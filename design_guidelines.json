@@ -1,0 +1,153 @@
+{
+  "app_name": "GrimorioApp",
+  "personality": "6 Glass / Luxe",
+  "personality_one_liner": "A refined, cinematic dark grimoire that feels like wielding ancient magic through a modern, glass-layered interface.",
+  "color": {
+    "surface": "#0A0A0B",
+    "onSurface": "#F0EBE1",
+    "surfaceSecondary": "#141416",
+    "onSurfaceSecondary": "#C8C2B5",
+    "surfaceTertiary": "#1D1D20",
+    "onSurfaceTertiary": "#A39E93",
+    "surfaceInverse": "#F0EBE1",
+    "onSurfaceInverse": "#0A0A0B",
+    "brand": "#D4AF37",
+    "brandPrimary": "#D4AF37",
+    "onBrandPrimary": "#1A1405",
+    "brandSecondary": "#9E8329",
+    "onBrandSecondary": "#F0EBE1",
+    "brandTertiary": "#3D3210",
+    "onBrandTertiary": "#D4AF37",
+    "success": "#2E5C3E",
+    "onSuccess": "#A5D6B6",
+    "warning": "#8A5A19",
+    "onWarning": "#F5D0A9",
+    "error": "#7D2626",
+    "onError": "#EFA1A1",
+    "info": "#5C5440",
+    "onInfo": "#EBDDC4",
+    "border": "#29292D",
+    "borderStrong": "#45454C",
+    "divider": "#1F1F24"
+  },
+  "typography": {
+    "displayFontFamily": "Cormorant Garamond",
+    "textFontFamily": "Satoshi",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous vertical breathing room for cinematic feel; cards should never sit flush to screen edges; use minimum md margin.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "0",
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Sticky headers over scrolling content",
+      "Bottom tab bar",
+      "Featured spell hero image overlay",
+      "Floating action buttons"
+    ],
+    "dont's": [
+      "Form fields",
+      "Body text regions"
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Home",
+      "purpose": "Welcome the player and provide quick access to search, popular spells, or recent filters.",
+      "states": {
+        "loading": "Centered antique gold spinner",
+        "empty": "Illustration of a closed grimoire with 'Inizia la tua ricerca magica.'",
+        "error": "Message 'Connessione persa' with a retry button."
+      },
+      "layout": "Cinematic hero area at the top with a dark atmospheric background image, overlaid with a subtle glass search bar. Below, horizontal scrollable sections for 'Scuole di Magia' (Schools of Magic) using tinted glass cards, and a 'Incantesimi in Evidenza' (Featured Spells) vertical list. The hero area should use the dragon d20 logo as a subtle watermark or primary element."
+    },
+    {
+      "name": "SpellsList",
+      "purpose": "Browse and filter the complete spell dictionary in real-time.",
+      "states": {
+        "loading": "Skeleton rows of spell names",
+        "empty": "Icon of an empty scroll with 'Nessun incantesimo trovato.'",
+        "error": "Error fetching spell list, retry button."
+      },
+      "layout": "Sticky glass header containing the real-time search input and a horizontally scrolling row of pill-shaped filter chips (Livello, Scuola, Classe). The list below uses simple but elegant list items with the spell name in Serif, level/school in small Sans, and an interactive 'Favorite' star icon on the right edge. List items have a subtle divider."
+    },
+    {
+      "name": "SpellDetail",
+      "purpose": "Immersive, easy-to-read reference for a specific spell's mechanics and lore.",
+      "states": {
+        "loading": "Spinner in the center",
+        "empty": "N/A",
+        "error": "Failed to load spell data."
+      },
+      "layout": "Full-bleed hero image of a glowing magic book at the top with a heavy gradient-to-dark scrim (top to bottom). The spell name (large Serif, 2xl+) sits at the bottom of the scrim. Below the hero, a tactical grid of core metadata (Tempo di lancio, Gittata, Componenti, Durata) using brandTertiary tinted containers. The description text follows with generous line height and editorial spacing. A sticky Floating Action Button (FAB) at the bottom right allows adding/removing from Favorites."
+    },
+    {
+      "name": "Favorites",
+      "purpose": "Quick access to locally saved spells for fast reference during a tabletop session.",
+      "states": {
+        "loading": "Spinner",
+        "empty": "Icon of an unlit candle with 'Il tuo grimorio è vuoto. Aggiungi i tuoi incantesimi preferiti.'",
+        "error": "Error reading local storage."
+      },
+      "layout": "Simple, focused list layout similar to SpellsList but without the complex filter chips. Just a search bar in a glass header and the list of saved spells, prioritized for fast reading in-game."
+    }
+  ],
+  "images": {
+    "dark_atmosphere": {
+      "url": "https://images.unsplash.com/photo-1670702146868-bc7797ef47a5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MjJ8MHwxfHNlYXJjaHwyfHxkYXJrJTIwZmFudGFzeSUyMGF0bW9zcGhlcmljJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3ODI0NzY5MDB8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Dark fantasy atmospheric mountains"
+    },
+    "dragon_d20_logo": {
+      "url": "https://images.pexels.com/photos/7394683/pexels-photo-7394683.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "alt": "Polyhedral d20 dice resting in shadow"
+    },
+    "magic_book_hero": {
+      "url": "https://images.pexels.com/photos/3151984/pexels-photo-3151984.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "alt": "Glowing magical spellbook with colorful smoke"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Implement a strict Glass/Luxe Dark personality. Avoid pure black backgrounds with extreme white contrast; use the provided #0A0A0B and #F0EBE1.",
+    "Use 'Cormorant Garamond' (or another elegant Serif) for display headings and spell titles, and 'Satoshi' for body text and metadata.",
+    "For the SpellDetail screen, ensure the full-bleed hero image has a strict gradient-to-dark scrim (transparent to #0A0A0B) so the overlaid spell title is perfectly readable.",
+    "Avoid any generic 'parchment' backgrounds or skeuomorphic beige textures. The aesthetic is modern, dark, and cinematic with gold (#D4AF37) accents.",
+    "Do not use blue, purple, or indigo anywhere. Stick to the midnight/charcoal base with gold/amber accents.",
+    "Implement real-time filtering in the SpellsList screen. Based on user feedback for D&D Beyond, users want fast access to spell details, so ensure navigating from the list to the detail screen is instant.",
+    "Make the 'Favorite' FAB sticky at the bottom right of the SpellDetail screen."
+  ]
+}
