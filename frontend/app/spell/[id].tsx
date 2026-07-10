@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { fetchSpell, Spell } from "@/src/api";
+import { HtmlText } from "@/src/components/HtmlText";
 import { useFavorites } from "@/src/favorites";
 import { IMAGES, schoolColors, theme } from "@/src/theme";
 
@@ -160,9 +161,10 @@ export default function SpellDetail() {
         {/* Description */}
         <View style={styles.descWrap}>
           <Text style={styles.sectionLabel}>Descrizione</Text>
-          <Text style={styles.descText} testID="detail-description">
-            {spell.descrizione}
-          </Text>
+          <HtmlText
+            html={spell.descrizione}
+            testID="detail-description"
+          />
         </View>
       </ScrollView>
 
