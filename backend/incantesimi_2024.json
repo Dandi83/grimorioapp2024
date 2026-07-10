@@ -2131,5 +2131,1193 @@
     "componenti": "V, S",
     "durata": "10 minuti",
     "descrizione": ""
+  },
+  {
+    "nome_italiano": "DIVINAZIONE",
+    "livello": "Divinazione di 4° livello (chierico, druido, mago)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (incenso del valore di 25 mo o più,",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "ESPLOSIONE SOLARE",
+    "livello": "Invocazione di 8° livello (chierico, druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "45 metri",
+    "componenti": "V, S, M (un frammento di pietra di sole)",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCA ANIMALI",
+    "livello": "Evocazione di 3° livello (druido, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCA CELESTIALE",
+    "livello": "Evocazione di 7° livello (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCA CREATURE BOSCHIVE",
+    "livello": "Evocazione di 4° livello (druido, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCA ELEMENTALE",
+    "livello": "Evocazione di 5° livello (druido, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCA ELEMENTALI MINORI",
+    "livello": "Evocazione di 4° livello (druido, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCA FOLLETTO",
+    "livello": "Evocazione di 6° livello (druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCA PIOGGIA DI ARMI",
+    "livello": "Evocazione di 5° livello (ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "45 metri",
+    "componenti": "V, S, M (un'arma da mischia o a distanza",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCA RAFFICA",
+    "livello": "Evocazione di 3° livello (ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un'arma da mischia o a distanza",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "EVOCAZIONI ISTANTANEE DI DRAWMIJ",
+    "livello": "Evocazione di 6° livello (mago)",
+    "tempo_di_lancio": "1 minuto o rituale",
+    "gittata": "contatto",
+    "componenti": "V, S, M (uno zaffiro del valore di 1.000 mo o più)",
+    "durata": "finché non viene dissolto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "FAME DI HADAR",
+    "livello": "Evocazione di 3° livello (warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "45 metri",
+    "componenti": "V, S, M (un tentacolo in salamoia)",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "GLOBO CROMATICO",
+    "livello": "Invocazione di 1° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (un diamante del valore di 50 mo o più)",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "GUIDA",
+    "livello": "Trucchetto di Divinazione (chierico, druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "ILLUSIONE PROGRAMMATA",
+    "livello": "Illusione di 6° livello (bardo, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (polvere di giada del valore di 25 mo",
+    "durata": "finché non viene dissolto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "IMMAGINE MAGGIORE",
+    "livello": "Illusione di 3° livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (un ciuffo di lana)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "IMMAGINE PROIETTATA",
+    "livello": "Illusione di 7° livello (bardo, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "800 chilometri",
+    "componenti": "V, S, M (una statuetta dell'incantatore del",
+    "durata": "concentrazione, fino a l giorno",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "IMMAGINE SILENZIOSA",
+    "livello": "Illusione di 1° livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un ciuffo di lana)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "IMMAGINE SPECULARE",
+    "livello": "Illusione di 2° livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INDIVIDUAZIONE DEI PENSIERI",
+    "livello": "Divinazione di 2° livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (1 pezzo di rame)",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INDIVIDUAZIONE DEL BENE E DEL MALE",
+    "livello": "Divinazione di 1° livello (chierico, paladino)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "VELENI",
+    "livello": "Divinazione di 1° livello (chierico, druido, paladino, ranger)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una foglia di tasso)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INSETTO GIGANTE",
+    "livello": "Evocazione di 4° livello (druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INTERDIZIONE ALLA MORTE",
+    "livello": "Abiurazione di 4° livello (chierico, paladino)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "8 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INTIMORIRE INFERNALE",
+    "livello": "Invocazione di 1° livello (warlock)",
+    "tempo_di_lancio": "reazione, che l'incantatore effettua quando",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INTRALCIARE",
+    "livello": "Evocazione di 1° livello (druido, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INVIARE",
+    "livello": "Divinazione di 3° livello (bardo, chierico, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "illimitata",
+    "componenti": "V, S, M (un filo di rame)",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INVISIBILITÀ",
+    "livello": "Illusione di 2° livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un ciglio in uno strato di resina)",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "INVOCARE IL FULMINE",
+    "livello": "Evocazione di 3° livello (druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "LABIRINTO",
+    "livello": "Evocazione di 8° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "LAMA INFUOCATA",
+    "livello": "Invocazione di 2° livello (druido, stregone)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una foglia di sommacco)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "LEGAME TELEPATICO DI RARY",
+    "livello": "Divinazione di 5° livello (bardo, mago)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (due uova)",
+    "durata": "1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "LIBERTÀ DI MOVIMENTO",
+    "livello": "Abiurazione di 4° livello (bardo, chierico, druido, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (una cinghia di cuoio)",
+    "durata": "1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "LOCALIZZA ANIMALI O VEGETALI",
+    "livello": "Divinazione di 2° livello (bardo, druido, ranger)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un ciuffo di peli di un segugio)",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "LUMINESCENZA",
+    "livello": "Invocazione di 1° livello (bardo, druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MANI BRUCIANTI",
+    "livello": "Invocazione di 1° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MANO DI BIGBY",
+    "livello": "Invocazione di 5° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (un guscio d'uovo e un guanto)",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MANTO DEL CROCIATO",
+    "livello": "Invocazione di 3° livello (paladino)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MARCHIO DEL CACCIATORE",
+    "livello": "Divinazione di 1° livello (ranger)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "27 metri",
+    "componenti": "V",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MIRAGGIO ARCANO",
+    "livello": "Illusione di 7° livello (bardo, druido, mago)",
+    "tempo_di_lancio": "10 minuti",
+    "gittata": "vista",
+    "componenti": "V, S",
+    "durata": "10 giorni",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MURO DI FORZA",
+    "livello": "Invocazione di 5° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (un frammento di vetro)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MURO DI GHIACCIO",
+    "livello": "Invocazione di 6° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (un pezzo di quarzo)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MURO DI PIETRA",
+    "livello": "Invocazione di 5° livello (druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (un cubo di granito)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MURO DI SPINE",
+    "livello": "Evocazione di 6° livello (druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (una manciata di spine)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "MURO DI VENTO",
+    "livello": "Invocazione di 3° livello (druido, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (un ventaglio e una piuma)",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "NUBE DI NEBBIA",
+    "livello": "Evocazione di 1° livello (druido, mago, ranger, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "NUBE DI PUGNALI",
+    "livello": "Evocazione di 2° livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (una scheggia di vetro)",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "NUBE INCENDIARIA",
+    "livello": "Evocazione di 8° livello (druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "45 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "NUBE MALEODORANTE",
+    "livello": "Evocazione di 3° livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (un uovo marcio)",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "NUBE MORTALE",
+    "livello": "Evocazione di 5° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "OCCHIO ARCANO",
+    "livello": "Divinazione di 4° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (un ciuffo di peli di pipistrello)",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "ONDA DISTRUTTIVA",
+    "livello": "Invocazione di 5° livello (paladino)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "ONDA TONANTE",
+    "livello": "Invocazione di 1° livello (bardo, druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "OSCURITÀ",
+    "livello": "Invocazione di 2° livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, M (pelo di pipistrello e un pezzo di carbone)",
+    "durata": "concentrazione, fino a 1 O minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PARLARE CON GLI ANIMALI",
+    "livello": "Divinazione di 1° livello (bardo, druido, ranger, warlock)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PAROLA DEL POTERE FORTIFICARE",
+    "livello": "Ammaliamento di livello (bardo, chierico)",
+    "tempo_di_lancio": "a7z°i one",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PAROLA DEL POTERE GUARIRE",
+    "livello": "Ammaliamento di livello (bardo, chierico)",
+    "tempo_di_lancio": "a9z°i one",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PAROLA DEL POTERE UCCIDERE",
+    "livello": "Ammaliamento di livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "a9z°i one",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PAROLA DEL RITIRO",
+    "livello": "Evocazione di 6° livello (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "1, S metri",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PAROLA DIVINA",
+    "livello": "Invocazione di 7° livello (chierico)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "9 metri",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PASSO VELATO",
+    "livello": "Evocazione di 2° livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PAURA",
+    "livello": "Illusione di 3° livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una piuma bianca)",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PELLE CORIACEA",
+    "livello": "Trasmutazione di livello (druido, ranger)",
+    "tempo_di_lancio": "2az° ione bonus",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un pezzo di corteccia)",
+    "durata": "1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PERCEZIONE DELLE BESTIE",
+    "livello": "Divinazione di 2° livello (druido, ranger)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "contatto",
+    "componenti": "S",
+    "durata": "concentrazione, fino a l ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PIAGA DEGLI INSETTI",
+    "livello": "Evocazione di 5° livello (chierico, druido, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "90 metri",
+    "componenti": "V, S, M (una locusta)",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PORTA DIMENSIONALE",
+    "livello": "Evocazione di 4° livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "l SO metri",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PORTALE",
+    "livello": "Evocazione di 9° livello (chierico, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un diamante del valore di 5.000 mo",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PORTALE ARCANO",
+    "livello": "Evocazione di 6° livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "150 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PREGHIERA DI GUARIGIONE",
+    "livello": "Abiurazione di 2° livello (chierico, paladino)",
+    "tempo_di_lancio": "10 minuti",
+    "gittata": "9 metri",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PRESAGIO",
+    "livello": "Divinazione di 2° livello (chierico, druido, mago)",
+    "tempo_di_lancio": "1 minuto o rituale",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (bastoncini, ossa, carte o altri oggetti",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PRESENZA REGALE DI YOLANDE",
+    "livello": "Ammaliamento di livello (bardo, mago)",
+    "tempo_di_lancio": "a5z°i one",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una tiara in miniatura)",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PREVISIONE",
+    "livello": "Divinazione di 9° livello (bardo, druido, mago, warlock)",
+    "tempo_di_lancio": "l minuto",
+    "gittata": "contatto",
+    "componenti": "V, S, M (una piuma di colibrì)",
+    "durata": "8 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PUNIZIONE COLLERICA",
+    "livello": "Necromanzia di 1° livello (paladino)",
+    "tempo_di_lancio": "azione bonus che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PUNIZIONE DEMORALIZZANTE",
+    "livello": "Ammaliamento di livello (paladino)",
+    "tempo_di_lancio": "a4z ° i one bonus che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PUNIZIONE DIVINA",
+    "livello": "Invocazione di 1° livello (paladino)",
+    "tempo_di_lancio": "azione bonus che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PUNIZIONE ESILIANTE",
+    "livello": "Evocazione di 5° livello (paladino)",
+    "tempo_di_lancio": "azione bonus che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PUNIZIONE INCANDESCENTE",
+    "livello": "Invocazione di 1° livello (paladino)",
+    "tempo_di_lancio": "azione bonus che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PUNIZIONE SPLENDENTE",
+    "livello": "Trasmutazione di livello (paladino)",
+    "tempo_di_lancio": "2az° ione bonus che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "PUNIZIONE TONANTE",
+    "livello": "Invocazione di 1° livello (paladino)",
+    "tempo_di_lancio": "azione bonus che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RAFFICA DI SPINE",
+    "livello": "Evocazione di 1° livello (ranger)",
+    "tempo_di_lancio": "azione bonus che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RAGGIO ROVENTE",
+    "livello": "Invocazione di 2° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RAMPICANTE AFFERRANTE",
+    "livello": "Evocazione di 4° livello (druido, ranger)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "REGGIA MERAVIGLIOSA DI MORDENKAINEN",
+    "livello": "Evocazione di 7° livello (bardo, mago)",
+    "tempo_di_lancio": "1 minuto",
+    "gittata": "90 metri",
+    "componenti": "V, S, M (una miniatura di una porta del valore",
+    "durata": "24 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RESISTENZA",
+    "livello": "Trucchetto diA biurazione (chierico, druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "I'\"RE\" SPIRARE SOTT'ACQUA",
+    "livello": "Trasmutazione di livello (druido, mago, ranger, stregone)",
+    "tempo_di_lancio": "3az° ione o rituale",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (un piccolo giunco)",
+    "durata": "24 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RICHIAMA ABERRAZIONE",
+    "livello": "Evocazione di 4° livello (mago, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (un tentacolo in salamoia e un bulbo",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RICHIAMA BESTIA",
+    "livello": "Evocazione di 2° livello (druido, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (una piuma, un ciuffo di peli e una",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RICHIAMA CELESTIALE",
+    "livello": "Evocazione di 5° livello (chierico, paladino)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (un reliquiario del valore di 500 mo",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RICHIAMA COSTRUTTO",
+    "livello": "Evocazione di 4° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (una cassaforte del valore di 400 mo",
+    "durata": "concentrazione, fino a l ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RICHIAMA DRAGO",
+    "livello": "Evocazione di 5° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un oggetto su cui è incisa l'immagine",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RICHIAMA ELEMENTALE",
+    "livello": "Evocazione di 4° livello (druido, mago, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (aria, un sassolino, cenere e acqua",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RICHIAMA FOLLETTO",
+    "livello": "Evocazione di 3° livello (druido, mago, ranger, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (un fiore dorato del valore di 300 mo",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RICHIAMA IMMONDO",
+    "livello": "Evocazione di 6° livello (mago, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (una fiala di sangue del valore",
+    "durata": "concentrazione, fino a 1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "RIMUOVI MALEDIZIONE",
+    "livello": "Abiurazione di 3° livello (chierico, mago, paladino, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SANTUARIO PRIVATO DI MORDENKAINEN",
+    "livello": "Abiurazione di 4° livello (mago)",
+    "tempo_di_lancio": "10 minuti",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (una sottile lamina di piombo)",
+    "durata": "24 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SCIAME DI METEORE",
+    "livello": "Invocazione di 9° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "1,5 chilometri",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SCOPRI IL PERCORSO",
+    "livello": "Divinazione di 6° livello (bardo, chierico, druido)",
+    "tempo_di_lancio": "1 minuto",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un set di strumenti di divinazione,",
+    "durata": "concentrazione, fino a 1 giorno",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SCOPRI TRAPPOLE",
+    "livello": "Divinazione di 2° livello (chierico, druido, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SCRIGNO SEGRETO DI LEOMUND",
+    "livello": "Evocazione di 4° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (uno scrigno che misura 90 60 60",
+    "durata": "finché non viene dissolto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SEGUGIO FEDELE DI MORDENKAINEN",
+    "livello": "Evocazione di 4° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (un fischietto d'argento)",
+    "durata": "8 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SEMBRARE",
+    "livello": "Illusione di 5° livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "8 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SEMIPIANO",
+    "livello": "Evocazione di 8° livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "S",
+    "durata": "1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SERRATURA ARCANA",
+    "livello": "Abiurazione di 2° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere d'oro del valore di 25 mo",
+    "durata": "finché non viene dissolto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SERVITORE INOSSERVATO",
+    "livello": "Evocazione di 1° livello (bardo, mago, warlock)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un pezzo di spago e di legno)",
+    "durata": "1 ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SFERA AL VETRIOLO",
+    "livello": "Invocazione di 4° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "45 metri",
+    "componenti": "V, S, M (una goccia di bile)",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SFERA CONGELANTE DI 0TILUKE",
+    "livello": "Invocazione di 6° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "90 metri",
+    "componenti": "V, S, M (una sfera di cristallo in miniatura)",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SFERA INFUOCATA",
+    "livello": "Evocazione di 2° livello (druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (una pallina di cera)",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SFOCATURA",
+    "livello": "Illusione di 2° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SILENZIO",
+    "livello": "Illusione di 2° livello (bardo, chierico, ranger)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SIMULACRO",
+    "livello": "Illusione di 7° livello (mago)",
+    "tempo_di_lancio": "12 ore",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere di rubino del valore",
+    "durata": "finché non viene dissolto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SOGNO",
+    "livello": "Illusione di 5° livello (bardo, mago, warlock)",
+    "tempo_di_lancio": "1 minuto",
+    "gittata": "speciale",
+    "componenti": "V, S, M (una manciata di sabbia)",
+    "durata": "8 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SPADA DI MORDENKAINEN",
+    "livello": "Invocazione di 7° livello (bardo, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (una spada in miniatura del valore",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "SPRUZZO PRISMATICO",
+    "livello": "Invocazione di 7° livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "STREGONERIA ESPLOSIVA",
+    "livello": "Trucchetto di Invocazione (stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TELEPATIA",
+    "livello": "Divinazione di 8° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "illimitata",
+    "componenti": "V, S, M (un paio di anelli d'argento concatenati)",
+    "durata": "24 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TELETRASPORTO",
+    "livello": "Evocazione di 7° livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "3 metri",
+    "componenti": "V",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TEMPESTA DI GHIACCIO",
+    "livello": "Invocazione di 4° livello (druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "90 metri",
+    "componenti": "V, S, M (una muffola)",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TEMPESTA DI NEVISCHIO",
+    "livello": "Evocazione di 3° livello (druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "45 metri",
+    "componenti": "V, S, M (un ombrello in miniatura)",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TEMPESTA DI VENDETTA",
+    "livello": "Evocazione di 9° livello (druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "1,5 chilometri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TENTACOLI NERI DI EVARD",
+    "livello": "Evocazione di 4° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (un tentacolo)",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TERRENO ILLUSORIO",
+    "livello": "Illusione di 4° livello (bardo, druido, mago, warlock)",
+    "tempo_di_lancio": "10 minuti",
+    "gittata": "90 metri",
+    "componenti": "V, S, M (un fungo)",
+    "durata": "24 ore",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TRAMA IPNOTICA",
+    "livello": "Illusione di 3° livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "S, M (una manciata di coriandoli)",
+    "durata": "concentrazione, fino a 1 minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TRASLAZIONE ARBOREA",
+    "livello": "Evocazione di 5° livello (druido, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TRASPORTO VEGETALE",
+    "livello": "Evocazione di 6° livello (druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "3 metri",
+    "componenti": "V, S",
+    "durata": "l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TROVA CAVALCATURA",
+    "livello": "Evocazione di 2° livello (paladino)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TROVA FAMIGLIO",
+    "livello": "Evocazione di 1° livello (mago)",
+    "tempo_di_lancio": "l ora o rituale",
+    "gittata": "3 metri",
+    "componenti": "V, S, M (incenso bruciato del valore di 10 mo",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TSUNAMI",
+    "livello": "Evocazione di 8° livello (druido)",
+    "tempo_di_lancio": "l minuto",
+    "gittata": "1,5 chilometri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 6 round",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "TURBINE IMPLACABILE",
+    "livello": "Evocazione di 5° livello (ranger, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "S, M (un'arma da mischia dal valore di l ma",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "UNTO",
+    "livello": "Evocazione di 1° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un pezzo di cotenna di maiale",
+    "durata": "l minuto",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "VEDERE INVISIBILITÀ",
+    "livello": "Divinazione di 2° livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un pizzico di talco)",
+    "durata": "l ora",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "VIGORE ARCANO",
+    "livello": "Abiurazione di 2° livello (mago, stregone)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "istantanea",
+    "descrizione": ""
+  },
+  {
+    "nome_italiano": "VINCOLO DI INTERDIZIONE",
+    "livello": "Abiurazione di 2° livello (chierico, paladino)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un paio di anelli di platino del valore",
+    "durata": "1 ora",
+    "descrizione": ""
   }
 ]

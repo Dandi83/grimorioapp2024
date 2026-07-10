@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { fetchMeta, fetchSpells, Spell, SpellsMeta } from "@/src/api";
 import { useFavorites } from "@/src/favorites";
-import { schoolColors, theme } from "@/src/theme";
+import { EDIT_MODE, schoolColors, theme } from "@/src/theme";
 
 type FilterKind = "livello" | "scuola" | "classe" | null;
 
@@ -380,7 +380,7 @@ function SpellRow({
   onToggleFavorite: () => void;
 }) {
   const scuolaColor = schoolColors[spell.scuola] ?? theme.colors.brand;
-  const incomplete = !spell.descrizione || spell.livello_num === -1;
+  const incomplete = EDIT_MODE && (!spell.descrizione || spell.livello_num === -1);
   return (
     <Pressable
       testID={`spell-row-${spell.id}`}

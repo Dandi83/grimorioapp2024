@@ -60,3 +60,8 @@ export const IMAGES = {
   magicBook:
     "https://images.pexels.com/photos/3151984/pexels-photo-3151984.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
 };
+
+// Whether editing spells is enabled for the current build.
+// Set EXPO_PUBLIC_EDIT_MODE=false in .env to lock the app for end users.
+export const EDIT_MODE =
+  (process.env.EXPO_PUBLIC_EDIT_MODE ?? "false").toLowerCase() === "true";

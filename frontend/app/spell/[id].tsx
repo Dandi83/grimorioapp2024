@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fetchSpell, Spell } from "@/src/api";
 import { HtmlText } from "@/src/components/HtmlText";
 import { useFavorites } from "@/src/favorites";
-import { IMAGES, schoolColors, theme } from "@/src/theme";
+import { EDIT_MODE, IMAGES, schoolColors, theme } from "@/src/theme";
 
 function capitalize(s: string) {
   if (!s) return s;
@@ -111,18 +111,20 @@ export default function SpellDetail() {
           </Pressable>
 
           {/* Edit button */}
-          <Pressable
-            testID="detail-edit-btn"
-            onPress={() => router.push(`/spell/edit/${spell.id}`)}
-            style={[styles.editCircle, { top: insets.top + theme.spacing.md }]}
-            hitSlop={12}
-          >
-            <Ionicons
-              name="create-outline"
-              size={20}
-              color={theme.colors.onSurface}
-            />
-          </Pressable>
+          {EDIT_MODE && (
+            <Pressable
+              testID="detail-edit-btn"
+              onPress={() => router.push(`/spell/edit/${spell.id}`)}
+              style={[styles.editCircle, { top: insets.top + theme.spacing.md }]}
+              hitSlop={12}
+            >
+              <Ionicons
+                name="create-outline"
+                size={20}
+                color={theme.colors.onSurface}
+              />
+            </Pressable>
+          )}
 
           <View style={styles.heroBottom}>
             <View
@@ -180,7 +182,7 @@ export default function SpellDetail() {
               html={spell.descrizione}
               testID="detail-description"
             />
-          ) : (
+          ) : EDIT_MODE ? (
             <Pressable
               testID="detail-add-description"
               onPress={() => router.push(`/spell/edit/${spell.id}`)}
@@ -196,6 +198,10 @@ export default function SpellDetail() {
                 Manuale del Giocatore.
               </Text>
             </Pressable>
+          ) : (
+            <Text style={styles.emptyDescReadonly} testID="detail-empty-desc">
+              Descrizione non disponibile per questo incantesimo.
+            </Text>
           )}
         </View>
       </ScrollView>
@@ -305,6 +311,13 @@ const styles = StyleSheet.create({
   emptyDescText: {
     flex: 1,
     color: theme.colors.onSurfaceSecondary,
+    fontFamily: theme.fonts.serif,
+    fontSize: 15,
+    lineHeight: 22,
+    fontStyle: "italic",
+  },
+  emptyDescReadonly: {
+    color: theme.colors.onSurfaceTertiary,
     fontFamily: theme.fonts.serif,
     fontSize: 15,
     lineHeight: 22,
