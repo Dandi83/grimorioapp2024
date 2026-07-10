@@ -46,6 +46,16 @@ export default function TabsLayout() {
           tabBarButtonTestID: "tab-favorites",
         }}
       />
+      <Tabs.Screen
+        name="dice"
+        options={{
+          title: "Dadi",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="dice" size={size} color={color} />
+          ),
+          tabBarButtonTestID: "tab-dice",
+        }}
+      />
     </Tabs>
   );
 }
