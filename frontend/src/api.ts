@@ -77,3 +77,35 @@ export async function updateSpell(id: string, update: SpellUpdate): Promise<Spel
   }
   return res.json();
 }
+
+export interface SpellCreate {
+  nome_italiano: string;
+  livello: string;
+  tempo_di_lancio?: string;
+  gittata?: string;
+  componenti?: string;
+  durata?: string;
+  descrizione?: string;
+}
+
+export async function createSpell(payload: SpellCreate): Promise<Spell> {
+  const url = `${BASE_URL}/api/spells`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(body || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function deleteSpell(id: string): Promise<void> {
+  const url = `${BASE_URL}/api/spells/${id}`;
+  const res = await fetch(url, { method: "DELETE" });
+  if (!res.ok && res.status !== 204) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+}

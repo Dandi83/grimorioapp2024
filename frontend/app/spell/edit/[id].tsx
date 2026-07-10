@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { fetchSpell, Spell, updateSpell } from "@/src/api";
+import { fetchSpell, Spell, updateSpell, deleteSpell } from "@/src/api";
 import { theme } from "@/src/theme";
 
 type FieldKey =
@@ -52,6 +52,8 @@ export default function EditSpellScreen() {
   const [spell, setSpell] = useState<Spell | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [values, setValues] = useState<Record<FieldKey, string>>({
     livello: "",
     tempo_di_lancio: "",
@@ -89,6 +91,19 @@ export default function EditSpellScreen() {
       console.warn("update failed", e);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const onDelete = async () => {
+    if (!spell) return;
+    setDeleting(true);
+    try {
+      await deleteSpell(spell.id);
+      // Go back to the spells list (pop two levels: editor -> detail -> list)
+      router.replace("/(tabs)/spells");
+    } catch (e) {
+      console.warn("delete failed", e);
+      setDeleting(false);
     }
   };
 
@@ -168,6 +183,55 @@ export default function EditSpellScreen() {
             </View>
           );
         })}
+
+        {/* Delete area */}
+        <View style={styles.dangerZone}>
+          {!showConfirmDelete ? (
+            <Pressable
+              testID="edit-delete-btn"
+              onPress={() => setShowConfirmDelete(true)}
+              style={({ pressed }) => [
+                styles.deleteBtn,
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <Ionicons
+                name="trash-outline"
+                size={18}
+                color={theme.colors.onError}
+              />
+              <Text style={styles.deleteBtnText}>Elimina incantesimo</Text>
+            </Pressable>
+          ) : (
+            <View style={styles.confirmBox}>
+              <Text style={styles.confirmText}>
+                Sicuro di voler eliminare &ldquo;{spell.nome_italiano}&rdquo;?
+                L&apos;azione è irreversibile.
+              </Text>
+              <View style={styles.confirmActions}>
+                <Pressable
+                  testID="edit-delete-cancel"
+                  onPress={() => setShowConfirmDelete(false)}
+                  style={styles.confirmCancel}
+                >
+                  <Text style={styles.confirmCancelText}>Annulla</Text>
+                </Pressable>
+                <Pressable
+                  testID="edit-delete-confirm"
+                  onPress={onDelete}
+                  disabled={deleting}
+                  style={[styles.confirmDelete, deleting && { opacity: 0.7 }]}
+                >
+                  {deleting ? (
+                    <ActivityIndicator color={theme.colors.onError} size="small" />
+                  ) : (
+                    <Text style={styles.confirmDeleteText}>Elimina</Text>
+                  )}
+                </Pressable>
+              </View>
+            </View>
+          )}
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -256,5 +320,72 @@ const styles = StyleSheet.create({
   inputMulti: {
     minHeight: 220,
     lineHeight: 24,
+  },
+  dangerZone: {
+    marginTop: theme.spacing.xl,
+    paddingTop: theme.spacing.xl,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.border,
+  },
+  deleteBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: theme.spacing.sm,
+    paddingVertical: theme.spacing.md,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.error,
+    backgroundColor: "transparent",
+  },
+  deleteBtnText: {
+    color: theme.colors.onError,
+    fontFamily: theme.fonts.sans,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  confirmBox: {
+    padding: theme.spacing.lg,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.error,
+    backgroundColor: "rgba(125,38,38,0.15)",
+    gap: theme.spacing.md,
+  },
+  confirmText: {
+    color: theme.colors.onError,
+    fontFamily: theme.fonts.serif,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  confirmActions: {
+    flexDirection: "row",
+    gap: theme.spacing.md,
+  },
+  confirmCancel: {
+    flex: 1,
+    paddingVertical: theme.spacing.md,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.surfaceTertiary,
+    alignItems: "center",
+  },
+  confirmCancelText: {
+    color: theme.colors.onSurface,
+    fontFamily: theme.fonts.sans,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  confirmDelete: {
+    flex: 1,
+    paddingVertical: theme.spacing.md,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.error,
+    alignItems: "center",
+  },
+  confirmDeleteText: {
+    color: theme.colors.onError,
+    fontFamily: theme.fonts.sans,
+    fontSize: 14,
+    fontWeight: "700",
   },
 });

@@ -319,6 +319,21 @@ export default function SpellsScreen() {
           ItemSeparatorComponent={() => <View style={styles.divider} />}
         />
       )}
+
+      {/* Create FAB — only in admin mode */}
+      {EDIT_MODE && (
+        <Pressable
+          testID="spells-create-fab"
+          onPress={() => router.push("/spell/new")}
+          style={({ pressed }) => [
+            styles.createFab,
+            { bottom: insets.bottom + 80 },
+            pressed && { opacity: 0.8 },
+          ]}
+        >
+          <Ionicons name="add" size={28} color={theme.colors.onBrand} />
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -605,5 +620,20 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: theme.colors.divider,
     marginLeft: theme.spacing.xl + 3,
+  },
+  createFab: {
+    position: "absolute",
+    right: theme.spacing.xl,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: theme.colors.brand,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
   },
 });

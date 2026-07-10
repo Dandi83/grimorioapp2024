@@ -197,6 +197,57 @@ async def list_spells(
     return [Spell(**d) for d in docs]
 
 
+class SpellCreate(BaseModel):
+    nome_italiano: str
+    livello: str
+    tempo_di_lancio: str = ""
+    gittata: str = ""
+    componenti: str = ""
+    durata: str = ""
+    descrizione: str = ""
+
+
+@api_router.post("/spells", response_model=Spell, status_code=201)
+async def create_spell(payload: SpellCreate):
+    name = payload.nome_italiano.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Il nome è obbligatorio.")
+    # Prevent duplicate by name (case-insensitive)
+    dupe = await db.spells.find_one(
+        {"nome_italiano": {"$regex": f"^{re.escape(name)}$", "$options": "i"}}
+    )
+    if dupe:
+        raise HTTPException(
+            status_code=409, detail=f"Esiste già un incantesimo con il nome '{name}'."
+        )
+    livello_num, scuola, classi = parse_livello(payload.livello)
+    doc = {
+        "id": str(uuid.uuid4()),
+        "nome_italiano": name,
+        "livello": payload.livello,
+        "tempo_di_lancio": payload.tempo_di_lancio,
+        "gittata": payload.gittata,
+        "componenti": payload.componenti,
+        "durata": payload.durata,
+        "descrizione": payload.descrizione,
+        "livello_num": livello_num,
+        "scuola": scuola,
+        "classi": classi,
+        "user_edited": True,
+    }
+    await db.spells.insert_one(doc)
+    doc.pop("_id", None)
+    return Spell(**doc)
+
+
+@api_router.delete("/spells/{spell_id}", status_code=204)
+async def delete_spell(spell_id: str):
+    res = await db.spells.delete_one({"id": spell_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Spell not found")
+    return
+
+
 @api_router.get("/spells/meta")
 async def spells_meta():
     """Returns available filter values: levels, schools, classes."""
