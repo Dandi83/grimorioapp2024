@@ -60,7 +60,7 @@ export default function HomeScreen() {
           />
           <View style={[styles.heroContent, { paddingTop: insets.top + 24 }]}>
             <Text style={styles.eyebrow} testID="home-eyebrow">
-              D&D 5e · 2024
+              5e24
             </Text>
             <Text style={styles.title} testID="home-title">
               GrimorioApp
@@ -148,6 +148,16 @@ export default function HomeScreen() {
               </Pressable>
             ))}
           </View>
+        </View>
+
+        {/* Disclaimer */}
+        <View style={styles.disclaimerWrap} testID="home-disclaimer">
+          <Text style={styles.disclaimerText}>
+            * Progetto fan-made a scopo puramente personale e non commerciale.
+            Nessuna affiliazione, sponsorizzazione o approvazione da parte di
+            Wizards of the Coast o dei detentori dei marchi originali. Tutti i
+            marchi registrati appartengono ai rispettivi proprietari.
+          </Text>
         </View>
       </ScrollView>
     </View>
@@ -275,5 +285,21 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: "uppercase",
     marginTop: theme.spacing.xs,
+  },
+  disclaimerWrap: {
+    marginHorizontal: theme.spacing.xl,
+    marginTop: theme.spacing.xxxl,
+    paddingTop: theme.spacing.lg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: theme.colors.divider,
+  },
+  disclaimerText: {
+    color: theme.colors.onSurfaceTertiary,
+    fontFamily: theme.fonts.sans,
+    fontSize: 10,
+    lineHeight: 15,
+    fontStyle: "italic",
+    textAlign: "center",
+    letterSpacing: 0.3,
   },
 });
