@@ -380,6 +380,7 @@ function SpellRow({
   onToggleFavorite: () => void;
 }) {
   const scuolaColor = schoolColors[spell.scuola] ?? theme.colors.brand;
+  const incomplete = !spell.descrizione || spell.livello_num === -1;
   return (
     <Pressable
       testID={`spell-row-${spell.id}`}
@@ -388,13 +389,22 @@ function SpellRow({
     >
       <View style={[styles.rowAccent, { backgroundColor: scuolaColor }]} />
       <View style={styles.rowContent}>
-        <Text style={styles.rowName} numberOfLines={1}>
-          {capitalize(spell.nome_italiano)}
-        </Text>
+        <View style={styles.rowNameRow}>
+          <Text style={styles.rowName} numberOfLines={1}>
+            {capitalize(spell.nome_italiano)}
+          </Text>
+          {incomplete && (
+            <View style={styles.todoBadge} testID={`todo-${spell.id}`}>
+              <Text style={styles.todoBadgeText}>DA COMPLETARE</Text>
+            </View>
+          )}
+        </View>
         <Text style={styles.rowMeta} numberOfLines={1}>
           {spell.livello_num === 0
             ? `Trucchetto · ${spell.scuola}`
-            : `${spell.livello_num}° liv. · ${spell.scuola}`}
+            : spell.livello_num === -1
+              ? `? · ${spell.scuola || "?"}`
+              : `${spell.livello_num}° liv. · ${spell.scuola}`}
         </Text>
       </View>
       <Pressable
@@ -553,12 +563,33 @@ const styles = StyleSheet.create({
   rowContent: {
     flex: 1,
   },
+  rowNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.sm,
+    marginBottom: 2,
+  },
   rowName: {
     color: theme.colors.onSurface,
     fontFamily: theme.fonts.serif,
     fontSize: 18,
     fontWeight: "600",
-    marginBottom: 2,
+    flexShrink: 1,
+  },
+  todoBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: theme.radius.sm,
+    backgroundColor: theme.colors.brandTertiary,
+    borderWidth: 1,
+    borderColor: theme.colors.brandSecondary,
+  },
+  todoBadgeText: {
+    color: theme.colors.brand,
+    fontFamily: theme.fonts.sans,
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 0.8,
   },
   rowMeta: {
     color: theme.colors.onSurfaceTertiary,

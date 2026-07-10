@@ -40,9 +40,18 @@ class Spell(BaseModel):
     durata: str
     descrizione: str
     # Parsed metadata
-    livello_num: int  # 0 for cantrip (Trucchetto), otherwise 1-9
+    livello_num: int  # 0 for cantrip (Trucchetto), otherwise 1-9, -1 unknown
     scuola: str
     classi: List[str]
+
+
+class SpellUpdate(BaseModel):
+    livello: Optional[str] = None
+    tempo_di_lancio: Optional[str] = None
+    gittata: Optional[str] = None
+    componenti: Optional[str] = None
+    durata: Optional[str] = None
+    descrizione: Optional[str] = None
 
 
 # ---------------- Parsing helpers ----------------
@@ -99,10 +108,27 @@ def parse_livello(livello_str: str) -> tuple[int, str, List[str]]:
 
 # ---------------- Seed ----------------
 async def seed_spells_if_empty():
+    # We re-seed only if collection is empty OR count differs from source file (initial load).
+    seed_file = ROOT_DIR / "incantesimi_2024.json"
+    if seed_file.exists():
+        with seed_file.open("r", encoding="utf-8") as f:
+            source_count = len(json.load(f))
+    else:
+        source_count = 0
+
     count = await db.spells.count_documents({})
+    # Only re-seed if source has more spells than we have (initial load or additions)
+    # AND no user edits exist (user_edited flag)
     if count > 0:
-        logger.info(f"Spells already seeded ({count} docs). Skipping.")
-        return
+        user_edited = await db.spells.count_documents({"user_edited": True})
+        if count >= source_count or user_edited > 0:
+            logger.info(
+                f"Spells collection has {count} docs (source={source_count}, edited={user_edited}). Skipping re-seed."
+            )
+            return
+        # Drop and re-seed to pick up new spells added to the source file
+        logger.info(f"Re-seeding: collection has {count}, source has {source_count}.")
+        await db.spells.drop()
 
     seed_file = ROOT_DIR / "incantesimi_2024.json"
     if not seed_file.exists():
@@ -153,7 +179,7 @@ async def list_spells(
     livello: Optional[int] = Query(None, description="Filter by level (0-9)"),
     scuola: Optional[str] = Query(None, description="Filter by school"),
     classe: Optional[str] = Query(None, description="Filter by class (lowercase)"),
-    limit: int = Query(200, ge=1, le=500),
+    limit: int = Query(500, ge=1, le=1000),
 ):
     filt: dict = {}
     if q:
@@ -190,6 +216,29 @@ async def get_spell(spell_id: str):
     if not doc:
         raise HTTPException(status_code=404, detail="Spell not found")
     return Spell(**doc)
+
+
+@api_router.patch("/spells/{spell_id}", response_model=Spell)
+async def update_spell(spell_id: str, update: SpellUpdate):
+    doc = await db.spells.find_one({"id": spell_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Spell not found")
+
+    changes = {k: v for k, v in update.dict().items() if v is not None}
+    if not changes:
+        return Spell(**doc)
+
+    # If livello changed, re-parse metadata
+    if "livello" in changes:
+        livello_num, scuola, classi = parse_livello(changes["livello"])
+        changes["livello_num"] = livello_num
+        changes["scuola"] = scuola
+        changes["classi"] = classi
+
+    changes["user_edited"] = True
+    await db.spells.update_one({"id": spell_id}, {"$set": changes})
+    updated = await db.spells.find_one({"id": spell_id}, {"_id": 0})
+    return Spell(**updated)
 
 
 app.include_router(api_router)

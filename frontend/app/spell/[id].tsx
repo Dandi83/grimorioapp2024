@@ -110,6 +110,20 @@ export default function SpellDetail() {
             />
           </Pressable>
 
+          {/* Edit button */}
+          <Pressable
+            testID="detail-edit-btn"
+            onPress={() => router.push(`/spell/edit/${spell.id}`)}
+            style={[styles.editCircle, { top: insets.top + theme.spacing.md }]}
+            hitSlop={12}
+          >
+            <Ionicons
+              name="create-outline"
+              size={20}
+              color={theme.colors.onSurface}
+            />
+          </Pressable>
+
           <View style={styles.heroBottom}>
             <View
               style={[
@@ -161,10 +175,28 @@ export default function SpellDetail() {
         {/* Description */}
         <View style={styles.descWrap}>
           <Text style={styles.sectionLabel}>Descrizione</Text>
-          <HtmlText
-            html={spell.descrizione}
-            testID="detail-description"
-          />
+          {spell.descrizione ? (
+            <HtmlText
+              html={spell.descrizione}
+              testID="detail-description"
+            />
+          ) : (
+            <Pressable
+              testID="detail-add-description"
+              onPress={() => router.push(`/spell/edit/${spell.id}`)}
+              style={styles.emptyDescCta}
+            >
+              <Ionicons
+                name="create-outline"
+                size={20}
+                color={theme.colors.brand}
+              />
+              <Text style={styles.emptyDescText}>
+                Descrizione non ancora trascritta. Tocca per aggiungerla dal
+                Manuale del Giocatore.
+              </Text>
+            </Pressable>
+          )}
         </View>
       </ScrollView>
 
@@ -246,6 +278,37 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.border,
     alignItems: "center",
     justifyContent: "center",
+  },
+  editCircle: {
+    position: "absolute",
+    right: theme.spacing.lg,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(20,20,22,0.75)",
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyDescCta: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: theme.spacing.md,
+    padding: theme.spacing.lg,
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderRadius: theme.radius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.brandTertiary,
+    borderStyle: "dashed",
+  },
+  emptyDescText: {
+    flex: 1,
+    color: theme.colors.onSurfaceSecondary,
+    fontFamily: theme.fonts.serif,
+    fontSize: 15,
+    lineHeight: 22,
+    fontStyle: "italic",
   },
   heroBottom: {
     padding: theme.spacing.xl,

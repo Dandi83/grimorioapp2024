@@ -55,3 +55,25 @@ export async function fetchMeta(): Promise<SpellsMeta> {
 export async function fetchSpell(id: string): Promise<Spell> {
   return request<Spell>(`/spells/${id}`);
 }
+
+export interface SpellUpdate {
+  livello?: string;
+  tempo_di_lancio?: string;
+  gittata?: string;
+  componenti?: string;
+  durata?: string;
+  descrizione?: string;
+}
+
+export async function updateSpell(id: string, update: SpellUpdate): Promise<Spell> {
+  const url = `${BASE_URL}/api/spells/${id}`;
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(update),
+  });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  }
+  return res.json();
+}

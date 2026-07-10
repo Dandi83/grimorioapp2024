@@ -1,0 +1,1226 @@
+[
+  {
+    "nome_italiano": "DANZA IRRESISTIBILE DI OTTO",
+    "livello": "Ammaliamento di 6° livello (bardo, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V",
+    "durata": "concentrazione, fino a l minuto"
+  },
+  {
+    "nome_italiano": "DARDO INCANTATO",
+    "livello": "Invocazione di 1° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "DARDO STREGATO",
+    "livello": "Invocazione di 1° livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un ramoscello colpito da un fulmine)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "DARDO TRACCIANTE",
+    "livello": "Invocazione di 1° livello (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "1 round"
+  },
+  {
+    "nome_italiano": "DEFLAGRAZIONE OCCULTA",
+    "livello": "Trucchetto di Invocazione (warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "DESIDERIO",
+    "livello": "Evocazione di 9° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "DESTRIERO FANTOMATICO",
+    "livello": "Illusione di 3° livello (mago)",
+    "tempo_di_lancio": "1 minuto o rituale",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "DISCO FLUTTUANTE DI TENSER",
+    "livello": "Evocazione di 1° livello (mago)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (una goccia di mercurio)",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "DISINTEGRAZIONE",
+    "livello": "Trasmutazione di 6° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (una calamita e della polvere)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "DISORIENTARE",
+    "livello": "Ammaliamento di 8° livello (bardo, druido, mago, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "45 metri",
+    "componenti": "V, S, M (un portachiavi senza chiavi)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "DISSOLVI IL BENE E IL MALE",
+    "livello": "Abiurazione di 5° livello (chierico, paladino)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (polvere d'argento e ferro)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "DISSOLVI MAGIE",
+    "livello": "Abiurazione di 3° livello (bardo, chierico, druido, mago, paladino, ranger, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "DITO DELLA MORTE",
+    "livello": "Necromanzia di livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "DOMINARE BESTIE",
+    "livello": "Ammaliamento di livello (druido, ranger, stregone)",
+    "tempo_di_lancio": "a4z°i one",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "DOMINARE MOSTRI",
+    "livello": "Ammaliamento di livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "a8z°i one",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "DOMINARE PERSONE",
+    "livello": "Ammaliamento di livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "a5z°i one",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "DUELLO OBBLIGATO",
+    "livello": "Ammaliamento di livello (paladino)",
+    "tempo_di_lancio": "a1z° ione bonus",
+    "gittata": "9 metri",
+    "componenti": "V",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "ELEMENTALISMO",
+    "livello": "Trucchetto di Trasmutazione (druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "EROISMO",
+    "livello": "Ammaliamento di livello (bardo, paladino)",
+    "tempo_di_lancio": "a1z° ione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "ESILIO",
+    "livello": "Abiurazione di livello (chierico, mago, paladino, stregone, warlock) 4°",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (un pentacolo)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "ESTASIARE",
+    "livello": "Ammaliamento di livello (bardo, warlock)",
+    "tempo_di_lancio": "a2z°i one",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "FABBRICARE",
+    "livello": "Trasmutazione di livello (mago)",
+    "tempo_di_lancio": "410° minuti",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FARETRA RAPIDA",
+    "livello": "Trasmutazione di livello (ranger)",
+    "tempo_di_lancio": "5az° ione bonus",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una faretra dal valore di 1 mo o più)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "FARO DI SPERANZA",
+    "livello": "Abiurazione di 3° livello (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "FATALE",
+    "livello": "Illusione di 9° livello (mago, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "FAVORE DIVINO",
+    "livello": "Trasmutazione di 1° livello (paladino)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "1 minuto"
+  },
+  {
+    "nome_italiano": "FERIRE",
+    "livello": "Necromanzia di 6° livello (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FERMARE IL TEMPO",
+    "livello": "Trasmutazione di 9° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FIAMMA PERENNE",
+    "livello": "Invocazione di 2° livello (chierico, druido, mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere di rubino del valore di 50 mo",
+    "durata": "finché non viene dissolto"
+  },
+  {
+    "nome_italiano": "FIAMMA SACRA",
+    "livello": "Trucchetto di Invocazione (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FOLATA DI VENTO",
+    "livello": "Invocazione di 2° livello (druido, ranger, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un seme di legume)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "FONDERSI NELLA PIETRA",
+    "livello": "Trasmutazione di 3° livello (chierico, druido, ranger)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "8 ore"
+  },
+  {
+    "nome_italiano": "FONTE DI LUCE LUNARE",
+    "livello": "Invocazione di 4° livello (bardo, druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "FORMA ETEREA",
+    "livello": "Evocazione di 7° livello (bardo, chierico, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "fino a 8 ore"
+  },
+  {
+    "nome_italiano": "FORMA GASSOSA",
+    "livello": "Trasmutazione di 3° livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un pezzo di garza)",
+    "durata": "concentrazione, fino a l ora"
+  },
+  {
+    "nome_italiano": "FRANTUMARE",
+    "livello": "Invocazione di 2° livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un frammento di mica)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FRECCIA ACIDA DI MELF",
+    "livello": "Invocazione di 2° livello (mago)",
+    "tempo_di_lancio": "azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (foglia di rabarbaro in polvere)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FRECCIA FOLGORANTE",
+    "livello": "Trasmutazione di 3° livello (ranger)",
+    "tempo_di_lancio": "azione bonus, che l'incantatore effettua",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FRUSTA DI SPINE",
+    "livello": "Trucchetto di Trasmutazione (druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (il gambo di una pianta spinata)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FULMINE",
+    "livello": "Invocazione di 3° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un ciuffo di pelo e una verga",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "FUORVIARE",
+    "livello": "Illusione di 5° livello (bardo, mago, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "S",
+    "durata": "concentrazione, fino a l ora"
+  },
+  {
+    "nome_italiano": "GABBIA DI FORZA",
+    "livello": "Invocazione di 7° livello (bardo, mago, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "30 metri",
+    "componenti": "V, S, M (polvere di rubino del valore",
+    "durata": "concentrazione, fino a l ora"
+  },
+  {
+    "nome_italiano": "GIARA MAGICA",
+    "livello": "Necromanzia di 6° livello (mago)",
+    "tempo_di_lancio": "l minuto",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una gemma, un cristallo o un",
+    "durata": "finché non viene dissolto"
+  },
+  {
+    "nome_italiano": "GLIFO DI INTERDIZIONE",
+    "livello": "Abiurazione di 3° livello (bardo, chierico, mago)",
+    "tempo_di_lancio": "l ora",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere di diamante del valore",
+    "durata": "finché non viene dissolto o innescato"
+  },
+  {
+    "nome_italiano": "GLOBO DI INVULNERABILITÀ",
+    "livello": "Abiurazione di 6° livello (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una perla di vetro)",
+    "durata": "concentrazione, fino a l minuto"
+  },
+  {
+    "nome_italiano": "GUARDIANI SPIRITUALI",
+    "livello": "Evocazione di 3° livello (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una pergamena con una preghiera)",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "GUARDIANO DELLA FEDE",
+    "livello": "Evocazione di 4° livello (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V",
+    "durata": "8 ore"
+  },
+  {
+    "nome_italiano": "GUARIGIONE",
+    "livello": "Abiurazione di 6° livello (chierico, druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "GUARIGIONE DI MASSA",
+    "livello": "Abiurazione di 9° livello (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "IDENTIFICARE",
+    "livello": "Divinazione di 1° livello (bardo, mago)",
+    "tempo_di_lancio": "1 minuto o rituale",
+    "gittata": "contatto",
+    "componenti": "V, S, M (una perla del valore di 100 mo o più)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "ILLUSIONE MINORE",
+    "livello": "Trucchetto di Illusione (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "S, M (un ciuffo di lana)",
+    "durata": "1 minuto"
+  },
+  {
+    "nome_italiano": "IMPRIGIONARE",
+    "livello": "Abiurazione di livello (mago, warlock)",
+    "tempo_di_lancio": "° l minuto",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (una statuetta del bersaglio del valore",
+    "durata": "finché non viene dissolto"
+  },
+  {
+    "nome_italiano": "INARIDIRE",
+    "livello": "Necromanzia di livello (druido, mago, stregone, warlock)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "INDIVIDUAZIONE DEL MAGICO",
+    "livello": "Divinazione di livello (bardo, chierico, druido, mago, paladino, range1r°, stregone, warlock)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "INFLIGGI FERITE",
+    "livello": "Necromanzia di livello (chierico)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "INGRANDIRE/RIDURRE",
+    "livello": "Trasmutazione di livello (bardo, druido, mago, stregone)",
+    "tempo_di_lancio": "2az° ione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (un pizzico di polvere di ferro)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "INTERDIZIONE ALLE LAME",
+    "livello": "Trucchetto diAbiurazione (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l minuto"
+  },
+  {
+    "nome_italiano": "INTERMITTENZA",
+    "livello": "Trasmutazione di livello (mago, stregone)",
+    "tempo_di_lancio": "3az° ione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "l minuto"
+  },
+  {
+    "nome_italiano": "..INV...--ERSIONE DELLA GRAVITÀ",
+    "livello": "Trasmutazione di livello (druido, mago, stregone)",
+    "tempo_di_lancio": "a7z° ione",
+    "gittata": "30 metri",
+    "componenti": "V, S, M (una calamita e limatura di ferro)",
+    "durata": "concentrazione, fino a l minuto"
+  },
+  {
+    "nome_italiano": "LEGAME PLANARE",
+    "livello": "Abiurazione di livello (bardo, chierico, druido, mago, warlock) 5°",
+    "tempo_di_lancio": "1 ora",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un gioiello del valore di 1.000 mo o più,",
+    "durata": "24 ore"
+  },
+  {
+    "nome_italiano": "LENTEZZA",
+    "livello": "Trasmutazione di livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "3az° ione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (una goccia di melassa)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "LINGUAGGI",
+    "livello": "Divinazione di livello (bardo, chierico, mago, stregone, warlock) 3°",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, M (una ziggurat in miniatura)",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "LOCALIZZA CREATURA",
+    "livello": "Divinazione di livello (bardo, chierico, druido, mago, paladino, range4r)°",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un ciuffo di peli di un segugio)",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "LOCALIZZA OGGETTO",
+    "livello": "Divinazione di livello (bardo, chierico, druido, mago, paladino, range2r )°",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un ramoscello biforcuto)",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "LOQUACITÀ",
+    "livello": "Ammaliamento di livello (bardo, warlock)",
+    "tempo_di_lancio": "a8z°i one",
+    "gittata": "incantatore",
+    "componenti": "V",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "LUCE",
+    "livello": "Trucchetto diI nvocazione (bardo, chierico, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, M (una lucciola o del muschio fosforescente)",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "LUCE DIURNA",
+    "livello": "Invocazione di livello (chierico, druido, paladino, ranger, stregone) 3°",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "LUCE SPLENDENTE",
+    "livello": "Trucchetto di Invocazione (bardo, druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "LUCI DANZANTI",
+    "livello": "Trucchetto di Illusione (bardo, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M ((un frammento di fosforo)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "MANO MAGICA",
+    "livello": "Trucchetto di Evocazione (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "1 minuto"
+  },
+  {
+    "nome_italiano": "MESSAGGIO",
+    "livello": "Trucchetto di Trasmutazione (bardo, druido, mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "36 metri",
+    "componenti": "S, M (un filo di rame)",
+    "durata": "1 round"
+  },
+  {
+    "nome_italiano": "METAMORFOSI",
+    "livello": "Trasmutazione di livello (bardo, druido, mago, stregone)",
+    "tempo_di_lancio": "4a z° ione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (il bozzolo di un bruco)",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "METAMORFOSI PURA",
+    "livello": "Trasmutazione di livello (bardo, mago, warlock)",
+    "tempo_di_lancio": "a9z° ione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (una goccia di mercurio, una piccola",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "MODIFICARE MEMORIA",
+    "livello": "Ammaliamento di livello (bardo, mago)",
+    "tempo_di_lancio": "a5z°i one",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l minuto"
+  },
+  {
+    "nome_italiano": "MORTE APPARENTE",
+    "livello": "Necromanzia di livello (bardo, chierico, druido, mago)",
+    "tempo_di_lancio": "°azione o rituale",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un pizzico di terriccio prelevato",
+    "durata": "l ora"
+  },
+  {
+    "nome_italiano": "MOVIMENTI DEL RAGNO",
+    "livello": "Trasmutazione di livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "2az° ione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (una goccia di bitume e un ragno)",
+    "durata": "concentrazione, fino a l ora"
+  },
+  {
+    "nome_italiano": "MUOVERE IL TERRENO",
+    "livello": "Trasmutazione di livello (druido, mago, stregone)",
+    "tempo_di_lancio": "a6z° ione",
+    "gittata": "36 metri",
+    "componenti": "V, S, M (una pala in miniatura)",
+    "durata": "concentrazione, fino a 2 ore"
+  },
+  {
+    "nome_italiano": "MURO PRISMATICO",
+    "livello": "Abiurazione di livello (bardo, mago)",
+    "tempo_di_lancio": "° azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "10 minuti"
+  },
+  {
+    "nome_italiano": "PARLARE CON I MORTI",
+    "livello": "Necromanzia di livello (bardo, chierico, mago)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "3 metri",
+    "componenti": "V, S, M (incenso bruciato)",
+    "durata": "10 minuti"
+  },
+  {
+    "nome_italiano": "PARLARE CON I VEGETALI",
+    "livello": "Trasmutazione di livello (bardo, druido, ranger)",
+    "tempo_di_lancio": "3az° ione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "10 minuti"
+  },
+  {
+    "nome_italiano": "PAROLA DEL POTERE STORDIRE",
+    "livello": "Ammaliamento di livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "a8z°i one",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "PAROLA GUARITRICE",
+    "livello": "Abiurazione di 1° livello (bardo, chierico, druido)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "PAROLA GUARITRICE DI MASSA",
+    "livello": "Abiurazione di livello (bardo, chierico)",
+    "tempo_di_lancio": "° azione bonus",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "PAROLA RADIOSA",
+    "livello": "Trucchetto di Invocazione (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "incantatore",
+    "componenti": "V, M (un gettone di esplosione solare)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "PASSAPARETI",
+    "livello": "Trasmutazione di livello (mago)",
+    "tempo_di_lancio": "5az° ione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (un pizzico di semi di sesamo)",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "PASSARE SENZA TRACCE",
+    "livello": "Abiurazione di livello (druido, ranger)",
+    "tempo_di_lancio": "° azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (ceneri di vischio bruciato)",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "PASSO VELOCE",
+    "livello": "Trasmutazione di 1° livello (bardo, druido, mago, ranger)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un pizzico di terriccio)",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "PELLE DI PIETRA",
+    "livello": "Trasmutazione di livello (druido, mago, ranger, stregone)",
+    "tempo_di_lancio": "4az° ione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere di diamante del valore",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "PRESTIDIGITAZIONE",
+    "livello": "Trucchetto di Trasmutazione (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "3 metri",
+    "componenti": "V, S",
+    "durata": "fino a l ora"
+  },
+  {
+    "nome_italiano": "PRODURRE FIAMMA",
+    "livello": "Trucchetto di Evocazione (druido)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "10 minuti"
+  },
+  {
+    "nome_italiano": "PROIBIZIONE",
+    "livello": "Abiurazione di livello (chierico)",
+    "tempo_di_lancio": "° 10 minuti o rituale",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere di rubino del valore",
+    "durata": "l giorno"
+  },
+  {
+    "nome_italiano": "PROIEZIONE ASTRALE",
+    "livello": "Necromanzia di livello (chierico, mago, warlock)",
+    "tempo_di_lancio": "°1 ora",
+    "gittata": "3 metri",
+    "componenti": "V, S, M (per ogni bersaglio dell'incantesimo,",
+    "durata": "finché non viene dissolto"
+  },
+  {
+    "nome_italiano": "PROTEZIONE DAI VELENI",
+    "livello": "Abiurazione di livello (chierico, druido, paladino, ranger)",
+    "tempo_di_lancio": "° azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "PROTEZIONE DAL BENE E DAL MALE",
+    "livello": "Abiurazione di livello (chierico, druido, mago, paladino, warlock) 1°",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un'ampolla di acqua santa del valore",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "PROTEZIONE DALL'ENERGIA",
+    "livello": "Abiurazione di livello (chierico, druido, mago, ranger, stregone) 3°",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "PURIFICARE CIBO E BEVANDE",
+    "livello": "Trasmutazione di 1° livello (chierico, druido, paladino)",
+    "tempo_di_lancio": "azione o rituale",
+    "gittata": "3 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RAGGIO DI AFFATICAMENTO",
+    "livello": "Necromanzia di livello (mago, warlock)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "RAGGIO DI GELO",
+    "livello": "Trucchetto di Invocazione (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RAGGIO DI INFERMITÀ",
+    "livello": "Necromanzia di livello (mago, stregone)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RANDELLO INCANTATO",
+    "livello": "Trucchetto di Trasmutazione (druido)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (vischio)",
+    "durata": "1 minuto"
+  },
+  {
+    "nome_italiano": "REINCARNAZIONE",
+    "livello": "Necromanzia di livello (druido)",
+    "tempo_di_lancio": "°1 ora",
+    "gittata": "contatto",
+    "componenti": "V, S, M (oli rari del valore di 1.000 mo o più,",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "I-'\"RE\" SPIRARE SOTT'ACQUA",
+    "livello": "Trasmutazione di livello (druido, mago, ranger, stregone)",
+    "tempo_di_lancio": "3az° ione o rituale",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (un piccolo giunco)",
+    "durata": "24 ore"
+  },
+  {
+    "nome_italiano": "RESURREZIONE",
+    "livello": "Necromanzia di livello (bardo, chierico)",
+    "tempo_di_lancio": "°1 ora",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un diamante del valore di 1.000 mo",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RESURREZIONE PURA",
+    "livello": "Necromanzia di livello (chierico, druido)",
+    "tempo_di_lancio": "°l ora",
+    "gittata": "contatto",
+    "componenti": "V, S, M (diamanti del valore di 25.000 mo o più,",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RIANIMARE MORTI",
+    "livello": "Necromanzia di livello (bardo, chierico, paladino)",
+    "tempo_di_lancio": "°l ora",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un diamante del valore di 500 mo o più,",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RICHIAMA NON MORTO",
+    "livello": "Necromanzia di livello (mago, warlock)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (un teschio dorato del valore di 300 mo",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "RIGENERAZIONE",
+    "livello": "Trasmutazione di livello (bardo, chierico, druido)",
+    "tempo_di_lancio": "l7°m inuto",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un ruota della preghiera)",
+    "durata": "l ora"
+  },
+  {
+    "nome_italiano": "RINASCITA",
+    "livello": "Necromanzia di livello (chierico, druido, paladino, ranger)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un diamante del valore di 300 mo",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RINTOCCO DEI MORTI",
+    "livello": "Trucchetto di Necromanzia (chierico, mago, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RIPARARE",
+    "livello": "Trucchetto di Trasmutazione (bardo, chierico, druido, mago, stregone)",
+    "tempo_di_lancio": "1 minuto",
+    "gittata": "contatto",
+    "componenti": "V, S, M (due calamite)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RIPOSO INVIOLATO",
+    "livello": "Necromanzia di livello (chierico, mago, paladino)",
+    "tempo_di_lancio": "°azione o rituale",
+    "gittata": "contatto",
+    "componenti": "V, S, M (2 monete di rame, che l'incantesimo",
+    "durata": "10 giorni"
+  },
+  {
+    "nome_italiano": "RISATA INCONTENIBILE DI TASHA",
+    "livello": "Ammaliamento di livello (bardo, warlock, mago)",
+    "tempo_di_lancio": "a1z° ione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (una crostata e una piuma)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "RISCALDARE IL METALLO",
+    "livello": "Trasmutazione di livello (bardo, druido)",
+    "tempo_di_lancio": "2az° ione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un pezzo di ferro e una fiamma)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "RISTORARE INFERIORE",
+    "livello": "Abiurazione di livello (bardo, chierico, druido, paladino, ranger) 2°",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RISTORARE SUPERIORE",
+    "livello": "Abiurazione di livello (bardo, chierico, druido, paladino, ranger) 5°",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere di diamante del valore",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RISVEGLIO",
+    "livello": "Trasmutazione di livello (bardo, druido)",
+    "tempo_di_lancio": "58°o re",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un'agata del valore di 1.000 mo o più,",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "RITIRATA RAPIDA",
+    "livello": "Trasmutazione di livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "Ia 0 z ione bonus",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "SALVARE I MORENTI",
+    "livello": "Trucchetto di Necromanzia (chierico, druido)",
+    "tempo_di_lancio": "azione",
+    "gittata": "4,5 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "SANTIFICARE",
+    "livello": "Abiurazione di livello (chierico)",
+    "tempo_di_lancio": "° 24 ore",
+    "gittata": "contatto",
+    "componenti": "V, S, M (incenso del valore di 1.000 mo o più,",
+    "durata": "finché non viene dissolto"
+  },
+  {
+    "nome_italiano": "SANTUARIO",
+    "livello": "Abiurazione di 1° livello (chierico)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (un frammento di vetro di uno",
+    "durata": "l minuto"
+  },
+  {
+    "nome_italiano": "SCAGLIARE MALEDIZIONE",
+    "livello": "Necromanzia di livello (bardo, chierico, mago)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a l minuto"
+  },
+  {
+    "nome_italiano": "SCASSINARE",
+    "livello": "Trasmutazione di livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "2az° ione",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "SCHEGGIA DELLA MENTE",
+    "livello": "Trucchetto diA mmaliamento (mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "1 round"
+  },
+  {
+    "nome_italiano": "SCOLPIRE PIETRA",
+    "livello": "Trasmutazione di livello (chierico, druido, mago)",
+    "tempo_di_lancio": "4az° ione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (argilla morbida)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "SCOSSA SINAPTICA",
+    "livello": "Ammaliamento di livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "a5z°i one",
+    "gittata": "36 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "SCRUTARE",
+    "livello": "Divinazione di livello (bardo, chierico, druido, mago, warlock) 5°",
+    "tempo_di_lancio": "10 minuti",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un focus del valore di 1.000 mo o più,",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "SCUDO",
+    "livello": "Abiurazione di 1° livello (mago, stregone)",
+    "tempo_di_lancio": "reazione, che l'incantatore effettua quando",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "l round"
+  },
+  {
+    "nome_italiano": "SCUDO DELLA FEDE",
+    "livello": "Abiurazione di 1° livello (chierico, paladino)",
+    "tempo_di_lancio": "azione bonus",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (una pergamena con una preghiera)",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "SCUROVISIONE",
+    "livello": "Trasmutazione di livello (druido, mago, ranger, stregone)",
+    "tempo_di_lancio": "2az° ione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (una carota essiccata)",
+    "durata": "8 ore"
+  },
+  {
+    "nome_italiano": "SFERA ELASTICA DI 0TILUKE",
+    "livello": "Abiurazione di livello (mago)",
+    "tempo_di_lancio": "° azione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (una sfera di vetro)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "SGUARDO PENETRANTE",
+    "livello": "Necromanzia di livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "incantatore",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "SIMBOLO",
+    "livello": "Abiurazione di livello (bardo, chierico, druido, mago)",
+    "tempo_di_lancio": "° 1 minuto",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere di diamante del valore",
+    "durata": "finché non viene dissolto o innescato"
+  },
+  {
+    "nome_italiano": "SOFFIO DEL DRAGO",
+    "livello": "Trasmutazione di livello (mago, stregone)",
+    "tempo_di_lancio": "2az° ione bonus",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un peperoncino)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "SONNO",
+    "livello": "Ammaliamento di livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "a1z° ione",
+    "gittata": "18 metri",
+    "componenti": "V, S, M (un pizzico di sabbia o dei petali di rosa)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "SORTILEGIO",
+    "livello": "Ammaliamento di livello (warlock)",
+    "tempo_di_lancio": "a1z° ione bonus",
+    "gittata": "27 metri",
+    "componenti": "V, S, M (l'occhio pietrificato di un tritone)",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "SPOSTAMENTO PLANARE",
+    "livello": "Evocazione di livello (chierico, druido, mago, stregone, warlock) 7°",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (una verga di metallo biforcuta",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "SPRUZZO VELENOSO",
+    "livello": "Trucchetto di Necromanzia (druido, mago, stregone, warlock)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "STRETTA FOLGORANTE",
+    "livello": "Trucchetto di Invocazione (mago, stregone)",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "SUGGESTIONE",
+    "livello": "Ammaliamento di livello (bardo, mago, stregone, warlock)",
+    "tempo_di_lancio": "a2z°i one",
+    "gittata": "9 metri",
+    "componenti": "V, M (una goccia di miele)",
+    "durata": "concentrazione, fino a 8 ore"
+  },
+  {
+    "nome_italiano": "SUGGESTIONE DI MASSA",
+    "livello": "Ammaliamento di livello (bardo, mago, stregone)",
+    "tempo_di_lancio": "a6z°i one",
+    "gittata": "18 metri",
+    "componenti": "V, M (una lingua di serpente)",
+    "durata": "24 ore"
+  },
+  {
+    "nome_italiano": "SUSSURRI DISSONANTI",
+    "livello": "Ammaliamento di livello (bardo)",
+    "tempo_di_lancio": "a1z° ione",
+    "gittata": "18 metri",
+    "componenti": "V",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "TAUMATURGIA",
+    "livello": "Trucchetto di Trasmutazione (chierico)",
+    "tempo_di_lancio": "azione",
+    "gittata": "9 metri",
+    "componenti": "V",
+    "durata": "fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "TELECINESI",
+    "livello": "Trasmutazione di livello (mago, stregone)",
+    "tempo_di_lancio": "5az° ione",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "TERREMOTO",
+    "livello": "Trasmutazione di livello (chierico, druido, stregone)",
+    "tempo_di_lancio": "a8z° ione",
+    "gittata": "150 metri",
+    "componenti": "V, S, M (una roccia fratturata)",
+    "durata": "concentrazione, fino a 1 minuto"
+  },
+  {
+    "nome_italiano": "TRASFORMAZIONE",
+    "livello": "Trasmutazione di livello (druido, mago)",
+    "tempo_di_lancio": "a9z° ione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (un diadema di giada del valore",
+    "durata": "concentrazione, fino a 1 ora"
+  },
+  {
+    "nome_italiano": "TRUCCO DELLA CORDA",
+    "livello": "Trasmutazione di livello (mago)",
+    "tempo_di_lancio": "2az ° ione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (un pezzo di corda)",
+    "durata": "l ora"
+  },
+  {
+    "nome_italiano": "VELOCITÀ",
+    "livello": "Trasmutazione di livello (mago, stregone)",
+    "tempo_di_lancio": "3az° ione",
+    "gittata": "9 metri",
+    "componenti": "V, S, M (una scaglia di radice di liquirizia)",
+    "durata": "concentrazione, fino a l minuto"
+  },
+  {
+    "nome_italiano": "VIGILANZA E INTERDIZIONE",
+    "livello": "Abiurazione di livello (bardo, mago)",
+    "tempo_di_lancio": "° l ora",
+    "gittata": "contatto",
+    "componenti": "V, S, M (una verga d'argento del valore",
+    "durata": "24 ore"
+  },
+  {
+    "nome_italiano": "VISIONE DEL VERO",
+    "livello": "Divinazione di livello (bardo, chierico, mago, stregone, warlock) 6°",
+    "tempo_di_lancio": "azione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (polvere di funghi del valore di 25 mo",
+    "durata": "1 ora"
+  },
+  {
+    "nome_italiano": "VITA FALSATA",
+    "livello": "Necromanzia di livello (mago, stregone)",
+    "tempo_di_lancio": "°azione",
+    "gittata": "incantatore",
+    "componenti": "V, S, M (una goccia di alcol)",
+    "durata": "istantanea"
+  },
+  {
+    "nome_italiano": "VOLARE",
+    "livello": "Trasmutazione di livello (mago, stregone, warlock)",
+    "tempo_di_lancio": "3az° ione",
+    "gittata": "contatto",
+    "componenti": "V, S, M (una piuma)",
+    "durata": "concentrazione, fino a 10 minuti"
+  },
+  {
+    "nome_italiano": "VUOTO MENTALE",
+    "livello": "Abiurazione di livello (bardo, mago)",
+    "tempo_di_lancio": "° azione",
+    "gittata": "contatto",
+    "componenti": "V, S",
+    "durata": "24 ore"
+  },
+  {
+    "nome_italiano": "ZONA DI VERITÀ",
+    "livello": "Ammaliamento di livello (bardo, chierico, paladino)",
+    "tempo_di_lancio": "a2z°i one",
+    "gittata": "18 metri",
+    "componenti": "V, S",
+    "durata": "10 minuti"
+  }
+]
