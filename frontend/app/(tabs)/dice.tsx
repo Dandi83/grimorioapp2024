@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -22,37 +22,41 @@ import { theme } from "@/src/theme";
 
 type DieSides = 4 | 6 | 8 | 10 | 12 | 20 | 100;
 
+// Reordered per user preference: d20 first, then descending by size, d100 last.
 const DICE: { sides: DieSides; label: string }[] = [
-  { sides: 4, label: "d4" },
-  { sides: 6, label: "d6" },
-  { sides: 8, label: "d8" },
-  { sides: 10, label: "d10" },
-  { sides: 12, label: "d12" },
   { sides: 20, label: "d20" },
+  { sides: 12, label: "d12" },
+  { sides: 10, label: "d10" },
+  { sides: 8, label: "d8" },
+  { sides: 6, label: "d6" },
+  { sides: 4, label: "d4" },
   { sides: 100, label: "d100" },
 ];
+
+const COUNT_PRESETS = [1, 2, 3, 4, 5, 6, 8, 10];
 
 interface RollEntry {
   id: string;
   sides: DieSides;
-  value: number;
+  count: number;
+  values: number[];
+  sum: number;
   timestamp: number;
 }
 
 function rollDie(sides: DieSides): number {
-  // d100 = percentile: 1-100
   return Math.floor(Math.random() * sides) + 1;
 }
 
 export default function DiceScreen() {
   const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState<DieSides>(20);
-  const [current, setCurrent] = useState<number | null>(null);
+  const [count, setCount] = useState<number>(1);
+  const [currentValues, setCurrentValues] = useState<number[]>([]);
   const [history, setHistory] = useState<RollEntry[]>([]);
   const [rolling, setRolling] = useState(false);
   const rollingCounter = useRef(0);
 
-  // Animated tumble
   const rotate = useSharedValue(0);
   const scale = useSharedValue(1);
 
@@ -63,6 +67,11 @@ export default function DiceScreen() {
     ],
   }));
 
+  const sum = useMemo(
+    () => currentValues.reduce((a, b) => a + b, 0),
+    [currentValues],
+  );
+
   const roll = useCallback(() => {
     if (rolling) return;
     setRolling(true);
@@ -70,62 +79,68 @@ export default function DiceScreen() {
     const myRun = rollingCounter.current;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
 
-    // Show shuffling numbers during the tumble
+    // Shuffle preview during tumble
     const shuffleInterval = setInterval(() => {
-      setCurrent(rollDie(selected));
-    }, 60);
+      setCurrentValues(
+        Array.from({ length: count }, () => rollDie(selected)),
+      );
+    }, 70);
 
-    // Animate: tumble with random rotation, scale bump
     rotate.value = 0;
     rotate.value = withSequence(
       withTiming(360 + Math.random() * 360, {
-        duration: 700,
+        duration: 750,
         easing: Easing.out(Easing.cubic),
       }),
     );
     scale.value = withSequence(
-      withTiming(1.15, { duration: 300, easing: Easing.out(Easing.quad) }),
-      withTiming(1, { duration: 400, easing: Easing.inOut(Easing.quad) }),
+      withTiming(1.12, { duration: 300, easing: Easing.out(Easing.quad) }),
+      withTiming(1, { duration: 420, easing: Easing.inOut(Easing.quad) }),
     );
 
     setTimeout(() => {
       clearInterval(shuffleInterval);
-      // If a newer roll happened, skip finalizing this one
       if (myRun !== rollingCounter.current) return;
-      const finalValue = rollDie(selected);
-      setCurrent(finalValue);
+      const values = Array.from({ length: count }, () => rollDie(selected));
+      const total = values.reduce((a, b) => a + b, 0);
+      setCurrentValues(values);
       Haptics.notificationAsync(
-        finalValue === selected
-          ? Haptics.NotificationFeedbackType.Success
-          : finalValue === 1
-            ? Haptics.NotificationFeedbackType.Warning
-            : Haptics.NotificationFeedbackType.Success,
+        Haptics.NotificationFeedbackType.Success,
       ).catch(() => {});
       setHistory((prev) => [
         {
           id: `${Date.now()}-${Math.random()}`,
           sides: selected,
-          value: finalValue,
+          count,
+          values,
+          sum: total,
           timestamp: Date.now(),
         },
         ...prev.slice(0, 19),
       ]);
       setRolling(false);
-    }, 750);
-  }, [rolling, rotate, scale, selected]);
+    }, 800);
+  }, [count, rolling, rotate, scale, selected]);
 
   const clearHistory = useCallback(() => {
     setHistory([]);
   }, []);
 
+  // Crit / min detection only meaningful for a single d20
   const critMessage = (() => {
-    if (current === null || rolling) return null;
-    if (selected === 20 && current === 20) return "🔥 Successo Critico!";
-    if (selected === 20 && current === 1) return "💀 Fallimento Critico";
-    if (current === selected) return "✨ Massimo!";
-    if (current === 1 && selected !== 4) return "⚠️ Minimo";
+    if (currentValues.length !== 1 || rolling) return null;
+    const v = currentValues[0];
+    if (selected === 20 && v === 20) return "🔥 Successo Critico!";
+    if (selected === 20 && v === 1) return "💀 Fallimento Critico";
+    if (v === selected) return "✨ Massimo!";
+    if (v === 1 && selected !== 4) return "⚠️ Minimo";
     return null;
   })();
+
+  const isCritLow =
+    currentValues.length === 1 &&
+    selected === 20 &&
+    currentValues[0] === 1;
 
   return (
     <View style={styles.container} testID="dice-screen">
@@ -135,24 +150,53 @@ export default function DiceScreen() {
       >
         <View style={[styles.header, { paddingTop: insets.top + theme.spacing.md }]}>
           <Text style={styles.title}>Dadi</Text>
-          <Text style={styles.subtitle}>Tocca un dado per lanciarlo</Text>
+          <Text style={styles.subtitle}>Scegli dado, quantità, e lancia</Text>
         </View>
 
-        {/* Big central display */}
+        {/* Stage */}
         <View style={styles.stage}>
           <Animated.View style={[styles.stageDie, animatedStyle]}>
             <DieShape
               sides={selected}
               size={200}
-              value={current ?? undefined}
+              value={
+                currentValues.length === 1 && !rolling
+                  ? currentValues[0]
+                  : undefined
+              }
             />
           </Animated.View>
-          <Text style={styles.stageLabel}>d{selected}</Text>
+
+          {/* Results row for multi-rolls */}
+          {currentValues.length > 1 && !rolling && (
+            <View style={styles.resultsRow} testID="dice-results-row">
+              {currentValues.map((v, i) => (
+                <View key={i} style={styles.resultChip}>
+                  <Text style={styles.resultChipText}>{v}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Sum */}
+          {currentValues.length > 1 && !rolling && (
+            <View style={styles.sumRow}>
+              <Text style={styles.sumLabel}>TOTALE</Text>
+              <Text style={styles.sumValue} testID="dice-sum">
+                {sum}
+              </Text>
+            </View>
+          )}
+
+          {currentValues.length <= 1 && (
+            <Text style={styles.stageLabel}>d{selected}</Text>
+          )}
+
           {critMessage && (
             <Text
               style={[
                 styles.critText,
-                current === 1 && selected === 20 && { color: theme.colors.onError },
+                isCritLow && { color: theme.colors.onError },
               ]}
               testID="crit-message"
             >
@@ -161,7 +205,7 @@ export default function DiceScreen() {
           )}
         </View>
 
-        {/* Big roll button */}
+        {/* Roll button */}
         <Pressable
           testID="dice-roll-btn"
           onPress={roll}
@@ -173,9 +217,45 @@ export default function DiceScreen() {
         >
           <Ionicons name="sync" size={20} color={theme.colors.onBrand} />
           <Text style={styles.rollBtnText}>
-            {rolling ? "Lanciando..." : `Lancia d${selected}`}
+            {rolling ? "Lanciando..." : `Lancia ${count}d${selected}`}
           </Text>
         </Pressable>
+
+        {/* Count selector */}
+        <Text style={styles.sectionLabel}>Quanti dadi</Text>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.countRow}
+        >
+          {COUNT_PRESETS.map((n) => {
+            const active = count === n;
+            return (
+              <Pressable
+                key={n}
+                testID={`count-${n}`}
+                onPress={() => {
+                  setCount(n);
+                  setCurrentValues([]);
+                  Haptics.selectionAsync().catch(() => {});
+                }}
+                style={[
+                  styles.countChip,
+                  active && styles.countChipActive,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.countChipText,
+                    active && styles.countChipTextActive,
+                  ]}
+                >
+                  {n}d
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
 
         {/* Die selector */}
         <Text style={styles.sectionLabel}>Seleziona dado</Text>
@@ -188,7 +268,7 @@ export default function DiceScreen() {
                 testID={`die-select-${d.sides}`}
                 onPress={() => {
                   setSelected(d.sides);
-                  setCurrent(null);
+                  setCurrentValues([]);
                   Haptics.selectionAsync().catch(() => {});
                 }}
                 style={({ pressed }) => [
@@ -199,11 +279,8 @@ export default function DiceScreen() {
               >
                 <DieShape
                   sides={d.sides}
-                  size={56}
-                  color={active ? theme.colors.brand : theme.colors.surfaceTertiary}
-                  strokeColor={
-                    active ? theme.colors.brandSecondary : theme.colors.borderStrong
-                  }
+                  size={54}
+                  variant={active ? "gold" : "muted"}
                 />
                 <Text
                   style={[
@@ -245,16 +322,16 @@ export default function DiceScreen() {
                 style={styles.historyRow}
               >
                 <View style={styles.historyShape}>
-                  <DieShape
-                    sides={h.sides}
-                    size={40}
-                    color={theme.colors.surfaceTertiary}
-                    strokeColor={theme.colors.borderStrong}
-                  />
+                  <DieShape sides={h.sides} size={40} variant="muted" />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.historyDie}>d{h.sides}</Text>
+                  <Text style={styles.historyDie}>
+                    {h.count}d{h.sides}
+                  </Text>
                   <Text style={styles.historyTime}>
+                    {h.count > 1 && h.values.length <= 10
+                      ? `${h.values.join(" + ")} = `
+                      : ""}
                     {new Date(h.timestamp).toLocaleTimeString("it-IT", {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -264,11 +341,15 @@ export default function DiceScreen() {
                 <Text
                   style={[
                     styles.historyValue,
-                    h.sides === 20 && h.value === 20 && { color: theme.colors.brand },
-                    h.sides === 20 && h.value === 1 && { color: theme.colors.onError },
+                    h.count === 1 &&
+                      h.sides === 20 &&
+                      h.sum === 20 && { color: theme.colors.brand },
+                    h.count === 1 &&
+                      h.sides === 20 &&
+                      h.sum === 1 && { color: theme.colors.onError },
                   ]}
                 >
-                  {h.value}
+                  {h.sum}
                 </Text>
               </View>
             ))}
@@ -304,14 +385,14 @@ const styles = StyleSheet.create({
   stage: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: theme.spacing.xxl,
+    paddingVertical: theme.spacing.xl,
     marginHorizontal: theme.spacing.xl,
     marginBottom: theme.spacing.lg,
     borderRadius: theme.radius.lg,
     backgroundColor: theme.colors.surfaceSecondary,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    minHeight: 320,
+    minHeight: 340,
   },
   stageDie: {
     alignItems: "center",
@@ -325,6 +406,50 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     fontWeight: "700",
     marginTop: theme.spacing.md,
+  },
+  resultsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing.sm,
+    justifyContent: "center",
+    marginTop: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+  },
+  resultChip: {
+    minWidth: 44,
+    height: 44,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.brandTertiary,
+    borderWidth: 1,
+    borderColor: theme.colors.brandSecondary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  resultChipText: {
+    color: theme.colors.brand,
+    fontFamily: theme.fonts.serif,
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  sumRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.md,
+    marginTop: theme.spacing.md,
+  },
+  sumLabel: {
+    color: theme.colors.onSurfaceTertiary,
+    fontFamily: theme.fonts.sans,
+    fontSize: 11,
+    letterSpacing: 2,
+    fontWeight: "700",
+  },
+  sumValue: {
+    color: theme.colors.brand,
+    fontFamily: theme.fonts.serif,
+    fontSize: 36,
+    fontWeight: "700",
   },
   critText: {
     color: theme.colors.brand,
@@ -365,6 +490,37 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     paddingHorizontal: theme.spacing.xl,
     marginBottom: theme.spacing.md,
+  },
+  countRow: {
+    gap: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.xl,
+    marginBottom: theme.spacing.xl,
+  },
+  countChip: {
+    minWidth: 52,
+    height: 40,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.pill,
+    backgroundColor: theme.colors.surfaceSecondary,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  countChipActive: {
+    backgroundColor: theme.colors.brand,
+    borderColor: theme.colors.brand,
+  },
+  countChipText: {
+    color: theme.colors.onSurfaceSecondary,
+    fontFamily: theme.fonts.sans,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  countChipTextActive: {
+    color: theme.colors.onBrand,
+    fontWeight: "700",
   },
   dieGrid: {
     flexDirection: "row",

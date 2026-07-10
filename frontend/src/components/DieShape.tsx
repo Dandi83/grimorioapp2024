@@ -1,8 +1,11 @@
 import Svg, {
+  Defs,
   G,
-  Line,
+  LinearGradient,
   Path,
   Polygon,
+  RadialGradient,
+  Stop,
   Text as SvgText,
 } from "react-native-svg";
 
@@ -11,45 +14,95 @@ import { theme } from "@/src/theme";
 interface Props {
   sides: 4 | 6 | 8 | 10 | 12 | 20 | 100;
   size: number;
-  color?: string;
-  strokeColor?: string;
-  textColor?: string;
+  variant?: "gold" | "muted"; // gold = full color; muted = grayscale-ish for inactive states
   value?: number | string;
 }
 
+// Palette
+const GOLD = {
+  hi: "#FFE080",       // brightest highlight (top-lit)
+  light: "#F4CF5E",    // light face
+  mid: "#D4AF37",      // base gold
+  dark: "#8B6914",     // shadow face
+  edge: "#5C4409",     // edge stroke
+  glow: "#FFF1B8",     // specular highlight
+};
+
+const MUTED = {
+  hi: "#3D3D42",
+  light: "#2F2F34",
+  mid: "#25252A",
+  dark: "#18181C",
+  edge: "#0C0C10",
+  glow: "#4A4A50",
+};
+
 /**
- * Isometric-style silhouettes of the seven classic D&D polyhedral dice.
- * Rendered with react-native-svg. Each die is drawn on a 100x100 viewBox and
- * scaled to `size`.
+ * Faceted, gradient-shaded polyhedra rendered with react-native-svg.
+ * Each die exposes its true polyhedral geometry (isometric projection) with
+ * per-face shading for a 3D metallic look.
  */
-export function DieShape({
-  sides,
-  size,
-  color = theme.colors.brand,
-  strokeColor = theme.colors.brandSecondary,
-  textColor = theme.colors.onBrand,
-  value,
-}: Props) {
-  const label = value !== undefined ? String(value) : String(sides);
+export function DieShape({ sides, size, variant = "gold", value }: Props) {
+  const palette = variant === "gold" ? GOLD : MUTED;
+  const label = value !== undefined ? String(value) : "";
   const showLabel = value !== undefined;
+  const uid = `${sides}-${variant}`; // unique per instance to avoid gradient id collisions
+
+  // Text placement per die (values were tuned visually)
+  const textY: Record<number, number> = {
+    4: 70,
+    6: 58,
+    8: 58,
+    10: 60,
+    12: 58,
+    20: 58,
+    100: 60,
+  };
+
+  const fontSize = label.length > 2 ? 20 : label.length === 2 ? 26 : 30;
 
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">
-      {sides === 4 && <D4 color={color} stroke={strokeColor} />}
-      {sides === 6 && <D6 color={color} stroke={strokeColor} />}
-      {sides === 8 && <D8 color={color} stroke={strokeColor} />}
-      {sides === 10 && <D10 color={color} stroke={strokeColor} />}
-      {sides === 12 && <D12 color={color} stroke={strokeColor} />}
-      {sides === 20 && <D20 color={color} stroke={strokeColor} />}
-      {sides === 100 && <D100 color={color} stroke={strokeColor} />}
+      <Defs>
+        <LinearGradient id={`hiGrad-${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor={palette.glow} stopOpacity="1" />
+          <Stop offset="1" stopColor={palette.light} stopOpacity="1" />
+        </LinearGradient>
+        <LinearGradient id={`midGrad-${uid}`} x1="0" y1="0" x2="0.6" y2="1">
+          <Stop offset="0" stopColor={palette.light} stopOpacity="1" />
+          <Stop offset="1" stopColor={palette.mid} stopOpacity="1" />
+        </LinearGradient>
+        <LinearGradient id={`darkGrad-${uid}`} x1="0.3" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor={palette.mid} stopOpacity="1" />
+          <Stop offset="1" stopColor={palette.dark} stopOpacity="1" />
+        </LinearGradient>
+        <RadialGradient
+          id={`glow-${uid}`}
+          cx="30%"
+          cy="25%"
+          r="70%"
+        >
+          <Stop offset="0" stopColor={palette.glow} stopOpacity="0.55" />
+          <Stop offset="0.6" stopColor={palette.glow} stopOpacity="0" />
+        </RadialGradient>
+      </Defs>
+
+      {sides === 4 && <D4Faces uid={uid} palette={palette} />}
+      {sides === 6 && <D6Faces uid={uid} palette={palette} />}
+      {sides === 8 && <D8Faces uid={uid} palette={palette} />}
+      {sides === 10 && <D10Faces uid={uid} palette={palette} />}
+      {sides === 12 && <D12Faces uid={uid} palette={palette} />}
+      {sides === 20 && <D20Faces uid={uid} palette={palette} />}
+      {sides === 100 && <D100Faces uid={uid} palette={palette} />}
+
       {showLabel && (
         <SvgText
           x="50"
-          y={sides === 4 ? "72" : sides === 10 || sides === 100 ? "56" : "58"}
+          y={textY[sides] ?? 58}
           textAnchor="middle"
-          fontSize={label.length > 2 ? "22" : "30"}
+          fontSize={fontSize}
           fontWeight="700"
-          fill={textColor}
+          fill={palette.edge}
           fontFamily="Georgia"
         >
           {label}
@@ -59,173 +112,167 @@ export function DieShape({
   );
 }
 
-// Shared props
-interface ShapeProps {
-  color: string;
-  stroke: string;
+interface Palette {
+  hi: string;
+  light: string;
+  mid: string;
+  dark: string;
+  edge: string;
+  glow: string;
+}
+interface FaceProps {
+  uid: string;
+  palette: Palette;
 }
 
-// d4 — tetrahedron: outer triangle + 3 inner lines to apex
-function D4({ color, stroke }: ShapeProps) {
+// d4 — tetrahedron viewed from the front: 3 visible triangular faces meeting at center
+function D4Faces({ uid, palette }: FaceProps) {
+  // Outer triangle vertices: A (top), B (bottom-right), C (bottom-left)
+  // Center point M
   return (
     <G>
-      <Polygon
-        points="50,8 92,84 8,84"
-        fill={color}
-        stroke={stroke}
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      <Line x1="50" y1="8" x2="50" y2="84" stroke={stroke} strokeWidth="1" opacity={0.5} />
-      <Line x1="8" y1="84" x2="50" y2="50" stroke={stroke} strokeWidth="1" opacity={0.5} />
-      <Line x1="92" y1="84" x2="50" y2="50" stroke={stroke} strokeWidth="1" opacity={0.5} />
+      {/* Left face (highlight) */}
+      <Polygon points="50,8 50,60 8,84" fill={`url(#hiGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Right face (dark) */}
+      <Polygon points="50,8 92,84 50,60" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Bottom face (mid) */}
+      <Polygon points="8,84 92,84 50,60" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Outer stroke for definition */}
+      <Polygon points="50,8 92,84 8,84" fill="none" stroke={palette.edge} strokeWidth="1.8" strokeLinejoin="round" />
+      {/* Specular */}
+      <Polygon points="50,8 50,60 8,84" fill={`url(#glow-${uid})`} />
     </G>
   );
 }
 
-// d6 — isometric cube (top, left, right faces)
-function D6({ color, stroke }: ShapeProps) {
+// d6 — cube in isometric projection: top (light), left (mid), right (dark)
+function D6Faces({ uid, palette }: FaceProps) {
   return (
     <G>
-      {/* main hexagon silhouette */}
-      <Polygon
-        points="50,8 88,30 88,74 50,96 12,74 12,30"
-        fill={color}
-        stroke={stroke}
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      {/* interior edges of cube */}
-      <Line x1="50" y1="8" x2="50" y2="52" stroke={stroke} strokeWidth="1.5" opacity={0.55} />
-      <Line x1="50" y1="52" x2="12" y2="30" stroke={stroke} strokeWidth="1.5" opacity={0.55} />
-      <Line x1="50" y1="52" x2="88" y2="30" stroke={stroke} strokeWidth="1.5" opacity={0.55} />
+      {/* Top face */}
+      <Polygon points="50,8 88,30 50,52 12,30" fill={`url(#hiGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Left face */}
+      <Polygon points="12,30 50,52 50,96 12,74" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Right face */}
+      <Polygon points="88,30 50,52 50,96 88,74" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Outer silhouette */}
+      <Polygon points="50,8 88,30 88,74 50,96 12,74 12,30" fill="none" stroke={palette.edge} strokeWidth="1.8" strokeLinejoin="round" />
+      <Polygon points="50,8 88,30 50,52 12,30" fill={`url(#glow-${uid})`} />
     </G>
   );
 }
 
-// d8 — octahedron: diamond with horizontal midline
-function D8({ color, stroke }: ShapeProps) {
+// d8 — octahedron viewed edge-on: 4 visible triangular faces
+function D8Faces({ uid, palette }: FaceProps) {
   return (
     <G>
-      <Polygon
-        points="50,6 90,50 50,94 10,50"
-        fill={color}
-        stroke={stroke}
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      <Line x1="10" y1="50" x2="90" y2="50" stroke={stroke} strokeWidth="1.2" opacity={0.55} />
-      <Line x1="50" y1="6" x2="50" y2="50" stroke={stroke} strokeWidth="1" opacity={0.35} />
-      <Line x1="50" y1="50" x2="50" y2="94" stroke={stroke} strokeWidth="1" opacity={0.35} />
+      {/* Top-left */}
+      <Polygon points="50,6 50,50 10,50" fill={`url(#hiGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Top-right */}
+      <Polygon points="50,6 90,50 50,50" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Bottom-left */}
+      <Polygon points="10,50 50,50 50,94" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.85" />
+      {/* Bottom-right */}
+      <Polygon points="50,50 90,50 50,94" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Silhouette */}
+      <Polygon points="50,6 90,50 50,94 10,50" fill="none" stroke={palette.edge} strokeWidth="1.8" strokeLinejoin="round" />
+      <Polygon points="50,6 50,50 10,50" fill={`url(#glow-${uid})`} />
     </G>
   );
 }
 
-// d10 — pentagonal trapezohedron (kite/diamond with pentagonal ridge)
-function D10({ color, stroke }: ShapeProps) {
+// d10 — pentagonal trapezohedron: 5 kite faces visible from front (top pentagon + 4 kites)
+function D10Faces({ uid, palette }: FaceProps) {
+  // Vertices: apex A=(50,6), pentagon vertices around, bottom apex B=(50,94)
   return (
     <G>
-      <Polygon
-        points="50,6 90,40 78,84 22,84 10,40"
-        fill={color}
-        stroke={stroke}
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      {/* front central diamond */}
-      <Path
-        d="M 50 6 L 78 84 L 22 84 Z"
-        fill="none"
-        stroke={stroke}
-        strokeWidth="1.2"
-        opacity={0.55}
-      />
-      <Line x1="10" y1="40" x2="50" y2="60" stroke={stroke} strokeWidth="1" opacity={0.5} />
-      <Line x1="90" y1="40" x2="50" y2="60" stroke={stroke} strokeWidth="1" opacity={0.5} />
-      <Line x1="50" y1="60" x2="50" y2="84" stroke={stroke} strokeWidth="1" opacity={0.5} />
+      {/* Top-left kite (highlight) */}
+      <Polygon points="50,6 10,40 34,58 50,50" fill={`url(#hiGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Top-right kite (mid) */}
+      <Polygon points="50,6 90,40 66,58 50,50" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Center/front kite (mid-light) */}
+      <Polygon points="34,58 50,50 66,58 50,88" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.9" />
+      {/* Bottom-left kite (dark) */}
+      <Polygon points="10,40 22,84 50,88 34,58" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.9" />
+      {/* Bottom-right kite (dark) */}
+      <Polygon points="90,40 78,84 50,88 66,58" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Silhouette */}
+      <Polygon points="50,6 90,40 78,84 22,84 10,40" fill="none" stroke={palette.edge} strokeWidth="1.8" strokeLinejoin="round" />
+      <Polygon points="50,6 10,40 34,58 50,50" fill={`url(#glow-${uid})`} />
     </G>
   );
 }
 
-// d12 — dodecahedron: outer pentagon-hexagon with inner pentagon
-function D12({ color, stroke }: ShapeProps) {
+// d12 — dodecahedron front view: central pentagon + 5 surrounding pentagon faces (only 3 fully visible)
+function D12Faces({ uid, palette }: FaceProps) {
   return (
     <G>
-      <Polygon
-        points="50,6 92,32 82,80 18,80 8,32"
-        fill={color}
-        stroke={stroke}
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      {/* inner pentagon for facets */}
-      <Polygon
-        points="50,26 74,42 66,72 34,72 26,42"
-        fill="none"
-        stroke={stroke}
-        strokeWidth="1.2"
-        opacity={0.5}
-      />
-      <Line x1="50" y1="6" x2="50" y2="26" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="92" y1="32" x2="74" y2="42" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="8" y1="32" x2="26" y2="42" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="82" y1="80" x2="66" y2="72" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="18" y1="80" x2="34" y2="72" stroke={stroke} strokeWidth="1" opacity={0.45} />
+      {/* Top pentagon (highlight) */}
+      <Polygon points="50,6 74,20 66,44 34,44 26,20" fill={`url(#hiGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Central pentagon (mid) */}
+      <Polygon points="50,44 66,44 74,70 50,80 26,70" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Reuse: shifted center */}
+      {/* Left pentagon (mid-dark) */}
+      <Polygon points="26,20 34,44 26,70 8,52 8,32" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.85" />
+      {/* Right pentagon (dark) */}
+      <Polygon points="74,20 92,32 92,52 74,70 66,44" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Bottom-left (dark) */}
+      <Polygon points="26,70 50,80 34,88 18,80 8,52" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.9" />
+      {/* Bottom-right (darker) */}
+      <Polygon points="74,70 92,52 82,80 66,88 50,80" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.75" />
+      {/* Silhouette */}
+      <Polygon points="50,6 74,20 92,32 92,52 82,80 66,88 34,88 18,80 8,52 8,32 26,20" fill="none" stroke={palette.edge} strokeWidth="1.8" strokeLinejoin="round" />
+      <Polygon points="50,6 74,20 66,44 34,44 26,20" fill={`url(#glow-${uid})`} />
     </G>
   );
 }
 
-// d20 — icosahedron: outer hexagon with triangular grid
-function D20({ color, stroke }: ShapeProps) {
+// d20 — icosahedron front view: central triangle + 5 surrounding triangles with alternating shades
+function D20Faces({ uid, palette }: FaceProps) {
   return (
     <G>
-      {/* outer hex silhouette */}
-      <Polygon
-        points="50,6 90,30 90,70 50,94 10,70 10,30"
-        fill={color}
-        stroke={stroke}
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      {/* central triangle (front face) */}
-      <Polygon
-        points="50,26 74,66 26,66"
-        fill="none"
-        stroke={stroke}
-        strokeWidth="1.4"
-        opacity={0.6}
-      />
-      {/* connecting edges to outer vertices */}
-      <Line x1="50" y1="6" x2="50" y2="26" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="90" y1="30" x2="74" y2="66" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="10" y1="30" x2="26" y2="66" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="90" y1="70" x2="74" y2="66" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="10" y1="70" x2="26" y2="66" stroke={stroke} strokeWidth="1" opacity={0.45} />
-      <Line x1="50" y1="94" x2="50" y2="66" stroke={stroke} strokeWidth="1" opacity={0.45} />
+      {/* Central triangle (mid) */}
+      <Polygon points="50,26 74,66 26,66" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Top-left triangle (highlight) */}
+      <Polygon points="50,6 50,26 26,66 10,30" fill={`url(#hiGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Top-right triangle (light) */}
+      <Polygon points="50,6 90,30 74,66 50,26" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.95" />
+      {/* Bottom triangle (dark) */}
+      <Polygon points="26,66 74,66 50,94" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Left side triangle (dark) */}
+      <Polygon points="10,30 26,66 10,70" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.85" />
+      {/* Right side triangle (dark) */}
+      <Polygon points="90,30 90,70 74,66" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.8" />
+      {/* Bottom-left small triangle */}
+      <Polygon points="10,70 26,66 50,94" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.75" />
+      {/* Bottom-right small triangle */}
+      <Polygon points="90,70 74,66 50,94" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.7" />
+      {/* Silhouette */}
+      <Polygon points="50,6 90,30 90,70 50,94 10,70 10,30" fill="none" stroke={palette.edge} strokeWidth="1.8" strokeLinejoin="round" />
+      <Polygon points="50,6 50,26 26,66 10,30" fill={`url(#glow-${uid})`} />
     </G>
   );
 }
 
-// d100 — percentile die: same shape as d10 with distinctive "%" hint via corner
-function D100({ color, stroke }: ShapeProps) {
+// d100 — like d10 but with distinctive tone (darker/copper hint) and two-digit prep
+function D100Faces({ uid, palette }: FaceProps) {
   return (
     <G>
-      <Polygon
-        points="50,6 90,40 78,84 22,84 10,40"
-        fill={color}
-        stroke={stroke}
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M 50 6 L 78 84 L 22 84 Z"
-        fill="none"
-        stroke={stroke}
-        strokeWidth="1.2"
-        opacity={0.55}
-      />
-      <Line x1="10" y1="40" x2="50" y2="60" stroke={stroke} strokeWidth="1" opacity={0.5} />
-      <Line x1="90" y1="40" x2="50" y2="60" stroke={stroke} strokeWidth="1" opacity={0.5} />
+      {/* Top-left kite (highlight) */}
+      <Polygon points="50,6 10,40 34,58 50,50" fill={`url(#hiGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.9" />
+      {/* Top-right kite (mid) */}
+      <Polygon points="50,6 90,40 66,58 50,50" fill={`url(#midGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Center kite */}
+      <Polygon points="34,58 50,50 66,58 50,88" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.85" />
+      {/* Bottom-left kite */}
+      <Polygon points="10,40 22,84 50,88 34,58" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" />
+      {/* Bottom-right kite */}
+      <Polygon points="90,40 78,84 50,88 66,58" fill={`url(#darkGrad-${uid})`} stroke={palette.edge} strokeWidth="1.2" strokeLinejoin="round" opacity="0.75" />
+      {/* Small "%" hint dot in top-left */}
+      <Path d="M 20 20 L 22 22 M 30 30 L 32 32" stroke={palette.glow} strokeWidth="1.5" opacity="0.35" />
+      {/* Silhouette */}
+      <Polygon points="50,6 90,40 78,84 22,84 10,40" fill="none" stroke={palette.edge} strokeWidth="1.8" strokeLinejoin="round" />
+      <Polygon points="50,6 10,40 34,58 50,50" fill={`url(#glow-${uid})`} />
     </G>
   );
 }
