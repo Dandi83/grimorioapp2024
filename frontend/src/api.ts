@@ -52,6 +52,19 @@ export async function fetchMeta(): Promise<SpellsMeta> {
   return request<SpellsMeta>("/spells/meta");
 }
 
+export interface Suggestions {
+  livello: string[];
+  tempo_di_lancio: string[];
+  gittata: string[];
+  componenti: string[];
+  durata: string[];
+  scuole: string[];
+}
+
+export async function fetchSuggestions(): Promise<Suggestions> {
+  return request<Suggestions>("/spells/suggestions");
+}
+
 export async function fetchSpell(id: string): Promise<Spell> {
   return request<Spell>(`/spells/${id}`);
 }

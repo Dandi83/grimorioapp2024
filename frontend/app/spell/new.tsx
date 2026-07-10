@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -14,37 +14,28 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { createSpell } from "@/src/api";
+import { createSpell, fetchSuggestions, Suggestions } from "@/src/api";
+import { PickerField } from "@/src/components/PickerField";
 import { theme } from "@/src/theme";
 
-type FieldKey =
-  | "nome_italiano"
-  | "livello"
-  | "tempo_di_lancio"
-  | "gittata"
-  | "componenti"
-  | "durata"
-  | "descrizione";
-
-const FIELD_LABELS: Record<FieldKey, string> = {
-  nome_italiano: "Nome",
-  livello: "Livello",
-  tempo_di_lancio: "Tempo di lancio",
-  gittata: "Gittata",
-  componenti: "Componenti",
-  durata: "Durata",
-  descrizione: "Descrizione",
+type Values = {
+  nome_italiano: string;
+  livello: string;
+  tempo_di_lancio: string;
+  gittata: string;
+  componenti: string;
+  durata: string;
+  descrizione: string;
 };
 
-const FIELD_HINTS: Record<FieldKey, string> = {
-  nome_italiano: "Es. \"Fulmine Rovente\"",
-  livello: "Es. \"Evocazione di 3° livello (mago, stregone)\" oppure \"Trucchetto di Illusione (bardo)\"",
-  tempo_di_lancio: "Es. \"azione\"",
-  gittata: "Es. \"9 metri\"",
-  componenti: "Es. \"V, S, M (un pizzico di ferro)\"",
-  durata: "Es. \"concentrazione, fino a 1 minuto\"",
-  descrizione:
-    "Descrizione dell'incantesimo. Puoi usare <b>grassetto</b> e <br> per andare a capo.",
+const EMPTY: Values = {
+  nome_italiano: "",
+  livello: "",
+  tempo_di_lancio: "",
+  gittata: "",
+  componenti: "",
+  durata: "",
+  descrizione: "",
 };
 
 export default function NewSpellScreen() {
@@ -52,15 +43,17 @@ export default function NewSpellScreen() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [values, setValues] = useState<Record<FieldKey, string>>({
-    nome_italiano: "",
-    livello: "",
-    tempo_di_lancio: "",
-    gittata: "",
-    componenti: "",
-    durata: "",
-    descrizione: "",
-  });
+  const [values, setValues] = useState<Values>(EMPTY);
+  const [suggestions, setSuggestions] = useState<Suggestions | null>(null);
+
+  useEffect(() => {
+    fetchSuggestions()
+      .then(setSuggestions)
+      .catch((e) => console.warn("suggestions fetch", e));
+  }, []);
+
+  const setField = (k: keyof Values, v: string) =>
+    setValues((prev) => ({ ...prev, [k]: v }));
 
   const onSave = async () => {
     setError(null);
@@ -75,14 +68,12 @@ export default function NewSpellScreen() {
     setSaving(true);
     try {
       const created = await createSpell(values);
-      // Go to detail of the new spell (replace, so back returns to list)
       router.replace(`/spell/${created.id}`);
     } catch (e: unknown) {
       const msg =
         e instanceof Error
           ? e.message
           : "Errore nel salvataggio dell'incantesimo.";
-      // Backend returns JSON like {"detail": "..."}
       try {
         const parsed = JSON.parse(msg);
         setError(parsed.detail || msg);
@@ -146,33 +137,111 @@ export default function NewSpellScreen() {
             <Text style={styles.errorText}>{error}</Text>
           </View>
         )}
-        {(Object.keys(FIELD_LABELS) as FieldKey[]).map((k) => {
-          const multi = k === "descrizione";
-          return (
-            <View key={k} style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>
-                {FIELD_LABELS[k]}
-                {(k === "nome_italiano" || k === "livello") && (
-                  <Text style={styles.required}> *</Text>
-                )}
-              </Text>
-              <TextInput
-                testID={`new-${k}`}
-                value={values[k]}
-                onChangeText={(t) => setValues((v) => ({ ...v, [k]: t }))}
-                placeholder={FIELD_HINTS[k]}
-                placeholderTextColor={theme.colors.onSurfaceTertiary}
-                style={[styles.input, multi && styles.inputMulti]}
-                multiline={multi}
-                autoCorrect
-                autoCapitalize={
-                  k === "nome_italiano" ? "characters" : multi ? "sentences" : "none"
-                }
-                textAlignVertical={multi ? "top" : "center"}
-              />
-            </View>
-          );
-        })}
+
+        {/* Nome — free text */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>
+            Nome<Text style={styles.required}> *</Text>
+          </Text>
+          <TextInput
+            testID="new-nome_italiano"
+            value={values.nome_italiano}
+            onChangeText={(t) => setField("nome_italiano", t)}
+            placeholder='Es. "Fulmine Rovente"'
+            placeholderTextColor={theme.colors.onSurfaceTertiary}
+            style={styles.input}
+            autoCorrect
+            autoCapitalize="characters"
+          />
+        </View>
+
+        {/* Livello — dropdown */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>
+            Livello<Text style={styles.required}> *</Text>
+          </Text>
+          <PickerField
+            testID="new-livello"
+            label="Livello dell'incantesimo"
+            value={values.livello}
+            placeholder="Scegli livello, scuola e classi..."
+            options={suggestions?.livello ?? []}
+            onChange={(v) => setField("livello", v)}
+          />
+          <Text style={styles.hint}>
+            Formato: &ldquo;Evocazione di 3° livello (mago, stregone)&rdquo; oppure
+            &ldquo;Trucchetto di Illusione (bardo)&rdquo;
+          </Text>
+        </View>
+
+        {/* Tempo di lancio — dropdown */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Tempo di lancio</Text>
+          <PickerField
+            testID="new-tempo_di_lancio"
+            label="Tempo di lancio"
+            value={values.tempo_di_lancio}
+            placeholder='Es. "azione", "1 minuto"...'
+            options={suggestions?.tempo_di_lancio ?? []}
+            onChange={(v) => setField("tempo_di_lancio", v)}
+          />
+        </View>
+
+        {/* Gittata — dropdown */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Gittata</Text>
+          <PickerField
+            testID="new-gittata"
+            label="Gittata"
+            value={values.gittata}
+            placeholder='Es. "9 metri", "contatto"...'
+            options={suggestions?.gittata ?? []}
+            onChange={(v) => setField("gittata", v)}
+          />
+        </View>
+
+        {/* Componenti — dropdown */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Componenti</Text>
+          <PickerField
+            testID="new-componenti"
+            label="Componenti"
+            value={values.componenti}
+            placeholder='Es. "V, S", "V, S, M (una piuma)"...'
+            options={suggestions?.componenti ?? []}
+            onChange={(v) => setField("componenti", v)}
+          />
+        </View>
+
+        {/* Durata — dropdown */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Durata</Text>
+          <PickerField
+            testID="new-durata"
+            label="Durata"
+            value={values.durata}
+            placeholder='Es. "istantanea", "concentrazione..."'
+            options={suggestions?.durata ?? []}
+            onChange={(v) => setField("durata", v)}
+          />
+        </View>
+
+        {/* Descrizione — free text multiline */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Descrizione</Text>
+          <TextInput
+            testID="new-descrizione"
+            value={values.descrizione}
+            onChangeText={(t) => setField("descrizione", t)}
+            placeholder="Descrizione dell'incantesimo. Puoi usare <b>grassetto</b> e <br> per andare a capo."
+            placeholderTextColor={theme.colors.onSurfaceTertiary}
+            style={[styles.input, styles.inputMulti]}
+            multiline
+            autoCorrect
+            autoCapitalize="sentences"
+            textAlignVertical="top"
+          />
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -258,6 +327,14 @@ const styles = StyleSheet.create({
   },
   required: {
     color: theme.colors.error,
+  },
+  hint: {
+    color: theme.colors.onSurfaceTertiary,
+    fontFamily: theme.fonts.sans,
+    fontSize: 11,
+    fontStyle: "italic",
+    marginTop: theme.spacing.xs,
+    lineHeight: 15,
   },
   input: {
     backgroundColor: theme.colors.surfaceSecondary,

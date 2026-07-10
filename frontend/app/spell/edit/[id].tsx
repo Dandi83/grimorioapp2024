@@ -14,34 +14,24 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { fetchSpell, Spell, updateSpell, deleteSpell } from "@/src/api";
+import {
+  deleteSpell,
+  fetchSpell,
+  fetchSuggestions,
+  Spell,
+  Suggestions,
+  updateSpell,
+} from "@/src/api";
+import { PickerField } from "@/src/components/PickerField";
 import { theme } from "@/src/theme";
 
-type FieldKey =
-  | "livello"
-  | "tempo_di_lancio"
-  | "gittata"
-  | "componenti"
-  | "durata"
-  | "descrizione";
-
-const FIELD_LABELS: Record<FieldKey, string> = {
-  livello: "Livello",
-  tempo_di_lancio: "Tempo di lancio",
-  gittata: "Gittata",
-  componenti: "Componenti",
-  durata: "Durata",
-  descrizione: "Descrizione",
-};
-
-const FIELD_HINTS: Record<FieldKey, string> = {
-  livello: "Es. \"Ammaliamento di 6° livello (bardo, mago)\"",
-  tempo_di_lancio: "Es. \"azione\"",
-  gittata: "Es. \"9 metri\"",
-  componenti: "Es. \"V, S, M (un pizzico di ferro)\"",
-  durata: "Es. \"concentrazione, fino a 1 minuto\"",
-  descrizione:
-    "Trascrivi qui la descrizione dal manuale. Puoi usare <b>grassetto</b> e <br> per andare a capo.",
+type Values = {
+  livello: string;
+  tempo_di_lancio: string;
+  gittata: string;
+  componenti: string;
+  durata: string;
+  descrizione: string;
 };
 
 export default function EditSpellScreen() {
@@ -54,7 +44,8 @@ export default function EditSpellScreen() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [values, setValues] = useState<Record<FieldKey, string>>({
+  const [suggestions, setSuggestions] = useState<Suggestions | null>(null);
+  const [values, setValues] = useState<Values>({
     livello: "",
     tempo_di_lancio: "",
     gittata: "",
@@ -65,9 +56,10 @@ export default function EditSpellScreen() {
 
   useEffect(() => {
     if (!id) return;
-    fetchSpell(id)
-      .then((s) => {
+    Promise.all([fetchSpell(id), fetchSuggestions()])
+      .then(([s, sug]) => {
         setSpell(s);
+        setSuggestions(sug);
         setValues({
           livello: s.livello,
           tempo_di_lancio: s.tempo_di_lancio,
@@ -80,6 +72,9 @@ export default function EditSpellScreen() {
       .catch((e) => console.warn("edit fetch", e))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const setField = (k: keyof Values, v: string) =>
+    setValues((prev) => ({ ...prev, [k]: v }));
 
   const onSave = async () => {
     if (!spell) return;
@@ -99,7 +94,6 @@ export default function EditSpellScreen() {
     setDeleting(true);
     try {
       await deleteSpell(spell.id);
-      // Go back to the spells list (pop two levels: editor -> detail -> list)
       router.replace("/(tabs)/spells");
     } catch (e) {
       console.warn("delete failed", e);
@@ -115,9 +109,9 @@ export default function EditSpellScreen() {
     );
   }
 
-  const titolo = spell.nome_italiano.toLowerCase().replace(/(^|\s)\S/g, (t) =>
-    t.toUpperCase(),
-  );
+  const titolo = spell.nome_italiano
+    .toLowerCase()
+    .replace(/(^|\s)\S/g, (t) => t.toUpperCase());
 
   return (
     <KeyboardAvoidingView
@@ -163,26 +157,90 @@ export default function EditSpellScreen() {
         }}
         keyboardShouldPersistTaps="handled"
       >
-        {(Object.keys(FIELD_LABELS) as FieldKey[]).map((k) => {
-          const multi = k === "descrizione";
-          return (
-            <View key={k} style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>{FIELD_LABELS[k]}</Text>
-              <TextInput
-                testID={`edit-${k}`}
-                value={values[k]}
-                onChangeText={(t) => setValues((v) => ({ ...v, [k]: t }))}
-                placeholder={FIELD_HINTS[k]}
-                placeholderTextColor={theme.colors.onSurfaceTertiary}
-                style={[styles.input, multi && styles.inputMulti]}
-                multiline={multi}
-                autoCorrect
-                autoCapitalize={multi ? "sentences" : "none"}
-                textAlignVertical={multi ? "top" : "center"}
-              />
-            </View>
-          );
-        })}
+        {/* Livello */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Livello</Text>
+          <PickerField
+            testID="edit-livello"
+            label="Livello dell'incantesimo"
+            value={values.livello}
+            placeholder="Scegli livello, scuola e classi..."
+            options={suggestions?.livello ?? []}
+            onChange={(v) => setField("livello", v)}
+          />
+          <Text style={styles.hint}>
+            Formato: &ldquo;Evocazione di 3° livello (mago, stregone)&rdquo;
+          </Text>
+        </View>
+
+        {/* Tempo di lancio */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Tempo di lancio</Text>
+          <PickerField
+            testID="edit-tempo_di_lancio"
+            label="Tempo di lancio"
+            value={values.tempo_di_lancio}
+            placeholder='Es. "azione", "1 minuto"...'
+            options={suggestions?.tempo_di_lancio ?? []}
+            onChange={(v) => setField("tempo_di_lancio", v)}
+          />
+        </View>
+
+        {/* Gittata */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Gittata</Text>
+          <PickerField
+            testID="edit-gittata"
+            label="Gittata"
+            value={values.gittata}
+            placeholder='Es. "9 metri", "contatto"...'
+            options={suggestions?.gittata ?? []}
+            onChange={(v) => setField("gittata", v)}
+          />
+        </View>
+
+        {/* Componenti */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Componenti</Text>
+          <PickerField
+            testID="edit-componenti"
+            label="Componenti"
+            value={values.componenti}
+            placeholder='Es. "V, S"...'
+            options={suggestions?.componenti ?? []}
+            onChange={(v) => setField("componenti", v)}
+          />
+        </View>
+
+        {/* Durata */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Durata</Text>
+          <PickerField
+            testID="edit-durata"
+            label="Durata"
+            value={values.durata}
+            placeholder='Es. "istantanea"...'
+            options={suggestions?.durata ?? []}
+            onChange={(v) => setField("durata", v)}
+          />
+        </View>
+
+        {/* Descrizione — free text multiline */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>Descrizione</Text>
+          <TextInput
+            testID="edit-descrizione"
+            value={values.descrizione}
+            onChangeText={(t) => setField("descrizione", t)}
+            placeholder="Trascrivi la descrizione dal Manuale del Giocatore. Puoi usare <b>grassetto</b> e <br> per andare a capo."
+            placeholderTextColor={theme.colors.onSurfaceTertiary}
+            style={[styles.input, styles.inputMulti]}
+            multiline
+            autoCorrect
+            autoCapitalize="sentences"
+            textAlignVertical="top"
+          />
+        </View>
 
         {/* Delete area */}
         <View style={styles.dangerZone}>
@@ -305,6 +363,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textTransform: "uppercase",
     marginBottom: theme.spacing.sm,
+  },
+  hint: {
+    color: theme.colors.onSurfaceTertiary,
+    fontFamily: theme.fonts.sans,
+    fontSize: 11,
+    fontStyle: "italic",
+    marginTop: theme.spacing.xs,
+    lineHeight: 15,
   },
   input: {
     backgroundColor: theme.colors.surfaceSecondary,

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -97,6 +97,13 @@ export default function SpellsScreen() {
     }, 200);
     return () => clearTimeout(t);
   }, [loadSpells]);
+
+  // Refetch whenever the tab regains focus (e.g. after creating/editing a spell)
+  useFocusEffect(
+    useCallback(() => {
+      loadSpells();
+    }, [loadSpells]),
+  );
 
   const activeFilterCount = useMemo(() => {
     let n = 0;

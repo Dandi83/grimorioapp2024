@@ -66,7 +66,7 @@ SCHOOL_KEYWORDS = [
     "Trasmutazione",
 ]
 
-_level_re = re.compile(r"(\d+)°\s*livello", re.IGNORECASE)
+_level_re = re.compile(r"(\d+)\s*[°º]\s*livello", re.IGNORECASE)
 _classes_re = re.compile(r"\(([^)]+)\)")
 
 
@@ -261,6 +261,42 @@ async def spells_meta():
     }
 
 
+@api_router.get("/spells/suggestions")
+async def spells_suggestions():
+    """Returns distinct values (top by frequency) for form dropdowns."""
+    async def top_values(field: str, limit: int = 30):
+        pipeline = [
+            {"$match": {field: {"$ne": "", "$exists": True}}},
+            {"$group": {"_id": f"${field}", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+            {"$limit": limit},
+        ]
+        vals = []
+        async for doc in db.spells.aggregate(pipeline):
+            v = doc["_id"]
+            if isinstance(v, str) and v.strip():
+                vals.append(v.strip())
+        return vals
+
+    return {
+        "livello": await top_values("livello", 60),
+        "tempo_di_lancio": await top_values("tempo_di_lancio"),
+        "gittata": await top_values("gittata"),
+        "componenti": await top_values("componenti", 50),
+        "durata": await top_values("durata", 40),
+        "scuole": [
+            "Abiurazione",
+            "Ammaliamento",
+            "Divinazione",
+            "Evocazione",
+            "Illusione",
+            "Invocazione",
+            "Necromanzia",
+            "Trasmutazione",
+        ],
+    }
+
+
 @api_router.get("/spells/{spell_id}", response_model=Spell)
 async def get_spell(spell_id: str):
     doc = await db.spells.find_one({"id": spell_id}, {"_id": 0})
@@ -307,8 +343,22 @@ app.add_middleware(
 async def on_startup():
     try:
         await seed_spells_if_empty()
+        # Backfill: reprocess spells with unknown livello_num or missing scuola
+        # (helps after parser improvements)
+        cursor = db.spells.find({"$or": [{"livello_num": -1}, {"scuola": ""}]})
+        async for doc in cursor:
+            livello_num, scuola, classi = parse_livello(doc.get("livello", ""))
+            changes = {}
+            if livello_num != doc.get("livello_num"):
+                changes["livello_num"] = livello_num
+            if scuola != doc.get("scuola"):
+                changes["scuola"] = scuola
+            if classi and classi != doc.get("classi", []):
+                changes["classi"] = classi
+            if changes:
+                await db.spells.update_one({"id": doc["id"]}, {"$set": changes})
     except Exception as e:
-        logger.exception(f"Seed failed: {e}")
+        logger.exception(f"Startup task failed: {e}")
 
 
 @app.on_event("shutdown")

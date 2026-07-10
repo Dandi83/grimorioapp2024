@@ -1,0 +1,36 @@
+{
+  "summary": "Retested 3 bug fixes (Palla di Fuoco backfill, º/° ordinal parser, list refresh via useFocusEffect) + new PickerField dropdown feature. Backend: 10/10 pytest cases pass. Frontend (mobile viewport 390x844): Palla di Fuoco now appears in Grimorio search with '3° LIV. · INVOCAZIONE' (backfill worked on U+00BA); Create FAB opens /spell/new with 5 PickerFields (livello, tempo_di_lancio, gittata, componenti, durata) + plain TextInputs for nome and descrizione; bottom-sheet modal has search filter (4 results for 'trucchetto') and 'Altro...' free-text mode that accepts the 'º' character; on Save navigates to /spell/{id}, and returning to Grimorio the new spell appears immediately with correctly parsed '3° LIV. · INVOCAZIONE' (useFocusEffect works). All 3 bugs are FIXED and the dropdown feature is fully functional.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "global (RN Web)", "issue": "Console warnings persist: 'shadow*' props deprecated (use boxShadow) and 'props.pointerEvents' deprecated (use style.pointerEvents). Non-blocking, carried over from iteration 1. Reference: /app/frontend/app/(tabs)/spells.tsx:640-644 (createFab shadow* props)."}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_spells_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "(Optional, non-blocking) Replace shadow* style props with boxShadow across styles (e.g. createFab in spells.tsx:640-644) and any 'pointerEvents' JSX props with style.pointerEvents to silence RN Web deprecation warnings."
+  ],
+  "critical_code_review_comments": [
+    "parse_livello regex now correctly matches both '°' (U+00B0) and 'º' (U+00BA): re.compile(r'(\\d+)\\s*[°º]\\s*livello', re.IGNORECASE) — validated by pytest.",
+    "Startup backfill re-parses spells with livello_num=-1 OR scuola=='' — Palla di Fuoco successfully upgraded to livello_num=3, scuola=Invocazione, classi=['mago','stregone'].",
+    "GET /api/spells/suggestions correctly returns 6 keys with scuole hardcoded to the 8 D&D schools and other lists sorted by frequency (aggregate $group/$sort). No _id leakage.",
+    "useFocusEffect in app/(tabs)/spells.tsx correctly refetches on tab focus after create/edit — BUG 3 fixed.",
+    "PickerField modal implementation is clean: testable via data-testid=`{testID}-search`, `{testID}-option-{value}`, `{testID}-other`, `{testID}-custom-input`, `{testID}-custom-apply`.",
+    "Note: app.on_event startup/shutdown is deprecated in FastAPI 0.109+; consider lifespan handlers (non-blocking, carried from iteration 1)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_spells_api.py (rewritten with 10 focused tests for the 3 bugs + suggestions endpoint + DELETE + no _id leakage)"
+  ],
+  "success_rate": {"backend": "100% (10/10)", "frontend": "100% — all bug fixes and dropdown feature verified end-to-end"},
+  "seed_data_creation": "None. Test spells prefixed with TEST_ / TESTUI are cleaned up in test teardown or via DELETE 204 in the UI script.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend: 369 spells + user-created ones. BUG 1/2/3 verified fixed. Preview URL https://app-python-deploy.preview.emergentagent.com. Key testIDs: spells-create-fab, new-{field} for form pickers, {testID}-search, {testID}-option-{value}, {testID}-other, {testID}-custom-input, {testID}-custom-apply for PickerField modal. List row parsing text is CSS-uppercased so match case-insensitively when asserting '3° liv.' style.",
+  "rca_of_issue": "BUG 1 (Palla di Fuoco missing from Grimorio): user typed '3º livello' with U+00BA (masculine ordinal indicator, iOS Italian keyboard long-press on 3), but parser regex only matched U+00B0 (°). Result: livello_num=-1, scuola=''. Fix — regex character class [°º] now matches both AND startup backfill re-parses existing records with livello_num=-1 or scuola=''. Verified: Palla di Fuoco now returns livello_num=3, scuola='Invocazione', classi=['mago','stregone']. BUG 3 (list not refreshing): screens.tsx now wraps loadSpells in useFocusEffect (verified by creating a spell → nav to detail → back to /spells → new row appears)."
+}
