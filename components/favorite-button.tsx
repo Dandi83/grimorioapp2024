@@ -14,14 +14,13 @@ export function FavoriteButton({ id }: { id: string }) {
       onClick={() => toggle(id)}
       aria-label={fav ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
       aria-pressed={fav}
-      className="fixed bottom-28 left-1/2 z-40 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full bg-primary shadow-lg shadow-black/50 transition-transform active:scale-95 sm:left-auto sm:right-[max(1.5rem,calc(50%-336px+1.5rem))] sm:translate-x-0"
+      className={`absolute right-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-full border backdrop-blur transition-transform active:scale-90 ${
+        fav
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-elevated/75 text-foreground"
+      }`}
     >
-      <Star
-        size={24}
-        className={
-          fav ? "fill-primary-foreground text-primary-foreground" : "text-primary-foreground"
-        }
-      />
+      <Star size={20} className={fav ? "fill-primary-foreground" : ""} />
     </button>
   );
 }

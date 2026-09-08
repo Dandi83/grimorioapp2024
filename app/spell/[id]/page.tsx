@@ -75,6 +75,7 @@ export default async function SpellDetailPage({
           }}
         />
         <BackButton />
+        <FavoriteButton id={spell.id} />
         <div className="absolute inset-x-0 bottom-0 p-6">
           <span
             className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground"
@@ -132,8 +133,6 @@ export default async function SpellDetailPage({
           </p>
         )}
       </section>
-
-      <FavoriteButton id={spell.id} />
     </article>
   );
 }
