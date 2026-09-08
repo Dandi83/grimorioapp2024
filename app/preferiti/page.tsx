@@ -1,10 +1,13 @@
 import { FavoritesList } from "@/components/favorites-list";
-import { SPELLS } from "@/lib/spells";
+import { getAllSpells } from "@/lib/spells";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Preferiti — GrimorioApp",
 };
 
-export default function PreferitiPage() {
-  return <FavoritesList spells={SPELLS} />;
+export default async function PreferitiPage() {
+  const spells = await getAllSpells();
+  return <FavoritesList spells={spells} />;
 }

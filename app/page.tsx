@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
 
-import { getMeta, levelLabel } from "@/lib/spells";
+import { getAllSpells, computeMeta, levelLabel } from "@/lib/spells";
 import { schoolColor } from "@/lib/school-colors";
 
-export default function HomePage() {
-  const meta = getMeta();
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const meta = computeMeta(await getAllSpells());
   const levels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   return (

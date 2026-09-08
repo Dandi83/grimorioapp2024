@@ -4,12 +4,10 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { HtmlText } from "@/components/html-text";
-import { capitalizeWords, getSpellById, SPELLS } from "@/lib/spells";
+import { capitalizeWords, getSpellById } from "@/lib/spells";
 import { schoolColor } from "@/lib/school-colors";
 
-export function generateStaticParams() {
-  return SPELLS.map((s) => ({ id: s.id }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -17,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const spell = getSpellById(id);
+  const spell = await getSpellById(id);
   if (!spell) return { title: "Incantesimo non trovato" };
   const titolo = capitalizeWords(spell.nome_italiano);
   return {
@@ -47,7 +45,7 @@ export default async function SpellDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const spell = getSpellById(id);
+  const spell = await getSpellById(id);
   if (!spell) notFound();
 
   const color = schoolColor(spell.scuola);

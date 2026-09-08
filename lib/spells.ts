@@ -1,4 +1,6 @@
-import rawSpells from "./data/incantesimi_2024.json";
+import { db } from "./db";
+import { spells as spellsTable } from "./db/schema";
+import { asc, eq } from "drizzle-orm";
 
 export interface Spell {
   id: string;
@@ -12,16 +14,6 @@ export interface Spell {
   livello_num: number; // 0 = Trucchetto, 1-9 = livello, -1 = sconosciuto
   scuola: string;
   classi: string[];
-}
-
-interface RawSpell {
-  nome_italiano?: string;
-  livello?: string;
-  tempo_di_lancio?: string;
-  gittata?: string;
-  componenti?: string;
-  durata?: string;
-  descrizione?: string;
 }
 
 export const SCHOOL_KEYWORDS = [
@@ -43,7 +35,7 @@ const CLASSES_RE = /\(([^)]+)\)/;
  * classes from strings like
  * "Divinazione di 2° livello (mago, stregone, warlock)".
  */
-function parseLivello(livelloStr: string): {
+export function parseLivello(livelloStr: string): {
   livello_num: number;
   scuola: string;
   classi: string[];
@@ -91,48 +83,42 @@ export function slugify(name: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-function buildSpells(): Spell[] {
-  const seen = new Set<string>();
-  const spells: Spell[] = [];
-
-  for (const item of rawSpells as RawSpell[]) {
-    const name = (item.nome_italiano || "").trim();
-    if (!name) continue;
-
-    let id = slugify(name);
-    // Guarantee uniqueness in the rare case two names collide after slugify.
-    let suffix = 2;
-    while (seen.has(id)) {
-      id = `${slugify(name)}-${suffix++}`;
-    }
-    seen.add(id);
-
-    const { livello_num, scuola, classi } = parseLivello(item.livello || "");
-    spells.push({
-      id,
-      nome_italiano: name,
-      livello: item.livello || "",
-      tempo_di_lancio: item.tempo_di_lancio || "",
-      gittata: item.gittata || "",
-      componenti: item.componenti || "",
-      durata: item.durata || "",
-      descrizione: item.descrizione || "",
-      livello_num,
-      scuola,
-      classi,
-    });
-  }
-
-  spells.sort((a, b) =>
-    a.nome_italiano.localeCompare(b.nome_italiano, "it", { sensitivity: "base" }),
-  );
-  return spells;
+interface RawRow {
+  id: string;
+  nome_italiano: string;
+  livello: string;
+  tempo_di_lancio: string;
+  gittata: string;
+  componenti: string;
+  durata: string;
+  descrizione: string;
 }
 
-export const SPELLS: Spell[] = buildSpells();
+function toSpell(r: RawRow): Spell {
+  const { livello_num, scuola, classi } = parseLivello(r.livello || "");
+  return {
+    id: r.id,
+    nome_italiano: r.nome_italiano,
+    livello: r.livello || "",
+    tempo_di_lancio: r.tempo_di_lancio || "",
+    gittata: r.gittata || "",
+    componenti: r.componenti || "",
+    durata: r.durata || "",
+    descrizione: r.descrizione || "",
+    livello_num,
+    scuola,
+    classi,
+  };
+}
 
-export function getSpellById(id: string): Spell | undefined {
-  return SPELLS.find((s) => s.id === id);
+export async function getAllSpells(): Promise<Spell[]> {
+  const rows = await db.select().from(spellsTable).orderBy(asc(spellsTable.sort_key));
+  return rows.map(toSpell);
+}
+
+export async function getSpellById(id: string): Promise<Spell | undefined> {
+  const rows = await db.select().from(spellsTable).where(eq(spellsTable.id, id)).limit(1);
+  return rows[0] ? toSpell(rows[0]) : undefined;
 }
 
 export interface SpellsMeta {
@@ -141,11 +127,11 @@ export interface SpellsMeta {
   livelli: number[];
 }
 
-export function getMeta(): SpellsMeta {
+export function computeMeta(list: Spell[]): SpellsMeta {
   const scuole = new Set<string>();
   const classi = new Set<string>();
   const livelli = new Set<number>();
-  for (const s of SPELLS) {
+  for (const s of list) {
     if (s.scuola) scuole.add(s.scuola);
     for (const c of s.classi) classi.add(c);
     if (s.livello_num >= 0) livelli.add(s.livello_num);
