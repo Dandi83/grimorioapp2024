@@ -63,3 +63,29 @@
     scrollbar-width: none;
   }
 }
+
+/* Dice medallion animations */
+@keyframes dice-in {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes dice-spin-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.animate-dice-in {
+  animation: dice-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.animate-ring-spin {
+  animation: dice-spin-ring 0.9s linear infinite;
+}

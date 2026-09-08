@@ -36,12 +36,21 @@ export function GrimorioBrowser({
 
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    return spells.filter((s) => {
+    const filtered = spells.filter((s) => {
       if (needle && !s.nome_italiano.toLowerCase().includes(needle)) return false;
       if (livello !== null && s.livello_num !== livello) return false;
       if (scuola && s.scuola.toLowerCase() !== scuola.toLowerCase()) return false;
       if (classe && !s.classi.includes(classe.toLowerCase())) return false;
       return true;
+    });
+
+    // Ordine crescente: prima i trucchetti (livello 0), poi 1 → 9; i livelli
+    // sconosciuti (-1) vanno in fondo. A parità di livello, ordine alfabetico.
+    const rank = (n: number) => (n < 0 ? 999 : n);
+    return filtered.sort((a, b) => {
+      const d = rank(a.livello_num) - rank(b.livello_num);
+      if (d !== 0) return d;
+      return a.nome_italiano.localeCompare(b.nome_italiano, "it");
     });
   }, [spells, q, livello, scuola, classe]);
 
@@ -169,12 +178,31 @@ export function GrimorioBrowser({
         </div>
       ) : (
         <ul className="px-6 py-2">
-          {results.map((spell, i) => (
-            <li key={spell.id}>
-              {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
-              <SpellRow spell={spell} />
-            </li>
-          ))}
+          {results.map((spell, i) => {
+            const prev = results[i - 1];
+            const newGroup = !prev || prev.livello_num !== spell.livello_num;
+            return (
+              <li key={spell.id}>
+                {newGroup ? (
+                  <div
+                    className={`flex items-center gap-3 ${i > 0 ? "mt-6" : "mt-1"} mb-1`}
+                  >
+                    <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                      {spell.livello_num < 0
+                        ? "Altro"
+                        : spell.livello_num === 0
+                          ? "Trucchetti"
+                          : `${spell.livello_num}° livello`}
+                    </span>
+                    <span className="h-px flex-1 bg-divider" />
+                  </div>
+                ) : (
+                  <div className="ml-[15px] h-px bg-divider" />
+                )}
+                <SpellRow spell={spell} />
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

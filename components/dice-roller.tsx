@@ -1,20 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { Dices, RotateCcw } from "lucide-react";
 
-import { DieShape, type DieSides } from "@/components/die-shape";
+type DieSides = 4 | 6 | 8 | 10 | 12 | 20 | 100;
 
-const DICE: { sides: DieSides; label: string }[] = [
-  { sides: 20, label: "d20" },
-  { sides: 12, label: "d12" },
-  { sides: 10, label: "d10" },
-  { sides: 8, label: "d8" },
-  { sides: 6, label: "d6" },
-  { sides: 4, label: "d4" },
-  { sides: 100, label: "d100" },
-];
-
+const DICE: DieSides[] = [4, 6, 8, 10, 12, 20, 100];
 const COUNT_PRESETS = [1, 2, 3, 4, 5, 6, 8, 10];
 
 interface RollEntry {
@@ -36,7 +27,7 @@ export function DiceRoller() {
   const [currentValues, setCurrentValues] = useState<number[]>([]);
   const [history, setHistory] = useState<RollEntry[]>([]);
   const [rolling, setRolling] = useState(false);
-  const [rotation, setRotation] = useState(0);
+  const [nonce, setNonce] = useState(0);
   const runRef = useRef(0);
 
   const sum = useMemo(
@@ -50,17 +41,16 @@ export function DiceRoller() {
     runRef.current += 1;
     const myRun = runRef.current;
 
-    setRotation((r) => r + 360 + Math.floor(Math.random() * 360));
-
     const shuffle = setInterval(() => {
       setCurrentValues(Array.from({ length: count }, () => rollDie(selected)));
-    }, 70);
+    }, 65);
 
     setTimeout(() => {
       clearInterval(shuffle);
       if (myRun !== runRef.current) return;
       const values = Array.from({ length: count }, () => rollDie(selected));
       setCurrentValues(values);
+      setNonce((n) => n + 1);
       setHistory((prev) => [
         {
           id: `${Date.now()}-${Math.random()}`,
@@ -73,8 +63,11 @@ export function DiceRoller() {
         ...prev.slice(0, 19),
       ]);
       setRolling(false);
-    }, 800);
+    }, 750);
   }, [count, rolling, selected]);
+
+  const hasResult = currentValues.length > 0;
+  const isMulti = count > 1;
 
   const critMessage = (() => {
     if (currentValues.length !== 1 || rolling) return null;
@@ -89,91 +82,197 @@ export function DiceRoller() {
   const isCritLow =
     currentValues.length === 1 && selected === 20 && currentValues[0] === 1;
 
-  const reset = () => {
-    setCurrentValues([]);
-  };
+  // Valore mostrato al centro del medaglione: il singolo dado, oppure la somma.
+  const centerValue = rolling
+    ? isMulti
+      ? sum
+      : (currentValues[0] ?? 0)
+    : hasResult
+      ? isMulti
+        ? sum
+        : currentValues[0]
+      : null;
+
+  const reset = () => setCurrentValues([]);
 
   return (
     <div className="pb-8">
-      <header className="px-6 pb-4 pt-6">
+      <header className="px-6 pb-2 pt-6">
         <h1 className="font-serif text-3xl font-bold text-foreground">Dadi</h1>
         <p className="mt-1 text-[13px] tracking-wide text-muted">
-          Scegli dado, quantità, e lancia
+          Scegli il dado, la quantità e lancia
         </p>
       </header>
 
-      {/* Stage */}
-      <div className="mx-6 mb-4 flex min-h-[340px] flex-col items-center justify-center rounded-2xl border border-border bg-card py-6">
-        <div
-          className="flex items-center justify-center transition-transform duration-700 ease-out"
-          style={{ transform: `rotate(${rotation}deg) scale(${rolling ? 1.1 : 1})` }}
-        >
-          <DieShape
-            sides={selected}
-            size={200}
-            value={
-              currentValues.length === 1 && !rolling ? currentValues[0] : undefined
-            }
+      {/* Medaglione */}
+      <div className="px-6 pt-4">
+        <div className="relative mx-auto aspect-square w-full max-w-[280px]">
+          {/* Bagliore ambientale */}
+          <div
+            className="absolute inset-2 rounded-full blur-2xl transition-opacity duration-500"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(212,175,55,0.28), transparent 70%)",
+              opacity: hasResult || rolling ? 1 : 0,
+            }}
           />
+
+          {/* Anello rotante durante il lancio */}
+          {rolling && (
+            <div
+              className="animate-ring-spin absolute inset-0 rounded-full"
+              style={{
+                background:
+                  "conic-gradient(from 0deg, transparent, #d4af37, transparent 60%)",
+                WebkitMask:
+                  "radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px))",
+                mask: "radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px))",
+              }}
+            />
+          )}
+
+          {/* Bordo dorato */}
+          <div
+            className="absolute inset-0 rounded-full p-[2px]"
+            style={{
+              background: "linear-gradient(135deg, #FFE080, #8B6914 60%, #5C4409)",
+            }}
+          >
+            <div
+              className="relative flex h-full w-full flex-col items-center justify-center rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 32%, #1d1d20, #0a0a0b 72%)",
+              }}
+            >
+              {/* Anello tratteggiato decorativo */}
+              <div className="absolute inset-[18px] rounded-full border border-dashed border-primary-dim/30" />
+
+              {centerValue === null ? (
+                <div className="flex flex-col items-center gap-3 text-muted">
+                  <Dices size={44} className="text-primary-dim" />
+                  <span className="text-[11px] font-bold uppercase tracking-[0.25em]">
+                    Pronto
+                  </span>
+                </div>
+              ) : (
+                <>
+                  <span
+                    key={nonce}
+                    className={`font-serif font-bold leading-none text-primary ${
+                      rolling ? "opacity-60" : "animate-dice-in"
+                    } ${String(centerValue).length > 2 ? "text-6xl" : "text-7xl"}`}
+                    style={{
+                      textShadow: "0 0 24px rgba(212,175,55,0.4)",
+                    }}
+                  >
+                    {centerValue}
+                  </span>
+                  <span className="mt-2 text-[11px] font-bold uppercase tracking-[0.3em] text-muted">
+                    {isMulti ? `${count}d${selected} · totale` : `d${selected}`}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
-        {currentValues.length > 1 && !rolling && (
-          <div className="mt-4 flex flex-wrap justify-center gap-2 px-4">
+        {/* Messaggio critico */}
+        <div className="mt-3 flex h-6 items-center justify-center">
+          {critMessage && (
+            <p
+              className={`font-serif text-base italic ${
+                isCritLow ? "text-destructive-foreground" : "text-primary"
+              }`}
+            >
+              {critMessage}
+            </p>
+          )}
+        </div>
+
+        {/* Valori singoli (multi-dado) */}
+        {isMulti && hasResult && !rolling && (
+          <div className="no-scrollbar mt-1 flex flex-wrap justify-center gap-2">
             {currentValues.map((v, i) => (
               <span
                 key={i}
-                className="flex h-11 min-w-[44px] items-center justify-center rounded-xl border border-primary-dim bg-primary-faint px-3 font-serif text-xl font-bold text-primary"
+                className="flex h-10 min-w-[40px] items-center justify-center rounded-lg border border-primary-dim/50 bg-primary-faint px-2.5 font-serif text-lg font-bold text-primary"
               >
                 {v}
               </span>
             ))}
           </div>
         )}
+      </div>
 
-        {currentValues.length > 1 && !rolling && (
-          <div className="mt-3 flex items-center gap-3">
-            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted">
-              Totale
-            </span>
-            <span className="font-serif text-4xl font-bold text-primary">
-              {sum}
-            </span>
-          </div>
-        )}
-
-        {currentValues.length <= 1 && (
-          <p className="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-muted">
-            d{selected}
-          </p>
-        )}
-
-        {critMessage && (
-          <p
-            className={`mt-2 font-serif text-base italic ${
-              isCritLow ? "text-destructive-foreground" : "text-primary"
-            }`}
+      {/* Pulsante lancia */}
+      <div className="mt-6 flex items-center gap-3 px-6">
+        <button
+          type="button"
+          onClick={roll}
+          disabled={rolling}
+          className="flex h-14 flex-1 items-center justify-center gap-2.5 rounded-full bg-primary text-base font-bold tracking-wide text-primary-foreground shadow-lg shadow-primary/25 transition-opacity active:opacity-80 disabled:opacity-70"
+        >
+          <Dices size={22} className={rolling ? "animate-spin" : ""} />
+          {rolling ? "Lancio..." : `Lancia ${count}d${selected}`}
+        </button>
+        {hasResult && !rolling && (
+          <button
+            type="button"
+            onClick={reset}
+            aria-label="Azzera"
+            className="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-card text-muted transition-colors active:bg-elevated"
           >
-            {critMessage}
-          </p>
+            <RotateCcw size={20} />
+          </button>
         )}
       </div>
 
-      {/* Roll button */}
-      <button
-        type="button"
-        onClick={roll}
-        disabled={rolling}
-        className="mx-6 mb-6 flex h-14 w-[calc(100%-3rem)] items-center justify-center gap-2 rounded-full bg-primary font-bold tracking-wide text-primary-foreground shadow-lg shadow-primary/30 transition-opacity disabled:opacity-70"
-      >
-        <RefreshCw size={20} className={rolling ? "animate-spin" : ""} />
-        {rolling ? "Lanciando..." : `Lancia ${count}d${selected}`}
-      </button>
+      {/* Selettore tipo dado */}
+      <p className="mb-3 mt-8 px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
+        Tipo di dado
+      </p>
+      <div className="no-scrollbar flex gap-2.5 overflow-x-auto px-6">
+        {DICE.map((sides) => {
+          const active = selected === sides;
+          return (
+            <button
+              key={sides}
+              type="button"
+              onClick={() => {
+                setSelected(sides);
+                reset();
+              }}
+              className={`flex h-16 min-w-[64px] flex-shrink-0 flex-col items-center justify-center gap-0.5 rounded-2xl border transition-colors ${
+                active
+                  ? "border-primary bg-primary-faint"
+                  : "border-border bg-card"
+              }`}
+            >
+              <span
+                className={`font-serif text-xl font-bold leading-none ${
+                  active ? "text-primary" : "text-card-foreground"
+                }`}
+              >
+                d{sides}
+              </span>
+              <span
+                className={`text-[9px] uppercase tracking-wider ${
+                  active ? "text-primary-dim" : "text-muted"
+                }`}
+              >
+                {sides} facce
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
-      {/* Count selector */}
-      <p className="mb-3 px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
+      {/* Selettore quantità */}
+      <p className="mb-3 mt-7 px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
         Quanti dadi
       </p>
-      <div className="no-scrollbar mb-6 flex gap-2 overflow-x-auto px-6">
+      <div className="no-scrollbar flex gap-2 overflow-x-auto px-6">
         {COUNT_PRESETS.map((n) => {
           const active = count === n;
           return (
@@ -182,9 +281,9 @@ export function DiceRoller() {
               type="button"
               onClick={() => {
                 setCount(n);
-                setCurrentValues([]);
+                reset();
               }}
-              className={`flex h-10 min-w-[52px] flex-shrink-0 items-center justify-center rounded-full border px-3 text-sm font-semibold transition-colors ${
+              className={`flex h-11 min-w-[52px] flex-shrink-0 items-center justify-center rounded-full border px-3 text-sm font-semibold transition-colors ${
                 active
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-card text-card-foreground"
@@ -196,42 +295,8 @@ export function DiceRoller() {
         })}
       </div>
 
-      {/* Die selector */}
-      <p className="mb-3 px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
-        Seleziona dado
-      </p>
-      <div className="mb-6 grid grid-cols-4 gap-3 px-6">
-        {DICE.map((d) => {
-          const active = selected === d.sides;
-          return (
-            <button
-              key={d.sides}
-              type="button"
-              onClick={() => {
-                setSelected(d.sides);
-                setCurrentValues([]);
-              }}
-              className={`flex aspect-[0.9] flex-col items-center justify-center gap-1 rounded-xl border py-2 transition-colors ${
-                active
-                  ? "border-primary bg-primary-faint"
-                  : "border-border bg-card"
-              }`}
-            >
-              <DieShape sides={d.sides} size={54} variant={active ? "gold" : "muted"} />
-              <span
-                className={`text-xs font-semibold ${
-                  active ? "font-bold text-primary" : "text-card-foreground"
-                }`}
-              >
-                {d.label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* History */}
-      <div className="mb-3 flex items-center justify-between px-6">
+      {/* Cronologia */}
+      <div className="mb-3 mt-8 flex items-center justify-between px-6">
         <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-primary">
           Cronologia
         </p>
@@ -258,16 +323,18 @@ export function DiceRoller() {
             return (
               <div
                 key={h.id}
-                className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2"
+                className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3"
               >
-                <DieShape sides={h.sides} size={40} variant="muted" />
+                <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-elevated font-serif text-sm font-bold text-primary">
+                  d{h.sides}
+                </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-serif text-base font-semibold text-foreground">
                     {h.count}d{h.sides}
                   </p>
                   <p className="truncate text-[11px] text-muted">
-                    {h.count > 1 && h.values.length <= 10
-                      ? `${h.values.join(" + ")} = `
+                    {h.count > 1 && h.values.length <= 12
+                      ? `${h.values.join(" + ")}  ·  `
                       : ""}
                     {new Date(h.timestamp).toLocaleTimeString("it-IT", {
                       hour: "2-digit",

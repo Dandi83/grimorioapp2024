@@ -31,6 +31,14 @@ export default async function HomePage() {
           }}
         />
         <div className="absolute inset-x-0 bottom-0 p-6">
+          <Image
+            src="/logo.png"
+            alt="Logo GrimorioApp"
+            width={72}
+            height={72}
+            priority
+            className="mb-3 h-16 w-16 drop-shadow-[0_2px_12px_rgba(212,175,55,0.35)]"
+          />
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">
             5e24
           </p>
