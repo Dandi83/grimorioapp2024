@@ -108,28 +108,9 @@ def parse_livello(livello_str: str) -> tuple[int, str, List[str]]:
 
 # ---------------- Seed ----------------
 async def seed_spells_if_empty():
-    # We re-seed only if collection is empty OR count differs from source file (initial load).
-    seed_file = ROOT_DIR / "incantesimi_2024.json"
-    if seed_file.exists():
-        with seed_file.open("r", encoding="utf-8") as f:
-            source_count = len(json.load(f))
-    else:
-        source_count = 0
-
-    count = await db.spells.count_documents({})
-    # Only re-seed if source has more spells than we have (initial load or additions)
-    # AND no user edits exist (user_edited flag)
-    if count > 0:
-        user_edited = await db.spells.count_documents({"user_edited": True})
-        if count >= source_count or user_edited > 0:
-            logger.info(
-                f"Spells collection has {count} docs (source={source_count}, edited={user_edited}). Skipping re-seed."
-            )
-            return
-        # Drop and re-seed to pick up new spells added to the source file
-        logger.info(f"Re-seeding: collection has {count}, source has {source_count}.")
-        await db.spells.drop()
-
+    """Idempotent seed: inserts only spells whose name is not already in the
+    collection. Never drops or overwrites existing documents. Safe on every
+    startup and on production redeploys."""
     seed_file = ROOT_DIR / "incantesimi_2024.json"
     if not seed_file.exists():
         logger.warning("incantesimi_2024.json not found, skipping seed.")
@@ -138,13 +119,25 @@ async def seed_spells_if_empty():
     with seed_file.open("r", encoding="utf-8") as f:
         raw = json.load(f)
 
+    # Snapshot of existing names (case-insensitive) up front
+    existing_names = set()
+    async for doc in db.spells.find({}, {"nome_italiano": 1, "_id": 0}):
+        name = (doc.get("nome_italiano") or "").strip().lower()
+        if name:
+            existing_names.add(name)
+
     docs = []
     for item in raw:
+        name = (item.get("nome_italiano") or "").strip()
+        if not name:
+            continue
+        if name.lower() in existing_names:
+            continue
         livello_num, scuola, classi = parse_livello(item.get("livello", ""))
         docs.append(
             {
                 "id": str(uuid.uuid4()),
-                "nome_italiano": item.get("nome_italiano", "").strip(),
+                "nome_italiano": name,
                 "livello": item.get("livello", ""),
                 "tempo_di_lancio": item.get("tempo_di_lancio", ""),
                 "gittata": item.get("gittata", ""),
@@ -159,12 +152,17 @@ async def seed_spells_if_empty():
 
     if docs:
         await db.spells.insert_many(docs)
-        # Create indexes for search
-        await db.spells.create_index("nome_italiano")
-        await db.spells.create_index("scuola")
-        await db.spells.create_index("livello_num")
-        await db.spells.create_index("classi")
-        logger.info(f"Seeded {len(docs)} spells.")
+        logger.info(f"Seeded {len(docs)} new spells (idempotent).")
+    else:
+        logger.info(
+            f"No new spells to seed. Collection has {len(existing_names)} docs."
+        )
+
+    # Ensure indexes exist (create_index is idempotent)
+    await db.spells.create_index("nome_italiano")
+    await db.spells.create_index("scuola")
+    await db.spells.create_index("livello_num")
+    await db.spells.create_index("classi")
 
 
 # ---------------- Routes ----------------
