@@ -11,7 +11,7 @@ import {
   endAdminSession,
   verifyPasscode,
 } from "@/lib/admin-auth";
-import { slugify } from "@/lib/spells";
+import { slugify } from "@/lib/spells-types";
 
 export interface SpellInput {
   nome_italiano: string;

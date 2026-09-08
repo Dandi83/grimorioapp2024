@@ -9,7 +9,7 @@ import {
   levelLabel,
   type Spell,
   type SpellsMeta,
-} from "@/lib/spells";
+} from "@/lib/spells-types";
 
 type FilterKind = "livello" | "scuola" | "classe" | null;
 

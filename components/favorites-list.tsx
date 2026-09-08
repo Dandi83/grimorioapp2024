@@ -4,7 +4,7 @@ import { Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
 import { SpellRow } from "@/components/spell-row";
-import type { Spell } from "@/lib/spells";
+import type { Spell } from "@/lib/spells-types";
 
 export function FavoritesList({ spells }: { spells: Spell[] }) {
   const { favorites, loaded } = useFavorites();

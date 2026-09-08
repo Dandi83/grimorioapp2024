@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
-import { capitalizeWords, type Spell } from "@/lib/spells";
+import { capitalizeWords, type Spell } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
 
 function metaLine(spell: Spell): string {

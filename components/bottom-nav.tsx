@@ -32,6 +32,9 @@ const ITEMS: NavItem[] = [
 export function BottomNav() {
   const pathname = usePathname();
 
+  // L'area riservata non fa parte della navigazione pubblica.
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <nav
       aria-label="Navigazione principale"
