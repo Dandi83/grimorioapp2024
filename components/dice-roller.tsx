@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Dices, RotateCcw } from "lucide-react";
+import { Die3D } from "@/components/die-3d";
 
 type DieSides = 4 | 6 | 8 | 10 | 12 | 20 | 100;
 
@@ -104,77 +105,49 @@ export function DiceRoller() {
         </p>
       </header>
 
-      {/* Medaglione */}
+      {/* Scena dado 3D */}
       <div className="px-6 pt-4">
-        <div className="relative mx-auto aspect-square w-full max-w-[280px]">
+        <div className="dice-scene relative mx-auto flex aspect-square w-full max-w-[280px] items-center justify-center">
           {/* Bagliore ambientale */}
           <div
-            className="absolute inset-2 rounded-full blur-2xl transition-opacity duration-500"
+            className="absolute inset-6 rounded-full blur-3xl transition-opacity duration-500"
             style={{
               background:
-                "radial-gradient(circle, rgba(212,175,55,0.28), transparent 70%)",
-              opacity: hasResult || rolling ? 1 : 0,
+                "radial-gradient(circle, rgba(212,175,55,0.30), transparent 70%)",
+              opacity: hasResult || rolling ? 1 : 0.35,
             }}
           />
 
-          {/* Anello rotante durante il lancio */}
-          {rolling && (
-            <div
-              className="animate-ring-spin absolute inset-0 rounded-full"
-              style={{
-                background:
-                  "conic-gradient(from 0deg, transparent, #d4af37, transparent 60%)",
-                WebkitMask:
-                  "radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px))",
-                mask: "radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px))",
-              }}
-            />
-          )}
-
-          {/* Bordo dorato */}
+          {/* Il dado poliedrico */}
           <div
-            className="absolute inset-0 rounded-full p-[2px]"
-            style={{
-              background: "linear-gradient(135deg, #FFE080, #8B6914 60%, #5C4409)",
-            }}
+            key={nonce}
+            className={
+              rolling
+                ? "animate-dice-tumble"
+                : hasResult
+                  ? "animate-dice-settle"
+                  : "animate-dice-float"
+            }
           >
-            <div
-              className="relative flex h-full w-full flex-col items-center justify-center rounded-full"
-              style={{
-                background:
-                  "radial-gradient(circle at 50% 32%, #1d1d20, #0a0a0b 72%)",
-              }}
-            >
-              {/* Anello tratteggiato decorativo */}
-              <div className="absolute inset-[18px] rounded-full border border-dashed border-primary-dim/30" />
-
-              {centerValue === null ? (
-                <div className="flex flex-col items-center gap-3 text-muted">
-                  <Dices size={44} className="text-primary-dim" />
-                  <span className="text-[11px] font-bold uppercase tracking-[0.25em]">
-                    Pronto
-                  </span>
-                </div>
-              ) : (
-                <>
-                  <span
-                    key={nonce}
-                    className={`font-serif font-bold leading-none text-primary ${
-                      rolling ? "opacity-60" : "animate-dice-in"
-                    } ${String(centerValue).length > 2 ? "text-6xl" : "text-7xl"}`}
-                    style={{
-                      textShadow: "0 0 24px rgba(212,175,55,0.4)",
-                    }}
-                  >
-                    {centerValue}
-                  </span>
-                  <span className="mt-2 text-[11px] font-bold uppercase tracking-[0.3em] text-muted">
-                    {isMulti ? `${count}d${selected} · totale` : `d${selected}`}
-                  </span>
-                </>
-              )}
-            </div>
+            <Die3D
+              sides={selected}
+              value={
+                centerValue === null
+                  ? null
+                  : (centerValue as number)
+              }
+              size={220}
+            />
           </div>
+
+          {/* Etichetta tipo/totale sotto il dado */}
+          <span className="absolute bottom-0 text-[11px] font-bold uppercase tracking-[0.3em] text-muted">
+            {centerValue === null
+              ? "Pronto"
+              : isMulti
+                ? `${count}d${selected} · totale`
+                : `d${selected}`}
+          </span>
         </div>
 
         {/* Messaggio critico */}

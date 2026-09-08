@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { BottomNav } from "@/components/bottom-nav";
+import { InstallPrompt } from "@/components/install-prompt";
 import "./globals.css";
 
 const inter = Inter({
@@ -23,6 +24,12 @@ export const metadata: Metadata = {
   description:
     "Consulta, cerca e filtra gli incantesimi di Dungeons & Dragons 5e edizione 2024 in italiano. Salva i preferiti e lancia i dadi. Progetto fan-made.",
   applicationName: "GrimorioApp",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "GrimorioApp",
+  },
   keywords: [
     "D&D",
     "Dungeons & Dragons",
@@ -57,6 +64,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <main className="flex-1 pb-24">{children}</main>
             <BottomNav />
           </div>
+          <InstallPrompt />
         </FavoritesProvider>
       </body>
     </html>
