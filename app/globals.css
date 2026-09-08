@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0a0a0b;
+  --color-foreground: #f0ebe1;
+
+  --color-card: #141416;
+  --color-card-foreground: #c8c2b5;
+
+  --color-elevated: #1d1d20;
+  --color-muted: #a39e93;
+
+  --color-primary: #d4af37;
+  --color-primary-foreground: #1a1405;
+  --color-primary-dim: #9e8329;
+  --color-primary-faint: #3d3210;
+
+  --color-destructive: #7d2626;
+  --color-destructive-foreground: #efa1a1;
+
+  --color-border: #29292d;
+  --color-border-strong: #45454c;
+  --color-divider: #1f1f24;
+
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-eb-garamond), Georgia, "Times New Roman", serif;
+
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    background-color: var(--color-background);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-primary-faint);
+    color: var(--color-primary);
+  }
+}
+
+/* Thin, themed scrollbars for the dark grimoire aesthetic. */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
