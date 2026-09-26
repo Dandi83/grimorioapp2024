@@ -12,7 +12,11 @@ import {
 import type { Spell } from "@/lib/spells-types";
 import { levelLabel } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
+import type { Monster } from "@/lib/monsters-types";
+import { AdminMonsters } from "@/components/admin-monsters";
 import {
+  BookOpen,
+  Skull,
   Pencil,
   Trash2,
   Plus,
@@ -27,7 +31,14 @@ type Editing =
   | { mode: "create" }
   | { mode: "edit"; spell: Spell };
 
-export function AdminDashboard({ spells }: { spells: Spell[] }) {
+export function AdminDashboard({
+  spells,
+  monsters,
+}: {
+  spells: Spell[];
+  monsters: Monster[];
+}) {
+  const [tab, setTab] = useState<"spells" | "monsters">("spells");
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Editing>({ mode: "closed" });
 
@@ -47,7 +58,7 @@ export function AdminDashboard({ spells }: { spells: Spell[] }) {
         <div>
           <h1 className="font-serif text-2xl text-foreground">Amministrazione</h1>
           <p className="text-sm text-muted-foreground">
-            {spells.length} incantesimi nel grimorio
+            {spells.length} incantesimi · {monsters.length} mostri
           </p>
         </div>
         <form action={logoutAction}>
@@ -61,6 +72,39 @@ export function AdminDashboard({ spells }: { spells: Spell[] }) {
         </form>
       </header>
 
+      <div
+        role="tablist"
+        aria-label="Sezione da gestire"
+        className="mb-5 grid grid-cols-2 gap-1 rounded-xl border border-border bg-card p-1"
+      >
+        {(
+          [
+            { key: "spells", label: "Incantesimi", Icon: BookOpen },
+            { key: "monsters", label: "Mostri", Icon: Skull },
+          ] as const
+        ).map(({ key, label, Icon }) => (
+          <button
+            key={key}
+            type="button"
+            role="tab"
+            aria-selected={tab === key}
+            onClick={() => setTab(key)}
+            className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+              tab === key
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Icon className="h-4 w-4" aria-hidden="true" />
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "monsters" ? (
+        <AdminMonsters monsters={monsters} />
+      ) : (
+      <>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
           <Search
@@ -139,6 +183,8 @@ export function AdminDashboard({ spells }: { spells: Spell[] }) {
           onClose={() => setEditing({ mode: "closed" })}
         />
       ) : null}
+      </>
+      )}
     </main>
   );
 }
