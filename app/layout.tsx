@@ -6,6 +6,7 @@ import { FavoritesProvider } from "@/components/favorites-provider";
 import { BottomNav } from "@/components/bottom-nav";
 import { InstallPrompt } from "@/components/install-prompt";
 import "./globals.css";
+import {CharacterSessionProvider} from "@/components/characters/session";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -62,7 +63,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <FavoritesProvider>
           <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x">
             <main className="min-w-0 flex-1 pb-24">
-              {children}
+              {process.env.VERCEL_ENV === "preview" || process.env.NODE_ENV !== "production" ? <CharacterSessionProvider>{children}</CharacterSessionProvider> : children}
             </main>
             <BottomNav />
           </div>
