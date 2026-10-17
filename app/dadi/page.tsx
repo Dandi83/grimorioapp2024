@@ -1,9 +1,5 @@
-import { DiceRoller } from "@/components/dice-roller";
-
-export const metadata = {
-  title: "Dadi — GrimorioApp",
-};
+import { redirect } from "next/navigation";
 
 export default function DadiPage() {
-  return <DiceRoller />;
+  redirect("/");
 }

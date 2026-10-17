@@ -22,7 +22,7 @@ const ebGaramond = EB_Garamond({
 export const metadata: Metadata = {
   title: "GrimorioApp — Incantesimi D&D 5e (2024)",
   description:
-    "Consulta, cerca e filtra gli incantesimi di Dungeons & Dragons 5e edizione 2024 in italiano. Salva i preferiti e lancia i dadi. Progetto fan-made.",
+    "Consulta, cerca e filtra gli incantesimi di Dungeons & Dragons 5e edizione 2024 in italiano. Salva i preferiti. Progetto fan-made.",
   applicationName: "GrimorioApp",
   manifest: "/manifest.webmanifest",
   appleWebApp: {

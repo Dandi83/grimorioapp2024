@@ -100,7 +100,7 @@ export default async function HomePage() {
       {/* Disclaimer */}
       <footer className="mx-6 mt-12 border-t border-divider pt-4">
         <p className="text-center text-[10px] italic leading-4 tracking-wide text-muted">
-          * Progetto fan-made a scopo puramente personale e non commerciale.
+          * Progetto fan-made a scopo hobbistico.
           Nessuna affiliazione, sponsorizzazione o approvazione da parte di
           Wizards of the Coast o dei detentori dei marchi originali. Tutti i
           marchi registrati appartengono ai rispettivi proprietari.
