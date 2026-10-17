@@ -1,0 +1,17 @@
+const assert=require('node:assert/strict');const fs=require('node:fs');const ts=require('typescript');
+require.extensions['.ts']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText,f);
+assert.ok(fs.existsSync('lib/digital-sheet.ts'),'First page needs an exhaustive digital field map');
+const {digitalGroups}=require('../lib/digital-sheet.ts');
+const fields=require('../lib/data/character-paper-fields.json').fields.filter(f=>f.page===1);
+const mapped=digitalGroups.flatMap(g=>g.fields.map(f=>f.name));
+assert.equal(new Set(mapped).size,mapped.length,'A source parameter must not appear twice');
+assert.deepEqual([...mapped].sort(),fields.map(f=>f.name).sort(),'Every first-page parameter must have a digital control');
+const {getPaperValue,setPaperValue}=require('../lib/paper-sheet.ts');const {createCharacter}=require('../lib/characters.ts');let c=createCharacter('Aria');
+c=setPaperValue(c,'TSM01.1',true);assert.equal(c.deathSuccess,2,'Death success counters share the quick-view data');
+c=setPaperValue(c,'TSM01.0',false);assert.equal(c.deathSuccess,0);assert.equal(getPaperValue(c,'TSM01.1'),false);
+c=setPaperValue(c,'TSM01.3.2',true);assert.equal(c.deathFailure,3);
+c=setPaperValue(c,'Intelligenza investigare',true);c=setPaperValue(c,'Intelligenza','16');assert.equal(getPaperValue(c,'Ispirazione'),'15','The source field named Ispirazione is actually passive Investigation');
+c=setPaperValue(c,'Arma 5a','Sesta arma');assert.equal(c.attacks[5].name,'Sesta arma');
+c=setPaperValue(c,'Arma 5 gittataa','18 m');assert.equal(getPaperValue(c,'Arma 5 gittataa'),'18 m');
+c=setPaperValue(c,'VRI1.5','1');assert.equal(getPaperValue(c,'VRI1.5'),'1');
+console.log(`Digital first page: all ${fields.length} original parameters mapped, death saves, passive Investigation, sixth attack and free fields passed`);
