@@ -14,6 +14,7 @@ import { levelLabel } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
 import type { Monster } from "@/lib/monsters-types";
 import { AdminMonsters } from "@/components/admin-monsters";
+import { SpellProvenanceMarker } from "./spell-provenance-marker";
 import {
   BookOpen,
   Skull,
@@ -146,6 +147,7 @@ export function AdminDashboard({
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-foreground">
                 {s.nome_italiano}
+                <SpellProvenanceMarker id={s.id} />
               </p>
               <p className="truncate text-xs text-muted-foreground">
                 {levelLabel(s.livello_num)} · {s.scuola || "—"}

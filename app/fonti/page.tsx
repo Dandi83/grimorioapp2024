@@ -22,6 +22,15 @@ export default function SourcesPage() {
           <a className="text-primary underline underline-offset-4" href="https://creativecommons.org/licenses/by/4.0/legalcode.it" target="_blank" rel="noreferrer">Licenza Creative Commons Attribuzione 4.0 Internazionale</a>
         </p>
       </section>
+      <section className="space-y-3 text-sm leading-6 text-muted">
+        <h2 className="font-serif text-xl font-bold text-foreground">Significato dell’asterisco *</h2>
+        <p>
+          Dieci schede hanno una descrizione preesistente non tratta dal SRD.
+          L’asterisco accanto al nome indica che la fonte e l’autorizzazione al riutilizzo
+          di quella descrizione non sono state verificate. Non indica che l’incantesimo
+          sia inventato o non ufficiale e non costituisce un’autorizzazione alla pubblicazione.
+        </p>
+      </section>
     </article>
   );
 }

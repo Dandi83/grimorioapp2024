@@ -13,10 +13,25 @@ assert.ok(existsSync(helperUrl), 'The app must resolve audited source descriptio
 function loadTs(url) {
   const source = ts.transpileModule(readFileSync(url,'utf8'), {compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
   const mod = {exports:{}};
-  new Function('require','module','exports',source)(id => id.endsWith('srd-italiano-5.2.1.json') ? data : id.endsWith('srd-revisions-20261017.json') ? review : require(id),mod,mod.exports);
+  new Function('require','module','exports',source)(id => id.endsWith('spells-types') ? loadTs(new URL('../lib/spells-types.ts',import.meta.url)) : id.endsWith('srd-italiano-5.2.1.json') ? data : id.endsWith('srd-revisions-20261017.json') ? review : require(id),mod,mod.exports);
   return mod.exports;
 }
 const { applySrdDescription, getSrdSource } = loadTs(helperUrl);
+const provenance=loadTs(new URL('../lib/spells-types.ts',import.meta.url));
+assert.equal(typeof provenance.hasUnverifiedDescription,'function','Ten unverified legacy descriptions need a provenance marker');
+for(const spell of review.excluded) assert.equal(provenance.hasUnverifiedDescription(spell.id),true,`${spell.id}: missing marker`);
+for(const spell of data.spells) assert.equal(provenance.hasUnverifiedDescription(spell.id),false,`${spell.id}: official SRD must not be marked`);
+assert.equal(provenance.hasUnverifiedDescription('dardo-stregato'),false,'An empty description is not one of the ten unverified texts');
+assert.equal(provenance.hasUnverifiedDescription('unknown'),false);
+const markerUrl=new URL('../components/spell-provenance-marker.tsx',import.meta.url);
+assert.ok(existsSync(markerUrl),'Spell names need a small accessible asterisk');
+const {SpellProvenanceMarker}=loadTs(markerUrl);
+for(const spell of review.excluded){
+  const marker=renderToStaticMarkup(createElement(SpellProvenanceMarker,{id:spell.id}));
+  assert.match(marker,/<sup\b[^>]*>\*<\/sup>/);
+  assert.match(marker,/aria-label="Descrizione non verificata nel SRD"/);
+}
+assert.equal(renderToStaticMarkup(createElement(SpellProvenanceMarker,{id:'palla-di-fuoco'})),'');
 const legacy=JSON.parse(readFileSync(new URL('../tests/fixtures/legacy-eldritch-blast.json',import.meta.url),'utf8'));
 assert.ok(legacy.descrizione.trim(), 'The legacy regression fixture must contain the original nonempty database text');
 const canonical=data.spells.find(s=>s.id==='deflagrazione-occulta');

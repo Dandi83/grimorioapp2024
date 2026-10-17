@@ -5,7 +5,8 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { HtmlText } from "@/components/html-text";
-import { capitalizeWords, getSpellById } from "@/lib/spells";
+import { SpellProvenanceMarker } from "@/components/spell-provenance-marker";
+import { capitalizeWords, getSpellById, hasUnverifiedDescription } from "@/lib/spells";
 import { schoolColor } from "@/lib/school-colors";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 
@@ -92,6 +93,7 @@ export default async function SpellDetailPage({
           </span>
           <h1 className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
             {titolo}
+            <SpellProvenanceMarker id={spell.id} />
           </h1>
         </div>
       </header>
@@ -136,6 +138,13 @@ export default async function SpellDetailPage({
           </p>
         )}
       </section>
+      {hasUnverifiedDescription(spell.id) && (
+        <p className="mx-6 mb-6 text-xs leading-5 text-muted">
+          <span className="text-primary">*</span> Descrizione preesistente non tratta dal SRD:
+          {" "}fonte e autorizzazione al riutilizzo non verificate.
+          {" "}<Link href="/fonti" className="underline underline-offset-4">Fonti e licenze</Link>
+        </p>
+      )}
       {source && (
         <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
           <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>
