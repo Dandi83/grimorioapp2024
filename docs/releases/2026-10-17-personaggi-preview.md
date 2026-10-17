@@ -24,3 +24,7 @@ Le variabili DATABASE_URL del progetto Vercel hanno lo stesso scope production/p
 
 ## Produzione
 Nessuna scrittura DB, nessun acquisto, nessuna promozione in produzione. Dati e cataloghi SRD invariati.
+
+## Verifica browser eseguita
+Preview verificata: https://grimorioapp2024-9xqm13rfd-grimorio-app.vercel.app/personaggi (commit 21b3e3ea203947213a5b84b3c767d0c2ec4870bc, READY, target preview).
+Creazione Aria delle Brume (Guerriero/Umano), elenco di due personaggi, PF temporanei 5 e danni 8: PF 16 → 13 e temporanei 0; guarigione limitata al massimo; snapshot e ripristino; consumo slot livello 1; ricerca/aggiunta Dardo incantato; navigazione Home → Indietro conserva elenco; Forza 10.5 normalizzata a 10. Esportazione JSON scaricata. Screenshot della scheda: personaggi-preview.jpg.
