@@ -25,10 +25,17 @@ export default function SourcesPage() {
       <section className="space-y-3 text-sm leading-6 text-muted">
         <h2 className="font-serif text-xl font-bold text-foreground">Significato dell’asterisco *</h2>
         <p>
-          Dieci schede hanno una descrizione preesistente non tratta dal SRD.
-          L’asterisco accanto al nome indica che la fonte e l’autorizzazione al riutilizzo
-          di quella descrizione non sono state verificate. Non indica che l’incantesimo
-          sia inventato o non ufficiale e non costituisce un’autorizzazione alla pubblicazione.
+          L’asterisco identifica le descrizioni non trascritte dal SRD. Le 39 schede
+          indicate come “Sintesi originale delle regole 2024” contengono riepiloghi
+          redazionali, con riferimenti per il confronto: non sono traduzioni ufficiali
+          né testi integrali SRD. Le schede degli spiriti richiamati sono riepilogate
+          e collegate per la consultazione completa.
+        </p>
+        <p>
+          Altre dieci schede conservano una descrizione preesistente: per queste,
+          fonte e autorizzazione al riutilizzo non sono state verificate.
+          L’asterisco non indica che l’incantesimo sia inventato o non ufficiale
+          e non costituisce un’autorizzazione alla pubblicazione.
         </p>
       </section>
     </article>

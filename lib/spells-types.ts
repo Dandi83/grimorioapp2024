@@ -1,5 +1,6 @@
 // Tipi e utility PURE (nessun accesso al DB) — sicure da importare sia lato
 // client che lato server.
+import originalDescriptionIds from "./data/original-description-ids.json";
 
 export interface Spell {
   id: string;
@@ -24,7 +25,13 @@ const UNVERIFIED_DESCRIPTION_IDS = new Set([
 ]);
 
 export function hasUnverifiedDescription(id: string): boolean {
-  return UNVERIFIED_DESCRIPTION_IDS.has(id);
+  return UNVERIFIED_DESCRIPTION_IDS.has(id) || isOriginalDescription(id);
+}
+
+const ORIGINAL_DESCRIPTION_IDS = new Set(originalDescriptionIds);
+
+export function isOriginalDescription(id: string): boolean {
+  return ORIGINAL_DESCRIPTION_IDS.has(id);
 }
 
 export const SCHOOL_KEYWORDS = [

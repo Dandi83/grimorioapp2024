@@ -9,6 +9,7 @@ import { SpellProvenanceMarker } from "@/components/spell-provenance-marker";
 import { capitalizeWords, getSpellById } from "@/lib/spells";
 import { schoolColor } from "@/lib/school-colors";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
+import { getOriginalSource } from "@/lib/original-descriptions";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +59,7 @@ export default async function SpellDetailPage({
       ? `Trucchetto · ${spell.scuola}`
       : `${spell.livello_num}° Livello · ${spell.scuola}`;
   const source = getSrdSource(spell.id, spell.descrizione);
+  const original = getOriginalSource(spell.id, spell.descrizione);
 
   return (
     <article>
@@ -138,6 +140,26 @@ export default async function SpellDetailPage({
           </p>
         )}
       </section>
+      {original?.statBlockSummary && (
+        <section className="px-6 pb-6">
+          <h2 className="mb-3 font-serif text-lg font-semibold text-primary">Spirito richiamato — riepilogo</h2>
+          <HtmlText html={original.statBlockSummary} />
+          <p className="mt-3 text-xs leading-5 text-muted">
+            Riepilogo operativo: per tutti i dettagli della creatura consulta la scheda 2024 collegata qui sotto.
+            Il bonus di competenza dello spirito è il tuo; le CD indicate usano la tua CD degli incantesimi.
+          </p>
+        </section>
+      )}
+      {original && (
+        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
+          <p>* Sintesi originale delle regole 2024 — {original.sourceName}. Non è una trascrizione ufficiale.</p>
+          <p>
+            <a className="underline underline-offset-4" href={original.sourceUrl} target="_blank" rel="noreferrer">Riferimento regole 2024</a>
+            {" · "}<a className="underline underline-offset-4" href={original.referenceUrl} target="_blank" rel="noreferrer">Riscontro consultato</a>
+            {original.statBlockUrl && <>{" · "}<a className="underline underline-offset-4" href={original.statBlockUrl} target="_blank" rel="noreferrer">Scheda completa dello spirito 2024</a></>}
+          </p>
+        </aside>
+      )}
       {source && (
         <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
           <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>

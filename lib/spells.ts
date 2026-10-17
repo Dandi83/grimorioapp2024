@@ -6,6 +6,7 @@ import { db } from "./db";
 import { spells as spellsTable } from "./db/schema";
 import { parseLivello, type Spell } from "./spells-types";
 import { applySrdDescription } from "./srd-descriptions";
+import { applyOriginalDescription } from "./original-descriptions";
 import { previewSpellRows, previewSpellById } from "./srd-additions";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
@@ -24,7 +25,7 @@ interface RawRow {
 }
 
 function toSpell(r: RawRow): Spell {
-  r = applySrdDescription(r);
+  r = applyOriginalDescription(applySrdDescription(r));
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
   return {
     id: r.id,

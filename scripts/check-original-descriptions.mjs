@@ -1,0 +1,86 @@
+import assert from 'node:assert/strict';
+import { readFileSync, existsSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import ts from 'typescript';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+
+const require = createRequire(import.meta.url);
+const root = new URL('../', import.meta.url);
+const expected = ["dardo-stregato","duello-obbligato","evoca-pioggia-di-armi","evoca-raffica","fame-di-hadar","faretra-rapida","fonte-di-luce-lunare","freccia-folgorante","frusta-di-spine","interdizione-alle-lame","manto-del-crociato","morte-apparente","nube-di-pugnali","onda-distruttiva","parola-del-potere-fortificare","parola-radiosa","percezione-delle-bestie","portale-arcano","presenza-regale-di-yolande","punizione-collerica","punizione-demoralizzante","punizione-esiliante","punizione-tonante","raffica-di-spine","rampicante-afferrante","richiama-aberrazione","richiama-bestia","richiama-celestiale","richiama-costrutto","richiama-elementale","richiama-folletto","richiama-immondo","richiama-non-morto","rintocco-dei-morti","scheggia-della-mente","scossa-sinaptica","telepatia","turbine-implacabile","vigore-arcano"];
+const dataUrl = new URL('lib/data/original-descriptions-2024.json', root);
+assert.ok(existsSync(dataUrl), 'The 39 empty spells need original, sourced descriptions');
+const data = JSON.parse(readFileSync(dataUrl, 'utf8'));
+const canonical = JSON.parse(readFileSync(new URL('lib/data/srd-italiano-5.2.1.json', root), 'utf8'));
+const legacy = JSON.parse(readFileSync(new URL('lib/data/srd-revisions-20261017.json', root), 'utf8'));
+function loadTs(relative) {
+  const url = new URL(relative, root);
+  const source = ts.transpileModule(readFileSync(url, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2017, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } }).outputText;
+  const mod = { exports: {} };
+  new Function('require', 'module', 'exports', source)(id => {
+    if (!id.startsWith('.')) return require(id);
+    const dependency = new URL(id, url);
+    if (id.endsWith('.json')) return JSON.parse(readFileSync(dependency, 'utf8'));
+    return loadTs(new URL(dependency.href + (id.endsWith('.tsx') || id.endsWith('.ts') ? '' : '.ts')).href);
+  }, mod, mod.exports);
+  return mod.exports;
+}
+assert.equal(data.spells.length, 39);
+assert.deepEqual(data.spells.map(s => s.id).sort(), [...expected].sort());
+assert.deepEqual(JSON.parse(readFileSync(new URL('lib/data/original-description-ids.json',root),'utf8')).sort(), [...expected].sort());
+const { applyOriginalDescription, getOriginalSource } = loadTs('lib/original-descriptions.ts');
+const { hasUnverifiedDescription, isOriginalDescription } = loadTs('lib/spells-types.ts');
+const { SpellProvenanceMarker } = loadTs('components/spell-provenance-marker.tsx');
+const { HtmlText } = loadTs('components/html-text.tsx');
+for (const spell of data.spells) {
+  assert.ok(spell.descrizione.length > 70, spell.id);
+  assert.ok(!/not available|TODO|TBD|non disponibile/i.test(spell.descrizione), spell.id);
+  assert.ok(spell.sourceUrl.startsWith('https://roll20.net/compendium/dnd5e/Spells:'), spell.id);
+  assert.ok(spell.referenceUrl.startsWith('https://'), spell.id);
+  assert.ok(!canonical.spells.some(s => s.id === spell.id));
+  assert.ok(!legacy.excluded.some(s => s.id === spell.id));
+  assert.equal(isOriginalDescription(spell.id), true);
+  assert.equal(hasUnverifiedDescription(spell.id), true);
+  const empty = { id: spell.id, nome_italiano: 'KEEP NAME', descrizione: '  ', extra: 'keep' };
+  const result = applyOriginalDescription(empty);
+  assert.equal(result.descrizione, spell.descrizione);
+  assert.equal(result.nome_italiano, 'KEEP NAME');
+  assert.equal(result.extra, 'keep');
+  assert.equal(empty.descrizione, '  ');
+  const edit = { ...empty, descrizione: 'Modifica editoriale successiva' };
+  assert.equal(applyOriginalDescription(edit), edit);
+  assert.deepEqual(getOriginalSource(spell.id, result.descrizione), spell);
+  assert.equal(getOriginalSource(spell.id, edit.descrizione), undefined);
+  const marker = renderToStaticMarkup(createElement(SpellProvenanceMarker, { id: spell.id }));
+  assert.match(marker, /<sup\b[^>]*>\*<\/sup>/);
+  assert.ok(!marker.includes('autorizzazione al riutilizzo non verificate'));
+  const html = renderToStaticMarkup(createElement(HtmlText, { html: spell.descrizione }));
+  assert.ok(!/<script|javascript:|onerror=/.test(html));
+  if (spell.descrizione.includes('Utilizzo di uno slot incantesimo di livello superiore')) assert.match(html, /<h3[^>]*text-primary/);
+  if (spell.id.startsWith('richiama-')) assert.ok(spell.statBlockUrl?.startsWith('https://www.aidedd.org/monster/'), 'Summons require a linked 2024 creature stat block');
+}
+for (const spell of canonical.spells) {
+  const row = { id: spell.id, descrizione: spell.descrizione };
+  assert.equal(applyOriginalDescription(row), row);
+  assert.equal(hasUnverifiedDescription(spell.id), false);
+}
+for (const spell of legacy.excluded) {
+  const row = { id: spell.id, descrizione: 'Preesistente' };
+  assert.equal(applyOriginalDescription(row), row);
+  assert.equal(hasUnverifiedDescription(spell.id), true);
+  assert.equal(isOriginalDescription(spell.id), false);
+}
+const unknown = { id: 'unknown', descrizione: '' };
+assert.equal(applyOriginalDescription(unknown), unknown);
+assert.equal(hasUnverifiedDescription('unknown'), false);
+const byId = Object.fromEntries(data.spells.map(s => [s.id, s]));
+assert.match(byId['dardo-stregato'].descrizione, /anche se.*mancat/i);
+assert.match(byId['dardo-stregato'].descrizione, /2d12/);
+assert.match(byId['freccia-folgorante'].tempo_di_lancio, /colpito o mancato/);
+assert.equal(byId['punizione-collerica'].durata, '1 minuto');
+assert.match(byId['punizione-demoralizzante'].descrizione, /Stordito/);
+assert.match(byId['parola-del-potere-fortificare'].descrizione, /120/);
+assert.match(byId['morte-apparente'].livello, /3°/);
+assert.match(byId['richiama-non-morto'].livello, /3°/);
+assert.match(byId['scheggia-della-mente'].livello, /Ammaliamento/);
+console.log('[originals] 39 original 2024 descriptions; 49 markers; preservation, sources, summon dependencies and gold headings verified.');
