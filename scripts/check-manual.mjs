@@ -12,6 +12,8 @@ function load(file,deps={}){if(file.endsWith('.json'))return JSON.parse(readFile
 const manual=load(path.join(root,'lib/manual.ts'));
 assert.equal(manual.manualAvailable('production'),false);assert.equal(manual.manualAvailable('preview'),true);
 const entries=manual.manualEntries;assert.equal(entries.filter(e=>e.category==='condizioni').length,15);assert.equal(entries.filter(e=>e.subgroup==='Classi').length,12);assert.equal(entries.filter(e=>e.subgroup==='Specie').length,9);assert.equal(entries.filter(e=>e.subgroup==='Background').length,4);
+for (const [category,count] of [['classi',12],['background',4],['specie',9],['creazione',4]]) assert.equal(entries.filter(e=>e.category===category).length,count,category+' is a separate collection');
+assert.equal(entries.some(e=>e.category==='personaggi'),false);
 for(const e of entries){assert.equal(manual.getManualEntry(e.id),e);assert.ok(e.blocks.length);}
 assert.equal(manual.getManualEntry('missing'),undefined);
 const conditions=load(path.join(root,'lib/conditions.ts'));
@@ -29,4 +31,17 @@ const {ManualContent}=load(path.join(root,'components/manual-content.tsx'));
 for(const e of entries){const markup=renderToStaticMarkup(createElement(ManualContent,{entry:e}));for(const b of e.blocks){const text=renderToStaticMarkup(createElement('span',null,b.text)).replace(/^<span>|<\/span>$/g,'');assert.ok(markup.includes(text),e.title+': missing block');}assert.ok(markup.includes('#page='+e.page));assert.ok(markup.includes('Attribuzione e licenza'));}
 assert.ok(readFileSync(path.join(root,'app/page.tsx'),'utf8').includes('href="/manuale"'));
 for(const p of ['app/spell/[id]/page.tsx','app/mostro/[id]/page.tsx'])assert.ok(readFileSync(path.join(root,p),'utf8').includes('<ConditionReferences'));
+const {ManualBrowser}=load(path.join(root,'components/manual-browser.tsx'));
+for(const [category,count] of [['classi',12],['background',4],['specie',9]]) {
+ const index=renderToStaticMarkup(createElement(ManualBrowser,{entries:entries.map(e=>({...e,search:e.title.toLowerCase()})),initialCategory:category}));
+ assert.ok(index.includes(count+'<!-- --> <!-- -->voci') || index.replace(/<!--.*?-->/g,'').includes(count+' voci'),category+' visible count');
+ for(const e of entries) assert.equal(index.includes('href="/manuale/'+e.id+'"'),e.category===category,category+': '+e.id);
+ assert.ok(!index.includes('Raccolta personaggi'));
+}
+const {default:EntryPage}=load(path.join(root,'app/manuale/[id]/page.tsx'),{'next/navigation':{notFound(){throw new Error('unexpected notFound');}}});
+const previousEnv=process.env.VERCEL_ENV;process.env.VERCEL_ENV='preview';
+for(const [id,category,label] of [['personaggi-mago','classi','Classi'],['personaggi-accolito','background','Background'],['personaggi-elfo','specie','Specie']]) {
+ const page=renderToStaticMarkup(await EntryPage({params:Promise.resolve({id})}));assert.ok(page.includes('href="/manuale?sezione='+category+'"'));assert.ok(page.includes(label));
+}
+if(previousEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=previousEnv;
 console.log('[manual] Reference routes, all 58 entries and their content/source links, conditions and 330 creatures including 95 animals verified.');
