@@ -3,13 +3,17 @@
 import { Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
+import { MonsterRow } from "@/components/monster-row";
+import type { Monster } from "@/lib/monsters-types";
 import { SpellRow } from "@/components/spell-row";
 import type { Spell } from "@/lib/spells-types";
 
-export function FavoritesList({ spells }: { spells: Spell[] }) {
+export function FavoritesList({ spells, monsters = [] }: { spells: Spell[]; monsters?: Monster[] }) {
   const { favorites, loaded } = useFavorites();
 
   const favSpells = spells.filter((s) => favorites.includes(s.id));
+
+  const favMonsters = monsters.filter((m) => favorites.includes(`mostro:${m.id}`));
 
   return (
     <div>
@@ -19,34 +23,46 @@ export function FavoritesList({ spells }: { spells: Spell[] }) {
         </h1>
         <p className="mt-1 text-[13px] tracking-wide text-muted">
           {loaded
-            ? `${favSpells.length} ${
-                favSpells.length === 1
-                  ? "incantesimo salvato"
-                  : "incantesimi salvati"
-              }`
+            ? `${favSpells.length} ${favSpells.length === 1 ? "incantesimo salvato" : "incantesimi salvati"} · ${favMonsters.length} ${favMonsters.length === 1 ? "mostro salvato" : "mostri salvati"}`
             : "\u00A0"}
         </p>
       </header>
 
-      {!loaded ? null : favSpells.length === 0 ? (
+      {!loaded ? null : favSpells.length + favMonsters.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 px-8 py-24 text-center">
           <Star size={56} className="text-muted" />
           <p className="mt-2 font-serif text-xl font-semibold text-foreground">
-            Il tuo grimorio è vuoto.
+            Nessun preferito salvato.
           </p>
           <p className="text-sm leading-5 text-muted text-pretty">
-            Aggiungi i tuoi incantesimi preferiti per ritrovarli qui.
+            Aggiungi incantesimi e mostri ai preferiti per ritrovarli qui.
           </p>
         </div>
       ) : (
-        <ul className="px-6 py-2">
-          {favSpells.map((spell, i) => (
-            <li key={spell.id}>
-              {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
-              <SpellRow spell={spell} />
-            </li>
-          ))}
-        </ul>
+        <>
+          {favSpells.length > 0 && (
+            <section className="px-6 py-2" aria-label="Incantesimi preferiti">
+              <h2 className="py-3 text-[11px] font-bold uppercase tracking-wider text-primary">Incantesimi</h2>
+              <ul>{favSpells.map((spell, i) => (
+                <li key={spell.id}>
+                  {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
+                  <SpellRow spell={spell} />
+                </li>
+              ))}</ul>
+            </section>
+          )}
+          {favMonsters.length > 0 && (
+            <section className="px-6 py-2" aria-label="Mostri preferiti">
+              <h2 className="py-3 text-[11px] font-bold uppercase tracking-wider text-primary">Mostri</h2>
+              <ul>{favMonsters.map((monster, i) => (
+                <li key={monster.id}>
+                  {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
+                  <MonsterRow monster={monster} />
+                </li>
+              ))}</ul>
+            </section>
+          )}
+        </>
       )}
     </div>
   );

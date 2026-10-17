@@ -1,4 +1,5 @@
 import { FavoritesList } from "@/components/favorites-list";
+import { getAllMonsters } from "@/lib/monsters";
 import { getAllSpells } from "@/lib/spells";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,6 @@ export const metadata = {
 };
 
 export default async function PreferitiPage() {
-  const spells = await getAllSpells();
-  return <FavoritesList spells={spells} />;
+  const [spells, monsters] = await Promise.all([getAllSpells(), getAllMonsters()]);
+  return <FavoritesList spells={spells} monsters={monsters} />;
 }
