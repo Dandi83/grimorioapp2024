@@ -6,6 +6,7 @@ import { db } from "./db";
 import { spells as spellsTable } from "./db/schema";
 import { parseLivello, type Spell } from "./spells-types";
 import { applySrdDescription } from "./srd-descriptions";
+import { previewSpellRows, previewSpellById } from "./srd-additions";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
 // keep working. The DB access below is server-only.
@@ -40,12 +41,13 @@ function toSpell(r: RawRow): Spell {
   };
 }
 
-export async function getAllSpells(): Promise<Spell[]> {
+export async function getAllSpells(options: { includePreview?: boolean } = {}): Promise<Spell[]> {
   const rows = await db
     .select()
     .from(spellsTable)
     .orderBy(asc(spellsTable.sort_key));
-  return rows.map(toSpell);
+  // The admin always sees only real, editable database rows.
+  return previewSpellRows(rows, options.includePreview === false ? undefined : process.env.VERCEL_ENV).map(toSpell);
 }
 
 export async function getSpellById(id: string): Promise<Spell | undefined> {
@@ -54,5 +56,6 @@ export async function getSpellById(id: string): Promise<Spell | undefined> {
     .from(spellsTable)
     .where(eq(spellsTable.id, id))
     .limit(1);
-  return rows[0] ? toSpell(rows[0]) : undefined;
+  const row = rows[0] ?? previewSpellById(id, process.env.VERCEL_ENV);
+  return row ? toSpell(row) : undefined;
 }

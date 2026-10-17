@@ -17,6 +17,6 @@ export default async function AdminPage() {
     return <AdminLogin />;
   }
 
-  const [spells, monsters] = await Promise.all([getAllSpells(), getAllMonsters()]);
+  const [spells, monsters] = await Promise.all([getAllSpells({ includePreview: false }), getAllMonsters()]);
   return <AdminDashboard spells={spells} monsters={monsters} />;
 }

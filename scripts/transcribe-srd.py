@@ -13,6 +13,10 @@ if review_path.exists():
     assert review['sourcePdfSha256']==previous['sourcePdfSha256'], 'Review uses a different SRD version'
     existing_ids={s['id'] for s in AUDIT['eligible']}
     AUDIT['eligible'] += [{'id':s['id'],'app':s['appName'],'title':s['sourceName']} for s in review['replacements'] if s['id'] not in existing_ids]
+additions=json.loads((ROOT/'lib/data/srd-additions-20261017.json').read_text())
+assert additions['sourcePdfSha256']==previous['sourcePdfSha256']
+existing_ids={s['id'] for s in AUDIT['eligible']}
+AUDIT['eligible'] += [{'id':s['id'],'app':s['sourceName'].upper(),'title':s['sourceName']} for s in additions['spells'] if s['id'] not in existing_ids]
 doc=fitz.open(PDF)
 raw=subprocess.check_output(['pdftotext','-raw','-f','121','-l','202',str(PDF),'-']).decode().splitlines()
 school=r'^(?:Abiurazione|Ammaliamento|Divinazione|Evocazione|Illusione|Invocazione|Necromanzia|Trasmutazione) (?:di|trucchetto)|^Trucchetto di '
@@ -132,6 +136,8 @@ for name,record in records.items():
     assert chars(html.unescape(re.sub('<[^>]+>','',desc)))==chars(''.join(r['text'] for r in body)),name
     transcripts[name]={**metadata,'descrizione':desc,'pages':sorted({record['titlePage']}|{r['page'] for r in body}),
                        'sourceAlphanumericSha256':hashlib.sha256(''.join(sorted(chars(''.join(r['text'] for r in body)).elements())).encode()).hexdigest()}
+
+assert {s['title'] for s in AUDIT['eligible']}==titles, 'The app must include every source spell'
 
 data={'version':'5.2.1','language':'it','license':'CC-BY-4.0',
       'sourceUrl':'https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf',

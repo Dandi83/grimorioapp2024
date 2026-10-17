@@ -1,0 +1,26 @@
+{
+  "version": "2026-10-17-add-20-srd",
+  "sourcePdfSha256": "a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718",
+  "spells": [
+    {"id":"bacche-benefiche","sourceName":"Bacche benefiche"},
+    {"id":"bagliore-lunare","sourceName":"Bagliore lunare"},
+    {"id":"bagliore-solare","sourceName":"Bagliore solare"},
+    {"id":"dardo-di-fuoco","sourceName":"Dardo di fuoco"},
+    {"id":"fiotto-acido","sourceName":"Fiotto acido"},
+    {"id":"forme-animali","sourceName":"Forme animali"},
+    {"id":"guscio-anti-vita","sourceName":"Guscio anti-vita"},
+    {"id":"invisibilita-superiore","sourceName":"Invisibilità superiore"},
+    {"id":"levitazione","sourceName":"Levitazione"},
+    {"id":"muro-di-fuoco","sourceName":"Muro di fuoco"},
+    {"id":"palla-di-fuoco","sourceName":"Palla di fuoco"},
+    {"id":"palla-di-fuoco-ritardata","sourceName":"Palla di fuoco ritardata"},
+    {"id":"ragnatela","sourceName":"Ragnatela"},
+    {"id":"salto","sourceName":"Salto"},
+    {"id":"scritto-illusorio","sourceName":"Scritto illusorio"},
+    {"id":"scudo-di-fuoco","sourceName":"Scudo di fuoco"},
+    {"id":"spruzzo-colorato","sourceName":"Spruzzo colorato"},
+    {"id":"tempesta-di-fuoco","sourceName":"Tempesta di fuoco"},
+    {"id":"tocco-del-vampiro","sourceName":"Tocco del vampiro"},
+    {"id":"tocco-gelido","sourceName":"Tocco gelido"}
+  ]
+}

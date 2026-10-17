@@ -7,7 +7,7 @@ const decode=text=>text.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot
 const out=[
   '# GrimorioApp — Trascrizioni integrali SRD italiano 5.2.1','',
   `${unique.length} incantesimi distinti, corrispondenti a ${data.spells.length} schede dell’app. Respirare sott’acqua è presente in due schede con ID differenti.`, '',
-  'Questa revisione comprende le 242 schede inizialmente vuote e 78 delle 88 descrizioni preesistenti. Le altre 10 descrizioni non sono nel SRD italiano; 39 schede sono ancora senza descrizione. Nessuna pubblicazione in produzione è stata effettuata.','',
+  'Questa raccolta comprende tutte le 339 descrizioni distinte del SRD italiano: 242 schede inizialmente vuote, 78 descrizioni preesistenti verificate e 20 nuove schede. Le altre 10 descrizioni preesistenti non sono nel SRD italiano; 39 schede preesistenti sono ancora senza descrizione. Il documento riporta i contenuti preparati, non certifica lo stato di pubblicazione.','',
   `Fonte: ${data.sourceUrl}`,'','## Attribuzione','',data.attribution,'',data.transcriptionNotes,'','## Indice','',
   ...unique.map((s,i)=>`${i+1}. ${s.sourceName}`),
 ];

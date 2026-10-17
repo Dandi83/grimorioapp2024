@@ -4872,6 +4872,307 @@
         173
       ],
       "sourceAlphanumericSha256": "13ca0691c2dfdac274b3b4e82d5e42188a6e9ac9ae6645d0b09f4123b0ba6ce1"
+    },
+    {
+      "id": "bacche-benefiche",
+      "appName": "BACCHE BENEFICHE",
+      "sourceName": "Bacche benefiche",
+      "livello": "Evocazione di 1º livello (druido, ranger)",
+      "tempo_di_lancio": "azione",
+      "gittata": "incantatore",
+      "componenti": "V, S, M (un rametto di vischio)",
+      "durata": "24 ore",
+      "descrizione": "Per la durata dell'incantesimo, nella mano dell'incantatore appaiono dieci bacche infuse di magia. Una creatura può effettuare un'azione bonus per mangiare una bacca, recuperando così 1 punto ferita e ottenendo nutrimento sufficiente per una giornata intera.<br><br>Le bacche non mangiate scompaiono al termine dell'incantesimo.",
+      "pages": [
+        127
+      ],
+      "sourceAlphanumericSha256": "fa3e154012a5eb507e7adeece8af4600c9c0d1f62201e322f30884bb52e04173"
+    },
+    {
+      "id": "bagliore-lunare",
+      "appName": "BAGLIORE LUNARE",
+      "sourceName": "Bagliore lunare",
+      "livello": "Invocazione di 2º livello (druido)",
+      "tempo_di_lancio": "azione",
+      "gittata": "36 metri",
+      "componenti": "V, S, M (una foglia di un vitigno legnoso)",
+      "durata": "concentrazione, fino a 1 minuto",
+      "descrizione": "Un bagliore argentato di luce pallida forma un cilindro del raggio di 1,5 metri e dell'altezza di 12 metri centrato su un punto entro gittata. Fino al termine dell'incantesimo, il cilindro è pervaso da luce fioca e l'incantatore può effettuare un'azione di Magia nei turni successivi per spostare il cilindro fino a 18 metri.<br><br>Quando appare il cilindro, ogni creatura al suo interno effettua un tiro salvezza su Costituzione. In caso di fallimento, una creatura subisce 2d10 danni radiosi e, se la creatura è in forma mutata (ad esempio, come conseguenza all'incantesimo metamorfosi), torna alla sua forma naturale e non può trasformarsi finché non esce dal cilindro. In caso di successo, subisce soltanto la metà di quei danni. Una creatura effettua questo tiro salvezza anche quando l'area dell'incantesimo si muove nel suo spazio e quando la creatura entra nell'area dell'incantesimo o vi termina il suo turno. Una creatura effettua questo tiro salvezza solo una volta per turno.<br><br>Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d10 per ogni slot di livello superiore al 2º.",
+      "pages": [
+        127
+      ],
+      "sourceAlphanumericSha256": "eda06c1cde34891ef04badf1d661034885489414bce042d6f52c623a9a023305"
+    },
+    {
+      "id": "bagliore-solare",
+      "appName": "BAGLIORE SOLARE",
+      "sourceName": "Bagliore solare",
+      "livello": "Invocazione di 6º livello (chierico, druido, mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "incantatore",
+      "componenti": "V, S, M (una lente d'ingrandimento)",
+      "durata": "concentrazione, fino a 1 minuto",
+      "descrizione": "L'incantatore lancia un bagliore solare in una linea larga 1,5 metri e lunga 18 metri. Ogni creatura nella sua traiettoria effettua un tiro salvezza su Costituzione e, se lo fallisce, subisce 6d8 danni radiosi e rimane accecata fino all'inizio del turno successivo dell'incantatore. Se lo supera, invece, subisce solo la metà dei danni.<br><br>Fino al termine dell'incantesimo, l'incantatore può effettuare un'azione di Magia per creare una nuova linea radiosa.<br><br>Per la durata dell'incantesimo, una scintilla di luce radiosa risplende nella sua mano ed emana luce intensa in un raggio di 9 metri e luce fioca per ulteriori 9 metri. Questa luce è considerata luce solare.",
+      "pages": [
+        127
+      ],
+      "sourceAlphanumericSha256": "2b5e52b645a19294f037b23d1d6d2e1429c62bd9a95f80cb03a5069e97a1d748"
+    },
+    {
+      "id": "dardo-di-fuoco",
+      "appName": "DARDO DI FUOCO",
+      "sourceName": "Dardo di fuoco",
+      "livello": "Trucchetto di Invocazione (mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "36 metri",
+      "componenti": "V, S",
+      "durata": "istantanea",
+      "descrizione": "L'incantatore scaglia una scintilla di fuoco verso una creatura o un oggetto situato entro gittata, effettuando un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce 1d10 danni da fuoco. Un oggetto infiammabile colpito da questo incantesimo prende fuoco se non indossato o trasportato in quel momento.<br><br>Trucchetto potenziato. I danni aumentano di 1d10 quando l'incantatore raggiunge il 5º livello (2d10), l'11º livello (3d10) e il 17º livello (4d10).",
+      "pages": [
+        140
+      ],
+      "sourceAlphanumericSha256": "042e2582f2c244634e475ad55e3d7e6c6caeba3f84a1e647e5f90ba0e698c632"
+    },
+    {
+      "id": "fiotto-acido",
+      "appName": "FIOTTO ACIDO",
+      "sourceName": "Fiotto acido",
+      "livello": "Trucchetto di Invocazione (mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "18 metri",
+      "componenti": "V, S",
+      "durata": "istantanea",
+      "descrizione": "L'incantatore crea una bolla di acido in un punto entro gittata, dove la bolla esplode in una sfera del raggio di 1,5 metri. Ogni creatura all'interno della sfera deve superare un tiro salvezza su Destrezza, altrimenti subisce 1d6 danni da acido.<br><br>Trucchetto potenziato. I danni aumentano di 1d6 quando l'incantatore raggiunge il 5º livello (2d6), l'11º livello (3d6) e il 17º livello (4d6).",
+      "pages": [
+        148
+      ],
+      "sourceAlphanumericSha256": "703189ec182380d610d0933a7256cdcf1723f58341fbee6aad70477983f59ad9"
+    },
+    {
+      "id": "forme-animali",
+      "appName": "FORME ANIMALI",
+      "sourceName": "Forme animali",
+      "livello": "Trasmutazione di 8º livello (druido)",
+      "tempo_di_lancio": "azione",
+      "gittata": "9 metri",
+      "componenti": "V, S",
+      "durata": "24 ore",
+      "descrizione": "L'incantatore sceglie un qualsiasi numero di creature consenzienti entro gittata che egli è in grado di vedere. Ogni bersaglio muta forma in una bestia Grande o Piccola a scelta, con un grado di sfida pari o inferiore a 4. L'incantatore può scegliere una forma differente per ogni bersaglio e, nei turni successivi, può effettuare un'azione di Magia per trasformare nuovamente i bersagli.<br><br>Le statistiche della bestia scelta sostituiscono le statistiche di gioco del bersaglio, il cui tipo di creatura non cambia. Inoltre, il bersaglio conserva i punti ferita, i dadi vita, il proprio allineamento, l'abilità di comunicare e i punteggi di Intelligenza, Saggezza e Carisma. Le azioni del bersaglio sono limitate dalla forma anatomica della bestia scelta, che non può lanciare incantesimi. L'equipaggiamento del bersaglio si fonde nella nuova forma e non può essere utilizzato finché non viene assunta di nuovo la forma originale.<br><br>Il bersaglio guadagna un numero di punti ferita temporanei pari ai punti ferita della prima forma in cui viene mutato. Al termine dell'incantesimo, il bersaglio perde tutti i punti ferita temporanei rimasti. La trasformazione permane per la durata dell'incantesimo o finché il bersaglio non la termina come azione bonus.",
+      "pages": [
+        149,
+        150
+      ],
+      "sourceAlphanumericSha256": "e5a63f977f3850b32b07d2f4fad285c4b8e688e48bcebeffeac57dbac066367b"
+    },
+    {
+      "id": "guscio-anti-vita",
+      "appName": "GUSCIO ANTI-VITA",
+      "sourceName": "Guscio anti-vita",
+      "livello": "Abiurazione di 5º livello (druido)",
+      "tempo_di_lancio": "azione",
+      "gittata": "incantatore",
+      "componenti": "V, S",
+      "durata": "concentrazione, fino a 1 ora",
+      "descrizione": "Un'aura si estende dall'incantatore in un'emanazione di 3 metri e permane per la durata dell'incantesimo, impedendo a tutte le creature che non siano non morti e costrutti di attraversarla o protendersi oltre essa. Una creatura influenzata può lanciare incantesimi o effettuare attacchi utilizzando armi a distanza o con portata attraverso la barriera.<br><br>Se l'incantatore si muove in modo che una creatura influenzata sia costretta ad attraversare la barriera, l'incantesimo termina.",
+      "pages": [
+        153
+      ],
+      "sourceAlphanumericSha256": "98849aee20ae6bf401389fb8b87ddb41eb8b4468af39d756707b2dcac433bdfa"
+    },
+    {
+      "id": "invisibilita-superiore",
+      "appName": "INVISIBILITÀ SUPERIORE",
+      "sourceName": "Invisibilità superiore",
+      "livello": "Illusione di 4º livello (bardo, mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "contatto",
+      "componenti": "V, S",
+      "durata": "concentrazione, fino a 1 minuto",
+      "descrizione": "Una creatura toccata dall'incantatore diventa invisibile fino al termine dell'incantesimo.",
+      "pages": [
+        159
+      ],
+      "sourceAlphanumericSha256": "6a1f4e12f215d8a9f2a585baefb709cb3abda9411c2689f56c5ec33b348f5520"
+    },
+    {
+      "id": "levitazione",
+      "appName": "LEVITAZIONE",
+      "sourceName": "Levitazione",
+      "livello": "Trasmutazione di 2º livello (mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "18 metri",
+      "componenti": "V, S, M (una molla in metallo)",
+      "durata": "concentrazione, fino a 10 minuti",
+      "descrizione": "Una creatura o un oggetto a scelta dell'incantatore, situato entro gittata e che egli è in grado di vedere, si solleva verticalmente fino a 6 metri rimanendo sospeso per la durata dell'incantesimo. L'incantesimo può far levitare un oggetto che pesa fino a 250 kg. Una creatura non consenziente che supera un tiro salvezza su Costituzione non subisce l'effetto dell'incantesimo.<br><br>Il bersaglio può muoversi soltanto spingendosi o aggrappandosi a un oggetto fisso o a una superficie entro portata (come per esempio una parete o un soffitto), che gli permetta di muoversi come se ne stesse scalando la superficie. Nel proprio turno, l'incantatore può variare l'altitudine del bersaglio per un massimo di 6 metri in ogni direzione. Se il bersaglio è l'incantatore stesso, può muoversi verso l'alto o verso il basso come parte del suo movimento. Altrimenti, l'incantatore può usare la sua azione di Magia per muovere il bersaglio, che deve rimanere entro gittata.<br><br>Il bersaglio, se è ancora sospeso, al termine dell'incantesimo fluttua dolcemente fino a terra.",
+      "pages": [
+        161
+      ],
+      "sourceAlphanumericSha256": "b105fe403011b3c6701a97de64345c58c5c095b9d2ccacc63525ac9e96e7ecea"
+    },
+    {
+      "id": "muro-di-fuoco",
+      "appName": "MURO DI FUOCO",
+      "sourceName": "Muro di fuoco",
+      "livello": "Invocazione di 4º livello (druido, mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "36 metri",
+      "componenti": "V, S, M (un pezzo di carbone)",
+      "durata": "concentrazione, fino a 1 minuto",
+      "descrizione": "L'incantatore crea un muro di fuoco su una superficie solida entro gittata. Il muro può essere lungo fino a 18 metri, alto 6 metri e spesso 30 cm, oppure essere un muro circolare del diametro massimo di 6 metri, alto 6 metri e spesso 30 cm. Il muro è opaco e permane per la durata dell'incantesimo.<br><br>Quando compare, ogni creatura al suo interno effettua un tiro salvezza su Destrezza, subendo 5d8 danni da fuoco in caso di fallimento, o la metà dei danni in caso di successo.<br><br>Un lato del muro, scelto dall'incantatore al momento del lancio dell'incantesimo, infligge 5d8 danni da fuoco a ogni creatura che termina il proprio turno entro 3 metri da quel lato o all'interno del muro. Una creatura subisce gli stessi danni quando lo attraversa per la prima volta in un turno o vi termina il suo turno. L'altro lato del muro non infligge danni.<br><br>Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d8 per ogni slot di livello superiore al 4º.",
+      "pages": [
+        167
+      ],
+      "sourceAlphanumericSha256": "d637f735a76d55c1894e34f2e1ed55181339c9fa41943fe383de47bbc8cc63ae"
+    },
+    {
+      "id": "palla-di-fuoco",
+      "appName": "PALLA DI FUOCO",
+      "sourceName": "Palla di fuoco",
+      "livello": "Invocazione di 3º livello (mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "45 metri",
+      "componenti": "V, S, M (una pallina di guano di pipistrello e zolfo)",
+      "durata": "istantanea",
+      "descrizione": "Una scia di luce brillante parte dall'incantatore e sfreccia fino a un punto a sua scelta entro gittata, provocando un'esplosione infuocata con un profondo boato. Ogni creatura presente in una sfera dal raggio di 6 metri e centrata su quel punto deve effettuare un tiro salvezza su Destrezza, subendo 8d6 danni da fuoco in caso di fallimento, o la metà dei danni in caso di successo.<br><br>Gli oggetti infiammabili nell'area che non sono indossati o trasportati iniziano a bruciare.<br><br>Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d6 per ogni slot di livello superiore al 3º.",
+      "pages": [
+        171
+      ],
+      "sourceAlphanumericSha256": "66a0a7676574ffaa71e49d46848c04ab5d055ef81c084590212b2dad82172db2"
+    },
+    {
+      "id": "palla-di-fuoco-ritardata",
+      "appName": "PALLA DI FUOCO RITARDATA",
+      "sourceName": "Palla di fuoco ritardata",
+      "livello": "Invocazione di 7º livello (mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "45 metri",
+      "componenti": "V, S, M (una pallina di guano di pipistrello e zolfo)",
+      "durata": "concentrazione, fino a 1 minuto",
+      "descrizione": "Un raggio di luce gialla si sprigiona dall'incantatore per poi condensarsi in un punto a sua scelta entro gittata, formando una sfera scintillante che permane per la durata dell'incantesimo. Al termine dell'incantesimo, la sfera esplode e ogni creatura all'interno di una sfera del raggio di 6 metri centrata su quel punto effettua un tiro salvezza su Destrezza. In caso di fallimento, la creatura subisce una quantità di danni da fuoco pari al totale dei danni accumulati, o la metà dei danni in caso di successo.<br><br>I danni base dell'incantesimo sono pari a 12d6 e aumentano di 1d6 ogni volta che termina il turno dell'incantatore e l'incantesimo è ancora attivo.<br><br>Se una creatura tocca la sfera scintillante prima del termine dell'incantesimo, effettua un tiro salvezza su Destrezza. In caso di fallimento, l'incantesimo termina, causando l'esplosione della sfera. In caso di successo, la creatura può lanciare la sfera fino a una distanza di 12 metri: se entra nello spazio di una creatura o si scontra con un oggetto solido, l'incantesimo termina, facendo esplodere la sfera.<br><br>Quando la sfera esplode, gli oggetti infiammabili all'interno dell'esplosione che non sono indossati o trasportati iniziano a bruciare.<br><br>Utilizzo di uno slot incantesimo di livello superiore. I danni base aumentano di 1d6 per ogni slot di livello superiore al 7º.",
+      "pages": [
+        171
+      ],
+      "sourceAlphanumericSha256": "6923d650d122552531dcf16b15f524536ea83ebfc932bb253cb07403d3102e05"
+    },
+    {
+      "id": "ragnatela",
+      "appName": "RAGNATELA",
+      "sourceName": "Ragnatela",
+      "livello": "Evocazione di 2º livello (mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "18 metri",
+      "componenti": "V, S, M (un frammento di ragnatela comune)",
+      "durata": "concentrazione, fino a 1 ora",
+      "descrizione": "L'incantatore evoca un ammasso di ragnatele appiccicose in un punto entro gittata, che riempiono un cubo con spigolo di 6 metri per la durata dell'incantesimo. Le ragnatele contano come terreno difficile e l'area al loro interno e leggermente oscurata.<br><br>Se le ragnatele non sono ancorate tra due masse solide (per esempio pareti o alberi) o stese su un pavimento, un muro o un soffitto, collassano su se stesse e l'incantesimo termina all'inizio del turno successivo dell'incantatore. Le ragnatele stese su una superficie piatta hanno una profondità di 1,5 metri.<br><br>La prima volta che una creatura vi entra in un turno o inizia lì il suo turno, deve superare un tiro salvezza su Destrezza, altrimenti sarà trattenuta finché sarà al loro interno o non si libera.<br><br>Una creatura trattenuta dalle ragnatele può usare la un'azione per effettuare una prova di Forza (Atletica) contro la CD del tiro salvezza sull'incantesimo. Se supera la prova, non è più trattenuta.<br><br>Le ragnatele sono infiammabili. Un cubo di ragnatele con spigolo di 1,5 metri brucia in 1 round, infliggendo 2d4 danni da fuoco a ogni creatura che inizi il suo turno tra le fiamme.",
+      "pages": [
+        178
+      ],
+      "sourceAlphanumericSha256": "66c17bb17bf040b9f0eb7364fc9d198a7278589b011a268bb5d7386fe4656eb7"
+    },
+    {
+      "id": "salto",
+      "appName": "SALTO",
+      "sourceName": "Salto",
+      "livello": "Trasmutazione di 1º livello (druido, mago, ranger, stregone)",
+      "tempo_di_lancio": "azione bonus",
+      "gittata": "contatto",
+      "componenti": "V, S, M (la zampa posteriore di una cavalletta)",
+      "durata": "1 minuto",
+      "descrizione": "L'incantatore tocca una creatura consenziente. La creatura, in ogni suo turno fino al termine dell'incantesimo, può saltare fino a 9 metri, usando 3 metri di movimento.<br><br>Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 1º.",
+      "pages": [
+        182
+      ],
+      "sourceAlphanumericSha256": "2f848d301cc4ccfc39ca11657fcd3c3d4aafa71e4a28e15ba065a850d7356881"
+    },
+    {
+      "id": "scritto-illusorio",
+      "appName": "SCRITTO ILLUSORIO",
+      "sourceName": "Scritto illusorio",
+      "livello": "Illusione di 1º livello (bardo, mago, warlock)",
+      "tempo_di_lancio": "1 minuto o rituale",
+      "gittata": "contatto",
+      "componenti": "S, M (inchiostro del valore di 10 mo o più, che l'incantesimo consuma)",
+      "durata": "10 giorni",
+      "descrizione": "L'incantatore scrive su una pergamena, un foglio o un altro materiale adatto e infonde nello scritto un'illusione che permane per la durata dell'incantesimo. All'incantatore e a qualsiasi creatura indicata da lui al momento del lancio, lo scritto appare normale, sembra essere stilato nella calligrafia dell'incantatore e trasmette il significato inteso nel momento in cui è stato scritto. Agli occhi di tutti gli altri, il messaggio appare scritto in una lingua magica o ignota che risulta per loro incomprensibile. In alternativa, l'illusione può alterare il significato, la calligrafia e la lingua del testo, ma questa deve essere una lingua conosciuta dall'incantatore.<br><br>Se l'incantesimo viene dissolto, il messaggio originale e l'illusione scompaiono.<br><br>Una creatura con vista pura può leggere il messaggio nascosto.",
+      "pages": [
+        185
+      ],
+      "sourceAlphanumericSha256": "10eef748cf23ea72ba8c1a114c5ac07c72ebaa8de93fab9a16c56e6512094bca"
+    },
+    {
+      "id": "scudo-di-fuoco",
+      "appName": "SCUDO DI FUOCO",
+      "sourceName": "Scudo di fuoco",
+      "livello": "Invocazione di 4º livello (druido, mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "incantatore",
+      "componenti": "V, S, M (un frammento di fosforo o una lucciola)",
+      "durata": "10 minuti",
+      "descrizione": "Per la durata dell'incantesimo, il corpo dell'incantatore è avvolto da fiamme sottili, che proiettano luce intensa in un raggio di 3 metri e luce fioca per ulteriori 3 metri.<br><br>Le fiamme conferiscono all'incantatore uno scudo ardente o gelido a sua scelta. Lo scudo ardente gli conferisce resistenza ai danni da freddo, mentre lo scudo gelido resistenza ai danni da fuoco.<br><br>Inoltre, ogni volta che una creatura entro 1,5 metri dall'incantatore lo colpisce con un tiro per colpire in mischia, dallo scudo erompono delle fiamme. L'attaccante subisce 2d8 danni da fuoco da uno scudo ardente o 2d8 danni da freddo da uno scudo gelido.",
+      "pages": [
+        186
+      ],
+      "sourceAlphanumericSha256": "0712021d05c6514e91181d971cf75b767efde53866eee7d653d261d0867793c0"
+    },
+    {
+      "id": "spruzzo-colorato",
+      "appName": "SPRUZZO COLORATO",
+      "sourceName": "Spruzzo colorato",
+      "livello": "Illusione di 1º livello (bardo, mago, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "incantatore",
+      "componenti": "V, S, M (un pizzico di sabbia colorata)",
+      "durata": "istantanea",
+      "descrizione": "L'incantatore lancia un lampo abbagliante di luce multicolore. Ogni creatura entro un cono di 4,5 metri originato dall'incantatore deve superare un tiro salvezza su Costituzione, altrimenti è accecata fino al termine del turno successivo dell'incantatore.",
+      "pages": [
+        191
+      ],
+      "sourceAlphanumericSha256": "6c1f2e42b42bff1fe5494408b6a375e3245845c401496957d0863e8aa83de3f9"
+    },
+    {
+      "id": "tempesta-di-fuoco",
+      "appName": "TEMPESTA DI FUOCO",
+      "sourceName": "Tempesta di fuoco",
+      "livello": "Invocazione di 7º livello (chierico, druido, stregone)",
+      "tempo_di_lancio": "azione",
+      "gittata": "45 metri",
+      "componenti": "V, S",
+      "durata": "istantanea",
+      "descrizione": "Una tempesta di fuoco compare in un luogo entro gittata. L'area della tempesta è composta da dieci cubi con spigolo di 3 metri, che l'incantatore può disporre come desidera. Ogni cubo deve essere contiguo ad almeno un altro cubo. Ogni creatura nell'area effettua un tiro salvezza su Destrezza; se lo fallisce, subisce 7d10 danni da fuoco, mentre se lo supera subisce la metà dei danni.<br><br>Gli oggetti infiammabili nell'area che non sono indossati o trasportati iniziano a bruciare.",
+      "pages": [
+        195
+      ],
+      "sourceAlphanumericSha256": "46e92bd7ea07840a95ba8d7ae87ec7597a1065c875f0784123dce4919c267d18"
+    },
+    {
+      "id": "tocco-del-vampiro",
+      "appName": "TOCCO DEL VAMPIRO",
+      "sourceName": "Tocco del vampiro",
+      "livello": "Necromanzia di 3º livello (stregone, mago, warlock)",
+      "tempo_di_lancio": "azione",
+      "gittata": "incantatore",
+      "componenti": "V, S",
+      "durata": "concentrazione, fino a 1 minuto",
+      "descrizione": "Il tocco della mano dell'incantatore, avviluppata in una cortina d'ombra, può risucchiare l'energia vitale delle altre creature per curare le proprie ferite. Effettua un attacco con incantesimo in mischia contro una creatura a portata. Se il colpo va a segno, il bersaglio subisce 3d6 danni necrotici e l'incantatore recupera una quantità di punti ferita pari alla metà dei danni necrotici inflitti.<br><br>Fino al termine dell'incantesimo, come azione di Magia, l'incantatore può effettuare di nuovo l'attacco a ogni suo turno, prendendo di mira la stessa creatura o un'altra.<br><br>Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d6 per ogni slot di livello superiore al 3º.",
+      "pages": [
+        196
+      ],
+      "sourceAlphanumericSha256": "36ce10af890324156295fb84a0a4420657bd9995d2da5d0f55da5dc9f019fa19"
+    },
+    {
+      "id": "tocco-gelido",
+      "appName": "TOCCO GELIDO",
+      "sourceName": "Tocco gelido",
+      "livello": "Trucchetto di Necromanzia (mago, stregone, warlock)",
+      "tempo_di_lancio": "azione",
+      "gittata": "contatto",
+      "componenti": "V, S",
+      "durata": "istantanea",
+      "descrizione": "Incanalando un flusso di gelo sepolcrale, l'incantatore effettua un attacco con incantesimo in mischia contro un bersaglio a portata. Se il colpo va a segno, il bersaglio subisce 1d10 danni necrotici e non può recuperare punti ferita fino al termine del turno successivo dell'incantatore.<br><br>Trucchetto potenziato. I danni aumentano di 1d10 quando l'incantatore raggiunge il 5º livello (2d10), l'11º livello (3d10) e il 17º livello (4d10).",
+      "pages": [
+        197
+      ],
+      "sourceAlphanumericSha256": "1966fbf58e2e801907ad2fd8c6c9a668050be299f42d480f1834aa746ec533a8"
     }
   ]
 }

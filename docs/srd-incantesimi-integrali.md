@@ -1,8 +1,8 @@
 # GrimorioApp — Trascrizioni integrali SRD italiano 5.2.1
 
-319 incantesimi distinti, corrispondenti a 320 schede dell’app. Respirare sott’acqua è presente in due schede con ID differenti.
+339 incantesimi distinti, corrispondenti a 340 schede dell’app. Respirare sott’acqua è presente in due schede con ID differenti.
 
-Questa revisione comprende le 242 schede inizialmente vuote e 78 delle 88 descrizioni preesistenti. Le altre 10 descrizioni non sono nel SRD italiano; 39 schede sono ancora senza descrizione. Nessuna pubblicazione in produzione è stata effettuata.
+Questa raccolta comprende tutte le 339 descrizioni distinte del SRD italiano: 242 schede inizialmente vuote, 78 descrizioni preesistenti verificate e 20 nuove schede. Le altre 10 descrizioni preesistenti non sono nel SRD italiano; 39 schede preesistenti sono ancora senza descrizione. Il documento riporta i contenuti preparati, non certifica lo stato di pubblicazione.
 
 Fonte: https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf
 
@@ -35,304 +35,324 @@ Testo integrale italiano del SRD. Normalizzati spazi, a capo e sillabazione tipo
 19. Aura di vita
 20. Aura magica dell'arcanista
 21. Aura sacra
-22. Banchetto degli eroi
-23. Barriera di lame
-24. Beffa crudele
-25. Benedizione
-26. Blocca mostri
-27. Blocca persone
-28. Bocca magica
-29. Caduta morbida
-30. Calmare emozioni
-31. Camminare nel vento
-32. Camminare sull'acqua
-33. Campo anti-magia
-34. Camuffare se stesso
-35. Capanna
-36. Caratteristica potenziata
-37. Carne in pietra
-38. Catena di fulmini
-39. Cecità/sordità
-40. Celare
-41. Cerchio di morte
-42. Cerchio di teletrasporto
-43. Cerchio magico
-44. Charme su persone
-45. Charme sui mostri
-46. Chiaroveggenza
-47. Clone
-48. Colpo accurato
-49. Colpo infuocato
-50. Colpo intrappolante
-51. Coltello di ghiaccio
-52. Comando
-53. Comprensione dei linguaggi
-54. Compulsione
-55. Comunione
-56. Comunione con la natura
-57. Confusione
-58. Cono di freddo
-59. Conoscenza delle leggende
-60. Contagio
-61. Contattare altri piani
-62. Contingenza
-63. Controincantesimo
-64. Controllare acqua
-65. Controllare tempo atmosferico
-66. Costrizione
-67. Creare cibo e acqua
-68. Creare non morti
-69. Creare o distruggere acqua
-70. Creazione
-71. Crescita di spine
-72. Crescita vegetale
-73. Cura ferite
-74. Cura ferite di massa
-75. Danza irresistibile
-76. Dardo incantato
-77. Dardo tracciante
-78. Deflagrazione occulta
-79. Desiderio
-80. Destriero fantomatico
-81. Disco fluttuante
-82. Disintegrazione
-83. Disorientare
-84. Dissolvi il bene e il male
-85. Dissolvi magie
-86. Dito della morte
-87. Divinazione
-88. Dominare bestie
-89. Dominare mostri
-90. Dominare persone
-91. Elementalismo
-92. Eroismo
-93. Esilio
-94. Esplosione solare
-95. Estasiare
-96. Evoca animali
-97. Evoca celestiale
-98. Evoca creature boschive
-99. Evoca elementale
-100. Evoca elementali minori
-101. Evoca folletto
-102. Evocazioni istantanee
-103. Fabbricare
-104. Faro di speranza
-105. Fatale
-106. Favore divino
-107. Ferire
-108. Fermare il tempo
-109. Fiamma perenne
-110. Fiamma sacra
-111. Folata di vento
-112. Fondersi nella pietra
-113. Forma eterea
-114. Forma gassosa
-115. Frantumare
-116. Freccia acida
-117. Fulmine
-118. Fuorviare
-119. Gabbia di forza
-120. Giara magica
-121. Glifo di interdizione
-122. Globo cromatico
-123. Globo di invulnerabilità
-124. Guardiani spirituali
-125. Guardiano della fede
-126. Guarigione
-127. Guarigione di massa
-128. Guida
-129. Identificare
-130. Illusione minore
-131. Illusione programmata
-132. Immagine maggiore
-133. Immagine proiettata
-134. Immagine silenziosa
-135. Immagine speculare
-136. Imprigionare
-137. Inaridire
-138. Individuazione dei pensieri
-139. Individuazione del bene e del male
-140. Individuazione del magico
-141. Individuazione delle malattie e dei veleni
-142. Infliggi ferite
-143. Ingrandire/ridurre
-144. Insetto gigante
-145. Interdizione alla morte
-146. Intermittenza
-147. Intimorire infernale
-148. Intralciare
-149. Inversione della gravità
-150. Inviare
-151. Invisibilità
-152. Invocare il fulmine
-153. Labirinto
-154. Lama infuocata
-155. Legame planare
-156. Legame telepatico
-157. Lentezza
-158. Libertà di movimento
-159. Linguaggi
-160. Localizza animali o vegetali
-161. Localizza creatura
-162. Localizza oggetto
-163. Loquacità
-164. Luce
-165. Luce diurna
-166. Luce splendente
-167. Luci danzanti
-168. Luminescenza
-169. Mani brucianti
-170. Mano arcana
-171. Mano magica
-172. Marchio del cacciatore
-173. Messaggio
-174. Metamorfosi
-175. Metamorfosi pura
-176. Miraggio arcano
-177. Modificare memoria
-178. Movimenti del ragno
-179. Muovere il terreno
-180. Muro di forza
-181. Muro di ghiaccio
-182. Muro di pietra
-183. Muro di spine
-184. Muro di vento
-185. Muro prismatico
-186. Nube di nebbia
-187. Nube incendiaria
-188. Nube maleodorante
-189. Nube mortale
-190. Occhio arcano
-191. Onda tonante
-192. Oscurità
-193. Parlare con gli animali
-194. Parlare con i morti
-195. Parlare con i vegetali
-196. Parola del potere guarire
-197. Parola del potere stordire
-198. Parola del potere uccidere
-199. Parola del ritiro
-200. Parola divina
-201. Parola guaritrice
-202. Parola guaritrice di massa
-203. Passapareti
-204. Passare senza tracce
-205. Passo velato
-206. Passo veloce
-207. Paura
-208. Pelle coriacea
-209. Pelle di pietra
-210. Piaga degli insetti
-211. Porta dimensionale
-212. Portale
-213. Preghiera di guarigione
-214. Presagio
-215. Prestidigitazione
-216. Previsione
-217. Produrre fiamma
-218. Proibizione
-219. Proiezione astrale
-220. Protezione dai veleni
-221. Protezione dal bene e dal male
-222. Protezione dall'energia
-223. Punizione divina
-224. Punizione incandescente
-225. Punizione splendente
-226. Purificare cibo e bevande
-227. Raggio di affaticamento
-228. Raggio di gelo
-229. Raggio di infermità
-230. Raggio rovente
-231. Randello incantato
-232. Reggia meravigliosa
-233. Reincarnazione
-234. Resistenza
-235. Respirare sott'acqua
-236. Resurrezione
-237. Resurrezione pura
-238. Rianimare morti
-239. Richiama drago
-240. Rigenerazione
-241. Rimuovi maledizione
-242. Rinascita
-243. Riparare
-244. Riposo inviolato
-245. Risata incontenibile
-246. Riscaldare il metallo
-247. Ristorare inferiore
-248. Ristorare superiore
-249. Risveglio
-250. Ritirata rapida
-251. Salvare i morenti
-252. Santificare
-253. Santuario
-254. Santuario privato
-255. Scagliare maledizione
-256. Scassinare
-257. Sciame di meteore
-258. Scolpire pietra
-259. Scopri il percorso
-260. Scopri trappole
-261. Scrigno segreto
-262. Scrutare
-263. Scudo
-264. Scudo della fede
-265. Scurovisione
-266. Segugio fedele
-267. Sembrare
-268. Semipiano
-269. Serratura arcana
-270. Servitore inosservato
-271. Sfera al vetriolo
-272. Sfera congelante
-273. Sfera elastica
-274. Sfera infuocata
-275. Sfocatura
-276. Sguardo penetrante
-277. Silenzio
-278. Simbolo
-279. Simulacro
-280. Soffio del drago
-281. Sogno
-282. Sonno
-283. Sortilegio
-284. Spada arcana
-285. Spostamento planare
-286. Spruzzo prismatico
-287. Spruzzo velenoso
-288. Stregoneria esplosiva
-289. Stretta folgorante
-290. Suggestione
-291. Suggestione di massa
-292. Sussurri dissonanti
-293. Taumaturgia
-294. Telecinesi
-295. Teletrasporto
-296. Tempesta di ghiaccio
-297. Tempesta di nevischio
-298. Tempesta di vendetta
-299. Tentacoli neri
-300. Terremoto
-301. Terreno illusorio
-302. Trama ipnotica
-303. Trasformazione
-304. Traslazione arborea
-305. Trasporto vegetale
-306. Trova cavalcatura
-307. Trova famiglio
-308. Trucco della corda
-309. Tsunami
-310. Unto
-311. Vedere invisibilità
-312. Velocità
-313. Vigilanza e interdizione
-314. Vincolo di interdizione
-315. Visione del vero
-316. Vita falsata
-317. Volare
-318. Vuoto mentale
-319. Zona di verità
+22. Bacche benefiche
+23. Bagliore lunare
+24. Bagliore solare
+25. Banchetto degli eroi
+26. Barriera di lame
+27. Beffa crudele
+28. Benedizione
+29. Blocca mostri
+30. Blocca persone
+31. Bocca magica
+32. Caduta morbida
+33. Calmare emozioni
+34. Camminare nel vento
+35. Camminare sull'acqua
+36. Campo anti-magia
+37. Camuffare se stesso
+38. Capanna
+39. Caratteristica potenziata
+40. Carne in pietra
+41. Catena di fulmini
+42. Cecità/sordità
+43. Celare
+44. Cerchio di morte
+45. Cerchio di teletrasporto
+46. Cerchio magico
+47. Charme su persone
+48. Charme sui mostri
+49. Chiaroveggenza
+50. Clone
+51. Colpo accurato
+52. Colpo infuocato
+53. Colpo intrappolante
+54. Coltello di ghiaccio
+55. Comando
+56. Comprensione dei linguaggi
+57. Compulsione
+58. Comunione
+59. Comunione con la natura
+60. Confusione
+61. Cono di freddo
+62. Conoscenza delle leggende
+63. Contagio
+64. Contattare altri piani
+65. Contingenza
+66. Controincantesimo
+67. Controllare acqua
+68. Controllare tempo atmosferico
+69. Costrizione
+70. Creare cibo e acqua
+71. Creare non morti
+72. Creare o distruggere acqua
+73. Creazione
+74. Crescita di spine
+75. Crescita vegetale
+76. Cura ferite
+77. Cura ferite di massa
+78. Danza irresistibile
+79. Dardo di fuoco
+80. Dardo incantato
+81. Dardo tracciante
+82. Deflagrazione occulta
+83. Desiderio
+84. Destriero fantomatico
+85. Disco fluttuante
+86. Disintegrazione
+87. Disorientare
+88. Dissolvi il bene e il male
+89. Dissolvi magie
+90. Dito della morte
+91. Divinazione
+92. Dominare bestie
+93. Dominare mostri
+94. Dominare persone
+95. Elementalismo
+96. Eroismo
+97. Esilio
+98. Esplosione solare
+99. Estasiare
+100. Evoca animali
+101. Evoca celestiale
+102. Evoca creature boschive
+103. Evoca elementale
+104. Evoca elementali minori
+105. Evoca folletto
+106. Evocazioni istantanee
+107. Fabbricare
+108. Faro di speranza
+109. Fatale
+110. Favore divino
+111. Ferire
+112. Fermare il tempo
+113. Fiamma perenne
+114. Fiamma sacra
+115. Fiotto acido
+116. Folata di vento
+117. Fondersi nella pietra
+118. Forma eterea
+119. Forma gassosa
+120. Forme animali
+121. Frantumare
+122. Freccia acida
+123. Fulmine
+124. Fuorviare
+125. Gabbia di forza
+126. Giara magica
+127. Glifo di interdizione
+128. Globo cromatico
+129. Globo di invulnerabilità
+130. Guardiani spirituali
+131. Guardiano della fede
+132. Guarigione
+133. Guarigione di massa
+134. Guida
+135. Guscio anti-vita
+136. Identificare
+137. Illusione minore
+138. Illusione programmata
+139. Immagine maggiore
+140. Immagine proiettata
+141. Immagine silenziosa
+142. Immagine speculare
+143. Imprigionare
+144. Inaridire
+145. Individuazione dei pensieri
+146. Individuazione del bene e del male
+147. Individuazione del magico
+148. Individuazione delle malattie e dei veleni
+149. Infliggi ferite
+150. Ingrandire/ridurre
+151. Insetto gigante
+152. Interdizione alla morte
+153. Intermittenza
+154. Intimorire infernale
+155. Intralciare
+156. Inversione della gravità
+157. Inviare
+158. Invisibilità
+159. Invisibilità superiore
+160. Invocare il fulmine
+161. Labirinto
+162. Lama infuocata
+163. Legame planare
+164. Legame telepatico
+165. Lentezza
+166. Levitazione
+167. Libertà di movimento
+168. Linguaggi
+169. Localizza animali o vegetali
+170. Localizza creatura
+171. Localizza oggetto
+172. Loquacità
+173. Luce
+174. Luce diurna
+175. Luce splendente
+176. Luci danzanti
+177. Luminescenza
+178. Mani brucianti
+179. Mano arcana
+180. Mano magica
+181. Marchio del cacciatore
+182. Messaggio
+183. Metamorfosi
+184. Metamorfosi pura
+185. Miraggio arcano
+186. Modificare memoria
+187. Movimenti del ragno
+188. Muovere il terreno
+189. Muro di forza
+190. Muro di fuoco
+191. Muro di ghiaccio
+192. Muro di pietra
+193. Muro di spine
+194. Muro di vento
+195. Muro prismatico
+196. Nube di nebbia
+197. Nube incendiaria
+198. Nube maleodorante
+199. Nube mortale
+200. Occhio arcano
+201. Onda tonante
+202. Oscurità
+203. Palla di fuoco
+204. Palla di fuoco ritardata
+205. Parlare con gli animali
+206. Parlare con i morti
+207. Parlare con i vegetali
+208. Parola del potere guarire
+209. Parola del potere stordire
+210. Parola del potere uccidere
+211. Parola del ritiro
+212. Parola divina
+213. Parola guaritrice
+214. Parola guaritrice di massa
+215. Passapareti
+216. Passare senza tracce
+217. Passo velato
+218. Passo veloce
+219. Paura
+220. Pelle coriacea
+221. Pelle di pietra
+222. Piaga degli insetti
+223. Porta dimensionale
+224. Portale
+225. Preghiera di guarigione
+226. Presagio
+227. Prestidigitazione
+228. Previsione
+229. Produrre fiamma
+230. Proibizione
+231. Proiezione astrale
+232. Protezione dai veleni
+233. Protezione dal bene e dal male
+234. Protezione dall'energia
+235. Punizione divina
+236. Punizione incandescente
+237. Punizione splendente
+238. Purificare cibo e bevande
+239. Raggio di affaticamento
+240. Raggio di gelo
+241. Raggio di infermità
+242. Raggio rovente
+243. Ragnatela
+244. Randello incantato
+245. Reggia meravigliosa
+246. Reincarnazione
+247. Resistenza
+248. Respirare sott'acqua
+249. Resurrezione
+250. Resurrezione pura
+251. Rianimare morti
+252. Richiama drago
+253. Rigenerazione
+254. Rimuovi maledizione
+255. Rinascita
+256. Riparare
+257. Riposo inviolato
+258. Risata incontenibile
+259. Riscaldare il metallo
+260. Ristorare inferiore
+261. Ristorare superiore
+262. Risveglio
+263. Ritirata rapida
+264. Salto
+265. Salvare i morenti
+266. Santificare
+267. Santuario
+268. Santuario privato
+269. Scagliare maledizione
+270. Scassinare
+271. Sciame di meteore
+272. Scolpire pietra
+273. Scopri il percorso
+274. Scopri trappole
+275. Scrigno segreto
+276. Scritto illusorio
+277. Scrutare
+278. Scudo
+279. Scudo della fede
+280. Scudo di fuoco
+281. Scurovisione
+282. Segugio fedele
+283. Sembrare
+284. Semipiano
+285. Serratura arcana
+286. Servitore inosservato
+287. Sfera al vetriolo
+288. Sfera congelante
+289. Sfera elastica
+290. Sfera infuocata
+291. Sfocatura
+292. Sguardo penetrante
+293. Silenzio
+294. Simbolo
+295. Simulacro
+296. Soffio del drago
+297. Sogno
+298. Sonno
+299. Sortilegio
+300. Spada arcana
+301. Spostamento planare
+302. Spruzzo colorato
+303. Spruzzo prismatico
+304. Spruzzo velenoso
+305. Stregoneria esplosiva
+306. Stretta folgorante
+307. Suggestione
+308. Suggestione di massa
+309. Sussurri dissonanti
+310. Taumaturgia
+311. Telecinesi
+312. Teletrasporto
+313. Tempesta di fuoco
+314. Tempesta di ghiaccio
+315. Tempesta di nevischio
+316. Tempesta di vendetta
+317. Tentacoli neri
+318. Terremoto
+319. Terreno illusorio
+320. Tocco del vampiro
+321. Tocco gelido
+322. Trama ipnotica
+323. Trasformazione
+324. Traslazione arborea
+325. Trasporto vegetale
+326. Trova cavalcatura
+327. Trova famiglio
+328. Trucco della corda
+329. Tsunami
+330. Unto
+331. Vedere invisibilità
+332. Velocità
+333. Vigilanza e interdizione
+334. Vincolo di interdizione
+335. Visione del vero
+336. Vita falsata
+337. Volare
+338. Vuoto mentale
+339. Zona di verità
 
 ---
 
@@ -739,6 +759,61 @@ Abiurazione di 8º livello (chierico)
 - Pagine SRD: 126, 127
 
 Per la durata dell'incantesimo, l'incantatore irradia un'aura in un'emanazione di 9 metri. Le creature scelte dell'incantatore che si trovano all'interno dell'aura dispongono di vantaggio a tutti i tiri salvezza, mentre le altre creature subiscono svantaggio ai tiri per colpire contro le creature scelte. Inoltre, quando un immondo o un non morto colpisce una creatura influenzata con un tiro per colpire in mischia, l'attaccante deve superare un tiro salvezza su Costituzione, altrimenti viene accecato fino al termine del proprio turno successivo.
+
+
+---
+
+## Bacche benefiche
+
+Evocazione di 1º livello (druido, ranger)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S, M (un rametto di vischio)
+- Durata: 24 ore
+- Pagine SRD: 127
+
+Per la durata dell'incantesimo, nella mano dell'incantatore appaiono dieci bacche infuse di magia. Una creatura può effettuare un'azione bonus per mangiare una bacca, recuperando così 1 punto ferita e ottenendo nutrimento sufficiente per una giornata intera.
+
+Le bacche non mangiate scompaiono al termine dell'incantesimo.
+
+
+---
+
+## Bagliore lunare
+
+Invocazione di 2º livello (druido)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: V, S, M (una foglia di un vitigno legnoso)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 127
+
+Un bagliore argentato di luce pallida forma un cilindro del raggio di 1,5 metri e dell'altezza di 12 metri centrato su un punto entro gittata. Fino al termine dell'incantesimo, il cilindro è pervaso da luce fioca e l'incantatore può effettuare un'azione di Magia nei turni successivi per spostare il cilindro fino a 18 metri.
+
+Quando appare il cilindro, ogni creatura al suo interno effettua un tiro salvezza su Costituzione. In caso di fallimento, una creatura subisce 2d10 danni radiosi e, se la creatura è in forma mutata (ad esempio, come conseguenza all'incantesimo metamorfosi), torna alla sua forma naturale e non può trasformarsi finché non esce dal cilindro. In caso di successo, subisce soltanto la metà di quei danni. Una creatura effettua questo tiro salvezza anche quando l'area dell'incantesimo si muove nel suo spazio e quando la creatura entra nell'area dell'incantesimo o vi termina il suo turno. Una creatura effettua questo tiro salvezza solo una volta per turno.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d10 per ogni slot di livello superiore al 2º.
+
+
+---
+
+## Bagliore solare
+
+Invocazione di 6º livello (chierico, druido, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S, M (una lente d'ingrandimento)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 127
+
+L'incantatore lancia un bagliore solare in una linea larga 1,5 metri e lunga 18 metri. Ogni creatura nella sua traiettoria effettua un tiro salvezza su Costituzione e, se lo fallisce, subisce 6d8 danni radiosi e rimane accecata fino all'inizio del turno successivo dell'incantatore. Se lo supera, invece, subisce solo la metà dei danni.
+
+Fino al termine dell'incantesimo, l'incantatore può effettuare un'azione di Magia per creare una nuova linea radiosa.
+
+Per la durata dell'incantesimo, una scintilla di luce radiosa risplende nella sua mano ed emana luce intensa in un raggio di 9 metri e luce fioca per ulteriori 9 metri. Questa luce è considerata luce solare.
 
 
 ---
@@ -1795,6 +1870,23 @@ Se il bersaglio fallisce il tiro, diventa affascinato per la durata dell'incante
 
 ---
 
+## Dardo di fuoco
+
+Trucchetto di Invocazione (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 140
+
+L'incantatore scaglia una scintilla di fuoco verso una creatura o un oggetto situato entro gittata, effettuando un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce 1d10 danni da fuoco. Un oggetto infiammabile colpito da questo incantesimo prende fuoco se non indossato o trasportato in quel momento.
+
+Trucchetto potenziato. I danni aumentano di 1d10 quando l'incantatore raggiunge il 5º livello (2d10), l'11º livello (3d10) e il 17º livello (4d10).
+
+
+---
+
 ## Dardo incantato
 
 Invocazione di 1º livello (mago, stregone)
@@ -2444,6 +2536,23 @@ Trucchetto potenziato. I danni aumentano di 1d8 quando l'incantatore raggiunge i
 
 ---
 
+## Fiotto acido
+
+Trucchetto di Invocazione (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 148
+
+L'incantatore crea una bolla di acido in un punto entro gittata, dove la bolla esplode in una sfera del raggio di 1,5 metri. Ogni creatura all'interno della sfera deve superare un tiro salvezza su Destrezza, altrimenti subisce 1d6 danni da acido.
+
+Trucchetto potenziato. I danni aumentano di 1d6 quando l'incantatore raggiunge il 5º livello (2d6), l'11º livello (3d6) e il 17º livello (4d6).
+
+
+---
+
 ## Folata di vento
 
 Invocazione di 2º livello (druido, ranger, mago, stregone)
@@ -2524,6 +2633,25 @@ Mentre si trova in questa forma, una velocità di volo di 3 metri è l'unico met
 Il bersaglio non può parlare o manipolare oggetti e quelli che trasporta o impugna non possono essere lasciati cadere, usati o manipolati in alcun modo. Infine, il bersaglio non può attaccare o lanciare incantesimi.
 
 Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 3º.
+
+
+---
+
+## Forme animali
+
+Trasmutazione di 8º livello (druido)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S
+- Durata: 24 ore
+- Pagine SRD: 149, 150
+
+L'incantatore sceglie un qualsiasi numero di creature consenzienti entro gittata che egli è in grado di vedere. Ogni bersaglio muta forma in una bestia Grande o Piccola a scelta, con un grado di sfida pari o inferiore a 4. L'incantatore può scegliere una forma differente per ogni bersaglio e, nei turni successivi, può effettuare un'azione di Magia per trasformare nuovamente i bersagli.
+
+Le statistiche della bestia scelta sostituiscono le statistiche di gioco del bersaglio, il cui tipo di creatura non cambia. Inoltre, il bersaglio conserva i punti ferita, i dadi vita, il proprio allineamento, l'abilità di comunicare e i punteggi di Intelligenza, Saggezza e Carisma. Le azioni del bersaglio sono limitate dalla forma anatomica della bestia scelta, che non può lanciare incantesimi. L'equipaggiamento del bersaglio si fonde nella nuova forma e non può essere utilizzato finché non viene assunta di nuovo la forma originale.
+
+Il bersaglio guadagna un numero di punti ferita temporanei pari ai punti ferita della prima forma in cui viene mutato. Al termine dell'incantesimo, il bersaglio perde tutti i punti ferita temporanei rimasti. La trasformazione permane per la durata dell'incantesimo o finché il bersaglio non la termina come azione bonus.
 
 
 ---
@@ -2796,6 +2924,23 @@ Trucchetto di Divinazione (chierico, druido)
 - Pagine SRD: 153
 
 L'incantatore tocca una creatura consenziente e sceglie un'abilità. Fino al termine dell'incantesimo, la creatura aggiunge 1d4 a qualsiasi prova di caratteristica effettuata utilizzando l'abilità scelta.
+
+
+---
+
+## Guscio anti-vita
+
+Abiurazione di 5º livello (druido)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 ora
+- Pagine SRD: 153
+
+Un'aura si estende dall'incantatore in un'emanazione di 3 metri e permane per la durata dell'incantesimo, impedendo a tutte le creature che non siano non morti e costrutti di attraversarla o protendersi oltre essa. Una creatura influenzata può lanciare incantesimi o effettuare attacchi utilizzando armi a distanza o con portata attraverso la barriera.
+
+Se l'incantatore si muove in modo che una creatura influenzata sia costretta ad attraversare la barriera, l'incantesimo termina.
 
 
 ---
@@ -3261,6 +3406,21 @@ Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersag
 
 ---
 
+## Invisibilità superiore
+
+Illusione di 4º livello (bardo, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 159
+
+Una creatura toccata dall'incantatore diventa invisibile fino al termine dell'incantesimo.
+
+
+---
+
 ## Invocare il fulmine
 
 Evocazione di 3º livello (druido)
@@ -3375,6 +3535,25 @@ L'incantatore altera il tempo intorno a un massimo di sei creature a sua scelta 
 Un bersaglio influenzato subisce una penalità di −2 alla CA e ai tiri salvezza su Destrezza, non può effettuare reazioni e la sua velocità è dimezzata. Quando è il suo turno, può effettuare un'azione o un'azione bonus, non entrambe. Inoltre, se sceglie di eseguire l'azione di Attacco, può sferrare un solo attacco. Se lancia un incantesimo con una componente somatica, ha una probabilità di fallimento del 25%, poiché l'incantatore effettua troppo lentamente i movimenti necessari al lancio.
 
 Inoltre, ripeterà il tiro salvezza alla fine di ogni suo turno. Se lo supera, l'incantesimo svanisce.
+
+
+---
+
+## Levitazione
+
+Trasmutazione di 2º livello (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S, M (una molla in metallo)
+- Durata: concentrazione, fino a 10 minuti
+- Pagine SRD: 161
+
+Una creatura o un oggetto a scelta dell'incantatore, situato entro gittata e che egli è in grado di vedere, si solleva verticalmente fino a 6 metri rimanendo sospeso per la durata dell'incantesimo. L'incantesimo può far levitare un oggetto che pesa fino a 250 kg. Una creatura non consenziente che supera un tiro salvezza su Costituzione non subisce l'effetto dell'incantesimo.
+
+Il bersaglio può muoversi soltanto spingendosi o aggrappandosi a un oggetto fisso o a una superficie entro portata (come per esempio una parete o un soffitto), che gli permetta di muoversi come se ne stesse scalando la superficie. Nel proprio turno, l'incantatore può variare l'altitudine del bersaglio per un massimo di 6 metri in ogni direzione. Se il bersaglio è l'incantatore stesso, può muoversi verso l'alto o verso il basso come parte del suo movimento. Altrimenti, l'incantatore può usare la sua azione di Magia per muovere il bersaglio, che deve rimanere entro gittata.
+
+Il bersaglio, se è ancora sospeso, al termine dell'incantesimo fluttua dolcemente fino a terra.
 
 
 ---
@@ -3822,6 +4001,27 @@ Nulla può fisicamente attraversare il muro, che è immune a tutti i danni e non
 
 ---
 
+## Muro di fuoco
+
+Invocazione di 4º livello (druido, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: V, S, M (un pezzo di carbone)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 167
+
+L'incantatore crea un muro di fuoco su una superficie solida entro gittata. Il muro può essere lungo fino a 18 metri, alto 6 metri e spesso 30 cm, oppure essere un muro circolare del diametro massimo di 6 metri, alto 6 metri e spesso 30 cm. Il muro è opaco e permane per la durata dell'incantesimo.
+
+Quando compare, ogni creatura al suo interno effettua un tiro salvezza su Destrezza, subendo 5d8 danni da fuoco in caso di fallimento, o la metà dei danni in caso di successo.
+
+Un lato del muro, scelto dall'incantatore al momento del lancio dell'incantesimo, infligge 5d8 danni da fuoco a ogni creatura che termina il proprio turno entro 3 metri da quel lato o all'interno del muro. Una creatura subisce gli stessi danni quando lo attraversa per la prima volta in un turno o vi termina il suo turno. L'altro lato del muro non infligge danni.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d8 per ogni slot di livello superiore al 4º.
+
+
+---
+
 ## Muro di ghiaccio
 
 Invocazione di 6º livello (mago)
@@ -4116,6 +4316,48 @@ Per la durata dell'incantesimo, un'oscurità magica si estende da un punto entro
 In alternativa, l'incantatore lancia l'incantesimo su un oggetto che non sia indossato o trasportato, facendo sì che l'oscurità riempia un'emanazione di 4,5 metri di cui l'oggetto è il punto di origine. Coprire l'oggetto con qualcosa di opaco, come una ciotola o un elmo, blocca l'oscurità.
 
 Se una parte dell'area di questo incantesimo si sovrappone a un'area di luce intensa o luce fioca creata da un incantesimo di 2º livello o inferiore, l'incantesimo che ha creato la luce viene dissolto.
+
+
+---
+
+## Palla di fuoco
+
+Invocazione di 3º livello (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 45 metri
+- Componenti: V, S, M (una pallina di guano di pipistrello e zolfo)
+- Durata: istantanea
+- Pagine SRD: 171
+
+Una scia di luce brillante parte dall'incantatore e sfreccia fino a un punto a sua scelta entro gittata, provocando un'esplosione infuocata con un profondo boato. Ogni creatura presente in una sfera dal raggio di 6 metri e centrata su quel punto deve effettuare un tiro salvezza su Destrezza, subendo 8d6 danni da fuoco in caso di fallimento, o la metà dei danni in caso di successo.
+
+Gli oggetti infiammabili nell'area che non sono indossati o trasportati iniziano a bruciare.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d6 per ogni slot di livello superiore al 3º.
+
+
+---
+
+## Palla di fuoco ritardata
+
+Invocazione di 7º livello (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 45 metri
+- Componenti: V, S, M (una pallina di guano di pipistrello e zolfo)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 171
+
+Un raggio di luce gialla si sprigiona dall'incantatore per poi condensarsi in un punto a sua scelta entro gittata, formando una sfera scintillante che permane per la durata dell'incantesimo. Al termine dell'incantesimo, la sfera esplode e ogni creatura all'interno di una sfera del raggio di 6 metri centrata su quel punto effettua un tiro salvezza su Destrezza. In caso di fallimento, la creatura subisce una quantità di danni da fuoco pari al totale dei danni accumulati, o la metà dei danni in caso di successo.
+
+I danni base dell'incantesimo sono pari a 12d6 e aumentano di 1d6 ogni volta che termina il turno dell'incantatore e l'incantesimo è ancora attivo.
+
+Se una creatura tocca la sfera scintillante prima del termine dell'incantesimo, effettua un tiro salvezza su Destrezza. In caso di fallimento, l'incantesimo termina, causando l'esplosione della sfera. In caso di successo, la creatura può lanciare la sfera fino a una distanza di 12 metri: se entra nello spazio di una creatura o si scontra con un oggetto solido, l'incantesimo termina, facendo esplodere la sfera.
+
+Quando la sfera esplode, gli oggetti infiammabili all'interno dell'esplosione che non sono indossati o trasportati iniziano a bruciare.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni base aumentano di 1d6 per ogni slot di livello superiore al 7º.
 
 
 ---
@@ -4799,6 +5041,29 @@ Utilizzo di uno slot incantesimo di livello superiore. L'incantatore crea un rag
 
 ---
 
+## Ragnatela
+
+Evocazione di 2º livello (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S, M (un frammento di ragnatela comune)
+- Durata: concentrazione, fino a 1 ora
+- Pagine SRD: 178
+
+L'incantatore evoca un ammasso di ragnatele appiccicose in un punto entro gittata, che riempiono un cubo con spigolo di 6 metri per la durata dell'incantesimo. Le ragnatele contano come terreno difficile e l'area al loro interno e leggermente oscurata.
+
+Se le ragnatele non sono ancorate tra due masse solide (per esempio pareti o alberi) o stese su un pavimento, un muro o un soffitto, collassano su se stesse e l'incantesimo termina all'inizio del turno successivo dell'incantatore. Le ragnatele stese su una superficie piatta hanno una profondità di 1,5 metri.
+
+La prima volta che una creatura vi entra in un turno o inizia lì il suo turno, deve superare un tiro salvezza su Destrezza, altrimenti sarà trattenuta finché sarà al loro interno o non si libera.
+
+Una creatura trattenuta dalle ragnatele può usare la un'azione per effettuare una prova di Forza (Atletica) contro la CD del tiro salvezza sull'incantesimo. Se supera la prova, non è più trattenuta.
+
+Le ragnatele sono infiammabili. Un cubo di ragnatele con spigolo di 1,5 metri brucia in 1 round, infliggendo 2d4 danni da fuoco a ogni creatura che inizi il suo turno tra le fiamme.
+
+
+---
+
 ## Randello incantato
 
 Trucchetto di Trasmutazione (druido)
@@ -5191,6 +5456,23 @@ L'incantatore effettua un'azione di Scatto e, fino al termine dell'incantesimo, 
 
 ---
 
+## Salto
+
+Trasmutazione di 1º livello (druido, mago, ranger, stregone)
+
+- Tempo di lancio: azione bonus
+- Gittata: contatto
+- Componenti: V, S, M (la zampa posteriore di una cavalletta)
+- Durata: 1 minuto
+- Pagine SRD: 182
+
+L'incantatore tocca una creatura consenziente. La creatura, in ogni suo turno fino al termine dell'incantesimo, può saltare fino a 9 metri, usando 3 metri di movimento.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 1º.
+
+
+---
+
 ## Salvare i morenti
 
 Trucchetto di Necromanzia (chierico, druido)
@@ -5418,6 +5700,25 @@ Dopo 60 giorni, esiste una probabilità cumulativa del 5% al termine di ogni gio
 
 ---
 
+## Scritto illusorio
+
+Illusione di 1º livello (bardo, mago, warlock)
+
+- Tempo di lancio: 1 minuto o rituale
+- Gittata: contatto
+- Componenti: S, M (inchiostro del valore di 10 mo o più, che l'incantesimo consuma)
+- Durata: 10 giorni
+- Pagine SRD: 185
+
+L'incantatore scrive su una pergamena, un foglio o un altro materiale adatto e infonde nello scritto un'illusione che permane per la durata dell'incantesimo. All'incantatore e a qualsiasi creatura indicata da lui al momento del lancio, lo scritto appare normale, sembra essere stilato nella calligrafia dell'incantatore e trasmette il significato inteso nel momento in cui è stato scritto. Agli occhi di tutti gli altri, il messaggio appare scritto in una lingua magica o ignota che risulta per loro incomprensibile. In alternativa, l'illusione può alterare il significato, la calligrafia e la lingua del testo, ma questa deve essere una lingua conosciuta dall'incantatore.
+
+Se l'incantesimo viene dissolto, il messaggio originale e l'illusione scompaiono.
+
+Una creatura con vista pura può leggere il messaggio nascosto.
+
+
+---
+
 ## Scrutare
 
 Divinazione di 5º livello (bardo, chierico, druido, mago, warlock)
@@ -5482,6 +5783,25 @@ Abiurazione di 1º livello (chierico, paladino)
 - Pagine SRD: 186
 
 Un campo di energia scintillante avvolge una creatura scelta dall'incantatore entro gittata, conferendole un bonus di +2 alla CA per la durata dell'incantesimo.
+
+
+---
+
+## Scudo di fuoco
+
+Invocazione di 4º livello (druido, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S, M (un frammento di fosforo o una lucciola)
+- Durata: 10 minuti
+- Pagine SRD: 186
+
+Per la durata dell'incantesimo, il corpo dell'incantatore è avvolto da fiamme sottili, che proiettano luce intensa in un raggio di 3 metri e luce fioca per ulteriori 3 metri.
+
+Le fiamme conferiscono all'incantatore uno scudo ardente o gelido a sua scelta. Lo scudo ardente gli conferisce resistenza ai danni da freddo, mentre lo scudo gelido resistenza ai danni da fuoco.
+
+Inoltre, ogni volta che una creatura entro 1,5 metri dall'incantatore lo colpisce con un tiro per colpire in mischia, dallo scudo erompono delle fiamme. L'attaccante subisce 2d8 danni da fuoco da uno scudo ardente o 2d8 danni da freddo da uno scudo gelido.
 
 
 ---
@@ -5899,6 +6219,21 @@ In alternativa, se l'incantatore conosce la sequenza di sigilli di un cerchio di
 
 ---
 
+## Spruzzo colorato
+
+Illusione di 1º livello (bardo, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S, M (un pizzico di sabbia colorata)
+- Durata: istantanea
+- Pagine SRD: 191
+
+L'incantatore lancia un lampo abbagliante di luce multicolore. Ogni creatura entro un cono di 4,5 metri originato dall'incantatore deve superare un tiro salvezza su Costituzione, altrimenti è accecata fino al termine del turno successivo dell'incantatore.
+
+
+---
+
 ## Spruzzo prismatico
 
 Invocazione di 7º livello (bardo, mago, stregone)
@@ -6164,6 +6499,23 @@ Sul bersaglio. L'incantatore e il suo gruppo (o l'oggetto bersaglio) compaiono n
 
 ---
 
+## Tempesta di fuoco
+
+Invocazione di 7º livello (chierico, druido, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 45 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 195
+
+Una tempesta di fuoco compare in un luogo entro gittata. L'area della tempesta è composta da dieci cubi con spigolo di 3 metri, che l'incantatore può disporre come desidera. Ogni cubo deve essere contiguo ad almeno un altro cubo. Ogni creatura nell'area effettua un tiro salvezza su Destrezza; se lo fallisce, subisce 7d10 danni da fuoco, mentre se lo supera subisce la metà dei danni.
+
+Gli oggetti infiammabili nell'area che non sono indossati o trasportati iniziano a bruciare.
+
+
+---
+
 ## Tempesta di ghiaccio
 
 Invocazione di 4º livello (druido, mago, stregone)
@@ -6280,6 +6632,42 @@ Illusione di 4º livello (bardo, druido, mago, warlock)
 L'incantatore fa in modo che un terreno naturale in un cubo con spigolo di 45 metri entro gittata abbia l'aspetto, i suoni e gli odori di un altro tipo di terreno naturale. Un campo aperto o una strada potrebbe così sembrare una palude, una collina, un crepaccio o qualche altro tipo di terreno difficile e invalicabile. Allo stesso modo, uno stagno potrebbe apparire come un prato erboso, un precipizio come un dolce pendio o un fosso irto di rocce come una strada ampia e accogliente. Tuttavia, le strutture artificiali, l'equipaggiamento e le creature all'interno dell'area non cambiano.
 
 Inoltre, le caratteristiche tattili del terreno rimangono invariate, quindi le creature che entrano nell'area hanno buone probabilità di accorgersi dell'illusione. Se la differenza non è ovvia al tatto, una creatura che esamina l'illusione può effettuare l'azione di Studio per effettuare una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo per non essere tratta in inganno. Se una creatura si accorge che il terreno è illusorio, vede un'immagine indistinta sovrapposta al terreno reale.
+
+
+---
+
+## Tocco del vampiro
+
+Necromanzia di 3º livello (stregone, mago, warlock)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 196
+
+Il tocco della mano dell'incantatore, avviluppata in una cortina d'ombra, può risucchiare l'energia vitale delle altre creature per curare le proprie ferite. Effettua un attacco con incantesimo in mischia contro una creatura a portata. Se il colpo va a segno, il bersaglio subisce 3d6 danni necrotici e l'incantatore recupera una quantità di punti ferita pari alla metà dei danni necrotici inflitti.
+
+Fino al termine dell'incantesimo, come azione di Magia, l'incantatore può effettuare di nuovo l'attacco a ogni suo turno, prendendo di mira la stessa creatura o un'altra.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d6 per ogni slot di livello superiore al 3º.
+
+
+---
+
+## Tocco gelido
+
+Trucchetto di Necromanzia (mago, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 197
+
+Incanalando un flusso di gelo sepolcrale, l'incantatore effettua un attacco con incantesimo in mischia contro un bersaglio a portata. Se il colpo va a segno, il bersaglio subisce 1d10 danni necrotici e non può recuperare punti ferita fino al termine del turno successivo dell'incantatore.
+
+Trucchetto potenziato. I danni aumentano di 1d10 quando l'incantatore raggiunge il 5º livello (2d10), l'11º livello (3d10) e il 17º livello (4d10).
 
 
 ---

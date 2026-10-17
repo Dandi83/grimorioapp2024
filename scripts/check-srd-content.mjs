@@ -3,9 +3,9 @@ import { readFileSync } from "node:fs";
 
 // A missing/partial transcription must fail before this release can be built.
 const data = JSON.parse(readFileSync(new URL("../lib/data/srd-italiano-5.2.1.json", import.meta.url), "utf8"));
-assert.equal(data.spells.length, 320, "The original 242 and the 78 reviewed entries must all have full source transcriptions");
-assert.equal(new Set(data.spells.map(s => s.id)).size, 320);
-assert.equal(new Set(data.spells.map(s => s.sourceName)).size, 319);
+assert.equal(data.spells.length, 340, "All 339 SRD spells and the preserved historical duplicate must have full source transcriptions");
+assert.equal(new Set(data.spells.map(s => s.id)).size, 340);
+assert.equal(new Set(data.spells.map(s => s.sourceName)).size, 339);
 assert.equal(data.license, "CC-BY-4.0");
 assert.ok(data.attribution.includes('Wizards of the Coast LLC'));
 for (const spell of data.spells) {
@@ -20,6 +20,20 @@ for (const spell of data.spells) {
   assert.equal((spell.descrizione.match(/<pre>/g) || []).length, (spell.descrizione.match(/<\/pre>/g) || []).length);
 }
 const byId = Object.fromEntries(data.spells.map(s => [s.id, s]));
+const additions = [
+  ['bacche-benefiche', 'Bacche benefiche'], ['bagliore-lunare', 'Bagliore lunare'],
+  ['bagliore-solare', 'Bagliore solare'], ['dardo-di-fuoco', 'Dardo di fuoco'],
+  ['fiotto-acido', 'Fiotto acido'], ['forme-animali', 'Forme animali'],
+  ['guscio-anti-vita', 'Guscio anti-vita'], ['invisibilita-superiore', 'Invisibilità superiore'],
+  ['levitazione', 'Levitazione'], ['muro-di-fuoco', 'Muro di fuoco'],
+  ['palla-di-fuoco', 'Palla di fuoco'], ['palla-di-fuoco-ritardata', 'Palla di fuoco ritardata'],
+  ['ragnatela', 'Ragnatela'], ['salto', 'Salto'], ['scritto-illusorio', 'Scritto illusorio'],
+  ['scudo-di-fuoco', 'Scudo di fuoco'], ['spruzzo-colorato', 'Spruzzo colorato'],
+  ['tempesta-di-fuoco', 'Tempesta di fuoco'], ['tocco-del-vampiro', 'Tocco del vampiro'],
+  ['tocco-gelido', 'Tocco gelido'],
+];
+for (const [id, name] of additions) assert.equal(byId[id]?.sourceName, name, `${id}: missing official spell`);
+assert.ok(byId['palla-di-fuoco'].descrizione.includes('8d6'), 'Fireball must include its source damage');
 const animals = byId['evoca-animali'].descrizione;
 assert.ok(animals.includes('branco') && animals.includes('3d10'), 'Conjure Animals continuation must cross the PDF column');
 assert.ok(!animals.includes('Luce curatrice'), 'Conjure Celestial must not leak into Conjure Animals');
@@ -33,4 +47,4 @@ assert.equal(byId['deflagrazione-occulta'].sourceName, 'Deflagrazione occulta');
 assert.equal(byId['aura-magica-di-nystul'].sourceName, "Aura magica dell'arcanista");
 assert.equal(byId['capanna-di-leomund'].sourceName, 'Capanna');
 assert.ok(!byId['amicizia'], 'An existing non-SRD spell must not receive an invented SRD source');
-console.log(`[srd] Verified ${data.spells.length} complete transcriptions, 319 distinct spells, source references and tables.`);
+console.log(`[srd] Verified ${data.spells.length} complete transcriptions, 339 distinct spells, source references and tables.`);
