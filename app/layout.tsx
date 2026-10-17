@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Inter } from "next/font/google";
 import type { ReactNode } from "react";
-import Link from "next/link";
 
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { BottomNav } from "@/components/bottom-nav";
@@ -64,9 +63,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x">
             <main className="min-w-0 flex-1 pb-24">
               {children}
-              <footer className="px-6 py-6 text-center text-xs text-muted">
-                <Link className="underline underline-offset-4" href="/fonti">Fonti e licenze</Link>
-              </footer>
             </main>
             <BottomNav />
           </div>
