@@ -20,3 +20,6 @@ Anteprima dimostrativa, dati soltanto in memoria della sessione; non persistenti
 
 ## Prova browser
 Commit iniziale 48b1406fc103a5160bb2f4363d8260fb3d3d8003: preview READY; compilazione Nome, Forza17, TS; nella gestione rapida verificati nome, Forza17 e TS+5. Cambio pagina, Allineamento mantenuto, Note.0 compilata, monete MO120, override conteggio incantesimi e casella slot01 verificati. Ritocco successivo della base visiva preserva le apparenze originali delle caselle.
+
+Preview finale verificata: https://grimorioapp2024-m7jwwpt9e-grimorio-app.vercel.app/personaggi — commit b9f51e56bb3e5f3cfcbfb463864dfb4d016c36cf, READY, target preview. Modello originale e forme delle caselle controllati in screenshot; esportazione JSON verificata con caratteristiche, note, monete, campi liberi e check.
+Screenshot: personaggi-scheda-madre-preview.jpg. Nessun collaudo su iPhone fisico o stampa reale dichiarato.
