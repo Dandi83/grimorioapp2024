@@ -23,7 +23,7 @@ function decodeEntities(s: string): string {
 
 const TAG_RE = /<\s*(\/?)\s*([a-zA-Z0-9]+)\s*(\/?)\s*>/g;
 
-export function HtmlText({ html }: { html: string }) {
+function InlineHtmlText({ html }: { html: string }) {
   const nodes: ReactNode[] = [];
   const stack: string[] = [];
   let key = 0;
@@ -75,5 +75,31 @@ export function HtmlText({ html }: { html: string }) {
     <p className="font-serif text-[1.05rem] leading-7 text-card-foreground">
       {nodes}
     </p>
+  );
+}
+
+/** Preserve the source tables without allowing attributes or executable markup. */
+export function HtmlText({ html }: { html: string }) {
+  if (!html?.includes("<pre>")) return <InlineHtmlText html={html} />;
+  const parts = html.split(/(<pre>[\s\S]*?<\/pre>)/g);
+  return (
+    <div className="min-w-0 max-w-full space-y-5">
+      {parts.map((part, index) => {
+        if (part.startsWith("<pre>") && part.endsWith("</pre>")) {
+          return (
+            <pre
+              key={index}
+              tabIndex={0}
+              aria-label="Tabella dell’incantesimo, scorribile orizzontalmente"
+              className="max-w-full overflow-x-auto rounded-xl border border-border bg-card p-3 font-mono text-[12px] leading-5 text-card-foreground"
+            >
+              {decodeEntities(part.slice(5, -6))}
+            </pre>
+          );
+        }
+        const text = part.replace(/^(?:<br>)+|(?:<br>)+$/g, "");
+        return text ? <InlineHtmlText key={index} html={text} /> : null;
+      })}
+    </div>
   );
 }

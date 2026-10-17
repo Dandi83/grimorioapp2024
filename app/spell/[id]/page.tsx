@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
@@ -6,6 +7,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { HtmlText } from "@/components/html-text";
 import { capitalizeWords, getSpellById } from "@/lib/spells";
 import { schoolColor } from "@/lib/school-colors";
+import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +56,7 @@ export default async function SpellDetailPage({
     spell.livello_num === 0
       ? `Trucchetto · ${spell.scuola}`
       : `${spell.livello_num}° Livello · ${spell.scuola}`;
+  const source = getSrdSource(spell.id, spell.descrizione);
 
   return (
     <article>
@@ -133,6 +136,17 @@ export default async function SpellDetailPage({
           </p>
         )}
       </section>
+      {source && (
+        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
+          <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>
+          <p>
+            <a className="underline underline-offset-4" href={`${srdSourceUrl}#page=${source.pages[0]}`} target="_blank" rel="noreferrer">
+              Fonte ufficiale, {source.pages.length === 1 ? "pagina" : "pagine"} {source.pages.join(", ")}
+            </a>
+            {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
+          </p>
+        </aside>
+      )}
     </article>
   );
 }

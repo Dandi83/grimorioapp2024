@@ -5,6 +5,7 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "./db";
 import { spells as spellsTable } from "./db/schema";
 import { parseLivello, type Spell } from "./spells-types";
+import { applySrdDescription } from "./srd-descriptions";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
 // keep working. The DB access below is server-only.
@@ -22,6 +23,7 @@ interface RawRow {
 }
 
 function toSpell(r: RawRow): Spell {
+  r = applySrdDescription(r);
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
   return {
     id: r.id,
