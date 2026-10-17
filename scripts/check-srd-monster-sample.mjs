@@ -7,7 +7,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 
 const require=createRequire(import.meta.url);
 const helper=new URL('../lib/srd-monsters.ts',import.meta.url);
-assert.ok(existsSync(helper),'The Aboleth sample must be available in preview without changing the shared database');
+assert.ok(existsSync(helper),'The approved Aboleth must be available without changing the shared database');
 const data=JSON.parse(readFileSync(new URL('../lib/data/srd-monster-sample.json',import.meta.url),'utf8'));
 const code=ts.transpileModule(readFileSync(helper,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText;
 const mod={exports:{}};
@@ -15,15 +15,17 @@ new Function('require','module','exports',code)(id=>id.endsWith('srd-monster-sam
 const {previewMonsters,previewMonsterById,getSrdMonsterSource}=mod.exports;
 const goblin={id:'goblin',nome:'Goblin',descrizione:'Existing custom text'};
 const rows=[goblin];
-assert.equal(previewMonsters(rows,'production'),rows);
+assert.equal(previewMonsters(rows,'production').length,2,'Publishing must include Aboleth in the production catalog');
 assert.equal(previewMonsters(rows,undefined),rows);
-assert.equal(previewMonsterById('aboleth','production'),undefined);
+assert.equal(previewMonsterById('aboleth','production')?.nome,'Aboleth','Publishing must enable the Aboleth detail page in production');
+assert.equal(previewMonsterById('aboleth',undefined),undefined);
 assert.equal(previewMonsterById('unknown','preview'),undefined);
 const staged=previewMonsters(rows,'preview');
 assert.equal(staged.length,2);
 assert.equal(rows.length,1);
 assert.equal(staged.find(m=>m.id==='goblin'),goblin);
 const sample=previewMonsterById('aboleth','preview');
+assert.deepEqual(previewMonsterById('aboleth','production'),sample,'The released monster must be identical to the approved preview');
 assert.equal(sample.nome,'Aboleth');
 assert.equal(sample.classe_armatura,'17');
 assert.equal(sample.punti_ferita,'150 (20d10 + 40)');
@@ -43,6 +45,7 @@ assert.equal(getSrdMonsterSource({...sample,azioni:'Custom edit'}),undefined,'Ed
 const custom={...sample,azioni:'Custom edit'};
 assert.equal(previewMonsters([goblin,custom],'preview').find(m=>m.id==='aboleth'),custom);
 assert.equal(previewMonsters([goblin,custom],'preview').length,2);
+assert.equal(previewMonsters([goblin,custom],'production').find(m=>m.id==='aboleth'),custom);
 
 // Render the real detail page: a missing PX label must fail this assertion.
 function loadTs(relativePath, dependencies={}) {
@@ -76,4 +79,4 @@ assert.ok(!labeledHeader.includes('PX 50 PX'));
 selected={...sample,px:''};
 const noXpHtml=renderToStaticMarkup(await page({params:Promise.resolve({id:'aboleth'})}));
 assert.ok(!noXpHtml.match(/<header[\s\S]*?<\/header>/)[0].includes(' · PX'),'An empty XP value must not leave a dangling label');
-console.log('[monsters] Aboleth sample statistics, preview isolation, existing records and exact-source attribution verified.');
+console.log('[monsters] Aboleth statistics, production/preview parity, existing records, PX label and exact-source attribution verified.');
