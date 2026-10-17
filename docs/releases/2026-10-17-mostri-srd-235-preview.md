@@ -2,8 +2,8 @@
 
 Richiesta autorizzata: integrazione nativa confermata da Daniele il 17 ottobre 2026. Solo preview.
 
-- Preview verificata: https://grimorioapp2024-94saaejdg-grimorio-app.vercel.app/bestiario
-- Commit applicativo verificato: ea622bfe660b641995da8108ef49a85b215ced8f.
+- Preview verificata: https://grimorioapp2024-9efhutb3z-grimorio-app.vercel.app/bestiario
+- Commit applicativo verificato: ad4f1539a94499e4bf77033cd13cc0452e92c43f.
 - Branch: preview/mostri-srd-235-20261017.
 - Produzione invariata: e79551b41bbd19ed56a2966e6917c73a1790a5c8, deployment dpl_A5x5NQKCV9Z4VE96eq7G6juwdfDD.
 - 235 schede uniche dalle pagine 294–384, Aboleth compreso. Esclusi animali e sei blocchi speciali.
@@ -25,8 +25,8 @@ Richiesta autorizzata: integrazione nativa confermata da Daniele il 17 ottobre 2
 ## Verifiche incomplete
 
 - Responsive 390/430 px e dispositivo fisico iPhone: non verificati. Il browser locale di test non può avviarsi per socket() Operation not permitted; il browser cloud disponibile non espone il ridimensionamento del viewport. Non è un errore osservato dell'app.
-- Round trip dei preferiti in browser: non eseguito. Il controllo automatico ha respinto il tentativo di clic perché considerato modifica dell'app sotto il precedente vincolo di sola lettura. Nessun dato preferiti è stato cambiato. ID e integrazione restano coperti dai test locali.
-- Lo status non è ready e qaPassed non è true finché queste verifiche non sono completate; nessuna attestazione anticipata per l'automazione.
+
+- Lo status non è ready e qaPassed non è true finché la verifica mobile non è completata; nessuna attestazione anticipata per l'automazione.
 
 ## Decisioni esecutive
 
@@ -34,3 +34,14 @@ Richiesta autorizzata: integrazione nativa confermata da Daniele il 17 ottobre 2
 - Boleto stridente conserva solo la reazione ufficiale: nessuna azione inventata per riempire il campo.
 - Sottotitolo ufficiale conservato integralmente; categorie canoniche per ricerca e filtri, comprese varianti di taglia. Se la categorizzazione fosse errata potrebbe incidere sul filtro, non sui testi mostrati.
 - La build locale usa webpack solo per il limite Turbopack relativo al symlink node_modules della snapshot; nessuna modifica di configurazione dell'app.
+
+## Prova preferiti autorizzata e correzione
+
+Daniele ha approvato esplicitamente la prova temporanea di aggiunta e rimozione.
+La prima esecuzione ha rilevato che la pagina preesistente caricava soltanto gli incantesimi: i mostri venivano salvati ma non visualizzati. Corretto esclusivamente sul branch preview, caricando anche i mostri e presentando due sezioni con conteggi separati. Chiave localStorage e ID invariati.
+
+- Test di regressione sulla pagina effettiva: RED mostro salvato assente -> GREEN; verifica namespace con ID uguali, preferiti misti, rimozione e stato di caricamento.
+- Suite completa e build webpack passate; build Vercel READY sul commit ad4f1539a94499e4bf77033cd13cc0452e92c43f.
+- Browser sulla nuova preview: aggiunta Orda di artigli striscianti, presenza nella pagina Preferiti, persistenza dopo ricarica, rimozione e ripristino dello stato iniziale 0 incantesimi / 0 mostri.
+- Nessun dato di test lasciato nei preferiti. Produzione non pubblicata.
+- Rimane non verificato soltanto il layout mobile a 390/430 px e su dispositivo fisico.
