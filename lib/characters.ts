@@ -5,6 +5,7 @@ export type Resource = {id:string; name:string; current:number; max:number; reco
 export type Attack = {id:string; name:string; bonus:string; damage:string; notes:string};
 export type Item = {id:string; name:string; quantity:number; weight:string; equipped:boolean};
 export type Character = {
+ paperFields?:Record<string,string|boolean>;
  id:string; name:string; className:string; subclass:string; species:string; background:string; level:number; description:string;
  scores:Record<Ability,number>; saves:Partial<Record<Ability,boolean>>; skills:Record<string,{rank:number;bonus:number}>;
  ac:number; speed:number; initiativeBonus:number; initiativeOverride:string; hpMax:number; hp:number; tempHp:number; hitDice:string;

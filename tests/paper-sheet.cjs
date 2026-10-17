@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict');const fs=require('node:fs');const ts=require('typescript');
+require.extensions['.ts']=(mod,file)=>mod._compile(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,file);
+assert.ok(fs.existsSync('lib/paper-sheet.ts'),'Paper sheet bridge is not implemented');
+const {getPaperValue,setPaperValue}=require('../lib/paper-sheet.ts');
+const {createCharacter}=require('../lib/characters.ts');
+let c=createCharacter('Aria');
+assert.equal(getPaperValue(c,'Nome'),'Aria');
+c=setPaperValue(c,'Forza 1','17');assert.equal(c.scores.Forza,17);assert.equal(getPaperValue(c,'Forza 2'),'+3');
+c=setPaperValue(c,'PUNTI FERITA TOTALI','30');c=setPaperValue(c,'Ferite','22');assert.equal(c.hpMax,30);assert.equal(c.hp,22);
+c=setPaperValue(c,'Forza ts',true);assert.equal(c.saves.Forza,true);assert.equal(getPaperValue(c,'Forza ts 2'),'+5');
+c=setPaperValue(c,'Nome','  ');assert.equal(c.name,'Personaggio senza nome');
+c=setPaperValue(c,'Note.0','Testo personale');assert.equal(getPaperValue(c,'Note.0'),'Testo personale');
+c=setPaperValue(c,'slot01',true);assert.equal(getPaperValue(c,'slot01'),true);
+c=setPaperValue(c,'slot01',false);assert.equal(getPaperValue(c,'slot01'),false);
+c=setPaperValue(c,'Classe e livello','Mago 5');assert.equal(c.level,5);assert.equal(c.className,'Mago');
+c=setPaperValue(c,'MP.1','120');assert.equal(c.coins.mo,120);
+const f=JSON.parse(fs.readFileSync('lib/data/character-paper-fields.json'));
+assert.equal(f.fields.length,902);assert.equal(new Set(f.fields.map(x=>x.name)).size,902);
+for(const field of f.fields){assert.ok(field.page>=1&&field.page<=4);assert.ok(field.rect[0]>=0&&field.rect[1]>=0&&field.rect[2]<=596&&field.rect[3]<=842)}
+for(let page=1;page<=4;page++)assert.ok(fs.statSync(`public/character-sheet/page-${page}.jpg`).size>10000);
+console.log('Paper sheet: 902 fields, four page assets, geometry, mapped stats, free notes, checkbox states and shared HP passed');

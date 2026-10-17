@@ -131,3 +131,25 @@
   animation: dice-settle 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-style: preserve-3d;
 }
+
+/* Original A4 character sheet: proportional native form fields. */
+.paper-field{position:absolute;margin:0;border:0;border-radius:0;padding:0 .12em;background:transparent;color:#102d55;font-family:Arial,Helvetica,sans-serif;line-height:1.1;box-sizing:border-box;min-width:0;outline-offset:0;color-scheme:light}
+.paper-text{text-align:left;resize:none;overflow:hidden}
+.paper-text:focus{background:#eef7ff;outline:1.5px solid #2474bf;z-index:2}
+.paper-checkbox{appearance:none;cursor:pointer;display:grid;place-items:center;outline:1px solid #444;outline-offset:-1px;background:#fff}
+.paper-checkbox:checked::after{content:'✓';font-family:Arial,sans-serif;font-size:1.4cqw;font-weight:bold;color:#122b48;line-height:1}
+.paper-checkbox:focus-visible{outline:2px solid #2474bf;z-index:3}
+.paper-page[data-highlight="true"] .paper-text{background:rgba(41,128,190,.08);box-shadow:inset 0 0 0 .5px rgba(41,128,190,.35)}
+.paper-page[data-highlight="true"] .paper-checkbox{background:#e8f4ff}
+@media print {
+ @page{size:A4;margin:0}
+ body:has(.paper-view),body:has(.paper-view)>div,body:has(.paper-view) main,body:has(.paper-view) main>div{background:white!important;border:0!important;margin:0!important;padding:0!important;max-width:none!important;width:100%!important}
+ body:has(.paper-view) nav,body:has(.paper-view) header,body:has(.paper-view) footer,body:has(.paper-view) aside,body:has(.paper-view) main>div>*:not(.paper-view){display:none!important}
+ .paper-view{display:block!important;margin:0!important;padding:0!important}
+ .paper-toolbar,.paper-credit{display:none!important}
+ .paper-scroll{padding:0!important;margin:0!important;border:0!important;overflow:visible!important}
+ .paper-stack{width:100%!important}
+ .paper-page{display:block!important;break-after:page;width:210mm;height:297mm;box-shadow:none!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .paper-page:last-child{break-after:auto}
+ .paper-field{box-shadow:none!important;background:transparent!important;outline:0!important}
+}
