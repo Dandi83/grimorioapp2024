@@ -123,7 +123,7 @@ export default async function MonsterDetailPage({
               style={{ backgroundColor: color }}
             />
             {gsLabel(monster.grado_sfida)}
-            {monster.px ? ` · ${monster.px}` : ""}
+            {monster.px ? ` · ${/\b(?:PX|PE|XP)\b/i.test(monster.px) ? "" : "PX "}${monster.px}` : ""}
           </span>
           <h1 className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
             {monster.nome}

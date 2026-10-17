@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import {readFileSync, existsSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import ts from 'typescript';
+import {createElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
 
 const require=createRequire(import.meta.url);
 const helper=new URL('../lib/srd-monsters.ts',import.meta.url);
@@ -41,4 +43,37 @@ assert.equal(getSrdMonsterSource({...sample,azioni:'Custom edit'}),undefined,'Ed
 const custom={...sample,azioni:'Custom edit'};
 assert.equal(previewMonsters([goblin,custom],'preview').find(m=>m.id==='aboleth'),custom);
 assert.equal(previewMonsters([goblin,custom],'preview').length,2);
+
+// Render the real detail page: a missing PX label must fail this assertion.
+function loadTs(relativePath, dependencies={}) {
+  const output=ts.transpileModule(readFileSync(new URL(relativePath,import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
+  const loaded={exports:{}};
+  new Function('require','module','exports',output)(id=>dependencies[id]??require(id),loaded,loaded.exports);
+  return loaded.exports;
+}
+let selected=sample;
+const page=loadTs('../app/mostro/[id]/page.tsx',{
+  'next/image':{__esModule:true,default:()=>null},
+  'next/link':{__esModule:true,default:({children,...props})=>createElement('a',props,children)},
+  'next/navigation':{notFound:()=>{throw new Error('Not found');}},
+  '@/components/back-button':{BackButton:()=>null},
+  '@/components/favorite-button':{FavoriteButton:()=>null},
+  '@/components/html-text':loadTs('../components/html-text.tsx'),
+  '@/lib/monsters':{getMonsterById:async id=>id===selected.id?selected:undefined},
+  '@/lib/monsters-types':loadTs('../lib/monsters-types.ts'),
+  '@/lib/srd-monsters':mod.exports,
+}).default;
+const html=renderToStaticMarkup(await page({params:Promise.resolve({id:'aboleth'})}));
+const header=html.match(/<header[\s\S]*?<\/header>/)[0].replace(/<[^>]+>/g,'');
+assert.ok(header.includes('GS 10 · PX 5.900, o 7.200 nella tana'),'Experience values must be explicitly labeled PX in the monster header');
+assert.ok(html.includes('#page=294'));
+assert.ok(html.includes('Attribuzione e licenza'));
+selected={...sample,px:'50 PX'};
+const labeledHtml=renderToStaticMarkup(await page({params:Promise.resolve({id:'aboleth'})}));
+const labeledHeader=labeledHtml.match(/<header[\s\S]*?<\/header>/)[0].replace(/<[^>]+>/g,'');
+assert.ok(labeledHeader.includes('GS 10 · 50 PX'),'Existing PX labels must be preserved without duplication');
+assert.ok(!labeledHeader.includes('PX 50 PX'));
+selected={...sample,px:''};
+const noXpHtml=renderToStaticMarkup(await page({params:Promise.resolve({id:'aboleth'})}));
+assert.ok(!noXpHtml.match(/<header[\s\S]*?<\/header>/)[0].includes(' · PX'),'An empty XP value must not leave a dangling label');
 console.log('[monsters] Aboleth sample statistics, preview isolation, existing records and exact-source attribution verified.');
