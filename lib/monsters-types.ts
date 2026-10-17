@@ -11,6 +11,10 @@ export interface Monster {
   px: string;
   classe_armatura: string;
   iniziativa?: string;
+  sottotitolo_fonte?: string;
+  azioni_bonus?: string;
+  attrezzatura?: string;
+  immunita?: string;
   bonus_competenza?: string;
   punti_ferita: string;
   velocita: string;
@@ -78,6 +82,9 @@ export function parseGs(gs: string): number {
 /** Categoria di tipo (prima parola nota) da "Umanoide (goblinoide)" -> "Umanoide". */
 export function typeCategory(tipo: string): string {
   const t = (tipo || "").toLowerCase();
+  if (t.includes("folletto")) return "Fata";
+  if (t.includes("vegetale")) return "Pianta";
+  if (/non mort[oi]/.test(t)) return "Non morto";
   for (const k of TYPE_KEYWORDS) {
     if (t.includes(k.toLowerCase())) return k;
   }

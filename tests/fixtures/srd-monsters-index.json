@@ -1,0 +1,942 @@
+[
+  {
+    "name": "Aboleth",
+    "page": 294
+  },
+  {
+    "name": "Albero risvegliato",
+    "page": 381
+  },
+  {
+    "name": "Ameba paglierina",
+    "page": 294
+  },
+  {
+    "name": "Ankheg",
+    "page": 295
+  },
+  {
+    "name": "Arcimago",
+    "page": 351
+  },
+  {
+    "name": "Armatura animata",
+    "page": 361
+  },
+  {
+    "name": "Arpia",
+    "page": 295
+  },
+  {
+    "name": "Arto di troll",
+    "page": 378
+  },
+  {
+    "name": "Assassino",
+    "page": 296
+  },
+  {
+    "name": "Azer sentinella",
+    "page": 296
+  },
+  {
+    "name": "Balor",
+    "page": 296
+  },
+  {
+    "name": "Bandito",
+    "page": 297
+  },
+  {
+    "name": "Basilisco",
+    "page": 297
+  },
+  {
+    "name": "Beccoaguzzo",
+    "page": 298
+  },
+  {
+    "name": "Behir",
+    "page": 298
+  },
+  {
+    "name": "Berserker",
+    "page": 298
+  },
+  {
+    "name": "Boleto stridente",
+    "page": 335
+  },
+  {
+    "name": "Bruto",
+    "page": 299
+  },
+  {
+    "name": "Bugbear cacciatore",
+    "page": 299
+  },
+  {
+    "name": "Bugbear guerriero",
+    "page": 299
+  },
+  {
+    "name": "Bulette",
+    "page": 300
+  },
+  {
+    "name": "Cacciatore invisibile",
+    "page": 300
+  },
+  {
+    "name": "Cane della morte",
+    "page": 300
+  },
+  {
+    "name": "Cane intermittente",
+    "page": 301
+  },
+  {
+    "name": "Capitano dei pirati",
+    "page": 364
+  },
+  {
+    "name": "Capitano delle guardie",
+    "page": 344
+  },
+  {
+    "name": "Capo dei banditi",
+    "page": 297
+  },
+  {
+    "name": "Capo dei bruti",
+    "page": 299
+  },
+  {
+    "name": "Cavaliere",
+    "page": 301
+  },
+  {
+    "name": "Cavallo degli incubi",
+    "page": 301
+  },
+  {
+    "name": "Centauro combattente",
+    "page": 302
+  },
+  {
+    "name": "Cespuglio risvegliato",
+    "page": 381
+  },
+  {
+    "name": "Chimera",
+    "page": 302
+  },
+  {
+    "name": "Chuul",
+    "page": 302
+  },
+  {
+    "name": "Cinghiale mannaro",
+    "page": 303
+  },
+  {
+    "name": "Coboldo guerriero",
+    "page": 303
+  },
+  {
+    "name": "Coccatrice",
+    "page": 303
+  },
+  {
+    "name": "Couatl",
+    "page": 304
+  },
+  {
+    "name": "Cubo gelatinoso",
+    "page": 304
+  },
+  {
+    "name": "Cultista",
+    "page": 305
+  },
+  {
+    "name": "Cultista fanatico",
+    "page": 305
+  },
+  {
+    "name": "Cumulo strisciante",
+    "page": 305
+  },
+  {
+    "name": "Deva",
+    "page": 306
+  },
+  {
+    "name": "Diavolo barbuto",
+    "page": 306
+  },
+  {
+    "name": "Diavolo cornuto",
+    "page": 306
+  },
+  {
+    "name": "Diavolo del ghiaccio",
+    "page": 307
+  },
+  {
+    "name": "Diavolo della fossa",
+    "page": 307
+  },
+  {
+    "name": "Diavolo delle catene",
+    "page": 308
+  },
+  {
+    "name": "Diavolo d'ossa",
+    "page": 308
+  },
+  {
+    "name": "Diavolo uncinato",
+    "page": 309
+  },
+  {
+    "name": "Djinni",
+    "page": 309
+  },
+  {
+    "name": "Doppelganger",
+    "page": 310
+  },
+  {
+    "name": "Drago bianco adulto",
+    "page": 311
+  },
+  {
+    "name": "Drago bianco antico",
+    "page": 312
+  },
+  {
+    "name": "Drago bianco cucciolo",
+    "page": 310
+  },
+  {
+    "name": "Drago bianco giovane",
+    "page": 311
+  },
+  {
+    "name": "Drago blu adulto",
+    "page": 313
+  },
+  {
+    "name": "Drago blu antico",
+    "page": 313
+  },
+  {
+    "name": "Drago blu cucciolo",
+    "page": 312
+  },
+  {
+    "name": "Drago blu giovane",
+    "page": 312
+  },
+  {
+    "name": "Drago d'argento adulto",
+    "page": 314
+  },
+  {
+    "name": "Drago d'argento antico",
+    "page": 315
+  },
+  {
+    "name": "Drago d'argento cucciolo",
+    "page": 314
+  },
+  {
+    "name": "Drago d'argento giovane",
+    "page": 314
+  },
+  {
+    "name": "Drago di bronzo adulto",
+    "page": 316
+  },
+  {
+    "name": "Drago di bronzo antico",
+    "page": 317
+  },
+  {
+    "name": "Drago di bronzo cucciolo",
+    "page": 316
+  },
+  {
+    "name": "Drago di bronzo giovane",
+    "page": 316
+  },
+  {
+    "name": "Drago di rame adulto",
+    "page": 318
+  },
+  {
+    "name": "Drago di rame antico",
+    "page": 319
+  },
+  {
+    "name": "Drago di rame cucciolo",
+    "page": 317
+  },
+  {
+    "name": "Drago di rame giovane",
+    "page": 318
+  },
+  {
+    "name": "Drago d'oro adulto",
+    "page": 320
+  },
+  {
+    "name": "Drago d'oro antico",
+    "page": 321
+  },
+  {
+    "name": "Drago d'oro cucciolo",
+    "page": 319
+  },
+  {
+    "name": "Drago d'oro giovane",
+    "page": 320
+  },
+  {
+    "name": "Drago d'ottone adulto",
+    "page": 322
+  },
+  {
+    "name": "Drago d'ottone antico",
+    "page": 323
+  },
+  {
+    "name": "Drago d'ottone cucciolo",
+    "page": 322
+  },
+  {
+    "name": "Drago d'ottone giovane",
+    "page": 322
+  },
+  {
+    "name": "Drago nero adulto",
+    "page": 324
+  },
+  {
+    "name": "Drago nero antico",
+    "page": 325
+  },
+  {
+    "name": "Drago nero cucciolo",
+    "page": 324
+  },
+  {
+    "name": "Drago nero giovane",
+    "page": 324
+  },
+  {
+    "name": "Drago rosso adulto",
+    "page": 326
+  },
+  {
+    "name": "Drago rosso antico",
+    "page": 326
+  },
+  {
+    "name": "Drago rosso cucciolo",
+    "page": 325
+  },
+  {
+    "name": "Drago rosso giovane",
+    "page": 325
+  },
+  {
+    "name": "Drago verde adulto",
+    "page": 327
+  },
+  {
+    "name": "Drago verde antico",
+    "page": 328
+  },
+  {
+    "name": "Drago verde cucciolo",
+    "page": 327
+  },
+  {
+    "name": "Drago verde giovane",
+    "page": 327
+  },
+  {
+    "name": "Dretch",
+    "page": 328
+  },
+  {
+    "name": "Driade",
+    "page": 329
+  },
+  {
+    "name": "Drider",
+    "page": 329
+  },
+  {
+    "name": "Druido",
+    "page": 330
+  },
+  {
+    "name": "Efreeti",
+    "page": 330
+  },
+  {
+    "name": "Elementale del fuoco",
+    "page": 330
+  },
+  {
+    "name": "Elementale dell'acqua",
+    "page": 331
+  },
+  {
+    "name": "Elementale dell'aria",
+    "page": 331
+  },
+  {
+    "name": "Elementale della terra",
+    "page": 332
+  },
+  {
+    "name": "Erinni",
+    "page": 332
+  },
+  {
+    "name": "Esploratore",
+    "page": 333
+  },
+  {
+    "name": "Ettercap",
+    "page": 333
+  },
+  {
+    "name": "Ettin",
+    "page": 333
+  },
+  {
+    "name": "Famiglio del vampiro",
+    "page": 379
+  },
+  {
+    "name": "Fantasma",
+    "page": 334
+  },
+  {
+    "name": "Fauce gorgogliante",
+    "page": 334
+  },
+  {
+    "name": "Fungo viola",
+    "page": 335
+  },
+  {
+    "name": "Fuoco fatuo",
+    "page": 335
+  },
+  {
+    "name": "Fustigatore",
+    "page": 335
+  },
+  {
+    "name": "Gargoyle",
+    "page": 336
+  },
+  {
+    "name": "Ghast",
+    "page": 336
+  },
+  {
+    "name": "Ghoul",
+    "page": 336
+  },
+  {
+    "name": "Gigante del fuoco",
+    "page": 337
+  },
+  {
+    "name": "Gigante del gelo",
+    "page": 337
+  },
+  {
+    "name": "Gigante delle colline",
+    "page": 337
+  },
+  {
+    "name": "Gigante delle nuvole",
+    "page": 338
+  },
+  {
+    "name": "Gigante delle pietre",
+    "page": 338
+  },
+  {
+    "name": "Gigante delle tempeste",
+    "page": 338
+  },
+  {
+    "name": "Glabrezu",
+    "page": 339
+  },
+  {
+    "name": "Gladiatore",
+    "page": 339
+  },
+  {
+    "name": "Gnoll guerriero",
+    "page": 340
+  },
+  {
+    "name": "Goblin capo",
+    "page": 340
+  },
+  {
+    "name": "Goblin guerriero",
+    "page": 340
+  },
+  {
+    "name": "Goblin tirapiedi",
+    "page": 340
+  },
+  {
+    "name": "Golem di argilla",
+    "page": 341
+  },
+  {
+    "name": "Golem di carne",
+    "page": 341
+  },
+  {
+    "name": "Golem di ferro",
+    "page": 342
+  },
+  {
+    "name": "Golem di pietra",
+    "page": 342
+  },
+  {
+    "name": "Gorgone",
+    "page": 342
+  },
+  {
+    "name": "Grick",
+    "page": 343
+  },
+  {
+    "name": "Grifone",
+    "page": 343
+  },
+  {
+    "name": "Grimlock",
+    "page": 343
+  },
+  {
+    "name": "Guardia",
+    "page": 344
+  },
+  {
+    "name": "Guardiano protettore",
+    "page": 343
+  },
+  {
+    "name": "Guerriero di fanteria",
+    "page": 344
+  },
+  {
+    "name": "Guerriero veterano",
+    "page": 345
+  },
+  {
+    "name": "Hezrou",
+    "page": 345
+  },
+  {
+    "name": "Hobgoblin capitano",
+    "page": 346
+  },
+  {
+    "name": "Hobgoblin guerriero",
+    "page": 345
+  },
+  {
+    "name": "Idra",
+    "page": 346
+  },
+  {
+    "name": "Imp",
+    "page": 346
+  },
+  {
+    "name": "Incubo",
+    "page": 347
+  },
+  {
+    "name": "Ippogrifo",
+    "page": 347
+  },
+  {
+    "name": "Kraken",
+    "page": 347
+  },
+  {
+    "name": "Lamia",
+    "page": 348
+  },
+  {
+    "name": "Lemure",
+    "page": 348
+  },
+  {
+    "name": "Lich",
+    "page": 349
+  },
+  {
+    "name": "Lupo invernale",
+    "page": 349
+  },
+  {
+    "name": "Lupo mannaro",
+    "page": 350
+  },
+  {
+    "name": "Magmin",
+    "page": 351
+  },
+  {
+    "name": "Mago",
+    "page": 350
+  },
+  {
+    "name": "Manticora",
+    "page": 351
+  },
+  {
+    "name": "Manto assassino",
+    "page": 352
+  },
+  {
+    "name": "Mantoscuro",
+    "page": 352
+  },
+  {
+    "name": "Marilith",
+    "page": 352
+  },
+  {
+    "name": "Marinide schermagliatore",
+    "page": 353
+  },
+  {
+    "name": "Medusa",
+    "page": 353
+  },
+  {
+    "name": "Megera marina",
+    "page": 354
+  },
+  {
+    "name": "Megera notturna",
+    "page": 354
+  },
+  {
+    "name": "Megera verde",
+    "page": 355
+  },
+  {
+    "name": "Melma grigia",
+    "page": 355
+  },
+  {
+    "name": "Mephit del ghiaccio",
+    "page": 356
+  },
+  {
+    "name": "Mephit della polvere",
+    "page": 357
+  },
+  {
+    "name": "Mephit del magma",
+    "page": 356
+  },
+  {
+    "name": "Mephit del vapore",
+    "page": 356
+  },
+  {
+    "name": "Merrow",
+    "page": 357
+  },
+  {
+    "name": "Mezzodrago",
+    "page": 357
+  },
+  {
+    "name": "Mimic",
+    "page": 358
+  },
+  {
+    "name": "Minotauro di Baphomet",
+    "page": 358
+  },
+  {
+    "name": "Mummia",
+    "page": 358
+  },
+  {
+    "name": "Naga guardiana",
+    "page": 359
+  },
+  {
+    "name": "Naga spirituale",
+    "page": 360
+  },
+  {
+    "name": "Nalfeshnee",
+    "page": 360
+  },
+  {
+    "name": "Nobile",
+    "page": 361
+  },
+  {
+    "name": "Ogre",
+    "page": 362
+  },
+  {
+    "name": "Ombra",
+    "page": 362
+  },
+  {
+    "name": "Omuncolo",
+    "page": 362
+  },
+  {
+    "name": "Oni",
+    "page": 363
+  },
+  {
+    "name": "Orda di artigli striscianti",
+    "page": 295
+  },
+  {
+    "name": "Orsogufo",
+    "page": 363
+  },
+  {
+    "name": "Orso mannaro",
+    "page": 363
+  },
+  {
+    "name": "Otyugh",
+    "page": 364
+  },
+  {
+    "name": "Pegaso",
+    "page": 364
+  },
+  {
+    "name": "Pirata",
+    "page": 364
+  },
+  {
+    "name": "Planetar",
+    "page": 365
+  },
+  {
+    "name": "Popolano",
+    "page": 365
+  },
+  {
+    "name": "Progenie vampirica",
+    "page": 380
+  },
+  {
+    "name": "Protoplasma nero",
+    "page": 366
+  },
+  {
+    "name": "Pseudodrago",
+    "page": 366
+  },
+  {
+    "name": "Quasit",
+    "page": 366
+  },
+  {
+    "name": "Ragno-fase",
+    "page": 367
+  },
+  {
+    "name": "Rakshasa",
+    "page": 367
+  },
+  {
+    "name": "Remorhaz",
+    "page": 368
+  },
+  {
+    "name": "Roc",
+    "page": 368
+  },
+  {
+    "name": "Rugginofago",
+    "page": 369
+  },
+  {
+    "name": "Sacerdote",
+    "page": 369
+  },
+  {
+    "name": "Sacerdote accolito",
+    "page": 369
+  },
+  {
+    "name": "Sahuagin guerriero",
+    "page": 370
+  },
+  {
+    "name": "Salamandra",
+    "page": 370
+  },
+  {
+    "name": "Satiro",
+    "page": 370
+  },
+  {
+    "name": "Scheletro",
+    "page": 371
+  },
+  {
+    "name": "Scheletro di cavallo da guerra",
+    "page": 371
+  },
+  {
+    "name": "Scheletro di minotauro",
+    "page": 371
+  },
+  {
+    "name": "Segugio infernale",
+    "page": 371
+  },
+  {
+    "name": "Sfinge della conoscenza",
+    "page": 372
+  },
+  {
+    "name": "Sfinge della meraviglia",
+    "page": 372
+  },
+  {
+    "name": "Sfinge del valore",
+    "page": 373
+  },
+  {
+    "name": "Signore delle mummie",
+    "page": 359
+  },
+  {
+    "name": "Solar",
+    "page": 373
+  },
+  {
+    "name": "Spada volante animata",
+    "page": 361
+  },
+  {
+    "name": "Spettro",
+    "page": 374
+  },
+  {
+    "name": "Spia",
+    "page": 374
+  },
+  {
+    "name": "Spiritello",
+    "page": 375
+  },
+  {
+    "name": "Succube",
+    "page": 375
+  },
+  {
+    "name": "Tappeto soffocante animato",
+    "page": 361
+  },
+  {
+    "name": "Tarrasque",
+    "page": 375
+  },
+  {
+    "name": "Testuggine dragona",
+    "page": 376
+  },
+  {
+    "name": "Tigre mannara",
+    "page": 377
+  },
+  {
+    "name": "Topo mannaro",
+    "page": 377
+  },
+  {
+    "name": "Treant",
+    "page": 377
+  },
+  {
+    "name": "Troll",
+    "page": 378
+  },
+  {
+    "name": "Uccello stigeo",
+    "page": 378
+  },
+  {
+    "name": "Unicorno",
+    "page": 379
+  },
+  {
+    "name": "Vampiro",
+    "page": 380
+  },
+  {
+    "name": "Verme purpureo",
+    "page": 382
+  },
+  {
+    "name": "Viverna",
+    "page": 382
+  },
+  {
+    "name": "Vrock",
+    "page": 382
+  },
+  {
+    "name": "Wight",
+    "page": 383
+  },
+  {
+    "name": "Worg",
+    "page": 383
+  },
+  {
+    "name": "Wraith",
+    "page": 383
+  },
+  {
+    "name": "Xorn",
+    "page": 384
+  },
+  {
+    "name": "Zombi",
+    "page": 384
+  },
+  {
+    "name": "Zombi ogre",
+    "page": 384
+  }
+]

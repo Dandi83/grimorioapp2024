@@ -11,7 +11,7 @@ assert.ok(existsSync(helper),'The approved Aboleth must be available without cha
 const data=JSON.parse(readFileSync(new URL('../lib/data/srd-monster-sample.json',import.meta.url),'utf8'));
 const code=ts.transpileModule(readFileSync(helper,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText;
 const mod={exports:{}};
-new Function('require','module','exports',code)(id=>id.endsWith('srd-monster-sample.json')?data:require(id),mod,mod.exports);
+new Function('require','module','exports',code)(id=>id.endsWith('.json')?JSON.parse(readFileSync(new URL('../lib/'+id.replace(/^\.\//,''),import.meta.url),'utf8')):require(id),mod,mod.exports);
 const {previewMonsters,previewMonsterById,getSrdMonsterSource}=mod.exports;
 const goblin={id:'goblin',nome:'Goblin',descrizione:'Existing custom text'};
 const rows=[goblin];
@@ -21,7 +21,7 @@ assert.equal(previewMonsterById('aboleth','production')?.nome,'Aboleth','Publish
 assert.equal(previewMonsterById('aboleth',undefined),undefined);
 assert.equal(previewMonsterById('unknown','preview'),undefined);
 const staged=previewMonsters(rows,'preview');
-assert.equal(staged.length,2);
+assert.equal(staged.length,236);
 assert.equal(rows.length,1);
 assert.equal(staged.find(m=>m.id==='goblin'),goblin);
 const sample=previewMonsterById('aboleth','preview');
@@ -44,7 +44,7 @@ assert.equal(getSrdMonsterSource(sample).page,294);
 assert.equal(getSrdMonsterSource({...sample,azioni:'Custom edit'}),undefined,'Edited content must not be labeled as an exact SRD transcription');
 const custom={...sample,azioni:'Custom edit'};
 assert.equal(previewMonsters([goblin,custom],'preview').find(m=>m.id==='aboleth'),custom);
-assert.equal(previewMonsters([goblin,custom],'preview').length,2);
+assert.equal(previewMonsters([goblin,custom],'preview').length,236);
 assert.equal(previewMonsters([goblin,custom],'production').find(m=>m.id==='aboleth'),custom);
 
 // Render the real detail page: a missing PX label must fail this assertion.

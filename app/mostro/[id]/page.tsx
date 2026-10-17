@@ -88,7 +88,7 @@ export default async function MonsterDetailPage({
 
   const color = monsterColor(monster.tipo);
   const source = getSrdMonsterSource(monster);
-  const sottotitolo = [monster.taglia, monster.tipo, monster.allineamento]
+  const sottotitolo = monster.sottotitolo_fonte || [monster.taglia, monster.tipo, monster.allineamento]
     .filter(Boolean)
     .join(" · ");
 
@@ -164,6 +164,8 @@ export default async function MonsterDetailPage({
         monster.abilita ||
         monster.vulnerabilita ||
         monster.resistenze ||
+        monster.immunita ||
+        monster.attrezzatura ||
         monster.immunita_danni ||
         monster.immunita_condizioni ||
         monster.sensi ||
@@ -178,6 +180,8 @@ export default async function MonsterDetailPage({
             label="Immunità alle Condizioni"
             value={monster.immunita_condizioni}
           />
+          <StatLine label="Immunità" value={monster.immunita || ""} />
+          <StatLine label="Attrezzatura" value={monster.attrezzatura || ""} />
           <StatLine label="Sensi" value={monster.sensi} />
           <StatLine label="Linguaggi" value={monster.linguaggi} />
         </section>
@@ -185,6 +189,7 @@ export default async function MonsterDetailPage({
 
       <Section title="Tratti" html={monster.tratti} />
       <Section title="Azioni" html={monster.azioni} />
+      <Section title="Azioni Bonus" html={monster.azioni_bonus || ""} />
       <Section title="Reazioni" html={monster.reazioni} />
       <Section title="Azioni Leggendarie" html={monster.azioni_leggendarie} />
       <Section title="Descrizione" html={monster.descrizione} />
