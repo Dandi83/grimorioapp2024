@@ -1,0 +1,15 @@
+{
+  "status": "preview_available_qa_pending",
+  "srdCount": 235,
+  "qaPassed": false,
+  "productionChanged": false,
+  "commit": "ea622bfe660b641995da8108ef49a85b215ced8f",
+  "previewUrl": "https://grimorioapp2024-94saaejdg-grimorio-app.vercel.app/bestiario",
+  "sourceAndLocalTestsPassed": true,
+  "liveDetailPagesPassed": 235,
+  "pendingChecks": [
+    "Responsive layout at 390 and 430 px / physical iPhone",
+    "Browser favorites add/remove round trip"
+  ],
+  "report": "docs/releases/2026-10-17-mostri-srd-235-preview.md"
+}
