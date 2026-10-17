@@ -17,6 +17,7 @@ assert.ok(!detailPage.includes('Riscontro consultato'), 'Remove the consulted re
 assert.ok(detailPage.includes('Scheda completa dello spirito 2024'), 'Keep the required summoned spirit stat block links');
 const canonical = JSON.parse(readFileSync(new URL('lib/data/srd-italiano-5.2.1.json', root), 'utf8'));
 const legacy = JSON.parse(readFileSync(new URL('lib/data/srd-revisions-20261017.json', root), 'utf8'));
+expected.push(...legacy.excluded.map(spell => spell.id));
 function loadTs(relative) {
   const url = new URL(relative, root);
   const source = ts.transpileModule(readFileSync(url, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2017, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true } }).outputText;
@@ -29,7 +30,7 @@ function loadTs(relative) {
   }, mod, mod.exports);
   return mod.exports;
 }
-assert.equal(data.spells.length, 39);
+assert.equal(data.spells.length, 49);
 assert.deepEqual(data.spells.map(s => s.id).sort(), [...expected].sort());
 assert.deepEqual(JSON.parse(readFileSync(new URL('lib/data/original-description-ids.json',root),'utf8')).sort(), [...expected].sort());
 const { applyOriginalDescription, getOriginalSource } = loadTs('lib/original-descriptions.ts');
@@ -42,7 +43,6 @@ for (const spell of data.spells) {
   assert.ok(spell.sourceUrl.startsWith('https://roll20.net/compendium/dnd5e/Spells:'), spell.id);
   assert.ok(spell.referenceUrl.startsWith('https://'), spell.id);
   assert.ok(!canonical.spells.some(s => s.id === spell.id));
-  assert.ok(!legacy.excluded.some(s => s.id === spell.id));
   assert.equal(isOriginalDescription(spell.id), true);
   assert.equal(hasUnverifiedDescription(spell.id), true);
   const empty = { id: spell.id, nome_italiano: 'KEEP NAME', descrizione: '  ', extra: 'keep' };
@@ -72,7 +72,7 @@ for (const spell of legacy.excluded) {
   const row = { id: spell.id, descrizione: 'Preesistente' };
   assert.equal(applyOriginalDescription(row), row);
   assert.equal(hasUnverifiedDescription(spell.id), true);
-  assert.equal(isOriginalDescription(spell.id), false);
+  assert.equal(isOriginalDescription(spell.id), true);
 }
 const unknown = { id: 'unknown', descrizione: '' };
 assert.equal(applyOriginalDescription(unknown), unknown);
@@ -87,4 +87,13 @@ assert.match(byId['parola-del-potere-fortificare'].descrizione, /120/);
 assert.match(byId['morte-apparente'].livello, /3°/);
 assert.match(byId['richiama-non-morto'].livello, /3°/);
 assert.match(byId['scheggia-della-mente'].livello, /Ammaliamento/);
-console.log('[originals] 39 original 2024 descriptions; 49 markers; preservation, sources, summon dependencies and gold headings verified.');
+assert.equal(data.replacements.length, 10);
+assert.deepEqual(data.replacements.map(s => s.id).sort(), legacy.excluded.map(s => s.id).sort());
+for (const replacement of data.replacements) assert.match(replacement.previousDescriptionSha256, /^[a-f0-9]{64}$/);
+assert.match(byId['cerchio-di-potere'].descrizione, /contro incantesimi e altri effetti magici/);
+assert.match(byId['aura-di-vitalita'].descrizione, /inizio di ogni tuo turno/);
+assert.match(byId['cordone-di-frecce'].descrizione, /2d4/);
+assert.match(byId['armatura-di-agathys'].descrizione, /punti ferita temporanei/);
+assert.equal(byId['armatura-di-agathys'].tempo_di_lancio, 'Azione bonus');
+assert.match(byId['corona-di-follia'].descrizione, /azione di Magia/);
+console.log('[originals] 49 original 2024 descriptions and markers; ten hash-guarded replacements, source references and preservation verified.');

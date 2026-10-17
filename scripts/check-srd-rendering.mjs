@@ -29,7 +29,7 @@ const {SpellProvenanceMarker}=loadTs(markerUrl);
 for(const spell of review.excluded){
   const marker=renderToStaticMarkup(createElement(SpellProvenanceMarker,{id:spell.id}));
   assert.match(marker,/<sup\b[^>]*>\*<\/sup>/);
-  assert.match(marker,/aria-label="Descrizione non verificata nel SRD"/);
+  assert.match(marker,/aria-label="Descrizione originale non tratta dal SRD"/);
 }
 assert.equal(renderToStaticMarkup(createElement(SpellProvenanceMarker,{id:'palla-di-fuoco'})),'');
 const legacy=JSON.parse(readFileSync(new URL('../tests/fixtures/legacy-eldritch-blast.json',import.meta.url),'utf8'));

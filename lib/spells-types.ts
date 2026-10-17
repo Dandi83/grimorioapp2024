@@ -16,16 +16,9 @@ export interface Spell {
   classi: string[];
 }
 
-// These ten pre-existing descriptions are not covered by the verified SRD.
-// Keep IDs and searchable names unchanged; the marker is display-only.
-const UNVERIFIED_DESCRIPTION_IDS = new Set([
-  "amicizia", "arma-elementale", "armatura-di-agathys", "aura-di-purezza",
-  "aura-di-vitalita", "braccia-di-hadar", "calderone-ribollente-di-tasha",
-  "cerchio-di-potere", "cordone-di-frecce", "corona-di-follia",
-]);
-
+// All 49 non-SRD descriptions are original rules summaries. Display-only marker.
 export function hasUnverifiedDescription(id: string): boolean {
-  return UNVERIFIED_DESCRIPTION_IDS.has(id) || isOriginalDescription(id);
+  return isOriginalDescription(id);
 }
 
 const ORIGINAL_DESCRIPTION_IDS = new Set(originalDescriptionIds);

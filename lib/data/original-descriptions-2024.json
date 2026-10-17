@@ -2,7 +2,7 @@
   "edition": "Player’s Handbook 2024",
   "textType": "original-rules-summary",
   "reviewedAt": "2026-10-17",
-  "notes": "Sintesi originali delle meccaniche, non traduzioni integrali né testi SRD. Le statistiche degli spiriti sono riepilogate separatamente; le schede complete sono collegate.",
+  "notes": "49 sintesi originali delle meccaniche 2024, non traduzioni integrali né testi SRD. Dieci sostituzioni autorizzate sono vincolate all’hash del testo precedente; le modifiche editoriali successive prevalgono. Le statistiche degli spiriti sono riepilogate separatamente e collegate.",
   "spells": [
     {
       "id": "dardo-stregato",
@@ -526,6 +526,178 @@
       "sourceName": "Arcane Vigor",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Arcane%20Vigor?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/arcane-vigor"
+    },
+    {
+      "id": "amicizia",
+      "nome_italiano": "AMICIZIA",
+      "livello": "Trucchetto di Ammaliamento (bardo, mago, stregone, warlock)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "3 metri",
+      "componenti": "S, M (un po' di trucco)",
+      "durata": "Concentrazione, fino a 1 minuto",
+      "descrizione": "Bersaglio: una creatura che vedi entro 3 metri. Tiro salvezza su Saggezza: con un fallimento diventa Affascinata per la durata.<br><br>Il tiro riesce automaticamente se non è un Umanoide, se state combattendo oppure se hai già usato questo incantesimo su di lei nelle ultime 24 ore.<br><br>L’effetto si interrompe se il bersaglio subisce danni o se tu effettui un tiro per colpire, infliggi danni oppure imponi a qualcuno un tiro salvezza. Alla conclusione il bersaglio sa che lo hai Affascinato.",
+      "sourceName": "Friends",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Friends?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/friends"
+    },
+    {
+      "id": "arma-elementale",
+      "nome_italiano": "ARMA ELEMENTALE",
+      "livello": "Trasmutazione di 3° livello (druido, paladino, ranger)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "Contatto",
+      "componenti": "V, S",
+      "durata": "Concentrazione, fino a 1 ora",
+      "descrizione": "Puoi scegliere soltanto un’arma non magica che tocchi: per la durata diventa magica. Scegli acido, freddo, fulmine, fuoco oppure tuono.<br><br>Benefici con slot di 3° o 4° livello: +1 ai tiri per colpire con l’arma; ogni colpo a segno infligge anche 1d4 danni del tipo scelto. Il bonus indicato non si aggiunge al normale danno dell’arma: il danno aggiuntivo è quello dei dadi.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Slot di 5°–6°: bonus al tiro per colpire +2 e danno aggiuntivo 2d4. Slot dal 7° in su: bonus +3 e danno aggiuntivo 3d4.",
+      "sourceName": "Elemental Weapon",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Elemental%20Weapon?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/elemental-weapon"
+    },
+    {
+      "id": "armatura-di-agathys",
+      "nome_italiano": "ARMATURA DI AGATHYS",
+      "livello": "Abiurazione di 1° livello (warlock)",
+      "tempo_di_lancio": "Azione bonus",
+      "gittata": "Incantatore",
+      "componenti": "V, S, M (un frammento di vetro blu)",
+      "durata": "1 ora",
+      "descrizione": "Ottieni 5 punti ferita temporanei. Finché l’incantesimo è attivo, una creatura che ti colpisce con un tiro per colpire in mischia subisce 5 danni da freddo.<br><br>La durata massima è un’ora; l’effetto termina prima se resti senza punti ferita temporanei. Non richiede concentrazione.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per ogni livello oltre il 1° aumentano di 5 sia i punti ferita temporanei ottenuti sia i danni da freddo.",
+      "sourceName": "Armor of Agathys",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Armor%20of%20Agathys?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/armor-of-agathys"
+    },
+    {
+      "id": "aura-di-purezza",
+      "nome_italiano": "AURA DI PUREZZA",
+      "livello": "Abiurazione di 4° livello (chierico, paladino)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "Incantatore",
+      "componenti": "V",
+      "durata": "Concentrazione, fino a 10 minuti",
+      "descrizione": "Area: emanazione di 9 metri centrata su di te. Tu e i tuoi alleati, mentre siete al suo interno, avete resistenza ai danni da veleno.<br><br>Avete inoltre vantaggio ai tiri salvezza per evitare o terminare effetti che comprendono almeno una di queste condizioni: Accecato, Affascinato, Assordato, Avvelenato, Paralizzato, Spaventato o Stordito. L’aura non concede immunità a queste condizioni.",
+      "sourceName": "Aura of Purity",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Aura%20of%20Purity?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/aura-of-purity"
+    },
+    {
+      "id": "aura-di-vitalita",
+      "nome_italiano": "AURA DI VITALITÀ",
+      "livello": "Abiurazione di 3° livello (chierico, druido, paladino)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "Incantatore",
+      "componenti": "V",
+      "durata": "Concentrazione, fino a 1 minuto",
+      "descrizione": "Mantieni un’emanazione di 9 metri attorno a te. Alla sua creazione e all’inizio di ogni tuo turno successivo, finché rimane attiva, puoi scegliere una creatura nell’area e farle recuperare 2d6 punti ferita.<br><br>Queste applicazioni della guarigione non richiedono un’azione bonus.",
+      "sourceName": "Aura of Vitality",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Aura%20of%20Vitality?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/aura-of-vitality"
+    },
+    {
+      "id": "braccia-di-hadar",
+      "nome_italiano": "BRACCIA DI HADAR",
+      "livello": "Evocazione di 1° livello (warlock)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "Incantatore",
+      "componenti": "V, S",
+      "durata": "Istantanea",
+      "descrizione": "Ogni creatura nell’emanazione di 3 metri che parte da te effettua un tiro salvezza su Forza.<br><br>Fallimento: 2d6 danni necrotici e impossibilità di usare reazioni fino all’inizio del prossimo turno del bersaglio. Successo: soltanto metà dei danni; le reazioni restano disponibili.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni livello oltre il 1° aggiunge 1d6 al danno.",
+      "sourceName": "Arms of Hadar",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Arms%20of%20Hadar?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/arms-of-hadar"
+    },
+    {
+      "id": "calderone-ribollente-di-tasha",
+      "nome_italiano": "CALDERONE RIBOLLENTE DI TASHA",
+      "livello": "Evocazione di 6° livello (mago, warlock)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "1,5 metri",
+      "componenti": "V, S, M (un mestolo dorato del valore di 500 mo o più)",
+      "durata": "10 minuti",
+      "descrizione": "Scegli un tipo di pozione comune o non comune. Fai apparire un calderone in uno spazio libero sul terreno entro 1,5 metri da te: resta immobile e dura al massimo 10 minuti.<br><br>Tu o un alleato potete usare un’azione bonus per raggiungere il calderone e prelevare una pozione del tipo scelto. La capacità totale è pari al tuo modificatore di caratteristica da incantatore, con un minimo di una pozione. Ogni fiala scompare quando se ne consuma il contenuto.<br><br>Prelevare l’ultima pozione esaurisce il calderone e conclude l’incantesimo. Alla fine spariscono anche il calderone e il liquido rimasto dentro. Le pozioni già estratte e non consumate scompaiono quando lanci di nuovo questo incantesimo.",
+      "sourceName": "Tasha's Bubbling Cauldron",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Tasha's%20Bubbling%20Cauldron?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/tasha-s-bubbling-cauldron"
+    },
+    {
+      "id": "cerchio-di-potere",
+      "nome_italiano": "CERCHIO DI POTERE",
+      "livello": "Abiurazione di 5° livello (chierico, mago, paladino)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "Incantatore",
+      "componenti": "V",
+      "durata": "Concentrazione, fino a 10 minuti",
+      "descrizione": "Mantieni un’emanazione di 9 metri centrata su di te. Tu e i tuoi alleati avete vantaggio ai tiri salvezza contro incantesimi e altri effetti magici mentre siete nell’area.<br><br>Se un incantesimo o un effetto magico permette di dimezzare i danni superando un tiro salvezza, una creatura protetta che riesce nel tiro non subisce invece alcun danno. Un fallimento non dimezza automaticamente il danno.",
+      "sourceName": "Circle of Power",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Circle%20of%20Power?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/circle-of-power"
+    },
+    {
+      "id": "cordone-di-frecce",
+      "nome_italiano": "Cordone di Frecce",
+      "livello": "Trasmutazione di 2° livello (ranger)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "Contatto",
+      "componenti": "V, S, M (una treccia ornamentale)",
+      "durata": "8 ore",
+      "descrizione": "Prepara nel terreno del tuo spazio fino a quattro frecce o quadrelli non magici toccati durante il lancio. Finché dura l’effetto non possono essere rimossi fisicamente. Al lancio scegli quali creature ignorare; tu sei escluso automaticamente.<br><br>Quando un’altra creatura entra entro 9 metri dalle munizioni per la prima volta in un turno, oppure termina il turno entro quella distanza, una munizione viene consumata contro di lei: tiro salvezza su Destrezza, 2d4 danni perforanti se fallisce e nessun danno se riesce. La munizione viene distrutta in entrambi i casi.<br><br>L’effetto termina quando non rimangono munizioni piantate, o alla fine della durata.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Puoi preparare due munizioni aggiuntive per ciascun livello oltre il 2°.",
+      "sourceName": "Cordon of Arrows",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Cordon%20of%20Arrows?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/cordon-of-arrows"
+    },
+    {
+      "id": "corona-di-follia",
+      "nome_italiano": "Corona di Follia",
+      "livello": "Ammaliamento di 2° livello (bardo, mago, stregone, warlock)",
+      "tempo_di_lancio": "Azione",
+      "gittata": "36 metri",
+      "componenti": "V, S",
+      "durata": "Concentrazione, fino a 1 minuto",
+      "descrizione": "Scegli una creatura visibile entro gittata: tiro salvezza su Saggezza. Se non è un Umanoide riesce automaticamente; altrimenti, con un fallimento, diventa Affascinata.<br><br>Durante il proprio turno, prima di muoversi, il bersaglio deve usare l’azione per un attacco in mischia contro una creatura diversa da sé scelta mentalmente da te. Se non scegli un bersaglio, oppure nessuna creatura è a portata, può agire normalmente. Alla fine di ciascun turno ripete il tiro: un successo termina l’incantesimo.<br><br>Per continuare il controllo nei tuoi turni successivi devi spendere l’azione di Magia; in caso contrario l’effetto termina.",
+      "sourceName": "Crown of Madness",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Crown%20of%20Madness?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/crown-of-madness"
+    }
+  ],
+  "replacements": [
+    {
+      "id": "amicizia",
+      "previousDescriptionSha256": "6a83889347e76ac89cc07b01de5ff5ca81923797da53aaf44b952e34967ddd99"
+    },
+    {
+      "id": "arma-elementale",
+      "previousDescriptionSha256": "c35fc1787527959a89f7bfb2d00d6a41cd1892c387934f2fffada4976480b544"
+    },
+    {
+      "id": "armatura-di-agathys",
+      "previousDescriptionSha256": "eaed117664af86451563a8a24b049e2d6eb45d6ab69373ae9f96b90f91d3a91b"
+    },
+    {
+      "id": "aura-di-purezza",
+      "previousDescriptionSha256": "bfd17e2f576068dabcab31425b1ba71ec6bea11e7d4f49ad5d418a7c38030704"
+    },
+    {
+      "id": "aura-di-vitalita",
+      "previousDescriptionSha256": "7a49bc09f237738ad663eb7c6855c35b5a569c594e779eac2b2dc2ea800b7478"
+    },
+    {
+      "id": "braccia-di-hadar",
+      "previousDescriptionSha256": "d99d54c999fe5a4a5051317cf1bf135f39dfe2e90920192443ce762745aad48f"
+    },
+    {
+      "id": "calderone-ribollente-di-tasha",
+      "previousDescriptionSha256": "707593a53665d7948b572c001e78c03fd367e7a00174b5c2cb39a315c89296df"
+    },
+    {
+      "id": "cerchio-di-potere",
+      "previousDescriptionSha256": "60eb6554a1f97ce837687dd699094d59edbbec2867aa631f6ba1579d41b4cb45"
+    },
+    {
+      "id": "cordone-di-frecce",
+      "previousDescriptionSha256": "f45b2bad99de5688a84758463029f763d126efdb69c902bdc0a66ae088d5f932"
+    },
+    {
+      "id": "corona-di-follia",
+      "previousDescriptionSha256": "36ab6e1e41561b203356e2d4c38db5f83bdb97f48542223d15bc4bb333d4e0c2"
     }
   ]
 }
