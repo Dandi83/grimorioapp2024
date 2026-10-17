@@ -8,12 +8,18 @@ import type { Monster } from "@/lib/monsters-types";
 import { SpellRow } from "@/components/spell-row";
 import type { Spell } from "@/lib/spells-types";
 
+const sortRank = (value: number) => value >= 0 ? value : Number.POSITIVE_INFINITY;
+
 export function FavoritesList({ spells, monsters = [] }: { spells: Spell[]; monsters?: Monster[] }) {
   const { favorites, loaded } = useFavorites();
 
-  const favSpells = spells.filter((s) => favorites.includes(s.id));
+  const favSpells = spells
+    .filter((s) => favorites.includes(s.id))
+    .sort((a, b) => sortRank(a.livello_num) - sortRank(b.livello_num) || a.nome_italiano.localeCompare(b.nome_italiano, "it"));
 
-  const favMonsters = monsters.filter((m) => favorites.includes(`mostro:${m.id}`));
+  const favMonsters = monsters
+    .filter((m) => favorites.includes(`mostro:${m.id}`))
+    .sort((a, b) => sortRank(a.gs_num) - sortRank(b.gs_num) || a.nome.localeCompare(b.nome, "it"));
 
   return (
     <div>

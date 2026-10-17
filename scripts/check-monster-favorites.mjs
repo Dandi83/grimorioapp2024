@@ -31,3 +31,29 @@ favorites=['shared','mostro:shared'];markup=await render();assert.ok(markup.incl
 favorites=[];markup=await render();assert.ok(!markup.includes('/mostro/shared')&&!markup.includes('/spell/shared'));
 loaded=false;favorites=['mostro:shared'];markup=await render();assert.ok(!markup.includes('/mostro/shared'));
 console.log('[favorites] Saved monsters/spells, ID namespaces, mixed favorites, removal and loading state verified through actual page and row components.');
+// Numeric ordering must win over incoming array order, names, and string/fraction formatting.
+loaded=true;
+const orderedSpells=[
+ {...spell,id:'z9',nome_italiano:'Zeta',livello_num:9},
+ {...spell,id:'b2',nome_italiano:'Beta',livello_num:2},
+ {...spell,id:'a2',nome_italiano:'Alfa',livello_num:2},
+ {...spell,id:'cantrip',nome_italiano:'Trucchetto',livello_num:0},
+ {...spell,id:'unknown',nome_italiano:'Ignoto',livello_num:-1},
+];
+const orderedMonsters=[
+ {...monster,id:'z10',nome:'Zeta',grado_sfida:'10',gs_num:10},
+ {...monster,id:'c2',nome:'Gamma',grado_sfida:'2',gs_num:2},
+ {...monster,id:'bhalf',nome:'Beta',grado_sfida:'1/2',gs_num:0.5},
+ {...monster,id:'ahalf',nome:'Alfa',grado_sfida:'1/2',gs_num:0.5},
+ {...monster,id:'eighth',nome:'Ottavo',grado_sfida:'1/8',gs_num:0.125},
+ {...monster,id:'quarter',nome:'Quarto',grado_sfida:'1/4',gs_num:0.25},
+ {...monster,id:'unknown',nome:'Ignoto',grado_sfida:'',gs_num:-1},
+];
+favorites=[...orderedSpells.map(s=>s.id),...orderedMonsters.map(m=>'mostro:'+m.id)];
+const originalSpells=orderedSpells.map(s=>s.id),originalMonsters=orderedMonsters.map(m=>m.id),originalFavorites=[...favorites];
+const FavoritesList=load(path.join(root,'components/favorites-list.tsx')).FavoritesList;
+markup=renderToStaticMarkup(createElement(FavoritesList,{spells:orderedSpells,monsters:orderedMonsters}));
+assert.deepEqual([...markup.matchAll(/href="\/spell\/([^\"]+)"/g)].map(m=>m[1]),['cantrip','a2','b2','z9','unknown'],'Favorite spells must be ordered by ascending numeric level, then Italian name; unknown levels last');
+assert.deepEqual([...markup.matchAll(/href="\/mostro\/([^\"]+)"/g)].map(m=>m[1]),['eighth','quarter','ahalf','bhalf','c2','z10','unknown'],'Favorite monsters must be ordered by numeric CR including fractions, then Italian name; unknown CR last');
+assert.deepEqual(orderedSpells.map(s=>s.id),originalSpells);assert.deepEqual(orderedMonsters.map(m=>m.id),originalMonsters);assert.deepEqual(favorites,originalFavorites);
+console.log('[favorites] Ascending numeric spell levels and CR (including fractions), alphabetical ties, unknowns last, and unmodified saved data verified.');
