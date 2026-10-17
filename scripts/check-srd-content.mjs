@@ -3,9 +3,9 @@ import { readFileSync } from "node:fs";
 
 // A missing/partial transcription must fail before this release can be built.
 const data = JSON.parse(readFileSync(new URL("../lib/data/srd-italiano-5.2.1.json", import.meta.url), "utf8"));
-assert.equal(data.spells.length, 242, "All 242 audited empty records must have a transcription");
-assert.equal(new Set(data.spells.map(s => s.id)).size, 242);
-assert.equal(new Set(data.spells.map(s => s.sourceName)).size, 241);
+assert.equal(data.spells.length, 320, "The original 242 and the 78 reviewed entries must all have full source transcriptions");
+assert.equal(new Set(data.spells.map(s => s.id)).size, 320);
+assert.equal(new Set(data.spells.map(s => s.sourceName)).size, 319);
 assert.equal(data.license, "CC-BY-4.0");
 assert.ok(data.attribution.includes('Wizards of the Coast LLC'));
 for (const spell of data.spells) {
@@ -28,5 +28,9 @@ assert.ok(byId['teletrasporto'].descrizione.includes('01–05') && byId['teletra
 assert.ok(byId['richiama-drago'].descrizione.includes('Spirito draconico'), 'Summon Dragon stat block must be included');
 assert.equal(byId['i-re-spirare-sott-acqua'].descrizione, byId['i-re-spirare-sott-acqua-2'].descrizione);
 assert.ok(!byId['dardo-stregato'], 'Non-SRD descriptions must not be invented');
-assert.ok(!byId['dardo-incantato'], 'Approved existing description must stay out of this release');
-console.log(`[srd] Verified ${data.spells.length} complete transcriptions, 241 distinct spells, source references and tables.`);
+assert.ok(byId['dardo-incantato'].descrizione.includes('1d4 + 1'), 'The reviewed Magic Missile must use the full official source');
+assert.equal(byId['deflagrazione-occulta'].sourceName, 'Deflagrazione occulta');
+assert.equal(byId['aura-magica-di-nystul'].sourceName, "Aura magica dell'arcanista");
+assert.equal(byId['capanna-di-leomund'].sourceName, 'Capanna');
+assert.ok(!byId['amicizia'], 'An existing non-SRD spell must not receive an invented SRD source');
+console.log(`[srd] Verified ${data.spells.length} complete transcriptions, 319 distinct spells, source references and tables.`);

@@ -7,6 +7,12 @@ ROOT=Path(__file__).resolve().parents[1]
 previous=json.loads((ROOT/'lib/data/srd-italiano-5.2.1.json').read_text())
 assert hashlib.sha256(PDF.read_bytes()).hexdigest()==previous['sourcePdfSha256'], 'Unexpected source PDF version'
 AUDIT={'eligible':[{'id':s['id'],'app':s['appName'],'title':s['sourceName']} for s in previous['spells']]}
+review_path=ROOT/'lib/data/srd-revisions-20261017.json'
+if review_path.exists():
+    review=json.loads(review_path.read_text())
+    assert review['sourcePdfSha256']==previous['sourcePdfSha256'], 'Review uses a different SRD version'
+    existing_ids={s['id'] for s in AUDIT['eligible']}
+    AUDIT['eligible'] += [{'id':s['id'],'app':s['appName'],'title':s['sourceName']} for s in review['replacements'] if s['id'] not in existing_ids]
 doc=fitz.open(PDF)
 raw=subprocess.check_output(['pdftotext','-raw','-f','121','-l','202',str(PDF),'-']).decode().splitlines()
 school=r'^(?:Abiurazione|Ammaliamento|Divinazione|Evocazione|Illusione|Invocazione|Necromanzia|Trasmutazione) (?:di|trucchetto)|^Trucchetto di '

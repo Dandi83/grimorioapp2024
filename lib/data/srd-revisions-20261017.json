@@ -1,0 +1,527 @@
+{
+  "reviewDate": "2026-10-17",
+  "reviewedEntries": 88,
+  "sourcePdfSha256": "a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718",
+  "replacements": [
+    {
+      "id": "aculeo-mentale",
+      "appName": "ACULEO MENTALE",
+      "sourceName": "Aculeo mentale",
+      "previousDescriptionSha256": "1cdd5b41f4c5241d5b4e6e54ea1c7d260c243850922e501258d0d6639534f18b"
+    },
+    {
+      "id": "aiuto",
+      "appName": "AIUTO",
+      "sourceName": "Aiuto",
+      "previousDescriptionSha256": "1de4c468f6e4d26b721793597ee294a60df12b13e18c22f29cf1c99536e671b3"
+    },
+    {
+      "id": "allarme",
+      "appName": "ALLARME",
+      "sourceName": "Allarme",
+      "previousDescriptionSha256": "e1e5c1c6f59ba1b635fafa075e50f2367b2125158fd51c417d50160c9717343f"
+    },
+    {
+      "id": "alleato-planare",
+      "appName": "ALLEATO PLANARE",
+      "sourceName": "Alleato planare",
+      "previousDescriptionSha256": "956bfadde88c51a8405ef835dfa51cffa88cf54c0331cba7e0bda0429055b089"
+    },
+    {
+      "id": "allucinazione-di-forza",
+      "appName": "ALLUCINAZIONE DI FORZA",
+      "sourceName": "Allucinazione di forza",
+      "previousDescriptionSha256": "9841e0ec38b7e988f4e19f7aed01856f4b38e0cb8d8579ea46161348ef05745f"
+    },
+    {
+      "id": "allucinazione-mortale",
+      "appName": "ALLUCINAZIONE MORTALE",
+      "sourceName": "Allucinazione mortale",
+      "previousDescriptionSha256": "712d8ee5cf68c36bcd2d7587005e6c92011a57d7ab0159d2a9ef39d216fd9372"
+    },
+    {
+      "id": "alterare-se-stesso",
+      "appName": "ALTERARE SE STESSO",
+      "sourceName": "Alterare se stesso",
+      "previousDescriptionSha256": "99b778f244732d4dfe35a4fd346609177b1d9e95fdf0c5123b0e2ef282ebd8f7"
+    },
+    {
+      "id": "amicizia-con-gli-animali",
+      "appName": "AMICIZIA CON GLI ANIMALI",
+      "sourceName": "Amicizia con gli animali",
+      "previousDescriptionSha256": "cf596c186eef95bf95edf41d4d1457c7d6cdd70e4107074d58abc22f6cbc5599"
+    },
+    {
+      "id": "anatema",
+      "appName": "ANATEMA",
+      "sourceName": "Anatema",
+      "previousDescriptionSha256": "1f892e537f53635a8e30bc4c11d43834e731a88b135fcd7eeb359da710353445"
+    },
+    {
+      "id": "animale-messaggero",
+      "appName": "ANIMALE MESSAGGERO",
+      "sourceName": "Animale messaggero",
+      "previousDescriptionSha256": "4d369674dd1b2eb5c044a8c81f956fd25842ba81cc6750c4c9eb7a3649efd52a"
+    },
+    {
+      "id": "animare-morti",
+      "appName": "ANIMARE MORTI",
+      "sourceName": "Animare morti",
+      "previousDescriptionSha256": "b47275a82542201a227dd770c6c8d444ad6db057138a390d35881eada2c515c5"
+    },
+    {
+      "id": "animare-oggetti",
+      "appName": "ANIMARE OGGETTI",
+      "sourceName": "Animare oggetti",
+      "previousDescriptionSha256": "2f4644e04bd9f916e15b369df957ff82510e13e553b08515c08373c2827dbdf2"
+    },
+    {
+      "id": "anti-individuazione",
+      "appName": "ANTI-INDIVIDUAZIONE",
+      "sourceName": "Anti-individuazione",
+      "previousDescriptionSha256": "b29c2aec3d71dc6f1fd829b14b944d91ffd26e19b8ea17df3adec659737a40f3"
+    },
+    {
+      "id": "antipatia-simpatia",
+      "appName": "ANTIPATIA/SIMPATIA",
+      "sourceName": "Antipatia/simpatia",
+      "previousDescriptionSha256": "a1f5842b0de1c9274baf95c5da7d43e0502a551aa45b8efca54e80a7eb837a12"
+    },
+    {
+      "id": "arma-magica",
+      "appName": "ARMA MAGICA",
+      "sourceName": "Arma magica",
+      "previousDescriptionSha256": "92c76984f25b33e051f093b2c60e7052a248a122f79b7f999fd76ec0886b5283"
+    },
+    {
+      "id": "arma-spirituale",
+      "appName": "ARMA SPIRITUALE",
+      "sourceName": "Arma spirituale",
+      "previousDescriptionSha256": "b8ead73a5256ea4cc51ab4deeb7915ff42c5c3a337d2627ec4fd346f0985a509"
+    },
+    {
+      "id": "armatura-magica",
+      "appName": "ARMATURA MAGICA",
+      "sourceName": "Armatura magica",
+      "previousDescriptionSha256": "6416afc7bcc416a7849306c9f5ecd2449396074151278233e02c7c408e4982a2"
+    },
+    {
+      "id": "artificio-druidico",
+      "appName": "ARTIFICIO DRUIDICO",
+      "sourceName": "Artificio druidico",
+      "previousDescriptionSha256": "1cb4d3f608c3fe28cf15ecf9a3b1af7564a803cb7f1e4708ec0211f8e562158d"
+    },
+    {
+      "id": "aura-di-vita",
+      "appName": "AURA DI VITA",
+      "sourceName": "Aura di vita",
+      "previousDescriptionSha256": "6ef2f0efd7ee919cd269bdecd8453a6b2aebc3f236755784437b84613148b51d"
+    },
+    {
+      "id": "aura-magica-di-nystul",
+      "appName": "AURA MAGICA DI NYSTUL",
+      "sourceName": "Aura magica dell'arcanista",
+      "previousDescriptionSha256": "dcd2505b790049ea61fd634b5ffe5d62246a78f19411324bb15116efe4a55971"
+    },
+    {
+      "id": "aura-sacra",
+      "appName": "AURA SACRA",
+      "sourceName": "Aura sacra",
+      "previousDescriptionSha256": "eaf7c8a43f2082ea142c9d322d818e983ac546e7bbdde004f4880dea297e60af"
+    },
+    {
+      "id": "banchetto-degli-eroi",
+      "appName": "BANCHETTO DEGLI EROI",
+      "sourceName": "Banchetto degli eroi",
+      "previousDescriptionSha256": "ad476c01a0a3b92ba670551f42a4d7132fc7965f4c3655f65716698beda30d81"
+    },
+    {
+      "id": "barriera-di-lame",
+      "appName": "BARRIERA DI LAME",
+      "sourceName": "Barriera di lame",
+      "previousDescriptionSha256": "70d57be6eb29e8c2ea334d1f473f1874f883c8d72b29bcf0927f5ffd862fbf80"
+    },
+    {
+      "id": "beffa-crudele",
+      "appName": "BEFFA CRUDELE",
+      "sourceName": "Beffa crudele",
+      "previousDescriptionSha256": "6f009befc7c933b26cf24f8b45e07acc4f805ddb11b5e1f7d970f46c3122bd4d"
+    },
+    {
+      "id": "benedizione",
+      "appName": "BENEDIZIONE",
+      "sourceName": "Benedizione",
+      "previousDescriptionSha256": "e8439b9972a90e7f5945b1ac9a5fd5dcf885de35daef6ea330e516f6da2fe0d9"
+    },
+    {
+      "id": "blocca-mostri",
+      "appName": "BLOCCA MOSTRI",
+      "sourceName": "Blocca mostri",
+      "previousDescriptionSha256": "11c734d37c330ecf48597c7bd84b218e90cdfc8949a1bb4a50b71b16984a84cb"
+    },
+    {
+      "id": "blocca-persone",
+      "appName": "BLOCCA PERSONE",
+      "sourceName": "Blocca persone",
+      "previousDescriptionSha256": "e932ed6362b51cc59cf16cf4809285456390361ae4f565608ea695d2072fd797"
+    },
+    {
+      "id": "bocca-magica",
+      "appName": "BOCCA MAGICA",
+      "sourceName": "Bocca magica",
+      "previousDescriptionSha256": "e668a577f920352f0766e97b0696cfd25e8f692ea7c4722746d3184e857712e5"
+    },
+    {
+      "id": "caduta-morbida",
+      "appName": "CADUTA MORBIDA",
+      "sourceName": "Caduta morbida",
+      "previousDescriptionSha256": "c05ffefed29964ab6e1caa7850af3d9fd36a37cb89fcf575bc3664f31188a58b"
+    },
+    {
+      "id": "calmare-emozioni",
+      "appName": "CALMARE EMOZIONI",
+      "sourceName": "Calmare emozioni",
+      "previousDescriptionSha256": "1c5b893ed45aadeaf580f5945e55cbaf182541068b819df37a26abb4e29d442b"
+    },
+    {
+      "id": "camminare-nel-vento",
+      "appName": "CAMMINARE NEL VENTO",
+      "sourceName": "Camminare nel vento",
+      "previousDescriptionSha256": "1f6f58e4975d4434221bf39e3689e476d03570a7c3ab8275c8389db79549bad9"
+    },
+    {
+      "id": "camminare-sull-acqua",
+      "appName": "CAMMINARE SULL'ACQUA",
+      "sourceName": "Camminare sull'acqua",
+      "previousDescriptionSha256": "b942557d1aed7f0e620b205052a4016a0d669747e6904984c09f6ae9aa1b8c5e"
+    },
+    {
+      "id": "campo-anti-magia",
+      "appName": "CAMPO ANTI-MAGIA",
+      "sourceName": "Campo anti-magia",
+      "previousDescriptionSha256": "5cb3723acc3b9c10a92fcd06d9fa157e61028d4f264bb9a0df49e2bd22bbc308"
+    },
+    {
+      "id": "camuffare-se-stesso",
+      "appName": "CAMUFFARE SE STESSO",
+      "sourceName": "Camuffare se stesso",
+      "previousDescriptionSha256": "54c285e1cd7830a16992ca5a438690c3772956755b2b1dbf4f1e315a52fb0f3b"
+    },
+    {
+      "id": "capanna-di-leomund",
+      "appName": "CAPANNA DI LEOMUND",
+      "sourceName": "Capanna",
+      "previousDescriptionSha256": "5c732823e776f9ed1a37eb7187e7856fd3922b4bbf53ae7dfed06b7af7a0d46c"
+    },
+    {
+      "id": "caratteristica-potenziata",
+      "appName": "CARATTERISTICA POTENZIATA",
+      "sourceName": "Caratteristica potenziata",
+      "previousDescriptionSha256": "354ce29d62d1a8bd14609ca8b02b83c4f01415a385748ce7bd612d3e77fc1120"
+    },
+    {
+      "id": "carne-in-pietra",
+      "appName": "CARNE IN PIETRA",
+      "sourceName": "Carne in pietra",
+      "previousDescriptionSha256": "a0ce5a04fd4e7f4fd3034568b3bb1fdd370f3bfb3b385df52c01fb5de0e0e32b"
+    },
+    {
+      "id": "catena-di-fulmini",
+      "appName": "CATENA DI FULMINI",
+      "sourceName": "Catena di fulmini",
+      "previousDescriptionSha256": "dd252e79452b1953c5ab240ec30e12fb0de459398e533815bf0164a533e49208"
+    },
+    {
+      "id": "cecita-sordita",
+      "appName": "CECITÀ/SORDITÀ",
+      "sourceName": "Cecità/sordità",
+      "previousDescriptionSha256": "b4d81b10110345a0309ee83408c91dd1460ea05c2a1042159e8273aac7119d40"
+    },
+    {
+      "id": "celare",
+      "appName": "CELARE",
+      "sourceName": "Celare",
+      "previousDescriptionSha256": "73c2257e69a5e55ef3113cea15269915b3f38bc55b95e1fff144447a1010597e"
+    },
+    {
+      "id": "cerchio-di-morte",
+      "appName": "CERCHIO DI MORTE",
+      "sourceName": "Cerchio di morte",
+      "previousDescriptionSha256": "1e9f28384aaf237dd1c8586df9d4c58d7f0b2c95908b1a57be23a5816110b2a5"
+    },
+    {
+      "id": "cerchio-di-teletrasporto",
+      "appName": "CERCHIO DI TELETRASPORTO",
+      "sourceName": "Cerchio di teletrasporto",
+      "previousDescriptionSha256": "7edfd272678a841ea76eeba3601384ff6c8140350cc8d99798f48928dece2382"
+    },
+    {
+      "id": "cerchio-magico",
+      "appName": "CERCHIO MAGICO",
+      "sourceName": "Cerchio magico",
+      "previousDescriptionSha256": "79d5c07ca34574f4472e35cdefa4f67272a7e908e3519ef708b996b99dccd750"
+    },
+    {
+      "id": "charme-su-persone",
+      "appName": "CHARME SU PERSONE",
+      "sourceName": "Charme su persone",
+      "previousDescriptionSha256": "3516d9cc3ecc6e933175ec0b444fca56503c6536cd642875fe7f10a43061d175"
+    },
+    {
+      "id": "charme-sui-mostri",
+      "appName": "CHARME SUI MOSTRI",
+      "sourceName": "Charme sui mostri",
+      "previousDescriptionSha256": "f39b69e41c60a89131d60770897ccef22bf6da4f407ffa383d79b9d57e5070bb"
+    },
+    {
+      "id": "chiaroveggenza",
+      "appName": "CHIAROVEGGENZA",
+      "sourceName": "Chiaroveggenza",
+      "previousDescriptionSha256": "24eb5e299b77f6e63fe79af15bb1dd169417c7c67d5bc97defa2f8515a18b971"
+    },
+    {
+      "id": "clone",
+      "appName": "CLONE",
+      "sourceName": "Clone",
+      "previousDescriptionSha256": "3f9c3b3acdeee851450c976b3181fdc59d96a43c04e4dd5db1e23ce856b81cdc"
+    },
+    {
+      "id": "colpo-accurato",
+      "appName": "COLPO ACCURATO",
+      "sourceName": "Colpo accurato",
+      "previousDescriptionSha256": "f87fbe78705df1cec8b421a196dd74b23757afcee6289adb1261ce1624f58d50"
+    },
+    {
+      "id": "colpo-infuocato",
+      "appName": "COLPO INFUOCATO",
+      "sourceName": "Colpo infuocato",
+      "previousDescriptionSha256": "3c44179f7b50cb2638f672f37ab4d8a1fcfb0112b9ee56e2b6301d267dd7eb6b"
+    },
+    {
+      "id": "colpo-intrappolante",
+      "appName": "COLPO INTRAPPOLANTE",
+      "sourceName": "Colpo intrappolante",
+      "previousDescriptionSha256": "3f633126fb6c925b0d1927b11bfbc8d60a430d415af592a4561d7ba62e1a88d1"
+    },
+    {
+      "id": "coltello-di-ghiaccio",
+      "appName": "COLTELLO DI GHIACCIO",
+      "sourceName": "Coltello di ghiaccio",
+      "previousDescriptionSha256": "e250ff3faa98fddb41aa9fa5e8fef8a97dd1853ab526d5fff8e1d9cefb188b32"
+    },
+    {
+      "id": "comando",
+      "appName": "COMANDO",
+      "sourceName": "Comando",
+      "previousDescriptionSha256": "d2658c5086b085f3b03ab7d308ec6a27fb6ca281e5233d564d34ba6c53e8866c"
+    },
+    {
+      "id": "comprensione-dei-linguaggi",
+      "appName": "COMPRENSIONE DEI LINGUAGGI",
+      "sourceName": "Comprensione dei linguaggi",
+      "previousDescriptionSha256": "facb5d3fe398187ebb19796bdcc1b1be3d46cd650a325f6a58c9ec3c1f8a65c7"
+    },
+    {
+      "id": "compulsione",
+      "appName": "COMPULSIONE",
+      "sourceName": "Compulsione",
+      "previousDescriptionSha256": "564e4d07747b4194ad3511ec645de11791d4683a49d98249fcb8332c1a238778"
+    },
+    {
+      "id": "comunione",
+      "appName": "COMUNIONE",
+      "sourceName": "Comunione",
+      "previousDescriptionSha256": "07ac9ebafc918840da6f1961860e05fc99de33cdc9919a2607f577f8ee8eae39"
+    },
+    {
+      "id": "comunione-con-la-natura",
+      "appName": "COMUNIONE CON LA NATURA",
+      "sourceName": "Comunione con la natura",
+      "previousDescriptionSha256": "fb7cc4409386dfe6be9be286921018b5ce1cc42b87530a1fa43ce8b3e6ed8be3"
+    },
+    {
+      "id": "confusione",
+      "appName": "CONFUSIONE",
+      "sourceName": "Confusione",
+      "previousDescriptionSha256": "6c712a11d17b94b769d7037a4e3b7a68282ed6995c21cd56d9d7d1670430d8d7"
+    },
+    {
+      "id": "cono-di-freddo",
+      "appName": "CONO DI FREDDO",
+      "sourceName": "Cono di freddo",
+      "previousDescriptionSha256": "2fe3e8ef4bb6a1bb5209551b863dba7dd717588c308b2aaddc6bdb4b4463e838"
+    },
+    {
+      "id": "conoscenza-delle-leggende",
+      "appName": "Conoscenza delle Leggende",
+      "sourceName": "Conoscenza delle leggende",
+      "previousDescriptionSha256": "c7155d5c8bb204d52989e5c28b5bebc74dd45fcaff33653c2c9bc973671b8c4a"
+    },
+    {
+      "id": "contagio",
+      "appName": "Contagio",
+      "sourceName": "Contagio",
+      "previousDescriptionSha256": "d9485c77574a38076cde809144c59fe33dbcb859be3f95e8ef2886b2aa56eb3a"
+    },
+    {
+      "id": "contattare-altri-piani",
+      "appName": "Contattare Altri Piani",
+      "sourceName": "Contattare altri piani",
+      "previousDescriptionSha256": "3867dd613adecc5375b81cee48de23cd00d473dc526d7d061017966f1ef22442"
+    },
+    {
+      "id": "contingenza",
+      "appName": "Contingenza",
+      "sourceName": "Contingenza",
+      "previousDescriptionSha256": "4244000a57e081bf9f2bfb3aba41525d495cbcb437db1d3527cd01b91a68bc46"
+    },
+    {
+      "id": "controincantesimo",
+      "appName": "Controincantesimo",
+      "sourceName": "Controincantesimo",
+      "previousDescriptionSha256": "0cbc52048355f93a7722d5a2585da4e8174b31c1ca88d37d22591d234804d128"
+    },
+    {
+      "id": "controllare-acqua",
+      "appName": "Controllare Acqua",
+      "sourceName": "Controllare acqua",
+      "previousDescriptionSha256": "f3e3cf1cb9e79089758bba0a36ea4865b6b3d20ee7dc39272ebaa8e62c266ba5"
+    },
+    {
+      "id": "controllare-tempo-atmosferico",
+      "appName": "Controllare Tempo Atmosferico",
+      "sourceName": "Controllare tempo atmosferico",
+      "previousDescriptionSha256": "064383f33f4b743d0d18a1ba616ade6a6afba5744ad11e95256ca2f176b1fbc2"
+    },
+    {
+      "id": "costrizione",
+      "appName": "Costrizione",
+      "sourceName": "Costrizione",
+      "previousDescriptionSha256": "aa850e6f759657b87f0162870a0e9d0ab34051d75e1ff71628bec1267b153aec"
+    },
+    {
+      "id": "creare-cibo-e-acqua",
+      "appName": "Creare Cibo e Acqua",
+      "sourceName": "Creare cibo e acqua",
+      "previousDescriptionSha256": "c9cd4f7ccfeeb8842e325234b8d2b87f65bd74fae034e605f507cbc46b2424e3"
+    },
+    {
+      "id": "creare-non-morti",
+      "appName": "Creare Non Morti",
+      "sourceName": "Creare non morti",
+      "previousDescriptionSha256": "09b7eff9d9def827a472c113b384d0d2ae3118c57abaadb1e7814333b3da1aca"
+    },
+    {
+      "id": "creare-o-distruggere-acqua",
+      "appName": "Creare o Distruggere Acqua",
+      "sourceName": "Creare o distruggere acqua",
+      "previousDescriptionSha256": "b4eca0b7a1bdadfbb7bce1182d70f216fe0a88112e9acc7777e6d134a38cb866"
+    },
+    {
+      "id": "creazione",
+      "appName": "Creazione",
+      "sourceName": "Creazione",
+      "previousDescriptionSha256": "0b857cdef3fc6109ab139da164ddd42c4ac91066e19003eb0bd1e8e5c33a51b4"
+    },
+    {
+      "id": "crescita-di-spine",
+      "appName": "Crescita di Spine",
+      "sourceName": "Crescita di spine",
+      "previousDescriptionSha256": "83eedef5e24280cf39f7fba60ad1f975736d5e7893ce232939ec20e237048778"
+    },
+    {
+      "id": "crescita-vegetale",
+      "appName": "Crescita Vegetale",
+      "sourceName": "Crescita vegetale",
+      "previousDescriptionSha256": "18846f24050a38fa51d02e1c6f95efc032ed10ee0dbc0edacfb65c989945c3a6"
+    },
+    {
+      "id": "cura-ferite",
+      "appName": "Cura Ferite",
+      "sourceName": "Cura ferite",
+      "previousDescriptionSha256": "f974f5e2799714223e67c0040289a8d2b3bb3992af6a61d230b06e78df2ef0e3"
+    },
+    {
+      "id": "cura-ferite-di-massa",
+      "appName": "Cura Ferite di Massa",
+      "sourceName": "Cura ferite di massa",
+      "previousDescriptionSha256": "20bb0b757d2fa6a7a9aa9c33890d98115b06d9cc7459f7a76b3c85a8fbb26479"
+    },
+    {
+      "id": "dardo-incantato",
+      "appName": "DARDO INCANTATO",
+      "sourceName": "Dardo incantato",
+      "previousDescriptionSha256": "254c7e718065d8b9542c5eb9769570cf456003b047f2bd00bebac087718feedb"
+    },
+    {
+      "id": "deflagrazione-occulta",
+      "appName": "DEFLAGRAZIONE OCCULTA",
+      "sourceName": "Deflagrazione occulta",
+      "previousDescriptionSha256": "aaadd136ef3f63709363e379255cd4fa059b7bf7e4d7132075d594a5ef554508"
+    },
+    {
+      "id": "esilio",
+      "appName": "ESILIO",
+      "sourceName": "Esilio",
+      "previousDescriptionSha256": "734681c935679b397555632362e706e135553e19321adf89a7116a5d18293c6e"
+    },
+    {
+      "id": "parola-guaritrice",
+      "appName": "PAROLA GUARITRICE",
+      "sourceName": "Parola guaritrice",
+      "previousDescriptionSha256": "69f499e3711277945cb4d5445ffe3ed626e2537329b7aaca3e83c7869075b492"
+    }
+  ],
+  "excluded": [
+    {
+      "id": "amicizia",
+      "name": "AMICIZIA",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "arma-elementale",
+      "name": "ARMA ELEMENTALE",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "armatura-di-agathys",
+      "name": "ARMATURA DI AGATHYS",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "aura-di-purezza",
+      "name": "AURA DI PUREZZA",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "aura-di-vitalita",
+      "name": "AURA DI VITALITÀ",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "braccia-di-hadar",
+      "name": "BRACCIA DI HADAR",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "calderone-ribollente-di-tasha",
+      "name": "CALDERONE RIBOLLENTE DI TASHA",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "cerchio-di-potere",
+      "name": "CERCHIO DI POTERE",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "cordone-di-frecce",
+      "name": "Cordone di Frecce",
+      "status": "not-in-italian-srd-5.2.1"
+    },
+    {
+      "id": "corona-di-follia",
+      "name": "Corona di Follia",
+      "status": "not-in-italian-srd-5.2.1"
+    }
+  ]
+}

@@ -7,15 +7,25 @@ import { createElement } from 'react';
 
 const require = createRequire(import.meta.url);
 const data = JSON.parse(readFileSync(new URL('../lib/data/srd-italiano-5.2.1.json',import.meta.url),'utf8'));
+const review = JSON.parse(readFileSync(new URL('../lib/data/srd-revisions-20261017.json',import.meta.url),'utf8'));
 const helperUrl = new URL('../lib/srd-descriptions.ts', import.meta.url);
 assert.ok(existsSync(helperUrl), 'The app must resolve audited source descriptions without changing the database');
 function loadTs(url) {
   const source = ts.transpileModule(readFileSync(url,'utf8'), {compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
   const mod = {exports:{}};
-  new Function('require','module','exports',source)(id => id.endsWith('srd-italiano-5.2.1.json') ? data : require(id),mod,mod.exports);
+  new Function('require','module','exports',source)(id => id.endsWith('srd-italiano-5.2.1.json') ? data : id.endsWith('srd-revisions-20261017.json') ? review : require(id),mod,mod.exports);
   return mod.exports;
 }
 const { applySrdDescription, getSrdSource } = loadTs(helperUrl);
+const legacy=JSON.parse(readFileSync(new URL('../tests/fixtures/legacy-eldritch-blast.json',import.meta.url),'utf8'));
+assert.ok(legacy.descrizione.trim(), 'The legacy regression fixture must contain the original nonempty database text');
+const canonical=data.spells.find(s=>s.id==='deflagrazione-occulta');
+assert.equal(applySrdDescription(legacy).descrizione,canonical.descrizione,'An audited legacy description must be replaced with the full source');
+assert.equal(getSrdSource(legacy.id,applySrdDescription(legacy).descrizione).sourceName,'Deflagrazione occulta');
+const laterEdit={...legacy,descrizione:'Testo personalizzato salvato dopo la verifica'};
+assert.equal(applySrdDescription(laterEdit),laterEdit,'A later editorial change must not be overwritten');
+const offSource={id:'amicizia',descrizione:'Descrizione precedente fuori dal SRD'};
+assert.equal(applySrdDescription(offSource),offSource,'The ten non-SRD legacy descriptions must remain unchanged');
 const target=data.spells.find(s=>s.id==='teletrasporto');
 const empty={id:target.id,nome_italiano:'TELETRASPORTO',descrizione:'  ',livello:'existing metadata'};
 const result=applySrdDescription(empty);
@@ -34,4 +44,4 @@ assert.match(output,/<pre[^>]*>/,'Source tables must retain a real preformatted 
 assert.ok(output.includes('A    B\n01–05 &lt;script&gt;'),'Table spacing and safe escaping must survive rendering');
 assert.ok(!output.includes('<script>'));
 assert.match(renderToStaticMarkup(createElement(HtmlText,{html:'<b>1d4 + 1</b><br>Fine'})),/font-semibold/,'Existing description formatting must stay supported');
-console.log('[srd] Read-only overlay, preservation of existing text, source attribution and safe table rendering verified.');
+console.log('[srd] Approved legacy replacements, preservation of later edits, source attribution and safe table rendering verified.');

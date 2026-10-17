@@ -1,12 +1,18 @@
+import { createHash } from "node:crypto";
 import data from "./data/srd-italiano-5.2.1.json";
+import review from "./data/srd-revisions-20261017.json";
 
 const descriptions = new Map(data.spells.map((spell) => [spell.id, spell]));
+const approvedReplacements = new Map(review.replacements.map((spell) => [spell.id, spell.previousDescriptionSha256]));
 
-/** Existing editorial text always takes precedence. This never writes to the DB. */
+/** Only the 78 audited legacy texts may be replaced; later editorial edits win. */
 export function applySrdDescription<T extends { id: string; descrizione: string }>(row: T): T {
-  if (row.descrizione?.trim()) return row;
   const source = descriptions.get(row.id);
   if (!source) return row;
+  if (row.descrizione?.trim()) {
+    const approvedHash = approvedReplacements.get(row.id);
+    if (!approvedHash || createHash("sha256").update(row.descrizione).digest("hex") !== approvedHash) return row;
+  }
   return {
     ...row,
     descrizione: source.descrizione,

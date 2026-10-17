@@ -1,6 +1,8 @@
 # GrimorioApp — Trascrizioni integrali SRD italiano 5.2.1
 
-241 incantesimi distinti, corrispondenti alle 242 schede vuote individuate nell’app. Respirare sott’acqua era presente in due schede. Le 88 descrizioni già compilate non sono state sostituite.
+319 incantesimi distinti, corrispondenti a 320 schede dell’app. Respirare sott’acqua è presente in due schede con ID differenti.
+
+Questa revisione comprende le 242 schede inizialmente vuote e 78 delle 88 descrizioni preesistenti. Le altre 10 descrizioni non sono nel SRD italiano; 39 schede sono ancora senza descrizione. Nessuna pubblicazione in produzione è stata effettuata.
 
 Fonte: https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf
 
@@ -12,247 +14,1767 @@ Testo integrale italiano del SRD. Normalizzati spazi, a capo e sillabazione tipo
 
 ## Indice
 
-1. Danza irresistibile
-2. Dardo tracciante
-3. Desiderio
-4. Destriero fantomatico
-5. Disco fluttuante
-6. Disintegrazione
-7. Disorientare
-8. Dissolvi il bene e il male
-9. Dissolvi magie
-10. Dito della morte
-11. Divinazione
-12. Dominare bestie
-13. Dominare mostri
-14. Dominare persone
-15. Elementalismo
-16. Eroismo
-17. Esplosione solare
-18. Estasiare
-19. Evoca animali
-20. Evoca celestiale
-21. Evoca creature boschive
-22. Evoca elementale
-23. Evoca elementali minori
-24. Evoca folletto
-25. Evocazioni istantanee
-26. Fabbricare
-27. Faro di speranza
-28. Fatale
-29. Favore divino
-30. Ferire
-31. Fermare il tempo
-32. Fiamma perenne
-33. Fiamma sacra
-34. Folata di vento
-35. Fondersi nella pietra
-36. Forma eterea
-37. Forma gassosa
-38. Frantumare
-39. Freccia acida
-40. Fulmine
-41. Fuorviare
-42. Gabbia di forza
-43. Giara magica
-44. Glifo di interdizione
-45. Globo cromatico
-46. Globo di invulnerabilità
-47. Guardiani spirituali
-48. Guardiano della fede
-49. Guarigione
-50. Guarigione di massa
-51. Guida
-52. Identificare
-53. Illusione minore
-54. Illusione programmata
-55. Immagine maggiore
-56. Immagine proiettata
-57. Immagine silenziosa
-58. Immagine speculare
-59. Imprigionare
-60. Inaridire
-61. Individuazione dei pensieri
-62. Individuazione del bene e del male
-63. Individuazione del magico
-64. Individuazione delle malattie e dei veleni
-65. Infliggi ferite
-66. Ingrandire/ridurre
-67. Insetto gigante
-68. Interdizione alla morte
-69. Intermittenza
-70. Intimorire infernale
-71. Intralciare
-72. Inversione della gravità
-73. Inviare
-74. Invisibilità
-75. Invocare il fulmine
-76. Labirinto
-77. Lama infuocata
-78. Legame planare
-79. Legame telepatico
-80. Lentezza
-81. Libertà di movimento
-82. Linguaggi
-83. Localizza animali o vegetali
-84. Localizza creatura
-85. Localizza oggetto
-86. Loquacità
-87. Luce
-88. Luce diurna
-89. Luce splendente
-90. Luci danzanti
-91. Luminescenza
-92. Mani brucianti
-93. Mano arcana
-94. Mano magica
-95. Marchio del cacciatore
-96. Messaggio
-97. Metamorfosi
-98. Metamorfosi pura
-99. Miraggio arcano
-100. Modificare memoria
-101. Movimenti del ragno
-102. Muovere il terreno
-103. Muro di forza
-104. Muro di ghiaccio
-105. Muro di pietra
-106. Muro di spine
-107. Muro di vento
-108. Muro prismatico
-109. Nube di nebbia
-110. Nube incendiaria
-111. Nube maleodorante
-112. Nube mortale
-113. Occhio arcano
-114. Onda tonante
-115. Oscurità
-116. Parlare con gli animali
-117. Parlare con i morti
-118. Parlare con i vegetali
-119. Parola del potere guarire
-120. Parola del potere stordire
-121. Parola del potere uccidere
-122. Parola del ritiro
-123. Parola divina
-124. Parola guaritrice di massa
-125. Passapareti
-126. Passare senza tracce
-127. Passo velato
-128. Passo veloce
-129. Paura
-130. Pelle coriacea
-131. Pelle di pietra
-132. Piaga degli insetti
-133. Porta dimensionale
-134. Portale
-135. Preghiera di guarigione
-136. Presagio
-137. Prestidigitazione
-138. Previsione
-139. Produrre fiamma
-140. Proibizione
-141. Proiezione astrale
-142. Protezione dai veleni
-143. Protezione dal bene e dal male
-144. Protezione dall'energia
-145. Punizione divina
-146. Punizione incandescente
-147. Punizione splendente
-148. Purificare cibo e bevande
-149. Raggio di affaticamento
-150. Raggio di gelo
-151. Raggio di infermità
-152. Raggio rovente
-153. Randello incantato
-154. Reggia meravigliosa
-155. Reincarnazione
-156. Resistenza
-157. Respirare sott'acqua
-158. Resurrezione
-159. Resurrezione pura
-160. Rianimare morti
-161. Richiama drago
-162. Rigenerazione
-163. Rimuovi maledizione
-164. Rinascita
-165. Riparare
-166. Riposo inviolato
-167. Risata incontenibile
-168. Riscaldare il metallo
-169. Ristorare inferiore
-170. Ristorare superiore
-171. Risveglio
-172. Ritirata rapida
-173. Salvare i morenti
-174. Santificare
-175. Santuario
-176. Santuario privato
-177. Scagliare maledizione
-178. Scassinare
-179. Sciame di meteore
-180. Scolpire pietra
-181. Scopri il percorso
-182. Scopri trappole
-183. Scrigno segreto
-184. Scrutare
-185. Scudo
-186. Scudo della fede
-187. Scurovisione
-188. Segugio fedele
-189. Sembrare
-190. Semipiano
-191. Serratura arcana
-192. Servitore inosservato
-193. Sfera al vetriolo
-194. Sfera congelante
-195. Sfera elastica
-196. Sfera infuocata
-197. Sfocatura
-198. Sguardo penetrante
-199. Silenzio
-200. Simbolo
-201. Simulacro
-202. Soffio del drago
-203. Sogno
-204. Sonno
-205. Sortilegio
-206. Spada arcana
-207. Spostamento planare
-208. Spruzzo prismatico
-209. Spruzzo velenoso
-210. Stregoneria esplosiva
-211. Stretta folgorante
-212. Suggestione
-213. Suggestione di massa
-214. Sussurri dissonanti
-215. Taumaturgia
-216. Telecinesi
-217. Teletrasporto
-218. Tempesta di ghiaccio
-219. Tempesta di nevischio
-220. Tempesta di vendetta
-221. Tentacoli neri
-222. Terremoto
-223. Terreno illusorio
-224. Trama ipnotica
-225. Trasformazione
-226. Traslazione arborea
-227. Trasporto vegetale
-228. Trova cavalcatura
-229. Trova famiglio
-230. Trucco della corda
-231. Tsunami
-232. Unto
-233. Vedere invisibilità
-234. Velocità
-235. Vigilanza e interdizione
-236. Vincolo di interdizione
-237. Visione del vero
-238. Vita falsata
-239. Volare
-240. Vuoto mentale
-241. Zona di verità
+1. Aculeo mentale
+2. Aiuto
+3. Allarme
+4. Alleato planare
+5. Allucinazione di forza
+6. Allucinazione mortale
+7. Alterare se stesso
+8. Amicizia con gli animali
+9. Anatema
+10. Animale messaggero
+11. Animare morti
+12. Animare oggetti
+13. Anti-individuazione
+14. Antipatia/simpatia
+15. Arma magica
+16. Arma spirituale
+17. Armatura magica
+18. Artificio druidico
+19. Aura di vita
+20. Aura magica dell'arcanista
+21. Aura sacra
+22. Banchetto degli eroi
+23. Barriera di lame
+24. Beffa crudele
+25. Benedizione
+26. Blocca mostri
+27. Blocca persone
+28. Bocca magica
+29. Caduta morbida
+30. Calmare emozioni
+31. Camminare nel vento
+32. Camminare sull'acqua
+33. Campo anti-magia
+34. Camuffare se stesso
+35. Capanna
+36. Caratteristica potenziata
+37. Carne in pietra
+38. Catena di fulmini
+39. Cecità/sordità
+40. Celare
+41. Cerchio di morte
+42. Cerchio di teletrasporto
+43. Cerchio magico
+44. Charme su persone
+45. Charme sui mostri
+46. Chiaroveggenza
+47. Clone
+48. Colpo accurato
+49. Colpo infuocato
+50. Colpo intrappolante
+51. Coltello di ghiaccio
+52. Comando
+53. Comprensione dei linguaggi
+54. Compulsione
+55. Comunione
+56. Comunione con la natura
+57. Confusione
+58. Cono di freddo
+59. Conoscenza delle leggende
+60. Contagio
+61. Contattare altri piani
+62. Contingenza
+63. Controincantesimo
+64. Controllare acqua
+65. Controllare tempo atmosferico
+66. Costrizione
+67. Creare cibo e acqua
+68. Creare non morti
+69. Creare o distruggere acqua
+70. Creazione
+71. Crescita di spine
+72. Crescita vegetale
+73. Cura ferite
+74. Cura ferite di massa
+75. Danza irresistibile
+76. Dardo incantato
+77. Dardo tracciante
+78. Deflagrazione occulta
+79. Desiderio
+80. Destriero fantomatico
+81. Disco fluttuante
+82. Disintegrazione
+83. Disorientare
+84. Dissolvi il bene e il male
+85. Dissolvi magie
+86. Dito della morte
+87. Divinazione
+88. Dominare bestie
+89. Dominare mostri
+90. Dominare persone
+91. Elementalismo
+92. Eroismo
+93. Esilio
+94. Esplosione solare
+95. Estasiare
+96. Evoca animali
+97. Evoca celestiale
+98. Evoca creature boschive
+99. Evoca elementale
+100. Evoca elementali minori
+101. Evoca folletto
+102. Evocazioni istantanee
+103. Fabbricare
+104. Faro di speranza
+105. Fatale
+106. Favore divino
+107. Ferire
+108. Fermare il tempo
+109. Fiamma perenne
+110. Fiamma sacra
+111. Folata di vento
+112. Fondersi nella pietra
+113. Forma eterea
+114. Forma gassosa
+115. Frantumare
+116. Freccia acida
+117. Fulmine
+118. Fuorviare
+119. Gabbia di forza
+120. Giara magica
+121. Glifo di interdizione
+122. Globo cromatico
+123. Globo di invulnerabilità
+124. Guardiani spirituali
+125. Guardiano della fede
+126. Guarigione
+127. Guarigione di massa
+128. Guida
+129. Identificare
+130. Illusione minore
+131. Illusione programmata
+132. Immagine maggiore
+133. Immagine proiettata
+134. Immagine silenziosa
+135. Immagine speculare
+136. Imprigionare
+137. Inaridire
+138. Individuazione dei pensieri
+139. Individuazione del bene e del male
+140. Individuazione del magico
+141. Individuazione delle malattie e dei veleni
+142. Infliggi ferite
+143. Ingrandire/ridurre
+144. Insetto gigante
+145. Interdizione alla morte
+146. Intermittenza
+147. Intimorire infernale
+148. Intralciare
+149. Inversione della gravità
+150. Inviare
+151. Invisibilità
+152. Invocare il fulmine
+153. Labirinto
+154. Lama infuocata
+155. Legame planare
+156. Legame telepatico
+157. Lentezza
+158. Libertà di movimento
+159. Linguaggi
+160. Localizza animali o vegetali
+161. Localizza creatura
+162. Localizza oggetto
+163. Loquacità
+164. Luce
+165. Luce diurna
+166. Luce splendente
+167. Luci danzanti
+168. Luminescenza
+169. Mani brucianti
+170. Mano arcana
+171. Mano magica
+172. Marchio del cacciatore
+173. Messaggio
+174. Metamorfosi
+175. Metamorfosi pura
+176. Miraggio arcano
+177. Modificare memoria
+178. Movimenti del ragno
+179. Muovere il terreno
+180. Muro di forza
+181. Muro di ghiaccio
+182. Muro di pietra
+183. Muro di spine
+184. Muro di vento
+185. Muro prismatico
+186. Nube di nebbia
+187. Nube incendiaria
+188. Nube maleodorante
+189. Nube mortale
+190. Occhio arcano
+191. Onda tonante
+192. Oscurità
+193. Parlare con gli animali
+194. Parlare con i morti
+195. Parlare con i vegetali
+196. Parola del potere guarire
+197. Parola del potere stordire
+198. Parola del potere uccidere
+199. Parola del ritiro
+200. Parola divina
+201. Parola guaritrice
+202. Parola guaritrice di massa
+203. Passapareti
+204. Passare senza tracce
+205. Passo velato
+206. Passo veloce
+207. Paura
+208. Pelle coriacea
+209. Pelle di pietra
+210. Piaga degli insetti
+211. Porta dimensionale
+212. Portale
+213. Preghiera di guarigione
+214. Presagio
+215. Prestidigitazione
+216. Previsione
+217. Produrre fiamma
+218. Proibizione
+219. Proiezione astrale
+220. Protezione dai veleni
+221. Protezione dal bene e dal male
+222. Protezione dall'energia
+223. Punizione divina
+224. Punizione incandescente
+225. Punizione splendente
+226. Purificare cibo e bevande
+227. Raggio di affaticamento
+228. Raggio di gelo
+229. Raggio di infermità
+230. Raggio rovente
+231. Randello incantato
+232. Reggia meravigliosa
+233. Reincarnazione
+234. Resistenza
+235. Respirare sott'acqua
+236. Resurrezione
+237. Resurrezione pura
+238. Rianimare morti
+239. Richiama drago
+240. Rigenerazione
+241. Rimuovi maledizione
+242. Rinascita
+243. Riparare
+244. Riposo inviolato
+245. Risata incontenibile
+246. Riscaldare il metallo
+247. Ristorare inferiore
+248. Ristorare superiore
+249. Risveglio
+250. Ritirata rapida
+251. Salvare i morenti
+252. Santificare
+253. Santuario
+254. Santuario privato
+255. Scagliare maledizione
+256. Scassinare
+257. Sciame di meteore
+258. Scolpire pietra
+259. Scopri il percorso
+260. Scopri trappole
+261. Scrigno segreto
+262. Scrutare
+263. Scudo
+264. Scudo della fede
+265. Scurovisione
+266. Segugio fedele
+267. Sembrare
+268. Semipiano
+269. Serratura arcana
+270. Servitore inosservato
+271. Sfera al vetriolo
+272. Sfera congelante
+273. Sfera elastica
+274. Sfera infuocata
+275. Sfocatura
+276. Sguardo penetrante
+277. Silenzio
+278. Simbolo
+279. Simulacro
+280. Soffio del drago
+281. Sogno
+282. Sonno
+283. Sortilegio
+284. Spada arcana
+285. Spostamento planare
+286. Spruzzo prismatico
+287. Spruzzo velenoso
+288. Stregoneria esplosiva
+289. Stretta folgorante
+290. Suggestione
+291. Suggestione di massa
+292. Sussurri dissonanti
+293. Taumaturgia
+294. Telecinesi
+295. Teletrasporto
+296. Tempesta di ghiaccio
+297. Tempesta di nevischio
+298. Tempesta di vendetta
+299. Tentacoli neri
+300. Terremoto
+301. Terreno illusorio
+302. Trama ipnotica
+303. Trasformazione
+304. Traslazione arborea
+305. Trasporto vegetale
+306. Trova cavalcatura
+307. Trova famiglio
+308. Trucco della corda
+309. Tsunami
+310. Unto
+311. Vedere invisibilità
+312. Velocità
+313. Vigilanza e interdizione
+314. Vincolo di interdizione
+315. Visione del vero
+316. Vita falsata
+317. Volare
+318. Vuoto mentale
+319. Zona di verità
+
+---
+
+## Aculeo mentale
+
+Divinazione di 2º livello (mago, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: S
+- Durata: concentrazione, fino a 1 ora
+- Pagine SRD: 121
+
+L'incantatore guida un flusso di energia psionica nella mente di una creatura entro gittata che egli è in grado di vedere. Il bersaglio effettua un tiro salvezza su Saggezza, subendo 3d8 danni psichici in caso di fallimento, o la metà dei danni in caso di successo. Se fallisce il tiro, l'incantatore sa sempre dove si trova il bersaglio fino al termine dell'incantesimo, ma solo se entrambi si trovano sullo stesso piano di esistenza. Finché l'incantatore è in possesso di queste conoscenze, il bersaglio non può nascondersi da lui e, se è invisibile, non ottiene alcun beneficio da questa condizione contro di lui.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d8 per ogni slot di livello superiore al 2º.
+
+
+---
+
+## Aiuto
+
+Abiurazione di 2º livello (bardo, chierico, druido, paladino, ranger)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S, M (una striscia di tessuto bianco)
+- Durata: 8 ore
+- Pagine SRD: 121
+
+L'incantatore sceglie fino a tre creature entro gittata. I punti ferita massimi e i punti ferita attuali di ogni bersaglio aumentano di 5 per la durata dell'incantesimo.
+
+Utilizzo di uno slot incantesimo di livello superiore. I punti ferita di ciascun bersaglio aumentano di 5 per ogni slot incantesimo di livello superiore al 2º.
+
+
+---
+
+## Allarme
+
+Abiurazione di 1º livello (mago, ranger)
+
+- Tempo di lancio: 1 minuto o rituale
+- Gittata: 9 metri
+- Componenti: V, S, M (una campanella e un filo d'argento)
+- Durata: 8 ore
+- Pagine SRD: 122
+
+L'incantatore predispone un allarme che segnala un'intrusione. Sceglie una porta, una finestra o un'area entro gittata che non sia più ampia di un cubo con spigolo di 6 metri. Fino al termine dell'incantesimo, un allarme avverte l'incantatore tutte le volte che una creatura tocca o entra nell'area protetta. Al momento del lancio dell'incantesimo, l'incantatore designa quali creature non faranno scattare l'allarme. Inoltre, sceglie se l'allarme è acustico o mentale.
+
+Allarme acustico. L'allarme produce il suono di una campanella per 10 secondi entro 18 metri dall'area protetta. Allarme mentale. Un suono nella mente avverte l'incantatore se questi si trova entro 1,5 chilometri dall'area protetta. Il suono sveglia l'incantatore se sta dormendo.
+
+
+---
+
+## Alleato planare
+
+Evocazione di 6º livello (chierico)
+
+- Tempo di lancio: 10 minuti
+- Gittata: 18 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 122
+
+L'incantatore chiede aiuto a un'entità ultraterrena che deve essergli nota: un dio, un principe dei demoni o qualche altro essere dotato di poteri cosmici. Quell'entità invia in aiuto un celestiale, un elementale o un immondo a lei fedele, che appare in uno spazio libero entro gittata. Se l'incantatore conosce il nome di una creatura specifica, può pronunciarlo quando lancia l'incantesimo per richiedere il suo intervento, ma potrebbe apparire comunque una creatura diversa (a scelta del GM).
+
+Quando la creatura appare, non è obbligata a comportarsi in un modo particolare. L'incantatore può chiederle di svolgere per lui un servizio in cambio di pagamento, ma essa non è costretta ad accettare. Il compito richiesto potrebbe essere qualcosa di semplice ("portaci in volo oltre il baratro" o "aiutaci a combattere una battaglia") o di complesso ("spia i nostri nemici" o "proteggici durante la nostra incursione nel dungeon"). L'incantatore deve essere in grado di comunicare con la creatura per contrattare per i suoi servigi.
+
+Il pagamento può avere varie forme: Un celestiale potrebbe richiedere un'ingente donazione in oro o oggetti magici a un tempio alleato, un immondo esigere una creatura vivente in sacrificio o un tesoro in dono. Alcune creature potrebbero scambiare i propri servigi con una missione che l'incantatore deve svolgere.
+
+Un compito che può essere misurato in minuti richiede un pagamento del valore di 100 mo al minuto, un compito misurato in ore richiede 1.000 mo all'ora e un compito misurato in giorni (per un massimo di 10 giorni) richiede 10.000 mo al giorno. Il GM può modificare questi pagamenti in base alle circostanze del lancio. Se il compito è in sintonia con l'etica della creatura, il pagamento potrebbe essere dimezzato o addirittura revocato. I compiti non pericolosi richiedono tipicamente solo la metà del pagamento suggerito, mentre quelli particolarmente rischiosi potrebbero richiedere una ricompensa superiore. È raro che una creatura accetti un compito potenzialmente suicida.
+
+Dopo aver portato a termine il compito o quando la durata pattuita termina, la creatura fa ritorno al suo piano d'origine dopo aver fatto rapporto all'incantatore, se possibile. Se l'incantatore e la creatura non riescono ad accordarsi sul prezzo del suo servizio, quest'ultima ritorna immediatamente sul suo piano d'origine.
+
+
+---
+
+## Allucinazione di forza
+
+Illusione di 2º livello (bardo, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S, M (un ciuffo di lana)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 122, 123
+
+L'incantatore tenta di creare un'illusione nella mente di una creatura entro gittata che egli è in grado di vedere. Il bersaglio effettua un tiro salvezza su Intelligenza. Se lo fallisce, l'incantatore crea l'illusione di un oggetto, una creatura o un fenomeno di altra natura, che non sia più grande di un cubo con spigolo di 3 metri e che sia percepibile soltanto dal bersaglio per la durata dell'incantesimo. L'allucinazione include suoni, temperature e altri stimoli analoghi.
+
+Il bersaglio può effettuare un'azione di Studio per esaminare l'allucinazione con una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se supera la prova, il bersaglio capisce che l'allucinazione è un'illusione e l'incantesimo termina.
+
+Finché il bersaglio è influenzato dall'incantesimo, considera l'allucinazione come se fosse reale e razionalizza qualsiasi esito illogico prodotto dalle sue interazioni con essa. Ad esempio, se il bersaglio cammina attraverso un ponte illusorio e sopravvive alla caduta, crederà comunque che il ponte esista e che sia stato qualcos'altro a causare la caduta.
+
+Un bersaglio influenzato può perfino subire danni dall'illusione se l'allucinazione rappresenta una creatura pericolosa o un pericolo. In ogni turno dell'incantatore, l'allucinazione può infliggere 2d8 danni psichici al bersaglio se questo si trova nell'area dell'allucinazione o entro 1,5 metri da essa. Il bersaglio percepisce i danni come se fossero del tipo appropriato per l'illusione.
+
+
+---
+
+## Allucinazione mortale
+
+Illusione di 4º livello (bardo, mago)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 123
+
+L'incantatore attinge agli incubi di una creatura entro gittata che egli è in grado di vedere e crea un'illusione delle sue paure più profonde, visibile solo a lei. Il bersaglio effettua un tiro salvezza su Saggezza. In caso di fallimento, subisce 4d10 danni psichici e subisce svantaggio alle prove di caratteristica e ai tiri per colpire per la durata dell'incantesimo. In caso di successo, subisce soltanto la metà di quei danni e l'incantesimo termina.
+
+Per la durata dell'incantesimo, il bersaglio effettua un tiro salvezza su Saggezza alla fine di ogni suo turno. In caso di fallimento, subisce nuovamente i danni psichici. In caso di successo, l'incantesimo termina.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d10 per ogni slot di livello superiore al 4º.
+
+
+---
+
+## Alterare se stesso
+
+Trasmutazione di 2º livello (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 ora
+- Pagine SRD: 123
+
+L'incantatore altera la propria forma fisica scegliendo tra le opzioni seguenti. Gli effetti permangono per la sua durata, durante la quale l'incantatore può effettuare un'azione di Magia per sostituire l'opzione scelta con una diversa.
+
+Adattamento acquatico. L'incantatore sviluppa le branchie e una membrana tra le dita. Inoltre, può respirare sott'acqua e ottenere una velocità di nuoto pari alla sua velocità.
+
+Armi naturali. L'incantatore sviluppa artigli (taglienti), zanne (perforanti), corna (perforanti) o zoccoli (contundenti). Quando usa il suo colpo senz'armi per infliggere danni con l'arma naturale creata, infligge 1d6 danni (del tipo indicato tra parentesi) invece di infliggere i danni normali del colpo senz'armi, usando il modificatore di caratteristica da incantatore per i tiri per colpire e per i tiri per i danni anziché quello di Forza.
+
+Cambiare aspetto. L'incantatore altera il suo aspetto: decide come apparire e definisce altezza, peso, lineamenti facciali, tono della voce, lunghezza dei capelli, carnagione e altri tratti distintivi. Può scegliere di assomigliare a un membro di un'altra specie, ma le sue statistiche non subiscono modifiche. Non può apparire come una creatura di taglia diversa e la sua forma base rimane la stessa; per esempio, se è bipede, non può usare l'incantesimo per diventare quadrupede. Per la durata dell'incantesimo, può effettuare un'azione di Magia per cambiare di nuovo il suo aspetto.
+
+
+---
+
+## Amicizia con gli animali
+
+Ammaliamento di 1º livello (bardo, druido, ranger)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S, M (un boccone di cibo)
+- Durata: 24 ore
+- Pagine SRD: 123
+
+L'incantatore sceglie come bersaglio una bestia entro gittata che egli è in grado di vedere. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti rimane affascinato per la durata dell'incantesimo. Se l'incantatore o uno dei suoi alleati infligge danni al bersaglio, l'incantesimo termina.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può scegliere come bersaglio una bestia aggiuntiva per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Anatema
+
+Ammaliamento di 1º livello (bardo, chierico, warlock)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S, M (una goccia di sangue)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 123
+
+L'incantatore sceglie fino a tre creature situate entro gittata che egli è in grado di vedere, ciascuna delle quali deve effettuare un tiro salvezza su Carisma. Se un bersaglio fallisce il tiro, ogni volta che effettua un tiro per colpire o un tiro salvezza prima del termine dell'incantesimo deve sottrarre 1d4 da essi.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Animale messaggero
+
+Ammaliamento di 2º livello (bardo, druido, ranger)
+
+- Tempo di lancio: azione o rituale
+- Gittata: 9 metri
+- Componenti: V, S, M (un boccone di cibo)
+- Durata: 24 ore
+- Pagine SRD: 123, 124
+
+Una bestia Minuscola a scelta entro gittata che l'incantatore è in grado di vedere deve superare un tiro salvezza su Carisma, altrimenti deve cercare di consegnare un messaggio da parte dell'incantatore (se il grado di sfida del bersaglio non è 0, la prova viene superata automaticamente). L'incantatore specifica il luogo di consegna, che ha già visitato, e un destinatario che corrisponda a una descrizione generica, come "una persona che indossa l'uniforme della guardia cittadina" o "un nano dai capelli rossi che indossa un cappello a punta". Inoltre, l'incantatore comunica un messaggio composto da un massimo di venticinque parole. La bestia bersaglio viaggia per la durata dell'incantesimo verso il luogo specificato, percorrendo circa 37,5 chilometri in 24 ore o 75 chilometri se è una bestia volante.
+
+Quando la bestia arriva a destinazione, trasmette il messaggio alla creatura descritta, imitando il modo di comunicare dell'incantatore. Se la bestia non raggiunge la sua destinazione prima della fine dell'incantesimo, il messaggio viene perso e la bestia torna nel luogo dove l'incantatore ha lanciato l'incantesimo.
+
+Utilizzo di uno slot incantesimo di livello superiore. La durata dell'incantesimo aumenta di 48 ore per ogni slot di livello superiore al 2º.
+
+
+---
+
+## Animare morti
+
+Necromanzia di 3º livello (chierico, mago)
+
+- Tempo di lancio: 1 minuto
+- Gittata: 3 metri
+- Componenti: V, S, M (una goccia di sangue, un pezzo di carne e un pizzico di polvere d'osso)
+- Durata: istantanea
+- Pagine SRD: 124
+
+L'incantatore sceglie una pila di ossa o un cadavere umanoide di taglia Media o Piccola entro gittata, animandolo come creatura non morta. Il bersaglio si trasforma in uno scheletro se l'incantatore sceglie la pila di ossa, o in uno zombi se l'incantatore sceglie un cadavere (vedi "Mostri" per le schede delle statistiche).
+
+A ogni suo turno, l'incantatore può effettuare un'azione bonus per comandare mentalmente qualsiasi creatura creata con questo incantesimo, a patto che si trovi entro 18 metri da lui (se controlla varie creature, l'incantatore può comandarne più di una allo stesso momento, impartendo lo stesso comando a ciascuna di loro). L'incantatore decide quale azione effettuerà la creatura e dove si muoverà nel suo turno successivo, oppure può impartirle un comando generale, come restare a guardia di una stanza o un di corridoio. Se invece non impartisce alcun comando, la creatura effettua l'azione Schivata e si sposta solo per evitare di subire danni. Una volta ricevuto un ordine, la creatura continua a seguirlo finché non ha portato a termine il compito.
+
+La creatura rimane sotto il controllo dell'incantatore per 24 ore, passate le quali smette di obbedire a qualsiasi comando ulteriore. Per mantenere il controllo sulla creatura per altre 24 ore, l'incantatore deve lanciare di nuovo questo incantesimo su di essa prima che l'attuale periodo di 24 ore termini. Questo uso dell'incantesimo gli permette di ristabilire il controllo su un massimo di quattro creature da lui animate tramite questo incantesimo, anziché animarne una nuova.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore anima due creature non morte aggiuntive o ristabilisce il controllo su di esse per ogni slot incantesimo di livello superiore al 3º. Ognuna delle creature deve provenire da un diverso cadavere o mucchio d'ossa.
+
+
+---
+
+## Animare oggetti
+
+Trasmutazione di 5º livello (bardo, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 124, 125
+
+Gli oggetti si animano su ordine dell'incantatore. L'incantatore sceglie un numero di oggetti non magici entro gittata che non siano indossati o trasportati, fissati su una superficie o di dimensioni Mastodontiche. Il numero massimo di oggetti è uguale al suo modificatore di caratteristica da incantatore; per questo numero, un bersaglio di taglia Media o inferiore conta come un oggetto, un bersaglio di taglia Grande conta come due e un bersaglio Enorme conta come tre.
+
+Ogni bersaglio si anima e diventa un costrutto provvisto di gambe che utilizza la scheda delle statistiche dell'oggetto animato; questa creatura è sotto il controllo dell'incantatore fino al termine dell'incantesimo o finché non viene ridotta a 0 punti ferita. Ogni creatura creata con questo incantesimo diventa un alleato per l'incantatore e i suoi alleati. In combattimento, la creatura ha lo stesso punteggio di iniziativa dell'incantatore, ma inizia il turno immediatamente dopo il suo.
+
+Fino al termine dell'incantesimo, come azione bonus, l'incantatore può comandare mentalmente qualsiasi creatura creata con questo incantesimo, a patto che si trovi entro 150 metri da sé (se controlla varie creature, l'incantatore può comandarne più di una allo stesso momento, impartendo lo stesso comando a ciascuna di loro). Se invece non impartisce alcun comando, la creatura effettua l'azione Schivata e si sposta solo per evitare di subire danni. Quando la creatura scende a 0 punti ferita, riassume la sua forma di oggetto, a cui vengono trasferiti eventuali danni rimanenti.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni da Schianto della creatura aumentano di 1d4 (taglia Media o inferiore), 1d6 (taglia Grande) o 1d12 (taglia Enorme) per ogni slot di livello superiore al 5º.
+
+**Oggetto animato**
+
+Costrutto Enorme o inferiore, senza allineamento
+
+CA 15 PF 10 (taglia Media o inferiore), 20 (taglia Grande),
+
+40 (taglia Enorme) Velocità 9 m
+
+```text
+      MOD SALV         MOD SALV         MOD SALV
+For 16 +3 +3     Des 10 +0 +0     Cos 10 +0 +0
+Int 3 −4 −4      Sag 3 −4 −4      Car 1 −5 −5
+```
+
+Immunità affascinato, avvelenato, indebolimento, paralizzato, psichico, spaventato, veleno Sensi Percezione passiva 6; vista cieca 9 m Lingue comprende le lingue parlate dal personaggio GS nessuno (PE 0; BC pari al bonus di competenza del personaggio)
+
+**Azioni**
+
+Schianto. Tiro per colpire in mischia: il bonus equivale al modificatore di attacco dell'incantesimo del personaggio, portata di 1,5 m Colpito: danni da forza pari a 1d4 + 3 (taglia Media o inferiore), 2d6 + 3 + il modificatore di caratteristica da incantatore dell'incantatore (taglia Grande) o 2d12 + 3 + il modificatore di caratteristica da incantatore dell'incantatore (taglia Enorme).
+
+
+---
+
+## Anti-individuazione
+
+Abiurazione di 3º livello (bardo, mago, ranger)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S, M (un pizzico di polvere di diamante del valore di 25 mo o più, che l'incantesimo consuma)
+- Durata: 8 ore
+- Pagine SRD: 125
+
+Per la durata dell'incantesimo, l'incantatore nasconde agli incantesimi di divinazione un bersaglio da lui toccato. Il bersaglio può essere una creatura consenziente, oppure un luogo o un oggetto non più grande di 3 metri in qualsiasi dimensione. Il bersaglio non può essere preso di mira da alcun incantesimo di divinazione né percepito da sensori di scrutamento magico.
+
+
+---
+
+## Antipatia/simpatia
+
+Ammaliamento di 8º livello (bardo, druido, mago)
+
+- Tempo di lancio: 1 ora
+- Gittata: 18 metri
+- Componenti: V, S, M (una miscela di aceto e miele)
+- Durata: 10 giorni
+- Pagine SRD: 125
+
+Quando l'incantatore lancia l'incantesimo, decide se creare antipatia o simpatia e sceglie come bersaglio una creatura o un oggetto di taglia Enorme o inferiore. Dopodiché, specifica un tipo di creatura, come per esempio draghi rossi, goblin o vampiri. Una creatura del tipo scelto effettua un tiro salvezza su Saggezza quando si trova entro 36 metri dal bersaglio. La scelta dell'incantatore tra gli effetti di antipatia e simpatia determina cosa accade a una creatura quando questa fallisce il tiro salvezza.
+
+Antipatia. La creatura è spaventata e deve usare il movimento nel suo turno per allontanarsi il più possibile dal bersaglio, muovendosi per la via più sicura. Simpatia. La creatura è affascinata e deve usare il movimento nel suo turno per avvicinarsi il più possibile al bersaglio, muovendosi per la via più sicura. Se la creatura si trova entro 1,5 metri dal bersaglio, non può allontanarsi volontariamente. Se il bersaglio infligge danni alla creatura affascinata, questa può effettuare un tiro salvezza su Saggezza per porre fine all'effetto, come descritto di seguito.
+
+Porre fine all'effetto. Se la creatura spaventata o affascinata termina il suo turno a più di 36 metri di distanza dal bersaglio, effettua un tiro salvezza su Saggezza. In caso di successo, la creatura non è più sotto l'influenza del bersaglio. Una creatura che supera un tiro salvezza contro l'effetto ne è immune per 1 minuto, al termine del quale può esserne influenzata di nuovo.
+
+
+---
+
+## Arma magica
+
+Trasmutazione di 2º livello (mago, paladino, ranger, stregone)
+
+- Tempo di lancio: azione bonus
+- Gittata: contatto
+- Componenti: V, S
+- Durata: 1 ora
+- Pagine SRD: 125
+
+L'incantatore tocca un'arma non magica, e, fino al termine dell'incantesimo, quell'arma diventa un'arma magica con un bonus di +1 ai tiri per colpire e ai tiri per i danni. L'incantesimo termina in anticipo se l'incantatore lo lancia di nuovo.
+
+Utilizzo di uno slot incantesimo di livello superiore. Il bonus aumenta a +2 con uno slot incantesimo compreso tra il 3º e 5º livello. Il bonus aumenta a +3 con uno slot incantesimo di 6º livello o superiore.
+
+
+---
+
+## Arma spirituale
+
+Invocazione di 2º livello (chierico)
+
+- Tempo di lancio: azione bonus
+- Gittata: 18 metri
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 125, 126
+
+L'incantatore crea una forza spettrale e fluttuante che ha la forma di un'arma a sua scelta e permane per la durata dell'incantesimo. L'arma appare entro gittata in un luogo a scelta dell'incantatore, il quale può subito effettuare un attacco in mischia con incantesimo contro una creatura entro 1,5 metri dall'arma. Se il colpo va a segno, il bersaglio subisce 1d8 danni da forza + il modificatore di caratteristica da incantatore dell'incantatore.
+
+Come azione bonus nei suoi turni successivi, l'incantatore può muovere l'arma spirituale di un massimo di 6 metri e ripetere l'attacco contro una creatura situata entro 1,5 metri da essa.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d8 per ogni slot di livello superiore al 2º.
+
+
+---
+
+## Armatura magica
+
+Abiurazione di 1º livello (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S, M (un pezzo di cuoio trattato)
+- Durata: 8 ore
+- Pagine SRD: 126
+
+L'incantatore tocca una creatura consenziente che non indossa un'armatura. Fino al termine dell'incantesimo, la CA base del bersaglio diventa 13 più il suo modificatore di Destrezza. L'incantesimo termina in anticipo se il bersaglio indossa un'armatura.
+
+
+---
+
+## Artificio druidico
+
+Trucchetto di Trasmutazione (druido)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 126
+
+Sussurrando agli spiriti della natura, l'incantatore crea uno degli effetti seguenti entro gittata.
+
+Sensore atmosferico. L'incantatore crea un Minuscolo e innocuo effetto sensoriale che predice il tempo atmosferico nel luogo in cui si trova per le successive 24 ore. L'effetto potrebbe manifestarsi come una sfera dorata in caso di cieli tersi, una nuvola in caso di pioggia, fiocchi di neve in caso di nevicate e così via. Questo effetto permane per 1 round.
+
+Fioritura. L'incantatore fa istantaneamente sbocciare un fiore, aprire un baccello o schiudere un germoglio.
+
+Effetto sensoriale. L'incantatore crea un effetto sensoriale innocuo, come la caduta di foglie, delle fate spettrali danzanti, una brezza leggera, il rumore di un piccolo animale o il debole odore di una puzzola. L'effetto deve poter essere contenuto in un cubo con spigolo di 1,5 metri.
+
+Trucchetto col fuoco. L'incantatore accende o spegne una candela, una torcia o un fuoco da campo.
+
+
+---
+
+## Aura di vita
+
+Abiurazione di 4º livello (chierico, paladino)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V
+- Durata: concentrazione, fino a 10 minuti
+- Pagine SRD: 126
+
+L'incantatore irradia un'aura in un'emanazione di 9 metri da sé che permane per la durata dell'incantesimo. Mentre sono nell'aura, l'incantatore e i suoi alleati ottengono resistenza ai danni necrotici e i loro punti ferita massimi non possono essere ridotti. Se un alleato con 0 punti ferita inizia il suo turno nell'aura, ne recupera 1.
+
+
+---
+
+## Aura magica dell'arcanista
+
+Illusione di 2º livello (mago)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S, M (un piccolo pezzo quadrato di seta)
+- Durata: 24 ore
+- Pagine SRD: 126
+
+L'incantatore tocca una creatura consenziente o un oggetto che non sia indossato o trasportato e vi pone un'illusione. Una creatura riceve l'effetto Maschera, mentre un oggetto riceve l'effetto Falsa aura. Entrambi gli effetti, descritti di seguito, permangono per tutta la durata dell'incantesimo. Se l'incantatore lancia l'incantesimo sullo stesso bersaglio ogni giorno per 30 giorni, l'illusione permane finché non viene dissolta.
+
+Maschera (creatura). L'incantatore sceglie un tipo di creatura diverso da quello del bersaglio. Gli incantesimi e altri effetti magici considerano il bersaglio come se fosse una creatura del tipo scelto dall'incantatore.
+
+Falsa aura (oggetto). L'incantatore modifica il modo in cui il bersaglio appare agli incantesimi e agli effetti magici che individuano le aure magiche, come per esempio individuazione del magico. L'incantatore può fare in modo che un oggetto non magico appaia come magico e viceversa, oppure può cambiare l'aura di un oggetto in modo che sembri appartenere a una scuola di magia a sua scelta.
+
+
+---
+
+## Aura sacra
+
+Abiurazione di 8º livello (chierico)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S, M (un reliquiario del valore di 1.000 mo o più)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 126, 127
+
+Per la durata dell'incantesimo, l'incantatore irradia un'aura in un'emanazione di 9 metri. Le creature scelte dell'incantatore che si trovano all'interno dell'aura dispongono di vantaggio a tutti i tiri salvezza, mentre le altre creature subiscono svantaggio ai tiri per colpire contro le creature scelte. Inoltre, quando un immondo o un non morto colpisce una creatura influenzata con un tiro per colpire in mischia, l'attaccante deve superare un tiro salvezza su Costituzione, altrimenti viene accecato fino al termine del proprio turno successivo.
+
+
+---
+
+## Banchetto degli eroi
+
+Evocazione di 6º livello (bardo, chierico, druido)
+
+- Tempo di lancio: 10 minuti
+- Gittata: incantatore
+- Componenti: V, S, M (una ciotola tempestata di gemme del valore di 1.000 mo o più, che l'incantesimo consuma)
+- Durata: istantanea
+- Pagine SRD: 127
+
+L'incantatore evoca accanto a sé un banchetto che appare su una superficie all'interno di un cubo libero con spigolo di 3 metri. Consumare il banchetto richiede 1 ora, solo al termine della quale il convivio scompare e i suoi effetti benefici vengono applicati. Fino a un massimo di dodici creature possono partecipare al banchetto.
+
+Una creatura che partecipa al banchetto ottiene numerosi benefici che durano 24 ore. La creatura diventa resistente ai danni da veleno e immune alle condizioni avvelenato e spaventato. Inoltre, i suoi punti ferita massimi aumentano di 2d10 e ottiene lo stesso numero di punti ferita.
+
+
+---
+
+## Barriera di lame
+
+Invocazione di 6º livello (chierico)
+
+- Tempo di lancio: azione
+- Gittata: 27 metri
+- Componenti: V, S
+- Durata: concentrazione, fino a 10 minuti
+- Pagine SRD: 127, 128
+
+L'incantatore crea un muro di lame turbinanti composte da energia magica. Il muro compare entro gittata e permane per la durata dell'incantesimo. L'incantatore crea un muro lineare lungo fino a 30 metri, alto 6 metri e spesso 1,5 metri, oppure un muro circolare del diametro massimo di 18 metri, alto 6 metri e spesso 1,5 metri. Il muro garantisce tre quarti di copertura e il suo spazio è un terreno difficile.
+
+Qualsiasi creatura situata nello spazio del muro deve effettuare un tiro salvezza su Destrezza, subendo 6d10 danni forza in caso di fallimento, o la metà dei danni in caso di successo. Una creatura effettua il tiro salvezza anche se entra nello spazio del muro o vi termina il suo turno. Il tiro salvezza può essere effettuato solo una volta per turno.
+
+
+---
+
+## Beffa crudele
+
+Trucchetto di Ammaliamento (bardo)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V
+- Durata: istantanea
+- Pagine SRD: 128
+
+L'incantatore pronuncia una sequenza di insulti mescolati a impercettibili ammaliamenti contro una creatura entro gittata che egli è in grado di vedere o di sentire. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti subisce 1d6 danni psichici e svantaggio al tiro per colpire successivo che effettua prima della fine del suo turno successivo.
+
+Trucchetto potenziato. I danni aumentano di 1d6 quando l'incantatore raggiunge il 5º livello (2d6), l'11º livello (3d6) e il 17º livello (4d6).
+
+
+---
+
+## Benedizione
+
+Ammaliamento di 1º livello (chierico, paladino)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S, M (un simbolo sacro del valore di 5 mo o più)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 128
+
+L'incantatore benedice fino a tre creature entro gittata. Se un bersaglio effettua un tiro per colpire o un tiro salvezza prima del termine dell'incantesimo, il bersaglio aggiunge a essi 1d4.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Blocca mostri
+
+Ammaliamento di 5º livello (bardo, mago, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: 27 metri
+- Componenti: V, S, M (una sbarra di ferro)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 128
+
+L'incantatore sceglie una creatura entro gittata che egli è in grado di vedere. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti rimane paralizzato per la durata dell'incantesimo. Alla fine di ogni suo turno, il bersaglio ripete il tiro salvezza e, se lo supera, termina l'incantesimo su di sé.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 5º.
+
+
+---
+
+## Blocca persone
+
+Ammaliamento di 2º livello (bardo, chierico, druido, mago, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S, M (una sbarra di ferro)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 128
+
+L'incantatore sceglie un umanoide entro gittata che egli è in grado di vedere. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti rimane paralizzato per la durata dell'incantesimo. Alla fine di ogni suo turno, il bersaglio ripete il tiro salvezza e, se lo supera, termina l'incantesimo su di sé.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare un umanoide aggiuntivo per ogni slot di livello superiore al 2º.
+
+
+---
+
+## Bocca magica
+
+Illusione di 2º livello (bardo, mago)
+
+- Tempo di lancio: 1 minuto o rituale
+- Gittata: 9 metri
+- Componenti: V, S, M (polvere di giada del valore di 10 mo o più, che l'incantesimo consuma)
+- Durata: finché non viene dissolto
+- Pagine SRD: 128, 129
+
+L'incantatore imprime un messaggio all'interno di un oggetto entro gittata, che viene pronunciato quando si verifica una condizione di innesco. L'incantatore sceglie un oggetto che egli è in grado di vedere e che non è indossato o trasportato da un'altra creatura. Quindi pronuncia il messaggio, che non deve essere più lungo di 25 parole, ma può essere enunciato nell'arco di 10 minuti. Infine, determina la circostanza che innesca l'incantesimo e l'emissione del messaggio.
+
+Quando quell'innesco si verifica, sull'oggetto appare una bocca magica che recita il messaggio con il tono e il volume di voce dell'incantatore. Se l'oggetto scelto presenta già una bocca o qualcosa di simile (per esempio, la bocca di una statua), la bocca magica appare in modo che le parole sembrino pronunciate dalla bocca dell'oggetto. Quando lancia questo incantesimo, l'incantatore può fare in modo che esso termini una volta consegnato il messaggio o che rimanga attivo ripetendo il messaggio ogniqualvolta si verifica la circostanza di innesco.
+
+L'innesco può essere sia generale che dettagliato, ma deve essere basato su condizioni visibili o udibili che si verificano entro 9 metri dall'oggetto. Per esempio, l'incantatore potrebbe ordinare alla bocca di parlare quando, entro 9 metri dall'oggetto, una qualsiasi creatura si muove, oppure un campana d'argento suona.
+
+
+---
+
+## Caduta morbida
+
+Trasmutazione di 1º livello (bardo, mago, stregone)
+
+- Tempo di lancio: reazione, che l'incantatore può effettuare quando egli stesso o una creatura entro 18 metri da lui che egli è in grado di vedere cade
+- Gittata: 18 metri
+- Componenti: V, M (una piccola piuma)
+- Durata: 1 minuto
+- Pagine SRD: 129
+
+L'incantatore sceglie fino a cinque creature in caduta entro gittata. La velocità di discesa di una creatura in caduta rallenta fino a 18 metri per round finché l'incantesimo non termina. Se una creatura cade prima del termine dell'incantesimo, non subisce alcun danno da caduta e interrompe l'effetto dell'incantesimo.
+
+
+---
+
+## Calmare emozioni
+
+Ammaliamento di 2º livello (bardo, chierico)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 129
+
+Ogni umanoide all'interno di una sfera del raggio di 6 metri centrata su un punto scelto dall'incantatore entro gittata deve effettuare un tiro salvezza su Carisma o essere influenzato da uno dei seguenti effetti (a scelta per ogni creatura):
+
+• La creatura è immune alle condizioni affascinato e spaventato fino al termine dell'incantesimo. Se la creatura è già affascinata o spaventata, queste condizioni sono soppresse per la durata dell'incantesimo.
+
+• La creatura diventa indifferente alle creature
+
+(a scelta dell'incantatore) verso cui è ostile. Questa indifferenza termina se il bersaglio subisce danni o se vede uno dei suoi alleati subire danni. Al termine dell'incantesimo, l'atteggiamento della creatura torna alla normalità.
+
+
+---
+
+## Camminare nel vento
+
+Trasmutazione di 6º livello (druido)
+
+- Tempo di lancio: 1 minuto
+- Gittata: 9 metri
+- Componenti: V, S, M (una candela)
+- Durata: 8 ore
+- Pagine SRD: 129
+
+L'incantatore e un massimo di dieci creature consenzienti a sua scelta entro gittata assumono una forma gassosa per la durata dell'incantesimo, apparendo come sbuffi di nuvole. Finché il bersaglio ha queste sembianze, ha una velocità di volo di 90 metri e può fluttuare. Inoltre, è immune alla condizione prono e resistente ai danni contundenti, perforanti e taglienti. Le uniche azioni che può effettuare in questa forma sono l'azione Scatto, un'azione di Magia o riassumere la propria forma normale. Quest'ultima opzione richiede 1 minuto, durante il quale il bersaglio è stordito. Fino al termine dell'incantesimo, il bersaglio può assumere nuovamente la forma di nuvola usando un'azione di Magia seguita da 1 minuto di trasformazione.
+
+Se una creatura è in forma gassosa e sta volando quando l'effetto termina, scende di 18 metri per round per 1 minuto finché non atterra, senza subire danni. Se tuttavia non riesce ad atterrare in 1 minuto, cade per la distanza rimanente.
+
+
+---
+
+## Camminare sull'acqua
+
+Trasmutazione di 3º livello (chierico, druido, ranger, stregone)
+
+- Tempo di lancio: azione o rituale
+- Gittata: 9 metri
+- Componenti: V, S, M (un pezzo di sughero)
+- Durata: 1 ora
+- Pagine SRD: 129
+
+Questo incantesimo conferisce la capacità di muoversi su una qualsiasi superficie liquida, come l'acqua, l'acido, il fango, la neve, le sabbie mobili o la lava, come se si trattasse di un innocuo terreno solido (ma le creature che attraversano un tratto di lava fusa possono comunque subire danni dal calore). Fino a dieci creature consenzienti entro gittata a scelta dell'incantatore ottengono questa capacità per la durata dell'incantesimo.
+
+Un bersaglio colpito deve usare un'azione bonus per passare dalla superficie del liquido all'interno del liquido stesso e viceversa, ma se il bersaglio cade dentro di esso passa attraverso la superficie nel liquido sottostante.
+
+
+---
+
+## Campo anti-magia
+
+Abiurazione di 8º livello (chierico, mago)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S, M (limatura di ferro)
+- Durata: concentrazione, fino a 1 ora
+- Pagine SRD: 129, 130
+
+Un'aura di anti-magia circonda l'incantatore in un'emanazione di 3 metri. Nessuno può lanciare incantesimi, compiere azioni di Magia o creare altri effetti magici all'interno dell'aura, e tali azioni non possono colpire o influenzare in alcun modo nulla al suo interno. Le proprietà degli oggetti magici non funzionano all'interno dell'aura o su qualsiasi cosa al suo interno.
+
+Le aree di effetto create da incantesimi o da altre magie non possono estendersi all'interno dell'aura e nessuno può teletrasportarsi all'interno o all'esterno di essa o utilizzare il viaggio planare. I portali si chiudono temporaneamente quando si trovano all'interno dell'aura.
+
+Gli incantesimi già in corso, tranne quelli lanciati da manufatti o divinità, sono soppressi all'interno dell'area. Mentre un effetto è soppresso non funziona, ma il tempo che trascorre in questo stato conta ai fini della sua durata.
+
+Dissolvi magie non ha alcun effetto sull'aura, e le aure create da più incantesimi campo anti-magia non si annullano a vicenda.
+
+
+---
+
+## Camuffare se stesso
+
+Illusione di 1º livello (bardo, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S
+- Durata: 1 ora
+- Pagine SRD: 130
+
+L'incantatore (compresi i suoi abiti, armatura, armi e altri oggetti personali presenti sulla sua persona) assume un aspetto diverso fino al termine dell'incantesimo. Può apparire 30 centimetri più alto o più basso e apparire più grasso o più magro, adottando una forma che usi la stessa disposizione basilare degli arti. Entro questi limiti, la natura dell'illusione dipende da lui.
+
+I cambiamenti apportati da questo incantesimo non passano il vaglio di un'ispezione fisica. Per esempio, se l'incantatore usa questo incantesimo per aggiungere un cappello al suo abbigliamento, gli oggetti attraverserebbero il cappello e chiunque lo toccasse non sentirebbe nulla.
+
+Per capire che l'incantatore è camuffato, una creatura può usare la sua azione di Studio per ispezionarne l'aspetto, superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo.
+
+
+---
+
+## Capanna
+
+Invocazione di 3º livello (bardo, mago)
+
+- Tempo di lancio: 1 minuto o rituale
+- Gittata: incantatore
+- Componenti: V, S, M (una perla di cristallo)
+- Durata: 8 ore
+- Pagine SRD: 130
+
+Un'emanazione di 3 metri si materializza attorno all'incantatore e permane stazionaria per la durata dell'incantesimo. L'incantesimo fallisce quando l'incantatore lo lancia ma l'emanazione non è abbastanza grande da poter inglobare totalmente tutte le creature all'interno della sua area.
+
+Le creature e gli oggetti all'interno dell'emanazione al momento del lancio dell'incantesimo possono attraversarla liberamente, mentre a tutte le altre creature e oggetti è proibito. Non è possibile lanciare incantesimi di 3º livello o inferiore attraverso l'emanazione, e gli effetti di tali incantesimi non si estendono al suo interno.
+
+L'atmosfera all'interno dell'emanazione è gradevole e asciutta, a prescindere dal tempo atmosferico all'esterno. Fino al termine dell'incantesimo, l'incantatore può decidere che all'interno dell'emanazione ci sia luce fioca o oscurità (nessuna azione richiesta). Dall'esterno, l'emanazione appare opaca e di un qualsiasi colore a scelta dell'incantatore, ma dall'interno risulta trasparente.
+
+L'incantesimo termina in anticipo se l'incantatore lo lancia di nuovo o se esce dall'area dell'emanazione.
+
+
+---
+
+## Caratteristica potenziata
+
+Trasmutazione di 2º livello (bardo, chierico, druido, mago, ranger, stregone)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S, M (un ciuffo di peli o una piuma)
+- Durata: concentrazione, fino a 1 ora
+- Pagine SRD: 130
+
+L'incantatore tocca una creatura e sceglie Forza, Destrezza, Intelligenza, Saggezza o Carisma. Per la durata dell'incantesimo, il bersaglio dispone di vantaggio sulle prove di caratteristica effettuate utilizzando l'abilità scelta.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 2º. L'incantatore può scegliere una caratteristica differente per ogni bersaglio.
+
+
+---
+
+## Carne in pietra
+
+Trasmutazione di 6º livello (druido, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S, M (una piuma di coccatrice)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 130, 131
+
+L'incantatore tenta di tramutare in pietra una creatura entro gittata che egli è in grado di vedere. Il bersaglio effettua un tiro salvezza su Costituzione. In caso di fallimento, è trattenuto per la durata dell'incantesimo. In caso di successo, la sua velocità è pari a 0 fino all'inizio del turno successivo dell'incantatore. I costrutti superano automaticamente il tiro salvezza.
+
+Un bersaglio trattenuto effettua un altro tiro salvezza su Costituzione al termine di ogni suo turno. L'incantesimo termina se il bersaglio supera per tre volte il tiro salvezza contro questo incantesimo. Mentre se lo fallisce per tre volte, viene tramutato in pietra e diventa pietrificato per la durata dell'incantesimo. Non è necessario che i tiri superati o falliti siano consecutivi: si tiene semplicemente il conto di entrambi finché il bersaglio non ne accumula tre di un certo tipo.
+
+Se l'incantatore mantiene la concentrazione su questo incantesimo per l'intera durata possibile, il bersaglio è pietrificato fino a quando non viene posta fine alla condizione con ristorare superiore o un'altra magia simile.
+
+
+---
+
+## Catena di fulmini
+
+Invocazione di 6º livello (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 45 metri
+- Componenti: V, S, M (tre spilli d'argento)
+- Durata: istantanea
+- Pagine SRD: 131
+
+L'incantatore scaglia un fulmine verso un bersaglio entro gittata e che egli è in grado di vedere. Tre fulmini sfrecciano poi dal bersaglio verso un massimo di altri tre bersagli a scelta dell'incantatore, ognuno dei quali deve trovarsi entro 9 metri dal primo. I bersagli dell'incantesimo possono essere creature o oggetti e possono essere bersagliati soltanto da uno dei fulmini.
+
+Ogni bersaglio effettua un tiro salvezza su Destrezza, subendo 10d8 danni da fulmine in caso di fallimento, o la metà dei danni in caso di successo.
+
+Utilizzo di uno slot incantesimo di livello superiore. Un fulmine aggiuntivo si trasmette dal primo bersaglio a un altro bersaglio per ogni slot di livello superiore al 6º.
+
+
+---
+
+## Cecità/sordità
+
+Trasmutazione di 2º livello (bardo, chierico, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: V
+- Durata: 1 minuto
+- Pagine SRD: 131
+
+Una creatura entro gittata che l'incantatore è in grado di vedere deve superare un tiro salvezza su Costituzione, altrimenti viene accecata o assordata (a scelta dell'incantatore) per la durata dell'incantesimo. Alla fine di ogni suo turno, il bersaglio ripete il tiro salvezza e, se lo supera, termina l'incantesimo su di sé.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 2º.
+
+
+---
+
+## Celare
+
+Trasmutazione di 7º livello (mago)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S, M (polvere di gemme del valore di 5.000 mo o più, che l'incantesimo consuma)
+- Durata: finché non viene dissolto
+- Pagine SRD: 131
+
+Con un tocco, l'incantatore cela magicamente un oggetto o una creatura consenziente. Per la durata dell'incantesimo, il bersaglio è invisibile e non può essere bersagliato da incantesimi di divinazione, individuato dalla magia o osservato a distanza con la magia.
+
+Se il bersaglio è una creatura, entra in uno stato di animazione sospesa, è priva di sensi, non invecchia e non necessita di cibo, acqua o aria.
+
+Per terminare prematuramente l'incantesimo, l'incantatore può stabilire una condizione, che può essere qualsiasi cosa a sua scelta che, tuttavia, debba verificarsi o essere visibile entro 1,5 chilometri dal bersaglio. Per esempio, "dopo 1.000 anni" o "al risveglio del tarrasque". Questo incantesimo termina inoltre se il bersaglio subisce danni.
+
+
+---
+
+## Cerchio di morte
+
+Necromanzia di 6º livello (mago, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: 45 metri
+- Componenti: V, S, M (polvere ricavata da una perla nera frantumata, del valore di 500 mo o più)
+- Durata: istantanea
+- Pagine SRD: 131
+
+Un flusso di energia negativa si espande in una sfera del raggio di 18 metri da un punto a scelta dell'incantatore situato entro gittata. Ogni creatura nell'area effettua un tiro salvezza su Costituzione, subendo 8d8 danni necrotici in caso di fallimento, o la metà dei danni in caso di successo.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 2d8 per ogni slot di livello superiore al 6º.
+
+
+---
+
+## Cerchio di teletrasporto
+
+Evocazione di 5º livello (bardo, mago, stregone, warlock)
+
+- Tempo di lancio: 1 minuto
+- Gittata: 3 metri
+- Componenti: V, M (inchiostri rari dal valore di 50 mo o più, che l'incantesimo consuma)
+- Durata: 1 round
+- Pagine SRD: 131, 132
+
+Quando lancia l'incantesimo, l'incantatore traccia un cerchio del diametro di 1,5 metri sul terreno dotato di sigilli che collegano il luogo in cui si trova a un cerchio di teletrasporto permanente a sua scelta, di cui conosce la sequenza di sigilli e che si trova sul suo stesso piano di esistenza. All'interno del cerchio tracciato si apre un portale scintillante che rimane aperto fino al termine del suo turno successivo. Qualsiasi creatura che entra nel portale appare immediatamente entro 1,5 metri dal cerchio di destinazione o nello spazio libero più vicino se tale spazio è occupato.
+
+Nella maggior parte dei casi, templi e palazzi delle gilde più grandi, oltre ad altri luoghi importanti, sono dotati di cerchi di teletrasporto permanenti. Ognuno di essi include una sequenza di sigilli unica: una serie di rune disposte secondo uno schema particolare.
+
+Quando l'incantatore ottiene per la prima volta la capacità di lanciare questo incantesimo, apprende la sequenza di sigilli abbinata a due destinazioni situate sul Piano Materiale, determinate dal GM. Nel corso delle sue avventure può apprendere ulteriori sequenze di sigilli, imparando a memoria ciascuna di esse dopo 1 minuto di studio.
+
+L'incantatore può creare un cerchio di teletrasporto permanente lanciando questo incantesimo nello stesso luogo ogni giorno per 365 giorni.
+
+
+---
+
+## Cerchio magico
+
+Abiurazione di 3º livello (chierico, mago, paladino, warlock)
+
+- Tempo di lancio: 1 minuto
+- Gittata: 3 metri
+- Componenti: V, S, M (sale e polvere d'argento del valore di 100 mo o più, che l'incantesimo consuma)
+- Durata: 1 ora
+- Pagine SRD: 132
+
+L'incantatore crea un cilindro di energia magica di 3 metri di raggio e 6 metri di altezza, centrato su un punto del terreno entro gittata che egli è in grado di vedere. Rune luminose appaiono nei punti in cui il cilindro si interseca con il pavimento o altre superfici.
+
+L'incantatore sceglie uno o più tra i tipi di creature seguenti: celestiali, elementali, folletti, immondi o non morti. Il cerchio influenza una creatura del tipo scelto nei seguenti modi:
+
+• La creatura non può entrare volontariamente nel cilindro tramite mezzi non magici. Se prova a utilizzare il teletrasporto o il viaggio interplanare, deve prima superare un tiro salvezza su Carisma.
+
+• La creatura subisce svantaggio ai tiri per colpire contro i bersagli all'interno del cilindro.
+
+• I bersagli all'interno del cilindro non possono essere posseduti, affascinati o spaventati dalla creatura.
+
+Ogni volta che lancia questo incantesimo, l'incantatore può far funzionare la sua magia nella direzione inversa, impedendo cioè a una creatura di un tipo specifico di uscire dal cilindro e proteggendo i bersagli all'esterno.
+
+Utilizzo di uno slot incantesimo di livello superiore. La durata aumenta di 1 ora per ogni slot di livello superiore al 3º.
+
+
+---
+
+## Charme su persone
+
+Ammaliamento di 1º livello (bardo, druido, mago, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S
+- Durata: 1 ora
+- Pagine SRD: 132
+
+Un umanoide entro gittata che l'incantatore è in grado di vedere effettua un tiro salvezza su Saggezza, disponendo di vantaggio se l'incantatore o i suoi alleati stanno combattendo contro di essa. In caso di fallimento, il bersaglio è affascinato fino al termine dell'incantesimo o finché non gli vengono inflitti danni dall'incantatore o i suoi alleati. La creatura affascinata è amichevole nei confronti dell'incantatore. Al termine dell'incantesimo, il bersaglio capirà di essere stato affascinato dall'incantatore.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Charme sui mostri
+
+Ammaliamento di 4º livello (bardo, druido, mago, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S
+- Durata: 1 ora
+- Pagine SRD: 132
+
+Una creatura entro gittata che l'incantatore è in grado di vedere effettua un tiro salvezza su Saggezza, disponendo di vantaggio se l'incantatore o i suoi alleati stanno combattendo contro di essa. In caso di fallimento, il bersaglio è affascinato fino al termine dell'incantesimo o finché non gli vengono inflitti danni dall'incantatore o i suoi alleati. La creatura affascinata è amichevole nei confronti dell'incantatore. Al termine dell'incantesimo, il bersaglio capirà di essere stato affascinato dall'incantatore.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 4º.
+
+
+---
+
+## Chiaroveggenza
+
+Divinazione di 3º livello (bardo, chierico, mago, stregone)
+
+- Tempo di lancio: 10 minuti
+- Gittata: 1,5 chilometri
+- Componenti: V, S, M (un focus del valore di 100 mo o più, a scelta tra un cornetto acustico incastonato di gemme o un occhio di vetro per la vista)
+- Durata: concentrazione, fino a 10 minuti
+- Pagine SRD: 132, 133
+
+L'incantatore crea un sensore invisibile entro gittata in un luogo a lui familiare (cioè che ha già visitato o visto), oppure in un luogo ovvio a lui non familiare (come per esempio dietro una porta, dietro un angolo o in un boschetto). Questo sensore intangibile e invulnerabile rimane in quella posizione per la durata dell'incantesimo.
+
+Quando lancia l'incantesimo, l'incantatore sceglie tra vista e udito, potendo utilizzare il senso scelto attraverso il sensore come se si trovasse nel suo spazio. Come azione bonus, l'incantatore può passare dalla vista all'udito e viceversa.
+
+Una creatura che vede il sensore (per esempio una creatura che beneficia di vedere invisibilità o vista pura) scorge una sfera luminosa grande quanto il pugno dell'incantatore.
+
+
+---
+
+## Clone
+
+Necromanzia di 8º livello (mago)
+
+- Tempo di lancio: 1 ora
+- Gittata: contatto
+- Componenti: V, S, M (un diamante del valore di 1.000 mo o più, che l'incantesimo consuma, e un contenitore sigillabile del valore di 2.000 mo o più, abbastanza grande da contenere la creatura da clonare)
+- Durata: istantanea
+- Pagine SRD: 133
+
+L'incantatore tocca una creatura o un cubo della sua carne di almeno 2,5 cm per lato. Un duplicato inerme di quella creatura si sviluppa all'interno del contenitore utilizzato per lanciare l'incantesimo e finisce di crescere dopo 120 giorni; l'incantatore sceglie se il clone sviluppato ha la stessa età della creatura o è più giovane. Il clone rimane inerte e permane per un tempo indeterminato, fintantoché il suo involucro rimane indisturbato.
+
+Dopo che il clone ha raggiunto la maturazione, se la creatura originale muore, la sua anima viene trasferita al clone, purché essa sia libera e disposta a tornare. Il clone è fisicamente identico all'originale e possiede la sua personalità, i suoi ricordi e le sue abilità, ma non il suo equipaggiamento. I resti della creatura originale, se ancora esistono, diventano inerti e non possono più essere riportati in vita, in quanto l'anima della creatura è altrove.
+
+
+---
+
+## Colpo accurato
+
+Trucchetto di Divinazione (bardo, mago, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: S, M (un'arma nel cui uso l'incantatore ha competenza e ha un valore di 1 mr o più)
+- Durata: istantanea
+- Pagine SRD: 133
+
+Guidato da un lampo di intuizione magica, l'incantatore effettua un attacco con l'arma utilizzata per lanciare l'incantesimo. Per determinare il tiro per colpire e il tiro per i danni, l'incantatore utilizza la sua caratteristica da incantatore invece che la Forza o la Destrezza. Se l'attacco infligge danni, possono essere danni radiosi o danni normali inflitti dall'arma (a scelta dell'incantatore).
+
+Trucchetto potenziato. A prescindere dal tipo di danni che l'incantatore sceglie (danni radiosi o danni normali dell'arma), l'attacco infligge danni radiosi extra quando l'incantatore raggiunge il 5º livello (1d6), l'11º livello (2d6) e il 17º livello (3d6).
+
+
+---
+
+## Colpo infuocato
+
+Invocazione di 5º livello (chierico)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S, M (un pizzico di zolfo)
+- Durata: istantanea
+- Pagine SRD: 133
+
+Una colonna verticale di fuoco splendente si abbatte dall'alto. Ogni creatura all'interno di un cilindro del raggio di 3 metri e dell'altezza di 12 metri centrato in un punto entro gittata effettua un tiro salvezza su Destrezza; se lo fallisce, subisce 5d6 danni da fuoco e 5d6 danni radiosi, mentre se lo supera subisce soltanto la metà di quei danni.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni da fuoco e i danni radiosi aumentano di 1d6 per ogni slot di livello superiore al 5º.
+
+
+---
+
+## Colpo intrappolante
+
+Evocazione di 1º livello (ranger)
+
+- Tempo di lancio: azione bonus che l'incantatore effettua subito dopo aver colpito una creatura con un'arma
+- Gittata: incantatore
+- Componenti: V
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 133
+
+Quando l'incantatore colpisce il bersaglio, su di esso appare un groviglio di rampicanti. Il bersaglio effettua un tiro salvezza su Forza, disponendo di vantaggio a questo tiro se è una creatura di taglia Grande o superiore. Se lo fallisce, il bersaglio è trattenuto fino al termine dell'incantesimo. Se lo supera, i rampicanti si ritraggono e avvizziscono, ponendo fine all'incantesimo.
+
+Finché è trattenuto, il bersaglio subisce 1d6 danni perforanti all'inizio di ogni suo turno. Il bersaglio o una creatura alla sua portata può usare un'azione per effettuare una prova di Forza (Atletica) contro la CD del tiro salvezza sull'incantesimo. In caso di successo, l'incantesimo termina.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d6 per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Coltello di ghiaccio
+
+Evocazione di 1º livello (druido, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: S, M (una goccia d'acqua o un frammento di ghiaccio)
+- Durata: istantanea
+- Pagine SRD: 133, 134
+
+L'incantatore crea un frammento di ghiaccio e lo scaglia contro una creatura entro gittata, effettuando un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce 1d10 danni perforanti. Che colpisca o manchi il bersaglio, il frammento poi esplode.
+
+Il bersaglio e ogni creatura entro 1,5 metri dal punto in cui il ghiaccio è esploso devono superare un tiro salvezza su Destrezza, altrimenti subiscono 2d6 danni da freddo.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni da freddo aumentano di 1d6 per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Comando
+
+Ammaliamento di 1º livello (bardo, chierico, paladino)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V
+- Durata: istantanea
+- Pagine SRD: 134
+
+L'incantatore rivolge una parola di comando a una creatura entro gittata che egli è in grado di vedere. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti dovrà obbedire al comando nel suo turno successivo. Scegli il comando tra le seguenti opzioni:
+
+Avvicinati. Il bersaglio si muove verso l'incantatore seguendo il percorso più breve e diretto, terminando il suo turno se giunge entro 1,5 metri da lui. Fermo. Nel suo turno, il bersaglio non si muove e non effettua alcuna azione o azione bonus. Fuggi. Il bersaglio usa il suo turno per allontanarsi dall'incantatore nel modo più rapido possibile. Lascia. Il bersaglio lascia cadere ciò che stava impugnando, poi termina il suo turno. Prostrati. Il bersaglio cade a terra prono e termina il suo turno.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può influenzare una creatura aggiuntiva per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Comprensione dei linguaggi
+
+Divinazione di 1º livello (bardo, mago, stregone, warlock)
+
+- Tempo di lancio: azione o rituale
+- Gittata: incantatore
+- Componenti: V, S, M (un pizzico di fuliggine e di sale)
+- Durata: 1 ora
+- Pagine SRD: 134
+
+Per la durata dell'incantesimo, l'incantatore comprende il significato letterale di qualsiasi linguaggio che è in grado di sentire o vedere tramite segni. Comprende inoltre ogni linguaggio scritto che è in grado di vedere, ma deve toccare la superficie su cui sono scritte le parole. È necessario circa 1 minuto per leggere una pagina di testo. Questo incantesimo non decodifica simboli o messaggi segreti.
+
+
+---
+
+## Compulsione
+
+Ammaliamento di 4º livello (bardo)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 134
+
+Ogni creatura a scelta dell'incantatore, entro gittata e che egli è in grado di vedere, deve superare un tiro salvezza su Saggezza, altrimenti diventa affascinata fino al termine dell'incantesimo.
+
+Per la durata dell'incantesimo, l'incantatore può effettuare un'azione bonus per scegliere una direzione orizzontale rispetto a lui. Ogni bersaglio affascinato deve usare la maggior parte possibile del suo movimento per muoversi in quella direzione nel suo turno successivo, percorrendo la via più sicura. Dopo essersi mosso in questo modo, un bersaglio ripete il tiro salvezza e, se lo supera, termina l'incantesimo su di sé.
+
+
+---
+
+## Comunione
+
+Divinazione di 5º livello (chierico)
+
+- Tempo di lancio: 1 minuto o rituale
+- Gittata: incantatore
+- Componenti: V, S, M (incenso)
+- Durata: 1 minuto
+- Pagine SRD: 134
+
+L'incantatore entra in contatto con una divinità o un emissario divino e, prima della fine dell'incantesimo, pone fino a tre domande a cui è possibile rispondere con sì o no. L'incantatore riceve una risposta corretta per ogni domanda.
+
+Gli esseri divini non sono necessariamente onniscienti, quindi l'incantatore potrebbe ricevere "ignoto" come risposta se una domanda riguarda informazioni che vanno oltre le loro conoscenze. Nel caso in cui una risposta di una parola sola possa rivelarsi fuorviante o contraria agli interessi della divinità, il GM può fornire come risposta una breve frase.
+
+Se l'incantatore lancia l'incantesimo più volte prima di completare un riposo lungo, esiste una probabilità cumulativa del 25% di non ottenere risposta per ogni lancio dopo il primo.
+
+
+---
+
+## Comunione con la natura
+
+Divinazione di 5º livello (druido, ranger)
+
+- Tempo di lancio: 1 minuto o rituale
+- Gittata: incantatore
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 134, 135
+
+L'incantatore entra in comunione con gli spiriti della natura e acquisisce conoscenza dell'area circostante. All'aperto, l'incantesimo fornisce all'incantatore la conoscenza dell'area entro un raggio di 4,5 chilometri. Nelle caverne e in altri ambienti naturali sotterranei, il raggio è limitato a 90 metri. L'incantesimo non funziona nei luoghi in cui la natura è stata sostituita da costruzioni, come castelli e insediamenti.
+
+Scegli tre dei seguenti fatti; l'incantatore apprende i fatti che riguardano l'area dell'incantesimo:
+
+• Luoghi di insediamento
+
+• Ubicazione dei portali che conducono verso altri piani di esistenza
+
+• Ubicazione di una creatura con grado di sfida pari o superiore a 10 (a scelta del GM) che sia un celestiale, un elementale, un folletto, un immondo o un non morto
+
+• Il tipo di pianta, minerale o bestia più diffuso
+
+(l'incantatore sceglie quale apprendere)
+
+• Ubicazione di distese d'acqua
+
+Ad esempio, l'incantatore può determinare l'ubicazione di un potente mostro situato in quell'area, l'ubicazione delle distese d'acqua e l'ubicazione di eventuali cittadine.
+
+
+---
+
+## Confusione
+
+Ammaliamento di 4º livello (bardo, druido, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 27 metri
+- Componenti: V, S, M (tre gusci di noce)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 135
+
+Ogni creatura all'interno di una sfera del raggio di 3 metri centrata su un punto entro gittata a scelta dell'incantatore deve superare un tiro salvezza su Saggezza, altrimenti non può effettuare azioni bonus o reazioni e deve tirare 1d10 all'inizio di ogni suo turno per determinare il suo comportamento durante quel turno, consultando la tabella sottostante.
+
+```text
+1d10 Comportamento per il turno
+ 1    Il bersaglio non effettua alcuna azione e usa
+      tutto il suo movimento per muoversi, tirando
+      1d4 per la direzione: 1, nord; 2, est; 3, sud; o 4,
+      ovest.
+2–6   Il bersaglio non si muove e non effettua azioni.
+7–8   Il bersaglio non si muove ed effettua l'azione
+      di Attacco per eseguire un attacco in mischia
+      contro una creatura casuale entro portata.
+      Se nessuna creatura si trova entro la sua por-
+      tata, il bersaglio non effettua azioni.
+9–10 Il bersaglio sceglie il comportamento.
+```
+
+Alla fine di ogni suo turno, un bersaglio influenzato ripete il tiro salvezza e, se lo supera, termina l'incantesimo su di sé.
+
+Utilizzo di uno slot incantesimo di livello superiore. Il raggio della sfera aumenta di 1,5 metri per ogni slot di livello superiore al 4º.
+
+
+---
+
+## Cono di freddo
+
+Invocazione di 5º livello (druido, mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: incantatore
+- Componenti: V, S, M (un piccolo cono di cristallo o vetro)
+- Durata: istantanea
+- Pagine SRD: 135
+
+Un getto d'aria gelida si propaga dall'incantatore. Ogni creatura entro un cono di 18 metri che ha origine dall'incantatore effettua un tiro salvezza su Costituzione, subendo 8d8 danni da freddo in caso di fallimento, o la metà dei danni in caso di successo. Una creatura uccisa da questo incantesimo si tramuta in una statua di ghiaccio finché non si scioglie.
+
+Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d8 per ogni slot di livello superiore al 5º.
+
+
+---
+
+## Conoscenza delle leggende
+
+Divinazione di 5º livello (bardo, chierico, mago)
+
+- Tempo di lancio: 10 minuti
+- Gittata: incantatore
+- Componenti: V, S, M (incenso del valore di 250 mo o più, che l'incantesimo consuma, e quattro bastoncini d'avorio del valore di 50 mo o più ciascuno)
+- Durata: istantanea
+- Pagine SRD: 135
+
+L'incantatore nomina o descrive una persona, un luogo o un oggetto famosi. L'incantesimo riporta alla mente dell'incantatore un breve riassunto delle conoscenze più significative relative a ciò che ha nominato, come descritto dal GM.
+
+Queste conoscenze possono includere dettagli importanti, rivelazioni sorprendenti o persino conoscenze segrete che non sono note ai più. Più informazioni l'incantatore conosce già riguardo a ciò che ha nominato, più precise e dettagliate saranno le informazioni che riceverà. Le informazioni che riceve sono accurate, ma potrebbero essere celate da un linguaggio figurativo o sotto forma di poesia, in base alla scelta del GM.
+
+Se l'incantatore nomina qualche cosa che in realtà non è famosa, sente il suono delle tristi note di un trombone, e l'incantesimo fallisce.
+
+
+---
+
+## Contagio
+
+Necromanzia di 5º livello (chierico, druido)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S
+- Durata: 7 giorni
+- Pagine SRD: 135, 136
+
+Il tocco dell'incantatore trasmette un contagio magico. Il bersaglio deve superare un tiro salvezza su Costituzione, altrimenti subirà 11d8 danni necrotici e sarà avvelenato. Inoltre, quando l'incantatore lancia l'incantesimo, sceglie una caratteristica. Mentre è avvelenato, il bersaglio subisce svantaggio ai tiri salvezza effettuati con la caratteristica scelta.
+
+Il bersaglio deve ripetere il tiro salvezza alla fine di ogni suo turno finché non raggiunge tre tiri superati o falliti. Se il bersaglio supera tre tiri salvezza, si libera dall'effetto dell'incantesimo. Se il bersaglio fallisce tre tiri salvezza, subisce l'incantesimo per 7 giorni.
+
+Ogni volta che il bersaglio avvelenato riceve un effetto che porrebbe fine all'avvelenamento, deve riuscire a superare un tiro salvezza su Costituzione, altrimenti l'avvelenamento permane.
+
+
+---
+
+## Contattare altri piani
+
+Divinazione di 5º livello (mago, warlock)
+
+- Tempo di lancio: 1 minuto o rituale
+- Gittata: incantatore
+- Componenti: V
+- Durata: 1 minuto
+- Pagine SRD: 136
+
+L'incantatore contatta mentalmente un semidio, lo spirito di un sapiente defunto da tempo o qualche altra entità saggia appartenente a un altro piano. Contattare questa intelligenza ultraterrena può sconvolgere la sua mente: quando l'incantatore lancia questo incantesimo, deve effettuare un tiro salvezza su Intelligenza con CD 15. In caso di successo, l'incantatore può porre all'entità un massimo di cinque domande prima del termine dell'incantesimo. Il GM risponde a ogni domanda con una parola, come per esempio "sì", "no", "forse", "mai", "irrilevante" o "ignoto" (se l'entità non conosce la risposta alla domanda). Nel caso in cui una risposta di una parola sola possa rivelarsi fuorviante, il GM può fornire come risposta una breve frase.
+
+In caso di fallimento, l'incantatore subisce 6d6 danni psichici ed è incapacitato finché non completa un riposo lungo. Un incantesimo ristorare superiore fa svanire questo effetto.
+
+
+---
+
+## Contingenza
+
+Abiurazione di 6º livello (mago)
+
+- Tempo di lancio: 10 minuti
+- Gittata: incantatore
+- Componenti: V, S, M (una statuetta dell'incantatore tempestata di gemme, del valore di 1.500 mo o più)
+- Durata: 10 giorni
+- Pagine SRD: 136
+
+L'incantatore sceglie un incantesimo di livello pari o inferiore a 5 che sia in grado di lanciare, che abbia un tempo di lancio di un'azione e che possa avere come bersaglio l'incantatore stesso. Lancia l'incantesimo, chiamato incantesimo contingente, come parte del lancio di contingenza, consumando gli slot incantesimo per entrambi. L'incantesimo contingente, tuttavia, non ha effetto finché non si verificano determinati inneschi che l'incantatore descrive nel momento in cui lancia i due incantesimi. Per esempio, un lancio di contingenza con respirare sott'acqua potrebbe stabilire che respirare sott'acqua avrà effetto quando l'incantatore sarà sommerso nell'acqua o in un liquido simile.
+
+Che l'incantatore lo desideri o meno, l'incantesimo contingente ha effetto nel momento in cui gli inneschi vengono soddisfatti per la prima volta, poi contingenza termina.
+
+L'incantesimo contingente ha effetto solamente sull'incantatore, nonostante normalmente possa essere lanciato su altri bersagli. L'incantatore può utilizzare un solo incantesimo contingenza alla volta. Se l'incantatore lancia nuovamente questo incantesimo, l'effetto di un altro incantesimo contingenza su di sé termina. Inoltre, contingenza termina qualora la sua componente materiale non si trovi sulla persona dell'incantatore.
+
+
+---
+
+## Controincantesimo
+
+Abiurazione di 3º livello (mago, stregone, warlock)
+
+- Tempo di lancio: reazione, che l'incantatore può effettuare quando vede una creatura entro 18 metri da lui lanciare un incantesimo con componenti verbali, somatiche o materiali
+- Gittata: 18 metri
+- Componenti: S
+- Durata: istantanea
+- Pagine SRD: 136
+
+L'incantatore tenta di interrompere una creatura nell'atto di lanciare un incantesimo. La creatura effettua un tiro salvezza su Costituzione. Se lo fallisce, l'incantesimo si dissolve senza alcun effetto e l'azione, azione bonus o reazione utilizzata per lanciarlo viene sprecata. Se l'incantesimo è stato lanciato usando uno slot incantesimo, lo slot non viene consumato.
+
+
+---
+
+## Controllare acqua
+
+Trasmutazione di 4º livello (chierico, druido, mago)
+
+- Tempo di lancio: azione
+- Gittata: 90 metri
+- Componenti: V, S, M (una miscela di acqua e polvere)
+- Durata: concentrazione, fino a 10 minuti
+- Pagine SRD: 136, 137
+
+Fino al termine dell'incantesimo, l'incantatore controlla una massa d'acqua all'interno di un'area a sua scelta, con un volume massimo pari a un cubo con spigolo di 30 metri, usando uno dei seguenti effetti. Come azione di Magia durante i suoi turni successivi, può ripetere il medesimo effetto o sceglierne uno differente.
+
+Deviare la corrente. L'incantatore fa in modo che l'acqua corrente nell'area si muova in una direzione scelta da lui, anche se l'acqua deve risalire ostacoli e pareti o scorrere in altre direzioni inverosimili. L'acqua nell'area si muove secondo le indicazioni dell'incantatore, ma una volta superata l'area dell'incantesimo, riprende il suo corso in base al terreno. L'acqua continua a scorrere nella direzione scelta fino al termine dell'incantesimo o finché l'incantatore non sceglie un effetto diverso.
+
+Gorgo. L'incantatore crea un gorgo al centro dell'area, che deve essere di almeno 15 metri per lato e 7,5 metri di profondità. Il gorgo permane finché l'incantatore non sceglie un effetto diverso o fino al termine dell'incantesimo. Il gorgo è alto 7,5 metri e ampio 1,5 metri alla base e fino a 15 metri alla sommità. Qualsiasi creatura nell'acqua ed entro 7,5 metri dal gorgo viene trascinata per 3 metri verso di esso. Quando una creatura viene trascinata nel gorgo per la prima volta in un turno o vi finisce il suo turno, effettua un tiro salvezza su Forza. In caso di fallimento, la creatura subisce 2d8 danni contundenti, mentre se lo supera, subisce soltanto la metà di quei danni. Una creatura può nuotare via dal gorgo solo se prima effettua un'azione per allontanarsi e supera una prova di Forza (Atletica) contro la CD del tiro salvezza sull'incantesimo dell'incantatore.
+
+Il livello dell'acqua rimane elevato fino al termine dell'incantesimo o finché l'incantatore non sceglie un effetto diverso. Se questo effetto produce un'onda, questa si ripete all'inizio del turno successivo dell'incantatore finché l'effetto di inondazione permane.
+
+Inondazione. L'incantatore fa in modo che il livello di tutta l'acqua ferma dell'area si alzi di un massimo di 6 metri. Se l'incantatore sceglie un'area all'interno di un grande specchio d'acqua, genera invece un'onda alta 6 metri che da una parte dell'area si infrange sull'altra. Qualsiasi veicolo di taglia Enorme o inferiore sul percorso dell'onda viene trascinato dall'altra parte dell'area e ha una probabilità del 25% di capovolgersi.
+
+Separare le acque. L'incantatore fa in modo che l'acqua presente nell'area si separi, creando un canale che si estende per tutta l'area dell'incantesimo; le acque divise formano un muro su entrambi i lati. Il canale permane fino al termine dell'incantesimo o finché l'incantatore non sceglie un effetto diverso. L'acqua poi riempie lentamente il canale nel corso del round successivo, finché il livello normale dell'acqua non viene ripristinato.
+
+
+---
+
+## Controllare tempo atmosferico
+
+Trasmutazione di 8º livello (chierico, druido, mago)
+
+- Tempo di lancio: 10 minuti
+- Gittata: incantatore
+- Componenti: V, S, M (incenso bruciato)
+- Durata: concentrazione, fino a 8 ore
+- Pagine SRD: 137
+
+L'incantatore assume il controllo del tempo atmosferico entro 7,5 chilometri per la durata dell'incantesimo, che dev'essere lanciato in un luogo all'aperto. L'incantesimo termina anticipatamente se l'incantatore si sposta in un luogo chiuso.
+
+Quando lancia un incantesimo, l'incantatore cambia le condizioni atmosferiche attuali determinate dal GM. L'incantatore può modificare le precipitazioni, la temperatura e il vento. Occorrono 1d4 × 10 minuti perché le nuove condizioni abbiano effetto. Quando questo accade, l'incantatore le può cambiare di nuovo. Al termine dell'incantesimo, il tempo atmosferico torna alla normalità.
+
+Quando l'incantatore modifica le condizioni atmosferiche, trova la condizione attuale nelle tabelle seguenti e la modifica di un grado, verso l'alto o verso il basso. Quando l'incantatore cambia il vento, può modificarne anche la direzione.
+
+```text
+Precipitazioni
+ Grado Condizione
+   1     Sereno
+   2     Poco nuvoloso
+   3     Nuvoloso o nebbia
+   4     Pioggia, grandine o neve
+   5     Pioggia torrenziale, grandinata violenta o
+         tormenta
+
+
+Temperatura                  Vento
+ Grado   Condizione           Grado Condizione
+   1     Torrido                 1     Calmo
+   2     Caldo                   2     Vento moderato
+   3     Temperato               3     Vento forte
+   4     Fresco                  4     Burrasca
+   5     Freddo                  5     Tempesta
+   6     Gelido
+```
+
+
+---
+
+## Costrizione
+
+Ammaliamento di 5º livello (bardo, chierico, druido, mago, paladino)
+
+- Tempo di lancio: 1 minuto
+- Gittata: 18 metri
+- Componenti: V
+- Durata: 30 giorni
+- Pagine SRD: 137, 138
+
+L'incantatore impartisce un comando verbale a una creatura entro gittata che egli è in grado di vedere, ordinandole di compiere un servizio di qualche tipo o ad astenersi dal compiere un'azione o un'attività, come da lui stabilito. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti rimane affascinato per la durata dell'incantesimo. Il bersaglio supera automaticamente il tiro se non è in grado di comprendere il comando dell'incantatore.
+
+Mentre è affascinata, la creatura subisce 5d10 danni psichici se agisce in maniera direttamente contraria al comando dell'incantatore, subendo questi danni non più di una volta al giorno.
+
+L'incantatore può impartire al bersaglio un comando a sua scelta, a eccezione di un'attività che ne provocherebbe la morte certa: se impartisce un comando suicida, l'incantesimo termina.
+
+Un incantesimo desiderio, rimuovi maledizione o ristorare superiore è in grado di porre fine all'incantesimo.
+
+Utilizzo di uno slot incantesimo di livello superiore. Se l'incantatore usa uno slot incantesimo di 7º o 8º livello, la durata diventa 365 giorni. Se l'incantatore usa uno slot incantesimo di 9º livello, l'incantesimo dura finché uno degli incantesimi menzionati sopra non vi pone fine.
+
+
+---
+
+## Creare cibo e acqua
+
+Evocazione di 3º livello (chierico, paladino)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 138
+
+L'incantatore crea 22,5 chili di cibo e 120 litri d'acqua fresca sul terreno o all'interno di un contenitore entro gittata, utili per tenere lontani i rischi di malnutrizione e disidratazione. Il cibo è insipido ma nutriente e assomiglia a un alimento a scelta dell'incantatore; l'acqua è pulita. Il cibo marcisce dopo 24 ore se non viene consumato.
+
+
+---
+
+## Creare non morti
+
+Necromanzia di 6º livello (chierico, mago, warlock)
+
+- Tempo di lancio: 1 minuto
+- Gittata: 3 metri
+- Componenti: V, S, M (una pietra onice nera del valore di 150 mo o più per ogni cadavere)
+- Durata: istantanea
+- Pagine SRD: 138
+
+L'incantatore può lanciare questo incantesimo solo di notte, scegliendo fino a tre cadaveri umanoidi di taglia Media o Piccola entro gittata. Ognuno di loro diventa un ghoul sotto il controllo dell'incantatore (vedi il "Mostri" per la scheda delle statistiche).
+
+Come azione bonus a ogni suo turno, l'incantatore può comandare mentalmente qualsiasi creatura animata con questo incantesimo, a patto che la creatura si trovi entro 36 metri da lui (se controlla varie creature, l'incantatore può comandarne più di una allo stesso momento, impartendo lo stesso comando a ciascuna di loro). L'incantatore decide quale azione effettuerà la creatura e dove si muoverà nel suo turno successivo, oppure può impartirle un comando generale, come restare a guardia di un determinato luogo. Se invece non impartisce alcun comando, la creatura effettua l'azione Schivata e si sposta solo per evitare di subire danni. Una volta ricevuto un ordine, la creatura continua a seguirlo finché non ha portato a termine il compito.
+
+La creatura rimane sotto il controllo dell'incantatore per 24 ore, passate le quali smette di obbedire a qualsiasi comando ulteriore. Per mantenere il controllo sulla creatura per altre 24 ore, l'incantatore deve lanciare questo incantesimo su di essa prima che l'attuale periodo di 24 ore termini. Questo uso dell'incantesimo gli permette di ristabilire il controllo su un massimo di tre creature da lui animate tramite questo incantesimo, anziché animarne di nuove.
+
+Utilizzo di uno slot incantesimo di livello superiore. Se l'incantatore usa uno slot incantesimo di 7º livello, può animare o ristabilire il controllo su quattro ghoul. Se l'incantatore usa uno slot incantesimo di 8º livello, può animare o ristabilire il controllo su cinque ghoul, o due ghast o wight. Se l'incantatore usa uno slot incantesimo di 9º livello, può animare o ristabilire il controllo su sei ghoul, tre ghast o wight, o due mummie. Vedi "Mostri" per le relative schede delle statistiche.
+
+
+---
+
+## Creare o distruggere acqua
+
+Trasmutazione di 1º livello (chierico, druido)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S, M (una miscela di acqua e sabbia)
+- Durata: istantanea
+- Pagine SRD: 138
+
+L'incantatore esegue una delle seguenti azioni:
+
+Creare acqua. L'incantatore crea fino a 40 litri
+
+d'acqua pulita in un contenitore aperto entro gittata. In alternativa, l'acqua cade sotto forma di pioggia in un cubo con spigolo di 9 metri entro gittata, estinguendo le fiamme presenti nell'area. Distruggere acqua. L'incantatore distrugge fino a 40 litri d'acqua in un contenitore aperto entro gittata. In alternativa, distrugge la nebbia presente in un cubo con spigolo di 9 metri entro gittata.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore crea o distrugge 40 litri aggiuntivi d'acqua, oppure la grandezza del cubo aumenta di 1,5 metri per spigolo, per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Creazione
+
+Illusione di 5º livello (mago, stregone)
+
+- Tempo di lancio: 1 minuto
+- Gittata: 9 metri
+- Componenti: V, S, M (un pennello)
+- Durata: speciale
+- Pagine SRD: 138, 139
+
+L'incantatore attrae a sé dei filamenti di sostanza d'ombra dalla Coltre Oscura per creare un oggetto entro gittata. L'oggetto può essere di materia vegetale (tessuti, corda, legno o materiali simili) o di materia minerale (pietra, cristallo, metallo o materiali simili). L'oggetto non dev'essere più grande di un cubo con spigolo di 1,5 metri e deve avere una forma ed essere un materiale che l'incantatore ha già visto.
+
+La durata dell'incantesimo dipende dal materiale dell'oggetto, come indicato nella tabella Materiali. se l'oggetto è composto da vari materiali, si usa la durata più breve. Usare un qualsiasi oggetto creato da questo incantesimo come componente materiale di un altro incantesimo ne provoca il fallimento.
+
+```text
+Materiali
+Materiale             Durata
+Materia vegetale      24 ore
+Pietra o cristallo    12 ore
+Metalli preziosi      1 ora
+Gemme                 10 minuti
+Adamantio o mithral   1 minuto
+```
+
+Utilizzo di uno slot incantesimo di livello superiore. Il cubo aumenta di 1,5 metri per spigolo per ogni slot di livello superiore al 5º.
+
+
+---
+
+## Crescita di spine
+
+Trasmutazione di 2º livello (druido, ranger)
+
+- Tempo di lancio: azione
+- Gittata: 45 metri
+- Componenti: V, S, M (sette spine)
+- Durata: concentrazione, fino a 10 minuti
+- Pagine SRD: 139
+
+Spine e spuntoni nascono dal terreno in una sfera del raggio di 6 metri, centrata su un punto entro gittata. Per la durata dell'incantesimo, l'area diventa terreno difficile. Quando una creatura entra nell'area o si muove al suo interno, subisce 2d4 danni perforanti ogni 1,5 metri di movimento.
+
+La trasformazione del terreno è mimetizzata in modo da sembrare naturale. Qualsiasi creatura che non stesse osservando l'area al momento del lancio dell'incantesimo deve effettuare un'azione di Ricerca e superare una prova di Saggezza (Percezione o Sopravvivenza) contro la CD del tiro salvezza sull'incantesimo per riconoscere la pericolosità del terreno prima di entrarvi.
+
+
+---
+
+## Crescita vegetale
+
+Trasmutazione di 3º livello (bardo, druido, ranger)
+
+- Tempo di lancio: azione (Groviglio) o 8 ore (Fertilità)
+- Gittata: 45 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 139
+
+Questo incantesimo incanala vitalità nei vegetali. Il tempo di lancio utilizzato dall'incantatore determina l'effetto che ha l'incantesimo tra i due descritti di seguito: Groviglio o Fertilità.
+
+Groviglio. L'incantatore sceglie un punto entro gittata e tutti i vegetali normali entro una sfera del raggio di 30 metri centrata su quel punto crescono rigogliosamente fino a formare un groviglio. Una creatura che si muove attraverso quell'area deve usare 1,2 metri di movimento per ogni 30 centimetri di cui si muove. L'incantatore può escludere dall'influenza dell'incantesimo una o più aree di qualsiasi dimensione all'interno dell'area scelta.
+
+Fertilità. Tutti i vegetali entro un raggio di 750 metri centrato in un punto entro gittata cresceranno rigogliosamente per 365 giorni e al momento del raccolto produrranno il doppio del cibo normale. I vegetali possono beneficiare di crescita vegetale solo una volta all'anno.
+
+
+---
+
+## Cura ferite
+
+Abiurazione di 1º livello (bardo, chierico, druido, paladino, ranger)
+
+- Tempo di lancio: azione
+- Gittata: contatto
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 139
+
+Una creatura toccata dall'incantatore recupera un numero di punti ferita pari a 2d8 più il modificatore di caratteristica da incantatore dell'incantatore.
+
+Utilizzo di uno slot incantesimo di livello superiore. La guarigione aumenta di 2d8 per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Cura ferite di massa
+
+Abiurazione di 5º livello (bardo, chierico, druido)
+
+- Tempo di lancio: azione
+- Gittata: 18 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 139
+
+Un'ondata di energia curativa si sprigiona da un punto entro gittata che l'incantatore è in grado di vedere. L'incantatore sceglie fino a sei creature in una sfera di 9 metri di raggio centrata su quel punto: ogni bersaglio recupera una quantità di punti ferita pari a 5d8 più il modificatore di caratteristica da incantatore dell'incantatore.
+
+Utilizzo di uno slot incantesimo di livello superiore. La guarigione aumenta di 1d8 per ogni slot di livello superiore al 5º.
+
 
 ---
 
@@ -273,6 +1795,23 @@ Se il bersaglio fallisce il tiro, diventa affascinato per la durata dell'incante
 
 ---
 
+## Dardo incantato
+
+Invocazione di 1º livello (mago, stregone)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 140
+
+L'incantatore crea tre dardi lucenti di forza magica. Ogni dardo colpisce una creatura a scelta dell'incantatore situata entro gittata che egli è in grado di vedere. Un dardo infligge 1d4 + 1 danni da forza al suo bersaglio. Tutti i dardi colpiscono simultaneamente e l'incantatore può dirigerli per colpire una o più creature.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantesimo crea un dardo aggiuntivo per ogni slot di livello superiore al 1º.
+
+
+---
+
 ## Dardo tracciante
 
 Invocazione di 1º livello (chierico)
@@ -286,6 +1825,23 @@ Invocazione di 1º livello (chierico)
 L'incantatore scaglia un lampo di luce verso una creatura entro gittata, effettuando un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, esso subisce 4d6 danni radiosi, e il successivo tiro per colpire effettuato contro il bersaglio prima del termine del turno successivo dell'incantatore dispone di vantaggio.
 
 Utilizzo di uno slot incantesimo di livello superiore. I danni aumentano di 1d6 per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Deflagrazione occulta
+
+Trucchetto di Invocazione (warlock)
+
+- Tempo di lancio: azione
+- Gittata: 36 metri
+- Componenti: V, S
+- Durata: istantanea
+- Pagine SRD: 140
+
+L'incantatore scaglia un raggio di energia crepitante, effettuando un attacco a distanza con incantesimo contro una creatura o un oggetto entro gittata. Se il colpo va a segno, il bersaglio subisce 1d10 danni da forza.
+
+Trucchetto potenziato. L'incantesimo crea due raggi al 5º livello, tre raggi all'11º livello e quattro raggi al 17º livello. L'incantatore può indirizzare i raggi contro lo stesso bersaglio o contro bersagli differenti, effettuando un tiro per colpire separato per ogni raggio.
 
 
 ---
@@ -560,6 +2116,25 @@ Ammaliamento di 1º livello (bardo, paladino)
 Una creatura consenziente toccata dall'incantatore è animata da grande coraggio. Fino al termine dell'incantesimo, la creatura è immune alla condizione spaventato e all'inizio di ogni suo turno ottiene una quantità di punti ferita temporanei pari al modificatore di caratteristica da incantatore dell'incantatore.
 
 Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 1º.
+
+
+---
+
+## Esilio
+
+Abiurazione di 4º livello (chierico, mago, paladino, stregone, warlock)
+
+- Tempo di lancio: azione
+- Gittata: 9 metri
+- Componenti: V, S, M (un pentacolo)
+- Durata: concentrazione, fino a 1 minuto
+- Pagine SRD: 144
+
+Una creatura entro gittata che l'incantatore è in grado di vedere deve superare un tiro salvezza su Carisma o essere trasportata in un semipiano sicuro per la durata dell'incantesimo. Mentre si trova lì, il bersaglio è incapacitato. Al termine dell'incantesimo, il bersaglio riappare nello spazio in cui si trovava prima del lancio o, se è occupato, nello spazio libero più vicino.
+
+Se l'incantesimo sul bersaglio dura 1 minuto, il bersaglio non fa ritorno se è un'aberrazione, un celestiale, un elementale, un folletto o un immondo. In questo caso, viene trasportato in un luogo casuale di un piano (a scelta del GM) associato al tipo di creatura di cui fa parte.
+
+Utilizzo di uno slot incantesimo di livello superiore. L'incantatore può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 4º.
 
 
 ---
@@ -2687,6 +4262,23 @@ ferita     Effetto
            10 minuti.
   41–50    Il bersaglio è assordato per 1 minuto.
 ```
+
+
+---
+
+## Parola guaritrice
+
+Abiurazione di 1º livello (bardo, chierico, druido)
+
+- Tempo di lancio: azione bonus
+- Gittata: 18 metri
+- Componenti: V
+- Durata: istantanea
+- Pagine SRD: 173
+
+Una creatura scelta dall'incantatore entro gittata e che egli è in grado di vedere recupera un ammontare di punti ferita pari a 2d4 più il modificatore di caratteristica da incantatore dell'incantatore.
+
+Utilizzo di uno slot incantesimo di livello superiore. La guarigione aumenta di 2d4 per ogni slot di livello superiore al 1º.
 
 
 ---
@@ -5066,4 +6658,20 @@ Ammaliamento di 2º livello (bardo, chierico, paladino)
 L'incantatore crea una zona magica che protegge dagli inganni all'interno di una sfera del raggio di 4,5 metri, centrata su un punto entro gittata. Fino al termine dell'incantesimo, una creatura che entra nell'area dell'incantesimo per la prima volta in un turno o che inizia qui il suo turno effettua un tiro salvezza su Carisma. Se lo fallisce, non può mentire deliberatamente mentre si trova nell'area. L'incantatore sa se il bersaglio supera o meno il tiro salvezza.
 
 Una creatura influenzata è consapevole dell'incantesimo e può evitare di rispondere alle domande a cui normalmente risponderebbe mentendo. In tal caso, deve essere evasiva, ma sincera.
+
+
+## Descrizioni precedenti escluse dal SRD
+
+Questi 10 testi sono stati conservati. La revisione non attribuisce loro la licenza o il testo ufficiale del SRD.
+
+- AMICIZIA
+- ARMA ELEMENTALE
+- ARMATURA DI AGATHYS
+- AURA DI PUREZZA
+- AURA DI VITALITÀ
+- BRACCIA DI HADAR
+- CALDERONE RIBOLLENTE DI TASHA
+- CERCHIO DI POTERE
+- Cordone di Frecce
+- Corona di Follia
 
