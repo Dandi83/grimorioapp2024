@@ -13,3 +13,9 @@ Il PDF è l'inventario dei parametri, non l'interfaccia da riprodurre. La prima 
 
 ## Verifiche locali
 Suite completa e prima build webpack superate; test aggiuntivo confronta tutti i 291 parametri ed esercita morte, indagare passivo, sesto attacco e campi liberi. TypeScript senza errori. Il collaudo della preview viene eseguito dopo il rilascio; nessuna verifica su iPhone fisico dichiarata.
+
+## Rilascio e collaudo browser
+Preview READY del commit 7603b315f09b6c48b267120fbf7d0f1aa97b87a3:
+https://grimorioapp2024-62zbv4uvs-grimorio-app.vercel.app/personaggi
+
+Verificati vista digitale predefinita, danni assorbiti dai PF temporanei, Forza 18 con modificatore +4 e maestria Atletica +8, sei armi con gittata/peso/note, munizioni e otto capacità. Trovato e corretto il congelamento involontario dei valori derivati al semplice blur: test di regressione e prova browser confermano che rimangono calcolati se non modificati. Suite completa ripetuta e superata dopo la correzione, TypeScript superato, build Vercel READY. Screenshot del rilascio finale in personaggi-digitale-pagina-1.jpg. Produzione non modificata. Layout responsive implementato; nessun collaudo su dispositivo fisico dichiarato.
