@@ -1,3 +1,5 @@
+import {getPaperValue,setPaperValue} from './paper-sheet';
+import type {Character} from './characters';
 import template from './data/character-paper-fields.json';
 export type DigitalField={name:string;label:string;type:'text'|'checkbox';automatic?:boolean;long?:boolean};
 export type DigitalGroup={id:string;title:string;fields:DigitalField[]};
@@ -29,3 +31,5 @@ export const digitalGroups:DigitalGroup[]=[
  ...Array.from({length:8},(_,i)=>group(`feature-${i}`,`Capacità ${i+1}`,[field(`Riferimento01.${i+1}`,'Talento, privilegio o capacità',false,true),field(`Riferimento check.${i+1}`,'Recupero con riposo lungo'),...Array.from({length:5},(_,j)=>field(`RIF.${j}.${i+1}`,`Uso ${j+1} speso`))]))
 ];
 export function digitalGroup(id:string):DigitalGroup {const g=digitalGroups.find(g=>g.id===id);if(!g)throw new Error(`Unknown group ${id}`);return g;}
+
+export function commitDigitalValue(c:Character,name:string,draft:string):Character {return draft===String(getPaperValue(c,name))?c:setPaperValue(c,name,draft)}

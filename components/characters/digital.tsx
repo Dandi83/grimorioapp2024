@@ -2,14 +2,14 @@
 import {useEffect,useState} from 'react';
 import {Heart,Shield,Swords,Sparkles,Minus,Plus,RotateCcw,ChevronDown,Eye,UserRound,Compass,BookOpen} from 'lucide-react';
 import {getPaperValue,setPaperValue} from '@/lib/paper-sheet';
-import {digitalGroup,digitalGroups,abilityNames,type DigitalField,type DigitalGroup} from '@/lib/digital-sheet';
+import {digitalGroup,digitalGroups,abilityNames,commitDigitalValue,type DigitalField,type DigitalGroup} from '@/lib/digital-sheet';
 import {applyDamage,type Character} from '@/lib/characters';
 import {button,control,Field,NumberField} from './fields';
 type Props={c:Character;update:(p:Partial<Character>)=>void};
 function Entry({field,c,update}:{field:DigitalField}&Props){
  const value=getPaperValue(c,field.name);const [draft,setDraft]=useState(String(value));useEffect(()=>setDraft(String(value)),[value]);
  const overridden=(!!c.paperFields&&Object.hasOwn(c.paperFields,field.name))||(field.name==='Iniziativa'&&c.initiativeOverride!=='');
- const commit=()=>{const next=setPaperValue(c,field.name,draft);update(next);setDraft(String(getPaperValue(next,field.name)))};
+ const commit=()=>{const next=commitDigitalValue(c,field.name,draft);if(next!==c)update(next);setDraft(String(getPaperValue(next,field.name)))};
  if(field.type==='checkbox')return <label className="digital-check flex min-h-11 items-center gap-2 rounded-lg px-2 text-xs text-muted"><input className="h-5 w-5 shrink-0 accent-[#d4af37]" type="checkbox" checked={value===true||value==='Yes'} onChange={e=>update(setPaperValue(c,field.name,e.target.checked))}/>{field.label}</label>;
  return <div className="min-w-0"><Field label={field.label}>{field.long?<textarea className={`${control} min-h-24 resize-y`} value={draft} maxLength={4000} onChange={e=>setDraft(e.target.value)} onBlur={commit}/>:<input className={control} value={draft} maxLength={200} onChange={e=>setDraft(e.target.value)} onBlur={commit} onKeyDown={e=>{if(e.key==='Enter')e.currentTarget.blur()}}/>}</Field>{field.automatic&&<div className="mt-1 flex min-h-6 items-center justify-between gap-1 text-[10px] text-primary/80"><span>{overridden?'Correzione manuale':'Calcolato · modificabile'}</span>{overridden&&<button type="button" className="inline-flex min-h-8 items-center gap-1 underline" aria-label={`Ripristina calcolo ${field.label}`} onClick={()=>{const paperFields={...c.paperFields};delete paperFields[field.name];update(field.name==='Iniziativa'?{paperFields,initiativeOverride:''}:{paperFields});}}><RotateCcw size={11}/>Ripristina</button>}</div>}</div>;
 }

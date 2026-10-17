@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict');const fs=require('node:fs');const ts=require('typescript');
 require.extensions['.ts']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText,f);
 assert.ok(fs.existsSync('lib/digital-sheet.ts'),'First page needs an exhaustive digital field map');
-const {digitalGroups}=require('../lib/digital-sheet.ts');
+const {digitalGroups,commitDigitalValue}=require('../lib/digital-sheet.ts');
 const fields=require('../lib/data/character-paper-fields.json').fields.filter(f=>f.page===1);
 const mapped=digitalGroups.flatMap(g=>g.fields.map(f=>f.name));
 assert.equal(new Set(mapped).size,mapped.length,'A source parameter must not appear twice');
@@ -14,4 +14,6 @@ c=setPaperValue(c,'Intelligenza investigare',true);c=setPaperValue(c,'Intelligen
 c=setPaperValue(c,'Arma 5a','Sesta arma');assert.equal(c.attacks[5].name,'Sesta arma');
 c=setPaperValue(c,'Arma 5 gittataa','18 m');assert.equal(getPaperValue(c,'Arma 5 gittataa'),'18 m');
 c=setPaperValue(c,'VRI1.5','1');assert.equal(getPaperValue(c,'VRI1.5'),'1');
+c=commitDigitalValue(c,'Forza 2',getPaperValue(c,'Forza 2'));assert.equal(c.paperFields?.['Forza 2'],undefined,'Focusing and blurring a calculated field must not freeze it');
+c=setPaperValue(c,'Forza 1','18');assert.equal(getPaperValue(c,'Forza 2'),'+4');
 console.log(`Digital first page: all ${fields.length} original parameters mapped, death saves, passive Investigation, sixth attack and free fields passed`);
