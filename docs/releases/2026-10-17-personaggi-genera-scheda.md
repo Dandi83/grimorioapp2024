@@ -13,3 +13,7 @@ La compilazione resta un modulo. Un pulsante esplicito Genera scheda costruisce 
 
 ## Controlli
 Test dedicato sul rendering effettivo: indipendenza della copia, grafica hero condivisa, nessun modulo nel risultato, tutti i testi della prima pagina popolati e presenti nel risultato, contenuti personali HTML resi come testo sicuro.
+
+## Preview verificata
+https://grimorioapp2024-jvu6q3kd9-grimorio-app.vercel.app/personaggi
+Commit a7b9a2bfefcae4b9e2998d052ebe9c62459b7022, target preview, stato READY. Suite completa, TypeScript e build superati. Nel browser: PF modificati da 16 a 11, click diretto su Genera scheda senza blur manuale, risultato 11/20; Modifica scheda ripristina la compilazione con 11, modifica a 14 e rigenerazione producono 14/20. Risultato finale senza campi di input, con grafica bestiario, tutte le caratteristiche, bonus, attacchi e risorse dimostrative. Screenshot: personaggi-scheda-finale.jpg. Nessuna prova su iPhone fisico dichiarata. Produzione invariata.
