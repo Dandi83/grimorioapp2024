@@ -43,6 +43,8 @@ def main():
     data=json.loads(path.read_text());rows=data['records'];assert len(rows)==235
     assert len({r['monster']['id'] for r in rows})==235
     ref=reference(args.pdf)
+    proofs=json.loads((ROOT/'tests/fixtures/srd-monsters-source-checks.json').read_text())
+    assert proofs==[dict(name=e['name'],page=e['page'],sha256=hashlib.sha256(compact(e['text']).encode()).hexdigest()) for e in ref]
     assert len(ref)==235
     assert [(r['sourceName'],r['page']) for r in rows]==[(e['name'],e['page']) for e in ref]
     # Independent printed table of contents, not generated from the stat blocks.

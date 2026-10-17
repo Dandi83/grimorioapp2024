@@ -1,0 +1,1177 @@
+[
+  {
+    "name": "Aboleth",
+    "page": 294,
+    "sha256": "923a7f8da517a2a910acc35632e1f2a3d5dca20ad5703fe1c82ee3b5fd6297bb"
+  },
+  {
+    "name": "Ameba paglierina",
+    "page": 294,
+    "sha256": "4b350b61ce4ee9861622883d2de8502565af55bafda44a8c5e876d5402d7be14"
+  },
+  {
+    "name": "Ankheg",
+    "page": 295,
+    "sha256": "9753a00519555f10e2053e3011c488e604281d9935ba0bdd6b0350b11ad9cc39"
+  },
+  {
+    "name": "Arpia",
+    "page": 295,
+    "sha256": "163c7bbe6cf67b8c72be7ae43d9c8a773dae016c0bfa2fce966f213592afdfd3"
+  },
+  {
+    "name": "Orda di artigli striscianti",
+    "page": 295,
+    "sha256": "0aec6d985d6b6657c58aa16ef5fb0f440e0b34d98b6d4bf140abee745b410e27"
+  },
+  {
+    "name": "Assassino",
+    "page": 296,
+    "sha256": "289d1695e6695dd82ca23de5679baf08e5753fe4880772907407700fb11ca591"
+  },
+  {
+    "name": "Azer sentinella",
+    "page": 296,
+    "sha256": "37bebdae7f167a1d5099ce9fa103686744ce383f0bcfa41168682af348e9302c"
+  },
+  {
+    "name": "Balor",
+    "page": 296,
+    "sha256": "bbbeaaeb8617430e4f54252f8819ee368faaae7f3a05b29b9d473f6696985380"
+  },
+  {
+    "name": "Bandito",
+    "page": 297,
+    "sha256": "eac550c68a3dc3d4a6fad31af9a6a0f4cbd2bbbe8f137f50993f53d4a400d4cb"
+  },
+  {
+    "name": "Capo dei banditi",
+    "page": 297,
+    "sha256": "7d919e929746f8d56a215a30ba4178dd42bdf6ebedf4f48fe127e631691848ff"
+  },
+  {
+    "name": "Basilisco",
+    "page": 297,
+    "sha256": "27e876140e08b7381d2104ff70269cd16c14f1f23ecdbaada954cbffbf882c2d"
+  },
+  {
+    "name": "Beccoaguzzo",
+    "page": 298,
+    "sha256": "828b886e4f05b972b4e9eff9aa4e0e0e25286114bbd2768e7d6452b86437e7f0"
+  },
+  {
+    "name": "Behir",
+    "page": 298,
+    "sha256": "ef1ee39fa9c33342e3e63d7aec118d42b371efdadba4e16ccc8fc1435d2adb67"
+  },
+  {
+    "name": "Berserker",
+    "page": 298,
+    "sha256": "50283158105747e0543da27c3079eda57358bb052478377bf69d55e0ac2d549b"
+  },
+  {
+    "name": "Bruto",
+    "page": 299,
+    "sha256": "4798b1dcb4ad2a208fefab5bbbfcede0dd2313aa143d23e761f8c46794dd11bf"
+  },
+  {
+    "name": "Capo dei bruti",
+    "page": 299,
+    "sha256": "3dca877c5796ef667aaf62b8828933f1252da02bf11abe4f62e482e7bf0ade7a"
+  },
+  {
+    "name": "Bugbear cacciatore",
+    "page": 299,
+    "sha256": "b96173e889bc238374dcb3b99ab0b1db8790f10b34eb11257589d2754c17c9d1"
+  },
+  {
+    "name": "Bugbear guerriero",
+    "page": 299,
+    "sha256": "da8d73cf23c9b7276f0ba77810c55cb64e5c717b973601779a35d97f9d1f67dc"
+  },
+  {
+    "name": "Bulette",
+    "page": 300,
+    "sha256": "953f5887cadfedeab23e531a18e5044228e10ecc093a8976c8b850541c5a36fb"
+  },
+  {
+    "name": "Cacciatore invisibile",
+    "page": 300,
+    "sha256": "2d8294d78802dbc8d1e360fb675ab514aff2fab488a087571cbf62bff33b9e82"
+  },
+  {
+    "name": "Cane della morte",
+    "page": 300,
+    "sha256": "91081b0d72eec135a3e14809196918f4c30a6cd85f62b42a9d92f718d18e4e19"
+  },
+  {
+    "name": "Cane intermittente",
+    "page": 301,
+    "sha256": "a1396bbd36ee89e7c14d9dc65bd402ad0d80f122e6f46247b97150510aa87bce"
+  },
+  {
+    "name": "Cavaliere",
+    "page": 301,
+    "sha256": "8965a9f1d6e8129dc0099fdc310c1eeb4cc0da2c2ff39f49e672e1283f27cf55"
+  },
+  {
+    "name": "Cavallo degli incubi",
+    "page": 301,
+    "sha256": "d7a0d6169f7d6de4b9bac19c3edb7d678365d1c388c2440594889d3b49efdb7c"
+  },
+  {
+    "name": "Centauro combattente",
+    "page": 302,
+    "sha256": "39318ec486d4ecf0f801b9d84d065dd98ee42ad8ede7c18d46c5d71d6a612fa0"
+  },
+  {
+    "name": "Chimera",
+    "page": 302,
+    "sha256": "d2b7751bd9ba158fba745f2df4b62fd6c660bff8bedff64d2451bff84e5bd8df"
+  },
+  {
+    "name": "Chuul",
+    "page": 302,
+    "sha256": "22cacd786dad3135113338e076d591bc37844d5cfbc701802a338492a785d182"
+  },
+  {
+    "name": "Cinghiale mannaro",
+    "page": 303,
+    "sha256": "e0b2da451fd71246e238c3e8203f6913d01cc9b668d6857415d0662e94f6f86f"
+  },
+  {
+    "name": "Coboldo guerriero",
+    "page": 303,
+    "sha256": "b3a70e9c9e4c522ad119a78850ec6d5bc25813bee97abff6cd6e6414b63d61d7"
+  },
+  {
+    "name": "Coccatrice",
+    "page": 303,
+    "sha256": "26ee96cbadcb4a805d01ddfa71ec31aa9744fe5c5a05af5f8493786c86735750"
+  },
+  {
+    "name": "Couatl",
+    "page": 304,
+    "sha256": "39a734f9705d038aac9359f918e126f37dac2a292bb4121d330ce6ff4f9aa84c"
+  },
+  {
+    "name": "Cubo gelatinoso",
+    "page": 304,
+    "sha256": "1ecc0e46583e3cddcf4141cd80a1c9ba5da98afaed1893a54a62da5bac62dff6"
+  },
+  {
+    "name": "Cultista",
+    "page": 305,
+    "sha256": "42f6bfeccb7f30922c1780051f7c7ede76ecc9ad12afc1b9afb47a6e9bc75e4f"
+  },
+  {
+    "name": "Cultista fanatico",
+    "page": 305,
+    "sha256": "025340cf761e3624ea3a205b0e944f8a5a83bb89b5588571d3badde67a3790b1"
+  },
+  {
+    "name": "Cumulo strisciante",
+    "page": 305,
+    "sha256": "e742129839fe65f9477cff48c424c16e25ea05c3da253bea32b8fc67265af2cd"
+  },
+  {
+    "name": "Deva",
+    "page": 306,
+    "sha256": "cfc9587bd40db2c7375ddb1c5c87c476987781882e88df1049bb0fed87e93199"
+  },
+  {
+    "name": "Diavolo barbuto",
+    "page": 306,
+    "sha256": "33ea407d335357b4cfbb21e504fcc7f01fd43981b881d41c6d79540001f183a6"
+  },
+  {
+    "name": "Diavolo cornuto",
+    "page": 306,
+    "sha256": "aeb09658a3870b6a4d8c010cbaf8cfaa63d399422ab2642b9dfea984615f1d68"
+  },
+  {
+    "name": "Diavolo del ghiaccio",
+    "page": 307,
+    "sha256": "afb9d493c7cbbbc4bef828f90ceec153189be2e6d71ac72f60013f69689aa145"
+  },
+  {
+    "name": "Diavolo della fossa",
+    "page": 307,
+    "sha256": "c23f6a714b2c5e2197178ff2a4896259dbc286625f0fc495ca5ebf120b975b94"
+  },
+  {
+    "name": "Diavolo delle catene",
+    "page": 308,
+    "sha256": "fdce68f4dd58026ac89bc60a83e435984f8118435c39ab6443275d0aece2e18f"
+  },
+  {
+    "name": "Diavolo d'ossa",
+    "page": 308,
+    "sha256": "e5c5cf4d46121adbc73de46a27f71954b9dae5e4620af280b6cf53818eca1335"
+  },
+  {
+    "name": "Diavolo uncinato",
+    "page": 309,
+    "sha256": "1583d5dfaea7c7f6d121c34f4f872e3ef9c7ffaa1f490bda00220ad9e9c67a2b"
+  },
+  {
+    "name": "Djinni",
+    "page": 309,
+    "sha256": "95cc77902035ec87f7102ef04b4679748b381a3cc39b1cc8486ed33ebd07aa26"
+  },
+  {
+    "name": "Doppelganger",
+    "page": 310,
+    "sha256": "724fd79868fc1a90a4e928a3058c9a8e120f9f122f2fadba1638b5dd6c3e9581"
+  },
+  {
+    "name": "Drago bianco cucciolo",
+    "page": 310,
+    "sha256": "eb5511d98299a9a9eadfc8ffb183779e1b9e3149716e62edfefbe6f8820fae5e"
+  },
+  {
+    "name": "Drago bianco giovane",
+    "page": 311,
+    "sha256": "17e2f19a7674c506485ea169b7382573f38089a48eb43c09b7fe66f894987da2"
+  },
+  {
+    "name": "Drago bianco adulto",
+    "page": 311,
+    "sha256": "2e2f38ae3f496a49b1a0968fb704f3d33cf25b3e162af0b638de90215939db74"
+  },
+  {
+    "name": "Drago bianco antico",
+    "page": 312,
+    "sha256": "187b445fe641e23e260cd28bbf25ff2fb91b5626908ec58322698adce4be047e"
+  },
+  {
+    "name": "Drago blu cucciolo",
+    "page": 312,
+    "sha256": "938e485aaee68daf2b5405e2a6d1895e502222215632e5f5644718649b3f2c6a"
+  },
+  {
+    "name": "Drago blu giovane",
+    "page": 312,
+    "sha256": "cda046567c904e74ae5ae02d48c7dc1f50b54e7b8f3113678048fff607c41599"
+  },
+  {
+    "name": "Drago blu adulto",
+    "page": 313,
+    "sha256": "eb9cb8140efbb4f5409842f25d1b2977ad77386236f27f020eac470bfd9e12a5"
+  },
+  {
+    "name": "Drago blu antico",
+    "page": 313,
+    "sha256": "9fbc4a4f442ad45caa160c55cf1d950cf288fd47af9ede94a402155c4fb41f45"
+  },
+  {
+    "name": "Drago d'argento cucciolo",
+    "page": 314,
+    "sha256": "93d5aa33fb2193cc5ce26c8096a38fccd240292c46e49577dd75121ded54b544"
+  },
+  {
+    "name": "Drago d'argento giovane",
+    "page": 314,
+    "sha256": "2ac52cd2727d18eb696d57aec24c185f8c437fe3cca9128d8550b36b067fbbce"
+  },
+  {
+    "name": "Drago d'argento adulto",
+    "page": 314,
+    "sha256": "66c40bcad19b4415d8addba23aee589bae57d6b8bc72025125b71b1947f937b5"
+  },
+  {
+    "name": "Drago d'argento antico",
+    "page": 315,
+    "sha256": "8f09be1bcb5f28b7b3e91ebf1df63c0be49cb6fbd0a114d9d2cd9af7c46fb0f9"
+  },
+  {
+    "name": "Drago di bronzo cucciolo",
+    "page": 316,
+    "sha256": "338e1e599354a466ec3d6e1aa13b61d7d062333e0d87f064bbf2fc343d17bb77"
+  },
+  {
+    "name": "Drago di bronzo giovane",
+    "page": 316,
+    "sha256": "02eb7c2dc2c3c3c7cd3f29bbd371cd7ac5857be54c35e4ea80e1b0f123d049e7"
+  },
+  {
+    "name": "Drago di bronzo adulto",
+    "page": 316,
+    "sha256": "8106b28ac83d0f61b45254daed3d326ec9f1a7efb076bce5e2e988b428e02b97"
+  },
+  {
+    "name": "Drago di bronzo antico",
+    "page": 317,
+    "sha256": "d2fcd993f87f898fc33ec634d0f6b5e673c31c6f2f427b64afcce14a5cbeed8c"
+  },
+  {
+    "name": "Drago di rame cucciolo",
+    "page": 317,
+    "sha256": "e5c834ba88a31fdf174a8ea420651802a035164a800e178de9a901f24faa1adc"
+  },
+  {
+    "name": "Drago di rame giovane",
+    "page": 318,
+    "sha256": "43f4e4ad29b92bfc0e8bcf89e8e6185910d551d0bb2f07cba2582c4777c97158"
+  },
+  {
+    "name": "Drago di rame adulto",
+    "page": 318,
+    "sha256": "bc031f5a748e3334bae3c5bc6dfd2c6fc9f39dfedbb580580603ec98e7e9aa97"
+  },
+  {
+    "name": "Drago di rame antico",
+    "page": 319,
+    "sha256": "6ee2d49eb0b4803f8e0037cb99d0bab93c1227b0924048afbd43352202dd5fad"
+  },
+  {
+    "name": "Drago d'oro cucciolo",
+    "page": 319,
+    "sha256": "6cf3786395a21c5a60c0c3721bb81137a3a407a057ed5b255f0700391ab3dc04"
+  },
+  {
+    "name": "Drago d'oro giovane",
+    "page": 320,
+    "sha256": "c02b30cdb9d56316805b973b4c6a226c1058915488631866612433de8503c3f7"
+  },
+  {
+    "name": "Drago d'oro adulto",
+    "page": 320,
+    "sha256": "d4d42dc5b1059db8a39a4b464f9f6edefb8c39c2e4c85e4b399acbf0ad8feba2"
+  },
+  {
+    "name": "Drago d'oro antico",
+    "page": 321,
+    "sha256": "18a3fc837f8e1cd19012e679d0c10bee3ae6d6a748942961be36887e24568bef"
+  },
+  {
+    "name": "Drago d'ottone cucciolo",
+    "page": 322,
+    "sha256": "f964bfc70e12539d9b5b45a6b4453e02d806680c92a893cd4e2019635d0d2eb1"
+  },
+  {
+    "name": "Drago d'ottone giovane",
+    "page": 322,
+    "sha256": "f079101503f9465be5deabedd394d34ee36c0bbf7a875903cc20138c60b64d76"
+  },
+  {
+    "name": "Drago d'ottone adulto",
+    "page": 322,
+    "sha256": "8c2ee92605531b63d3a354725ae5fcbbe31fe722a7b5dd936dc6aed58b04404d"
+  },
+  {
+    "name": "Drago d'ottone antico",
+    "page": 323,
+    "sha256": "ae0b5827413727b8ff1185d59890d2e13fdfd8ce2cd5ebf392f6188981c62499"
+  },
+  {
+    "name": "Drago nero cucciolo",
+    "page": 324,
+    "sha256": "faa2fc402377ea0544d4a29a39237cab71c2ecb40c12dd66064996709004dae6"
+  },
+  {
+    "name": "Drago nero giovane",
+    "page": 324,
+    "sha256": "03b263c3e85ccc722526839d8d8c111bfc3c5f3cd65ef40fe8abc545ce5f2173"
+  },
+  {
+    "name": "Drago nero adulto",
+    "page": 324,
+    "sha256": "83951e8a8c7b15814a59b11756fced05a864f6e653d933b1d1c819b2aef551e3"
+  },
+  {
+    "name": "Drago nero antico",
+    "page": 325,
+    "sha256": "78d90bd6cb10934ddc75d895cb977bb3c7acbc423b1b19750ddba38d9328df3c"
+  },
+  {
+    "name": "Drago rosso cucciolo",
+    "page": 325,
+    "sha256": "49ec3228d78baa5d7b0161e7da13c224882e174f008b37f6cc2b358f8d736319"
+  },
+  {
+    "name": "Drago rosso giovane",
+    "page": 325,
+    "sha256": "571a66fe30e2320f8877b91ac8966a47a1b03cae4f882e1eabf8aa282dd6ea67"
+  },
+  {
+    "name": "Drago rosso adulto",
+    "page": 326,
+    "sha256": "58e572d706689cd034bfdc66c696166302515fe8d9322e36d08933ba5860c7f1"
+  },
+  {
+    "name": "Drago rosso antico",
+    "page": 326,
+    "sha256": "784dd83c294cd209dbbc61d58b21fb9be077f66e5b7522af0115b6eddb468fe1"
+  },
+  {
+    "name": "Drago verde cucciolo",
+    "page": 327,
+    "sha256": "5f5bea3912e23ddb657644eeacaf6422c0db1d8389ae005732fb6495c24f4caa"
+  },
+  {
+    "name": "Drago verde giovane",
+    "page": 327,
+    "sha256": "85b6b84eff545d08783cf294250352d0a7886ef33ae66ac2e407fc0c76be944d"
+  },
+  {
+    "name": "Drago verde adulto",
+    "page": 327,
+    "sha256": "a5877d511eac9b40506c937015540374a42c85054b1a6f1a1ca039ae5a5663ac"
+  },
+  {
+    "name": "Drago verde antico",
+    "page": 328,
+    "sha256": "b6ec94f5cde20e8973ce7fe226f9e801c40921080d9911687ee1f2f622909414"
+  },
+  {
+    "name": "Dretch",
+    "page": 328,
+    "sha256": "21b14724f12acb8fb6cfae71a661c01624be028081577e20b53fc72a4f5259c8"
+  },
+  {
+    "name": "Driade",
+    "page": 329,
+    "sha256": "f4145d45abe46bc60897b1a0adfd889fc988e2a8b87792221b10e65cf7764c3a"
+  },
+  {
+    "name": "Drider",
+    "page": 329,
+    "sha256": "7a0615f372f3649c7a57e2751cdbf6c1b0d776a0b753b4434aa254560fb2e33a"
+  },
+  {
+    "name": "Druido",
+    "page": 330,
+    "sha256": "c5c97172de1fe952f5399a67a738c0183b9430df189c67aa9dfde9b071c09ef5"
+  },
+  {
+    "name": "Efreeti",
+    "page": 330,
+    "sha256": "ead2579498ffd52bbc9de2a4c489d538d67010ecb34b5fade8ca20e1a33b6f9d"
+  },
+  {
+    "name": "Elementale del fuoco",
+    "page": 330,
+    "sha256": "9258af4e31d9c08020bee7383c19d8caafe6d6e322f18f4aebd90eea796b0c04"
+  },
+  {
+    "name": "Elementale dell'acqua",
+    "page": 331,
+    "sha256": "494cd0e4703ac24108edb62764a04893cd82ba9b9b9a89ddb3391f9fe0c488b8"
+  },
+  {
+    "name": "Elementale dell'aria",
+    "page": 331,
+    "sha256": "3c9c4c31aa6987a9bfa67e72a7c2b3f630674b53af7b23d3d3a4a4c3b9bab0be"
+  },
+  {
+    "name": "Elementale della terra",
+    "page": 332,
+    "sha256": "f1f940f0ca461eab0f7365557d5813c3f6a7cb46b513c9e02cbc22f7e4bbec08"
+  },
+  {
+    "name": "Erinni",
+    "page": 332,
+    "sha256": "a73877fb4529792334b41be877a2789c0c72ba67bda448f37b496ec3b403c8f5"
+  },
+  {
+    "name": "Esploratore",
+    "page": 333,
+    "sha256": "56ad28322721f7a56fe4da6708b000dc91861905cad63c257b339da3fb4009d3"
+  },
+  {
+    "name": "Ettercap",
+    "page": 333,
+    "sha256": "5c60ca7d1b71d7923d43d65f45f2df9d31fb01e14e3177a837c97a215fdaaee5"
+  },
+  {
+    "name": "Ettin",
+    "page": 333,
+    "sha256": "1edbb6a21405e6213a47284c7e1ed57772a40b0e56ccd56339f3335fc32a0890"
+  },
+  {
+    "name": "Fantasma",
+    "page": 334,
+    "sha256": "905d6b3650d584fc92e5e5b2b1ce3ac64dab465efdefb3f9ee34a77540d4660d"
+  },
+  {
+    "name": "Fauce gorgogliante",
+    "page": 334,
+    "sha256": "366bd2536ec687633a8a3626ed5e8e049af5b323246b98d5a61b51e92e506cea"
+  },
+  {
+    "name": "Boleto stridente",
+    "page": 335,
+    "sha256": "c7a22679a34db4a1e49dc367aacf859bdc4c5d3e23b5531b095200a17c59b8c6"
+  },
+  {
+    "name": "Fungo viola",
+    "page": 335,
+    "sha256": "44c77059c93c1a4171bbd802ab8941d21bd24fcd0df6b8fab55b88991d5bb04b"
+  },
+  {
+    "name": "Fuoco fatuo",
+    "page": 335,
+    "sha256": "770a67547782bd60132ef9d3f5610b83c22f833095b9f09e0cde160fdfb11caa"
+  },
+  {
+    "name": "Fustigatore",
+    "page": 335,
+    "sha256": "8f5f9c3a8725446473a9b04d55bb339c00d108f810a93aec1547c1d0ae8d0d66"
+  },
+  {
+    "name": "Gargoyle",
+    "page": 336,
+    "sha256": "3d062e62deebcaeb13639c5d9f79e4233f556867bb3c55b586d1dab3752d1d19"
+  },
+  {
+    "name": "Ghast",
+    "page": 336,
+    "sha256": "f8afe3cd2fa674ba96b51e3d4b4861eab65c9c310aac19eecd64381a3af264e7"
+  },
+  {
+    "name": "Ghoul",
+    "page": 336,
+    "sha256": "510f611b01732a6aece08d7e464edb1722f89f89d4ac0c0bfd42b23e19207fb9"
+  },
+  {
+    "name": "Gigante del fuoco",
+    "page": 337,
+    "sha256": "460d3bbaddcd5e3710804849a29bb47c7957e41df69183c8a4c7303d0981b805"
+  },
+  {
+    "name": "Gigante del gelo",
+    "page": 337,
+    "sha256": "2bd57101e3b03c064065236f17637f9787d43c34db8e8d62be67e6cf49a14261"
+  },
+  {
+    "name": "Gigante delle colline",
+    "page": 337,
+    "sha256": "335d0dc53c0a7534e45cf5a4166cba904ec746c2ce602df2ed8050db9d8feebc"
+  },
+  {
+    "name": "Gigante delle nuvole",
+    "page": 338,
+    "sha256": "af73379cc9e6786209bd7f683c34e5b255cd2899abb67845d03f24dd65cd9507"
+  },
+  {
+    "name": "Gigante delle pietre",
+    "page": 338,
+    "sha256": "cd0366ce4c7c5be7f6ebfc10eefa84067271b69fdd1a4dab086c11d415889373"
+  },
+  {
+    "name": "Gigante delle tempeste",
+    "page": 338,
+    "sha256": "6e281df6a1e57ee45c43e6da9461ead9bef3b8992e6a69c82c9e222d8f2f97dc"
+  },
+  {
+    "name": "Glabrezu",
+    "page": 339,
+    "sha256": "f2785d2be0c68a2320178ceea8cafa05f4b5aad164be099bd0fca2f941f1a3dd"
+  },
+  {
+    "name": "Gladiatore",
+    "page": 339,
+    "sha256": "769e3b458a4908b14facbf1e942b1cca0cacfdfe21dd94900adcc21e007cbc5f"
+  },
+  {
+    "name": "Gnoll guerriero",
+    "page": 340,
+    "sha256": "b7d7df92b6d600544449542cd090b6d1b9d483bccfbfcd7bb9b53f56fb05bd70"
+  },
+  {
+    "name": "Goblin tirapiedi",
+    "page": 340,
+    "sha256": "60348c971ae0ac022f263918d62f864b2833c56c1cad28836c523083bce5ee6b"
+  },
+  {
+    "name": "Goblin guerriero",
+    "page": 340,
+    "sha256": "b749744bc6b74e7715e2316c053033758dfb6b8f80bab77fefec096fcf4a0426"
+  },
+  {
+    "name": "Goblin capo",
+    "page": 340,
+    "sha256": "d82f38388fefecf13a319c8a3e7aca4be8fbca5a9f727b9a5af91b37a200b8af"
+  },
+  {
+    "name": "Golem di argilla",
+    "page": 341,
+    "sha256": "c471b1dda57c81c34c0a9687a71a135940bc5040fcbb0d2a6f2926b36630faff"
+  },
+  {
+    "name": "Golem di carne",
+    "page": 341,
+    "sha256": "d1f7c1e96929aa516c24dd2c948242be9a086cddb6d774a43ab6673938881f5e"
+  },
+  {
+    "name": "Golem di ferro",
+    "page": 342,
+    "sha256": "971a003b328a438abdfb79c4a25792381b0d5ee7ff25bc5f88771f8b850b6017"
+  },
+  {
+    "name": "Golem di pietra",
+    "page": 342,
+    "sha256": "236caca72fcd2610ab85486ef31fe46a1f6e94ebf5ed3e97bacf92e6b5b478cb"
+  },
+  {
+    "name": "Gorgone",
+    "page": 342,
+    "sha256": "e07249d14939ca01cfe0d0e871d0f190ec728f3aa3c4fd0a642d4ac19862eec9"
+  },
+  {
+    "name": "Grick",
+    "page": 343,
+    "sha256": "fca7e518957830c43ab90535cd9426c1e23ab72bec53625d94ab0f3ccb6f40a2"
+  },
+  {
+    "name": "Grifone",
+    "page": 343,
+    "sha256": "4f2ed41b21932f5800043c8366a32ac8b0f9ef71a2b5caeef0fc59bd9f0950e1"
+  },
+  {
+    "name": "Grimlock",
+    "page": 343,
+    "sha256": "f5689279d9f7ecfec3616c9812c254dbaa34faab0058e11f88515b2f5dd9f7e5"
+  },
+  {
+    "name": "Guardiano protettore",
+    "page": 343,
+    "sha256": "91982090141fc74a11357ef97f6b0752f94cd98d6bfd419c5defb716e328fe72"
+  },
+  {
+    "name": "Guardia",
+    "page": 344,
+    "sha256": "c7e09fdef21f085de7cac5855f6f95c43b9aefb247e7015f50b6f4317283c8ea"
+  },
+  {
+    "name": "Capitano delle guardie",
+    "page": 344,
+    "sha256": "1e4befd8d52f8223d4fd605da97e10e84e1df8ecb4e1764ffafc47b31ec86722"
+  },
+  {
+    "name": "Guerriero di fanteria",
+    "page": 344,
+    "sha256": "f63ac7f267286b170bde6dbbd3476b3aad0aad9472bea7fcc1e62a63914e12da"
+  },
+  {
+    "name": "Guerriero veterano",
+    "page": 345,
+    "sha256": "cc5ab2afd303808e38318894fd0ce1ec1f93fb334963c9efbfe2ecdd53dc20f5"
+  },
+  {
+    "name": "Hezrou",
+    "page": 345,
+    "sha256": "62b763c9ac572861aebe780d52c1f93ee5eed455b778a20763cb47b95d0274d2"
+  },
+  {
+    "name": "Hobgoblin guerriero",
+    "page": 345,
+    "sha256": "62e9c9e8e5382096f16c0c7a01a814be2156ca9adf66a6cc44d2d3b0d2b6f129"
+  },
+  {
+    "name": "Hobgoblin capitano",
+    "page": 346,
+    "sha256": "8b81ab65a3b9acb7bdb8b1d8df26748d352689efda19019a9ec144826273c863"
+  },
+  {
+    "name": "Idra",
+    "page": 346,
+    "sha256": "f4620d092e4dc5e347e0c521caebd3a47bfbbf67e357c8126ef76ffe1c1d4190"
+  },
+  {
+    "name": "Imp",
+    "page": 346,
+    "sha256": "1b2372b2dc3178d02959b48d8869e4fef2deff8774066aaebd709d3c7956fdcb"
+  },
+  {
+    "name": "Incubo",
+    "page": 347,
+    "sha256": "a6a7e9ada8c22af23ef8476a9c6d183de06ce514da68d5aa12628b931028649b"
+  },
+  {
+    "name": "Ippogrifo",
+    "page": 347,
+    "sha256": "d6b4c1cafe390929448716ef29490cda351b6711fe8e36a997a380797f063189"
+  },
+  {
+    "name": "Kraken",
+    "page": 347,
+    "sha256": "f63f4457077ef61037886500e10510cdd7ec89ac9ba27b78f3e563bcb5011ffa"
+  },
+  {
+    "name": "Lamia",
+    "page": 348,
+    "sha256": "3296c38c455a458b8c2b43916eb3ffe9838061503681edf809b04d505bae09b3"
+  },
+  {
+    "name": "Lemure",
+    "page": 348,
+    "sha256": "1d0a3f6f371bc0eb162b7d19ee11026872232b9943c22d6078ae3778437a0ca2"
+  },
+  {
+    "name": "Lich",
+    "page": 349,
+    "sha256": "61d3a39388376c7c1f7806a9541f593ecb03807d63a8dc8bc2f2a75c285898ec"
+  },
+  {
+    "name": "Lupo invernale",
+    "page": 349,
+    "sha256": "99e7fceb5d08032fef430f0f37abdbb494fa3d62726c2c37bbfe4715d7258330"
+  },
+  {
+    "name": "Lupo mannaro",
+    "page": 350,
+    "sha256": "27e05e23d1d4aa3dc07f40bf9ac235f977ea5d3bac6a6898408bcf362622c939"
+  },
+  {
+    "name": "Mago",
+    "page": 350,
+    "sha256": "34bc48c281d51817369631e09f9c9c86cb07149106d37bc79e79f2ef21a74b67"
+  },
+  {
+    "name": "Arcimago",
+    "page": 351,
+    "sha256": "cf082a3e042c4a7fa43388020a947b7012835c62e64db704d8c29fbc3b593f7c"
+  },
+  {
+    "name": "Magmin",
+    "page": 351,
+    "sha256": "d285c14f326597a0ae0319c3e8068e6e2ba10e5c759085618b28bfd41612bdb7"
+  },
+  {
+    "name": "Manticora",
+    "page": 351,
+    "sha256": "0a131b2a50e4ee1d853e5138ee4d75c3ec87d175e70b99812cf4f87c42755c16"
+  },
+  {
+    "name": "Manto assassino",
+    "page": 352,
+    "sha256": "3ae373d5701b4d3258ef8fa1151704f51a77dbb11014c6d61eea607953854017"
+  },
+  {
+    "name": "Mantoscuro",
+    "page": 352,
+    "sha256": "99ff833280f2c874eddf8600798651a2afa4de5b8846d3aafed76bd56a811ce1"
+  },
+  {
+    "name": "Marilith",
+    "page": 352,
+    "sha256": "abcea016a0b38e589c5dd59f111d76f3e5a85cdeb9e4faf3e38b70fb3c1f0de9"
+  },
+  {
+    "name": "Marinide schermagliatore",
+    "page": 353,
+    "sha256": "c5d97d6c342cc6acbc867bd50abad03e97dfda5bb8a141970ee3471218671340"
+  },
+  {
+    "name": "Medusa",
+    "page": 353,
+    "sha256": "02f2ca14cc33de7a9a35f5378de922497ac307ea26c9ce87ae243ed5f53731e9"
+  },
+  {
+    "name": "Megera marina",
+    "page": 354,
+    "sha256": "0a23ef7c3439100c3e31aa87d35cc4c97c381e77a9d9013a86564191e7dfb224"
+  },
+  {
+    "name": "Megera notturna",
+    "page": 354,
+    "sha256": "ee5eb998041b2aed639c65a0939e8dad1f91ab1c2f0157fb75df184c0c663811"
+  },
+  {
+    "name": "Megera verde",
+    "page": 355,
+    "sha256": "4c77c18d741942a697ed9263fa77e8b488814f6e8f3c56fab99821f115a48f25"
+  },
+  {
+    "name": "Melma grigia",
+    "page": 355,
+    "sha256": "4c9efc080c0e1c8cbee3e6f4091585585803365aa58e6cc1ba5e42345bab5451"
+  },
+  {
+    "name": "Mephit del ghiaccio",
+    "page": 356,
+    "sha256": "94613c1dc9a9eccfc2386275dde32e869ac57416a3856020396559aedcfe48d8"
+  },
+  {
+    "name": "Mephit del magma",
+    "page": 356,
+    "sha256": "7f26b33f8ef9dfe7cc17ac018523c90602a3c006d9fdc7e1c3c7bd7294fa9651"
+  },
+  {
+    "name": "Mephit del vapore",
+    "page": 356,
+    "sha256": "8ef9bf6931c173bcaf3c285abc9213b6e3ad917e842971cc64998094f57b6811"
+  },
+  {
+    "name": "Mephit della polvere",
+    "page": 357,
+    "sha256": "b9b324150303408594e42905e25f0e590b23506de8209f84dce4306adc3b6eb1"
+  },
+  {
+    "name": "Merrow",
+    "page": 357,
+    "sha256": "cb244c0ed059f4c021c866f223f552b21fbf4bc2f0fa13f0661e8f41d89f3887"
+  },
+  {
+    "name": "Mezzodrago",
+    "page": 357,
+    "sha256": "521a4d5672a10fe9629eec89cdde79e449492c762b29feb9aadd189addaeafdb"
+  },
+  {
+    "name": "Mimic",
+    "page": 358,
+    "sha256": "b6ed3cd2b608ba27863f40fb7ac7d0bc85b4114f8a7c89d5c7b8b3836d1a56b7"
+  },
+  {
+    "name": "Minotauro di Baphomet",
+    "page": 358,
+    "sha256": "2e92ccaece4d151cb4f57212a3e032a18209c13163b9e7b57a61daadd07c27ae"
+  },
+  {
+    "name": "Mummia",
+    "page": 358,
+    "sha256": "265c852c8683c064d0cbae949e49d4d3e5055a1614c081f47a52e31c9f20dc8d"
+  },
+  {
+    "name": "Signore delle mummie",
+    "page": 359,
+    "sha256": "6a0b1ea5c0ffdf8f37946fa0f62c458d870632ce5c86859816ec1abf9ae35c1e"
+  },
+  {
+    "name": "Naga guardiana",
+    "page": 359,
+    "sha256": "546928de7f3cf1a31a44bdd89c6ba5faac174355eabf0e70a741da08dd45ea74"
+  },
+  {
+    "name": "Naga spirituale",
+    "page": 360,
+    "sha256": "4a7a7a6a4798e32a15ad9fdae754fa43d1d74b401d4d84ca7341a4eb96640e4f"
+  },
+  {
+    "name": "Nalfeshnee",
+    "page": 360,
+    "sha256": "51c505468f1e901fd1082b230cd78901d88db091c3cc3c86b2493ce432ffaaf8"
+  },
+  {
+    "name": "Nobile",
+    "page": 361,
+    "sha256": "7a4ca6f4f1a4c5623fc2f7befbcb04a1f7bfc1d9b7a106133ee7819989954c4f"
+  },
+  {
+    "name": "Armatura animata",
+    "page": 361,
+    "sha256": "952e041af7a8c8d115ec22e1989913c942e555192a7f8b885de35a588d03c806"
+  },
+  {
+    "name": "Spada volante animata",
+    "page": 361,
+    "sha256": "a70d1bbf41e47841057c2db9eef091ca7547aea529d1d256a0ba5cedc22f283c"
+  },
+  {
+    "name": "Tappeto soffocante animato",
+    "page": 361,
+    "sha256": "f09a79e392e257ae636f8f35ed299c86eac4fa2111990cacd74a04f514c58c37"
+  },
+  {
+    "name": "Ogre",
+    "page": 362,
+    "sha256": "4763f28586a8151f05abfc21d01efe57592df276760b93cb0ab8d956cabce41f"
+  },
+  {
+    "name": "Ombra",
+    "page": 362,
+    "sha256": "4b9853b4f71fdf160b5ecc2ef82dcf3bbf9ded1d3b64a1fb494ad57ea699585b"
+  },
+  {
+    "name": "Omuncolo",
+    "page": 362,
+    "sha256": "7014c9900336742fcac3c1809fd4e9fee5169388e9196b0bf0d11a293552eeb5"
+  },
+  {
+    "name": "Oni",
+    "page": 363,
+    "sha256": "62de2c724db8b65b3ecb1322b4288c2f2db6bd5d1f13dc90e07903398f98fe69"
+  },
+  {
+    "name": "Orsogufo",
+    "page": 363,
+    "sha256": "770a13e6bed0ae00ff9669df5746cba78fe510e445631af0856ff488427db03d"
+  },
+  {
+    "name": "Orso mannaro",
+    "page": 363,
+    "sha256": "23ca1a459a07145b81c98133a03ef789d88983e0c80b45a81ba7e6ea3b68b204"
+  },
+  {
+    "name": "Otyugh",
+    "page": 364,
+    "sha256": "9eefdbf08d1364549cb8402d088a5300f0346a7a4baf16ea27a4f79a7274f357"
+  },
+  {
+    "name": "Pegaso",
+    "page": 364,
+    "sha256": "6a461fcd2cc5e5d720253623c0c10505e7fd192587a69ab01601b831465d1c76"
+  },
+  {
+    "name": "Pirata",
+    "page": 364,
+    "sha256": "c83886f56a9b0a71fd6506c1ed1799acbf0205d6991f26dc36c95c1f13389e44"
+  },
+  {
+    "name": "Capitano dei pirati",
+    "page": 364,
+    "sha256": "b7240be00b754ec6b150897396ca473be4a28b53ef3ede031155a1b1ad5bc4e1"
+  },
+  {
+    "name": "Planetar",
+    "page": 365,
+    "sha256": "7057399b4b2ed38336932089d4239a6f83fbdfc088afe56730fb861d6347a9ef"
+  },
+  {
+    "name": "Popolano",
+    "page": 365,
+    "sha256": "c0a5d9440a787d9a3f91679d14ba45c5fd154623de41f14e887b987781f4c0b2"
+  },
+  {
+    "name": "Protoplasma nero",
+    "page": 366,
+    "sha256": "a7f2494851ed48941500029869914068ddb293b7cb3bcc04dfd89c96bb29697c"
+  },
+  {
+    "name": "Pseudodrago",
+    "page": 366,
+    "sha256": "5a747c4fc1a621b102064f3f8043d3e77e9d698f33b5ab1bb90f5d22b6d5a9e1"
+  },
+  {
+    "name": "Quasit",
+    "page": 366,
+    "sha256": "4292060d949eedfecff77b838938e5a4ed25ef50f09fe316c6f43519f32fb75c"
+  },
+  {
+    "name": "Ragno-fase",
+    "page": 367,
+    "sha256": "81d241645ea9eb530656005dc9a918f9e414d5d0edb67eb051c0772ff5ebc18d"
+  },
+  {
+    "name": "Rakshasa",
+    "page": 367,
+    "sha256": "5bf307f98b1cb26a49cbb60b6c21f97b653e5fcf2b3a4528f85adea0bc9deddc"
+  },
+  {
+    "name": "Remorhaz",
+    "page": 368,
+    "sha256": "513bd01da645094f297457d908b38928347185bb1ad8eb5fb3f0c1b5431ce374"
+  },
+  {
+    "name": "Roc",
+    "page": 368,
+    "sha256": "baf1d446f2195c1d08205caa5c5d0154b4b9dc0efd30f2e9a22e3b0b7786ddbe"
+  },
+  {
+    "name": "Rugginofago",
+    "page": 369,
+    "sha256": "cd853681fdaf26dbd8795d3ccd6e005122ebe456be4f2ee3de79845e587488a0"
+  },
+  {
+    "name": "Sacerdote accolito",
+    "page": 369,
+    "sha256": "87e4af7bea24e59f7f642b7f583e937da7d95306841ebd10c09b1d51af6cd941"
+  },
+  {
+    "name": "Sacerdote",
+    "page": 369,
+    "sha256": "13a21cbf8a9535305cb5a773a794ed59fb63c255f813fa2b159b5497e8b78c5b"
+  },
+  {
+    "name": "Sahuagin guerriero",
+    "page": 370,
+    "sha256": "6786a7dddf0c94268eea0379f23ebf46f9eeec2dc32655fd2af4b9e7dfeb2d16"
+  },
+  {
+    "name": "Salamandra",
+    "page": 370,
+    "sha256": "cf05d0b3766eadefb0c30db0b90efc8a7c16cf6cff8c2420e703d693b392ff3d"
+  },
+  {
+    "name": "Satiro",
+    "page": 370,
+    "sha256": "3ff5a45aac646e7a8dfc078308e6ffc3b5fe0cba16cfb37cfe8247f170edb441"
+  },
+  {
+    "name": "Scheletro",
+    "page": 371,
+    "sha256": "7568200868af0dc53d8335b2c1def47ad1bcd4e99d1e8b7fdafe62997070ab49"
+  },
+  {
+    "name": "Scheletro di cavallo da guerra",
+    "page": 371,
+    "sha256": "a2fe006fbd8484933a6d2a97a64531ac6944124ef8dca47dcb6ca24b04cbeb7f"
+  },
+  {
+    "name": "Scheletro di minotauro",
+    "page": 371,
+    "sha256": "15372a855bed6e2ed65ab35714f0410cf4e2f4743cda8d8231103526031f78d6"
+  },
+  {
+    "name": "Segugio infernale",
+    "page": 371,
+    "sha256": "ceed956bd15aafdce6f0117cc365a064f76564e3843f5924f00fdd4f30ac036f"
+  },
+  {
+    "name": "Sfinge della meraviglia",
+    "page": 372,
+    "sha256": "4aa62e8fc3f5ed29981f46ce2a1befb12785bae18ae631ea5636c016e2545caa"
+  },
+  {
+    "name": "Sfinge della conoscenza",
+    "page": 372,
+    "sha256": "1e4624ecb38e30e791bc493171781ce97685f6d7444633591f64c41b0b00197b"
+  },
+  {
+    "name": "Sfinge del valore",
+    "page": 373,
+    "sha256": "a1767b67476121a175a027cd931beda8e97ac6e2d61dd5421c012a35f9936650"
+  },
+  {
+    "name": "Solar",
+    "page": 373,
+    "sha256": "fc6d66f57123f740d4c1e6128cad88b2328edad9d1e65ca3809905514b1d4718"
+  },
+  {
+    "name": "Spettro",
+    "page": 374,
+    "sha256": "b8ab029d7dc0eff854b2170230eec505829004392f762c2f6a04c1e1e272c04c"
+  },
+  {
+    "name": "Spia",
+    "page": 374,
+    "sha256": "0f186fdf4a341a9804134d3645354f6f9452886f84043b9f9fcf9227d55fd701"
+  },
+  {
+    "name": "Spiritello",
+    "page": 375,
+    "sha256": "c516766697a9e3eebc13628d85b8133429ba0e0088e3aee3b971b2ec27d1b70b"
+  },
+  {
+    "name": "Succube",
+    "page": 375,
+    "sha256": "fa1bde410b0a97bbcf2e507a57e9e780bd8f45ae21dfb744cf932c77b6347428"
+  },
+  {
+    "name": "Tarrasque",
+    "page": 375,
+    "sha256": "5b02ab23c66fa3f0da35e679a0fa41d729bd8893814a09f78456d2b72abdaa2b"
+  },
+  {
+    "name": "Testuggine dragona",
+    "page": 376,
+    "sha256": "986ed42fab8e045fd2025206b204803ef705345faa2af72a2581353cee5f0c99"
+  },
+  {
+    "name": "Tigre mannara",
+    "page": 377,
+    "sha256": "4a15cf5c4067a22dd5e8dbbe11aa65250d2d409633929bb9f3d5dc15fc94dddd"
+  },
+  {
+    "name": "Topo mannaro",
+    "page": 377,
+    "sha256": "105efb9c75f5c70b2ae9e802c573ae41956c73cb599f5a80a00c1d1a37de4447"
+  },
+  {
+    "name": "Treant",
+    "page": 377,
+    "sha256": "eea8893ce233cd38df3052e167892470c303e44bbc287f3550332c298f461298"
+  },
+  {
+    "name": "Troll",
+    "page": 378,
+    "sha256": "ecb632a59089ec5ea5ffc657be81b4f9db24c6e875ac316914dd89f875f75770"
+  },
+  {
+    "name": "Arto di troll",
+    "page": 378,
+    "sha256": "d44228fbba4e9dbce2cdb972a4535bb1c3202965e3b42f1a6f706b9bb8a312c5"
+  },
+  {
+    "name": "Uccello stigeo",
+    "page": 378,
+    "sha256": "7ad90a50401a6376e5b03a917ce0a3142256e5631dcb446a1f1c748ade469339"
+  },
+  {
+    "name": "Unicorno",
+    "page": 379,
+    "sha256": "51b35317a4d08b7662a8bf78bc657549629e9f9e70050e40b2a155e063dc2239"
+  },
+  {
+    "name": "Famiglio del vampiro",
+    "page": 379,
+    "sha256": "f4a76fdd75eee939e8b37643ef4ddfebb699e4123e2926505bb949cdd986e0fc"
+  },
+  {
+    "name": "Progenie vampirica",
+    "page": 380,
+    "sha256": "911dec231de7bdb06519d5de1dc2960ba3f221742fa885ce10d0c7c709d70704"
+  },
+  {
+    "name": "Vampiro",
+    "page": 380,
+    "sha256": "5f45f8de8b7f4360512b04ed5eadd39116425bfe1d43e8234cf97961da3a32c7"
+  },
+  {
+    "name": "Albero risvegliato",
+    "page": 381,
+    "sha256": "18a175e28425a1ec58d164dccce5b01b48095acc288c97867fa46682a04a0c95"
+  },
+  {
+    "name": "Cespuglio risvegliato",
+    "page": 381,
+    "sha256": "58413542c1fd462e29cb53f95e2b19ad77370d5ea521ce58c316e5ed16636fa1"
+  },
+  {
+    "name": "Verme purpureo",
+    "page": 382,
+    "sha256": "63b50807515da5bb3d4ccb81b23dd5178eca52ef363adf751e4668910c275269"
+  },
+  {
+    "name": "Viverna",
+    "page": 382,
+    "sha256": "27728ffaf82cf0b0969321517371140039118fcf27eda6eb0b6c2c74016c6f4d"
+  },
+  {
+    "name": "Vrock",
+    "page": 382,
+    "sha256": "8a115821232554eab72c94f3bdd57836ea32973e1f0bc7efdc41d1f6db250698"
+  },
+  {
+    "name": "Wight",
+    "page": 383,
+    "sha256": "0ee23c678d26b28fe1df75a8e2093e92e19634b0156d8c2511b859ad91998192"
+  },
+  {
+    "name": "Worg",
+    "page": 383,
+    "sha256": "847aae163532b030573046190b1b2cdbbbc78704432ec49f4ff0d7631fbc4a33"
+  },
+  {
+    "name": "Wraith",
+    "page": 383,
+    "sha256": "24864df301ba0e99d2d788acc003b4f341d19e86cca9a729c2965b9e3fcd2dce"
+  },
+  {
+    "name": "Xorn",
+    "page": 384,
+    "sha256": "3ce3d47b826b886f2aba79f071c4fb9b08bfdfe7297da64cd5593bc6142cd0bf"
+  },
+  {
+    "name": "Zombi",
+    "page": 384,
+    "sha256": "3b3402d009520e49ce7c12211e54ad200eff81033d4e5082b508b9e35ba83835"
+  },
+  {
+    "name": "Zombi ogre",
+    "page": 384,
+    "sha256": "143cf41847af155f41632c18a0fa45727e4491e0082902e950e85e2a16c21f06"
+  }
+]

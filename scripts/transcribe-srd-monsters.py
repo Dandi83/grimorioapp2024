@@ -39,7 +39,7 @@ def render(lines):
                 if runs and runs[-1][0]==style:runs[-1][1]+=text
                 else:runs.append([style,text])
         def runtext(txt): return re.sub(r'\s+',' ',txt.replace('\xad','').replace('−','-'))
-        result.append(''.join((f'<{tag}>'+html.escape(runtext(txt))+f'</{tag}>' if tag else html.escape(runtext(txt))) for tag,txt in runs).strip())
+        result.append(''.join((f'<{tag}>'+html.escape(runtext(txt),quote=False)+f'</{tag}>' if tag else html.escape(runtext(txt),quote=False)) for tag,txt in runs).strip())
     return '<br><br>'.join(result)
 
 def blocks(doc):
@@ -73,8 +73,7 @@ def parse(r):
     meta=text[0];match=re.match(r'(.+?) (Minuscola|Piccola|Media|Medio|Grande|Enorme|Mastodontica|Piccolo|Minuscolo|Mastodontico)(.*?), (.*)',meta)
     if not match:raise ValueError(('TYPE',r['name'],meta))
     tipo,size,extra,align=match.groups()
-    descriptors=' '.join(re.findall(r'\([^)]*\)',extra))
-    alternative=re.sub(r'\([^)]*\)','',extra).strip()
+    descriptors=re.sub(r'^\s*o\s+(?:Piccol[oa]|Medi[oa])','',extra).strip()
     m.update(tipo=(tipo+' '+descriptors).strip(),taglia={'Medio':'Media','Piccolo':'Piccola','Minuscolo':'Minuscola','Mastodontico':'Mastodontica'}.get(size,size),allineamento=align)
     m['sottotitolo_fonte']=meta
     ca=' '.join(text[1:3]);mat=re.search(r'CA (.*?)\s*Iniziativa\s*(.*?)(?: PF|$)',ca)
