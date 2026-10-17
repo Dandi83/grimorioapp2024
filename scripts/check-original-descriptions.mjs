@@ -11,6 +11,10 @@ const expected = ["dardo-stregato","duello-obbligato","evoca-pioggia-di-armi","e
 const dataUrl = new URL('lib/data/original-descriptions-2024.json', root);
 assert.ok(existsSync(dataUrl), 'The 39 empty spells need original, sourced descriptions');
 const data = JSON.parse(readFileSync(dataUrl, 'utf8'));
+const detailPage = readFileSync(new URL('app/spell/[id]/page.tsx', root), 'utf8');
+assert.ok(!detailPage.includes('Riferimento regole 2024'), 'Remove the rules reference link from all original summary pages');
+assert.ok(!detailPage.includes('Riscontro consultato'), 'Remove the consulted reference link from all original summary pages');
+assert.ok(detailPage.includes('Scheda completa dello spirito 2024'), 'Keep the required summoned spirit stat block links');
 const canonical = JSON.parse(readFileSync(new URL('lib/data/srd-italiano-5.2.1.json', root), 'utf8'));
 const legacy = JSON.parse(readFileSync(new URL('lib/data/srd-revisions-20261017.json', root), 'utf8'));
 function loadTs(relative) {

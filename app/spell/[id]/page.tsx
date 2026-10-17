@@ -153,11 +153,9 @@ export default async function SpellDetailPage({
       {original && (
         <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
           <p>* Sintesi originale delle regole 2024 — {original.sourceName}. Non è una trascrizione ufficiale.</p>
-          <p>
-            <a className="underline underline-offset-4" href={original.sourceUrl} target="_blank" rel="noreferrer">Riferimento regole 2024</a>
-            {" · "}<a className="underline underline-offset-4" href={original.referenceUrl} target="_blank" rel="noreferrer">Riscontro consultato</a>
-            {original.statBlockUrl && <>{" · "}<a className="underline underline-offset-4" href={original.statBlockUrl} target="_blank" rel="noreferrer">Scheda completa dello spirito 2024</a></>}
-          </p>
+          {original.statBlockUrl && (
+            <p><a className="underline underline-offset-4" href={original.statBlockUrl} target="_blank" rel="noreferrer">Scheda completa dello spirito 2024</a></p>
+          )}
         </aside>
       )}
       {source && (
