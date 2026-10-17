@@ -2,8 +2,8 @@
 
 Richiesta autorizzata: integrazione nativa confermata da Daniele il 17 ottobre 2026. Solo preview.
 
-- Preview verificata: https://grimorioapp2024-9efhutb3z-grimorio-app.vercel.app/bestiario
-- Commit applicativo verificato: ad4f1539a94499e4bf77033cd13cc0452e92c43f.
+- Preview verificata: https://grimorioapp2024-b6puniyy6-grimorio-app.vercel.app/bestiario
+- Commit applicativo verificato: 2f90649cc78975376e577099fc6ade6b14299852.
 - Branch: preview/mostri-srd-235-20261017.
 - Produzione invariata: e79551b41bbd19ed56a2966e6917c73a1790a5c8, deployment dpl_A5x5NQKCV9Z4VE96eq7G6juwdfDD.
 - 235 schede uniche dalle pagine 294–384, Aboleth compreso. Esclusi animali e sei blocchi speciali.
@@ -45,3 +45,11 @@ La prima esecuzione ha rilevato che la pagina preesistente caricava soltanto gli
 - Browser sulla nuova preview: aggiunta Orda di artigli striscianti, presenza nella pagina Preferiti, persistenza dopo ricarica, rimozione e ripristino dello stato iniziale 0 incantesimi / 0 mostri.
 - Nessun dato di test lasciato nei preferiti. Produzione non pubblicata.
 - Rimane non verificato soltanto il layout mobile a 390/430 px e su dispositivo fisico.
+
+## Ordinamento dei preferiti richiesto
+
+- Incantesimi in ordine di livello crescente: trucchetti, poi livelli 1–9.
+- Mostri in ordine di grado sfida numerico crescente, comprese le frazioni 1/8, 1/4, 1/2.
+- Parità: ordine alfabetico italiano; valori sconosciuti in fondo.
+- Ordinamento applicato solo alla visualizzazione, senza modificare array ricevuti, ID o localStorage.
+- Test di regressione eseguito prima della modifica (RED ordine entrante), poi GREEN ordinamento numerico e parità alfabetiche; suite completa e build webpack superate.
