@@ -6,6 +6,8 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { HtmlText } from "@/components/html-text";
 import { getMonsterById } from "@/lib/monsters";
 import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
+import { getSrdMonsterSource } from "@/lib/srd-monsters";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +87,7 @@ export default async function MonsterDetailPage({
   if (!monster) notFound();
 
   const color = monsterColor(monster.tipo);
+  const source = getSrdMonsterSource(monster);
   const sottotitolo = [monster.taglia, monster.tipo, monster.allineamento]
     .filter(Boolean)
     .join(" · ");
@@ -137,6 +140,8 @@ export default async function MonsterDetailPage({
         <MetaCell label="Punti Ferita" value={monster.punti_ferita} />
         <MetaCell label="Velocità" value={monster.velocita} />
         <MetaCell label="Grado Sfida" value={monster.grado_sfida} />
+        {monster.iniziativa && <MetaCell label="Iniziativa" value={monster.iniziativa} />}
+        {monster.bonus_competenza && <MetaCell label="Bonus di competenza" value={monster.bonus_competenza} />}
       </div>
 
       {/* Caratteristiche */}
@@ -183,6 +188,14 @@ export default async function MonsterDetailPage({
       <Section title="Reazioni" html={monster.reazioni} />
       <Section title="Azioni Leggendarie" html={monster.azioni_leggendarie} />
       <Section title="Descrizione" html={monster.descrizione} />
+      {source && (
+        <aside aria-label="Fonte della scheda" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+          <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>
+          <a className="underline underline-offset-4" href={`${source.sourceUrl}#page=${source.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {source.page}</a>
+          {" · "}
+          <Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
+        </aside>
+      )}
     </article>
   );
 }

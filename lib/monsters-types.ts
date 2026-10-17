@@ -10,6 +10,8 @@ export interface Monster {
   grado_sfida: string;
   px: string;
   classe_armatura: string;
+  iniziativa?: string;
+  bonus_competenza?: string;
   punti_ferita: string;
   velocita: string;
   forza: number;
