@@ -42,9 +42,9 @@ def render(lines):
         result.append(''.join((f'<{tag}>'+html.escape(runtext(txt),quote=False)+f'</{tag}>' if tag else html.escape(runtext(txt),quote=False)) for tag,txt in runs).strip())
     return '<br><br>'.join(result)
 
-def blocks(doc):
+def blocks(doc, first=294, last=384):
     records=[];current=None
-    for pi in range(293,384):
+    for pi in range(first-1,last):
         p=doc[pi]
         native=[l for b in p.get_text('dict')['blocks'] for l in b.get('lines',[]) if 30<l['bbox'][1]<735]
         for col in [0,1]:

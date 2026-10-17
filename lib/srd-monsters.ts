@@ -1,8 +1,9 @@
 import sample from "./data/srd-monster-sample.json";
 import data from "./data/srd-monsters-5.2.1-it.json";
+import animals from "./data/srd-animals-5.2.1-it.json";
 import type { Monster } from "./monsters-types";
 
-const previewRecords = data.records;
+const previewRecords = [...data.records, ...animals.records];
 const recordsById = new Map(previewRecords.map(record => [record.monster.id, record]));
 function available(environment: string | undefined): Monster[] {
   if (environment === "preview") return previewRecords.map(record => record.monster);

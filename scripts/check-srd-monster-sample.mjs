@@ -21,7 +21,7 @@ assert.equal(previewMonsterById('aboleth','production')?.nome,'Aboleth','Publish
 assert.equal(previewMonsterById('aboleth',undefined),undefined);
 assert.equal(previewMonsterById('unknown','preview'),undefined);
 const staged=previewMonsters(rows,'preview');
-assert.equal(staged.length,236);
+assert.equal(staged.length,331);
 assert.equal(rows.length,1);
 assert.equal(staged.find(m=>m.id==='goblin'),goblin);
 const sample=previewMonsterById('aboleth','preview');
@@ -44,14 +44,14 @@ assert.equal(getSrdMonsterSource(sample).page,294);
 assert.equal(getSrdMonsterSource({...sample,azioni:'Custom edit'}),undefined,'Edited content must not be labeled as an exact SRD transcription');
 const custom={...sample,azioni:'Custom edit'};
 assert.equal(previewMonsters([goblin,custom],'preview').find(m=>m.id==='aboleth'),custom);
-assert.equal(previewMonsters([goblin,custom],'preview').length,236);
+assert.equal(previewMonsters([goblin,custom],'preview').length,331);
 assert.equal(previewMonsters([goblin,custom],'production').find(m=>m.id==='aboleth'),custom);
 
 // Render the real detail page: a missing PX label must fail this assertion.
 function loadTs(relativePath, dependencies={}) {
   const output=ts.transpileModule(readFileSync(new URL(relativePath,import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
   const loaded={exports:{}};
-  new Function('require','module','exports',output)(id=>dependencies[id]??require(id),loaded,loaded.exports);
+  new Function('require','module','exports',output)(id=>dependencies[id]??createRequire(new URL(relativePath,import.meta.url))(id),loaded,loaded.exports);
   return loaded.exports;
 }
 let selected=sample;
@@ -59,6 +59,8 @@ const page=loadTs('../app/mostro/[id]/page.tsx',{
   'next/image':{__esModule:true,default:()=>null},
   'next/link':{__esModule:true,default:({children,...props})=>createElement('a',props,children)},
   'next/navigation':{notFound:()=>{throw new Error('Not found');}},
+  '@/components/condition-references':{ConditionReferences:()=>null},
+  '@/components/spell-references':{SpellReferences:()=>null},
   '@/components/back-button':{BackButton:()=>null},
   '@/components/favorite-button':{FavoriteButton:()=>null},
   '@/components/html-text':loadTs('../components/html-text.tsx'),

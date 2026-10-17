@@ -1,0 +1,382 @@
+[
+  {
+    "name": "Alce",
+    "page": 385
+  },
+  {
+    "name": "Alce gigante",
+    "page": 385
+  },
+  {
+    "name": "Allosauro",
+    "page": 385
+  },
+  {
+    "name": "Anchilosauro",
+    "page": 385
+  },
+  {
+    "name": "Aquila",
+    "page": 385
+  },
+  {
+    "name": "Aquila gigante",
+    "page": 386
+  },
+  {
+    "name": "Archelon",
+    "page": 386
+  },
+  {
+    "name": "Avvoltoio",
+    "page": 386
+  },
+  {
+    "name": "Avvoltoio gigante",
+    "page": 386
+  },
+  {
+    "name": "Babbuino",
+    "page": 386
+  },
+  {
+    "name": "Banco di piranha",
+    "page": 387
+  },
+  {
+    "name": "Cammello",
+    "page": 387
+  },
+  {
+    "name": "Capra",
+    "page": 387
+  },
+  {
+    "name": "Capra gigante",
+    "page": 387
+  },
+  {
+    "name": "Cavallo da galoppo",
+    "page": 387
+  },
+  {
+    "name": "Cavallo da guerra",
+    "page": 388
+  },
+  {
+    "name": "Cavallo da tiro",
+    "page": 388
+  },
+  {
+    "name": "Cavalluccio marino",
+    "page": 388
+  },
+  {
+    "name": "Cavalluccio marino gigante",
+    "page": 388
+  },
+  {
+    "name": "Cinghiale",
+    "page": 388
+  },
+  {
+    "name": "Cinghiale gigante",
+    "page": 389
+  },
+  {
+    "name": "Coccodrillo",
+    "page": 389
+  },
+  {
+    "name": "Coccodrillo gigante",
+    "page": 389
+  },
+  {
+    "name": "Colonia di serpenti velenosi",
+    "page": 389
+  },
+  {
+    "name": "Colonia di topi",
+    "page": 390
+  },
+  {
+    "name": "Corvo",
+    "page": 390
+  },
+  {
+    "name": "Daino",
+    "page": 390
+  },
+  {
+    "name": "Elefante",
+    "page": 390
+  },
+  {
+    "name": "Faina",
+    "page": 391
+  },
+  {
+    "name": "Faina gigante",
+    "page": 391
+  },
+  {
+    "name": "Falco",
+    "page": 391
+  },
+  {
+    "name": "Falco di sangue",
+    "page": 391
+  },
+  {
+    "name": "Gatto",
+    "page": 391
+  },
+  {
+    "name": "Gorilla",
+    "page": 392
+  },
+  {
+    "name": "Gorilla gigante",
+    "page": 392
+  },
+  {
+    "name": "Granchio",
+    "page": 392
+  },
+  {
+    "name": "Granchio gigante",
+    "page": 392
+  },
+  {
+    "name": "Gufo",
+    "page": 392
+  },
+  {
+    "name": "Gufo gigante",
+    "page": 393
+  },
+  {
+    "name": "Iena",
+    "page": 393
+  },
+  {
+    "name": "Iena gigante",
+    "page": 393
+  },
+  {
+    "name": "Ippopotamo",
+    "page": 393
+  },
+  {
+    "name": "Leone",
+    "page": 394
+  },
+  {
+    "name": "Lucertola",
+    "page": 394
+  },
+  {
+    "name": "Lucertola gigante",
+    "page": 394
+  },
+  {
+    "name": "Lupo",
+    "page": 394
+  },
+  {
+    "name": "Lupo feroce",
+    "page": 394
+  },
+  {
+    "name": "Mammut",
+    "page": 395
+  },
+  {
+    "name": "Mastino",
+    "page": 395
+  },
+  {
+    "name": "Millepiedi gigante",
+    "page": 395
+  },
+  {
+    "name": "Mulo",
+    "page": 395
+  },
+  {
+    "name": "Orca assassina",
+    "page": 396
+  },
+  {
+    "name": "Orso bruno",
+    "page": 396
+  },
+  {
+    "name": "Orso nero",
+    "page": 396
+  },
+  {
+    "name": "Orso polare",
+    "page": 396
+  },
+  {
+    "name": "Pantera",
+    "page": 396
+  },
+  {
+    "name": "Piovra",
+    "page": 397
+  },
+  {
+    "name": "Piovra gigante",
+    "page": 397
+  },
+  {
+    "name": "Pipistrello",
+    "page": 397
+  },
+  {
+    "name": "Pipistrello gigante",
+    "page": 397
+  },
+  {
+    "name": "Piranha",
+    "page": 397
+  },
+  {
+    "name": "Plesiosauro",
+    "page": 398
+  },
+  {
+    "name": "Pony",
+    "page": 398
+  },
+  {
+    "name": "Pteranodonte",
+    "page": 398
+  },
+  {
+    "name": "Ragno",
+    "page": 398
+  },
+  {
+    "name": "Ragno gigante",
+    "page": 399
+  },
+  {
+    "name": "Ragno lupo gigante",
+    "page": 399
+  },
+  {
+    "name": "Rana",
+    "page": 399
+  },
+  {
+    "name": "Rana gigante",
+    "page": 399
+  },
+  {
+    "name": "Rinoceronte",
+    "page": 400
+  },
+  {
+    "name": "Rospo gigante",
+    "page": 400
+  },
+  {
+    "name": "Scarabeo di fuoco gigante",
+    "page": 400
+  },
+  {
+    "name": "Sciacallo",
+    "page": 400
+  },
+  {
+    "name": "Sciame di insetti",
+    "page": 401
+  },
+  {
+    "name": "Sciame di pipistrelli",
+    "page": 401
+  },
+  {
+    "name": "Scorpione",
+    "page": 401
+  },
+  {
+    "name": "Scorpione gigante",
+    "page": 401
+  },
+  {
+    "name": "Serpente stritolatore",
+    "page": 401
+  },
+  {
+    "name": "Serpente stritolatore gigante",
+    "page": 402
+  },
+  {
+    "name": "Serpente velenoso",
+    "page": 402
+  },
+  {
+    "name": "Serpente velenoso gigante",
+    "page": 402
+  },
+  {
+    "name": "Serpente volante",
+    "page": 402
+  },
+  {
+    "name": "Squalo cacciatore",
+    "page": 402
+  },
+  {
+    "name": "Squalo gigante",
+    "page": 403
+  },
+  {
+    "name": "Squalo tropicale",
+    "page": 403
+  },
+  {
+    "name": "Stormo di corvi",
+    "page": 403
+  },
+  {
+    "name": "Tasso",
+    "page": 403
+  },
+  {
+    "name": "Tasso gigante",
+    "page": 404
+  },
+  {
+    "name": "Tigre",
+    "page": 404
+  },
+  {
+    "name": "Tigre dai denti a sciabola",
+    "page": 404
+  },
+  {
+    "name": "Tirannosauro",
+    "page": 404
+  },
+  {
+    "name": "Topo",
+    "page": 405
+  },
+  {
+    "name": "Topo gigante",
+    "page": 405
+  },
+  {
+    "name": "Triceratopo",
+    "page": 405
+  },
+  {
+    "name": "Vespa gigante",
+    "page": 405
+  }
+]

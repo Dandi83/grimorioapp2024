@@ -10,18 +10,20 @@ export const metadata = {
 export default async function BestiarioPage({
   searchParams,
 }: {
-  searchParams: Promise<{ taglia?: string; tipo?: string; gs?: string }>;
+  searchParams: Promise<{ taglia?: string; tipo?: string; gs?: string; raccolta?: string }>;
 }) {
   const sp = await searchParams;
   const monsters = await getAllMonsters();
 
   return (
     <BestiarioBrowser
+      showCollections={process.env.VERCEL_ENV === "preview"}
       monsters={monsters}
       meta={computeMonstersMeta(monsters)}
       initialTaglia={sp.taglia || null}
       initialTipo={sp.tipo || null}
       initialGs={sp.gs || null}
+      initialRaccolta={sp.raccolta === "animali" || sp.raccolta === "mostri" ? sp.raccolta : null}
     />
   );
 }

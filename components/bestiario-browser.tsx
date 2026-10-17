@@ -6,12 +6,13 @@ import { ChevronDown, Search, Skull, X } from "lucide-react";
 import { MonsterRow } from "@/components/monster-row";
 import {
   gsLabel,
+  isSrdAnimal,
   typeCategory,
   type Monster,
   type MonstersMeta,
 } from "@/lib/monsters-types";
 
-type FilterKind = "taglia" | "tipo" | "gs" | null;
+type FilterKind = "taglia" | "tipo" | "gs" | "raccolta" | null;
 
 interface Props {
   monsters: Monster[];
@@ -19,6 +20,8 @@ interface Props {
   initialTaglia: string | null;
   initialTipo: string | null;
   initialGs: string | null;
+  showCollections?: boolean;
+  initialRaccolta?: "mostri" | "animali" | null;
 }
 
 export function BestiarioBrowser({
@@ -27,7 +30,10 @@ export function BestiarioBrowser({
   initialTaglia,
   initialTipo,
   initialGs,
+  initialRaccolta,
+  showCollections = false,
 }: Props) {
+  const [raccolta, setRaccolta] = useState<"mostri" | "animali" | null>(showCollections ? initialRaccolta || null : null);
   const [q, setQ] = useState("");
   const [taglia, setTaglia] = useState<string | null>(initialTaglia);
   const [tipo, setTipo] = useState<string | null>(initialTipo);
@@ -37,6 +43,7 @@ export function BestiarioBrowser({
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase();
     const filtered = monsters.filter((m) => {
+      if (raccolta && (isSrdAnimal(m) ? "animali" : "mostri") !== raccolta) return false;
       if (needle && !m.nome.toLowerCase().includes(needle)) return false;
       if (taglia && m.taglia !== taglia) return false;
       if (tipo && typeCategory(m.tipo) !== tipo) return false;
@@ -50,11 +57,12 @@ export function BestiarioBrowser({
       if (d !== 0) return d;
       return a.nome.localeCompare(b.nome, "it");
     });
-  }, [monsters, q, taglia, tipo, gs]);
+  }, [monsters, q, taglia, tipo, gs, raccolta]);
 
-  const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0);
+  const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0) + (raccolta ? 1 : 0);
 
   const clearFilters = () => {
+    setRaccolta(null);
     setTaglia(null);
     setTipo(null);
     setGs(null);
@@ -93,6 +101,7 @@ export function BestiarioBrowser({
 
         {/* Filter chips */}
         <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
+          {showCollections && <Chip label={raccolta === "animali" ? "Animali" : raccolta === "mostri" ? "Mostri A–Z" : "Raccolta"} active={!!raccolta} caret onClick={() => setOpenFilter(openFilter === "raccolta" ? null : "raccolta")} />}
           <Chip
             label={gs ? gsLabel(gs) : "Grado sfida"}
             active={!!gs}
@@ -121,6 +130,7 @@ export function BestiarioBrowser({
         {/* Expanded options */}
         {openFilter && (
           <div className="no-scrollbar -mx-6 mt-2 flex gap-2 overflow-x-auto border-t border-divider bg-card px-6 py-3">
+            {openFilter === "raccolta" && ([{value:null,label:"Tutti"},{value:"mostri",label:"Mostri A–Z"},{value:"animali",label:"Animali"}] as const).map(option => <Option key={option.label} label={option.label} active={raccolta===option.value} onClick={() => {setRaccolta(option.value);setOpenFilter(null);}}/>)}
             {openFilter === "gs" &&
               meta.gradi.map((g) => (
                 <Option

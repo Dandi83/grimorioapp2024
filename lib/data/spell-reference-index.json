@@ -1,0 +1,1358 @@
+[
+  {
+    "id": "danza-irresistibile-di-otto",
+    "name": "Danza irresistibile"
+  },
+  {
+    "id": "dardo-tracciante",
+    "name": "Dardo tracciante"
+  },
+  {
+    "id": "desiderio",
+    "name": "Desiderio"
+  },
+  {
+    "id": "destriero-fantomatico",
+    "name": "Destriero fantomatico"
+  },
+  {
+    "id": "disco-fluttuante-di-tenser",
+    "name": "Disco fluttuante"
+  },
+  {
+    "id": "disintegrazione",
+    "name": "Disintegrazione"
+  },
+  {
+    "id": "disorientare",
+    "name": "Disorientare"
+  },
+  {
+    "id": "dissolvi-il-bene-e-il-male",
+    "name": "Dissolvi il bene e il male"
+  },
+  {
+    "id": "dissolvi-magie",
+    "name": "Dissolvi magie"
+  },
+  {
+    "id": "dito-della-morte",
+    "name": "Dito della morte"
+  },
+  {
+    "id": "divinazione",
+    "name": "Divinazione"
+  },
+  {
+    "id": "dominare-bestie",
+    "name": "Dominare bestie"
+  },
+  {
+    "id": "dominare-mostri",
+    "name": "Dominare mostri"
+  },
+  {
+    "id": "dominare-persone",
+    "name": "Dominare persone"
+  },
+  {
+    "id": "elementalismo",
+    "name": "Elementalismo"
+  },
+  {
+    "id": "eroismo",
+    "name": "Eroismo"
+  },
+  {
+    "id": "esplosione-solare",
+    "name": "Esplosione solare"
+  },
+  {
+    "id": "estasiare",
+    "name": "Estasiare"
+  },
+  {
+    "id": "evoca-animali",
+    "name": "Evoca animali"
+  },
+  {
+    "id": "evoca-celestiale",
+    "name": "Evoca celestiale"
+  },
+  {
+    "id": "evoca-creature-boschive",
+    "name": "Evoca creature boschive"
+  },
+  {
+    "id": "evoca-elementale",
+    "name": "Evoca elementale"
+  },
+  {
+    "id": "evoca-elementali-minori",
+    "name": "Evoca elementali minori"
+  },
+  {
+    "id": "evoca-folletto",
+    "name": "Evoca folletto"
+  },
+  {
+    "id": "evocazioni-istantanee-di-drawmij",
+    "name": "Evocazioni istantanee"
+  },
+  {
+    "id": "fabbricare",
+    "name": "Fabbricare"
+  },
+  {
+    "id": "faro-di-speranza",
+    "name": "Faro di speranza"
+  },
+  {
+    "id": "fatale",
+    "name": "Fatale"
+  },
+  {
+    "id": "favore-divino",
+    "name": "Favore divino"
+  },
+  {
+    "id": "ferire",
+    "name": "Ferire"
+  },
+  {
+    "id": "fermare-il-tempo",
+    "name": "Fermare il tempo"
+  },
+  {
+    "id": "fiamma-perenne",
+    "name": "Fiamma perenne"
+  },
+  {
+    "id": "fiamma-sacra",
+    "name": "Fiamma sacra"
+  },
+  {
+    "id": "folata-di-vento",
+    "name": "Folata di vento"
+  },
+  {
+    "id": "fondersi-nella-pietra",
+    "name": "Fondersi nella pietra"
+  },
+  {
+    "id": "forma-eterea",
+    "name": "Forma eterea"
+  },
+  {
+    "id": "forma-gassosa",
+    "name": "Forma gassosa"
+  },
+  {
+    "id": "frantumare",
+    "name": "Frantumare"
+  },
+  {
+    "id": "freccia-acida-di-melf",
+    "name": "Freccia acida"
+  },
+  {
+    "id": "fulmine",
+    "name": "Fulmine"
+  },
+  {
+    "id": "fuorviare",
+    "name": "Fuorviare"
+  },
+  {
+    "id": "gabbia-di-forza",
+    "name": "Gabbia di forza"
+  },
+  {
+    "id": "giara-magica",
+    "name": "Giara magica"
+  },
+  {
+    "id": "glifo-di-interdizione",
+    "name": "Glifo di interdizione"
+  },
+  {
+    "id": "globo-cromatico",
+    "name": "Globo cromatico"
+  },
+  {
+    "id": "globo-di-invulnerabilita",
+    "name": "Globo di invulnerabilità"
+  },
+  {
+    "id": "guardiani-spirituali",
+    "name": "Guardiani spirituali"
+  },
+  {
+    "id": "guardiano-della-fede",
+    "name": "Guardiano della fede"
+  },
+  {
+    "id": "guarigione",
+    "name": "Guarigione"
+  },
+  {
+    "id": "guarigione-di-massa",
+    "name": "Guarigione di massa"
+  },
+  {
+    "id": "guida",
+    "name": "Guida"
+  },
+  {
+    "id": "i-re-spirare-sott-acqua-2",
+    "name": "Respirare sott'acqua"
+  },
+  {
+    "id": "identificare",
+    "name": "Identificare"
+  },
+  {
+    "id": "illusione-minore",
+    "name": "Illusione minore"
+  },
+  {
+    "id": "illusione-programmata",
+    "name": "Illusione programmata"
+  },
+  {
+    "id": "immagine-maggiore",
+    "name": "Immagine maggiore"
+  },
+  {
+    "id": "immagine-proiettata",
+    "name": "Immagine proiettata"
+  },
+  {
+    "id": "immagine-silenziosa",
+    "name": "Immagine silenziosa"
+  },
+  {
+    "id": "immagine-speculare",
+    "name": "Immagine speculare"
+  },
+  {
+    "id": "imprigionare",
+    "name": "Imprigionare"
+  },
+  {
+    "id": "inaridire",
+    "name": "Inaridire"
+  },
+  {
+    "id": "individuazione-dei-pensieri",
+    "name": "Individuazione dei pensieri"
+  },
+  {
+    "id": "individuazione-del-bene-e-del-male",
+    "name": "Individuazione del bene e del male"
+  },
+  {
+    "id": "individuazione-del-magico",
+    "name": "Individuazione del magico"
+  },
+  {
+    "id": "infliggi-ferite",
+    "name": "Infliggi ferite"
+  },
+  {
+    "id": "ingrandire-ridurre",
+    "name": "Ingrandire/ridurre"
+  },
+  {
+    "id": "insetto-gigante",
+    "name": "Insetto gigante"
+  },
+  {
+    "id": "interdizione-alla-morte",
+    "name": "Interdizione alla morte"
+  },
+  {
+    "id": "intermittenza",
+    "name": "Intermittenza"
+  },
+  {
+    "id": "intimorire-infernale",
+    "name": "Intimorire infernale"
+  },
+  {
+    "id": "intralciare",
+    "name": "Intralciare"
+  },
+  {
+    "id": "inversione-della-gravita",
+    "name": "Inversione della gravità"
+  },
+  {
+    "id": "inviare",
+    "name": "Inviare"
+  },
+  {
+    "id": "invisibilita",
+    "name": "Invisibilità"
+  },
+  {
+    "id": "invocare-il-fulmine",
+    "name": "Invocare il fulmine"
+  },
+  {
+    "id": "labirinto",
+    "name": "Labirinto"
+  },
+  {
+    "id": "lama-infuocata",
+    "name": "Lama infuocata"
+  },
+  {
+    "id": "legame-planare",
+    "name": "Legame planare"
+  },
+  {
+    "id": "legame-telepatico-di-rary",
+    "name": "Legame telepatico"
+  },
+  {
+    "id": "lentezza",
+    "name": "Lentezza"
+  },
+  {
+    "id": "liberta-di-movimento",
+    "name": "Libertà di movimento"
+  },
+  {
+    "id": "linguaggi",
+    "name": "Linguaggi"
+  },
+  {
+    "id": "localizza-animali-o-vegetali",
+    "name": "Localizza animali o vegetali"
+  },
+  {
+    "id": "localizza-creatura",
+    "name": "Localizza creatura"
+  },
+  {
+    "id": "localizza-oggetto",
+    "name": "Localizza oggetto"
+  },
+  {
+    "id": "loquacita",
+    "name": "Loquacità"
+  },
+  {
+    "id": "luce",
+    "name": "Luce"
+  },
+  {
+    "id": "luce-diurna",
+    "name": "Luce diurna"
+  },
+  {
+    "id": "luce-splendente",
+    "name": "Luce splendente"
+  },
+  {
+    "id": "luci-danzanti",
+    "name": "Luci danzanti"
+  },
+  {
+    "id": "luminescenza",
+    "name": "Luminescenza"
+  },
+  {
+    "id": "mani-brucianti",
+    "name": "Mani brucianti"
+  },
+  {
+    "id": "mano-di-bigby",
+    "name": "Mano arcana"
+  },
+  {
+    "id": "mano-magica",
+    "name": "Mano magica"
+  },
+  {
+    "id": "marchio-del-cacciatore",
+    "name": "Marchio del cacciatore"
+  },
+  {
+    "id": "messaggio",
+    "name": "Messaggio"
+  },
+  {
+    "id": "metamorfosi",
+    "name": "Metamorfosi"
+  },
+  {
+    "id": "metamorfosi-pura",
+    "name": "Metamorfosi pura"
+  },
+  {
+    "id": "miraggio-arcano",
+    "name": "Miraggio arcano"
+  },
+  {
+    "id": "modificare-memoria",
+    "name": "Modificare memoria"
+  },
+  {
+    "id": "movimenti-del-ragno",
+    "name": "Movimenti del ragno"
+  },
+  {
+    "id": "muovere-il-terreno",
+    "name": "Muovere il terreno"
+  },
+  {
+    "id": "muro-di-forza",
+    "name": "Muro di forza"
+  },
+  {
+    "id": "muro-di-ghiaccio",
+    "name": "Muro di ghiaccio"
+  },
+  {
+    "id": "muro-di-pietra",
+    "name": "Muro di pietra"
+  },
+  {
+    "id": "muro-di-spine",
+    "name": "Muro di spine"
+  },
+  {
+    "id": "muro-di-vento",
+    "name": "Muro di vento"
+  },
+  {
+    "id": "muro-prismatico",
+    "name": "Muro prismatico"
+  },
+  {
+    "id": "nube-di-nebbia",
+    "name": "Nube di nebbia"
+  },
+  {
+    "id": "nube-incendiaria",
+    "name": "Nube incendiaria"
+  },
+  {
+    "id": "nube-maleodorante",
+    "name": "Nube maleodorante"
+  },
+  {
+    "id": "nube-mortale",
+    "name": "Nube mortale"
+  },
+  {
+    "id": "occhio-arcano",
+    "name": "Occhio arcano"
+  },
+  {
+    "id": "onda-tonante",
+    "name": "Onda tonante"
+  },
+  {
+    "id": "oscurita",
+    "name": "Oscurità"
+  },
+  {
+    "id": "parlare-con-gli-animali",
+    "name": "Parlare con gli animali"
+  },
+  {
+    "id": "parlare-con-i-morti",
+    "name": "Parlare con i morti"
+  },
+  {
+    "id": "parlare-con-i-vegetali",
+    "name": "Parlare con i vegetali"
+  },
+  {
+    "id": "parola-del-potere-guarire",
+    "name": "Parola del potere guarire"
+  },
+  {
+    "id": "parola-del-potere-stordire",
+    "name": "Parola del potere stordire"
+  },
+  {
+    "id": "parola-del-potere-uccidere",
+    "name": "Parola del potere uccidere"
+  },
+  {
+    "id": "parola-del-ritiro",
+    "name": "Parola del ritiro"
+  },
+  {
+    "id": "parola-divina",
+    "name": "Parola divina"
+  },
+  {
+    "id": "parola-guaritrice-di-massa",
+    "name": "Parola guaritrice di massa"
+  },
+  {
+    "id": "passapareti",
+    "name": "Passapareti"
+  },
+  {
+    "id": "passare-senza-tracce",
+    "name": "Passare senza tracce"
+  },
+  {
+    "id": "passo-velato",
+    "name": "Passo velato"
+  },
+  {
+    "id": "passo-veloce",
+    "name": "Passo veloce"
+  },
+  {
+    "id": "paura",
+    "name": "Paura"
+  },
+  {
+    "id": "pelle-coriacea",
+    "name": "Pelle coriacea"
+  },
+  {
+    "id": "pelle-di-pietra",
+    "name": "Pelle di pietra"
+  },
+  {
+    "id": "piaga-degli-insetti",
+    "name": "Piaga degli insetti"
+  },
+  {
+    "id": "porta-dimensionale",
+    "name": "Porta dimensionale"
+  },
+  {
+    "id": "portale",
+    "name": "Portale"
+  },
+  {
+    "id": "preghiera-di-guarigione",
+    "name": "Preghiera di guarigione"
+  },
+  {
+    "id": "presagio",
+    "name": "Presagio"
+  },
+  {
+    "id": "prestidigitazione",
+    "name": "Prestidigitazione"
+  },
+  {
+    "id": "previsione",
+    "name": "Previsione"
+  },
+  {
+    "id": "produrre-fiamma",
+    "name": "Produrre fiamma"
+  },
+  {
+    "id": "proibizione",
+    "name": "Proibizione"
+  },
+  {
+    "id": "proiezione-astrale",
+    "name": "Proiezione astrale"
+  },
+  {
+    "id": "protezione-dai-veleni",
+    "name": "Protezione dai veleni"
+  },
+  {
+    "id": "protezione-dal-bene-e-dal-male",
+    "name": "Protezione dal bene e dal male"
+  },
+  {
+    "id": "protezione-dall-energia",
+    "name": "Protezione dall'energia"
+  },
+  {
+    "id": "punizione-divina",
+    "name": "Punizione divina"
+  },
+  {
+    "id": "punizione-incandescente",
+    "name": "Punizione incandescente"
+  },
+  {
+    "id": "punizione-splendente",
+    "name": "Punizione splendente"
+  },
+  {
+    "id": "purificare-cibo-e-bevande",
+    "name": "Purificare cibo e bevande"
+  },
+  {
+    "id": "raggio-di-affaticamento",
+    "name": "Raggio di affaticamento"
+  },
+  {
+    "id": "raggio-di-gelo",
+    "name": "Raggio di gelo"
+  },
+  {
+    "id": "raggio-di-infermita",
+    "name": "Raggio di infermità"
+  },
+  {
+    "id": "raggio-rovente",
+    "name": "Raggio rovente"
+  },
+  {
+    "id": "randello-incantato",
+    "name": "Randello incantato"
+  },
+  {
+    "id": "reggia-meravigliosa-di-mordenkainen",
+    "name": "Reggia meravigliosa"
+  },
+  {
+    "id": "reincarnazione",
+    "name": "Reincarnazione"
+  },
+  {
+    "id": "resistenza",
+    "name": "Resistenza"
+  },
+  {
+    "id": "resurrezione",
+    "name": "Resurrezione"
+  },
+  {
+    "id": "resurrezione-pura",
+    "name": "Resurrezione pura"
+  },
+  {
+    "id": "rianimare-morti",
+    "name": "Rianimare morti"
+  },
+  {
+    "id": "richiama-drago",
+    "name": "Richiama drago"
+  },
+  {
+    "id": "rigenerazione",
+    "name": "Rigenerazione"
+  },
+  {
+    "id": "rimuovi-maledizione",
+    "name": "Rimuovi maledizione"
+  },
+  {
+    "id": "rinascita",
+    "name": "Rinascita"
+  },
+  {
+    "id": "riparare",
+    "name": "Riparare"
+  },
+  {
+    "id": "riposo-inviolato",
+    "name": "Riposo inviolato"
+  },
+  {
+    "id": "risata-incontenibile-di-tasha",
+    "name": "Risata incontenibile"
+  },
+  {
+    "id": "riscaldare-il-metallo",
+    "name": "Riscaldare il metallo"
+  },
+  {
+    "id": "ristorare-inferiore",
+    "name": "Ristorare inferiore"
+  },
+  {
+    "id": "ristorare-superiore",
+    "name": "Ristorare superiore"
+  },
+  {
+    "id": "risveglio",
+    "name": "Risveglio"
+  },
+  {
+    "id": "ritirata-rapida",
+    "name": "Ritirata rapida"
+  },
+  {
+    "id": "salvare-i-morenti",
+    "name": "Salvare i morenti"
+  },
+  {
+    "id": "santificare",
+    "name": "Santificare"
+  },
+  {
+    "id": "santuario",
+    "name": "Santuario"
+  },
+  {
+    "id": "santuario-privato-di-mordenkainen",
+    "name": "Santuario privato"
+  },
+  {
+    "id": "scagliare-maledizione",
+    "name": "Scagliare maledizione"
+  },
+  {
+    "id": "scassinare",
+    "name": "Scassinare"
+  },
+  {
+    "id": "sciame-di-meteore",
+    "name": "Sciame di meteore"
+  },
+  {
+    "id": "scolpire-pietra",
+    "name": "Scolpire pietra"
+  },
+  {
+    "id": "scopri-il-percorso",
+    "name": "Scopri il percorso"
+  },
+  {
+    "id": "scopri-trappole",
+    "name": "Scopri trappole"
+  },
+  {
+    "id": "scrigno-segreto-di-leomund",
+    "name": "Scrigno segreto"
+  },
+  {
+    "id": "scrutare",
+    "name": "Scrutare"
+  },
+  {
+    "id": "scudo",
+    "name": "Scudo"
+  },
+  {
+    "id": "scudo-della-fede",
+    "name": "Scudo della fede"
+  },
+  {
+    "id": "scurovisione",
+    "name": "Scurovisione"
+  },
+  {
+    "id": "segugio-fedele-di-mordenkainen",
+    "name": "Segugio fedele"
+  },
+  {
+    "id": "sembrare",
+    "name": "Sembrare"
+  },
+  {
+    "id": "semipiano",
+    "name": "Semipiano"
+  },
+  {
+    "id": "serratura-arcana",
+    "name": "Serratura arcana"
+  },
+  {
+    "id": "servitore-inosservato",
+    "name": "Servitore inosservato"
+  },
+  {
+    "id": "sfera-al-vetriolo",
+    "name": "Sfera al vetriolo"
+  },
+  {
+    "id": "sfera-congelante-di-0tiluke",
+    "name": "Sfera congelante"
+  },
+  {
+    "id": "sfera-elastica-di-0tiluke",
+    "name": "Sfera elastica"
+  },
+  {
+    "id": "sfera-infuocata",
+    "name": "Sfera infuocata"
+  },
+  {
+    "id": "sfocatura",
+    "name": "Sfocatura"
+  },
+  {
+    "id": "sguardo-penetrante",
+    "name": "Sguardo penetrante"
+  },
+  {
+    "id": "silenzio",
+    "name": "Silenzio"
+  },
+  {
+    "id": "simbolo",
+    "name": "Simbolo"
+  },
+  {
+    "id": "simulacro",
+    "name": "Simulacro"
+  },
+  {
+    "id": "soffio-del-drago",
+    "name": "Soffio del drago"
+  },
+  {
+    "id": "sogno",
+    "name": "Sogno"
+  },
+  {
+    "id": "sonno",
+    "name": "Sonno"
+  },
+  {
+    "id": "sortilegio",
+    "name": "Sortilegio"
+  },
+  {
+    "id": "spada-di-mordenkainen",
+    "name": "Spada arcana"
+  },
+  {
+    "id": "spostamento-planare",
+    "name": "Spostamento planare"
+  },
+  {
+    "id": "spruzzo-prismatico",
+    "name": "Spruzzo prismatico"
+  },
+  {
+    "id": "spruzzo-velenoso",
+    "name": "Spruzzo velenoso"
+  },
+  {
+    "id": "stregoneria-esplosiva",
+    "name": "Stregoneria esplosiva"
+  },
+  {
+    "id": "stretta-folgorante",
+    "name": "Stretta folgorante"
+  },
+  {
+    "id": "suggestione",
+    "name": "Suggestione"
+  },
+  {
+    "id": "suggestione-di-massa",
+    "name": "Suggestione di massa"
+  },
+  {
+    "id": "sussurri-dissonanti",
+    "name": "Sussurri dissonanti"
+  },
+  {
+    "id": "taumaturgia",
+    "name": "Taumaturgia"
+  },
+  {
+    "id": "telecinesi",
+    "name": "Telecinesi"
+  },
+  {
+    "id": "teletrasporto",
+    "name": "Teletrasporto"
+  },
+  {
+    "id": "tempesta-di-ghiaccio",
+    "name": "Tempesta di ghiaccio"
+  },
+  {
+    "id": "tempesta-di-nevischio",
+    "name": "Tempesta di nevischio"
+  },
+  {
+    "id": "tempesta-di-vendetta",
+    "name": "Tempesta di vendetta"
+  },
+  {
+    "id": "tentacoli-neri-di-evard",
+    "name": "Tentacoli neri"
+  },
+  {
+    "id": "terremoto",
+    "name": "Terremoto"
+  },
+  {
+    "id": "terreno-illusorio",
+    "name": "Terreno illusorio"
+  },
+  {
+    "id": "trama-ipnotica",
+    "name": "Trama ipnotica"
+  },
+  {
+    "id": "trasformazione",
+    "name": "Trasformazione"
+  },
+  {
+    "id": "traslazione-arborea",
+    "name": "Traslazione arborea"
+  },
+  {
+    "id": "trasporto-vegetale",
+    "name": "Trasporto vegetale"
+  },
+  {
+    "id": "trova-cavalcatura",
+    "name": "Trova cavalcatura"
+  },
+  {
+    "id": "trova-famiglio",
+    "name": "Trova famiglio"
+  },
+  {
+    "id": "trucco-della-corda",
+    "name": "Trucco della corda"
+  },
+  {
+    "id": "tsunami",
+    "name": "Tsunami"
+  },
+  {
+    "id": "unto",
+    "name": "Unto"
+  },
+  {
+    "id": "vedere-invisibilita",
+    "name": "Vedere invisibilità"
+  },
+  {
+    "id": "veleni",
+    "name": "Individuazione delle malattie e dei veleni"
+  },
+  {
+    "id": "velocita",
+    "name": "Velocità"
+  },
+  {
+    "id": "vigilanza-e-interdizione",
+    "name": "Vigilanza e interdizione"
+  },
+  {
+    "id": "vincolo-di-interdizione",
+    "name": "Vincolo di interdizione"
+  },
+  {
+    "id": "visione-del-vero",
+    "name": "Visione del vero"
+  },
+  {
+    "id": "vita-falsata",
+    "name": "Vita falsata"
+  },
+  {
+    "id": "volare",
+    "name": "Volare"
+  },
+  {
+    "id": "vuoto-mentale",
+    "name": "Vuoto mentale"
+  },
+  {
+    "id": "zona-di-verita",
+    "name": "Zona di verità"
+  },
+  {
+    "id": "aculeo-mentale",
+    "name": "Aculeo mentale"
+  },
+  {
+    "id": "aiuto",
+    "name": "Aiuto"
+  },
+  {
+    "id": "allarme",
+    "name": "Allarme"
+  },
+  {
+    "id": "alleato-planare",
+    "name": "Alleato planare"
+  },
+  {
+    "id": "allucinazione-di-forza",
+    "name": "Allucinazione di forza"
+  },
+  {
+    "id": "allucinazione-mortale",
+    "name": "Allucinazione mortale"
+  },
+  {
+    "id": "alterare-se-stesso",
+    "name": "Alterare se stesso"
+  },
+  {
+    "id": "amicizia-con-gli-animali",
+    "name": "Amicizia con gli animali"
+  },
+  {
+    "id": "anatema",
+    "name": "Anatema"
+  },
+  {
+    "id": "animale-messaggero",
+    "name": "Animale messaggero"
+  },
+  {
+    "id": "animare-morti",
+    "name": "Animare morti"
+  },
+  {
+    "id": "animare-oggetti",
+    "name": "Animare oggetti"
+  },
+  {
+    "id": "anti-individuazione",
+    "name": "Anti-individuazione"
+  },
+  {
+    "id": "antipatia-simpatia",
+    "name": "Antipatia/simpatia"
+  },
+  {
+    "id": "arma-magica",
+    "name": "Arma magica"
+  },
+  {
+    "id": "arma-spirituale",
+    "name": "Arma spirituale"
+  },
+  {
+    "id": "armatura-magica",
+    "name": "Armatura magica"
+  },
+  {
+    "id": "artificio-druidico",
+    "name": "Artificio druidico"
+  },
+  {
+    "id": "aura-di-vita",
+    "name": "Aura di vita"
+  },
+  {
+    "id": "aura-magica-di-nystul",
+    "name": "Aura magica dell'arcanista"
+  },
+  {
+    "id": "aura-sacra",
+    "name": "Aura sacra"
+  },
+  {
+    "id": "banchetto-degli-eroi",
+    "name": "Banchetto degli eroi"
+  },
+  {
+    "id": "barriera-di-lame",
+    "name": "Barriera di lame"
+  },
+  {
+    "id": "beffa-crudele",
+    "name": "Beffa crudele"
+  },
+  {
+    "id": "benedizione",
+    "name": "Benedizione"
+  },
+  {
+    "id": "blocca-mostri",
+    "name": "Blocca mostri"
+  },
+  {
+    "id": "blocca-persone",
+    "name": "Blocca persone"
+  },
+  {
+    "id": "bocca-magica",
+    "name": "Bocca magica"
+  },
+  {
+    "id": "caduta-morbida",
+    "name": "Caduta morbida"
+  },
+  {
+    "id": "calmare-emozioni",
+    "name": "Calmare emozioni"
+  },
+  {
+    "id": "camminare-nel-vento",
+    "name": "Camminare nel vento"
+  },
+  {
+    "id": "camminare-sull-acqua",
+    "name": "Camminare sull'acqua"
+  },
+  {
+    "id": "campo-anti-magia",
+    "name": "Campo anti-magia"
+  },
+  {
+    "id": "camuffare-se-stesso",
+    "name": "Camuffare se stesso"
+  },
+  {
+    "id": "capanna-di-leomund",
+    "name": "Capanna"
+  },
+  {
+    "id": "caratteristica-potenziata",
+    "name": "Caratteristica potenziata"
+  },
+  {
+    "id": "carne-in-pietra",
+    "name": "Carne in pietra"
+  },
+  {
+    "id": "catena-di-fulmini",
+    "name": "Catena di fulmini"
+  },
+  {
+    "id": "cecita-sordita",
+    "name": "Cecità/sordità"
+  },
+  {
+    "id": "celare",
+    "name": "Celare"
+  },
+  {
+    "id": "cerchio-di-morte",
+    "name": "Cerchio di morte"
+  },
+  {
+    "id": "cerchio-di-teletrasporto",
+    "name": "Cerchio di teletrasporto"
+  },
+  {
+    "id": "cerchio-magico",
+    "name": "Cerchio magico"
+  },
+  {
+    "id": "charme-su-persone",
+    "name": "Charme su persone"
+  },
+  {
+    "id": "charme-sui-mostri",
+    "name": "Charme sui mostri"
+  },
+  {
+    "id": "chiaroveggenza",
+    "name": "Chiaroveggenza"
+  },
+  {
+    "id": "clone",
+    "name": "Clone"
+  },
+  {
+    "id": "colpo-accurato",
+    "name": "Colpo accurato"
+  },
+  {
+    "id": "colpo-infuocato",
+    "name": "Colpo infuocato"
+  },
+  {
+    "id": "colpo-intrappolante",
+    "name": "Colpo intrappolante"
+  },
+  {
+    "id": "coltello-di-ghiaccio",
+    "name": "Coltello di ghiaccio"
+  },
+  {
+    "id": "comando",
+    "name": "Comando"
+  },
+  {
+    "id": "comprensione-dei-linguaggi",
+    "name": "Comprensione dei linguaggi"
+  },
+  {
+    "id": "compulsione",
+    "name": "Compulsione"
+  },
+  {
+    "id": "comunione",
+    "name": "Comunione"
+  },
+  {
+    "id": "comunione-con-la-natura",
+    "name": "Comunione con la natura"
+  },
+  {
+    "id": "confusione",
+    "name": "Confusione"
+  },
+  {
+    "id": "cono-di-freddo",
+    "name": "Cono di freddo"
+  },
+  {
+    "id": "conoscenza-delle-leggende",
+    "name": "Conoscenza delle leggende"
+  },
+  {
+    "id": "contagio",
+    "name": "Contagio"
+  },
+  {
+    "id": "contattare-altri-piani",
+    "name": "Contattare altri piani"
+  },
+  {
+    "id": "contingenza",
+    "name": "Contingenza"
+  },
+  {
+    "id": "controincantesimo",
+    "name": "Controincantesimo"
+  },
+  {
+    "id": "controllare-acqua",
+    "name": "Controllare acqua"
+  },
+  {
+    "id": "controllare-tempo-atmosferico",
+    "name": "Controllare tempo atmosferico"
+  },
+  {
+    "id": "costrizione",
+    "name": "Costrizione"
+  },
+  {
+    "id": "creare-cibo-e-acqua",
+    "name": "Creare cibo e acqua"
+  },
+  {
+    "id": "creare-non-morti",
+    "name": "Creare non morti"
+  },
+  {
+    "id": "creare-o-distruggere-acqua",
+    "name": "Creare o distruggere acqua"
+  },
+  {
+    "id": "creazione",
+    "name": "Creazione"
+  },
+  {
+    "id": "crescita-di-spine",
+    "name": "Crescita di spine"
+  },
+  {
+    "id": "crescita-vegetale",
+    "name": "Crescita vegetale"
+  },
+  {
+    "id": "cura-ferite",
+    "name": "Cura ferite"
+  },
+  {
+    "id": "cura-ferite-di-massa",
+    "name": "Cura ferite di massa"
+  },
+  {
+    "id": "dardo-incantato",
+    "name": "Dardo incantato"
+  },
+  {
+    "id": "deflagrazione-occulta",
+    "name": "Deflagrazione occulta"
+  },
+  {
+    "id": "esilio",
+    "name": "Esilio"
+  },
+  {
+    "id": "parola-guaritrice",
+    "name": "Parola guaritrice"
+  },
+  {
+    "id": "bacche-benefiche",
+    "name": "Bacche benefiche"
+  },
+  {
+    "id": "bagliore-lunare",
+    "name": "Bagliore lunare"
+  },
+  {
+    "id": "bagliore-solare",
+    "name": "Bagliore solare"
+  },
+  {
+    "id": "dardo-di-fuoco",
+    "name": "Dardo di fuoco"
+  },
+  {
+    "id": "fiotto-acido",
+    "name": "Fiotto acido"
+  },
+  {
+    "id": "forme-animali",
+    "name": "Forme animali"
+  },
+  {
+    "id": "guscio-anti-vita",
+    "name": "Guscio anti-vita"
+  },
+  {
+    "id": "invisibilita-superiore",
+    "name": "Invisibilità superiore"
+  },
+  {
+    "id": "levitazione",
+    "name": "Levitazione"
+  },
+  {
+    "id": "muro-di-fuoco",
+    "name": "Muro di fuoco"
+  },
+  {
+    "id": "palla-di-fuoco",
+    "name": "Palla di fuoco"
+  },
+  {
+    "id": "palla-di-fuoco-ritardata",
+    "name": "Palla di fuoco ritardata"
+  },
+  {
+    "id": "ragnatela",
+    "name": "Ragnatela"
+  },
+  {
+    "id": "salto",
+    "name": "Salto"
+  },
+  {
+    "id": "scritto-illusorio",
+    "name": "Scritto illusorio"
+  },
+  {
+    "id": "scudo-di-fuoco",
+    "name": "Scudo di fuoco"
+  },
+  {
+    "id": "spruzzo-colorato",
+    "name": "Spruzzo colorato"
+  },
+  {
+    "id": "tempesta-di-fuoco",
+    "name": "Tempesta di fuoco"
+  },
+  {
+    "id": "tocco-del-vampiro",
+    "name": "Tocco del vampiro"
+  },
+  {
+    "id": "tocco-gelido",
+    "name": "Tocco gelido"
+  }
+]

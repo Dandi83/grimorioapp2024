@@ -50,6 +50,8 @@ export default async function HomePage() {
         </div>
       </header>
 
+      {process.env.VERCEL_ENV === "preview" && <section className="mt-8 px-6"><Link href="/manuale" className="block rounded-2xl border border-primary/35 bg-card p-5"><p className="text-xs font-bold uppercase tracking-widest text-primary">Manuale</p><h2 className="mt-2 font-serif text-2xl font-bold">Il sapere, a portata di mano</h2><p className="mt-2 text-sm leading-6 text-muted">Condizioni, equipaggiamento e personaggi. Consulta le regole ufficiali e le 95 schede degli animali.</p><span className="mt-4 inline-block text-sm font-semibold text-primary">Apri il Manuale →</span></Link></section>}
+
       {/* Scuole di Magia */}
       <section className="mt-8">
         <h2 className="mb-4 px-6 font-serif text-2xl font-bold text-foreground">

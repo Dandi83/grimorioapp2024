@@ -6,9 +6,9 @@ ROOT=Path(__file__).resolve().parents[1]
 SHA='a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718'
 def compact(t):
     return re.sub(r'\s+','',t.replace('\xad','').replace('−','-')).casefold()
-def reference(pdf):
+def reference(pdf, first=294, last=384):
     doc=fitz.open(pdf); entries=[]; current=None
-    for page in range(294,385):
+    for page in range(first,last+1):
         p=doc[page-1]
         # Text blocks supply title boundaries; words provide independent text extraction.
         lines=[l for b in p.get_text('dict')['blocks'] for l in b.get('lines',[])]

@@ -1,3 +1,7 @@
+import animalIds from "./data/srd-animal-ids.json";
+const ANIMAL_IDS = new Set(animalIds);
+export function isSrdAnimal(monster: {id:string}) { return ANIMAL_IDS.has(monster.id); }
+
 // Tipi e utility PURE per i mostri (nessun accesso al DB) — sicure sia lato
 // client che lato server.
 
@@ -82,6 +86,7 @@ export function parseGs(gs: string): number {
 /** Categoria di tipo (prima parola nota) da "Umanoide (goblinoide)" -> "Umanoide". */
 export function typeCategory(tipo: string): string {
   const t = (tipo || "").toLowerCase();
+  if (t.includes("bestie")) return "Bestia";
   if (t.includes("folletto")) return "Fata";
   if (t.includes("vegetale")) return "Pianta";
   if (/non mort[oi]/.test(t)) return "Non morto";
