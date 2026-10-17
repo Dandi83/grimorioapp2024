@@ -1,0 +1,767 @@
+[
+  {
+    "kind": "manual",
+    "id": "condizioni-accecato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-affascinato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-afferrato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-assordato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-avvelenato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-incapacitato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-indebolimento",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-invisibile",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-paralizzato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-pietrificato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-privo-di-sensi",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-prono",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-spaventato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-stordito",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "condizioni-trattenuto",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-monete",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-armi",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-armature",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-strumenti",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-equipaggiamento-d-avventura",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-cavalcature-e-veicoli",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-spese-dello-stile-di-vita",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-vitto-e-alloggio",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-gregari",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-incantesimi",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-oggetti-magici",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-creare-oggetti-non-magici",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-realizzare-pozioni-di-guarigione",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "equipaggiamento-trascrivere-pergamene-magiche",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-barbaro",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-bardo",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-chierico",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-druido",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-guerriero",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-ladro",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-mago",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-monaco",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-paladino",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-ranger",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-stregone",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-warlock",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-creazione-del-personaggio",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-origini-e-background",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-accolito",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-criminale",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-sapiente",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-soldato",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-specie-dei-personaggi",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-dragonide",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-elfo",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-gnomo",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-goliath",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-halfling",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-nano",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-orco",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-tiefling",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-umano",
+    "ok": true
+  },
+  {
+    "kind": "manual",
+    "id": "personaggi-talenti",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "alce",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "alce-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "allosauro",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "anchilosauro",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "aquila",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "aquila-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "archelon",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "avvoltoio",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "avvoltoio-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "babbuino",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "banco-di-piranha",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "cammello",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "capra",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "capra-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "cavallo-da-galoppo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "cavallo-da-guerra",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "cavallo-da-tiro",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "cavalluccio-marino",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "cavalluccio-marino-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "cinghiale",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "cinghiale-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "coccodrillo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "coccodrillo-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "colonia-di-serpenti-velenosi",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "colonia-di-topi",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "corvo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "daino",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "elefante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "faina",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "faina-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "falco",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "falco-di-sangue",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "gatto",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "gorilla",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "gorilla-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "granchio",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "granchio-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "gufo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "gufo-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "iena",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "iena-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "ippopotamo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "leone",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "lucertola",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "lucertola-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "lupo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "lupo-feroce",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "mammut",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "mastino",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "millepiedi-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "mulo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "orca-assassina",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "orso-bruno",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "orso-nero",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "orso-polare",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "pantera",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "piovra",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "piovra-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "pipistrello",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "pipistrello-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "piranha",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "plesiosauro",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "pony",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "pteranodonte",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "ragno",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "ragno-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "ragno-lupo-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "rana",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "rana-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "rinoceronte",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "rospo-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "scarabeo-di-fuoco-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "sciacallo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "sciame-di-insetti",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "sciame-di-pipistrelli",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "scorpione",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "scorpione-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "serpente-stritolatore",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "serpente-stritolatore-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "serpente-velenoso",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "serpente-velenoso-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "serpente-volante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "squalo-cacciatore",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "squalo-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "squalo-tropicale",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "stormo-di-corvi",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "tasso",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "tasso-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "tigre",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "tigre-dai-denti-a-sciabola",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "tirannosauro",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "topo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "topo-gigante",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "triceratopo",
+    "ok": true
+  },
+  {
+    "kind": "animal",
+    "id": "vespa-gigante",
+    "ok": true
+  }
+]
