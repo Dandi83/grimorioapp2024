@@ -13,11 +13,9 @@ export function MonsterProvenanceBadge({
   linked?: boolean;
   compact?: boolean;
 }) {
-  const label = source
-    ? linked
-      ? `${source.document} · ${source.edition === "2014" ? "D&D 2014" : `D&D 5e (${source.edition})`}`
-      : `D&D ${source.edition}`
-    : edition ? `D&D ${edition}` : "Fonte da verificare";
+  const rulesEdition = source?.edition ?? edition;
+  if (rulesEdition !== "2014" && rulesEdition !== "2024") return null;
+  const label = `D&D5e ${rulesEdition}`;
   const description = source
     ? `Fonte: ${source.document} italiano, pagina ${source.page}. D&D quinta edizione, regole ${source.edition}.`
     : edition ? `D&D ${edition}: edizione indicata dall’amministratore; fonte e licenza non verificate.`

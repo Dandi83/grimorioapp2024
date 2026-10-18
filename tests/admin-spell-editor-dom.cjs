@@ -52,7 +52,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.equal(new FormData(document.querySelector('form')).get('componenti'),'');
  for(const type of ['V','S','M'])assert.equal(document.getElementById('component-'+type).checked,false);
  await input(document.getElementById('nome_italiano'),'Gelo di prova');
- assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D 2024','D&D 2014']);
+ assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D5e 2024','D&D5e 2014']);
  await choose('edition','2024');
  await choose('spell-level','2');
  await choose('spell-school','Invocazione');
@@ -107,7 +107,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  for(const field of ['livello','componenti','durata'])assert.equal(new FormData(document.querySelector('form')).get(field),custom[field]);
  assert.equal(document.getElementById('edition').value,'2014');
  await click(button('Anteprima'));
- assert.ok(document.querySelector('article').textContent.includes('D&D 2014'));
+ assert.ok(document.querySelector('article').textContent.includes('D&D5e 2014'));
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,0);
  await act(async()=>root.unmount());
  const {renderToStaticMarkup}=requireProject('react-dom/server');

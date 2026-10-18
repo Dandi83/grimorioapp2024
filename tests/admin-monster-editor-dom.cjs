@@ -48,7 +48,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
 (async()=>{
  await act(async()=>root.render(React.createElement(MonsterEditor,{monster:null,onClose:()=>closed++})));
  await input(document.getElementById('nome'),'Guardiano di prova');
- assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D 2024','D&D 2014']);
+ assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D5e 2024','D&D5e 2014']);
  await choose('edition','2024');
  for(const [id,value] of [['tipo','Costrutto'],['taglia','Grande'],['allineamento','neutrale'],['grado_sfida','1/4'],['velocita','9 m']]) {
   await choose(id,value);
@@ -126,7 +126,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.equal(document.getElementById('tipo-custom').value,'Non morto (mago)','existing subtypes remain editable without truncation');
  await choose('edition','2014');
  await click(button('Anteprima'));
- assert.ok(document.querySelector('article').textContent.includes('D&D 2014'));
+ assert.ok(document.querySelector('article').textContent.includes('D&D5e 2014'));
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,0,'preview uses selected edition');
  await act(async()=>root.unmount());
  console.log('DOM interactions: named blocks, body formatting, ability modifiers, preview with links and no writes, return-to-form, failed-save draft retention, clear formatting, exact existing-source submission passed.');

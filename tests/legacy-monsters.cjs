@@ -62,7 +62,7 @@ function load(relative, deps = {}) {
     const edited = {...monster, descrizione: 'Testo personalizzato'};
     assert.equal(provider.previewMonsters([edited], 'preview').find(m => m.id === edited.id), edited);
     const badge = renderToStaticMarkup(createElement(MonsterProvenanceBadge, {source, linked: true}));
-    assert.ok(badge.includes('D&amp;D 2014'), 'edition label explicitly requested by user');
+    assert.ok(badge.includes('D&amp;D5e 2014'), 'edition label explicitly requested by user');
     assert.ok(badge.includes(legacy.sourceUrl + '#page=' + r.page));
     selected = monster;
     const html = renderToStaticMarkup(await page({params: Promise.resolve({id: monster.id})}));
@@ -75,7 +75,7 @@ function load(relative, deps = {}) {
     assert.ok(html.includes('data-damage-type='), 'approved damage icons remain visible');
     selected = edited;
     const editedHtml = renderToStaticMarkup(await page({params: Promise.resolve({id: monster.id})}));
-    assert.ok(editedHtml.includes('Fonte da verificare'), 'later edits remain unattributed');
+    assert.ok(!editedHtml.includes('data-monster-provenance="verified"'), 'later edits remain unattributed');
     assert.ok(!editedHtml.includes('href="/manuale/condizioni-'), 'an edited Legacy description must not enable 2024 condition links');
     assert.ok(!editedHtml.includes('href="/spell/'), 'an edited Legacy description must not enable 2024 spell links');
   }

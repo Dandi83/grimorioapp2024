@@ -68,6 +68,6 @@ for(const summary of originalSummaries){
  assert.ok(title,`Missing title for ${row.id}`);
  assert.doesNotMatch(title,/<sup\b|\*/,`No asterisk beside ${row.id} in public lists`);
  assert.ok(markup.includes(`/spell/${row.id}`));
- assert.ok(markup.includes('D&amp;D 2024'),'Keep the selected edition label');
+ assert.ok(markup.includes('D&amp;D5e 2024'),'Keep the selected edition label');
 }
 console.log('[spell lists] All 49 original summaries have titles without asterisks; detail links and edition labels preserved.');

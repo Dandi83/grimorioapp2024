@@ -26,8 +26,8 @@ function PickerFields({ name, edition }: { name: string; edition?: "2014" | "202
     <select name="edition" defaultValue={edition ?? ""} aria-label={`Edizione di ${name}`} disabled={pending}
       className="min-w-0 max-w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground focus-visible:outline-primary disabled:opacity-50">
       <option value="">Automatica</option>
-      <option value="2014">D&amp;D 2014</option>
-      <option value="2024">D&amp;D 2024</option>
+      <option value="2014">D&amp;D5e 2014</option>
+      <option value="2024">D&amp;D5e 2024</option>
     </select>
     <button type="submit" disabled={pending} aria-label={`Salva etichetta di ${name}`}
       className="rounded-md border border-border px-2 py-1.5 text-xs text-foreground hover:border-primary focus-visible:outline-primary disabled:opacity-50">

@@ -123,12 +123,12 @@ function load(relative, deps = {}) {
   await assert.rejects(()=>failing.getContentEditions('monster'),/offline/,'connection errors cannot masquerade as empty metadata');
   const {AdminEditionPicker} = load('components/admin-edition-picker.tsx', {'@/app/actions/admin-editions': {setContentEditionAction: action}});
   const ui = renderToStaticMarkup(React.createElement(AdminEditionPicker,{kind:'monster',id:monster.id,name:monster.nome,edition:'2014'}));
-  assert.ok(ui.includes('<select') && ui.includes('D&amp;D 2014') && ui.includes('D&amp;D 2024') && ui.includes('Automatica'));
+  assert.ok(ui.includes('<select') && ui.includes('D&amp;D5e 2014') && ui.includes('D&amp;D5e 2024') && ui.includes('Automatica'));
   assert.ok(ui.includes('aria-label="Edizione di Creatura manuale"'));
   assert.ok(ui.includes('value="2014" selected=""'));
   const {MonsterProvenanceBadge} = load('components/monster-provenance-badge.tsx');
   const badge = renderToStaticMarkup(React.createElement(MonsterProvenanceBadge,{edition:'2014'}));
-  assert.equal(badge.replace(/<[^>]*>/g,''),'D&amp;D 2014');
+  assert.equal(badge.replace(/<[^>]*>/g,''),'D&amp;D5e 2014');
   assert.ok(badge.includes('data-monster-provenance="unverified"'),'manual edition must not certify an SRD source');
   assert.ok(!badge.includes('<a'),'manual edition cannot invent a source link');
   assert.equal(provider.usesLegacyMonsterRules({...monster,edizione:'2014'}),true,'manual 2014 records must not link to 2024 conditions');
