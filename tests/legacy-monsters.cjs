@@ -90,6 +90,7 @@ function load(relative, deps = {}) {
   assert.equal(byId('topo-gigante-contagioso').punti_ferita, '7 (2d6)');
   assert.equal(byId('sciame-di-ragni').punti_ferita, '22 (5d8)', '2014 base, not the current 2024 swarm');
   const sources = load('app/fonti/page.tsx', {
+    '@/components/analytics-provider': {AnalyticsPreferencesButton: () => null},
     'next/link': {__esModule: true, default: ({children, ...props}) => createElement('a', props, children)},
     '@/lib/srd-descriptions': load('lib/srd-descriptions.ts'),
   }).default;

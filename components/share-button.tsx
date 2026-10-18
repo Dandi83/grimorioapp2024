@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Share2, X } from "lucide-react";
+import { trackAnalytics } from "@/lib/analytics-client";
 
 export function ShareButton({ path, title }: { path: string; title: string }) {
   const [busy, setBusy] = useState(false);
@@ -9,7 +10,9 @@ export function ShareButton({ path, title }: { path: string; title: string }) {
   const [manualCopy, setManualCopy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const button = useRef<HTMLButtonElement>(null);
-  const url = new URL(path, "https://ilgrimorio.app").href;
+  const shareUrl = new URL(path, "https://ilgrimorio.app");
+  shareUrl.searchParams.set("ref", "share");
+  const url = shareUrl.href;
 
   useEffect(() => {
     if (manualCopy) { input.current?.focus(); input.current?.select(); }
@@ -18,18 +21,21 @@ export function ShareButton({ path, title }: { path: string; title: string }) {
   async function share() {
     if (busy) return;
     setBusy(true); setMessage(""); setManualCopy(false);
+    trackAnalytics("share_click");
     try {
       if (typeof navigator.share === "function") {
         try {
           await navigator.share({ title: `${title} — Il Grimorio.App`, url });
+          trackAnalytics("share_native");
           return;
         } catch (error) {
-          if ((error as { name?: string })?.name === "AbortError") return;
+          if ((error as { name?: string })?.name === "AbortError") {trackAnalytics("share_cancel");return;}
         }
       }
       try {
         if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
         await navigator.clipboard.writeText(url);
+        trackAnalytics("share_copy");
         setMessage("Link copiato! Puoi incollarlo e condividerlo.");
       } catch {
         setManualCopy(true);

@@ -54,7 +54,7 @@ export function AdminDashboard({
 
   return (
     <main className="mx-auto max-w-3xl px-5 pb-24 pt-8">
-      <AdminPublicLink />
+      <div className="flex flex-wrap items-start justify-between gap-3"><AdminPublicLink /><Link href="/admin/statistiche" className="mb-4 inline-flex min-h-11 items-center rounded-lg border border-primary/30 px-3 py-2 text-sm text-primary">Statistiche</Link></div>
       <header className="mb-6 flex items-center justify-between gap-3">
         <div>
           <h1 className="font-serif text-2xl text-foreground">Amministrazione</h1>

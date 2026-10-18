@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnalyticsPreferencesButton } from "@/components/analytics-provider";
 import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
 
 export const metadata = { title: "Info, fonti e licenze — GrimorioApp" };
@@ -8,6 +9,7 @@ export default function SourcesPage() {
     <article className="space-y-6 p-6">
       <Link href="/" className="inline-flex min-h-11 items-center text-sm text-primary">← Torna alla Home</Link>
       <h1 className="font-serif text-3xl font-bold">Info, fonti e licenze</h1>
+      <section className="space-y-3 text-sm"><h2 className="font-serif text-xl text-foreground">Statistiche e privacy</h2><Link href="/privacy" className="block text-primary underline underline-offset-4">Come usiamo i dati di navigazione</Link><AnalyticsPreferencesButton /></section>
       <section aria-labelledby="project-info" className="space-y-3 text-sm leading-6 text-muted">
         <h2 id="project-info" className="font-serif text-xl font-bold text-foreground">Informazioni sul progetto</h2>
         <p>
@@ -41,16 +43,15 @@ export default function SourcesPage() {
       <section className="space-y-3 text-sm leading-6 text-muted">
         <h2 className="font-serif text-xl font-bold text-foreground">Provenienza dei mostri</h2>
         <p>
-          Il bollino sulle creature indica il documento da cui proviene la scheda e
-          l’edizione delle regole. “SRD 5.2.1 · D&amp;D 5e (2024)” identifica il System
-          Reference Document italiano per la quinta edizione aggiornata. Nella scheda,
-          il bollino apre la pagina della fonte ufficiale.
+          Il bollino sulle creature mostra l’edizione delle regole: “D&amp;D5e 2024”
+          oppure “D&amp;D5e 2014”. Nelle schede con fonte verificata, il bollino
+          apre la pagina del documento ufficiale.
         </p>
         <p>
           La fonte dichiarata è il documento SRD utilizzato, distinto dal Manuale dei
           Mostri commerciale. L’attribuzione viene verificata confrontando il contenuto
-          della scheda con la trascrizione: per versioni modificate o prive di riscontro
-          viene mostrato “Fonte da verificare”.
+          della scheda con la trascrizione. Per versioni modificate o prive di riscontro
+          l’etichetta manuale dell’edizione non certifica una fonte o una licenza.
         </p>
       </section>
       <section className="space-y-3 text-sm leading-6 text-muted">

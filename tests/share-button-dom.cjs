@@ -11,7 +11,8 @@ global.IS_REACT_ACT_ENVIRONMENT=true;
 const React=require('react'),{act}=React,{createRoot}=require('react-dom/client');
 const filename=path.resolve('components/share-button.tsx'),mod={exports:{}};
 assert.ok(fs.existsSync(filename),'shared card button must exist');
-new Function('require','module','exports',ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText)(createRequire(filename),mod,mod.exports);
+new Function('require','module','exports',ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText)(id=>id==='@/lib/analytics-client'?{trackAnalytics:event=>events.push(event)}:createRequire(filename)(id),mod,mod.exports);
+const events=[];
 const {ShareButton}=mod.exports,root=createRoot(document.getElementById('root'));
 const render=async(path,title)=>act(async()=>root.render(React.createElement(ShareButton,{key:path,path,title})));
 const click=async()=>act(async()=>document.querySelector('button[aria-label^="Condividi"]')?.dispatchEvent(new MouseEvent('click',{bubbles:true})));
@@ -21,29 +22,30 @@ Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:
 (async()=>{
   for(const [route,title] of [['/spell/colpo-accurato','Colpo Accurato'],['/mostro/duergar','Duergar'],['/mostro/gatto','Gatto']]){
     await render(route,title);await click();
-    assert.deepEqual(shares.at(-1),{title:`${title} — Il Grimorio.App`,url:`https://ilgrimorio.app${route}`});
+    assert.deepEqual(shares.at(-1),{title:`${title} — Il Grimorio.App`,url:`https://ilgrimorio.app${route}?ref=share`});
     assert.equal(document.querySelector('button[aria-label^="Condividi"]').disabled,false);
   }
   assert.equal(copies.length,0,'native sharing does not also copy');
+  assert.equal(events.filter(e=>e==='share_native').length,3);
   Object.defineProperty(navigator,'share',{configurable:true,value:async()=>{throw new DOMException('Cancelled','AbortError')}});
-  await click();assert.equal(copies.length,0,'cancelled share must not silently copy');
+  await click();assert.equal(copies.length,0,'cancelled share must not silently copy');assert.equal(events.at(-1),'share_cancel');
   assert.equal(document.querySelector('[role="status"]').textContent,'');
   Object.defineProperty(navigator,'share',{configurable:true,value:undefined});
-  await click();assert.equal(copies.at(-1),'https://ilgrimorio.app/mostro/gatto');
+  await click();assert.equal(copies.at(-1),'https://ilgrimorio.app/mostro/gatto?ref=share');
   assert.match(document.querySelector('[role="status"]').textContent,/Link copiato/);
   Object.defineProperty(navigator,'share',{configurable:true,value:async()=>{throw new Error('Unsupported sharing')}});
   await click();assert.equal(copies.length,2,'native failure falls back to copying');
   Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw new Error('Denied')}}});
   await click();
   const input=document.querySelector('input[readonly]');
-  assert.equal(input.value,'https://ilgrimorio.app/mostro/gatto');
+  assert.equal(input.value,'https://ilgrimorio.app/mostro/gatto?ref=share');
   assert.equal(document.activeElement,input);
   assert.equal(input.selectionStart,0);assert.equal(input.selectionEnd,input.value.length);
   await act(async()=>document.querySelector('button[aria-label="Chiudi condivisione"]').click());
   assert.equal(document.querySelector('input[readonly]'),null);
   Object.defineProperty(navigator,'share',{configurable:true,value:undefined});
   Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined});
-  await click();assert.equal(document.querySelector('input[readonly]').value,'https://ilgrimorio.app/mostro/gatto');
+  await click();assert.equal(document.querySelector('input[readonly]').value,'https://ilgrimorio.app/mostro/gatto?ref=share');
   await act(async()=>root.unmount());
   console.log('Sharing: spells, monsters and animals, canonical public links, native share, cancellation, clipboard fallback and selectable manual copy passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

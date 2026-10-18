@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { BottomNav } from "@/components/bottom-nav";
+import { AnalyticsProvider } from "@/components/analytics-provider";
 import { InstallPrompt } from "@/components/install-prompt";
 import "./globals.css";
 import {CharacterSessionProvider} from "@/components/characters/session";
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <BottomNav />
           </div>
           <InstallPrompt />
+          <AnalyticsProvider />
         </FavoritesProvider>
       </body>
     </html>
