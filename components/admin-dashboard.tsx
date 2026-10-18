@@ -1,11 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import {
-  createSpellAction,
-  updateSpellAction,
   deleteSpellAction,
   logoutAction,
 } from "@/app/actions/admin";
@@ -16,6 +13,7 @@ import type { Monster } from "@/lib/monsters-types";
 import { AdminMonsters } from "@/components/admin-monsters";
 import { SpellProvenanceMarker } from "./spell-provenance-marker";
 import { AdminEditionPicker } from "./admin-edition-picker";
+import { SpellEditor } from "./admin-spell-editor";
 import {
   BookOpen,
   Skull,
@@ -25,7 +23,6 @@ import {
   LogOut,
   Search,
   ExternalLink,
-  X,
 } from "lucide-react";
 
 type Editing =
@@ -212,122 +209,5 @@ function DeleteButton({ id, nome }: { id: string; nome: string }) {
         <Trash2 className="h-4 w-4" aria-hidden="true" />
       </button>
     </form>
-  );
-}
-
-const FIELDS: { name: keyof Spell; label: string; textarea?: boolean }[] = [
-  { name: "nome_italiano", label: "Nome" },
-  { name: "livello", label: "Livello / Scuola / Classi (testo completo)" },
-  { name: "tempo_di_lancio", label: "Tempo di lancio" },
-  { name: "gittata", label: "Gittata" },
-  { name: "componenti", label: "Componenti" },
-  { name: "durata", label: "Durata" },
-  { name: "descrizione", label: "Descrizione (accetta HTML)", textarea: true },
-];
-
-function SpellEditor({
-  spell,
-  onClose,
-}: {
-  spell: Spell | null;
-  onClose: () => void;
-}) {
-  const isEdit = spell !== null;
-
-  async function action(formData: FormData) {
-    const result = isEdit
-      ? await updateSpellAction(null, formData)
-      : await createSpellAction(null, formData);
-    if (result?.ok) {
-      onClose();
-    } else {
-      alert(result?.error ?? "Errore durante il salvataggio.");
-    }
-  }
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-6"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
-      <div
-        className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-2xl border border-border bg-card p-6 sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="font-serif text-xl text-foreground">
-            {isEdit ? "Modifica incantesimo" : "Nuovo incantesimo"}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md p-1.5 text-muted-foreground hover:text-foreground"
-            aria-label="Chiudi"
-          >
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </div>
-
-        <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
-          Livello, scuola e classi vengono ricavati automaticamente dal campo
-          &quot;Livello&quot;. Scrivilo come negli altri incantesimi, es.
-          &quot;Divinazione di 2° livello (mago, stregone)&quot; oppure
-          &quot;Trucchetto di invocazione (mago)&quot;.
-        </p>
-
-        <form action={action} className="flex flex-col gap-4">
-          {isEdit ? <input type="hidden" name="id" value={spell.id} /> : null}
-          {FIELDS.map((f) => (
-            <div key={f.name} className="flex flex-col gap-1.5">
-              <label htmlFor={f.name} className="text-sm text-muted-foreground">
-                {f.label}
-              </label>
-              {f.textarea ? (
-                <textarea
-                  id={f.name}
-                  name={f.name}
-                  defaultValue={spell?.[f.name] as string | undefined}
-                  rows={7}
-                  className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
-                />
-              ) : (
-                <input
-                  id={f.name}
-                  name={f.name}
-                  defaultValue={spell?.[f.name] as string | undefined}
-                  className="rounded-lg border border-border bg-background px-3 py-2 text-foreground outline-none focus:border-primary"
-                />
-              )}
-            </div>
-          ))}
-
-          <div className="mt-2 flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 rounded-lg border border-border px-4 py-3 text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Annulla
-            </button>
-            <SubmitButton isEdit={isEdit} />
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-function SubmitButton({ isEdit }: { isEdit: boolean }) {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="flex-1 rounded-lg bg-primary px-4 py-3 font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-    >
-      {pending ? "Salvataggio…" : isEdit ? "Salva modifiche" : "Crea"}
-    </button>
   );
 }

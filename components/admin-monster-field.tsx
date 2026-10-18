@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { conditions } from "@/lib/conditions";
 import { SIZES, TYPE_KEYWORDS, type Monster } from "@/lib/monsters-types";
+import { AdminChoiceField } from "./admin-choice-field";
 
 const inputClass="w-full min-w-0 rounded-lg border border-border bg-background px-3 py-2.5 text-base text-foreground outline-none focus:border-primary";
-const CUSTOM="__custom__";
 const CHOICES: Partial<Record<keyof Monster,readonly string[]>> = {
   tipo:TYPE_KEYWORDS.map(type=>type==="Fata" ? "Folletto" : type==="Pianta" ? "Vegetale" : type),
   taglia:SIZES,
@@ -29,21 +29,7 @@ export function AdminMonsterField({name,label,initialValue,placeholder}: {
   const choices=CHOICES[name];
   const additions=ADDITIONS[name];
   const [value,setValue]=useState(initialValue);
-  const [selection,setSelection]=useState(()=>choices && initialValue && !choices.includes(initialValue) ? CUSTOM : initialValue);
-
-  if (choices) return <div className="space-y-2">
-    <input type="hidden" name={name} value={value} />
-    <select id={name} value={selection} onChange={event=>{
-      const selected=event.target.value;
-      setSelection(selected);
-      if(selected!==CUSTOM)setValue(selected);
-    }} className={inputClass}>
-      <option value="">Seleziona…</option>
-      {choices.map(choice=><option key={choice} value={choice}>{choice}</option>)}
-      <option value={CUSTOM}>Valore personalizzato…</option>
-    </select>
-    {selection===CUSTOM && <div><label htmlFor={`${name}-custom`} className="mb-1 block text-xs text-muted-foreground">Valore personalizzato <span className="sr-only">per {label.toLocaleLowerCase("it")}</span></label><input id={`${name}-custom`} value={value} onChange={event=>setValue(event.target.value)} placeholder={placeholder || "Scrivi il valore completo"} className={inputClass} /></div>}
-  </div>;
+  if (choices) return <AdminChoiceField name={name} label={label} initialValue={initialValue} choices={choices} placeholder={placeholder} />;
 
   if (additions) return <div className="space-y-2">
     <select id={`${name}-add`} aria-label={`Aggiungi a ${label.toLocaleLowerCase("it")}`} value="" onChange={event=>{
