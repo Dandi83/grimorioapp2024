@@ -28,3 +28,9 @@ Confronto locale eseguito con la stessa pipeline Sharp della versione Next insta
 AVIF richiede una nuova variante in cache e può costare più tempo alla prima codifica. Non si attribuisce al sito il tempo totale delle richieste dall'ambiente di verifica: anche la Home già in cache ha mostrato circa sei secondi di attesa, quindi tali tempi includono la rete/proxy del sistema di misura e non rappresentano iPhone/4G. PageSpeed Insights mobile ha restituito HTTP 429: nessun punteggio Lighthouse, LCP o Core Web Vitals viene dichiarato verificato.
 
 La verifica dell'anteprima deve controllare `Content-Type`, peso reale AVIF, fallback WebP, caricamento visivo e compatibilità prima del rilascio. Nessun nuovo servizio, acquisto o generazione di immagini. File condiviso modificato: soltanto `next.config.mjs`; fonti e crediti delle immagini invariati. Client iPhone separato.
+
+## Esito dell'anteprima
+
+Commit `4df343e427867149af36e8d9474c65c288ca85d8`, deployment `dpl_BwejRVqdKz5t6qpfjG3k89hbDGQN` READY. Richieste effettive allo stesso URL con `Accept: image/avif` oppure `Accept: image/webp`: formati corretti e fallback conservato. AVIF remoto a 828 pixel: Aboleth 35.194 byte, Orsogufo 37.007 byte, Beholder 38.141 byte, Aquila 15.654 byte. I valori WebP coincidono con la tabella iniziale. Risparmio effettivo circa 30–49%, 43% aggregato sui quattro campioni; non è una stima su tutte le 336 immagini.
+
+Home e Aquila verificati nel browser: immagini caricate, aspetto e trasparenza conservati. `npm test` completo e `npm run build` superati. Pubblicazione dell'ottimizzazione nel branch `release/avif-images-20261018`, discendente della prova verificata; l'unica modifica applicativa è la configurazione dei formati, senza ricampionare o sostituire gli originali.
