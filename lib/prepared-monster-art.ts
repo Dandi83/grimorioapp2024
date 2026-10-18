@@ -336,7 +336,7 @@ import art334 from "./data/prepared-art/zombi.webp";
 import art335 from "./data/prepared-art/zombi-ogre.webp";
 import type { StaticImageData } from "next/image";
 
-// Device comparison only. Production retains its existing responsive pipeline.
+// Approved prepared artwork, shared by preview and production.
 const preparedArt: Record<string, StaticImageData> = {
   "aboleth": art0,
   "albero-risvegliato": art1,
@@ -677,6 +677,6 @@ const preparedArt: Record<string, StaticImageData> = {
 };
 
 export function getPreparedMonsterArt(id: string, environment = process.env.VERCEL_ENV) {
-  if (environment !== "preview") return undefined;
+  if (environment !== "preview" && environment !== "production") return undefined;
   return Object.prototype.hasOwnProperty.call(preparedArt, id) ? preparedArt[id] : undefined;
 }

@@ -41,9 +41,10 @@ new Function('require','module','exports',code)(id => {
     assert.equal(props.srcSet,undefined);
     assert.equal(props.width,meta.width);assert.equal(props.height,meta.height);
     assert.ok(props.style.backgroundImage,'The image must show a placeholder while loading');
-    assert.equal(mod.exports.getPreparedMonsterArt(id,'production'),undefined,'Pilot must not activate in production');
+    assert.equal(mod.exports.getPreparedMonsterArt(id,'production'),prepared,'Production must use the same prepared artwork as the approved preview');
+    assert.equal(mod.exports.getPreparedMonsterArt(id,'development'),undefined);
   }
   assert.equal(Object.keys(staticImages).length,Object.keys(registry).length,'Every approved artwork must be prepared');
   assert.equal(mod.exports.getPreparedMonsterArt('unknown','preview'),undefined);
-  console.log('Prepared artwork: all approved images, preview isolation, static delivery, dimensions and loading placeholder verified.');
+  console.log('Prepared artwork: all approved images, preview/production parity, static delivery, dimensions and loading placeholder verified.');
 })().catch(e=>{console.error(e);process.exitCode=1;});
