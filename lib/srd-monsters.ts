@@ -1,9 +1,16 @@
 import data from "./data/srd-monsters-5.2.1-it.json";
 import animals from "./data/srd-animals-5.2.1-it.json";
+import legacy from "./data/srd-monsters-5.1-it.json";
 import type { Monster } from "./monsters-types";
 
-const previewRecords = [...data.records, ...animals.records];
+const currentRecords = [...data.records, ...animals.records];
+const previewRecords = [...currentRecords, ...legacy.records];
 const recordsById = new Map(previewRecords.map(record => [record.monster.id, record]));
+const legacyIds = new Set(legacy.records.map(record => record.monster.id));
+/** Rules edition stays isolated even when a later edit invalidates exact attribution. */
+export function usesLegacyMonsterRules(monster: Pick<Monster, "id">): boolean {
+  return legacyIds.has(monster.id);
+}
 function available(environment: string | undefined): Monster[] {
   if (environment === "preview" || environment === "production") return previewRecords.map(record => record.monster);
   return [];
@@ -28,8 +35,17 @@ export function getSrdMonsterSource(monster: Monster) {
   if (!record) return undefined;
   const actual = monster as unknown as Record<string, unknown>;
   const expected = record.monster as unknown as Record<string, unknown>;
-  const fields = new Set([...Object.keys(expected), "azioni_bonus", "attrezzatura", "immunita", "sottotitolo_fonte"]);
+  const fields = new Set([...Object.keys(expected), "azioni_bonus", "attrezzatura", "immunita", "sottotitolo_fonte", "iniziativa", "bonus_competenza"]);
+  const isLegacy = legacyIds.has(monster.id);
   return [...fields].every(key => (actual[key] ?? "") === (expected[key] ?? ""))
-    ? { document: "SRD 5.2.1", edition: "2024", sourceUrl: data.sourceUrl, page: record.page, sourceName: record.sourceName }
+    ? {
+      document: isLegacy ? legacy.document : "SRD 5.2.1",
+      edition: isLegacy ? legacy.edition : "2024",
+      sourceUrl: isLegacy ? legacy.sourceUrl : data.sourceUrl,
+      page: record.page,
+      sourceName: record.sourceName,
+      adaptation: "adaptation" in record ? String(record.adaptation) : undefined,
+      pages: "pages" in record ? record.pages as number[] : [record.page],
+    }
     : undefined;
 }

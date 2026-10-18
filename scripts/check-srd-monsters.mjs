@@ -9,13 +9,13 @@ const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const data=JSON.parse(read('lib/data/srd-monsters-5.2.1-it.json'));
 function load(path,deps={}){const m={exports:{}};const code=ts.transpileModule(read(path),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2017,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;new Function('require','module','exports',code)(id=>deps[id]??(id.endsWith('.json')?JSON.parse(read('lib/'+id.replace(/^\.\//,''))):require(id)),m,m.exports);return m.exports;}
 const provider=load('lib/srd-monsters.ts');
-assert.equal(provider.previewMonsters([],'preview').length,330,'Preview must contain all 235 SRD records');
+assert.equal(provider.previewMonsters([],'preview').length,340,'Preview must contain 330 current and 10 approved Legacy records');
 const sample=JSON.parse(read('lib/data/srd-monster-sample.json')).monster;
 assert.deepEqual(provider.previewMonsters([],'production'),provider.previewMonsters([],'preview'),'Production must match the approved catalog');
 const legacy={id:'goblin',nome:'Goblin',descrizione:'Preserved custom text'};
 const custom={...sample,azioni:'Custom edit'};
 const result=provider.previewMonsters([legacy,custom],'preview');
-assert.equal(result.length,331);assert.equal(result.find(x=>x.id==='goblin'),legacy);assert.equal(result.find(x=>x.id==='aboleth'),custom);
+assert.equal(result.length,341);assert.equal(result.find(x=>x.id==='goblin'),legacy);assert.equal(result.find(x=>x.id==='aboleth'),custom);
 assert.equal(new Set(result.map(x=>x.id)).size,result.length);
 assert.equal(provider.getSrdMonsterSource(custom),undefined);
 for(const r of data.records){const m=provider.previewMonsterById(r.monster.id,'preview');assert.deepEqual(m,r.monster);assert.equal(provider.getSrdMonsterSource(m).page,r.page);assert.deepEqual(provider.previewMonsterById(m.id,'production'),m);assert.equal(provider.getSrdMonsterSource({...m,azioni_bonus:'An unauthorized additional power'}),undefined);}

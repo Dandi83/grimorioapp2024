@@ -24,8 +24,8 @@ let html=renderToStaticMarkup(createElement(ConditionReferences,{text:'Il bersag
 const spellRefs=load(path.join(root,'lib/spell-references.ts'));
 assert.deepEqual(spellRefs.findReferencedSpells('<strong>Incantesimi.</strong> <em>Invisibilità</em>, <em>palla di fuoco (di 4º livello)</em>').map(s=>s.name),['Invisibilità','Palla di fuoco']);
 assert.deepEqual(spellRefs.findReferencedSpells('Il mostro vola alla luce del sole.'),[]);
-const provider=load(path.join(root,'lib/srd-monsters.ts'));const rows=provider.previewMonsters([],'preview');assert.equal(rows.length,330);assert.equal(new Set(rows.map(x=>x.id)).size,330);assert.equal(provider.previewMonsters([],'production').length,330);
-const types=load(path.join(root,'lib/monsters-types.ts'));assert.equal(rows.filter(types.isSrdAnimal).length,95);assert.equal(types.typeCategory('Sciame di bestie Minuscole'),'Bestia');assert.equal(types.isSrdAnimal(rows.find(m=>m.id==='alce-gigante')),true);assert.equal(types.typeCategory(rows.find(m=>m.id==='alce-gigante').tipo),'Celestiale');
+const provider=load(path.join(root,'lib/srd-monsters.ts'));const rows=provider.previewMonsters([],'preview');assert.equal(rows.length,340);assert.equal(new Set(rows.map(x=>x.id)).size,340);assert.equal(provider.previewMonsters([],'production').length,340);
+const types=load(path.join(root,'lib/monsters-types.ts'));assert.equal(rows.filter(types.isSrdAnimal).length,100);assert.equal(types.typeCategory('Sciame di bestie Minuscole'),'Bestia');assert.equal(types.isSrdAnimal(rows.find(m=>m.id==='alce-gigante')),true);assert.equal(types.typeCategory(rows.find(m=>m.id==='alce-gigante').tipo),'Celestiale');
 for(const id of ['app/manuale/page.tsx','app/manuale/[id]/page.tsx'])assert.ok(existsSync(path.join(root,id)));
 const {ManualContent}=load(path.join(root,'components/manual-content.tsx'));
 for(const e of entries){const markup=renderToStaticMarkup(createElement(ManualContent,{entry:e}));for(const b of e.blocks){const text=renderToStaticMarkup(createElement('span',null,b.text)).replace(/^<span>|<\/span>$/g,'');assert.ok((e.category === 'condizioni' ? markup.replace(/<[^>]*>/g,'').replace(/\s+/g,' ').includes(text.replace(/\s+/g,' ')) : markup.includes(text)),e.title+': missing block');}assert.ok(markup.includes('#page='+e.page));assert.ok(markup.includes('Attribuzione e licenza'));}
@@ -54,7 +54,7 @@ for(const [id,category,label] of [['personaggi-mago','classi','Classi'],['person
  const page=renderToStaticMarkup(await EntryPage({params:Promise.resolve({id})}));assert.ok(page.includes('href="/manuale?sezione='+category+'"'));assert.ok(page.includes(label));
 }
 if(previousEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=previousEnv;
-console.log('[manual] Reference routes, all 58 entries and their content/source links, conditions and 330 creatures including 95 animals verified.');
+console.log('[manual] Reference routes, all 58 entries and their content/source links, conditions and 340 creatures including 100 animals verified.');
 // Published inline links must reach condition details while the Manual index stays hidden.
 process.env.VERCEL_ENV='production';
 const publishedCondition=renderToStaticMarkup(await EntryPage({params:Promise.resolve({id:'condizioni-paralizzato'})}));

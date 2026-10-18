@@ -9,7 +9,7 @@ import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { ReferenceText, MonsterText } from "@/components/html-text";
 import { getMonsterById } from "@/lib/monsters";
 import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
-import { getSrdMonsterSource } from "@/lib/srd-monsters";
+import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -59,24 +59,24 @@ function AbilityCell({ label, score }: { label: string; score: number }) {
   );
 }
 
-function StatLine({ label, value, damageIcons = false }: { label: string; value: string; damageIcons?: boolean }) {
+function StatLine({ label, value, damageIcons = false, legacy = false }: { label: string; value: string; damageIcons?: boolean; legacy?: boolean }) {
   if (!value) return null;
   return (
     <p className="text-[15px] leading-6 text-foreground">
       <span className="font-bold text-primary">{label}</span>{" "}
-      {<ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={inlineConditionReferences} />}
+      {<ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={legacy ? [] : inlineConditionReferences} />}
     </p>
   );
 }
 
-function Section({ title, html }: { title: string; html: string }) {
+function Section({ title, html, legacy = false }: { title: string; html: string; legacy?: boolean }) {
   if (!html) return null;
   return (
     <section data-monster-section className="px-6 pb-4">
       <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
         {title}
       </h2>
-      <MonsterText html={html} damageIcons references={inlineConditionReferences} spellReferences={inlineSpellReferences(html)} />
+      <MonsterText html={html} damageIcons references={legacy ? [] : inlineConditionReferences} spellReferences={legacy ? [] : inlineSpellReferences(html)} />
     </section>
   );
 }
@@ -92,6 +92,7 @@ export default async function MonsterDetailPage({
 
   const color = monsterColor(monster.tipo);
   const source = getSrdMonsterSource(monster);
+  const legacy = usesLegacyMonsterRules(monster);
   const sottotitolo = monster.sottotitolo_fonte || [monster.taglia, monster.tipo, monster.allineamento]
     .filter(Boolean)
     .join(" · ");
@@ -140,6 +141,7 @@ export default async function MonsterDetailPage({
 
       <div className="px-6 pt-3">
         <MonsterProvenanceBadge source={source} linked />
+        {legacy && <p className="mt-2 text-xs leading-5 text-muted">Questa scheda utilizza le regole 2014. I richiami alle condizioni e agli incantesimi 2024 non sono applicati.</p>}
       </div>
 
       {/* Statistiche base */}
@@ -179,31 +181,34 @@ export default async function MonsterDetailPage({
         monster.sensi ||
         monster.linguaggi) && (
         <section className="mx-6 mb-4 space-y-1 rounded-xl border border-border bg-card p-4">
-          <StatLine label="Tiri Salvezza" value={monster.tiri_salvezza} />
-          <StatLine label="Abilità" value={monster.abilita} />
-          <StatLine label="Vulnerabilità" value={monster.vulnerabilita} damageIcons />
-          <StatLine label="Resistenze" value={monster.resistenze} damageIcons />
-          <StatLine label="Immunità ai Danni" value={monster.immunita_danni} damageIcons />
+          <StatLine label="Tiri Salvezza" value={monster.tiri_salvezza} legacy={legacy} />
+          <StatLine label="Abilità" value={monster.abilita} legacy={legacy} />
+          <StatLine label="Vulnerabilità" value={monster.vulnerabilita} damageIcons legacy={legacy} />
+          <StatLine label="Resistenze" value={monster.resistenze} damageIcons legacy={legacy} />
+          <StatLine label="Immunità ai Danni" value={monster.immunita_danni} damageIcons legacy={legacy} />
           <StatLine
             label="Immunità alle Condizioni"
             value={monster.immunita_condizioni}
+            legacy={legacy}
           />
-          <StatLine label="Immunità" value={monster.immunita || ""} damageIcons />
-          <StatLine label="Attrezzatura" value={monster.attrezzatura || ""} />
-          <StatLine label="Sensi" value={monster.sensi} />
-          <StatLine label="Linguaggi" value={monster.linguaggi} />
+          <StatLine label="Immunità" value={monster.immunita || ""} damageIcons legacy={legacy} />
+          <StatLine label="Attrezzatura" value={monster.attrezzatura || ""} legacy={legacy} />
+          <StatLine label="Sensi" value={monster.sensi} legacy={legacy} />
+          <StatLine label="Linguaggi" value={monster.linguaggi} legacy={legacy} />
         </section>
       )}
 
-      <Section title="Tratti" html={monster.tratti} />
-      <Section title="Azioni" html={monster.azioni} />
-      <Section title="Azioni Bonus" html={monster.azioni_bonus || ""} />
-      <Section title="Reazioni" html={monster.reazioni} />
-      <Section title="Azioni Leggendarie" html={monster.azioni_leggendarie} />
-      <Section title="Descrizione" html={monster.descrizione} />
+      <Section title="Tratti" html={monster.tratti} legacy={legacy} />
+      <Section title="Azioni" html={monster.azioni} legacy={legacy} />
+      <Section title="Azioni Bonus" html={monster.azioni_bonus || ""} legacy={legacy} />
+      <Section title="Reazioni" html={monster.reazioni} legacy={legacy} />
+      <Section title="Azioni Leggendarie" html={monster.azioni_leggendarie} legacy={legacy} />
+      <Section title="Descrizione" html={monster.descrizione} legacy={legacy} />
       {source && (
         <aside aria-label="Fonte della scheda" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
-          <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>
+          <p>Testo integrale: {source.document} italiano — {source.sourceName}.</p>
+          {source.adaptation && <p>{source.adaptation}</p>}
+          {source.pages.length > 1 && <p>Pagine della fonte: {source.pages.join(", ")}.</p>}
           <a className="underline underline-offset-4" href={`${source.sourceUrl}#page=${source.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {source.page}</a>
           {" · "}
           <Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
