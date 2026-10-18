@@ -1,5 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.dndbeyond.com",
+        pathname: "/avatars/thumbnails/47138/549/1000/1000/638741963682090474.jpeg",
+        search: "",
+      },
+      {
+        protocol: "https",
+        hostname: "www.dndbeyond.com",
+        pathname: "/avatars/thumbnails/47139/138/1000/1000/638741964495949233.jpeg",
+        search: "",
+      },
+    ],
+  },
   async headers() {
     return [
       {
