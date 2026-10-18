@@ -109,9 +109,10 @@ export default async function HomePage() {
           Wizards of the Coast o dei detentori dei marchi originali. Tutti i
           marchi registrati appartengono ai rispettivi proprietari.
         </p>
-        <p className="py-6 text-center text-xs text-muted">
-          <Link className="underline underline-offset-4" href="/fonti">Fonti e licenze</Link>
-        </p>
+        <nav aria-label="Collegamenti del sito" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 py-4 text-xs text-muted">
+          <Link className="inline-flex min-h-11 items-center rounded-sm underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary" href="/fonti">Fonti e licenze</Link>
+          <Link className="inline-flex min-h-11 items-center rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary" href="/admin">Area riservata</Link>
+        </nav>
       </footer>
     </div>
   );
