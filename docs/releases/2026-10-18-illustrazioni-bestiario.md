@@ -48,3 +48,7 @@ File condivisi cambiati rispetto alla prova: `lib/monster-art-preview.ts`, `next
 ## Crediti compatti — richiesta successiva
 
 Daniele ha chiesto di lasciare in ogni scheda solo la riga «Illustrazione © Wizards of the Coast LLC. Fonte: D&D Beyond», mantenendo il collegamento alla fonte individuale. Branch `ui/compact-art-credits-20261018`, base `fd361e5`. Rimossa la dicitura «Anteprima grafica»; disclaimer fan, Fan Content Policy e distinzione dalle licenze SRD trasferiti nella sezione «Crediti delle illustrazioni» di `/fonti`, identificata da `crediti-illustrazioni`. Modifiche condivise limitate a `app/mostro/[id]/page.tsx` e `app/fonti/page.tsx`. Registro immagini, dati, attivazione solo in preview e lavoro iPhone invariati.
+
+## Rilascio autorizzato
+
+Il 18 ottobre Daniele ha chiesto esplicitamente «Pubblica tutto e dimmi quante e quali schede rimangono senza foto». Branch `release/official-art-20261018`, base `b1c9717`. Il selettore viene quindi abilitato anche per `VERCEL_ENV=production`; sviluppo e ID sconosciuti restano esclusi. Conteggio ricontrollato: 336 illustrazioni e le cinque schede elencate sopra senza foto su 341 creature. Crediti compatti, fonti e registro invariati. Nessuna modifica ai dati o al client iPhone. La pubblicazione web non costituisce una certificazione della licenza delle immagini. Il commit effettivamente pubblicato e la verifica del dominio sono comunicati nel passaggio di coordinamento dopo il deployment.

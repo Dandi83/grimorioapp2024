@@ -88,6 +88,8 @@ Compilare iOS richiede macOS/Xcode o un servizio appropriato, distinto dall'ambi
 
 ## Verifiche più recenti
 
+- Rilascio illustrazioni autorizzato successivamente da Daniele: branch `release/official-art-20261018`, base crediti compatti `b1c9717`. Selettore abilitato anche in produzione per 336 immagini; cinque schede senza foto restano con sfondo generico. La precedente indicazione «solo preview» descrive la fase iniziale. Verificare il deployment Vercel corrente per il commit live, come sempre; niente integrazione automatica iPhone. Registro in `docs/releases/2026-10-18-illustrazioni-bestiario.md`.
+
 - Illustrazioni ufficiali: Daniele ha approvato la prova grafica Aboleth/Orsogufo (`bb52972`) e la sua estensione al bestiario. Branch web separato `ui/official-creature-art-20261018`: registro di 336 immagini su 341 creature, cinque fallback espliciti, fonte/copyright vicini alle immagini. Resta attivo solo in preview, senza modifiche al database o al client iPhone. Dettagli, fonti mancanti e limiti della verifica dei diritti in `docs/releases/2026-10-18-illustrazioni-bestiario.md`. Il registro delle immagini non è una licenza SRD/Creative Commons. Nessun merge automatico verso iPhone.
 
 - `npm test` completo e `npm run build`: riusciti sulla modifica etichette (`0dcb9f3`).
