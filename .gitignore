@@ -80,3 +80,5 @@ memory/test_credentials.md
 
 # Mobile development
 android-sdk/
+# Prepared catalog artwork is reproduced from the locked manifest before build.
+lib/data/prepared-art/*.webp
