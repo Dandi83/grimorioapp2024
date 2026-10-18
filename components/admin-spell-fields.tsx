@@ -53,8 +53,9 @@ export function SpellComponents({initialValue}: {initialValue:string}) {
       if(next==="custom")setRaw(value);
       else {const parsedRaw=raw.match(/^\s*((?:[VSM](?:\s*,\s*[VSM])*))(?:\s*\(([\s\S]*)\))?\s*$/);setSelected(parsedRaw ? parsedRaw[1].split(",").map(item=>item.trim()) : []);setMaterial(parsedRaw?.[2]||"");}
       setMode(next);setEdited(true);
-    }} className={inputClass}><option value="guided">V / S / M</option><option value="custom">Testo personalizzato</option></select></div>
+    }} className={inputClass}><option value="guided">{["V","S","M"].filter(item=>selected.includes(item)).join(", ") || "Seleziona le componenti…"}</option><option value="custom">Testo personalizzato</option></select></div>
     {mode==="custom" ? <div><label htmlFor="spell-components-custom" className="mb-1.5 block text-sm text-muted-foreground">Componenti complete</label><input id="spell-components-custom" value={raw} onChange={event=>{setRaw(event.target.value);setEdited(true);}} className={inputClass} /></div> : <>
+      {!selected.length && <p role="status" className="text-xs leading-5 text-muted-foreground">Nessuna componente selezionata. Spunta le caselle richieste dall’incantesimo.</p>}
       <div className="flex flex-wrap gap-3">{([['V','Verbali'],['S','Somatiche'],['M','Materiali']] as const).map(([key,label])=><label key={key} className="flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm"><input id={`component-${key}`} type="checkbox" checked={selected.includes(key)} onChange={event=>{const checked=event.target.checked;setSelected(previous=>checked ? [...previous,key] : previous.filter(item=>item!==key));setEdited(true);}} className="h-4 w-4 accent-primary" />{key} · {label}</label>)}</div>
       {selected.includes("M") && <div><label htmlFor="spell-material" className="mb-1.5 block text-sm text-muted-foreground">Materiali, costo ed eventuale consumo</label><input id="spell-material" value={material} onChange={event=>{setMaterial(event.target.value);setEdited(true);}} placeholder="Es. un diamante del valore di 300 mo, che si consuma" className={inputClass} /></div>}
     </>}

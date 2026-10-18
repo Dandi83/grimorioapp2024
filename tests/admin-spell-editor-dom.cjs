@@ -48,6 +48,9 @@ const input=async(el,value)=>{assert.ok(el);await act(async()=>{Object.getOwnPro
 const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal(el?.tagName,'SELECT');await act(async()=>{el.value=value;el.dispatchEvent(new Event('change',{bubbles:true}))})};
 (async()=>{
  await act(async()=>root.render(React.createElement(SpellEditor,{spell:null,onClose:()=>closed++})));
+ assert.equal(document.getElementById('spell-components-mode').selectedOptions[0].textContent,'Seleziona le componenti…','new spell must not appear to have prefilled components');
+ assert.equal(new FormData(document.querySelector('form')).get('componenti'),'');
+ for(const type of ['V','S','M'])assert.equal(document.getElementById('component-'+type).checked,false);
  await input(document.getElementById('nome_italiano'),'Gelo di prova');
  await choose('spell-level','2');
  await choose('spell-school','Invocazione');
@@ -58,6 +61,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  await choose('gittata','18 metri');
  await choose('durata','concentrazione, fino a 1 minuto');
  for(const type of ['V','S','M'])await click(document.getElementById('component-'+type));
+ assert.equal(document.getElementById('spell-components-mode').selectedOptions[0].textContent,'V, S, M','label follows actual selections');
  await input(document.getElementById('spell-material'),'un cristallo del valore di 50 mo, che si consuma');
  const body=document.getElementById('spell-description');
  await act(async()=>{body.innerHTML='Il bersaglio è paralizzato.<br><br>Subisce 2d6 danni da freddo.';body.dispatchEvent(new InputEvent('input',{bubbles:true}))});

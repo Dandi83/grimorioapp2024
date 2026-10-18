@@ -47,3 +47,13 @@ I test DOM non sostituiscono una verifica visiva su iPhone, ancora da
 completare. Nessun salvataggio eseguito sul database reale. Il pulsante
 «Crea nel catalogo» conserva il comportamento di salvataggio diretto;
 «Anteprima» non salva. Rilascio solo in preview, senza promozione in produzione.
+
+## Correzione: componenti inizialmente vuote
+
+La tendina non mostra più l’etichetta generica «V / S / M» per un nuovo
+incantesimo. Mostra «Seleziona le componenti…» e il messaggio «Nessuna
+componente selezionata»; le caselle partono tutte vuote. Dopo la scelta,
+l’etichetta mostra soltanto le componenti realmente selezionate.
+Il test DOM riproduce il problema segnalato e verifica valore iniziale vuoto,
+caselle non selezionate e aggiornamento dell’etichetta. I valori dei record
+esistenti restano conservati. Nessuna modifica ai dati salvati.
