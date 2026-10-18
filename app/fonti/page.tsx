@@ -1,13 +1,22 @@
 import Link from "next/link";
 import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
 
-export const metadata = { title: "Fonti e licenze — GrimorioApp" };
+export const metadata = { title: "Info, fonti e licenze — GrimorioApp" };
 
 export default function SourcesPage() {
   return (
     <article className="space-y-6 p-6">
-      <Link href="/grimorio" className="text-sm text-primary">← Torna al Grimorio</Link>
-      <h1 className="font-serif text-3xl font-bold">Fonti e licenze</h1>
+      <Link href="/" className="inline-flex min-h-11 items-center text-sm text-primary">← Torna alla Home</Link>
+      <h1 className="font-serif text-3xl font-bold">Info, fonti e licenze</h1>
+      <section aria-labelledby="project-info" className="space-y-3 text-sm leading-6 text-muted">
+        <h2 id="project-info" className="font-serif text-xl font-bold text-foreground">Informazioni sul progetto</h2>
+        <p>
+          * Progetto fan-made a scopo hobbistico.
+          Nessuna affiliazione, sponsorizzazione o approvazione da parte di
+          Wizards of the Coast o dei detentori dei marchi originali. Tutti i
+          marchi registrati appartengono ai rispettivi proprietari.
+        </p>
+      </section>
       <section className="space-y-4 font-serif text-[1.05rem] leading-7">
         <h2 className="text-xl font-bold">System Reference Document 5.2.1 italiano</h2>
         <p>{srdAttribution}</p>

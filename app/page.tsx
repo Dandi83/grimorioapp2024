@@ -36,17 +36,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className={styles.footer}>
-        <p>
-          * Progetto fan-made a scopo hobbistico.
-          Nessuna affiliazione, sponsorizzazione o approvazione da parte di
-          Wizards of the Coast o dei detentori dei marchi originali. Tutti i
-          marchi registrati appartengono ai rispettivi proprietari.
-        </p>
-        <nav aria-label="Collegamenti del sito" className={styles.siteLinks}>
-          <Link href="/fonti">Fonti e licenze</Link>
-          <Link href="/admin">Area riservata</Link>
-        </nav>
+      <footer className={styles.adminCorner}>
+        <Link href="/admin">Area riservata</Link>
       </footer>
     </div>
   );

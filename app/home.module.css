@@ -19,7 +19,7 @@
 .logo {
   color: var(--color-foreground);
   font-family: var(--font-serif);
-  font-size: 26px;
+  font-size: 32px;
   font-weight: 500;
   white-space: nowrap;
 }
@@ -101,47 +101,28 @@
   color: var(--color-primary);
 }
 
-.footer {
-  padding: 0 24px;
-  color: var(--color-muted);
-  text-align: center;
-}
-
-.footer p {
-  max-width: 540px;
-  margin: 0 auto;
-  font-size: 10px;
-  line-height: 1.5;
-}
-
-.siteLinks {
+.adminCorner {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0 24px;
-  padding: 4px 0;
-  font-size: 11px;
+  justify-content: flex-end;
+  padding: 0 20px 4px;
+  color: var(--color-muted);
+  font-size: 10px;
 }
 
-.siteLinks a {
+.adminCorner a {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
   border-radius: 4px;
 }
 
-.siteLinks a:first-child {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
 .favorites:hover,
-.siteLinks a:hover {
+.adminCorner a:hover {
   color: var(--color-primary);
 }
 
 .favorites:focus-visible,
-.siteLinks a:focus-visible {
+.adminCorner a:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 4px;
 }
@@ -153,7 +134,7 @@
   }
 
   .logo {
-    font-size: 25px;
+    font-size: 29px;
   }
 
   .favorites {

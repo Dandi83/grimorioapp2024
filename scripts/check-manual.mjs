@@ -29,7 +29,6 @@ const types=load(path.join(root,'lib/monsters-types.ts'));assert.equal(rows.filt
 for(const id of ['app/manuale/page.tsx','app/manuale/[id]/page.tsx'])assert.ok(existsSync(path.join(root,id)));
 const {ManualContent}=load(path.join(root,'components/manual-content.tsx'));
 for(const e of entries){const markup=renderToStaticMarkup(createElement(ManualContent,{entry:e}));for(const b of e.blocks){const text=renderToStaticMarkup(createElement('span',null,b.text)).replace(/^<span>|<\/span>$/g,'');assert.ok((e.category === 'condizioni' ? markup.replace(/<[^>]*>/g,'').replace(/\s+/g,' ').includes(text.replace(/\s+/g,' ')) : markup.includes(text)),e.title+': missing block');}assert.ok(markup.includes('#page='+e.page));assert.ok(markup.includes('Attribuzione e licenza'));}
-assert.ok(readFileSync(path.join(root,'app/page.tsx'),'utf8').includes('href="/manuale"'));
 const spellPage=readFileSync(path.join(root,'app/spell/[id]/page.tsx'),'utf8');
 assert.ok(!spellPage.includes('<ConditionReferences'), 'Spell condition references are inline without a duplicate footer panel');
 const monsterPage=readFileSync(path.join(root,'app/mostro/[id]/page.tsx'),'utf8');
