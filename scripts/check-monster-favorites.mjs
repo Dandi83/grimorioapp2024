@@ -57,3 +57,17 @@ assert.deepEqual([...markup.matchAll(/href="\/spell\/([^\"]+)"/g)].map(m=>m[1]),
 assert.deepEqual([...markup.matchAll(/href="\/mostro\/([^\"]+)"/g)].map(m=>m[1]),['eighth','quarter','ahalf','bhalf','c2','z10','unknown'],'Favorite monsters must be ordered by numeric CR including fractions, then Italian name; unknown CR last');
 assert.deepEqual(orderedSpells.map(s=>s.id),originalSpells);assert.deepEqual(orderedMonsters.map(m=>m.id),originalMonsters);assert.deepEqual(favorites,originalFavorites);
 console.log('[favorites] Ascending numeric spell levels and CR (including fractions), alphabetical ties, unknowns last, and unmodified saved data verified.');
+// Public catalog and favorites share SpellRow: original summaries must have plain titles.
+const SpellRow=load(path.join(root,'components/spell-row.tsx')).SpellRow;
+const originalSummaries=JSON.parse(readFileSync(path.join(root,'lib/data/original-descriptions-2024.json'))).spells;
+assert.ok(originalSummaries.some(s=>s.id==='amicizia'),'Include the reported Amicizia regression');
+for(const summary of originalSummaries){
+ const row={...spell,...summary,edizione:'2024'};
+ markup=renderToStaticMarkup(createElement(SpellRow,{spell:row}));
+ const title=markup.match(/<p\b[^>]*>([\s\S]*?)<\/p>/)?.[1];
+ assert.ok(title,`Missing title for ${row.id}`);
+ assert.doesNotMatch(title,/<sup\b|\*/,`No asterisk beside ${row.id} in public lists`);
+ assert.ok(markup.includes(`/spell/${row.id}`));
+ assert.ok(markup.includes('D&amp;D 2024'),'Keep the selected edition label');
+}
+console.log('[spell lists] All 49 original summaries have titles without asterisks; detail links and edition labels preserved.');
