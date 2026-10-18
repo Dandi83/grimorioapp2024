@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "node scripts/check-srd-content.mjs && node scripts/check-srd-rendering.mjs && node scripts/check-srd-additions.mjs && node scripts/check-original-descriptions.mjs && node scripts/check-navigation.mjs && node scripts/check-srd-monster-sample.mjs && node scripts/check-srd-monsters.mjs && node scripts/check-srd-monsters-regressions.mjs && node scripts/check-monster-favorites.mjs && node scripts/check-manual.mjs && node tests/characters.cjs && node tests/paper-sheet.cjs && node tests/digital-sheet.cjs && node tests/generated-character.cjs && node tests/damage-icons.cjs && node tests/monster-provenance.cjs && node tests/legacy-monsters.cjs && node tests/admin-editions.cjs"
+    "test": "node scripts/check-srd-content.mjs && node scripts/check-srd-rendering.mjs && node scripts/check-srd-additions.mjs && node scripts/check-original-descriptions.mjs && node scripts/check-navigation.mjs && node scripts/check-srd-monster-sample.mjs && node scripts/check-srd-monsters.mjs && node scripts/check-srd-monsters-regressions.mjs && node scripts/check-monster-favorites.mjs && node scripts/check-manual.mjs && node tests/characters.cjs && node tests/paper-sheet.cjs && node tests/digital-sheet.cjs && node tests/generated-character.cjs && node tests/damage-icons.cjs && node tests/monster-provenance.cjs && node tests/legacy-monsters.cjs && node tests/admin-editions.cjs && node tests/admin-monster-editor.cjs && node tests/admin-monster-editor-dom.cjs"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
@@ -25,6 +25,7 @@
     "@types/pg": "^8.23.1",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
+    "jsdom": "^26.1.0",
     "tailwindcss": "4.1.13",
     "typescript": "5.9.3"
   }
