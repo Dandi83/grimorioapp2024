@@ -22,7 +22,7 @@ const ITEMS: NavItem[] = [
   },
   {
     href: "/bestiario",
-    label: "Mostri",
+    label: "Bestiario",
     Icon: Skull,
     match: (p) => p.startsWith("/bestiario") || p.startsWith("/mostro"),
   },

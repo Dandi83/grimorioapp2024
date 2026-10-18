@@ -1,49 +1,51 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronDown, Search, Skull, X } from "lucide-react";
+import { ChevronDown, PawPrint, Search, Skull, X } from "lucide-react";
 
 import { MonsterRow } from "@/components/monster-row";
 import {
   gsLabel,
+  computeMonstersMeta,
   isSrdAnimal,
   typeCategory,
   type Monster,
-  type MonstersMeta,
 } from "@/lib/monsters-types";
 
-type FilterKind = "taglia" | "tipo" | "gs" | "raccolta" | null;
+type FilterKind = "taglia" | "tipo" | "gs" | null;
 
 interface Props {
   monsters: Monster[];
-  meta: MonstersMeta;
   initialTaglia: string | null;
   initialTipo: string | null;
   initialGs: string | null;
-  showCollections?: boolean;
   initialRaccolta?: "mostri" | "animali" | null;
 }
 
 export function BestiarioBrowser({
   monsters,
-  meta,
   initialTaglia,
   initialTipo,
   initialGs,
   initialRaccolta,
-  showCollections = false,
 }: Props) {
-  const [raccolta, setRaccolta] = useState<"mostri" | "animali" | null>(showCollections ? initialRaccolta || null : null);
+  const [raccolta, setRaccolta] = useState<"mostri" | "animali">(initialRaccolta || "mostri");
   const [q, setQ] = useState("");
   const [taglia, setTaglia] = useState<string | null>(initialTaglia);
   const [tipo, setTipo] = useState<string | null>(initialTipo);
   const [gs, setGs] = useState<string | null>(initialGs);
   const [openFilter, setOpenFilter] = useState<FilterKind>(null);
 
+  const collections = useMemo(() => ({
+    animali: monsters.filter(isSrdAnimal),
+    mostri: monsters.filter(monster => !isSrdAnimal(monster)),
+  }), [monsters]);
+  const collection = collections[raccolta];
+  const meta = useMemo(() => computeMonstersMeta(collection), [collection]);
+
   const results = useMemo(() => {
     const needle = q.trim().toLowerCase();
-    const filtered = monsters.filter((m) => {
-      if (raccolta && (isSrdAnimal(m) ? "animali" : "mostri") !== raccolta) return false;
+    const filtered = collection.filter((m) => {
       if (needle && !m.nome.toLowerCase().includes(needle)) return false;
       if (taglia && m.taglia !== taglia) return false;
       if (tipo && typeCategory(m.tipo) !== tipo) return false;
@@ -57,12 +59,11 @@ export function BestiarioBrowser({
       if (d !== 0) return d;
       return a.nome.localeCompare(b.nome, "it");
     });
-  }, [monsters, q, taglia, tipo, gs, raccolta]);
+  }, [collection, q, taglia, tipo, gs]);
 
-  const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0) + (raccolta ? 1 : 0);
+  const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0);
 
   const clearFilters = () => {
-    setRaccolta(null);
     setTaglia(null);
     setTipo(null);
     setGs(null);
@@ -74,8 +75,27 @@ export function BestiarioBrowser({
       {/* Sticky header */}
       <div className="sticky top-0 z-30 border-b border-border bg-background/95 px-6 pb-3 pt-6 backdrop-blur">
         <h1 className="mb-4 font-serif text-3xl font-bold text-foreground">
-          Mostri ({monsters.length})
+          Bestiario ({monsters.length})
         </h1>
+
+        <div role="group" aria-label="Sezioni del bestiario" className="mb-4 grid grid-cols-2 gap-1 rounded-2xl border border-border bg-card p-1">
+          {([
+            { value: "mostri", label: "Mostri", Icon: Skull },
+            { value: "animali", label: "Animali", Icon: PawPrint },
+          ] as const).map(({ value, label, Icon }) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={raccolta === value}
+              onClick={() => { if (value !== raccolta) { setRaccolta(value); clearFilters(); } }}
+              className={`flex min-h-11 items-center justify-center gap-2 rounded-xl px-2 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${raccolta === value ? "bg-primary text-primary-foreground" : "text-muted hover:text-foreground"}`}
+            >
+              <Icon size={17} aria-hidden="true" className="shrink-0" />
+              {label}
+              <span className="text-xs tabular-nums opacity-75">({collections[value].length})</span>
+            </button>
+          ))}
+        </div>
 
         {/* Search */}
         <div className="flex h-12 items-center gap-2 rounded-xl border border-border bg-card px-3">
@@ -83,7 +103,9 @@ export function BestiarioBrowser({
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Cerca mostro..."
+            type="search"
+            aria-label={raccolta === "animali" ? "Cerca un animale" : "Cerca un mostro"}
+            placeholder={raccolta === "animali" ? "Cerca animale..." : "Cerca mostro..."}
             autoCorrect="off"
             autoCapitalize="none"
             className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted"
@@ -101,7 +123,6 @@ export function BestiarioBrowser({
 
         {/* Filter chips */}
         <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
-          {showCollections && <Chip label={raccolta === "animali" ? "Animali" : raccolta === "mostri" ? "Mostri A–Z" : "Raccolta"} active={!!raccolta} caret onClick={() => setOpenFilter(openFilter === "raccolta" ? null : "raccolta")} />}
           <Chip
             label={gs ? gsLabel(gs) : "Grado sfida"}
             active={!!gs}
@@ -130,7 +151,6 @@ export function BestiarioBrowser({
         {/* Expanded options */}
         {openFilter && (
           <div className="no-scrollbar -mx-6 mt-2 flex gap-2 overflow-x-auto border-t border-divider bg-card px-6 py-3">
-            {openFilter === "raccolta" && ([{value:null,label:"Tutti"},{value:"mostri",label:"Mostri A–Z"},{value:"animali",label:"Animali"}] as const).map(option => <Option key={option.label} label={option.label} active={raccolta===option.value} onClick={() => {setRaccolta(option.value);setOpenFilter(null);}}/>)}
             {openFilter === "gs" &&
               meta.gradi.map((g) => (
                 <Option
@@ -169,14 +189,17 @@ export function BestiarioBrowser({
               ))}
           </div>
         )}
+        <p className="mt-3 text-xs text-muted" role="status" aria-live="polite">
+          {results.length} {results.length === 1 ? "risultato" : "risultati"}
+        </p>
       </div>
 
       {/* Results */}
       {results.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 px-6 py-24 text-center">
-          <Skull size={48} className="text-muted" />
+          {raccolta === "animali" ? <PawPrint size={48} className="text-muted" /> : <Skull size={48} className="text-muted" />}
           <p className="font-serif text-base italic text-muted">
-            Nessun mostro trovato.
+            {raccolta === "animali" ? "Nessun animale trovato." : "Nessun mostro trovato."}
           </p>
         </div>
       ) : (

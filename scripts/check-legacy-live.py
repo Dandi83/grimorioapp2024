@@ -24,9 +24,16 @@ def norm(text):
 
 
 catalog = fetch('/bestiario')
-assert catalog.h1.get_text() == 'Mostri (340)'
-assert len(catalog.select('a[href^="/mostro/"]')) == 340
-badges = catalog.select('[data-monster-provenance="verified"]')
+animals = fetch('/bestiario?raccolta=animali')
+for page in [catalog, animals]:
+    assert page.h1.get_text() == 'Bestiario (340)'
+assert len(catalog.select('a[href^="/mostro/"]')) == 240
+assert len(animals.select('a[href^="/mostro/"]')) == 100
+catalog_ids = {link['href'] for link in catalog.select('a[href^="/mostro/"]')}
+animal_ids = {link['href'] for link in animals.select('a[href^="/mostro/"]')}
+assert not catalog_ids & animal_ids
+assert len(catalog_ids | animal_ids) == 340
+badges = catalog.select('[data-monster-provenance="verified"]') + animals.select('[data-monster-provenance="verified"]')
 assert len(badges) == 340
 assert sum('D&D 2014' in badge.get_text() for badge in badges) == 10
 assert sum('2024' in badge.get_text() for badge in badges) == 330

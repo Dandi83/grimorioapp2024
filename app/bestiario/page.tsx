@@ -1,10 +1,10 @@
 import { BestiarioBrowser } from "@/components/bestiario-browser";
-import { getAllMonsters, computeMonstersMeta } from "@/lib/monsters";
+import { getAllMonsters } from "@/lib/monsters";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Mostri — Cerca i mostri",
+  title: "Bestiario — Mostri e animali",
 };
 
 export default async function BestiarioPage({
@@ -17,9 +17,7 @@ export default async function BestiarioPage({
 
   return (
     <BestiarioBrowser
-      showCollections={(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production")}
       monsters={monsters}
-      meta={computeMonstersMeta(monsters)}
       initialTaglia={sp.taglia || null}
       initialTipo={sp.tipo || null}
       initialGs={sp.gs || null}

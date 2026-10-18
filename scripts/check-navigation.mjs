@@ -15,8 +15,8 @@ const cases = [
   ['/', '/', 'Home'],
   ['/grimorio', '/grimorio', 'Incantesimi'],
   ['/spell/amicizia', '/grimorio', 'Incantesimi'],
-  ['/bestiario', '/bestiario', 'Mostri'],
-  ['/mostro/test', '/bestiario', 'Mostri'],
+  ['/bestiario', '/bestiario', 'Bestiario'],
+  ['/mostro/test', '/bestiario', 'Bestiario'],
   ['/preferiti', '/preferiti', 'Preferiti'],
 ];
 for (const [path,activeHref,activeLabel] of cases) {
@@ -24,7 +24,7 @@ for (const [path,activeHref,activeLabel] of cases) {
   const html=renderToStaticMarkup(createElement(BottomNav));
   const links=[...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
   assert.equal(links.length,4,'The bottom navigation must have four items, with no dice section');
-  assert.deepEqual(links.map(m=>m[2].replace(/<[^>]*>/g,'')),['Home','Incantesimi','Mostri','Preferiti']);
+  assert.deepEqual(links.map(m=>m[2].replace(/<[^>]*>/g,'')),['Home','Incantesimi','Bestiario','Preferiti']);
   const active=links.filter(m=>m[1].includes('aria-current="page"'));
   assert.equal(active.length,1);
   assert.ok(active[0][1].includes(`href="${activeHref}"`));
