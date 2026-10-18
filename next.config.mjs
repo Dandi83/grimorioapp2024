@@ -14,6 +14,7 @@ const artworkFolders = [...new Set(Object.values(artworks).map(({ src }) => {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: artworkFolders.map(pathname => ({
       protocol: "https", hostname: "www.dndbeyond.com", pathname, search: "",
     })),

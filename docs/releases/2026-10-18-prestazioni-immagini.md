@@ -1,0 +1,30 @@
+# Verifica del peso delle immagini
+
+Richiesta di Daniele: controllare l'impatto delle illustrazioni e, se utile, alleggerire mantenendo la qualità visiva. Base produzione `9613809`; branch `perf/avif-creature-images-20261018`. Nessun lavoro iPhone concorrente risultava nella chat dedicata.
+
+## Misure sulla produzione prima dell'intervento
+
+Le richieste reali all'ottimizzatore di ilgrimorio.app hanno confermato WebP, qualità richiesta 75 e risposta con `Vary: Accept`. Le varianti da 828 pixel hanno questi pesi effettivi:
+
+| Immagine | WebP, byte | AVIF locale, byte | Riduzione |
+| --- | ---: | ---: | ---: |
+| Aboleth | 63.936 | 34.808 | 46% |
+| Orsogufo | 52.868 | 36.493 | 31% |
+| Beholder | 75.486 | 37.565 | 50% |
+| Aquila | 29.216 | 15.315 | 48% |
+
+Altri campioni WebP reali da 828 pixel: Lemure 81.030 byte; Drago rosso antico 40.244 byte. A 1200 pixel richiesti: Aboleth 87.160 byte, Beholder 89.192 byte, Orsogufo ancora 52.868 byte. Quest'ultimo mantiene la larghezza sorgente di 800 pixel: l'ottimizzatore evita già l'ingrandimento artificiale.
+
+Le richieste ripetute alle varianti da 828 pixel hanno restituito `X-Vercel-Cache: HIT`; `Cache-Control: public, max-age=432000, must-revalidate`. Nessuna modifica alla durata della cache. La Home contiene una sola immagine e nessuna illustrazione di creatura; il bestiario non contiene elementi immagine. Le 336 illustrazioni non vengono caricate tutte nell'elenco.
+
+HTML letto senza compressione: Home 17.807 byte, bestiario 1.128.720 byte, Orsogufo 41.471 byte. Questi numeri non misurano il trasferimento HTML compresso. Il catalogo serializzato è un possibile approfondimento separato: non è stato modificato in questo intervento.
+
+## Ottimizzazione
+
+Abilitata la negoziazione `formats: ["image/avif", "image/webp"]` nella configurazione Next. Si conserva la qualità richiesta 75, la risoluzione responsive, le proporzioni, la trasparenza e i file originali. I browser che non accettano AVIF ricevono ancora WebP.
+
+Confronto locale eseguito con la stessa pipeline Sharp della versione Next installata: ridimensionamento senza ingrandimento, WebP 75 e AVIF 47/effort 3 (conversione qualitativa interna Next da 75 a 47). Per Aboleth e Orsogufo i pesi WebP locali coincidono con quelli serviti realmente. AVIF e WebP di Beholder sono stati confrontati visivamente; controllati anche Aboleth, Orsogufo e Aquila. La trasparenza di Beholder e Aquila è presente in entrambi i formati. Non sono stati osservati peggioramenti evidenti alla normale dimensione di consultazione; questo non equivale a compressione matematicamente senza perdita.
+
+AVIF richiede una nuova variante in cache e può costare più tempo alla prima codifica. Non si attribuisce al sito il tempo totale delle richieste dall'ambiente di verifica: anche la Home già in cache ha mostrato circa sei secondi di attesa, quindi tali tempi includono la rete/proxy del sistema di misura e non rappresentano iPhone/4G. PageSpeed Insights mobile ha restituito HTTP 429: nessun punteggio Lighthouse, LCP o Core Web Vitals viene dichiarato verificato.
+
+La verifica dell'anteprima deve controllare `Content-Type`, peso reale AVIF, fallback WebP, caricamento visivo e compatibilità prima del rilascio. Nessun nuovo servizio, acquisto o generazione di immagini. File condiviso modificato: soltanto `next.config.mjs`; fonti e crediti delle immagini invariati. Client iPhone separato.
