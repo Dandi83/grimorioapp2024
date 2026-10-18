@@ -12,6 +12,7 @@ import {
   verifyPasscode,
 } from "@/lib/admin-auth";
 import { slugify } from "@/lib/spells-types";
+import { deleteContentWithEdition } from "@/lib/content-editions";
 
 export interface SpellInput {
   nome_italiano: string;
@@ -119,7 +120,7 @@ export async function deleteSpellAction(formData: FormData) {
   await requireAdmin();
   const id = clean(formData.get("id"));
   if (!id) return;
-  await db.delete(spells).where(eq(spells.id, id));
+  await deleteContentWithEdition("spell", id);
   revalidatePath("/");
   revalidatePath("/grimorio");
   revalidatePath("/admin");

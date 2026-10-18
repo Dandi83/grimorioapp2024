@@ -4,19 +4,22 @@ import type { MonsterProvenance } from "../lib/monsters-types";
 /** Source is checked on the server; the catalog never imports the full SRD. */
 export function MonsterProvenanceBadge({
   source,
+  edition,
   linked = false,
 }: {
   source?: MonsterProvenance;
+  edition?: "2014" | "2024";
   linked?: boolean;
 }) {
   const label = source
     ? linked
       ? `${source.document} · ${source.edition === "2014" ? "D&D 2014" : `D&D 5e (${source.edition})`}`
       : `D&D ${source.edition}`
-    : "Fonte da verificare";
+    : edition ? `D&D ${edition}` : "Fonte da verificare";
   const description = source
     ? `Fonte: ${source.document} italiano, pagina ${source.page}. D&D quinta edizione, regole ${source.edition}.`
-    : "Provenienza ed edizione non verificate per questa versione della scheda.";
+    : edition ? `D&D ${edition}: edizione indicata dall’amministratore; fonte e licenza non verificate.`
+      : "Provenienza ed edizione non verificate per questa versione della scheda.";
   const className = `inline-flex max-w-full items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium leading-4 ${
     source ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-card text-muted"
   }`;

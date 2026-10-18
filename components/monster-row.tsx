@@ -35,7 +35,7 @@ export function MonsterRow({ monster }: { monster: Monster }) {
           {typeCategory(monster.tipo) ? ` · ${typeCategory(monster.tipo)}` : ""}
         </p>
         <div className="mt-1.5">
-          <MonsterProvenanceBadge source={monster.provenienza} />
+          <MonsterProvenanceBadge source={monster.provenienza} edition={monster.edizione} />
         </div>
       </Link>
       <button

@@ -140,7 +140,7 @@ export default async function MonsterDetailPage({
       </header>
 
       <div className="px-6 pt-3">
-        <MonsterProvenanceBadge source={source} linked />
+        <MonsterProvenanceBadge source={source} edition={monster.edizione} linked />
         {legacy && <p className="mt-2 text-xs leading-5 text-muted">Questa scheda utilizza le regole 2014. I richiami alle condizioni e agli incantesimi 2024 non sono applicati.</p>}
       </div>
 

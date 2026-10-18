@@ -8,6 +8,7 @@ import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { HtmlText } from "@/components/html-text";
 import { SpellProvenanceMarker } from "@/components/spell-provenance-marker";
+import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { capitalizeWords, getSpellById } from "@/lib/spells";
 import { schoolColor } from "@/lib/school-colors";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
@@ -99,6 +100,7 @@ export default async function SpellDetailPage({
             {titolo}
             <SpellProvenanceMarker id={spell.id} />
           </h1>
+          <RulesEditionBadge edition={spell.edizione} />
         </div>
       </header>
 
@@ -135,7 +137,7 @@ export default async function SpellDetailPage({
           Descrizione
         </h2>
         {spell.descrizione ? (
-          <HtmlText html={spell.descrizione} damageIcons references={inlineConditionReferences} spellReferences={inlineSpellReferences(spell.descrizione)} />
+          <HtmlText html={spell.descrizione} damageIcons references={spell.edizione === "2014" ? undefined : inlineConditionReferences} spellReferences={spell.edizione === "2014" ? undefined : inlineSpellReferences(spell.descrizione)} />
         ) : (
           <p className="font-serif text-[15px] italic leading-6 text-muted">
             Descrizione non disponibile per questo incantesimo.

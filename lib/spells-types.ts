@@ -3,6 +3,7 @@
 import originalDescriptionIds from "./data/original-description-ids.json";
 
 export interface Spell {
+  edizione?: "2014" | "2024";
   id: string;
   nome_italiano: string;
   livello: string;

@@ -3,6 +3,7 @@ import "server-only";
 import { asc, eq } from "drizzle-orm";
 
 import { db } from "./db";
+import { getContentEditions } from "./content-editions";
 import { spells as spellsTable } from "./db/schema";
 import { parseLivello, type Spell } from "./spells-types";
 import { applySrdDescription } from "./srd-descriptions";
@@ -43,20 +44,22 @@ function toSpell(r: RawRow): Spell {
 }
 
 export async function getAllSpells(options: { includePreview?: boolean } = {}): Promise<Spell[]> {
-  const rows = await db
+  const [rows, editions] = await Promise.all([db
     .select()
     .from(spellsTable)
-    .orderBy(asc(spellsTable.sort_key));
+    .orderBy(asc(spellsTable.sort_key)), getContentEditions("spell")]);
   // The admin always sees only real, editable database rows.
-  return previewSpellRows(rows, options.includePreview === false ? undefined : process.env.VERCEL_ENV).map(toSpell);
+  return previewSpellRows(rows, options.includePreview === false ? undefined : process.env.VERCEL_ENV)
+    .map(row => ({ ...toSpell(row), edizione: editions.get(row.id) }));
 }
 
 export async function getSpellById(id: string): Promise<Spell | undefined> {
-  const rows = await db
+  const [rows, editions] = await Promise.all([db
     .select()
     .from(spellsTable)
     .where(eq(spellsTable.id, id))
-    .limit(1);
+    .limit(1), getContentEditions("spell", id)]);
   const row = rows[0] ?? previewSpellById(id, process.env.VERCEL_ENV);
-  return row ? toSpell(row) : undefined;
+  if (!row) return undefined;
+  return { ...toSpell(row), edizione: editions.get(id) };
 }

@@ -3,6 +3,7 @@ import "server-only";
 import { asc, eq } from "drizzle-orm";
 
 import { db } from "./db";
+import { getContentEditions } from "./content-editions";
 import { monsters as monstersTable } from "./db/schema";
 import { parseGs, type Monster } from "./monsters-types";
 import { previewMonsters, previewMonsterById, getSrdMonsterSource } from "./srd-monsters";
@@ -48,14 +49,15 @@ function toMonster(r: RawRow): Monster {
 }
 
 export async function getAllMonsters(): Promise<Monster[]> {
-  const rows = await db
+  const [rows, editions] = await Promise.all([db
     .select()
     .from(monstersTable)
-    .orderBy(asc(monstersTable.sort_key));
+    .orderBy(asc(monstersTable.sort_key)), getContentEditions("monster")]);
   return previewMonsters(rows.map(toMonster), process.env.VERCEL_ENV).map(monster => {
     const source = getSrdMonsterSource(monster);
     return {
       ...monster,
+      edizione: editions.get(monster.id),
       provenienza: source ? {
         document: source.document,
         edition: source.edition,
@@ -67,10 +69,12 @@ export async function getAllMonsters(): Promise<Monster[]> {
 }
 
 export async function getMonsterById(id: string): Promise<Monster | undefined> {
-  const rows = await db
+  const [rows, editions] = await Promise.all([db
     .select()
     .from(monstersTable)
     .where(eq(monstersTable.id, id))
-    .limit(1);
-  return rows[0] ? toMonster(rows[0]) : previewMonsterById(id, process.env.VERCEL_ENV);
+    .limit(1), getContentEditions("monster", id)]);
+  const monster = rows[0] ? toMonster(rows[0]) : previewMonsterById(id, process.env.VERCEL_ENV);
+  if (!monster) return undefined;
+  return { ...monster, edizione: editions.get(id) };
 }

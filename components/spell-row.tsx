@@ -7,6 +7,7 @@ import { useFavorites } from "@/components/favorites-provider";
 import { capitalizeWords, type Spell } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
 import { SpellProvenanceMarker } from "./spell-provenance-marker";
+import { RulesEditionBadge } from "./rules-edition-badge";
 
 function metaLine(spell: Spell): string {
   if (spell.livello_num === 0) return `Trucchetto · ${spell.scuola}`;
@@ -35,6 +36,7 @@ export function SpellRow({ spell }: { spell: Spell }) {
         <p className="truncate text-xs uppercase tracking-wide text-muted">
           {metaLine(spell)}
         </p>
+        <RulesEditionBadge edition={spell.edizione} />
       </Link>
       <button
         type="button"

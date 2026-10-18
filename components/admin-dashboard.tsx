@@ -15,6 +15,7 @@ import { schoolColor } from "@/lib/school-colors";
 import type { Monster } from "@/lib/monsters-types";
 import { AdminMonsters } from "@/components/admin-monsters";
 import { SpellProvenanceMarker } from "./spell-provenance-marker";
+import { AdminEditionPicker } from "./admin-edition-picker";
 import {
   BookOpen,
   Skull,
@@ -152,6 +153,7 @@ export function AdminDashboard({
               <p className="truncate text-xs text-muted-foreground">
                 {levelLabel(s.livello_num)} · {s.scuola || "—"}
               </p>
+              <AdminEditionPicker key={`${s.id}-${s.edizione ?? "auto"}`} kind="spell" id={s.id} name={s.nome_italiano} edition={s.edizione} />
             </div>
             <Link
               href={`/spell/${s.id}`}

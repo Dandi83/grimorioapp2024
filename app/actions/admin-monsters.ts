@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { monsters } from "@/lib/db/schema";
 import { isAdmin } from "@/lib/admin-auth";
 import { monsterSlugify } from "@/lib/monsters-types";
+import { deleteContentWithEdition } from "@/lib/content-editions";
 
 async function requireAdmin() {
   if (!(await isAdmin())) throw new Error("Non autorizzato");
@@ -115,7 +116,7 @@ export async function deleteMonsterAction(formData: FormData) {
   await requireAdmin();
   const id = clean(formData.get("id"));
   if (!id) return;
-  await db.delete(monsters).where(eq(monsters.id, id));
+  await deleteContentWithEdition("monster", id);
   revalidatePath("/bestiario");
   revalidatePath("/admin");
 }

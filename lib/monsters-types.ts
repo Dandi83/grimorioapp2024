@@ -13,6 +13,7 @@ export interface MonsterProvenance {
 }
 
 export interface Monster {
+  edizione?: "2014" | "2024";
   id: string;
   nome: string;
   tipo: string;

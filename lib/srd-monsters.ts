@@ -8,8 +8,8 @@ const previewRecords = [...currentRecords, ...legacy.records];
 const recordsById = new Map(previewRecords.map(record => [record.monster.id, record]));
 const legacyIds = new Set(legacy.records.map(record => record.monster.id));
 /** Rules edition stays isolated even when a later edit invalidates exact attribution. */
-export function usesLegacyMonsterRules(monster: Pick<Monster, "id">): boolean {
-  return legacyIds.has(monster.id);
+export function usesLegacyMonsterRules(monster: Pick<Monster, "id" | "edizione">): boolean {
+  return monster.edizione ? monster.edizione === "2014" : legacyIds.has(monster.id);
 }
 function available(environment: string | undefined): Monster[] {
   if (environment === "preview" || environment === "production") return previewRecords.map(record => record.monster);
