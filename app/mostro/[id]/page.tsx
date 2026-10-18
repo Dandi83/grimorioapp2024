@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
+import { ShareButton } from "@/components/share-button";
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { ReferenceText, MonsterText } from "@/components/html-text";
 import { getMonsterById } from "@/lib/monsters";
@@ -22,11 +23,17 @@ export async function generateMetadata({
   const { id } = await params;
   const monster = await getMonsterById(id);
   if (!monster) return { title: "Mostro non trovato" };
+  const description = monster.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
+    `${monster.nome}, ${monster.tipo}.`;
+  const url = `https://ilgrimorio.app/mostro/${encodeURIComponent(monster.id)}`;
   return {
     title: `${monster.nome} — Bestiario GrimorioApp`,
-    description:
-      monster.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
-      `${monster.nome}, ${monster.tipo}.`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${monster.nome} — Il Grimorio.App`, description, url, type: "website",
+      images: [{ url: "https://ilgrimorio.app/hero-bestiario.png", alt: monster.nome }],
+    },
   };
 }
 
@@ -117,6 +124,7 @@ export default async function MonsterDetailPage({
           }}
         />
         <BackButton />
+        <ShareButton path={`/mostro/${encodeURIComponent(monster.id)}`} title={monster.nome} />
         <FavoriteButton id={`mostro:${monster.id}`} />
         <div className="absolute inset-x-0 bottom-0 p-6">
           <span

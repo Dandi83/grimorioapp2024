@@ -63,7 +63,7 @@ const page=loadTs('../app/mostro/[id]/page.tsx',{
   '@/components/condition-references':{ConditionReferences:()=>null},
   '@/components/spell-references':{SpellReferences:()=>null},
   '@/components/back-button':{BackButton:()=>null},
-  '@/components/favorite-button':{FavoriteButton:()=>null},
+  '@/components/share-button':{ShareButton:()=>null},'@/components/favorite-button':{FavoriteButton:()=>null},
   '@/components/html-text':loadTs('../components/html-text.tsx'),
   '@/lib/monsters':{getMonsterById:async id=>id===selected.id?selected:undefined},
   '@/lib/spell-references':loadTs('../lib/spell-references.ts'),

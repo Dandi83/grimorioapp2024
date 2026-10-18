@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
+import { ShareButton } from "@/components/share-button";
 import { HtmlText } from "@/components/html-text";
 import { SpellProvenanceMarker } from "@/components/spell-provenance-marker";
 import { RulesEditionBadge } from "@/components/rules-edition-badge";
@@ -25,11 +26,17 @@ export async function generateMetadata({
   const spell = await getSpellById(id);
   if (!spell) return { title: "Incantesimo non trovato" };
   const titolo = capitalizeWords(spell.nome_italiano);
+  const description = spell.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
+    `${titolo}, incantesimo di ${spell.scuola}.`;
+  const url = `https://ilgrimorio.app/spell/${encodeURIComponent(spell.id)}`;
   return {
     title: `${titolo} — GrimorioApp`,
-    description:
-      spell.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
-      `${titolo}, incantesimo di ${spell.scuola}.`,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: `${titolo} — Il Grimorio.App`, description, url, type: "website",
+      images: [{ url: "https://ilgrimorio.app/hero-libro.png", alt: titolo }],
+    },
   };
 }
 
@@ -84,6 +91,7 @@ export default async function SpellDetailPage({
           }}
         />
         <BackButton />
+        <ShareButton path={`/spell/${encodeURIComponent(spell.id)}`} title={titolo} />
         <FavoriteButton id={spell.id} />
         <div className="absolute inset-x-0 bottom-0 p-6">
           <span
