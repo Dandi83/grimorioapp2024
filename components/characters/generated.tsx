@@ -3,12 +3,13 @@ import type {ReactNode} from 'react';
 import {digitalGroup,digitalGroups,abilityNames,type DigitalGroup} from '@/lib/digital-sheet';
 import {getPaperValue} from '@/lib/paper-sheet';
 import type {Character} from '@/lib/characters';
+import {CharacterDashboard} from './dashboard';
 function ContentSection({title,children}:{title:string;children:ReactNode}){
  return <section className="px-6 pb-5"><h2 className="mb-3 border-b border-primary/25 pb-2 text-[11px] font-bold uppercase tracking-wider text-primary">{title}</h2>{children}</section>;
 }
 function Line({label,value}:{label:string;value:string}) {return value.trim()?<p className="whitespace-pre-wrap break-words text-[15px] leading-7"><strong className="font-bold text-primary">{label}.</strong> {value}</p>:null}
 function Cell({label,value}:{label:string;value:string}) {return <div className="min-w-0 rounded-xl border border-border bg-card p-3"><p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted">{label}</p><p className="break-words font-serif text-xl leading-6 text-foreground">{value||'—'}</p></div>}
-export function GeneratedCharacterSheet({c}:{c:Character}) {
+export function GeneratedCharacterSheet({c,onChange}:{c:Character;onChange?:(next:Character)=>void}) {
  const value=(name:string)=>String(getPaperValue(c,name));
  const checked=(name:string)=>getPaperValue(c,name)===true||getPaperValue(c,name)==='Yes';
  const used=(group:DigitalGroup)=>group.fields.filter(f=>f.type==='checkbox'&&checked(f.name)).length;
@@ -20,6 +21,8 @@ export function GeneratedCharacterSheet({c}:{c:Character}) {
  const features=digitalGroups.filter(g=>g.id.startsWith('feature-')&&populated(g));
  const subtitle=[value('Razza'),value('Background'),value('Allineamento')].filter(Boolean).join(' · ');
  return <article className="generated-character -mx-5 mt-4 overflow-hidden rounded-t-2xl border-t border-primary/20 bg-background" aria-label="Scheda personaggio generata">
+ <CharacterDashboard c={c} onChange={onChange}/>
+ <details className="pg-full-sheet"><summary>Tutti i parametri della scheda · dettagli completi</summary>
  <header className="relative flex min-h-[300px] items-end overflow-hidden">
  {/* The exact same atmospheric backdrop and visual hierarchy used by monster details. */}
  {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -43,6 +46,7 @@ export function GeneratedCharacterSheet({c}:{c:Character}) {
  <ContentSection title="Talenti, privilegi e capacità">{features.map(g=><div key={g.id} className="mb-4 border-b border-border/60 pb-3"><p className="whitespace-pre-wrap break-words text-[15px] leading-7">{value(g.fields[0].name)||g.title}</p><p className="mt-1 text-xs leading-6 text-muted">Recupero: {checked(g.fields[1].name)?'riposo lungo':'riposo breve o lungo'} · Usi spesi: {used({...g,fields:g.fields.slice(2)})} / 5</p></div>)}{c.resources.map(r=><Line key={r.id} label={r.name} value={`${r.current} / ${r.max} usi disponibili${r.recovery?` · ${r.recovery}`:''}`}/>)}{c.features&&<p className="mt-2 whitespace-pre-wrap break-words text-[15px] leading-7">{c.features}</p>}{!features.length&&!c.resources.length&&!c.features&&<p className="text-sm text-muted">Nessuna capacità compilata.</p>}</ContentSection>
  <ContentSection title="Identità e progressione"><div className="space-y-1">{identity.fields.filter(f=>!['Nome','Classe e livello','Razza','Background','Allineamento'].includes(f.name)).map(f=><Line key={f.name} label={f.label} value={value(f.name)}/>)}</div></ContentSection>
  {c.description&&<ContentSection title="Descrizione"><p className="whitespace-pre-wrap break-words text-[15px] leading-7">{c.description}</p></ContentSection>}
- <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-6 text-muted">Scheda generata dai dati compilati. Usa “Modifica scheda” per aggiornarli, poi “Genera scheda” per ottenere il nuovo risultato. Le modifiche restano in questa sessione: il salvataggio cloud non è ancora attivo.</aside>
+ </details>
+ <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-6 text-muted">Usa i comandi rapidi per aggiornare la plancia oppure “Modifica scheda” per tutti i campi. Le modifiche restano in questa sessione: il salvataggio cloud non è ancora attivo.</aside>
  </article>;
 }
