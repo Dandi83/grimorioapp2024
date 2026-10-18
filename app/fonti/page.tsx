@@ -37,6 +37,11 @@ export default function SourcesPage() {
           o non ufficiale, né attribuisce ai riepiloghi la licenza del documento SRD.
         </p>
       </section>
+      <section className="space-y-3 text-sm leading-6 text-muted">
+        <h2 className="font-serif text-xl font-bold text-foreground">Icone dei tipi di danno</h2>
+        <p>Icone di Baldur’s Gate 3 © Larian Studios, consultate tramite BG3 Wiki. Sono elementi grafici distinti dai testi SRD; GrimorioApp non è affiliata a Larian Studios.</p>
+        <p><a className="text-primary underline underline-offset-4" href="https://bg3.wiki/wiki/Category:Damage_type_icons" target="_blank" rel="noreferrer">Icone originali e attribuzione</a></p>
+      </section>
     </article>
   );
 }

@@ -30,15 +30,43 @@ const SLOT_HEADING_RE = new RegExp(
   "gi",
 );
 
-function InlineHtmlText({ html }: { html: string }) {
+const DAMAGE_TYPES: Record<string, string> = {
+  fuoco: "fire", freddo: "cold", ghiaccio: "cold", fulmine: "lightning", tuono: "thunder",
+  veleno: "poison", acido: "acid", forza: "force", necrotico: "necrotic", necrotici: "necrotic",
+  radiante: "radiant", radianti: "radiant", psichico: "psychic", psichici: "psychic",
+  contundente: "bludgeoning", contundenti: "bludgeoning", perforante: "piercing", perforanti: "piercing",
+  tagliente: "slashing", taglienti: "slashing",
+};
+const DAMAGE_WORDS = new RegExp(`\\b(${Object.keys(DAMAGE_TYPES).join("|")})\\b`, "gi");
+
+function InlineHtmlText({ html, damageIcons = false }: { html: string; damageIcons?: boolean }) {
   const nodes: ReactNode[] = [];
   const stack: string[] = [];
   let key = 0;
   let last = 0;
+  let plainEmitted = "";
 
   const emit = (text: string) => {
     const decoded = decodeEntities(text);
     if (!decoded) return;
+    let content: ReactNode = decoded;
+    if (damageIcons) {
+      const decorated: ReactNode[] = [];
+      let end = 0;
+      for (const match of decoded.matchAll(DAMAGE_WORDS)) {
+        const before = (plainEmitted + decoded.slice(0, match.index)).split(/[.!?;\n]/).pop() || "";
+        // Only damage/resistance contexts: never decorate the Forza ability or ambient fire.
+        const context = before.match(/\b(?:dann[oi]|resistenz[ae]|immunit[àa]|vulnerabilit[àa])(?=\s|[,:;]|$)[^.!?;\n]{0,180}$/i);
+        if (!context || /\b(?:tiro|prova|punteggio|caratteristica|modificatore|muro)\b/i.test(context[0])) continue;
+        decorated.push(decoded.slice(end, match.index));
+        const type = DAMAGE_TYPES[match[0].toLowerCase()];
+        decorated.push(<span key={match.index} data-damage-type={type} className="inline-block whitespace-nowrap">{match[0]}<img src={`/damage-icons/${type}.png`} alt="" aria-hidden="true" title={`Danni: ${match[0]}`} width={18} height={18} className="ml-1 inline-block h-[18px] w-[18px] align-[-3px] object-contain" /></span>);
+        end = match.index + match[0].length;
+      }
+      decorated.push(decoded.slice(end));
+      content = decorated;
+    }
+    plainEmitted += decoded;
     const bold = stack.includes("b") || stack.includes("strong");
     const italic = stack.includes("i") || stack.includes("em");
     const className = [
@@ -50,10 +78,10 @@ function InlineHtmlText({ html }: { html: string }) {
     nodes.push(
       className ? (
         <span key={key++} className={className}>
-          {decoded}
+          {content}
         </span>
       ) : (
-        <Fragment key={key++}>{decoded}</Fragment>
+        <Fragment key={key++}>{content}</Fragment>
       ),
     );
   };
@@ -67,7 +95,7 @@ function InlineHtmlText({ html }: { html: string }) {
     const tag = m[2].toLowerCase();
     const isSelf = !!m[3] || tag === "br";
     if (isSelf) {
-      if (tag === "br") nodes.push(<br key={key++} />);
+      if (tag === "br") { nodes.push(<br key={key++} />); plainEmitted += "\n"; }
     } else if (isClose) {
       const idx = stack.lastIndexOf(tag);
       if (idx >= 0) stack.splice(idx, 1);
@@ -85,16 +113,16 @@ function InlineHtmlText({ html }: { html: string }) {
   );
 }
 
-function SpellProse({ html }: { html: string }) {
+function SpellProse({ html, damageIcons = false }: { html: string; damageIcons?: boolean }) {
   const matches = [...html.matchAll(SLOT_HEADING_RE)];
-  if (matches.length === 0) return <InlineHtmlText html={html} />;
+  if (matches.length === 0) return <InlineHtmlText html={html} damageIcons={damageIcons} />;
 
   const sections: ReactNode[] = [];
   let last = 0;
   const addProse = (part: string) => {
     const text = part.replace(/^(?:\s|<br\s*\/?>)+|(?:\s|<br\s*\/?>)+$/gi, "");
     if (text.replace(/<[^>]+>/g, "").trim()) {
-      sections.push(<InlineHtmlText key={sections.length} html={text} />);
+      sections.push(<InlineHtmlText key={sections.length} html={text} damageIcons={damageIcons} />);
     }
   };
   for (const match of matches) {
@@ -115,8 +143,8 @@ function SpellProse({ html }: { html: string }) {
 }
 
 /** Preserve the source tables without allowing attributes or executable markup. */
-export function HtmlText({ html }: { html: string }) {
-  if (!html?.includes("<pre>")) return <SpellProse html={html || ""} />;
+export function HtmlText({ html, damageIcons = false }: { html: string; damageIcons?: boolean }) {
+  if (!html?.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} />;
   const parts = html.split(/(<pre>[\s\S]*?<\/pre>)/g);
   return (
     <div className="min-w-0 max-w-full space-y-5">
@@ -134,7 +162,7 @@ export function HtmlText({ html }: { html: string }) {
           );
         }
         const text = part.replace(/^(?:<br>)+|(?:<br>)+$/g, "");
-        return text ? <SpellProse key={index} html={text} /> : null;
+        return text ? <SpellProse key={index} html={text} damageIcons={damageIcons} /> : null;
       })}
     </div>
   );

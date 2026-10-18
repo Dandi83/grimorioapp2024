@@ -134,7 +134,7 @@ export default async function SpellDetailPage({
           Descrizione
         </h2>
         {spell.descrizione ? (
-          <HtmlText html={spell.descrizione} />
+          <HtmlText html={spell.descrizione} damageIcons />
         ) : (
           <p className="font-serif text-[15px] italic leading-6 text-muted">
             Descrizione non disponibile per questo incantesimo.
@@ -144,7 +144,7 @@ export default async function SpellDetailPage({
       {original?.statBlockSummary && (
         <section className="px-6 pb-6">
           <h2 className="mb-3 font-serif text-lg font-semibold text-primary">Spirito richiamato — riepilogo</h2>
-          <HtmlText html={original.statBlockSummary} />
+          <HtmlText html={original.statBlockSummary} damageIcons />
           <p className="mt-3 text-xs leading-5 text-muted">
             Riepilogo operativo: per tutti i dettagli della creatura consulta la scheda 2024 collegata qui sotto.
             Il bonus di competenza dello spirito è il tuo; le CD indicate usano la tua CD degli incantesimi.
