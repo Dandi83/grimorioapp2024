@@ -5,3 +5,7 @@ export function findReferencedSpells(html: string) {
   const italic = [...html.matchAll(/<em>([\s\S]*?)<\/em>/g)].map(match => normalize(match[1].replace(/<[^>]*>/g," ").replace(/\([^)]*\)/g,"")));
   return index.filter(spell => italic.some(text => text.split(/[,;]/).some(part => normalize(part) === normalize(spell.name))));
 }
+
+export function inlineSpellReferences(html: string) {
+  return findReferencedSpells(html).map(spell => ({ label: spell.name, href: `/spell/${spell.id}` }));
+}

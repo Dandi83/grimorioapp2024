@@ -1,3 +1,4 @@
+import { inlineSpellReferences } from "@/lib/spell-references";
 import { inlineConditionReferences } from "@/lib/conditions";
 import { SpellReferences } from "@/components/spell-references";
 import { ConditionReferences } from "@/components/condition-references";
@@ -6,7 +7,7 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
-import { ReferenceText, HtmlText } from "@/components/html-text";
+import { ReferenceText, MonsterText } from "@/components/html-text";
 import { getMonsterById } from "@/lib/monsters";
 import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
 import { getSrdMonsterSource } from "@/lib/srd-monsters";
@@ -76,7 +77,7 @@ function Section({ title, html }: { title: string; html: string }) {
       <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
         {title}
       </h2>
-      <HtmlText html={html} damageIcons references={inlineConditionReferences} />
+      <MonsterText html={html} damageIcons references={inlineConditionReferences} spellReferences={inlineSpellReferences(html)} />
     </section>
   );
 }
@@ -191,8 +192,6 @@ export default async function MonsterDetailPage({
         </section>
       )}
 
-      {(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><ConditionReferences text={[monster.tratti,monster.azioni,monster.azioni_bonus,monster.reazioni,monster.azioni_leggendarie,monster.immunita,monster.immunita_condizioni].filter(Boolean).join(" ")}/></div>}
-      {(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><SpellReferences html={[monster.tratti,monster.azioni,monster.azioni_bonus,monster.reazioni,monster.azioni_leggendarie].filter(Boolean).join(" ")}/></div>}
       <Section title="Tratti" html={monster.tratti} />
       <Section title="Azioni" html={monster.azioni} />
       <Section title="Azioni Bonus" html={monster.azioni_bonus || ""} />
@@ -207,6 +206,9 @@ export default async function MonsterDetailPage({
           <Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
         </aside>
       )}
+
+      {(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><ConditionReferences text={[monster.tratti,monster.azioni,monster.azioni_bonus,monster.reazioni,monster.azioni_leggendarie,monster.immunita,monster.immunita_condizioni].filter(Boolean).join(" ")}/></div>}
+      {(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><SpellReferences html={[monster.tratti,monster.azioni,monster.azioni_bonus,monster.reazioni,monster.azioni_leggendarie].filter(Boolean).join(" ")}/></div>}
     </article>
   );
 }

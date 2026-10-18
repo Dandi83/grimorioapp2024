@@ -60,7 +60,7 @@ export function DamageText({ text, context = "", precedingText = "", softLineBre
 }
 
 type InlineReference = { label: string; href: string };
-type HtmlTextProps = { html: string; damageIcons?: boolean; references?: readonly InlineReference[] };
+type HtmlTextProps = { html: string; damageIcons?: boolean; references?: readonly InlineReference[]; spellReferences?: readonly InlineReference[] };
 
 
 /** Preserve source text while adding accessible inline links and damage icons. */
@@ -72,8 +72,8 @@ export function ReferenceText({ text, damageIcons = false, precedingText = "", r
     : part;
   if (!references.length) return <>{renderText(text, 0)}</>;
   const escape = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const labels = references.map(reference => reference.label.split(/\s+/).map(word => [...word].map(escape).join("(?:-\\s*\\n\\s*)?")).join("\\s+"));
-  const matcher = new RegExp(`\\b(${labels.join("|")})\\b`, "gi");
+  const labels = [...references].sort((a, b) => b.label.length - a.label.length).map(reference => reference.label.split(/\s+/).map(word => [...word].map(escape).join("(?:-\\s*\\n\\s*)?")).join("\\s+"));
+  const matcher = new RegExp(`(?<![\\p{L}\\p{N}_])(${labels.join("|")})(?![\\p{L}\\p{N}_])`, "giu");
   const nodes: ReactNode[] = [];
   let end = 0;
   for (const match of text.matchAll(matcher)) {
@@ -87,7 +87,7 @@ export function ReferenceText({ text, damageIcons = false, precedingText = "", r
   return <>{nodes}</>;
 }
 
-function InlineHtmlText({ html, damageIcons = false, references = [] }: HtmlTextProps) {
+function InlineHtmlText({ html, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
   const nodes: ReactNode[] = [];
   const stack: string[] = [];
   let key = 0;
@@ -97,10 +97,10 @@ function InlineHtmlText({ html, damageIcons = false, references = [] }: HtmlText
   const emit = (text: string) => {
     const decoded = decodeEntities(text);
     if (!decoded) return;
-    const content = <ReferenceText text={decoded} damageIcons={damageIcons} precedingText={plainEmitted} references={references} />;
-    plainEmitted += decoded;
     const bold = stack.includes("b") || stack.includes("strong");
     const italic = stack.includes("i") || stack.includes("em");
+    const content = <ReferenceText text={decoded} damageIcons={damageIcons} precedingText={plainEmitted} references={italic ? [...references, ...spellReferences] : references} />;
+    plainEmitted += decoded;
     const className = [
       bold ? "font-semibold text-primary" : "",
       italic ? "italic" : "",
@@ -145,16 +145,16 @@ function InlineHtmlText({ html, damageIcons = false, references = [] }: HtmlText
   );
 }
 
-function SpellProse({ html, damageIcons = false, references = [] }: HtmlTextProps) {
+function SpellProse({ html, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
   const matches = [...html.matchAll(SLOT_HEADING_RE)];
-  if (matches.length === 0) return <InlineHtmlText html={html} damageIcons={damageIcons} references={references} />;
+  if (matches.length === 0) return <InlineHtmlText html={html} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />;
 
   const sections: ReactNode[] = [];
   let last = 0;
   const addProse = (part: string) => {
     const text = part.replace(/^(?:\s|<br\s*\/?>)+|(?:\s|<br\s*\/?>)+$/gi, "");
     if (text.replace(/<[^>]+>/g, "").trim()) {
-      sections.push(<InlineHtmlText key={sections.length} html={text} damageIcons={damageIcons} references={references} />);
+      sections.push(<InlineHtmlText key={sections.length} html={text} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />);
     }
   };
   for (const match of matches) {
@@ -175,8 +175,8 @@ function SpellProse({ html, damageIcons = false, references = [] }: HtmlTextProp
 }
 
 /** Preserve the source tables without allowing attributes or executable markup. */
-export function HtmlText({ html, damageIcons = false, references = [] }: HtmlTextProps) {
-  if (!html?.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} />;
+export function HtmlText({ html, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
+  if (!html?.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />;
   const parts = html.split(/(<pre>[\s\S]*?<\/pre>)/g);
   return (
     <div className="min-w-0 max-w-full space-y-5">
@@ -194,8 +194,30 @@ export function HtmlText({ html, damageIcons = false, references = [] }: HtmlTex
           );
         }
         const text = part.replace(/^(?:<br>)+|(?:<br>)+$/g, "");
-        return text ? <SpellProse key={index} html={text} damageIcons={damageIcons} references={references} /> : null;
+        return text ? <SpellProse key={index} html={text} damageIcons={damageIcons} references={references} spellReferences={spellReferences} /> : null;
       })}
     </div>
   );
+}
+
+/** Display-only cleanup of PDF paragraph breaks in creature stat blocks. */
+export function MonsterText({ html, ...props }: HtmlTextProps) {
+  if (!html) return null;
+  if (html.includes("<pre>")) return <HtmlText html={html} {...props} />;
+  let formatted = html;
+  for (let pass = 0; pass < 4; pass++) {
+    const repaired = formatted.replace(/<(strong|b)>([^<]*)<\/\1>\s*(?:<br\s*\/?>\s*)+<(strong|b)>([^<]*)<\/\3>/gi, (whole, tag, left: string, _rightTag, right: string) => {
+      const open = (left.match(/\(/g) || []).length;
+      const close = (left.match(/\)/g) || []).length;
+      return open > close ? `<${tag}>${left.trimEnd()} ${right.trimStart()}</${tag}>` : whole;
+    });
+    if (repaired === formatted) break;
+    formatted = repaired;
+  }
+  formatted = formatted.replace(/(<(strong|b)>\s*(?:\d+\s*\/\s*(?:giorno|riposo)[^<:]*|A\s+volontà)\s*:\s*<\/\2>)/gi, "<br><br>$1<br>");
+  const paragraphs = formatted.split(/(?:<br\s*\/?>\s*){2,}/gi).filter(part => part.replace(/<[^>]+>/g, "").trim());
+  return <div className="min-w-0 space-y-4">{paragraphs.map((part, index) => {
+    const frequency = /^\s*<(?:strong|b)>\s*(?:\d+\s*\/|A\s+volontà)/i.test(part);
+    return <div key={index} data-spell-frequency={frequency ? "true" : undefined} className={frequency ? "ml-1 border-l-2 border-primary/25 pl-3" : undefined}><HtmlText html={part} {...props} /></div>;
+  })}</div>;
 }

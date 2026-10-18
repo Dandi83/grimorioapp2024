@@ -82,3 +82,26 @@ for(const file of ['srd-italiano-5.2.1.json','original-descriptions-2024.json','
  }
 }
 console.log('Condition links: all 15 destinations, inflections, PDF table wraps and',checkedConditionTexts,'source fields passed');
+
+assert.equal(typeof m.exports.MonsterText,'function','monster prose has a dedicated readable layout');
+const lich=JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.2.1-it.json')).records.find(r=>r.monster.id==='lich').monster;
+const lichTraits=renderToStaticMarkup(createElement(m.exports.MonsterText,{html:lich.tratti}));
+const splitHeading=lichTraits.slice(lichTraits.indexOf('Resistenza leggendaria'),lichTraits.indexOf('tana).'));
+assert.ok(!splitHeading.includes('<br'),'wrapped legendary resistance title stays together');
+const lichActions=renderToStaticMarkup(createElement(m.exports.MonsterText,{html:lich.azioni}));
+assert.equal((lichActions.match(/data-spell-frequency/g)||[]).length,3,'each lich spell frequency has a separate group');
+assert.equal(plain(lichActions),plain(render(lich.azioni)),'monster layout preserves all source words and values');
+const spellMention=renderToStaticMarkup(createElement(m.exports.HtmlText,{html:'Il lich lancia <em>paura</em>. La paura svanisce.',spellReferences:[{label:'paura',href:'/spell/paura'}]}));
+assert.equal((spellMention.match(/href="\/spell\/paura"/g)||[]).length,1,'only explicit italic spell mentions become spell links');
+console.log('Monster prose: repaired title, separate spell frequencies, preserved source and explicit inline spell link passed');
+let monsterParagraphs=0;
+for(const file of ['srd-monsters-5.2.1-it.json','srd-animals-5.2.1-it.json'])for(const {monster} of JSON.parse(fs.readFileSync(`lib/data/${file}`)).records)for(const field of ['tratti','azioni','azioni_bonus','reazioni','azioni_leggendarie','descrizione']){
+ const value=monster[field];if(!value)continue;
+ const output=renderToStaticMarkup(createElement(m.exports.MonsterText,{html:value,damageIcons:true,references:allReferences}));
+ assert.equal(plain(output),plain(render(value)),`${monster.id}:${field}: monster paragraph layout preserves source`);
+ monsterParagraphs++;
+}
+console.log('Readable monster paragraphs preserve source in',monsterParagraphs,'fields');
+const accentedSpells=renderToStaticMarkup(createElement(m.exports.HtmlText,{html:'Lancia <em>invisibilità</em> o <em>zona di verità</em>.',spellReferences:[{label:'Invisibilità',href:'/spell/invisibilita'},{label:'Zona di verità',href:'/spell/zona-di-verita'}]}));
+assert.ok(accentedSpells.includes('href="/spell/invisibilita"'),'accented final vowel in spell name remains linkable');
+assert.ok(accentedSpells.includes('href="/spell/zona-di-verita"'),'multiword accented spell name remains linkable');

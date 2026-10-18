@@ -1,3 +1,4 @@
+import { inlineSpellReferences } from "@/lib/spell-references";
 import { inlineConditionReferences } from "@/lib/conditions";
 import { ConditionReferences } from "@/components/condition-references";
 import Image from "next/image";
@@ -135,7 +136,7 @@ export default async function SpellDetailPage({
           Descrizione
         </h2>
         {spell.descrizione ? (
-          <HtmlText html={spell.descrizione} damageIcons references={inlineConditionReferences} />
+          <HtmlText html={spell.descrizione} damageIcons references={inlineConditionReferences} spellReferences={inlineSpellReferences(spell.descrizione)} />
         ) : (
           <p className="font-serif text-[15px] italic leading-6 text-muted">
             Descrizione non disponibile per questo incantesimo.
@@ -145,7 +146,7 @@ export default async function SpellDetailPage({
       {original?.statBlockSummary && (
         <section className="px-6 pb-6">
           <h2 className="mb-3 font-serif text-lg font-semibold text-primary">Spirito richiamato — riepilogo</h2>
-          <HtmlText html={original.statBlockSummary} damageIcons references={inlineConditionReferences} />
+          <HtmlText html={original.statBlockSummary} damageIcons references={inlineConditionReferences} spellReferences={inlineSpellReferences(original.statBlockSummary)} />
           <p className="mt-3 text-xs leading-5 text-muted">
             Riepilogo operativo: per tutti i dettagli della creatura consulta la scheda 2024 collegata qui sotto.
             Il bonus di competenza dello spirito è il tuo; le CD indicate usano la tua CD degli incantesimi.
@@ -160,7 +161,6 @@ export default async function SpellDetailPage({
           )}
         </aside>
       )}
-      {(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><ConditionReferences text={spell.descrizione || ""}/></div>}
       {source && (
         <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
           <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>
@@ -172,6 +172,8 @@ export default async function SpellDetailPage({
           </p>
         </aside>
       )}
+
+      {(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><ConditionReferences text={spell.descrizione || ""}/></div>}
     </article>
   );
 }
