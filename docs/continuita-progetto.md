@@ -88,6 +88,8 @@ Compilare iOS richiede macOS/Xcode o un servizio appropriato, distinto dall'ambi
 
 ## Verifiche più recenti
 
+- Illustrazioni ufficiali: Daniele ha approvato la prova grafica Aboleth/Orsogufo (`bb52972`) e la sua estensione al bestiario. Branch web separato `ui/official-creature-art-20261018`: registro di 336 immagini su 341 creature, cinque fallback espliciti, fonte/copyright vicini alle immagini. Resta attivo solo in preview, senza modifiche al database o al client iPhone. Dettagli, fonti mancanti e limiti della verifica dei diritti in `docs/releases/2026-10-18-illustrazioni-bestiario.md`. Il registro delle immagini non è una licenza SRD/Creative Commons. Nessun merge automatico verso iPhone.
+
 - `npm test` completo e `npm run build`: riusciti sulla modifica etichette (`0dcb9f3`).
 - 389 incantesimi, 241 mostri e 100 animali senza bollini nelle righe, verificati sul dominio ufficiale.
 - Colpo Accurato, Cespuglio risvegliato e Aquila con libro/2024; Sciame di ragni con libro/2014 nei dettagli.

@@ -29,7 +29,7 @@ La Fan Content Policy è stata letta: https://company.wizards.com/en/legal/fanco
 - Allowlist remota limitata a due URL HTTPS, senza parametri query.
 - Verificato il selettore: restituisce immagini solo in preview per i due ID; nessuna immagine in produzione/sviluppo o per ID sconosciuti, anche `__proto__`/`constructor`.
 - `npm test` completo e `npm run build`: passati. Aggiornati solo i loader dei test che importano la pagina per risolvere il nuovo modulo.
-- Verifica del deploy e del caricamento immagini da completare sull'URL preview prima della consegna.
+- Deploy `dpl_5Yw9o5VnkNskmw5VYu8nNUhzVit4` READY: https://grimorioapp2024-39wstutx9-grimorio-app.vercel.app. Aboleth e Orsogufo verificati nel browser con immagini caricate; produzione rimasta al commit `0dcb9f3`. La successiva estensione approvata da Daniele è descritta in `2026-10-18-illustrazioni-bestiario.md`.
 
 ## File condivisi da coordinare con iPhone
 
