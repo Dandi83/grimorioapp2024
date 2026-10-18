@@ -53,6 +53,10 @@ export default async function SpellDetailPage({
   const spell = await getSpellById(id);
   if (!spell) notFound();
 
+  // One reviewable example; public spell rendering is unchanged until approval.
+  const inlineConditions = process.env.VERCEL_ENV === "preview" && spell.id === "blocca-persone"
+    ? [{ label: "paralizzato", href: "/manuale/condizioni-paralizzato" }]
+    : undefined;
   const color = schoolColor(spell.scuola);
   const titolo = capitalizeWords(spell.nome_italiano);
   const badge =
@@ -134,7 +138,7 @@ export default async function SpellDetailPage({
           Descrizione
         </h2>
         {spell.descrizione ? (
-          <HtmlText html={spell.descrizione} damageIcons />
+          <HtmlText html={spell.descrizione} damageIcons references={inlineConditions} />
         ) : (
           <p className="font-serif text-[15px] italic leading-6 text-muted">
             Descrizione non disponibile per questo incantesimo.

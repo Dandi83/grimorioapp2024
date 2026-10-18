@@ -59,7 +59,10 @@ export function DamageText({ text, context = "", precedingText = "", softLineBre
   return <>{decorated}</>;
 }
 
-function InlineHtmlText({ html, damageIcons = false }: { html: string; damageIcons?: boolean }) {
+type InlineReference = { label: string; href: string };
+type HtmlTextProps = { html: string; damageIcons?: boolean; references?: readonly InlineReference[] };
+
+function InlineHtmlText({ html, damageIcons = false, references = [] }: HtmlTextProps) {
   const nodes: ReactNode[] = [];
   const stack: string[] = [];
   let key = 0;
@@ -69,9 +72,23 @@ function InlineHtmlText({ html, damageIcons = false }: { html: string; damageIco
   const emit = (text: string) => {
     const decoded = decodeEntities(text);
     if (!decoded) return;
-    let content: ReactNode = decoded;
-    if (damageIcons) {
-      content = <DamageText text={decoded} precedingText={plainEmitted} />;
+    const renderText = (part: string, offset: number) => damageIcons
+      ? <DamageText text={part} precedingText={plainEmitted + decoded.slice(0, offset)} />
+      : part;
+    let content: ReactNode = renderText(decoded, 0);
+    if (references.length) {
+      const labels = references.map(reference => reference.label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+      const matcher = new RegExp(`\\b(${labels.join("|")})\\b`, "gi");
+      const linked: ReactNode[] = [];
+      let end = 0;
+      for (const match of decoded.matchAll(matcher)) {
+        linked.push(<Fragment key={`text-${match.index}`}>{renderText(decoded.slice(end, match.index), end)}</Fragment>);
+        const reference = references.find(item => item.label.toLowerCase() === match[0].toLowerCase())!;
+        linked.push(<a key={`link-${match.index}`} href={reference.href} className="underline decoration-primary/70 underline-offset-4 hover:text-primary focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary">{match[0]}</a>);
+        end = match.index + match[0].length;
+      }
+      linked.push(<Fragment key="tail">{renderText(decoded.slice(end), end)}</Fragment>);
+      content = linked;
     }
     plainEmitted += decoded;
     const bold = stack.includes("b") || stack.includes("strong");
@@ -120,16 +137,16 @@ function InlineHtmlText({ html, damageIcons = false }: { html: string; damageIco
   );
 }
 
-function SpellProse({ html, damageIcons = false }: { html: string; damageIcons?: boolean }) {
+function SpellProse({ html, damageIcons = false, references = [] }: HtmlTextProps) {
   const matches = [...html.matchAll(SLOT_HEADING_RE)];
-  if (matches.length === 0) return <InlineHtmlText html={html} damageIcons={damageIcons} />;
+  if (matches.length === 0) return <InlineHtmlText html={html} damageIcons={damageIcons} references={references} />;
 
   const sections: ReactNode[] = [];
   let last = 0;
   const addProse = (part: string) => {
     const text = part.replace(/^(?:\s|<br\s*\/?>)+|(?:\s|<br\s*\/?>)+$/gi, "");
     if (text.replace(/<[^>]+>/g, "").trim()) {
-      sections.push(<InlineHtmlText key={sections.length} html={text} damageIcons={damageIcons} />);
+      sections.push(<InlineHtmlText key={sections.length} html={text} damageIcons={damageIcons} references={references} />);
     }
   };
   for (const match of matches) {
@@ -150,8 +167,8 @@ function SpellProse({ html, damageIcons = false }: { html: string; damageIcons?:
 }
 
 /** Preserve the source tables without allowing attributes or executable markup. */
-export function HtmlText({ html, damageIcons = false }: { html: string; damageIcons?: boolean }) {
-  if (!html?.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} />;
+export function HtmlText({ html, damageIcons = false, references = [] }: HtmlTextProps) {
+  if (!html?.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} />;
   const parts = html.split(/(<pre>[\s\S]*?<\/pre>)/g);
   return (
     <div className="min-w-0 max-w-full space-y-5">
@@ -169,7 +186,7 @@ export function HtmlText({ html, damageIcons = false }: { html: string; damageIc
           );
         }
         const text = part.replace(/^(?:<br>)+|(?:<br>)+$/g, "");
-        return text ? <SpellProse key={index} html={text} damageIcons={damageIcons} /> : null;
+        return text ? <SpellProse key={index} html={text} damageIcons={damageIcons} references={references} /> : null;
       })}
     </div>
   );
