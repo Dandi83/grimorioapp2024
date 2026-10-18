@@ -193,3 +193,35 @@
 .lich-sections-preview [data-monster-section] > div.min-w-0 > div {
   margin-top: 0;
 }
+
+/* Compact reference pills replace repeated underlines in the Lich trial. */
+.lich-sections-preview p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]) {
+  display: inline-block;
+  max-width: 100%;
+  margin: 2px 1px;
+  border: 1px solid rgb(212 175 55 / 24%);
+  border-radius: 999px;
+  padding: 1px 8px;
+  background: rgb(212 175 55 / 5%);
+  color: var(--color-foreground);
+  font-size: 0.94em;
+  font-style: normal;
+  line-height: 1.45;
+  text-decoration: none;
+  vertical-align: baseline;
+  transition: background-color 150ms, border-color 150ms;
+}
+
+.lich-sections-preview p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):hover {
+  border-color: var(--color-primary);
+  background: rgb(212 175 55 / 12%);
+}
+
+.lich-sections-preview p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.lich-sections-preview aside[aria-label="Incantesimi citati"] a {
+  text-decoration: none;
+}
