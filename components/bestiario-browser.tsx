@@ -9,13 +9,13 @@ import {
   computeMonstersMeta,
   isSrdAnimal,
   typeCategory,
-  type Monster,
+  type MonsterListItem,
 } from "@/lib/monsters-types";
 
 type FilterKind = "taglia" | "tipo" | "gs" | null;
 
 interface Props {
-  monsters: Monster[];
+  monsters: MonsterListItem[];
   initialTaglia: string | null;
   initialTipo: string | null;
   initialGs: string | null;

@@ -7,14 +7,14 @@ import { SpellRow } from "@/components/spell-row";
 import {
   capitalizeWords,
   levelLabel,
-  type Spell,
+  type SpellListItem,
   type SpellsMeta,
 } from "@/lib/spells-types";
 
 type FilterKind = "livello" | "scuola" | "classe" | null;
 
 interface Props {
-  spells: Spell[];
+  spells: SpellListItem[];
   meta: SpellsMeta;
   initialLivello: number | null;
   initialScuola: string | null;

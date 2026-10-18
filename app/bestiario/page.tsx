@@ -17,7 +17,9 @@ export default async function BestiarioPage({
 
   return (
     <BestiarioBrowser
-      monsters={monsters}
+      monsters={monsters.map(({id, nome, tipo, taglia, grado_sfida, gs_num}) => ({
+        id, nome, tipo, taglia, grado_sfida, gs_num,
+      }))}
       initialTaglia={sp.taglia || null}
       initialTipo={sp.tipo || null}
       initialGs={sp.gs || null}

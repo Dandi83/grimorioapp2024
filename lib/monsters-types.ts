@@ -127,7 +127,9 @@ export interface MonstersMeta {
   gradi: string[];
 }
 
-export function computeMonstersMeta(list: Monster[]): MonstersMeta {
+export type MonsterListItem = Pick<Monster, "id" | "nome" | "tipo" | "taglia" | "grado_sfida" | "gs_num">;
+
+export function computeMonstersMeta(list: readonly MonsterListItem[]): MonstersMeta {
   const taglie = new Set<string>();
   const tipi = new Set<string>();
   const gradi = new Set<string>();

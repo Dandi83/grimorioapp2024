@@ -21,7 +21,9 @@ export default async function GrimorioPage({
 
   return (
     <GrimorioBrowser
-      spells={spells}
+      spells={spells.map(({id, nome_italiano, livello_num, scuola, classi}) => ({
+        id, nome_italiano, livello_num, scuola, classi,
+      }))}
       meta={computeMeta(spells)}
       initialLivello={Number.isNaN(livello as number) ? null : livello}
       initialScuola={sp.scuola || null}

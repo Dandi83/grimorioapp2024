@@ -8,10 +8,10 @@ import {
   gsLabel,
   monsterColor,
   typeCategory,
-  type Monster,
+  type MonsterListItem,
 } from "@/lib/monsters-types";
 
-export function MonsterRow({ monster }: { monster: Monster }) {
+export function MonsterRow({ monster }: { monster: MonsterListItem }) {
   const { isFavorite, toggle } = useFavorites();
   const favId = `mostro:${monster.id}`;
   const fav = isFavorite(favId);

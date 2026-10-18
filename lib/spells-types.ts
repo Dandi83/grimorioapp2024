@@ -101,7 +101,9 @@ export interface SpellsMeta {
   livelli: number[];
 }
 
-export function computeMeta(list: Spell[]): SpellsMeta {
+export type SpellListItem = Pick<Spell, "id" | "nome_italiano" | "livello_num" | "scuola" | "classi">;
+
+export function computeMeta(list: readonly SpellListItem[]): SpellsMeta {
   const scuole = new Set<string>();
   const classi = new Set<string>();
   const livelli = new Set<number>();

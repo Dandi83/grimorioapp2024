@@ -4,16 +4,16 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
-import { capitalizeWords, type Spell } from "@/lib/spells-types";
+import { capitalizeWords, type SpellListItem } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
 
-function metaLine(spell: Spell): string {
+function metaLine(spell: SpellListItem): string {
   if (spell.livello_num === 0) return `Trucchetto · ${spell.scuola}`;
   if (spell.livello_num === -1) return `? · ${spell.scuola || "?"}`;
   return `${spell.livello_num}° liv. · ${spell.scuola}`;
 }
 
-export function SpellRow({ spell }: { spell: Spell }) {
+export function SpellRow({ spell }: { spell: SpellListItem }) {
   const { isFavorite, toggle } = useFavorites();
   const fav = isFavorite(spell.id);
 
