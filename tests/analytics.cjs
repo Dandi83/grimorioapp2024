@@ -34,6 +34,11 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  await analytics.exportAnalytics();
  assert.equal(payload.api_key,'test-public-token');assert.ok(payload.batch.every(e=>e.event.startsWith('grimorio_')&&e.distinct_id.startsWith('grimorio:')&&e.properties.app==='il_grimorio'&&e.properties.$process_person_profile===false&&e.properties.$geoip_disable===true&&e.properties.$ip===null));
  assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events WHERE exported=false')).rows[0].n,0);
+ const delivered=[];
+ for(let i=0;i<5;i++)await analytics.storeAnalyticsEvent(event('share_click'),a,card);
+ global.fetch=async(url,options)=>{delivered.push(...JSON.parse(options.body).batch.map(e=>e.uuid));await new Promise(r=>setTimeout(r,10));return {ok:true}};
+ await Promise.all([analytics.exportAnalytics(),analytics.exportAnalytics()]);
+ assert.equal(delivered.length,5);assert.equal(new Set(delivered).size,5,'concurrent exporters claim disjoint rows');
  await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '91 days'");await analytics.purgeAnalytics();assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events')).rows[0].n,0);
  let admin=false,stored=0;const afterCallbacks=[];
  const {NextRequest}=require('next/server');

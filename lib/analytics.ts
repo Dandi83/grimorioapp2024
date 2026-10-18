@@ -1,4 +1,5 @@
 import "server-only";
+import { randomUUID } from "node:crypto";
 import { pool } from "./db";
 import type { AnalyticsInput } from "./analytics-events";
 export const POSTHOG_DASHBOARD = "https://eu.posthog.com/project/295280/dashboard/1034015";
@@ -18,6 +19,8 @@ async function ensureSchema() {
         received_at timestamptz NOT NULL DEFAULT now(), exported boolean NOT NULL DEFAULT false,
         UNIQUE(view_id, event_name, id)
       )`);
+      await client.query("ALTER TABLE grimorio_analytics_events ADD COLUMN IF NOT EXISTS export_claim uuid");
+      await client.query("ALTER TABLE grimorio_analytics_events ADD COLUMN IF NOT EXISTS export_claimed_at timestamptz");
       await client.query("CREATE INDEX IF NOT EXISTS grimorio_analytics_date_idx ON grimorio_analytics_events (received_at)");
       await client.query("CREATE INDEX IF NOT EXISTS grimorio_analytics_visitor_idx ON grimorio_analytics_events (visitor_id, received_at)");
       await client.query("CREATE UNIQUE INDEX IF NOT EXISTS grimorio_analytics_view_idx ON grimorio_analytics_events (visitor_id, view_id, event_name) WHERE event_name IN ('page_view','card_open','card_read')");
@@ -44,22 +47,30 @@ export async function purgeAnalytics() {
 }
 export async function exportAnalytics() {
   if (!analyticsConfigured()) return;
+  await ensureSchema();
   await purgeAnalytics();
-  let rows;
-  try {rows=(await pool.query(`SELECT * FROM grimorio_analytics_events WHERE exported=false ORDER BY received_at LIMIT 25`)).rows;}
-  catch(error) {if((error as {code?:string}).code==="42P01")return;throw error;}
+  const claim=randomUUID();
+  const {rows}=await pool.query(`UPDATE grimorio_analytics_events SET export_claim=$1,export_claimed_at=now()
+    WHERE id IN (SELECT id FROM grimorio_analytics_events WHERE exported=false
+      AND (export_claimed_at IS NULL OR export_claimed_at<now()-interval '1 minute')
+      ORDER BY received_at LIMIT 25 FOR UPDATE SKIP LOCKED) RETURNING *`,[claim]);
   if (!rows.length) return;
-  const response = await fetch(`${process.env.POSTHOG_INGEST_HOST}/batch/`, {
-    method:"POST", headers:{"Content-Type":"application/json"}, signal:AbortSignal.timeout(8000),
-    body:JSON.stringify({api_key:process.env.POSTHOG_PROJECT_TOKEN,batch:rows.map(r=>({
-      event:`grimorio_${r.event_name}`, distinct_id:`grimorio:${r.visitor_id}`, timestamp:new Date(r.received_at).toISOString(),
-      properties:{app:"il_grimorio",is_test:r.is_test,card_kind:r.card_kind,card_id:r.card_id,card_title:r.title,path:r.path,source:r.source,
-        active_seconds:r.active_seconds,scroll_percent:r.scroll_percent,$session_id:r.session_id,$insert_id:r.id,
-        $current_url:`https://ilgrimorio.app${r.path}`,$pathname:r.path,$host:"ilgrimorio.app",$process_person_profile:false,$geoip_disable:true,$ip:null}
-    }))})
-  });
-  if (!response.ok) throw new Error(`PostHog export failed (${response.status})`);
-  await pool.query("UPDATE grimorio_analytics_events SET exported=true WHERE id=ANY($1::uuid[])",[rows.map(r=>r.id)]);
+  try {
+    const response=await fetch(`${process.env.POSTHOG_INGEST_HOST}/batch/`,{
+      method:"POST",headers:{"Content-Type":"application/json"},signal:AbortSignal.timeout(8000),
+      body:JSON.stringify({api_key:process.env.POSTHOG_PROJECT_TOKEN,batch:rows.map(r=>({
+        uuid:r.id,event:`grimorio_${r.event_name}`,distinct_id:`grimorio:${r.visitor_id}`,timestamp:new Date(r.received_at).toISOString(),
+        properties:{app:"il_grimorio",is_test:r.is_test,card_kind:r.card_kind,card_id:r.card_id,card_title:r.title,path:r.path,source:r.source,
+          active_seconds:r.active_seconds,scroll_percent:r.scroll_percent,$session_id:r.session_id,$insert_id:r.id,
+          $current_url:`https://ilgrimorio.app${r.path}`,$pathname:r.path,$host:"ilgrimorio.app",$process_person_profile:false,$geoip_disable:true,$ip:null}
+      }))})
+    });
+    if(!response.ok)throw new Error(`PostHog export failed (${response.status})`);
+    await pool.query("UPDATE grimorio_analytics_events SET exported=true,export_claim=NULL,export_claimed_at=NULL WHERE export_claim=$1",[claim]);
+  } catch(error) {
+    await pool.query("UPDATE grimorio_analytics_events SET export_claim=NULL,export_claimed_at=NULL WHERE export_claim=$1",[claim]);
+    throw error;
+  }
 }
 export type AnalyticsSummary = {visitors:number;views:number;opens:number;readers:number;sharers:number;copies:number;sharedArrivals:number;newVisitors:number;pending:number};
 export type AnalyticsCardRow = {path:string;title:string;kind:string;opens:number;visitors:number;readers:number;sharers:number};
