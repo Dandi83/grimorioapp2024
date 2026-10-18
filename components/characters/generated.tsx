@@ -9,7 +9,7 @@ function ContentSection({title,children}:{title:string;children:ReactNode}){
 }
 function Line({label,value}:{label:string;value:string}) {return value.trim()?<p className="whitespace-pre-wrap break-words text-[15px] leading-7"><strong className="font-bold text-primary">{label}.</strong> {value}</p>:null}
 function Cell({label,value}:{label:string;value:string}) {return <div className="min-w-0 rounded-xl border border-border bg-card p-3"><p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted">{label}</p><p className="break-words font-serif text-xl leading-6 text-foreground">{value||'—'}</p></div>}
-export function GeneratedCharacterSheet({c,onChange}:{c:Character;onChange?:(next:Character)=>void}) {
+export function GeneratedCharacterSheet({c,onChange,onPortrait}:{c:Character;onChange?:(next:Character)=>void;onPortrait?:(portrait:string)=>void}) {
  const value=(name:string)=>String(getPaperValue(c,name));
  const checked=(name:string)=>getPaperValue(c,name)===true||getPaperValue(c,name)==='Yes';
  const used=(group:DigitalGroup)=>group.fields.filter(f=>f.type==='checkbox'&&checked(f.name)).length;
@@ -21,7 +21,7 @@ export function GeneratedCharacterSheet({c,onChange}:{c:Character;onChange?:(nex
  const features=digitalGroups.filter(g=>g.id.startsWith('feature-')&&populated(g));
  const subtitle=[value('Razza'),value('Background'),value('Allineamento')].filter(Boolean).join(' · ');
  return <article className="generated-character -mx-5 mt-4 overflow-hidden rounded-t-2xl border-t border-primary/20 bg-background" aria-label="Scheda personaggio generata">
- <CharacterDashboard c={c} onChange={onChange}/>
+ <CharacterDashboard c={c} onChange={onChange} onPortrait={onPortrait}/>
  <details className="pg-full-sheet"><summary>Tutti i parametri della scheda · dettagli completi</summary>
  <header className="relative flex min-h-[300px] items-end overflow-hidden">
  {/* The exact same atmospheric backdrop and visual hierarchy used by monster details. */}

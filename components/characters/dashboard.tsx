@@ -1,13 +1,24 @@
 "use client";
-import {useState} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import {Shield,Swords,Sparkles,UserRound,Heart,Backpack,ScrollText,BookOpen,Plus,Minus,Camera} from 'lucide-react';
 import type {Character} from '@/lib/characters';
 import {digitalGroup,digitalGroups,abilityNames} from '@/lib/digital-sheet';
-import {getPaperValue,setPaperValue} from '@/lib/paper-sheet';
+import {getPaperValue} from '@/lib/paper-sheet';
 import {changeDashboardHp,changeAmmo,changeResource} from '@/lib/character-dashboard';
 
-export function CharacterDashboard({c,onChange}:{c:Character;onChange?:(next:Character)=>void}) {
+export function CharacterDashboard({c,onChange,onPortrait}:{c:Character;onChange?:(next:Character)=>void;onPortrait?:(portrait:string)=>void}) {
  const [tab,setTab]=useState('Equipaggiamento');const [amount,setAmount]=useState(1);const [error,setError]=useState('');
+ const portraitReader=useRef<FileReader|null>(null);
+ useEffect(()=>()=>{portraitReader.current?.abort();portraitReader.current=null},[c.id]);
+ function uploadPortrait(file:File|undefined){
+  if(!file)return;
+  if(file.size>3*1024*1024||!['image/png','image/jpeg','image/webp'].includes(file.type)){setError('Scegli un’immagine PNG, JPEG o WebP fino a 3 MB.');return}
+  portraitReader.current?.abort();
+  const reader=new FileReader();portraitReader.current=reader;
+  reader.onload=()=>{if(portraitReader.current!==reader)return;onPortrait?.(String(reader.result));portraitReader.current=null;setError('')};
+  reader.onerror=()=>{if(portraitReader.current===reader){portraitReader.current=null;setError('Impossibile leggere questa immagine. Riprova con un altro file.')}};
+  reader.readAsDataURL(file);
+ }
  const value=(name:string)=>String(getPaperValue(c,name));
  const checked=(name:string)=>getPaperValue(c,name)===true||getPaperValue(c,name)==='Yes';
  const populated=(prefix:string)=>digitalGroups.filter(g=>g.id.startsWith(prefix)&&g.fields.some(f=>f.type==='text'?value(f.name).trim():checked(f.name)));
@@ -22,7 +33,7 @@ export function CharacterDashboard({c,onChange}:{c:Character;onChange?:(next:Cha
  <img src={safePortrait||'/hero-bestiario.png'} alt={safePortrait?`Ritratto di ${c.name}`:''} className={safePortrait?'pg-image':'pg-image pg-placeholder'}/>
  {!safePortrait&&<div className="pg-sigil"><UserRound size={90} strokeWidth={.7}/><span>Il tuo eroe</span></div>}
  <span className="pg-level"><small>LIVELLO</small>{c.level}</span>
- <label className="pg-upload"><Camera size={15}/><span>{safePortrait?'Cambia ritratto':'Carica ritratto'}</span><input aria-label="Carica ritratto personaggio" type="file" accept="image/png,image/jpeg,image/webp" disabled={!onChange} onChange={e=>{const f=e.target.files?.[0];if(!f)return;if(f.size>3*1024*1024||!['image/png','image/jpeg','image/webp'].includes(f.type)){setError('Scegli un’immagine PNG, JPEG o WebP fino a 3 MB.');return}const reader=new FileReader();reader.onload=()=>{onChange?.(setPaperValue(c,'dashboard-portrait',String(reader.result)));setError('')};reader.readAsDataURL(f);e.target.value=''}}/></label>
+ <label className="pg-upload"><Camera size={15}/><span>{safePortrait?'Cambia ritratto':'Carica ritratto'}</span><input aria-label="Carica ritratto personaggio" type="file" accept="image/png,image/jpeg,image/webp" disabled={!onPortrait} onChange={e=>{uploadPortrait(e.target.files?.[0]);e.target.value=''}}/></label>
  </div>
  <div className="pg-identity"><p className="pg-eyebrow">Grimorio · Il tuo personaggio</p><h1>{value('Nome')}</h1><p className="pg-class">{value('Classe e livello')}{c.subclass&&` · ${c.subclass}`}</p><p className="pg-origin">{[value('Razza'),value('Background'),value('Allineamento')].filter(Boolean).join(' · ')}</p>
  <div className="pg-combat">{[[Shield,'Classe armatura',value('Classe armatura')],[Swords,'Iniziativa',value('Iniziativa')],[Sparkles,'Competenza',value('Bonus competenza')]].map(([Icon,label,v])=>{const I=Icon as typeof Shield;return <div key={String(label)}><I size={19}/><strong>{String(v)}</strong><span>{String(label)}</span></div>})}</div>

@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),ts=require('typescript');
 const cache=new Map();function load(file){if(cache.has(file))return cache.get(file);if(file.endsWith('.json'))return JSON.parse(fs.readFileSync(file));const m={exports:{}};new Function('require','module','exports',ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(id=>id.startsWith('.')?load(path.resolve(path.dirname(file),id)+'.ts'):require(id),m,m.exports);cache.set(file,m.exports);return m.exports}
 const {exampleCharacter}=load(path.resolve('lib/characters.ts'));
-const {changeDashboardHp,changeAmmo,changeResource}=load(path.resolve('lib/character-dashboard.ts'));
+const {changeDashboardHp,changeAmmo,changeResource,setDashboardPortrait}=load(path.resolve('lib/character-dashboard.ts'));
 const c=exampleCharacter();c.tempHp=3;
 let n=changeDashboardHp(c,-5);assert.equal(n.hp,14);assert.equal(n.tempHp,0);assert.equal(c.hp,16,'Immutable changes');
 assert.equal(changeDashboardHp(c,100).hp,20);assert.equal(changeDashboardHp(c,-100).hp,0);
@@ -10,4 +10,6 @@ n=changeAmmo(c,fields,-1);assert.equal(fields.filter(k=>n.paperFields[k]===true)
 n=changeAmmo(n,fields,1);assert.equal(fields.filter(k=>n.paperFields[k]===true).length,0);
 for(let i=0;i<30;i++)n=changeAmmo(n,fields,-1);assert.equal(fields.filter(k=>n.paperFields[k]===true).length,20);
 n=changeResource(c,c.resources[0].id,-10);assert.equal(n.resources[0].current,0);assert.equal(changeResource(n,c.resources[0].id,10).resources[0].current,1);
+const latest={...c,hp:9,notes:'Modificato durante il caricamento',paperFields:{custom:'Da conservare'}};
+n=setDashboardPortrait(latest,'data:image/png;base64,AAA');assert.equal(n.hp,9);assert.equal(n.notes,latest.notes);assert.equal(n.paperFields.custom,'Da conservare');assert.equal(n.paperFields['dashboard-portrait'],'data:image/png;base64,AAA');
 console.log('Dashboard: damage, temporary HP, healing caps, immutable updates, ammo mapping and resource boundaries passed');

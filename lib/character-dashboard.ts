@@ -1,5 +1,8 @@
 import {applyDamage,bounded,normalizeCharacter,type Character} from './characters';
 import {getPaperValue,setPaperValue} from './paper-sheet';
+export function setDashboardPortrait(c:Character,portrait:string):Character {
+ return {...c,paperFields:{...c.paperFields,'dashboard-portrait':portrait}};
+}
 
 export function changeDashboardHp(c:Character,delta:number):Character {
  const live={...c,hp:Number(getPaperValue(c,'Ferite')),hpMax:Number(getPaperValue(c,'PUNTI FERITA TOTALI')),tempHp:Number(getPaperValue(c,'PF temp'))};
