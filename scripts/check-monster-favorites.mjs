@@ -68,6 +68,6 @@ for(const summary of originalSummaries){
  assert.ok(title,`Missing title for ${row.id}`);
  assert.doesNotMatch(title,/<sup\b|\*/,`No asterisk beside ${row.id} in public lists`);
  assert.ok(markup.includes(`/spell/${row.id}`));
- assert.ok(markup.includes('D&amp;D5e 2024'),'Keep the selected edition label');
+ assert.doesNotMatch(markup,/D&amp;D5e|lucide-book-open/,'Edition labels belong only inside detail pages');
 }
-console.log('[spell lists] All 49 original summaries have titles without asterisks; detail links and edition labels preserved.');
+console.log('[spell lists] All 49 original summaries have plain titles without edition badges; detail links preserved.');

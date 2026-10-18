@@ -4,7 +4,6 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
-import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import {
   gsLabel,
   monsterColor,
@@ -31,7 +30,6 @@ export function MonsterRow({ monster }: { monster: Monster }) {
           <p className="min-w-0 truncate font-serif text-lg font-semibold text-foreground">
             {monster.nome}
           </p>
-          <MonsterProvenanceBadge source={monster.provenienza} edition={monster.edizione} compact />
         </div>
         <p className="truncate text-xs uppercase tracking-wide text-muted">
           {gsLabel(monster.grado_sfida)} · {monster.taglia}

@@ -6,7 +6,6 @@ import { Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { capitalizeWords, type Spell } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
-import { RulesEditionBadge } from "./rules-edition-badge";
 
 function metaLine(spell: Spell): string {
   if (spell.livello_num === 0) return `Trucchetto · ${spell.scuola}`;
@@ -32,7 +31,6 @@ export function SpellRow({ spell }: { spell: Spell }) {
           <p className="min-w-0 truncate font-serif text-lg font-semibold text-foreground">
             {capitalizeWords(spell.nome_italiano)}
           </p>
-          <RulesEditionBadge edition={spell.edizione} compact />
         </div>
         <p className="truncate text-xs uppercase tracking-wide text-muted">
           {metaLine(spell)}
