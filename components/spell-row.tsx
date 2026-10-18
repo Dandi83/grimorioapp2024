@@ -6,7 +6,6 @@ import { Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { capitalizeWords, type Spell } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
-import { SpellProvenanceMarker } from "./spell-provenance-marker";
 
 function metaLine(spell: Spell): string {
   if (spell.livello_num === 0) return `Trucchetto · ${spell.scuola}`;
@@ -30,7 +29,6 @@ export function SpellRow({ spell }: { spell: Spell }) {
       >
         <p className="truncate font-serif text-lg font-semibold text-foreground">
           {capitalizeWords(spell.nome_italiano)}
-          <SpellProvenanceMarker id={spell.id} />
         </p>
         <p className="truncate text-xs uppercase tracking-wide text-muted">
           {metaLine(spell)}
