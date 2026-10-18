@@ -195,7 +195,7 @@
 }
 
 /* Compact inline reference pills for conditions and cited spells. */
-.monster-sheet p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]) {
+:is(.monster-sheet, .spell-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"]) {
   display: inline-block;
   max-width: 100%;
   margin: 2px 1px;
@@ -212,16 +212,16 @@
   transition: background-color 150ms, border-color 150ms;
 }
 
-.monster-sheet p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):hover {
+:is(.monster-sheet, .spell-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):hover {
   border-color: var(--color-primary);
   background: rgb(212 175 55 / 12%);
 }
 
-.monster-sheet p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):focus-visible {
+:is(.monster-sheet, .spell-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.monster-sheet p a:is([href^="/spell/"], [href^="/manuale/condizioni-"])::first-letter {
+:is(.monster-sheet, .spell-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"])::first-letter {
   text-transform: lowercase;
 }

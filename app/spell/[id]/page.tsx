@@ -1,6 +1,5 @@
 import { inlineSpellReferences } from "@/lib/spell-references";
 import { inlineConditionReferences } from "@/lib/conditions";
-import { ConditionReferences } from "@/components/condition-references";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -65,7 +64,7 @@ export default async function SpellDetailPage({
   const original = getOriginalSource(spell.id, spell.descrizione);
 
   return (
-    <article>
+    <article className="spell-sheet">
       {/* Hero */}
       <header className="relative h-[360px] overflow-hidden">
         <Image
@@ -173,7 +172,6 @@ export default async function SpellDetailPage({
         </aside>
       )}
 
-      {(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><ConditionReferences text={spell.descrizione || ""}/></div>}
     </article>
   );
 }
