@@ -56,6 +56,7 @@ function loadTs(relativePath, dependencies={}) {
 }
 let selected=sample;
 const page=loadTs('../app/mostro/[id]/page.tsx',{
+  '@/lib/prepared-monster-art':{getPreparedMonsterArt:()=>undefined},
   '@/lib/monster-art-preview':loadTs('../lib/monster-art-preview.ts'),
   'next/image':{__esModule:true,default:()=>null},
   'next/link':{__esModule:true,default:({children,...props})=>createElement('a',props,children)},

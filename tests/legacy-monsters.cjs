@@ -39,6 +39,7 @@ function load(relative, deps = {}) {
     'next/link': {__esModule: true, default: ({children, ...props}) => createElement('a', props, children)},
     'next/navigation': {notFound: () => {throw Error('Not found');}},
     '@/components/monster-provenance-badge': {MonsterProvenanceBadge},
+    '@/lib/prepared-monster-art':{getPreparedMonsterArt:()=>undefined},
     '@/lib/monster-art-preview': load('lib/monster-art-preview.ts'),
     '@/components/back-button': {BackButton: () => null},
     '@/components/share-button':{ShareButton:()=>null},'@/components/favorite-button': {FavoriteButton: () => null},

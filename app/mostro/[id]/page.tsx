@@ -13,6 +13,7 @@ import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
 import { getPreviewMonsterArt } from "@/lib/monster-art-preview";
+import { getPreparedMonsterArt } from "@/lib/prepared-monster-art";
 
 export const dynamic = "force-dynamic";
 
@@ -102,6 +103,7 @@ export default async function MonsterDetailPage({
   const source = getSrdMonsterSource(monster);
   const legacy = usesLegacyMonsterRules(monster);
   const artwork = getPreviewMonsterArt(monster.id);
+  const preparedArtwork = getPreparedMonsterArt(monster.id);
   const sottotitolo = monster.sottotitolo_fonte || [monster.taglia, monster.tipo, monster.allineamento]
     .filter(Boolean)
     .join(" · ");
@@ -111,10 +113,12 @@ export default async function MonsterDetailPage({
       {/* Hero */}
       <header className={`relative overflow-hidden ${artwork ? "" : "h-[320px]"}`}>
         {artwork ? <Image
-          src={artwork.src}
+          src={preparedArtwork ?? artwork.src}
           alt={`Illustrazione ufficiale di ${artwork.name}`}
           width={artwork.width}
           height={artwork.height}
+          unoptimized={!!preparedArtwork}
+          placeholder={preparedArtwork ? "blur" : "empty"}
           priority
           sizes="(max-width: 672px) 100vw, 672px"
           className="h-auto w-full"
