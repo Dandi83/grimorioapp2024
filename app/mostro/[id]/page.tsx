@@ -73,7 +73,7 @@ function StatLine({ label, value, damageIcons = false }: { label: string; value:
 function Section({ title, html }: { title: string; html: string }) {
   if (!html) return null;
   return (
-    <section className="px-6 pb-4">
+    <section data-monster-section className="px-6 pb-4">
       <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
         {title}
       </h2>
@@ -98,7 +98,7 @@ export default async function MonsterDetailPage({
     .join(" · ");
 
   return (
-    <article>
+    <article className={monster.id === "lich" ? "lich-sections-preview" : undefined}>
       {/* Hero */}
       <header className="relative h-[320px] overflow-hidden">
         <Image
@@ -150,7 +150,7 @@ export default async function MonsterDetailPage({
       </div>
 
       {/* Caratteristiche */}
-      <section className="px-6 pb-4">
+      <section data-monster-section className="px-6 pb-4">
         <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
           Caratteristiche
         </h2>
