@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
+import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import {
   gsLabel,
   monsterColor,
@@ -33,6 +34,9 @@ export function MonsterRow({ monster }: { monster: Monster }) {
           {gsLabel(monster.grado_sfida)} · {monster.taglia}
           {typeCategory(monster.tipo) ? ` · ${typeCategory(monster.tipo)}` : ""}
         </p>
+        <div className="mt-1.5">
+          <MonsterProvenanceBadge source={monster.provenienza} />
+        </div>
       </Link>
       <button
         type="button"

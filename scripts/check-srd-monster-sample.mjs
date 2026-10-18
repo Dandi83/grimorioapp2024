@@ -59,6 +59,7 @@ const page=loadTs('../app/mostro/[id]/page.tsx',{
   'next/image':{__esModule:true,default:()=>null},
   'next/link':{__esModule:true,default:({children,...props})=>createElement('a',props,children)},
   'next/navigation':{notFound:()=>{throw new Error('Not found');}},
+  '@/components/monster-provenance-badge':loadTs('../components/monster-provenance-badge.tsx'),
   '@/components/condition-references':{ConditionReferences:()=>null},
   '@/components/spell-references':{SpellReferences:()=>null},
   '@/components/back-button':{BackButton:()=>null},

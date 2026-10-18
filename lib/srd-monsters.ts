@@ -30,6 +30,6 @@ export function getSrdMonsterSource(monster: Monster) {
   const expected = record.monster as unknown as Record<string, unknown>;
   const fields = new Set([...Object.keys(expected), "azioni_bonus", "attrezzatura", "immunita", "sottotitolo_fonte"]);
   return [...fields].every(key => (actual[key] ?? "") === (expected[key] ?? ""))
-    ? { sourceUrl: data.sourceUrl, page: record.page, sourceName: record.sourceName }
+    ? { document: "SRD 5.2.1", edition: "2024", sourceUrl: data.sourceUrl, page: record.page, sourceName: record.sourceName }
     : undefined;
 }

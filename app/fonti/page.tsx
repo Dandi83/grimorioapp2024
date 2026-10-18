@@ -23,6 +23,21 @@ export default function SourcesPage() {
         </p>
       </section>
       <section className="space-y-3 text-sm leading-6 text-muted">
+        <h2 className="font-serif text-xl font-bold text-foreground">Provenienza dei mostri</h2>
+        <p>
+          Il bollino sulle creature indica il documento da cui proviene la scheda e
+          l’edizione delle regole. “SRD 5.2.1 · D&amp;D 5e (2024)” identifica il System
+          Reference Document italiano per la quinta edizione aggiornata. Nella scheda,
+          il bollino apre la pagina della fonte ufficiale.
+        </p>
+        <p>
+          La fonte dichiarata è il documento SRD utilizzato, distinto dal Manuale dei
+          Mostri commerciale. L’attribuzione viene verificata confrontando il contenuto
+          della scheda con la trascrizione: per versioni modificate o prive di riscontro
+          viene mostrato “Fonte da verificare”.
+        </p>
+      </section>
+      <section className="space-y-3 text-sm leading-6 text-muted">
         <h2 className="font-serif text-xl font-bold text-foreground">Significato dell’asterisco *</h2>
         <p>
           L’asterisco identifica le descrizioni non trascritte dal SRD. Le 49 schede

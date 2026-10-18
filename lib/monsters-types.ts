@@ -5,6 +5,13 @@ export function isSrdAnimal(monster: {id:string}) { return ANIMAL_IDS.has(monste
 // Tipi e utility PURE per i mostri (nessun accesso al DB) — sicure sia lato
 // client che lato server.
 
+export interface MonsterProvenance {
+  document: string;
+  edition: string;
+  sourceUrl: string;
+  page: number;
+}
+
 export interface Monster {
   id: string;
   nome: string;
@@ -42,6 +49,7 @@ export interface Monster {
   azioni_leggendarie: string;
   descrizione: string;
   gs_num: number; // valore numerico del grado sfida per l'ordinamento
+  provenienza?: MonsterProvenance;
 }
 
 export const SIZES = [

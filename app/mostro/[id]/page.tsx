@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
+import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { ReferenceText, MonsterText } from "@/components/html-text";
 import { getMonsterById } from "@/lib/monsters";
 import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
@@ -136,6 +137,10 @@ export default async function MonsterDetailPage({
           )}
         </div>
       </header>
+
+      <div className="px-6 pt-3">
+        <MonsterProvenanceBadge source={source} linked />
+      </div>
 
       {/* Statistiche base */}
       <div className="flex flex-wrap gap-3 p-6">

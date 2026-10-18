@@ -5,7 +5,7 @@ import { asc, eq } from "drizzle-orm";
 import { db } from "./db";
 import { monsters as monstersTable } from "./db/schema";
 import { parseGs, type Monster } from "./monsters-types";
-import { previewMonsters, previewMonsterById } from "./srd-monsters";
+import { previewMonsters, previewMonsterById, getSrdMonsterSource } from "./srd-monsters";
 
 // Re-export dei tipi/utility puri per comodità (l'accesso DB resta server-only).
 export * from "./monsters-types";
@@ -52,7 +52,18 @@ export async function getAllMonsters(): Promise<Monster[]> {
     .select()
     .from(monstersTable)
     .orderBy(asc(monstersTable.sort_key));
-  return previewMonsters(rows.map(toMonster), process.env.VERCEL_ENV);
+  return previewMonsters(rows.map(toMonster), process.env.VERCEL_ENV).map(monster => {
+    const source = getSrdMonsterSource(monster);
+    return {
+      ...monster,
+      provenienza: source ? {
+        document: source.document,
+        edition: source.edition,
+        sourceUrl: source.sourceUrl,
+        page: source.page,
+      } : undefined,
+    };
+  });
 }
 
 export async function getMonsterById(id: string): Promise<Monster | undefined> {
