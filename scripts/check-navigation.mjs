@@ -17,14 +17,14 @@ const cases = [
   ['/spell/amicizia', '/grimorio', 'Incantesimi'],
   ['/bestiario', '/bestiario', 'Bestiario'],
   ['/mostro/test', '/bestiario', 'Bestiario'],
-  ['/fonti', '/fonti', 'Info'],
+  ['/preferiti', '/preferiti', 'Preferiti'],
 ];
 for (const [path,activeHref,activeLabel] of cases) {
   pathname=path;
   const html=renderToStaticMarkup(createElement(BottomNav));
   const links=[...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
   assert.equal(links.length,4,'The bottom navigation must have four items, with no dice section');
-  assert.deepEqual(links.map(m=>m[2].replace(/<[^>]*>/g,'')),['Home','Incantesimi','Bestiario','Info']);
+  assert.deepEqual(links.map(m=>m[2].replace(/<[^>]*>/g,'')),['Home','Incantesimi','Bestiario','Preferiti']);
   const active=links.filter(m=>m[1].includes('aria-current="page"'));
   assert.equal(active.length,1);
   assert.ok(active[0][1].includes(`href="${activeHref}"`));
@@ -33,10 +33,10 @@ for (const [path,activeHref,activeLabel] of cases) {
 }
 pathname='/admin';
 assert.equal(renderToStaticMarkup(createElement(BottomNav)),'');
-pathname='/preferiti';
-const favoritesNav=renderToStaticMarkup(createElement(BottomNav));
-assert.ok(!favoritesNav.includes('href="/preferiti"'),'Favorites remain available from the home header instead of the bottom navigation');
-assert.ok(!favoritesNav.includes('aria-current="page"'));
+pathname='/fonti';
+const sourcesNav=renderToStaticMarkup(createElement(BottomNav));
+assert.ok(!sourcesNav.includes('href="/fonti"'),'Legal information is available from the home header');
+assert.ok(!sourcesNav.includes('aria-current="page"'));
 const home=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8');
 const sources=readFileSync(new URL('../app/fonti/page.tsx',import.meta.url),'utf8');
 assert.ok(sources.includes('* Progetto fan-made a scopo hobbistico.'));
@@ -44,10 +44,12 @@ assert.ok(!sources.includes('puramente personale e non commerciale'));
 assert.match(sources,/fonti e licenze/i);
 assert.ok(!home.includes('Progetto fan-made'));
 assert.ok(!home.includes('Fonti e licenze'));
-assert.ok(home.includes('href="/preferiti"'));
+assert.ok(!home.includes('href="/preferiti"'));
 assert.ok(home.includes('href="/admin"'));
+assert.ok(home.includes('href="/fonti"'));
+assert.ok(home.includes('Termini e condizioni'));
 const dicePage=readFileSync(new URL('../app/dadi/page.tsx',import.meta.url),'utf8');
 assert.ok(!dicePage.includes('DiceRoller'),'The removed dice section must not render');
 assert.match(dicePage,/redirect\("\/"\)/,'Existing dice URLs must return to Home');
 assert.ok(!readFileSync(new URL('../app/layout.tsx',import.meta.url),'utf8').includes('lancia i dadi'));
-console.log('[navigation] Home, Incantesimi, Bestiario and Info verified; Favorites stay in the header and the hobby disclaimer stays on the sources page.');
+console.log('[navigation] Home, Incantesimi, Bestiario and Preferiti verified; admin and legal links stay in the home header, with disclaimer and licenses on the sources page.');

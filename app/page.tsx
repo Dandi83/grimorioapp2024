@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
 
 import styles from "./home.module.css";
 
@@ -9,11 +8,12 @@ export default function HomePage() {
     <div className={styles.home}>
       <header className={styles.header}>
         <div className={styles.logo}>
-          Grimorio<span>App</span>
+          Il Grimorio<span>.App</span>
         </div>
-        <Link href="/preferiti" className={styles.favorites}>
-          Preferiti <Star size={18} aria-hidden="true" />
-        </Link>
+        <nav className={styles.headerLinks} aria-label="Area riservata e informazioni legali">
+          <Link href="/admin">Area riservata</Link>
+          <Link href="/fonti">Termini e condizioni</Link>
+        </nav>
       </header>
 
       <section className={styles.library} aria-labelledby="home-quote">
@@ -35,10 +35,6 @@ export default function HomePage() {
           </h1>
         </div>
       </section>
-
-      <footer className={styles.adminCorner}>
-        <Link href="/admin">Area riservata</Link>
-      </footer>
     </div>
   );
 }

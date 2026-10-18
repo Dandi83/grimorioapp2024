@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Home, Info, Skull } from "lucide-react";
+import { BookOpen, Home, Skull, Star } from "lucide-react";
 import type { ComponentType } from "react";
 
 interface NavItem {
@@ -27,10 +27,10 @@ const ITEMS: NavItem[] = [
     match: (p) => p.startsWith("/bestiario") || p.startsWith("/mostro"),
   },
   {
-    href: "/fonti",
-    label: "Info",
-    Icon: Info,
-    match: (p) => p === "/fonti" || p.startsWith("/fonti/"),
+    href: "/preferiti",
+    label: "Preferiti",
+    Icon: Star,
+    match: (p) => p.startsWith("/preferiti"),
   },
 ];
 
