@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { MANUAL_SOURCE_URL, type ManualEntry } from "@/lib/manual-types";
+import { ConditionContent } from "@/components/condition-content";
 
 export function ManualContent({ entry }: { entry: ManualEntry }) {
   return <div className="min-w-0 max-w-full space-y-5">
-    {entry.blocks.map((block, i) => block.kind === "heading" ? (
+    {entry.category === "condizioni" ? <ConditionContent entry={entry} /> : entry.blocks.map((block, i) => block.kind === "heading" ? (
       <h2 key={i} className="pt-3 font-serif text-xl font-bold text-primary">{block.text}</h2>
     ) : block.kind === "table" ? (
       <div key={i} className="min-w-0 max-w-full overflow-x-auto rounded-xl border border-border bg-card" tabIndex={0} role="region" aria-label={`Tabella di ${entry.title}, pagina ${block.page}, scorribile orizzontalmente`}>

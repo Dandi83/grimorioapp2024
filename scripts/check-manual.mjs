@@ -28,12 +28,19 @@ const provider=load(path.join(root,'lib/srd-monsters.ts'));const rows=provider.p
 const types=load(path.join(root,'lib/monsters-types.ts'));assert.equal(rows.filter(types.isSrdAnimal).length,95);assert.equal(types.typeCategory('Sciame di bestie Minuscole'),'Bestia');assert.equal(types.isSrdAnimal(rows.find(m=>m.id==='alce-gigante')),true);assert.equal(types.typeCategory(rows.find(m=>m.id==='alce-gigante').tipo),'Celestiale');
 for(const id of ['app/manuale/page.tsx','app/manuale/[id]/page.tsx'])assert.ok(existsSync(path.join(root,id)));
 const {ManualContent}=load(path.join(root,'components/manual-content.tsx'));
-for(const e of entries){const markup=renderToStaticMarkup(createElement(ManualContent,{entry:e}));for(const b of e.blocks){const text=renderToStaticMarkup(createElement('span',null,b.text)).replace(/^<span>|<\/span>$/g,'');assert.ok(markup.includes(text),e.title+': missing block');}assert.ok(markup.includes('#page='+e.page));assert.ok(markup.includes('Attribuzione e licenza'));}
+for(const e of entries){const markup=renderToStaticMarkup(createElement(ManualContent,{entry:e}));for(const b of e.blocks){const text=renderToStaticMarkup(createElement('span',null,b.text)).replace(/^<span>|<\/span>$/g,'');assert.ok((e.category === 'condizioni' ? markup.replace(/<[^>]*>/g,'').replace(/\s+/g,' ').includes(text.replace(/\s+/g,' ')) : markup.includes(text)),e.title+': missing block');}assert.ok(markup.includes('#page='+e.page));assert.ok(markup.includes('Attribuzione e licenza'));}
 assert.ok(readFileSync(path.join(root,'app/page.tsx'),'utf8').includes('href="/manuale"'));
 const spellPage=readFileSync(path.join(root,'app/spell/[id]/page.tsx'),'utf8');
 assert.ok(!spellPage.includes('<ConditionReferences'), 'Spell condition references are inline without a duplicate footer panel');
 const monsterPage=readFileSync(path.join(root,'app/mostro/[id]/page.tsx'),'utf8');
 assert.ok(!monsterPage.includes('<ConditionReferences') && !monsterPage.includes('<SpellReferences'), 'Monster references are inline without duplicate footer panels');
+const paralizzatoMarkup=renderToStaticMarkup(createElement(ManualContent,{entry:manual.getManualEntry('condizioni-paralizzato')}));
+assert.equal((paralizzatoMarkup.match(/data-condition-effect=/g)||[]).length,5);
+assert.ok(paralizzatoMarkup.includes('href="/manuale/condizioni-incapacitato"'));
+assert.ok(!paralizzatoMarkup.includes('href="/manuale/condizioni-paralizzato"'));
+const pietrificatoEntry=manual.getManualEntry('condizioni-pietrificato');
+const pietrificatoMarkup=renderToStaticMarkup(createElement(ManualContent,{entry:pietrificatoEntry}));
+assert.equal((pietrificatoMarkup.match(/data-condition-effect=/g)||[]).length,pietrificatoEntry.blocks.length-2,'PDF continuation remains in its effect');
 const {ManualBrowser}=load(path.join(root,'components/manual-browser.tsx'));
 for(const [category,count] of [['classi',12],['background',4],['specie',9]]) {
  const index=renderToStaticMarkup(createElement(ManualBrowser,{entries:entries.map(e=>({...e,search:e.title.toLowerCase()})),initialCategory:category}));

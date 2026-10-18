@@ -28,8 +28,8 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
       ) : (
         <Link href={`/manuale?sezione=${entry.category}`} className="text-sm font-semibold text-primary">← {MANUAL_CATEGORIES[entry.category]}</Link>
       )}
-      <header className="mb-6 mt-6">
-        <p className="mb-2 text-xs uppercase tracking-widest text-primary">{entry.subgroup}</p>
+      <header className={isCondition ? "mb-6 mt-3 border-b border-primary/40 pb-5" : "mb-6 mt-6"}>
+        <p className="mb-2 text-xs uppercase tracking-widest text-primary">{entry.subgroup || (isCondition ? "Condizione" : "")}</p>
         <h1 className="font-serif text-4xl font-bold leading-tight text-foreground">{entry.title}</h1>
       </header>
       {entry.subgroup === "Classi" && ["Bardo", "Chierico", "Druido", "Mago", "Paladino", "Ranger", "Stregone", "Warlock"].includes(entry.title) && (
