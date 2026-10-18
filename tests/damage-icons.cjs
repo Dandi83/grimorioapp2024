@@ -54,3 +54,31 @@ assert.ok(linked.includes('underline-offset-4'),'inline reference is visibly und
 assert.ok(linked.includes('/damage-icons/fire.png'),'damage icons survive beside condition links');
 assert.equal(plain(linked),plain(render('Il bersaglio è <strong>paralizzato</strong> e subisce 2d6 danni da fuoco.')),'reference preserves source words');
 assert.ok(!renderToStaticMarkup(createElement(m.exports.HtmlText,{html:'Una presenza paralizzatissima.',references:conditionReferences})).includes('href='),'only whole condition words link');
+
+const conditionsModule={exports:{}};
+new Function('require','module','exports',ts.transpileModule(fs.readFileSync('lib/conditions.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText)(id=>id.endsWith('.json')?JSON.parse(fs.readFileSync('lib/'+id.replace(/^\.\//,''))):require(id),conditionsModule,conditionsModule.exports);
+const allReferences=conditionsModule.exports.inlineConditionReferences;
+assert.ok(Array.isArray(allReferences),'all conditions expose reusable inflected references');
+assert.equal(new Set(allReferences.map(r=>r.href)).size,15,'all 15 conditions have destinations');
+for(const word of ['paralizzata','afferrati','invisibili','priva di sensi','indebolimento']){
+ const html=renderToStaticMarkup(createElement(m.exports.HtmlText,{html:`Il bersaglio è ${word}.`,references:allReferences}));
+ assert.ok(html.includes('href="/manuale/condizioni-'),word);
+}
+const tableLink=renderToStaticMarkup(createElement(m.exports.HtmlText,{html:'<pre>Il bersaglio è tratte-\n  nuto e privo\n  di sensi.</pre>',references:allReferences}));
+assert.equal((tableLink.match(/href="\/manuale\/condizioni-/g)||[]).length,2,'condition links survive PDF hyphenation and table line wraps');
+
+let checkedConditionTexts=0;
+for(const file of ['srd-italiano-5.2.1.json','original-descriptions-2024.json','srd-monsters-5.2.1-it.json','srd-animals-5.2.1-it.json']){
+ const data=JSON.parse(fs.readFileSync(`lib/data/${file}`));
+ for(const record of data.records||data.spells){
+  const item=record.monster||record;
+  for(const field of ['descrizione','tratti','azioni','azioni_bonus','reazioni','azioni_leggendarie','immunita','immunita_danni','immunita_condizioni','resistenze','vulnerabilita']){
+   const value=item[field];if(!value)continue;
+   const html=renderToStaticMarkup(createElement(m.exports.HtmlText,{html:value,damageIcons:true,references:allReferences}));
+   assert.equal(plain(html),plain(render(value)),`${item.id} ${field}: condition links preserve text`);
+   for(const condition of conditionsModule.exports.findConditions(value))assert.ok(html.includes(`href="/manuale/${condition.id}"`),`${item.id} ${field}: missing inline ${condition.title}`);
+   checkedConditionTexts++;
+  }
+ }
+}
+console.log('Condition links: all 15 destinations, inflections, PDF table wraps and',checkedConditionTexts,'source fields passed');

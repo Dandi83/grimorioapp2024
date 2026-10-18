@@ -1,3 +1,4 @@
+import { inlineConditionReferences } from "@/lib/conditions";
 import { ConditionReferences } from "@/components/condition-references";
 import Image from "next/image";
 import Link from "next/link";
@@ -53,10 +54,6 @@ export default async function SpellDetailPage({
   const spell = await getSpellById(id);
   if (!spell) notFound();
 
-  // One reviewable example; public spell rendering is unchanged until approval.
-  const inlineConditions = process.env.VERCEL_ENV === "preview" && spell.id === "blocca-persone"
-    ? [{ label: "paralizzato", href: "/manuale/condizioni-paralizzato" }]
-    : undefined;
   const color = schoolColor(spell.scuola);
   const titolo = capitalizeWords(spell.nome_italiano);
   const badge =
@@ -138,7 +135,7 @@ export default async function SpellDetailPage({
           Descrizione
         </h2>
         {spell.descrizione ? (
-          <HtmlText html={spell.descrizione} damageIcons references={inlineConditions} />
+          <HtmlText html={spell.descrizione} damageIcons references={inlineConditionReferences} />
         ) : (
           <p className="font-serif text-[15px] italic leading-6 text-muted">
             Descrizione non disponibile per questo incantesimo.
@@ -148,7 +145,7 @@ export default async function SpellDetailPage({
       {original?.statBlockSummary && (
         <section className="px-6 pb-6">
           <h2 className="mb-3 font-serif text-lg font-semibold text-primary">Spirito richiamato — riepilogo</h2>
-          <HtmlText html={original.statBlockSummary} damageIcons />
+          <HtmlText html={original.statBlockSummary} damageIcons references={inlineConditionReferences} />
           <p className="mt-3 text-xs leading-5 text-muted">
             Riepilogo operativo: per tutti i dettagli della creatura consulta la scheda 2024 collegata qui sotto.
             Il bonus di competenza dello spirito è il tuo; le CD indicate usano la tua CD degli incantesimi.

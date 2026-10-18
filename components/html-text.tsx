@@ -62,6 +62,31 @@ export function DamageText({ text, context = "", precedingText = "", softLineBre
 type InlineReference = { label: string; href: string };
 type HtmlTextProps = { html: string; damageIcons?: boolean; references?: readonly InlineReference[] };
 
+
+/** Preserve source text while adding accessible inline links and damage icons. */
+export function ReferenceText({ text, damageIcons = false, precedingText = "", references = [], damageContext = "", softLineBreaks = false }: {
+  text: string; damageIcons?: boolean; precedingText?: string; references?: readonly InlineReference[]; damageContext?: string; softLineBreaks?: boolean;
+}) {
+  const renderText = (part: string, offset: number) => damageIcons
+    ? <DamageText text={part} precedingText={precedingText + text.slice(0, offset)} context={damageContext} softLineBreaks={softLineBreaks} />
+    : part;
+  if (!references.length) return <>{renderText(text, 0)}</>;
+  const escape = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const labels = references.map(reference => reference.label.split(/\s+/).map(word => [...word].map(escape).join("(?:-\\s*\\n\\s*)?")).join("\\s+"));
+  const matcher = new RegExp(`\\b(${labels.join("|")})\\b`, "gi");
+  const nodes: ReactNode[] = [];
+  let end = 0;
+  for (const match of text.matchAll(matcher)) {
+    nodes.push(<Fragment key={`text-${match.index}`}>{renderText(text.slice(end, match.index), end)}</Fragment>);
+    const label = match[0].replace(/-\s*\n\s*/g, "").replace(/\s+/g, " ").toLowerCase();
+    const reference = references.find(item => item.label.toLowerCase() === label)!;
+    nodes.push(<a key={`link-${match.index}`} href={reference.href} className="underline decoration-primary/70 underline-offset-4 hover:text-primary focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary">{match[0]}</a>);
+    end = match.index + match[0].length;
+  }
+  nodes.push(<Fragment key="tail">{renderText(text.slice(end), end)}</Fragment>);
+  return <>{nodes}</>;
+}
+
 function InlineHtmlText({ html, damageIcons = false, references = [] }: HtmlTextProps) {
   const nodes: ReactNode[] = [];
   const stack: string[] = [];
@@ -72,24 +97,7 @@ function InlineHtmlText({ html, damageIcons = false, references = [] }: HtmlText
   const emit = (text: string) => {
     const decoded = decodeEntities(text);
     if (!decoded) return;
-    const renderText = (part: string, offset: number) => damageIcons
-      ? <DamageText text={part} precedingText={plainEmitted + decoded.slice(0, offset)} />
-      : part;
-    let content: ReactNode = renderText(decoded, 0);
-    if (references.length) {
-      const labels = references.map(reference => reference.label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-      const matcher = new RegExp(`\\b(${labels.join("|")})\\b`, "gi");
-      const linked: ReactNode[] = [];
-      let end = 0;
-      for (const match of decoded.matchAll(matcher)) {
-        linked.push(<Fragment key={`text-${match.index}`}>{renderText(decoded.slice(end, match.index), end)}</Fragment>);
-        const reference = references.find(item => item.label.toLowerCase() === match[0].toLowerCase())!;
-        linked.push(<a key={`link-${match.index}`} href={reference.href} className="underline decoration-primary/70 underline-offset-4 hover:text-primary focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary">{match[0]}</a>);
-        end = match.index + match[0].length;
-      }
-      linked.push(<Fragment key="tail">{renderText(decoded.slice(end), end)}</Fragment>);
-      content = linked;
-    }
+    const content = <ReferenceText text={decoded} damageIcons={damageIcons} precedingText={plainEmitted} references={references} />;
     plainEmitted += decoded;
     const bold = stack.includes("b") || stack.includes("strong");
     const italic = stack.includes("i") || stack.includes("em");
@@ -181,7 +189,7 @@ export function HtmlText({ html, damageIcons = false, references = [] }: HtmlTex
               aria-label="Tabella dell’incantesimo, scorribile orizzontalmente"
               className="max-w-full overflow-x-auto rounded-xl border border-border bg-card p-3 font-mono text-[12px] leading-5 text-card-foreground"
             >
-              {damageIcons ? <DamageText text={decodeEntities(part.slice(5, -6))} softLineBreaks /> : decodeEntities(part.slice(5, -6))}
+              {<ReferenceText text={decodeEntities(part.slice(5, -6))} damageIcons={damageIcons} references={references} softLineBreaks />}
             </pre>
           );
         }

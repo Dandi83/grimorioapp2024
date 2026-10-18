@@ -1,3 +1,4 @@
+import { inlineConditionReferences } from "@/lib/conditions";
 import { SpellReferences } from "@/components/spell-references";
 import { ConditionReferences } from "@/components/condition-references";
 import Image from "next/image";
@@ -5,7 +6,7 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
-import { DamageText, HtmlText } from "@/components/html-text";
+import { ReferenceText, HtmlText } from "@/components/html-text";
 import { getMonsterById } from "@/lib/monsters";
 import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
 import { getSrdMonsterSource } from "@/lib/srd-monsters";
@@ -63,7 +64,7 @@ function StatLine({ label, value, damageIcons = false }: { label: string; value:
   return (
     <p className="text-[15px] leading-6 text-foreground">
       <span className="font-bold text-primary">{label}</span>{" "}
-      {damageIcons ? <DamageText text={value} context={label} /> : value}
+      {<ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={inlineConditionReferences} />}
     </p>
   );
 }
@@ -75,7 +76,7 @@ function Section({ title, html }: { title: string; html: string }) {
       <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
         {title}
       </h2>
-      <HtmlText html={html} damageIcons />
+      <HtmlText html={html} damageIcons references={inlineConditionReferences} />
     </section>
   );
 }

@@ -16,3 +16,14 @@ export function findConditions(text: string) {
   const plain = text.replace(/<[^>]*>/g, " ").replace(/&nbsp;/g, " ");
   return matchers.filter(({regex}) => regex.test(plain)).map(({condition}) => condition);
 }
+
+/** All gender/number forms, sharing the same condition detail destination. */
+export const inlineConditionReferences = conditions.flatMap(condition => {
+  const title = condition.title;
+  const labels = title === "Privo di sensi"
+    ? ["privo", "priva", "privi", "prive"].map(form => `${form} di sensi`)
+    : title === "Invisibile" ? ["invisibile", "invisibili"]
+    : title === "Indebolimento" ? ["indebolimento"]
+    : ["o", "a", "i", "e"].map(ending => (forms[title] || title).replace(/ /g, "") + ending);
+  return labels.map(label => ({ label, href: `/manuale/${condition.id}` }));
+});

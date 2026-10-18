@@ -38,10 +38,17 @@ for(const [category,count] of [['classi',12],['background',4],['specie',9]]) {
  for(const e of entries) assert.equal(index.includes('href="/manuale/'+e.id+'"'),e.category===category,category+': '+e.id);
  assert.ok(!index.includes('Raccolta personaggi'));
 }
-const {default:EntryPage}=load(path.join(root,'app/manuale/[id]/page.tsx'),{'next/navigation':{notFound(){throw new Error('unexpected notFound');}}});
+const {default:EntryPage}=load(path.join(root,'app/manuale/[id]/page.tsx'),{'@/components/back-button':{BackButton:()=>null},'next/navigation':{notFound(){throw new Error('unexpected notFound');}}});
 const previousEnv=process.env.VERCEL_ENV;process.env.VERCEL_ENV='preview';
 for(const [id,category,label] of [['personaggi-mago','classi','Classi'],['personaggi-accolito','background','Background'],['personaggi-elfo','specie','Specie']]) {
  const page=renderToStaticMarkup(await EntryPage({params:Promise.resolve({id})}));assert.ok(page.includes('href="/manuale?sezione='+category+'"'));assert.ok(page.includes(label));
 }
 if(previousEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=previousEnv;
 console.log('[manual] Reference routes, all 58 entries and their content/source links, conditions and 330 creatures including 95 animals verified.');
+// Published inline links must reach condition details while the Manual index stays hidden.
+process.env.VERCEL_ENV='production';
+const publishedCondition=renderToStaticMarkup(await EntryPage({params:Promise.resolve({id:'condizioni-paralizzato'})}));
+assert.ok(publishedCondition.includes('Paralizzato'));
+assert.ok(!publishedCondition.includes('href="/manuale?sezione=condizioni"'),'published condition must not link to hidden Manual index');
+await assert.rejects(()=>EntryPage({params:Promise.resolve({id:'personaggi-mago'})}));
+if(previousEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=previousEnv;

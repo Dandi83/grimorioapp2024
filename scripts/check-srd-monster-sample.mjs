@@ -65,6 +65,7 @@ const page=loadTs('../app/mostro/[id]/page.tsx',{
   '@/components/favorite-button':{FavoriteButton:()=>null},
   '@/components/html-text':loadTs('../components/html-text.tsx'),
   '@/lib/monsters':{getMonsterById:async id=>id===selected.id?selected:undefined},
+  '@/lib/conditions':loadTs('../lib/conditions.ts'),
   '@/lib/monsters-types':loadTs('../lib/monsters-types.ts'),
   '@/lib/srd-monsters':mod.exports,
 }).default;
