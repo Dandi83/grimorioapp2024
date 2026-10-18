@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createMonsterAction, updateMonsterAction } from "@/app/actions/admin-monsters";
-import { abilityMod, SIZES, type Monster } from "@/lib/monsters-types";
+import { abilityMod, type Monster } from "@/lib/monsters-types";
+import { AdminMonsterField } from "./admin-monster-field";
 import { MonsterContentEditor } from "./admin-monster-content";
 import { AdminMonsterPreview } from "./admin-monster-preview";
 
@@ -38,7 +39,7 @@ const inputClass="w-full min-w-0 rounded-lg border border-border bg-background p
 function EditorFields({fields,monster}: {fields:Field[];monster:Monster|null}) {
   return <div className="grid gap-4 sm:grid-cols-2">{fields.map(field=><div key={field.name} className="min-w-0">
     <label htmlFor={field.name} className="mb-1.5 block text-sm text-muted-foreground">{field.label}{field.name==="nome" ? " *" : ""}</label>
-    {field.name==="taglia" ? <><input id={field.name} name={field.name} defaultValue={monster?.taglia || ""} list="monster-sizes" placeholder="Scegli o scrivi una taglia" className={inputClass} /><datalist id="monster-sizes">{SIZES.map(size=><option key={size} value={size} />)}</datalist></> : <input id={field.name} name={field.name} required={field.name==="nome"} defaultValue={String(monster?.[field.name] ?? "")} placeholder={field.placeholder} className={inputClass} />}
+    <AdminMonsterField name={field.name} label={field.label} initialValue={String(monster?.[field.name] ?? "")} placeholder={field.placeholder} />
   </div>)}</div>;
 }
 

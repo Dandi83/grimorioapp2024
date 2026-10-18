@@ -44,9 +44,24 @@ const root=createRoot(document.getElementById('root'));
 const click=async el=>{assert.ok(el);await act(async()=>{el.dispatchEvent(new MouseEvent('click',{bubbles:true}))})};
 const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent===text);
 const input=async(el,value)=>{await act(async()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new InputEvent('input',{bubbles:true}))})};
+const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal(el?.tagName,'SELECT',`${id} must offer a native dropdown`);await act(async()=>{el.value=value;el.dispatchEvent(new Event('change',{bubbles:true}))})};
 (async()=>{
  await act(async()=>root.render(React.createElement(MonsterEditor,{monster:null,onClose:()=>closed++})));
  await input(document.getElementById('nome'),'Guardiano di prova');
+ for(const [id,value] of [['tipo','Costrutto'],['taglia','Grande'],['allineamento','neutrale'],['grado_sfida','1/4'],['velocita','9 m']]) {
+  await choose(id,value);
+  assert.equal(new FormData(document.querySelector('form')).get(id),value);
+ }
+ await choose('velocita','__custom__');
+ await input(document.getElementById('velocita-custom'),'9 m, volo 18 m');
+ await choose('resistenze-add','freddo');
+ await choose('resistenze-add','fulmine');
+ await choose('resistenze-add','freddo');
+ assert.equal(new FormData(document.querySelector('form')).get('resistenze'),'freddo, fulmine','quick selections append without duplicates');
+ await input(document.getElementById('resistenze'),'freddo; danni da attacchi non magici');
+ await choose('resistenze-add','fuoco');
+ assert.equal(new FormData(document.querySelector('form')).get('resistenze'),'freddo; danni da attacchi non magici, fuoco','selection must not overwrite custom qualifications');
+ await choose('immunita_condizioni-add','avvelenato');
  await input(document.getElementById('punti_ferita'),'45 (6d8 + 18)');
  await input(document.getElementById('forza'),'18');
  await click(button('Aggiungi azione'));
@@ -60,6 +75,8 @@ const input=async(el,value)=>{await act(async()=>{Object.getOwnPropertyDescripto
  await click(button('Anteprima'));
  assert.equal(calls,0,'preview must not invoke any mutation');
  assert.ok(document.querySelector('article').textContent.includes('Morso gelido.'));
+ assert.ok(document.querySelector('article').textContent.includes('Grande · Costrutto · neutrale'));
+ assert.ok(document.querySelector('article').textContent.includes('9 m, volo 18 m'));
  assert.ok(document.querySelector('article').textContent.includes('+4'));
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,1);
  await click(button('Torna al modulo'));
@@ -68,6 +85,8 @@ const input=async(el,value)=>{await act(async()=>{Object.getOwnPropertyDescripto
  assert.equal(calls,1);
  assert.equal(payload.nome,'Guardiano di prova');
  assert.equal(payload.azioni,originalData.get('azioni'));
+ assert.equal(payload.velocita,'9 m, volo 18 m');
+ assert.equal(payload.resistenze,'freddo; danni da attacchi non magici, fuoco');
  assert.equal(document.getElementById('nome').value,'Guardiano di prova','failed save must preserve uncontrolled inputs');
  assert.equal(document.getElementById('punti_ferita').value,'45 (6d8 + 18)');
  assert.ok(document.querySelector('[role="alert"]').textContent.includes('Errore simulato'));
@@ -99,6 +118,8 @@ const input=async(el,value)=>{await act(async()=>{Object.getOwnPropertyDescripto
  const lich=requireProject('./lib/data/srd-monsters-5.2.1-it.json').records.find(r=>r.monster.id==='lich').monster;
  await act(async()=>root.render(React.createElement(MonsterEditor,{key:'lich',monster:lich,onClose:()=>closed++})));
  for(const field of ['tratti','azioni','reazioni','azioni_leggendarie','descrizione'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',field);
+ for(const field of ['tipo','taglia','allineamento','grado_sfida','velocita','resistenze','immunita_condizioni','sensi','linguaggi'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',`unchanged ${field}`);
+ assert.equal(document.getElementById('tipo-custom').value,'Non morto (mago)','existing subtypes remain editable without truncation');
  await act(async()=>root.unmount());
  console.log('DOM interactions: named blocks, body formatting, ability modifiers, preview with links and no writes, return-to-form, failed-save draft retention, clear formatting, exact existing-source submission passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});
