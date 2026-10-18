@@ -40,6 +40,8 @@ Regola esplicita di Daniele del 18 ottobre 2026: evitare sovrapposizioni tra que
 
 ## Vincoli funzionali da preservare
 
+- Prestazioni immagini: Daniele ha segnalato caricamento più lento e scattoso su iPhone dopo l'attivazione AVIF del commit `d4d9db9`. L'esperimento è stato ritirato ripubblicando `9613809`, con WebP predefinito, foto e crediti conservati. Non ripristinare AVIF sulla sola base dei KB o del controllo visivo desktop: serve validare prima la fluidità sul dispositivo/rete interessati. Dettagli in `docs/releases/2026-10-18-prestazioni-immagini.md`, sezione regressione.
+
 - Grafica nera e oro, intestazione `Il Grimorio.App` con `.App` oro; navigazione inferiore Home, Incantesimi, Bestiario, Preferiti.
 - Negli elenchi pubblici e preferiti niente etichette edizione. Solo nelle schede: icona libro e `D&D5e 2024` oppure `D&D5e 2014`. Conserva metadati edizione e scelta amministrativa.
 - Incantesimi, mostri e animali condivisibili tramite link pubblici alle singole schede.

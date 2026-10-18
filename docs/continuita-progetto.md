@@ -88,6 +88,8 @@ Compilare iOS richiede macOS/Xcode o un servizio appropriato, distinto dall'ambi
 
 ## Verifiche più recenti
 
+- Regressione AVIF: Daniele segnala foto più lente/scattose su iPhone dopo `d4d9db9`. Ritirata quella modifica applicativa ripubblicando `96138096486df4f4f4c7ae82baaf48676b1bcff7` (deployment `dpl_6npjg7EhTQB2DMqoZzQVwGso96NT`): WebP predefinito, 336 foto e crediti conservati. Audit con esito negativo in `docs/releases/2026-10-18-prestazioni-immagini.md`. Non considerare il minor peso una validazione della fluidità e non riattivare AVIF automaticamente. Verificare sempre il deployment corrente prima di altri lavori.
+
 - Rilascio illustrazioni autorizzato successivamente da Daniele: branch `release/official-art-20261018`, base crediti compatti `b1c9717`. Selettore abilitato anche in produzione per 336 immagini; cinque schede senza foto restano con sfondo generico. La precedente indicazione «solo preview» descrive la fase iniziale. Verificare il deployment Vercel corrente per il commit live, come sempre; niente integrazione automatica iPhone. Registro in `docs/releases/2026-10-18-illustrazioni-bestiario.md`.
 
 - Illustrazioni ufficiali: Daniele ha approvato la prova grafica Aboleth/Orsogufo (`bb52972`) e la sua estensione al bestiario. Branch web separato `ui/official-creature-art-20261018`: registro di 336 immagini su 341 creature, cinque fallback espliciti, fonte/copyright vicini alle immagini. Resta attivo solo in preview, senza modifiche al database o al client iPhone. Dettagli, fonti mancanti e limiti della verifica dei diritti in `docs/releases/2026-10-18-illustrazioni-bestiario.md`. Il registro delle immagini non è una licenza SRD/Creative Commons. Nessun merge automatico verso iPhone.
