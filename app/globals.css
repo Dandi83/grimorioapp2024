@@ -154,3 +154,42 @@
  .paper-page:last-child{break-after:auto}
  .paper-field{box-shadow:none!important;background:transparent!important;outline:0!important}
 }
+
+/* Lich-only design trial; the other creature sheets keep their current style. */
+.lich-sections-preview [data-monster-section] {
+  margin: 0 24px 36px;
+  padding: 0;
+}
+
+.lich-sections-preview [data-monster-section] > h2 {
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgb(212 175 55 / 40%);
+  padding-bottom: 10px;
+  font-family: var(--font-serif);
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.025em;
+  text-transform: none;
+  font-variant-caps: small-caps;
+}
+
+.lich-sections-preview [data-monster-section] p {
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+/* Entry names stay distinct from the larger gold section headings. */
+.lich-sections-preview [data-monster-section] p > span.font-semibold {
+  color: var(--color-foreground);
+}
+
+.lich-sections-preview [data-monster-section] > div.min-w-0 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lich-sections-preview [data-monster-section] > div.min-w-0 > div {
+  margin-top: 0;
+}
