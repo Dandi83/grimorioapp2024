@@ -52,6 +52,8 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.equal(new FormData(document.querySelector('form')).get('componenti'),'');
  for(const type of ['V','S','M'])assert.equal(document.getElementById('component-'+type).checked,false);
  await input(document.getElementById('nome_italiano'),'Gelo di prova');
+ assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D 2024','D&D 2014']);
+ await choose('edition','2024');
  await choose('spell-level','2');
  await choose('spell-school','Invocazione');
  await choose('spell-class-add','mago');
@@ -79,6 +81,8 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  await act(async()=>document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
  assert.equal(calls,1);assert.equal(closed,0);
  assert.equal(payload.livello,data.get('livello'));assert.equal(payload.componenti,data.get('componenti'));
+ assert.equal(payload.edition,'2024');
+ assert.equal(document.getElementById('edition').value,'2024','failed save preserves selected edition');
  assert.equal(document.getElementById('nome_italiano').value,'Gelo di prova');
  assert.equal(new FormData(document.querySelector('form')).get('descrizione'),data.get('descrizione'));
  assert.ok(document.querySelector('[role="alert"]').textContent.includes('Errore simulato'));
@@ -98,9 +102,13 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.equal(new FormData(document.querySelector('form')).get('descrizione'),record.descrizione,'metadata edits preserve tables and paragraphs');
  await click(button('Anteprima'));
  assert.ok(document.querySelector('article pre'),'existing tables remain rendered in preview');
- const custom={...spell,livello:'Potere speciale (classe personalizzata)',componenti:'Materiali speciali: una chiave',durata:'finché il portale rimane aperto'};
+ const custom={...spell,edizione:'2014',livello:'Potere speciale (classe personalizzata)',componenti:'Materiali speciali: una chiave',durata:'finché il portale rimane aperto'};
  await act(async()=>root.render(React.createElement(SpellEditor,{key:'custom',spell:custom,onClose:()=>closed++})));
  for(const field of ['livello','componenti','durata'])assert.equal(new FormData(document.querySelector('form')).get(field),custom[field]);
+ assert.equal(document.getElementById('edition').value,'2014');
+ await click(button('Anteprima'));
+ assert.ok(document.querySelector('article').textContent.includes('D&D 2014'));
+ assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,0);
  await act(async()=>root.unmount());
  const {renderToStaticMarkup}=requireProject('react-dom/server');
  for(const record of requireProject('./lib/data/srd-italiano-5.2.1.json').spells) {

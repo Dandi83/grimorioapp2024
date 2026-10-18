@@ -3,6 +3,7 @@ import { abilityMod } from "@/lib/monsters-types";
 import { inlineConditionReferences } from "@/lib/conditions";
 import { inlineSpellReferences } from "@/lib/spell-references";
 import { MonsterText, ReferenceText } from "./html-text";
+import { RulesEditionBadge } from "./rules-edition-badge";
 
 export function AdminMonsterPreview({monster,legacy}: {monster:Partial<Monster>;legacy:boolean}) {
   const references = legacy ? [] : inlineConditionReferences;
@@ -10,6 +11,7 @@ export function AdminMonsterPreview({monster,legacy}: {monster:Partial<Monster>;
     <header className="px-6 pb-6">
       <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">Anteprima · non ancora salvata</p>
       <h2 className="break-words font-serif text-3xl text-foreground">{monster.nome || "Nome del mostro"}</h2>
+      <RulesEditionBadge edition={monster.edizione} compact />
       <p className="mt-1 text-sm text-muted-foreground">{[monster.taglia,monster.tipo,monster.allineamento].filter(Boolean).join(" · ")}</p>
       {legacy && <p className="mt-2 text-xs text-muted-foreground">Regole D&D 2014: richiami alle regole 2024 disattivati.</p>}
     </header>

@@ -13,6 +13,9 @@ import {
 } from "@/lib/admin-auth";
 import { slugify } from "@/lib/spells-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
+import { saveAdminContent } from "@/lib/admin-content-save";
+import { getSrdSource } from "@/lib/srd-descriptions";
+import { getOriginalSource } from "@/lib/original-descriptions";
 
 export interface SpellInput {
   nome_italiano: string;
@@ -81,13 +84,15 @@ export async function createSpellAction(_prev: unknown, formData: FormData) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
   const id = await uniqueId(slugify(input.nome_italiano));
-  await db.insert(spells).values({
+  const result = await saveAdminContent("spell", id, formData, undefined, database => database.insert(spells).values({
     id,
     ...input,
     sort_key: input.nome_italiano.toLowerCase(),
-  });
+  }));
+  if (!result.ok) return result;
   revalidatePath("/");
   revalidatePath("/grimorio");
+  revalidatePath("/preferiti");
   revalidatePath("/admin");
   revalidatePath(`/spell/${id}`);
   return { ok: true as const, error: null, id };
@@ -101,16 +106,21 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   if (!input.nome_italiano) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
-  await db
-    .update(spells)
+  const sourceEdition = getSrdSource(id, input.descrizione) || getOriginalSource(id, input.descrizione) ? "2024" : undefined;
+  const result = await saveAdminContent("spell", id, formData, sourceEdition, async database => {
+    const updated = await database.update(spells)
     .set({
       ...input,
       sort_key: input.nome_italiano.toLowerCase(),
       updated_at: new Date(),
     })
-    .where(eq(spells.id, id));
+    .where(eq(spells.id, id)).returning({ id: spells.id });
+    if (!updated.length) throw new Error("Scheda non trovata.");
+  });
+  if (!result.ok) return result;
   revalidatePath("/");
   revalidatePath("/grimorio");
+  revalidatePath("/preferiti");
   revalidatePath("/admin");
   revalidatePath(`/spell/${id}`);
   return { ok: true as const, error: null, id };
@@ -123,5 +133,6 @@ export async function deleteSpellAction(formData: FormData) {
   await deleteContentWithEdition("spell", id);
   revalidatePath("/");
   revalidatePath("/grimorio");
+  revalidatePath("/preferiti");
   revalidatePath("/admin");
 }

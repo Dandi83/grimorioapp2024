@@ -1,5 +1,6 @@
 import "server-only";
 import { pool } from "./db";
+import type { PoolClient } from "pg";
 
 export type ContentKind = "monster" | "spell";
 export type RulesEdition = "2014" | "2024";
@@ -18,10 +19,11 @@ export async function getContentEditions(kind: ContentKind, id?: string): Promis
   }
 }
 
-export async function saveContentEdition(kind: ContentKind, id: string, edition?: RulesEdition): Promise<void> {
+export async function saveContentEdition(kind: ContentKind, id: string, edition?: RulesEdition, writeContent?: (client: PoolClient) => Promise<unknown>): Promise<void> {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+    if (writeContent) await writeContent(client);
     await client.query(`CREATE TABLE IF NOT EXISTS grimorio_content_editions (
       content_kind text NOT NULL CHECK (content_kind IN ('monster', 'spell')),
       content_id text NOT NULL,

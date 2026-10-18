@@ -48,6 +48,8 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
 (async()=>{
  await act(async()=>root.render(React.createElement(MonsterEditor,{monster:null,onClose:()=>closed++})));
  await input(document.getElementById('nome'),'Guardiano di prova');
+ assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D 2024','D&D 2014']);
+ await choose('edition','2024');
  for(const [id,value] of [['tipo','Costrutto'],['taglia','Grande'],['allineamento','neutrale'],['grado_sfida','1/4'],['velocita','9 m']]) {
   await choose(id,value);
   assert.equal(new FormData(document.querySelector('form')).get(id),value);
@@ -84,6 +86,8 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  await act(async()=>document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
  assert.equal(calls,1);
  assert.equal(payload.nome,'Guardiano di prova');
+ assert.equal(payload.edition,'2024');
+ assert.equal(document.getElementById('edition').value,'2024');
  assert.equal(payload.azioni,originalData.get('azioni'));
  assert.equal(payload.velocita,'9 m, volo 18 m');
  assert.equal(payload.resistenze,'freddo; danni da attacchi non magici, fuoco');
@@ -120,6 +124,10 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  for(const field of ['tratti','azioni','reazioni','azioni_leggendarie','descrizione'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',field);
  for(const field of ['tipo','taglia','allineamento','grado_sfida','velocita','resistenze','immunita_condizioni','sensi','linguaggi'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',`unchanged ${field}`);
  assert.equal(document.getElementById('tipo-custom').value,'Non morto (mago)','existing subtypes remain editable without truncation');
+ await choose('edition','2014');
+ await click(button('Anteprima'));
+ assert.ok(document.querySelector('article').textContent.includes('D&D 2014'));
+ assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,0,'preview uses selected edition');
  await act(async()=>root.unmount());
  console.log('DOM interactions: named blocks, body formatting, ability modifiers, preview with links and no writes, return-to-form, failed-save draft retention, clear formatting, exact existing-source submission passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

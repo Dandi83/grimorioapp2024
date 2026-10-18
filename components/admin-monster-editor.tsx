@@ -7,6 +7,7 @@ import { abilityMod, type Monster } from "@/lib/monsters-types";
 import { AdminMonsterField } from "./admin-monster-field";
 import { MonsterContentEditor } from "./admin-monster-content";
 import { AdminMonsterPreview } from "./admin-monster-preview";
+import { AdminEditionField } from "./admin-edition-field";
 
 type Field = {name:keyof Monster;label:string;placeholder?:string};
 const IDENTITY: Field[] = [
@@ -44,6 +45,8 @@ function EditorFields({fields,monster}: {fields:Field[];monster:Monster|null}) {
 }
 
 export function MonsterEditor({monster,onClose}: {monster:Monster|null;onClose:()=>void}) {
+  const sourceEdition = monster?.provenienza?.edition;
+  const initialEdition = monster?.edizione ?? (sourceEdition === "2014" || sourceEdition === "2024" ? sourceEdition : undefined);
   const dialog=useRef<HTMLDialogElement>(null);
   const form=useRef<HTMLFormElement>(null);
   const [preview,setPreview]=useState<Partial<Monster>|null>(null);
@@ -56,7 +59,7 @@ export function MonsterEditor({monster,onClose}: {monster:Monster|null;onClose:(
     if (!form.current) return;
     if (!form.current.reportValidity()) return;
     const entries=Object.fromEntries(new FormData(form.current).entries());
-    const snapshot: Record<string,unknown>={...entries,id:monster?.id || "unsaved-monster"};
+    const snapshot: Record<string,unknown>={...entries,id:monster?.id || "unsaved-monster",edizione:entries.edition || undefined};
     for (const field of ABILITIES) snapshot[field.name]=Number(entries[field.name]) || 10;
     setPreview(snapshot as Partial<Monster>);
     dialog.current?.scrollTo({top:0});
@@ -82,6 +85,7 @@ export function MonsterEditor({monster,onClose}: {monster:Monster|null;onClose:(
       <fieldset disabled={saving} className="min-w-0 p-4 sm:p-6">
         <div hidden={preview!==null} className="space-y-5">
           <details open className="rounded-xl border border-border p-4"><summary className="mb-3 min-h-11 cursor-pointer font-serif text-xl text-primary">Identità</summary><EditorFields fields={IDENTITY} monster={monster} /></details>
+          <AdminEditionField edition={initialEdition} />
           <details open className="rounded-xl border border-border p-4"><summary className="mb-3 min-h-11 cursor-pointer font-serif text-xl text-primary">Statistiche di combattimento</summary><EditorFields fields={COMBAT} monster={monster} /></details>
           <section className="rounded-xl border border-border p-4"><h3 className="mb-1 font-serif text-xl text-primary">Caratteristiche</h3><p className="mb-4 text-xs leading-5 text-muted-foreground">Inserisci i punteggi da 1 a 30. I modificatori sono automatici.</p>
             <div className="grid grid-cols-3 gap-3">{ABILITIES.map(field=><div key={field.name}><label htmlFor={field.name} className="mb-1 block text-center text-xs font-semibold">{field.label}</label><input id={field.name} name={field.name} type="number" min={1} max={30} step={1} required value={Number.isNaN(scores[field.name]) ? "" : scores[field.name]} onChange={event=>setScores(previous=>({...previous,[field.name]:event.target.value==="" ? NaN : Number(event.target.value)}))} className={`${inputClass} text-center`} /><p className="mt-1 text-center text-xs text-primary">{Number.isFinite(scores[field.name]) ? abilityMod(scores[field.name]) : "—"}</p></div>)}</div>
@@ -89,7 +93,7 @@ export function MonsterEditor({monster,onClose}: {monster:Monster|null;onClose:(
           <details className="rounded-xl border border-border p-4"><summary className="min-h-11 cursor-pointer font-serif text-xl text-primary">Difese, abilità e sensi <span className="text-xs text-muted-foreground">· facoltativi</span></summary><div className="mt-3"><EditorFields fields={DETAILS} monster={monster} /></div></details>
           {BLOCKS.map(block=><MonsterContentEditor key={block.name} {...block} initialHtml={monster?.[block.name] || ""} descriptionOnly={block.name==="descrizione"} />)}
         </div>
-        {preview && <div onClick={event=>{if((event.target as HTMLElement).closest("a")) event.preventDefault();}}><AdminMonsterPreview monster={preview} legacy={monster?.edizione === "2014" || (!monster?.edizione && monster?.provenienza?.edition === "2014")} /><p className="mt-3 text-xs text-muted-foreground">Anteprima locale al modulo. I collegamenti sono mostrati senza lasciare l’editor.</p></div>}
+        {preview && <div onClick={event=>{if((event.target as HTMLElement).closest("a")) event.preventDefault();}}><AdminMonsterPreview monster={preview} legacy={preview.edizione === "2014" || (!preview.edizione && monster?.provenienza?.edition === "2014")} /><p className="mt-3 text-xs text-muted-foreground">Anteprima locale al modulo. I collegamenti sono mostrati senza lasciare l’editor.</p></div>}
       </fieldset>
       <footer className="sticky bottom-0 z-10 border-t border-border bg-card px-4 py-4 sm:px-6">
         {error && <p role="alert" className="mb-3 text-sm text-destructive">{error}</p>}

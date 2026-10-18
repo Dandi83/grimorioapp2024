@@ -6,8 +6,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { monsters } from "@/lib/db/schema";
 import { isAdmin } from "@/lib/admin-auth";
-import { monsterSlugify } from "@/lib/monsters-types";
+import { monsterSlugify, parseGs } from "@/lib/monsters-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
+import { saveAdminContent } from "@/lib/admin-content-save";
+import { getSrdMonsterSource } from "@/lib/srd-monsters";
 
 async function requireAdmin() {
   if (!(await isAdmin())) throw new Error("Non autorizzato");
@@ -72,6 +74,7 @@ function fromForm(formData: FormData) {
 
 function revalidateMonster(id: string) {
   revalidatePath("/bestiario");
+  revalidatePath("/preferiti");
   revalidatePath("/admin");
   revalidatePath(`/mostro/${id}`);
 }
@@ -83,11 +86,12 @@ export async function createMonsterAction(_prev: unknown, formData: FormData) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
   const id = await uniqueId(monsterSlugify(input.nome));
-  await db.insert(monsters).values({
+  const result = await saveAdminContent("monster", id, formData, undefined, database => database.insert(monsters).values({
     id,
     ...input,
     sort_key: input.nome.toLowerCase(),
-  });
+  }));
+  if (!result.ok) return result;
   revalidateMonster(id);
   return { ok: true as const, error: null, id };
 }
@@ -100,14 +104,18 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
   if (!input.nome) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
-  await db
-    .update(monsters)
+  const sourceEdition = getSrdMonsterSource({ ...input, id, gs_num: parseGs(input.grado_sfida) })?.edition;
+  const result = await saveAdminContent("monster", id, formData, sourceEdition, async database => {
+    const updated = await database.update(monsters)
     .set({
       ...input,
       sort_key: input.nome.toLowerCase(),
       updated_at: new Date(),
     })
-    .where(eq(monsters.id, id));
+    .where(eq(monsters.id, id)).returning({ id: monsters.id });
+    if (!updated.length) throw new Error("Scheda non trovata.");
+  });
+  if (!result.ok) return result;
   revalidateMonster(id);
   return { ok: true as const, error: null, id };
 }
@@ -118,5 +126,6 @@ export async function deleteMonsterAction(formData: FormData) {
   if (!id) return;
   await deleteContentWithEdition("monster", id);
   revalidatePath("/bestiario");
+  revalidatePath("/preferiti");
   revalidatePath("/admin");
 }
