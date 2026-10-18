@@ -1,7 +1,5 @@
 import { inlineSpellReferences } from "@/lib/spell-references";
 import { inlineConditionReferences } from "@/lib/conditions";
-import { SpellReferences } from "@/components/spell-references";
-import { ConditionReferences } from "@/components/condition-references";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -98,7 +96,7 @@ export default async function MonsterDetailPage({
     .join(" · ");
 
   return (
-    <article className={monster.id === "lich" ? "lich-sections-preview" : undefined}>
+    <article className="monster-sheet">
       {/* Hero */}
       <header className="relative h-[320px] overflow-hidden">
         <Image
@@ -207,8 +205,6 @@ export default async function MonsterDetailPage({
         </aside>
       )}
 
-      {monster.id !== "lich" && (process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><ConditionReferences text={[monster.tratti,monster.azioni,monster.azioni_bonus,monster.reazioni,monster.azioni_leggendarie,monster.immunita,monster.immunita_condizioni].filter(Boolean).join(" ")}/></div>}
-      {monster.id !== "lich" && (process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><SpellReferences html={[monster.tratti,monster.azioni,monster.azioni_bonus,monster.reazioni,monster.azioni_leggendarie].filter(Boolean).join(" ")}/></div>}
     </article>
   );
 }

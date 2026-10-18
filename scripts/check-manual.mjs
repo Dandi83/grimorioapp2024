@@ -30,7 +30,9 @@ for(const id of ['app/manuale/page.tsx','app/manuale/[id]/page.tsx'])assert.ok(e
 const {ManualContent}=load(path.join(root,'components/manual-content.tsx'));
 for(const e of entries){const markup=renderToStaticMarkup(createElement(ManualContent,{entry:e}));for(const b of e.blocks){const text=renderToStaticMarkup(createElement('span',null,b.text)).replace(/^<span>|<\/span>$/g,'');assert.ok(markup.includes(text),e.title+': missing block');}assert.ok(markup.includes('#page='+e.page));assert.ok(markup.includes('Attribuzione e licenza'));}
 assert.ok(readFileSync(path.join(root,'app/page.tsx'),'utf8').includes('href="/manuale"'));
-for(const p of ['app/spell/[id]/page.tsx','app/mostro/[id]/page.tsx'])assert.ok(readFileSync(path.join(root,p),'utf8').includes('<ConditionReferences'));
+assert.ok(readFileSync(path.join(root,'app/spell/[id]/page.tsx'),'utf8').includes('<ConditionReferences'));
+const monsterPage=readFileSync(path.join(root,'app/mostro/[id]/page.tsx'),'utf8');
+assert.ok(!monsterPage.includes('<ConditionReferences') && !monsterPage.includes('<SpellReferences'), 'Monster references are inline without duplicate footer panels');
 const {ManualBrowser}=load(path.join(root,'components/manual-browser.tsx'));
 for(const [category,count] of [['classi',12],['background',4],['specie',9]]) {
  const index=renderToStaticMarkup(createElement(ManualBrowser,{entries:entries.map(e=>({...e,search:e.title.toLowerCase()})),initialCategory:category}));

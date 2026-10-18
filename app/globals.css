@@ -155,13 +155,13 @@
  .paper-field{box-shadow:none!important;background:transparent!important;outline:0!important}
 }
 
-/* Lich-only design trial; the other creature sheets keep their current style. */
-.lich-sections-preview [data-monster-section] {
+/* Shared creature-sheet typography and section separators. */
+.monster-sheet [data-monster-section] {
   margin: 0 24px 36px;
   padding: 0;
 }
 
-.lich-sections-preview [data-monster-section] > h2 {
+.monster-sheet [data-monster-section] > h2 {
   margin-bottom: 18px;
   border-bottom: 1px solid rgb(212 175 55 / 40%);
   padding-bottom: 10px;
@@ -174,28 +174,28 @@
   font-variant-caps: small-caps;
 }
 
-.lich-sections-preview [data-monster-section] p {
+.monster-sheet [data-monster-section] p {
   font-size: 17px;
   line-height: 1.65;
 }
 
 /* Entry names stay distinct from the larger gold section headings. */
-.lich-sections-preview [data-monster-section] p > span.font-semibold {
+.monster-sheet [data-monster-section] p > span.font-semibold {
   color: var(--color-foreground);
 }
 
-.lich-sections-preview [data-monster-section] > div.min-w-0 {
+.monster-sheet [data-monster-section] > div.min-w-0 {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.lich-sections-preview [data-monster-section] > div.min-w-0 > div {
+.monster-sheet [data-monster-section] > div.min-w-0 > div {
   margin-top: 0;
 }
 
-/* Compact reference pills replace repeated underlines in the Lich trial. */
-.lich-sections-preview p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]) {
+/* Compact inline reference pills for conditions and cited spells. */
+.monster-sheet p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]) {
   display: inline-block;
   max-width: 100%;
   margin: 2px 1px;
@@ -212,16 +212,16 @@
   transition: background-color 150ms, border-color 150ms;
 }
 
-.lich-sections-preview p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):hover {
+.monster-sheet p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):hover {
   border-color: var(--color-primary);
   background: rgb(212 175 55 / 12%);
 }
 
-.lich-sections-preview p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):focus-visible {
+.monster-sheet p a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-.lich-sections-preview aside[aria-label="Incantesimi citati"] a {
-  text-decoration: none;
+.monster-sheet p a:is([href^="/spell/"], [href^="/manuale/condizioni-"])::first-letter {
+  text-transform: lowercase;
 }
