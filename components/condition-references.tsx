@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
 import { X } from "lucide-react";
-import Link from "next/link";
 import { findConditions } from "@/lib/conditions";
 import type { ManualEntry } from "@/lib/manual-types";
 import { ManualContent } from "@/components/manual-content";
@@ -25,7 +24,6 @@ export function ConditionReferences({ text }: { text: string }) {
       {selected && <>
         <div className="mb-5 flex items-start justify-between gap-4"><h2 id={titleId} className="font-serif text-3xl font-bold">{selected.title}</h2><button type="button" onClick={() => setSelected(null)} aria-label="Chiudi condizione" className="rounded-full p-2 text-muted hover:text-primary"><X size={22}/></button></div>
         <ManualContent entry={selected}/>
-        <Link href={`/manuale/${selected.id}`} className="mt-5 inline-block text-sm font-semibold text-primary underline" onClick={() => setSelected(null)}>Apri nel Manuale</Link>
       </>}
     </dialog>
   </div>;

@@ -10,7 +10,7 @@ const require=createRequire(import.meta.url),root=path.resolve(path.dirname(file
 assert.ok(existsSync(path.join(root,'lib/manual.ts')),'Manual provider and routes must exist');
 function load(file,deps={}){if(file.endsWith('.json'))return JSON.parse(readFileSync(file));const m={exports:{}};new Function('require','module','exports',ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2017,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText)(id=>{if(id in deps)return deps[id];if(id==='next/link')return {__esModule:true,default:({children,...p})=>createElement('a',p,children)};if(id.startsWith('@/')||id.startsWith('.')){let p=id.startsWith('@/')?path.join(root,id.slice(2)):path.resolve(path.dirname(file),id);if(!path.extname(p))p=['.tsx','.ts','.json'].map(e=>p+e).find(existsSync);return load(p,deps);}return require(id);},m,m.exports);return m.exports;}
 const manual=load(path.join(root,'lib/manual.ts'));
-assert.equal(manual.manualAvailable('production'),true);assert.equal(manual.manualAvailable('preview'),true);
+assert.equal(manual.manualAvailable('production'),false);assert.equal(manual.manualAvailable('preview'),true);
 const entries=manual.manualEntries;assert.equal(entries.filter(e=>e.category==='condizioni').length,15);assert.equal(entries.filter(e=>e.subgroup==='Classi').length,12);assert.equal(entries.filter(e=>e.subgroup==='Specie').length,9);assert.equal(entries.filter(e=>e.subgroup==='Background').length,4);
 for (const [category,count] of [['classi',12],['background',4],['specie',9],['creazione',4]]) assert.equal(entries.filter(e=>e.category===category).length,count,category+' is a separate collection');
 assert.equal(entries.some(e=>e.category==='personaggi'),false);
