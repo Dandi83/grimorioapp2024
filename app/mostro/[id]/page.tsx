@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
-import { HtmlText } from "@/components/html-text";
+import { DamageText, HtmlText } from "@/components/html-text";
 import { getMonsterById } from "@/lib/monsters";
 import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
 import { getSrdMonsterSource } from "@/lib/srd-monsters";
@@ -58,11 +58,12 @@ function AbilityCell({ label, score }: { label: string; score: number }) {
   );
 }
 
-function StatLine({ label, value }: { label: string; value: string }) {
+function StatLine({ label, value, damageIcons = false }: { label: string; value: string; damageIcons?: boolean }) {
   if (!value) return null;
   return (
     <p className="text-[15px] leading-6 text-foreground">
-      <span className="font-bold text-primary">{label}</span> {value}
+      <span className="font-bold text-primary">{label}</span>{" "}
+      {damageIcons ? <DamageText text={value} context={label} /> : value}
     </p>
   );
 }
@@ -74,7 +75,7 @@ function Section({ title, html }: { title: string; html: string }) {
       <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
         {title}
       </h2>
-      <HtmlText html={html} />
+      <HtmlText html={html} damageIcons />
     </section>
   );
 }
@@ -175,14 +176,14 @@ export default async function MonsterDetailPage({
         <section className="mx-6 mb-4 space-y-1 rounded-xl border border-border bg-card p-4">
           <StatLine label="Tiri Salvezza" value={monster.tiri_salvezza} />
           <StatLine label="Abilità" value={monster.abilita} />
-          <StatLine label="Vulnerabilità" value={monster.vulnerabilita} />
-          <StatLine label="Resistenze" value={monster.resistenze} />
-          <StatLine label="Immunità ai Danni" value={monster.immunita_danni} />
+          <StatLine label="Vulnerabilità" value={monster.vulnerabilita} damageIcons />
+          <StatLine label="Resistenze" value={monster.resistenze} damageIcons />
+          <StatLine label="Immunità ai Danni" value={monster.immunita_danni} damageIcons />
           <StatLine
             label="Immunità alle Condizioni"
             value={monster.immunita_condizioni}
           />
-          <StatLine label="Immunità" value={monster.immunita || ""} />
+          <StatLine label="Immunità" value={monster.immunita || ""} damageIcons />
           <StatLine label="Attrezzatura" value={monster.attrezzatura || ""} />
           <StatLine label="Sensi" value={monster.sensi} />
           <StatLine label="Linguaggi" value={monster.linguaggi} />

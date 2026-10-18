@@ -37,7 +37,27 @@ const DAMAGE_TYPES: Record<string, string> = {
   contundente: "bludgeoning", contundenti: "bludgeoning", perforante: "piercing", perforanti: "piercing",
   tagliente: "slashing", taglienti: "slashing",
 };
-const DAMAGE_WORDS = new RegExp(`\\b(${Object.keys(DAMAGE_TYPES).join("|")})\\b`, "gi");
+const DAMAGE_WORDS = new RegExp(`\\b(${Object.keys(DAMAGE_TYPES).map(word => word.split("").join("(?:-\\s*\\n\\s*)?")).join("|")})\\b`, "gi");
+
+/** Inline decoration shared by prose and labelled monster damage lists. */
+export function DamageText({ text, context = "", precedingText = "", softLineBreaks = false }: { text: string; context?: string; precedingText?: string; softLineBreaks?: boolean }) {
+  const decorated: ReactNode[] = [];
+  let end = 0;
+  for (const match of text.matchAll(DAMAGE_WORDS)) {
+    const preceding = precedingText + text.slice(0, match.index);
+    const sentence = (softLineBreaks ? preceding.replace(/\n/g, " ") : preceding).split(/[.!?;\n]/).pop() || "";
+    const before = `${context} ${sentence}`;
+    // A damage label may sit outside the value; ability checks and narrative uses stay plain.
+    const damageContext = before.match(/\b(?:dann[oi]|resistenz[ae]|immunit[àa]|vulnerabilit[àa])(?=\s|[,:;]|$)[^.!?;\n]{0,180}$/i);
+    if (!damageContext || /\b(?:tiro|prova|punteggio|caratteristica|modificatore|muro)\b/i.test(damageContext[0])) continue;
+    decorated.push(text.slice(end, match.index));
+    const type = DAMAGE_TYPES[match[0].replace(/-\s*\n\s*/g, "").toLowerCase()];
+    decorated.push(<span key={match.index} data-damage-type={type} className={match[0].includes("\n") ? undefined : "inline-block whitespace-nowrap"}>{match[0]}<img src={`/damage-icons/${type}.png`} alt="" aria-hidden="true" title={`Danni: ${match[0]}`} width={18} height={18} className="ml-1 inline-block h-[18px] w-[18px] align-[-3px] object-contain" /></span>);
+    end = match.index + match[0].length;
+  }
+  decorated.push(text.slice(end));
+  return <>{decorated}</>;
+}
 
 function InlineHtmlText({ html, damageIcons = false }: { html: string; damageIcons?: boolean }) {
   const nodes: ReactNode[] = [];
@@ -51,20 +71,7 @@ function InlineHtmlText({ html, damageIcons = false }: { html: string; damageIco
     if (!decoded) return;
     let content: ReactNode = decoded;
     if (damageIcons) {
-      const decorated: ReactNode[] = [];
-      let end = 0;
-      for (const match of decoded.matchAll(DAMAGE_WORDS)) {
-        const before = (plainEmitted + decoded.slice(0, match.index)).split(/[.!?;\n]/).pop() || "";
-        // Only damage/resistance contexts: never decorate the Forza ability or ambient fire.
-        const context = before.match(/\b(?:dann[oi]|resistenz[ae]|immunit[àa]|vulnerabilit[àa])(?=\s|[,:;]|$)[^.!?;\n]{0,180}$/i);
-        if (!context || /\b(?:tiro|prova|punteggio|caratteristica|modificatore|muro)\b/i.test(context[0])) continue;
-        decorated.push(decoded.slice(end, match.index));
-        const type = DAMAGE_TYPES[match[0].toLowerCase()];
-        decorated.push(<span key={match.index} data-damage-type={type} className="inline-block whitespace-nowrap">{match[0]}<img src={`/damage-icons/${type}.png`} alt="" aria-hidden="true" title={`Danni: ${match[0]}`} width={18} height={18} className="ml-1 inline-block h-[18px] w-[18px] align-[-3px] object-contain" /></span>);
-        end = match.index + match[0].length;
-      }
-      decorated.push(decoded.slice(end));
-      content = decorated;
+      content = <DamageText text={decoded} precedingText={plainEmitted} />;
     }
     plainEmitted += decoded;
     const bold = stack.includes("b") || stack.includes("strong");
@@ -157,7 +164,7 @@ export function HtmlText({ html, damageIcons = false }: { html: string; damageIc
               aria-label="Tabella dell’incantesimo, scorribile orizzontalmente"
               className="max-w-full overflow-x-auto rounded-xl border border-border bg-card p-3 font-mono text-[12px] leading-5 text-card-foreground"
             >
-              {decodeEntities(part.slice(5, -6))}
+              {damageIcons ? <DamageText text={decodeEntities(part.slice(5, -6))} softLineBreaks /> : decodeEntities(part.slice(5, -6))}
             </pre>
           );
         }

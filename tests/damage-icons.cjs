@@ -19,3 +19,30 @@ const plain=s=>s.replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&#x27;|&#
 const spells=JSON.parse(fs.readFileSync('lib/data/srd-italiano-5.2.1.json')).spells;
 for(const s of spells)assert.equal(plain(render(s.descrizione)),plain(render(s.descrizione,false)),s.id+': source text preserved');
 console.log('Damage icons: 13 types, repeated lists, formatting boundaries, ability disambiguation, opt-in, safe rendering and all source texts passed');
+
+// Damage lists carry their meaning in the stat label, separate from the value.
+assert.equal(typeof m.exports.DamageText,'function','shared inline damage renderer');
+const inline=(text,context='')=>renderToStaticMarkup(createElement(m.exports.DamageText,{text,context}));
+for(const context of ['Resistenze','Immunità ai Danni','Vulnerabilità','Immunità']){
+ const html=inline('Fuoco, Freddo; Contundenti, Perforanti e Taglienti',context);
+ assert.equal((html.match(/data-damage-type=/g)||[]).length,5,context);
+ assert.ok(!html.includes('<p'),'inline stats must not contain nested paragraphs');
+}
+assert.ok(!inline('Forza +5, Destrezza +3').includes('data-damage-type='));
+assert.ok(!inline('Il fuoco illumina la stanza.').includes('data-damage-type='));
+for(const file of ['srd-monsters-5.2.1-it.json','original-descriptions-2024.json']){
+ const data=JSON.parse(fs.readFileSync(`lib/data/${file}`));
+ const records=data.records||data.spells;
+ for(const record of records){
+  const item=record.monster||record;
+  for(const [field,value] of Object.entries(item)){
+   if(typeof value!=='string')continue;
+   assert.equal(plain(render(value)),plain(render(value,false)),`${file}:${item.id}:${field}: preserved text`);
+  }
+ }
+}
+console.log('Shared inline damage lists and monster/original-spell text preservation passed');
+const wrappedTable=render('<pre>Raggio. 12d6 danni da\n  acido e 12d6 danni da ful-\n  mine.</pre>');
+assert.ok(wrappedTable.includes('/damage-icons/acid.png'),'damage context survives visual table line wraps');
+assert.ok(wrappedTable.includes('/damage-icons/lightning.png'),'PDF hyphenation in damage type is recognized');
+assert.ok(!render('<pre>Temperatura\n5 Freddo\n6 Gelido</pre>').includes('data-damage-type='),'weather table is not damage');
