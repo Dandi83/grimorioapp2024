@@ -4,7 +4,7 @@ import { getAllSpells, computeMeta } from "@/lib/spells";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Grimorio — Cerca gli incantesimi",
+  title: "Incantesimi — Cerca gli incantesimi",
 };
 
 export default async function GrimorioPage({

@@ -4,7 +4,7 @@ import { getAllMonsters, computeMonstersMeta } from "@/lib/monsters";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Bestiario — Cerca i mostri",
+  title: "Mostri — Cerca i mostri",
 };
 
 export default async function BestiarioPage({

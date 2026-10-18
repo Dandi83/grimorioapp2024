@@ -69,7 +69,7 @@ export function GrimorioBrowser({
       {/* Sticky header */}
       <div className="sticky top-0 z-30 border-b border-border bg-background/95 px-6 pb-3 pt-6 backdrop-blur">
         <h1 className="mb-4 font-serif text-3xl font-bold text-foreground">
-          Grimorio
+          Incantesimi ({spells.length})
         </h1>
 
         {/* Search */}
