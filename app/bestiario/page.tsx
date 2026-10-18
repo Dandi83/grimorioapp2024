@@ -17,7 +17,7 @@ export default async function BestiarioPage({
 
   return (
     <BestiarioBrowser
-      showCollections={process.env.VERCEL_ENV === "preview"}
+      showCollections={(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production")}
       monsters={monsters}
       meta={computeMonstersMeta(monsters)}
       initialTaglia={sp.taglia || null}

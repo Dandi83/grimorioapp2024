@@ -15,7 +15,7 @@ new Function('require','module','exports',code)(id=>id.endsWith('.json')?JSON.pa
 const {previewMonsters,previewMonsterById,getSrdMonsterSource}=mod.exports;
 const goblin={id:'goblin',nome:'Goblin',descrizione:'Existing custom text'};
 const rows=[goblin];
-assert.equal(previewMonsters(rows,'production').length,2,'Publishing must include Aboleth in the production catalog');
+assert.equal(previewMonsters(rows,'production').length,331,'Publishing must include Aboleth in the production catalog');
 assert.equal(previewMonsters(rows,undefined),rows);
 assert.equal(previewMonsterById('aboleth','production')?.nome,'Aboleth','Publishing must enable the Aboleth detail page in production');
 assert.equal(previewMonsterById('aboleth',undefined),undefined);

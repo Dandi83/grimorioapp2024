@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <FavoritesProvider>
           <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x">
             <main className="min-w-0 flex-1 pb-24">
-              {process.env.VERCEL_ENV === "preview" || process.env.NODE_ENV !== "production" ? <CharacterSessionProvider>{children}</CharacterSessionProvider> : children}
+              <CharacterSessionProvider>{children}</CharacterSessionProvider>
             </main>
             <BottomNav />
           </div>

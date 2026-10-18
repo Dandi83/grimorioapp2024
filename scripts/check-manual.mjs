@@ -10,7 +10,7 @@ const require=createRequire(import.meta.url),root=path.resolve(path.dirname(file
 assert.ok(existsSync(path.join(root,'lib/manual.ts')),'Manual provider and routes must exist');
 function load(file,deps={}){if(file.endsWith('.json'))return JSON.parse(readFileSync(file));const m={exports:{}};new Function('require','module','exports',ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2017,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText)(id=>{if(id in deps)return deps[id];if(id==='next/link')return {__esModule:true,default:({children,...p})=>createElement('a',p,children)};if(id.startsWith('@/')||id.startsWith('.')){let p=id.startsWith('@/')?path.join(root,id.slice(2)):path.resolve(path.dirname(file),id);if(!path.extname(p))p=['.tsx','.ts','.json'].map(e=>p+e).find(existsSync);return load(p,deps);}return require(id);},m,m.exports);return m.exports;}
 const manual=load(path.join(root,'lib/manual.ts'));
-assert.equal(manual.manualAvailable('production'),false);assert.equal(manual.manualAvailable('preview'),true);
+assert.equal(manual.manualAvailable('production'),true);assert.equal(manual.manualAvailable('preview'),true);
 const entries=manual.manualEntries;assert.equal(entries.filter(e=>e.category==='condizioni').length,15);assert.equal(entries.filter(e=>e.subgroup==='Classi').length,12);assert.equal(entries.filter(e=>e.subgroup==='Specie').length,9);assert.equal(entries.filter(e=>e.subgroup==='Background').length,4);
 for (const [category,count] of [['classi',12],['background',4],['specie',9],['creazione',4]]) assert.equal(entries.filter(e=>e.category===category).length,count,category+' is a separate collection');
 assert.equal(entries.some(e=>e.category==='personaggi'),false);
@@ -24,7 +24,7 @@ let html=renderToStaticMarkup(createElement(ConditionReferences,{text:'Il bersag
 const spellRefs=load(path.join(root,'lib/spell-references.ts'));
 assert.deepEqual(spellRefs.findReferencedSpells('<strong>Incantesimi.</strong> <em>Invisibilità</em>, <em>palla di fuoco (di 4º livello)</em>').map(s=>s.name),['Invisibilità','Palla di fuoco']);
 assert.deepEqual(spellRefs.findReferencedSpells('Il mostro vola alla luce del sole.'),[]);
-const provider=load(path.join(root,'lib/srd-monsters.ts'));const rows=provider.previewMonsters([],'preview');assert.equal(rows.length,330);assert.equal(new Set(rows.map(x=>x.id)).size,330);assert.equal(provider.previewMonsters([],'production').length,1);
+const provider=load(path.join(root,'lib/srd-monsters.ts'));const rows=provider.previewMonsters([],'preview');assert.equal(rows.length,330);assert.equal(new Set(rows.map(x=>x.id)).size,330);assert.equal(provider.previewMonsters([],'production').length,330);
 const types=load(path.join(root,'lib/monsters-types.ts'));assert.equal(rows.filter(types.isSrdAnimal).length,95);assert.equal(types.typeCategory('Sciame di bestie Minuscole'),'Bestia');assert.equal(types.isSrdAnimal(rows.find(m=>m.id==='alce-gigante')),true);assert.equal(types.typeCategory(rows.find(m=>m.id==='alce-gigante').tipo),'Celestiale');
 for(const id of ['app/manuale/page.tsx','app/manuale/[id]/page.tsx'])assert.ok(existsSync(path.join(root,id)));
 const {ManualContent}=load(path.join(root,'components/manual-content.tsx'));

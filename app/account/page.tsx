@@ -1,9 +1,7 @@
 import type {Metadata} from 'next';
-import {notFound} from 'next/navigation';
 import Link from 'next/link';
 import {ShieldCheck,ArrowLeft} from 'lucide-react';
 export const metadata:Metadata={title:'Account personali — anteprima',robots:{index:false,follow:false}};
 export default function AccountPage(){
- if(process.env.VERCEL_ENV!=='preview'&&process.env.NODE_ENV==='production')notFound();
  return <div className="px-6 py-8"><Link className="mb-8 inline-flex min-h-11 items-center gap-2 text-sm text-muted" href="/personaggi"><ArrowLeft size={16}/>I miei personaggi</Link><ShieldCheck size={38} className="mb-5 text-primary"/><p className="text-xs uppercase tracking-widest text-primary">Stato della preview</p><h1 className="mt-3 font-serif text-4xl font-bold">Un posto per i tuoi eroi.</h1><p className="mt-5 text-sm leading-7 text-muted">L’anteprima permette di creare e modificare la scheda. Gli account personali e il salvataggio sincronizzato non sono ancora attivi: le modifiche restano solo nella pagina aperta.</p><div className="my-6 rounded-2xl border border-border bg-card p-5"><h2 className="font-serif text-2xl">Cosa arriverà con l’account</h2><ul className="mt-4 space-y-3 text-sm text-card-foreground"><li>Schede private accessibili solo dal proprietario.</li><li>Sincronizzazione fra iPhone, iPad e computer.</li><li>Salvataggio automatico e versioni recuperabili.</li></ul></div><p className="text-sm leading-7 text-muted">Per attivarli serve prima un archivio di prova separato da quello dell’app pubblica. In questa anteprima non vengono richiesti nome utente o password.</p><Link href="/personaggi" className="mt-6 inline-flex rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground">Prova la scheda</Link></div>;
 }

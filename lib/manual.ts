@@ -9,5 +9,5 @@ export const manualEntries: ManualEntry[] = data.entries.map(entry => ({
     entry.subgroup === "Specie" ? "specie" : "creazione") as ManualCategory,
   blocks: entry.blocks as ManualEntry["blocks"],
 }));
-export function manualAvailable(environment: string | undefined) { return environment === "preview"; }
+export function manualAvailable(environment: string | undefined) { return environment === "preview" || environment === "production"; }
 export function getManualEntry(id: string) { return manualEntries.find(entry => entry.id === id); }

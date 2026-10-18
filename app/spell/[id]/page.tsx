@@ -159,7 +159,7 @@ export default async function SpellDetailPage({
           )}
         </aside>
       )}
-      {process.env.VERCEL_ENV === "preview" && <div className="px-6"><ConditionReferences text={spell.descrizione || ""}/></div>}
+      {(process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "production") && <div className="px-6"><ConditionReferences text={spell.descrizione || ""}/></div>}
       {source && (
         <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
           <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>

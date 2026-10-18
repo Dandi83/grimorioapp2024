@@ -16,14 +16,14 @@ const additions = manifest.spells.map(({ id }) => {
   };
 });
 
-/** Stage only the twenty new records; never invent production DB rows. */
+/** Serve the twenty approved records without mutating database rows. */
 export function previewSpellRows<T extends { id: string; nome_italiano: string }>(rows: T[], environment?: string) {
-  if (environment !== "preview") return rows;
+  if (environment !== "preview" && environment !== "production") return rows;
   const existing = new Set(rows.map((row) => row.id));
   return [...rows, ...additions.filter((row) => !existing.has(row.id))]
     .sort((a, b) => a.nome_italiano.localeCompare(b.nome_italiano, "it"));
 }
 
 export function previewSpellById(id: string, environment?: string) {
-  return environment === "preview" ? additions.find((row) => row.id === id) : undefined;
+  return (environment === "preview" || environment === "production") ? additions.find((row) => row.id === id) : undefined;
 }
