@@ -27,7 +27,6 @@ export default function HomePage() {
         />
         <div className={styles.shade} aria-hidden="true" />
         <div className={styles.copy}>
-          <div className={styles.rule} aria-hidden="true" />
           <h1 id="home-quote" className={styles.quote}>
             Il sapere è la più
             <br />

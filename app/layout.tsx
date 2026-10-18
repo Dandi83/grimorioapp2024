@@ -62,7 +62,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-dvh bg-background text-foreground antialiased">
         <FavoritesProvider>
           <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x">
-            <main className="min-w-0 flex-1 pb-24">
+            <main className="min-w-0 flex-1 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
               <CharacterSessionProvider>{children}</CharacterSessionProvider>
             </main>
             <BottomNav />

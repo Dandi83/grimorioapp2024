@@ -43,9 +43,9 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navigazione principale"
-      className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-2xl border-t border-border bg-card/95 backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto h-[calc(88px+env(safe-area-inset-bottom,0px))] w-full max-w-2xl border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur"
     >
-      <ul className="flex items-stretch">
+      <ul className="flex h-[88px] items-stretch">
         {ITEMS.map(({ href, label, Icon, match }) => {
           const active = match(pathname);
           return (
@@ -53,15 +53,15 @@ export function BottomNav() {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className="flex flex-col items-center gap-1 px-2 pb-6 pt-3 transition-colors"
+                className="flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"
               >
                 <Icon
-                  size={22}
+                  size={28}
                   strokeWidth={active ? 2.4 : 2}
                   className={active ? "text-primary" : "text-muted"}
                 />
                 <span
-                  className={`text-[11px] font-semibold tracking-wide ${
+                  className={`text-[13px] font-semibold leading-[18px] tracking-wide ${
                     active ? "text-primary" : "text-muted"
                   }`}
                 >
