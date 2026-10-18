@@ -10,7 +10,9 @@ export function MonsterProvenanceBadge({
   linked?: boolean;
 }) {
   const label = source
-    ? `${source.document} · ${source.edition === "2014" ? "D&D 2014" : `D&D 5e (${source.edition})`}`
+    ? linked
+      ? `${source.document} · ${source.edition === "2014" ? "D&D 2014" : `D&D 5e (${source.edition})`}`
+      : `D&D ${source.edition}`
     : "Fonte da verificare";
   const description = source
     ? `Fonte: ${source.document} italiano, pagina ${source.page}. D&D quinta edizione, regole ${source.edition}.`
