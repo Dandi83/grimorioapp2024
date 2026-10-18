@@ -16,6 +16,17 @@ La richiesta attuale autorizza ambiente cloud, continuità del progetto e prepar
 
 Mantieni sito, catalogo e area amministrativa esistenti. Non mescolare con AGAIN, THE HOUSE, JARVIS o altri progetti. Lavoro mobile in branch separati. La scelta Capacitor è una raccomandazione da validare con una prova, non una build iOS già riuscita.
 
+## Coordinamento permanente web / iPhone
+
+Regola esplicita di Daniele del 18 ottobre 2026: evitare sovrapposizioni tra questa chat web e la chat `IL GRIMORIO — iPhone · Codex Cloud`.
+
+- Chat web: sito pubblico, catalogo, amministrazione e statistiche. Chat Codex iPhone: client mobile/Capacitor su branch separati.
+- Prima di ogni intervento verifica stato del repository, branch remoti, commit di produzione e lavoro dell'altro filone disponibile nei documenti e nelle chat. Non presumere una sincronizzazione automatica delle conversazioni.
+- Non modificare contemporaneamente gli stessi file condivisi nei due filoni. Se esiste lavoro concorrente, prosegui su parti indipendenti e coordina la modifica condivisa prima di applicarla.
+- Distingui nei documenti l'ultimo commit web pubblicato dalla base mobile. Registra branch, commit, file condivisi cambiati e verifiche nei passaggi significativi.
+- Trasferisci le modifiche condivise con integrazione esplicita e verificata; niente merge automatici dell'intero lavoro iPhone nel sito o aggiornamenti ciechi della base mobile.
+- La pubblicazione del sito e quella dell'app iPhone sono operazioni distinte, con le rispettive autorizzazioni. Le richieste successive di Daniele possono ridefinire questa divisione.
+
 ## Ambiente e verifiche
 
 - La root è la web app Next.js attuale. Usa Node.js 24 LTS (22 LTS è accettabile se compatibile con lockfile e build), npm e il `package-lock.json` della root.
