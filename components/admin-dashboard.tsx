@@ -14,6 +14,7 @@ import { AdminMonsters } from "@/components/admin-monsters";
 import { SpellProvenanceMarker } from "./spell-provenance-marker";
 import { AdminEditionPicker } from "./admin-edition-picker";
 import { SpellEditor } from "./admin-spell-editor";
+import { AdminPublicLink } from "./admin-public-link";
 import {
   BookOpen,
   Skull,
@@ -53,6 +54,7 @@ export function AdminDashboard({
 
   return (
     <main className="mx-auto max-w-3xl px-5 pb-24 pt-8">
+      <AdminPublicLink />
       <header className="mb-6 flex items-center justify-between gap-3">
         <div>
           <h1 className="font-serif text-2xl text-foreground">Amministrazione</h1>

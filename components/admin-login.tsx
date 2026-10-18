@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { loginAction } from "@/app/actions/admin";
 import { KeyRound } from "lucide-react";
+import { AdminPublicLink } from "./admin-public-link";
 
 const initialState = { ok: false as const, error: "" };
 
@@ -11,6 +12,7 @@ export function AdminLogin() {
 
   return (
     <main className="mx-auto flex min-h-[80vh] max-w-md flex-col items-center justify-center px-5">
+      <AdminPublicLink />
       <div className="w-full rounded-2xl border border-border bg-card p-8">
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full border border-primary/40 bg-primary/10">
