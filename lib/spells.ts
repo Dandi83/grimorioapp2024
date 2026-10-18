@@ -6,8 +6,8 @@ import { db } from "./db";
 import { getContentEditions } from "./content-editions";
 import { spells as spellsTable } from "./db/schema";
 import { parseLivello, type Spell } from "./spells-types";
-import { applySrdDescription } from "./srd-descriptions";
-import { applyOriginalDescription } from "./original-descriptions";
+import { applySrdDescription, getSrdSource } from "./srd-descriptions";
+import { applyOriginalDescription, getOriginalSource } from "./original-descriptions";
 import { previewSpellRows, previewSpellById } from "./srd-additions";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
@@ -29,6 +29,7 @@ function toSpell(r: RawRow): Spell {
   r = applyOriginalDescription(applySrdDescription(r));
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
   return {
+    edizione: getSrdSource(r.id, r.descrizione) || getOriginalSource(r.id, r.descrizione) ? "2024" : undefined,
     id: r.id,
     nome_italiano: r.nome_italiano,
     livello: r.livello || "",
@@ -50,7 +51,10 @@ export async function getAllSpells(options: { includePreview?: boolean } = {}): 
     .orderBy(asc(spellsTable.sort_key)), getContentEditions("spell")]);
   // The admin always sees only real, editable database rows.
   return previewSpellRows(rows, options.includePreview === false ? undefined : process.env.VERCEL_ENV)
-    .map(row => ({ ...toSpell(row), edizione: editions.get(row.id) }));
+    .map(row => {
+      const spell = toSpell(row);
+      return { ...spell, edizione: editions.get(row.id) ?? spell.edizione };
+    });
 }
 
 export async function getSpellById(id: string): Promise<Spell | undefined> {
@@ -61,5 +65,6 @@ export async function getSpellById(id: string): Promise<Spell | undefined> {
     .limit(1), getContentEditions("spell", id)]);
   const row = rows[0] ?? previewSpellById(id, process.env.VERCEL_ENV);
   if (!row) return undefined;
-  return { ...toSpell(row), edizione: editions.get(id) };
+  const spell = toSpell(row);
+  return { ...spell, edizione: editions.get(id) ?? spell.edizione };
 }

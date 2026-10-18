@@ -27,16 +27,16 @@ export function MonsterRow({ monster }: { monster: Monster }) {
         href={`/mostro/${monster.id}`}
         className="min-w-0 flex-1 py-3 transition-opacity hover:opacity-70"
       >
-        <p className="truncate font-serif text-lg font-semibold text-foreground">
-          {monster.nome}
-        </p>
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="min-w-0 truncate font-serif text-lg font-semibold text-foreground">
+            {monster.nome}
+          </p>
+          <MonsterProvenanceBadge source={monster.provenienza} edition={monster.edizione} compact />
+        </div>
         <p className="truncate text-xs uppercase tracking-wide text-muted">
           {gsLabel(monster.grado_sfida)} · {monster.taglia}
           {typeCategory(monster.tipo) ? ` · ${typeCategory(monster.tipo)}` : ""}
         </p>
-        <div className="mt-1.5">
-          <MonsterProvenanceBadge source={monster.provenienza} edition={monster.edizione} />
-        </div>
       </Link>
       <button
         type="button"

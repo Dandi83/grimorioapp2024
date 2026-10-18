@@ -28,13 +28,15 @@ export function SpellRow({ spell }: { spell: Spell }) {
         href={`/spell/${spell.id}`}
         className="min-w-0 flex-1 py-3 transition-opacity hover:opacity-70"
       >
-        <p className="truncate font-serif text-lg font-semibold text-foreground">
-          {capitalizeWords(spell.nome_italiano)}
-        </p>
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="min-w-0 truncate font-serif text-lg font-semibold text-foreground">
+            {capitalizeWords(spell.nome_italiano)}
+          </p>
+          <RulesEditionBadge edition={spell.edizione} compact />
+        </div>
         <p className="truncate text-xs uppercase tracking-wide text-muted">
           {metaLine(spell)}
         </p>
-        <RulesEditionBadge edition={spell.edizione} />
       </Link>
       <button
         type="button"

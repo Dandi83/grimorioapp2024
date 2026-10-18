@@ -101,6 +101,23 @@ function load(relative, deps = {}) {
   });
   assert.equal((await spellReader.getAllSpells())[0].edizione,'2024');
   assert.equal((await spellReader.getSpellById(spell.id)).edizione,'2024');
+  const srdSpell=JSON.parse(fs.readFileSync('lib/data/srd-italiano-5.2.1.json','utf8')).spells[0];
+  const originalSpell=JSON.parse(fs.readFileSync('lib/data/original-descriptions-2024.json','utf8')).spells[0];
+  for(const [record,expected] of [
+    [srdSpell,'2024'],
+    [originalSpell,'2024'],
+    [{...srdSpell,descrizione:'Descrizione personalizzata successiva'},undefined],
+    [{id:'custom-unclassified',descrizione:'Creato dal master'},undefined],
+  ]) {
+    const autoReader=load('lib/spells.ts',{
+      'server-only':{},'./db':{db:database({...record,nome_italiano:record.appName||record.sourceName||'Personalizzato'})},
+      './db/schema':{spells:{}},'./content-editions':{getContentEditions:async()=>new Map()},
+      './spells-types':load('lib/spells-types.ts'),'./srd-descriptions':load('lib/srd-descriptions.ts'),
+      './original-descriptions':load('lib/original-descriptions.ts'),'./srd-additions':load('lib/srd-additions.ts'),
+    });
+    assert.equal((await autoReader.getAllSpells())[0].edizione,expected,record.id+': catalog edition follows verified content');
+    assert.equal((await autoReader.getSpellById(record.id)).edizione,expected,record.id+': detail edition follows verified content');
+  }
   assert.ok(revalidated.includes('/bestiario') && revalidated.includes('/grimorio') && revalidated.includes('/preferiti') && revalidated.includes('/admin'));
   const failing = load('lib/content-editions.ts', {'server-only': {}, './db': {pool:{query:async()=>{throw Object.assign(new Error('offline'),{code:'ECONNREFUSED'});}}}});
   await assert.rejects(()=>failing.getContentEditions('monster'),/offline/,'connection errors cannot masquerade as empty metadata');

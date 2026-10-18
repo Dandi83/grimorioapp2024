@@ -6,10 +6,12 @@ export function MonsterProvenanceBadge({
   source,
   edition,
   linked = false,
+  compact = false,
 }: {
   source?: MonsterProvenance;
   edition?: "2014" | "2024";
   linked?: boolean;
+  compact?: boolean;
 }) {
   const label = source
     ? linked
@@ -20,10 +22,13 @@ export function MonsterProvenanceBadge({
     ? `Fonte: ${source.document} italiano, pagina ${source.page}. D&D quinta edizione, regole ${source.edition}.`
     : edition ? `D&D ${edition}: edizione indicata dall’amministratore; fonte e licenza non verificate.`
       : "Provenienza ed edizione non verificate per questa versione della scheda.";
-  const className = `inline-flex max-w-full items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-medium leading-4 ${
+  const sizeClass = compact
+    ? "shrink-0 gap-1 px-1.5 py-0.5 text-[10px] leading-3.5"
+    : "gap-1.5 px-2.5 py-1 text-[10px] leading-4";
+  const className = `inline-flex max-w-full items-center rounded-full border font-medium ${sizeClass} ${
     source ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-card text-muted"
   }`;
-  const content = <><BookOpen size={12} className="shrink-0" aria-hidden="true" /><span>{label}</span></>;
+  const content = <><BookOpen size={compact ? 10 : 12} className="shrink-0" aria-hidden="true" /><span className="whitespace-nowrap">{label}</span></>;
 
   if (source && linked) {
     return (
