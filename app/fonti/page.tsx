@@ -19,6 +19,13 @@ export default function SourcesPage() {
           marchi registrati appartengono ai rispettivi proprietari.
         </p>
       </section>
+      <section id="crediti-illustrazioni" aria-labelledby="artwork-credits" className="space-y-3 text-sm leading-6 text-muted">
+        <h2 id="artwork-credits" className="font-serif text-xl font-bold text-foreground">Crediti delle illustrazioni</h2>
+        <p>Le illustrazioni ufficiali del bestiario sono © Wizards of the Coast LLC. La fonte della singola immagine è collegata nella relativa scheda.</p>
+        <p>Il Grimorio.App è un contenuto fan non ufficiale. Non approvato o sponsorizzato da Wizards of the Coast. Parti dei materiali utilizzati sono proprietà di Wizards of the Coast.</p>
+        <p><a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer" className="text-primary underline underline-offset-4">Fan Content Policy</a></p>
+        <p>Le illustrazioni sono distinte dai testi SRD e non sono distribuite con licenza Creative Commons.</p>
+      </section>
       <section className="space-y-4 font-serif text-[1.05rem] leading-7">
         <h2 className="text-xl font-bold">System Reference Document 5.2.1 italiano</h2>
         <p>{srdAttribution}</p>

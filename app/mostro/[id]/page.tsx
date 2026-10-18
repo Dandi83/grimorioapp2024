@@ -158,10 +158,7 @@ export default async function MonsterDetailPage({
       </header>
 
       {artwork && <aside aria-label="Crediti dell’illustrazione" className="mx-6 mb-2 space-y-1 border-b border-border pb-4 text-[11px] leading-5 text-muted">
-        <p className="text-primary">Anteprima grafica · illustrazione ufficiale</p>
         <p>Illustrazione © Wizards of the Coast LLC. <a href={artwork.sourceUrl} target="_blank" rel="noreferrer" className="underline underline-offset-4">Fonte: D&amp;D Beyond</a>.</p>
-        <p>Il Grimorio.App è un contenuto fan non ufficiale. Non approvato o sponsorizzato da Wizards of the Coast. Parti dei materiali utilizzati sono proprietà di Wizards of the Coast. <a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer" className="underline underline-offset-4">Fan Content Policy</a>.</p>
-        <p>L’illustrazione è distinta dai testi SRD e non è distribuita con licenza Creative Commons.</p>
       </aside>}
 
       <div className="px-6 pt-3">

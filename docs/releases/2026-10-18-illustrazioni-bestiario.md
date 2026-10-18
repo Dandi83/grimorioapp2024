@@ -44,3 +44,7 @@ Controllati tutti i 341 ID: 336 immagini e cinque fallback espliciti; nessun ass
 `npm test` completo e `npm run build`: superati. Il controllo del registro finale ha verificato copertura, identità, dimensioni, origini e isolamento degli ambienti; la configurazione contiene 18 cartelle consentite.
 
 File condivisi cambiati rispetto alla prova: `lib/monster-art-preview.ts`, `next.config.mjs`; nuovo registro JSON. La pagina di dettaglio mantiene il codice della prova approvata. Prima di trasferire questo lavoro nel client iPhone occorre un'integrazione esplicita e verificata.
+
+## Crediti compatti — richiesta successiva
+
+Daniele ha chiesto di lasciare in ogni scheda solo la riga «Illustrazione © Wizards of the Coast LLC. Fonte: D&D Beyond», mantenendo il collegamento alla fonte individuale. Branch `ui/compact-art-credits-20261018`, base `fd361e5`. Rimossa la dicitura «Anteprima grafica»; disclaimer fan, Fan Content Policy e distinzione dalle licenze SRD trasferiti nella sezione «Crediti delle illustrazioni» di `/fonti`, identificata da `crediti-illustrazioni`. Modifiche condivise limitate a `app/mostro/[id]/page.tsx` e `app/fonti/page.tsx`. Registro immagini, dati, attivazione solo in preview e lavoro iPhone invariati.
