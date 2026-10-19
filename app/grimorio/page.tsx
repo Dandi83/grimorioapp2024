@@ -1,7 +1,6 @@
 import { GrimorioBrowser } from "@/components/grimorio-browser";
-import { getAllSpells, computeMeta } from "@/lib/spells";
-
-export const dynamic = "force-dynamic";
+import { getSpellIndex } from "@/lib/spell-index";
+import { computeMeta } from "@/lib/spells-types";
 
 export const metadata = {
   title: "Incantesimi — Cerca gli incantesimi",
@@ -13,7 +12,7 @@ export default async function GrimorioPage({
   searchParams: Promise<{ scuola?: string; livello?: string; classe?: string }>;
 }) {
   const sp = await searchParams;
-  const spells = await getAllSpells();
+  const spells = await getSpellIndex();
   const livello =
     sp.livello !== undefined && sp.livello !== ""
       ? parseInt(sp.livello, 10)
@@ -21,9 +20,7 @@ export default async function GrimorioPage({
 
   return (
     <GrimorioBrowser
-      spells={spells.map(({id, nome_italiano, livello_num, scuola, classi}) => ({
-        id, nome_italiano, livello_num, scuola, classi,
-      }))}
+      spells={spells}
       meta={computeMeta(spells)}
       initialLivello={Number.isNaN(livello as number) ? null : livello}
       initialScuola={sp.scuola || null}

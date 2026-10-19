@@ -35,17 +35,24 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     setLoaded(true);
   }, []);
 
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify(favorites));
+    } catch {
+      // ignore unavailable storage
+    }
+  }, [favorites, loaded]);
+
+  const favoriteSet = useMemo(() => new Set(favorites), [favorites]);
+  const isFavorite = useCallback((id: string) => favoriteSet.has(id), [favoriteSet]);
+
   const toggle = useCallback(
     (id: string) => {
       setFavorites((prev) => {
         const next = prev.includes(id)
           ? prev.filter((f) => f !== id)
           : [...prev, id];
-        try {
-          window.localStorage.setItem(KEY, JSON.stringify(next));
-        } catch {
-          // ignore
-        }
         return next;
       });
     },
@@ -55,11 +62,11 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const value = useMemo<FavoritesContextValue>(
     () => ({
       favorites,
-      isFavorite: (id: string) => favorites.includes(id),
+      isFavorite,
       toggle,
       loaded,
     }),
-    [favorites, toggle, loaded],
+    [favorites, isFavorite, toggle, loaded],
   );
 
   return (

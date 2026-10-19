@@ -11,7 +11,7 @@ import type { Spell } from "@/lib/spells-types";
 const sortRank = (value: number) => value >= 0 ? value : Number.POSITIVE_INFINITY;
 
 export function FavoritesList({ spells, monsters = [] }: { spells: Spell[]; monsters?: Monster[] }) {
-  const { favorites, loaded } = useFavorites();
+  const { favorites, loaded, isFavorite, toggle } = useFavorites();
 
   const favSpells = spells
     .filter((s) => favorites.includes(s.id))
@@ -52,7 +52,7 @@ export function FavoritesList({ spells, monsters = [] }: { spells: Spell[]; mons
               <ul>{favSpells.map((spell, i) => (
                 <li key={spell.id}>
                   {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
-                  <SpellRow spell={spell} />
+                  <SpellRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggle} />
                 </li>
               ))}</ul>
             </section>

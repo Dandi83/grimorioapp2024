@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
@@ -90,6 +90,7 @@ export async function createSpellAction(_prev: unknown, formData: FormData) {
     sort_key: input.nome_italiano.toLowerCase(),
   }));
   if (!result.ok) return result;
+  updateTag("spells");
   revalidatePath("/");
   revalidatePath("/grimorio");
   revalidatePath("/preferiti");
@@ -118,6 +119,7 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
     if (!updated.length) throw new Error("Scheda non trovata.");
   });
   if (!result.ok) return result;
+  updateTag("spells");
   revalidatePath("/");
   revalidatePath("/grimorio");
   revalidatePath("/preferiti");
@@ -131,8 +133,10 @@ export async function deleteSpellAction(formData: FormData) {
   const id = clean(formData.get("id"));
   if (!id) return;
   await deleteContentWithEdition("spell", id);
+  updateTag("spells");
   revalidatePath("/");
   revalidatePath("/grimorio");
   revalidatePath("/preferiti");
   revalidatePath("/admin");
+  revalidatePath(`/spell/${id}`);
 }

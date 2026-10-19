@@ -18,7 +18,7 @@ function load(file){
   if(id==='@/components/favorites-provider')return state;
   if(id==='@/lib/spells')return {getAllSpells:async()=>[spell]};
   if(id==='@/lib/monsters')return {getAllMonsters:async()=>[monster]};
-  if(id==='next/link')return {__esModule:true,default:({children,...p})=>createElement('a',p,children)};
+  if(id==='next/link')return {__esModule:true,default:({children,prefetch,...p})=>createElement('a',p,children)};
   if(id.startsWith('@/')||id.startsWith('.')){let p=id.startsWith('@/')?path.join(root,id.slice(2)):path.resolve(path.dirname(file),id);if(!path.extname(p))p=['.tsx','.ts','.json'].map(e=>p+e).find(existsSync);return load(p);}
   return require(id);
  },m,m.exports);return m.exports;
@@ -63,7 +63,7 @@ const originalSummaries=JSON.parse(readFileSync(path.join(root,'lib/data/origina
 assert.ok(originalSummaries.some(s=>s.id==='amicizia'),'Include the reported Amicizia regression');
 for(const summary of originalSummaries){
  const row={...spell,...summary,edizione:'2024'};
- markup=renderToStaticMarkup(createElement(SpellRow,{spell:row}));
+ markup=renderToStaticMarkup(createElement(SpellRow,{spell:row,fav:false,onToggle:state.useFavorites().toggle}));
  const title=markup.match(/<p\b[^>]*>([\s\S]*?)<\/p>/)?.[1];
  assert.ok(title,`Missing title for ${row.id}`);
  assert.doesNotMatch(title,/<sup\b|\*/,`No asterisk beside ${row.id} in public lists`);

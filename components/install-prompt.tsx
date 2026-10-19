@@ -82,7 +82,7 @@ export function InstallPrompt() {
       <div className="animate-dice-in w-full max-w-md rounded-2xl border border-primary-dim/40 bg-elevated/95 p-4 shadow-2xl shadow-black/60 backdrop-blur">
         <div className="flex items-start gap-3">
           <img
-            src="/icon.png"
+            src="/icon-install.webp"
             alt=""
             className="h-12 w-12 flex-shrink-0 rounded-xl border border-primary-dim/40"
           />
@@ -92,7 +92,7 @@ export function InstallPrompt() {
             </p>
             <p className="mt-0.5 text-[13px] leading-snug text-muted">
               {isIOS
-                ? "Installalo sul telefono per aprirlo come un'app, anche offline."
+                ? "Installalo sul telefono per aprirlo come un'app."
                 : "Installalo per aprirlo a schermo intero, come una vera app."}
             </p>
           </div>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { ChevronDown, FileText, Search, X } from "lucide-react";
 
 import { SpellRow } from "@/components/spell-row";
+import { useFavorites } from "@/components/favorites-provider";
 import {
   capitalizeWords,
   levelLabel,
@@ -12,6 +13,7 @@ import {
 } from "@/lib/spells-types";
 
 type FilterKind = "livello" | "scuola" | "classe" | null;
+const PAGE_SIZE = 40;
 
 interface Props {
   spells: SpellListItem[];
@@ -33,10 +35,21 @@ export function GrimorioBrowser({
   const [scuola, setScuola] = useState<string | null>(initialScuola);
   const [classe, setClasse] = useState<string | null>(initialClasse);
   const [openFilter, setOpenFilter] = useState<FilterKind>(null);
+  const [limit, setLimit] = useState(PAGE_SIZE);
+  const deferredQ = useDeferredValue(q);
+  const { isFavorite, toggle } = useFavorites();
+
+  const sortedSpells = useMemo(() => {
+    const rank = (n: number) => (n < 0 ? Number.POSITIVE_INFINITY : n);
+    return [...spells].sort((a, b) =>
+      rank(a.livello_num) - rank(b.livello_num) ||
+      a.nome_italiano.localeCompare(b.nome_italiano, "it"),
+    );
+  }, [spells]);
 
   const results = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    const filtered = spells.filter((s) => {
+    const needle = deferredQ.trim().toLowerCase();
+    return sortedSpells.filter((s) => {
       if (needle && !s.nome_italiano.toLowerCase().includes(needle)) return false;
       if (livello !== null && s.livello_num !== livello) return false;
       if (scuola && s.scuola.toLowerCase() !== scuola.toLowerCase()) return false;
@@ -44,15 +57,10 @@ export function GrimorioBrowser({
       return true;
     });
 
-    // Ordine crescente: prima i trucchetti (livello 0), poi 1 → 9; i livelli
-    // sconosciuti (-1) vanno in fondo. A parità di livello, ordine alfabetico.
-    const rank = (n: number) => (n < 0 ? 999 : n);
-    return filtered.sort((a, b) => {
-      const d = rank(a.livello_num) - rank(b.livello_num);
-      if (d !== 0) return d;
-      return a.nome_italiano.localeCompare(b.nome_italiano, "it");
-    });
-  }, [spells, q, livello, scuola, classe]);
+  }, [sortedSpells, deferredQ, livello, scuola, classe]);
+
+  useEffect(() => { setLimit(PAGE_SIZE); }, [q, livello, scuola, classe]);
+  const visible = results.slice(0, limit);
 
   const activeCount =
     (livello !== null ? 1 : 0) + (scuola ? 1 : 0) + (classe ? 1 : 0);
@@ -177,9 +185,10 @@ export function GrimorioBrowser({
           </p>
         </div>
       ) : (
+        <>
         <ul className="px-6 py-2">
-          {results.map((spell, i) => {
-            const prev = results[i - 1];
+          {visible.map((spell, i) => {
+            const prev = visible[i - 1];
             const newGroup = !prev || prev.livello_num !== spell.livello_num;
             return (
               <li key={spell.id} className={`catalog-row${newGroup ? (i > 0 ? " catalog-row-group" : " catalog-row-first-group") : ""}`}>
@@ -199,11 +208,23 @@ export function GrimorioBrowser({
                 ) : (
                   <div className="ml-[15px] h-px bg-divider" />
                 )}
-                <SpellRow spell={spell} />
+                <SpellRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggle} />
               </li>
             );
           })}
         </ul>
+        {visible.length < results.length && (
+          <div className="px-6 pb-6 pt-2">
+            <button
+              type="button"
+              onClick={() => setLimit(current => current + PAGE_SIZE)}
+              className="h-12 w-full rounded-xl border border-border bg-card text-sm font-semibold text-card-foreground"
+            >
+              Mostra altri ({results.length - visible.length})
+            </button>
+          </div>
+        )}
+        </>
       )}
     </div>
   );

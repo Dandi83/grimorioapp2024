@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { memo } from "react";
 import { Star } from "lucide-react";
 
-import { useFavorites } from "@/components/favorites-provider";
 import { capitalizeWords, type SpellListItem } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
 
@@ -13,9 +13,11 @@ function metaLine(spell: SpellListItem): string {
   return `${spell.livello_num}° liv. · ${spell.scuola}`;
 }
 
-export function SpellRow({ spell }: { spell: SpellListItem }) {
-  const { isFavorite, toggle } = useFavorites();
-  const fav = isFavorite(spell.id);
+export const SpellRow = memo(function SpellRow({ spell, fav, onToggle }: {
+  spell: SpellListItem;
+  fav: boolean;
+  onToggle: (id: string) => void;
+}) {
 
   return (
     <div className="flex items-center pr-4">
@@ -25,6 +27,7 @@ export function SpellRow({ spell }: { spell: SpellListItem }) {
       />
       <Link
         href={`/spell/${spell.id}`}
+        prefetch={false}
         className="min-w-0 flex-1 py-3 transition-opacity hover:opacity-70"
       >
         <div className="flex min-w-0 items-center gap-2">
@@ -38,7 +41,7 @@ export function SpellRow({ spell }: { spell: SpellListItem }) {
       </Link>
       <button
         type="button"
-        onClick={() => toggle(spell.id)}
+        onClick={() => onToggle(spell.id)}
         aria-label={fav ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
         aria-pressed={fav}
         className="p-2 transition-transform active:scale-90"
@@ -50,4 +53,4 @@ export function SpellRow({ spell }: { spell: SpellListItem }) {
       </button>
     </div>
   );
-}
+});

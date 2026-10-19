@@ -34,7 +34,7 @@ function load(relative) {
   }
   const database = drizzle(pg,{schema});
   let failMetadata = false, admin = true;
-  const paths = [];
+  const paths = [], tags = [];
   const pool = {query:(sql,params)=>pg.query(sql,params),connect:async()=>({
     query:(sql,params)=>failMetadata && sql.startsWith('INSERT INTO grimorio_content_editions') ? Promise.reject(new Error('metadata unavailable')) : pg.query(sql,params),release(){}
   })};
@@ -42,7 +42,7 @@ function load(relative) {
   deps['./db'] = deps['@/lib/db'] = {db:database,pool};
   deps['drizzle-orm/node-postgres'] = {drizzle:()=>database};
   deps['@/lib/admin-auth'] = {isAdmin:async()=>admin};
-  deps['next/cache'] = {revalidatePath:p=>paths.push(p)};
+  deps['next/cache'] = {revalidatePath:p=>paths.push(p), updateTag:t=>tags.push(t)};
   const spells = load('app/actions/admin.ts'), monsters = load('app/actions/admin-monsters.ts');
   const storage = load('lib/content-editions.ts');
   const extraStorage = load('lib/monster-extra-storage.ts');
@@ -108,6 +108,7 @@ function load(relative) {
   assert.equal((await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Versione personale',descrizione:'Regole adattate al 2014',edition:'2014'}))).ok,true,'an edited unverified sheet can select 2014');
   assert.equal((await storage.getContentEditions('spell',official.id)).get(official.id),'2014');
   for(const route of ['/admin','/grimorio','/bestiario','/preferiti'])assert.ok(paths.includes(route),route);
+  assert.ok(tags.length>0 && tags.every(tag=>tag==='spells'),'successful spell saves invalidate the index');
   await pg.close();
   console.log('Editor editions: authenticated create/edit, both editions, reset, older forms, validation, source safeguard and atomic content/label rollback passed with PostgreSQL.');
 })().catch(error=>{console.error(error);process.exitCode=1});

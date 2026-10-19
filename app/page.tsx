@@ -18,7 +18,7 @@ export default function HomePage() {
 
       <section className={styles.library} aria-labelledby="home-quote">
         <Image
-          src="/hero-atmosfera.png"
+          src="/hero-atmosfera.webp"
           alt="Antica biblioteca con scaffali di libri e una scala a chiocciola"
           fill
           priority
