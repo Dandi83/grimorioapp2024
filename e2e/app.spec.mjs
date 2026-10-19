@@ -1,0 +1,83 @@
+import { test, expect } from "@playwright/test";
+
+const catalogRows = page => page.locator("li.catalog-row");
+
+test("home: header, bottom navigation and security headers", async ({ page }) => {
+  const response = await page.goto("/");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["x-frame-options"]).toBe("DENY");
+  expect(response.headers()["content-security-policy"]).toBe("frame-ancestors 'none'");
+  await expect(page.getByText("Il Grimorio", { exact: false }).first()).toBeVisible();
+  const nav = page.getByRole("navigation", { name: "Navigazione principale" });
+  for (const label of ["Home", "Incantesimi", "Bestiario", "Preferiti"]) {
+    await expect(nav.getByRole("link", { name: label })).toBeVisible();
+  }
+});
+
+test("spells: 40-row pages, search, detail, favorite and back", async ({ page }) => {
+  await page.goto("/grimorio");
+  await expect(catalogRows(page)).toHaveCount(40);
+  await page.getByRole("button", { name: /Mostra altri/ }).click();
+  await expect(catalogRows(page)).toHaveCount(80);
+  await page.getByPlaceholder("Cerca incantesimo...").fill("dardo incantato");
+  await expect(catalogRows(page)).toHaveCount(1);
+  await page.getByRole("link", { name: /Dardo Incantato/i }).click();
+  await expect(page).toHaveURL(/\/spell\/dardo-incantato$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/Dardo Incantato/i);
+  await page.getByRole("button", { name: "Aggiungi ai preferiti" }).click();
+  await expect(page.getByRole("button", { name: "Rimuovi dai preferiti" })).toBeVisible();
+  await page.getByRole("button", { name: "Torna indietro" }).click();
+  await expect(page).toHaveURL(/\/grimorio$/);
+  await page.getByRole("navigation", { name: "Navigazione principale" }).getByRole("link", { name: "Preferiti" }).click();
+  await expect(page.getByRole("region", { name: "Incantesimi preferiti" }).getByRole("link", { name: /Dardo Incantato/i })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("1 incantesimo salvato", { exact: false })).toBeVisible();
+});
+
+test("bestiary: 40-row pages, show more, animals and a creature sheet", async ({ page }) => {
+  await page.goto("/bestiario");
+  await expect(catalogRows(page)).toHaveCount(40);
+  await expect(page.getByRole("button", { name: /Mostra altri \(200\)/ })).toBeVisible();
+  await page.getByRole("button", { name: /Mostra altri/ }).click();
+  await expect(catalogRows(page)).toHaveCount(80);
+  await page.getByRole("button", { name: /^Animali/ }).click();
+  await expect(catalogRows(page)).toHaveCount(40);
+  await page.getByRole("searchbox", { name: "Cerca un animale" }).fill("gatto");
+  await expect(catalogRows(page)).toHaveCount(1);
+  await page.getByRole("link", { name: /Gatto/ }).click();
+  await expect(page).toHaveURL(/\/mostro\/gatto$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Gatto");
+});
+
+test("conditions: inline links open the prebuilt condition page", async ({ page }) => {
+  await page.goto("/mostro/aboleth");
+  const condition = page.locator('a[href^="/manuale/condizioni-"]').first();
+  await expect(condition).toBeVisible();
+  const href = await condition.getAttribute("href");
+  await condition.click();
+  await expect(page).toHaveURL(new RegExp(`${href}$`));
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  // Manual entries other than conditions stay preview-only.
+  expect((await page.goto("/manuale")).status()).toBe(404);
+});
+
+test("shared link without history: unknown cards return 404", async ({ page }) => {
+  expect((await page.goto("/spell/non-esiste")).status()).toBe(404);
+  expect((await page.goto("/mostro/non-esiste")).status()).toBe(404);
+});
+
+test("admin: wrong passcode, login, logout", async ({ page }) => {
+  await page.goto("/admin");
+  await expect(page.getByRole("heading", { name: "Area riservata" })).toBeVisible();
+  await page.getByLabel("Passcode").fill("sbagliata");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "Passcode errata." })).toBeVisible();
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  const cookie = (await page.context().cookies()).find(c => c.name === "grimorio_admin");
+  expect(cookie?.value).toMatch(/^v2\.\d+\.[0-9a-f]{64}$/);
+  expect(cookie?.httpOnly).toBe(true);
+  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Area riservata" })).toBeVisible();
+});

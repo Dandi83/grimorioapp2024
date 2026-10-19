@@ -1,0 +1,71 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const {createRequire}=require('node:module');
+const {JSDOM}=require('jsdom');
+const dom=new JSDOM('<!doctype html><div id="root"></div>',{url:'https://ilgrimorio.app/'});
+for(const key of ['window','document','HTMLElement','Event','MouseEvent','localStorage'])Object.defineProperty(global,key,{value:dom.window[key],configurable:true,writable:true});
+Object.defineProperty(global,'navigator',{value:dom.window.navigator,configurable:true});
+global.IS_REACT_ACT_ENVIRONMENT=true;
+const React=require('react'),{act}=React,{createRoot}=require('react-dom/client'),ts=require('typescript');
+const calls=[];let pathname='/';
+const router={back:()=>calls.push('back'),prefetch:href=>calls.push(`prefetch:${href}`),push:href=>calls.push(`push:${href}`)};
+function load(relative){
+ const filename=path.resolve(relative),mod={exports:{}};
+ const code=ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
+ new Function('require','module','exports',code)(id=>{
+  if(id==='next/navigation')return {useRouter:()=>router,usePathname:()=>pathname};
+  if(id==='next/link')return {__esModule:true,default:({children,prefetch,...props})=>React.createElement('a',props,children)};
+  return createRequire(filename)(id);
+ },mod,mod.exports);return mod.exports;
+}
+const root=createRoot(document.getElementById('root'));
+const render=async element=>act(async()=>root.render(element));
+const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value:ua,configurable:true});
+
+(async()=>{
+ // Back button returns to the previous page of the app.
+ const {BackButton}=load('components/back-button.tsx');
+ await render(React.createElement(BackButton));
+ await act(async()=>document.querySelector('button[aria-label="Torna indietro"]').dispatchEvent(new MouseEvent('click',{bubbles:true})));
+ assert.deepEqual(calls,['back']);
+
+ // Bottom navigation: four public sections, active item marked, hidden in the admin area.
+ const {BottomNav}=load('components/bottom-nav.tsx');
+ window.requestIdleCallback=cb=>{cb();return 1};window.cancelIdleCallback=()=>{};
+ pathname='/spell/dardo-incantato';calls.length=0;
+ await render(React.createElement(BottomNav));
+ const links=[...document.querySelectorAll('nav a')];
+ assert.deepEqual(links.map(a=>a.textContent),['Home','Incantesimi','Bestiario','Preferiti']);
+ assert.equal(document.querySelector('a[aria-current="page"]').textContent,'Incantesimi','a spell sheet highlights Incantesimi');
+ assert.deepEqual(calls,['prefetch:/','prefetch:/grimorio','prefetch:/bestiario','prefetch:/preferiti']);
+ pathname='/admin';calls.length=0;
+ await render(React.createElement(BottomNav,{key:'admin'}));
+ assert.equal(document.querySelector('nav'),null,'the admin area has no public navigation');
+ assert.deepEqual(calls,[],'the admin area does not prefetch public pages');
+
+ // Install prompt: hidden when installed or recently dismissed; manual steps on iPhone Safari.
+ const {InstallPrompt}=load('components/install-prompt.tsx');
+ const match=standalone=>{window.matchMedia=()=>({matches:standalone})};
+ const iphone='Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
+ const wait=ms=>act(async()=>new Promise(r=>setTimeout(r,ms)));
+ match(true);setUserAgent(iphone);
+ await render(React.createElement(InstallPrompt,{key:'installed'}));await wait(1300);
+ assert.equal(document.body.textContent.includes('Aggiungi GrimorioApp'),false,'installed app shows no prompt');
+ match(false);window.localStorage.setItem('grimorio-install-dismissed',String(Date.now()+86400000));
+ await render(React.createElement(InstallPrompt,{key:'dismissed'}));await wait(1300);
+ assert.equal(document.body.textContent.includes('Aggiungi GrimorioApp'),false,'a recent dismissal is respected');
+ window.localStorage.removeItem('grimorio-install-dismissed');
+ await render(React.createElement(InstallPrompt,{key:'iphone'}));await wait(1300);
+ assert.ok(document.body.textContent.includes('Aggiungi a Home'),'iPhone Safari shows the manual steps');
+ await act(async()=>document.querySelector('button[aria-label="Chiudi"]').dispatchEvent(new MouseEvent('click',{bubbles:true})));
+ assert.equal(document.body.textContent.includes('Aggiungi GrimorioApp'),false);
+ assert.ok(Number(window.localStorage.getItem('grimorio-install-dismissed'))>Date.now()+6*86400000,'closing hides it for seven days');
+ setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/130.0 Mobile/15E148 Safari/604.1');
+ window.localStorage.removeItem('grimorio-install-dismissed');
+ await render(React.createElement(InstallPrompt,{key:'chrome-ios'}));await wait(1300);
+ assert.equal(document.body.textContent.includes('Aggiungi GrimorioApp'),false,'other iPhone browsers cannot add to Home: no prompt');
+
+ await act(async()=>root.unmount());
+ console.log('UI shell: back button, bottom navigation (active section, idle prefetch, hidden in admin), install prompt (installed, dismissed, iPhone Safari, other iPhone browsers).');
+})().catch(error=>{console.error(error);process.exit(1);});

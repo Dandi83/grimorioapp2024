@@ -109,6 +109,16 @@ function load(relative) {
   assert.equal((await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Fonte verificata',descrizione:official.descrizione,edition:'2014'}))).ok,false,'source safeguard also applies inside editor');
   assert.equal((await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Versione personale',descrizione:'Regole adattate al 2014',edition:'2014'}))).ok,true,'an edited unverified sheet can select 2014');
   assert.equal((await storage.getContentEditions('spell',official.id)).get(official.id),'2014');
+  // Deleting a spell removes the row and its manual label, refreshes caches, and requires an admin.
+  admin=false;
+  await assert.rejects(()=>spells.deleteSpellAction(form({id:official.id})),/Non autorizzato/);
+  assert.equal((await pg.query('SELECT count(*)::int AS n FROM spells WHERE id=$1',[official.id])).rows[0].n,1,'unauthorized delete changes nothing');
+  admin=true;
+  const spellDeleteOffset=paths.length,spellTagOffset=tags.length;
+  await spells.deleteSpellAction(form({id:official.id}));
+  assert.equal((await pg.query('SELECT count(*)::int AS n FROM spells WHERE id=$1',[official.id])).rows[0].n,0);
+  assert.equal((await storage.getContentEditions('spell',official.id)).has(official.id),false,'deleting a spell removes its manual label');
+  assert.ok(paths.slice(spellDeleteOffset).includes(`/spell/${official.id}`) && tags.slice(spellTagOffset).includes('spells'),'deleting a spell refreshes its sheet and the list');
   for(const route of ['/admin','/grimorio','/bestiario','/preferiti'])assert.ok(paths.includes(route),route);
   assert.ok(tags.includes('spells') && tags.includes('monsters'),'successful saves invalidate both catalog indexes');
   assert.ok(tags.every(tag=>tag==='spells'||tag==='monsters'));
