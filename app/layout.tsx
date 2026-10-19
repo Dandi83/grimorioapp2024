@@ -22,29 +22,31 @@ const ebGaramond = EB_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "GrimorioApp — Incantesimi D&D 5e (2024)",
+  title: "Il Grimorio.App — Incantesimi e Bestiario D&D 5e",
   description:
-    "Consulta, cerca e filtra gli incantesimi di Dungeons & Dragons 5e edizione 2024 in italiano. Salva i preferiti. Progetto fan-made.",
-  applicationName: "GrimorioApp",
+    "Consulta, cerca e filtra incantesimi, mostri e animali di Dungeons & Dragons 5e in italiano. Salva i preferiti. Progetto fan-made.",
+  applicationName: "Il Grimorio.App",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "GrimorioApp",
+    title: "Grimorio",
   },
   keywords: [
     "D&D",
     "Dungeons & Dragons",
     "incantesimi",
+    "bestiario",
+    "mostri",
     "grimorio",
     "5e",
     "2024",
     "italiano",
   ],
   openGraph: {
-    title: "GrimorioApp — Incantesimi D&D 5e (2024)",
+    title: "Il Grimorio.App — Incantesimi e Bestiario D&D 5e",
     description:
-      "Consulta, cerca e filtra gli incantesimi di D&D 5e (2024) in italiano.",
+      "Consulta, cerca e filtra incantesimi, mostri e animali di D&D 5e in italiano.",
     type: "website",
   },
 };

@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { BookOpen, Home, Skull, Star } from "lucide-react";
 import type { ComponentType } from "react";
+
+import { notePathChange } from "@/components/navigation-memory";
 
 interface NavItem {
   href: string;
@@ -39,6 +41,14 @@ export function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const admin = pathname.startsWith("/admin");
+
+  // Counts in-app page changes for the back button (the first page is not one).
+  const lastPath = useRef(pathname);
+  useEffect(() => {
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
+    notePathChange();
+  }, [pathname]);
 
   useEffect(() => {
     if (admin) return;

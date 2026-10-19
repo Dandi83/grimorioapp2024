@@ -1,8 +1,8 @@
-# GrimorioApp — Incantesimi D&D 5e (2024)
+# Il Grimorio.App — Incantesimi e Bestiario D&D 5e
 
-App web (Next.js) per consultare, cercare e filtrare gli incantesimi di
-Dungeons & Dragons 5e edizione 2024 in italiano, con preferiti, tira-dadi e
-un'area riservata per modificare gli incantesimi.
+App web (Next.js) per consultare, cercare e filtrare incantesimi, mostri e animali
+di Dungeons & Dragons 5e in italiano, con preferiti e un'area riservata per
+modificare le schede. Sito: https://ilgrimorio.app
 
 ## Struttura del repository
 
@@ -11,14 +11,10 @@ un'area riservata per modificare gli incantesimi.
 
 ## Dati
 
-I 369 incantesimi sono nel database **Neon Postgres** (tabella `spells`).
+Gli incantesimi sono nel database **Neon Postgres** (tabella `spells`); le creature SRD sono incluse nel codice e le schede aggiunte o modificate dall'area riservata sono nella tabella `monsters`.
 Il sito pubblico legge dal database; l'area riservata scrive nel database.
 
-Per ripopolare la tabella dal file JSON originale:
-
-```
-node scripts/seed.mjs
-```
+Lo script `scripts/seed.mjs` ripopola la tabella dal file JSON originale: **non eseguirlo sul database reale**, sovrascriverebbe le modifiche fatte dall'area riservata.
 
 ## Verifiche
 
@@ -31,7 +27,7 @@ node scripts/seed.mjs
 - URL: `/admin`
 - Protetta da una passcode segreta salvata nella variabile d'ambiente `ADMIN_PASSCODE`.
 - Massimo 5 tentativi errati ogni 15 minuti per indirizzo (100 in un'ora in totale); la sessione scade dopo 30 giorni. Cambiare la passcode chiude tutte le sessioni.
-- Da lì puoi **creare, modificare ed eliminare** incantesimi. Le modifiche
+- Da lì puoi **creare, modificare ed eliminare** incantesimi e creature. Le modifiche
   compaiono subito sul sito pubblico.
 
 ## Variabili d'ambiente richieste

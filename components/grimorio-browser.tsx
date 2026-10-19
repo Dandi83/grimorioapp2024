@@ -1,10 +1,11 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, FileText, Search, X } from "lucide-react";
 
 import { SpellRow } from "@/components/spell-row";
 import { useFavorites } from "@/components/favorites-provider";
+import { saveListState } from "@/components/navigation-memory";
 import {
   capitalizeWords,
   levelLabel,
@@ -15,12 +16,19 @@ import {
 type FilterKind = "livello" | "scuola" | "classe" | null;
 const PAGE_SIZE = 40;
 
+export type SpellListState = {
+  url: string; q: string; livello: number | null; scuola: string | null; classe: string | null; limit: number; scroll: number;
+};
+
 interface Props {
   spells: SpellListItem[];
   meta: SpellsMeta;
   initialLivello: number | null;
   initialScuola: string | null;
   initialClasse: string | null;
+  initialQuery?: string;
+  initialLimit?: number;
+  initialScroll?: number;
 }
 
 export function GrimorioBrowser({
@@ -29,13 +37,16 @@ export function GrimorioBrowser({
   initialLivello,
   initialScuola,
   initialClasse,
+  initialQuery = "",
+  initialLimit = PAGE_SIZE,
+  initialScroll,
 }: Props) {
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(initialQuery);
   const [livello, setLivello] = useState<number | null>(initialLivello);
   const [scuola, setScuola] = useState<string | null>(initialScuola);
   const [classe, setClasse] = useState<string | null>(initialClasse);
   const [openFilter, setOpenFilter] = useState<FilterKind>(null);
-  const [limit, setLimit] = useState(PAGE_SIZE);
+  const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle } = useFavorites();
 
@@ -59,8 +70,24 @@ export function GrimorioBrowser({
 
   }, [sortedSpells, deferredQ, livello, scuola, classe]);
 
-  useEffect(() => { setLimit(PAGE_SIZE); }, [q, livello, scuola, classe]);
+  // A new search or filter starts again from the first page.
+  const filters = JSON.stringify([q, livello, scuola, classe]);
+  const lastFilters = useRef(filters);
+  useEffect(() => {
+    if (lastFilters.current === filters) return;
+    lastFilters.current = filters;
+    setLimit(PAGE_SIZE);
+  }, [filters]);
   const visible = results.slice(0, limit);
+
+  // Remember the list for "back" from a card; the scroll is taken when a row is opened.
+  const scroll = useRef(initialScroll ?? 0);
+  const save = () => saveListState<SpellListState>("grimorio",
+    { url: window.location.search, q, livello, scuola, classe, limit, scroll: scroll.current });
+  useEffect(save);
+  useEffect(() => {
+    if (initialScroll) window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo(0, initialScroll)));
+  }, [initialScroll]);
 
   const activeCount =
     (livello !== null ? 1 : 0) + (scuola ? 1 : 0) + (classe ? 1 : 0);
@@ -186,7 +213,7 @@ export function GrimorioBrowser({
         </div>
       ) : (
         <>
-        <ul className="px-6 py-2">
+        <ul className="px-6 py-2" onClickCapture={() => { scroll.current = window.scrollY; save(); }}>
           {visible.map((spell, i) => {
             const prev = visible[i - 1];
             const newGroup = !prev || prev.livello_num !== spell.livello_num;

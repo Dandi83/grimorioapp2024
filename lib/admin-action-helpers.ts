@@ -4,6 +4,8 @@ import { isAdmin } from "@/lib/admin-auth";
 import { db } from "@/lib/db";
 import { monsters, spells } from "@/lib/db/schema";
 
+export type DeleteResult = { ok: true } | { ok: false; error: string };
+
 /** Shared by the spell and creature Server Actions. */
 export async function requireAdmin() {
   if (!(await isAdmin())) throw new Error("Non autorizzato");

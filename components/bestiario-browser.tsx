@@ -1,10 +1,11 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, PawPrint, Search, Skull, X } from "lucide-react";
 
 import { MonsterRow } from "@/components/monster-row";
 import { useFavorites } from "@/components/favorites-provider";
+import { saveListState } from "@/components/navigation-memory";
 import {
   gsLabel,
   computeMonstersMeta,
@@ -16,12 +17,20 @@ import {
 type FilterKind = "taglia" | "tipo" | "gs" | null;
 const PAGE_SIZE = 40;
 
+export type MonsterListState = {
+  url: string; raccolta: "mostri" | "animali"; q: string; taglia: string | null; tipo: string | null; gs: string | null;
+  limit: number; scroll: number;
+};
+
 interface Props {
   monsters: MonsterListItem[];
   initialTaglia: string | null;
   initialTipo: string | null;
   initialGs: string | null;
   initialRaccolta?: "mostri" | "animali" | null;
+  initialQuery?: string;
+  initialLimit?: number;
+  initialScroll?: number;
 }
 
 export function BestiarioBrowser({
@@ -30,14 +39,17 @@ export function BestiarioBrowser({
   initialTipo,
   initialGs,
   initialRaccolta,
+  initialQuery = "",
+  initialLimit = PAGE_SIZE,
+  initialScroll,
 }: Props) {
   const [raccolta, setRaccolta] = useState<"mostri" | "animali">(initialRaccolta || "mostri");
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(initialQuery);
   const [taglia, setTaglia] = useState<string | null>(initialTaglia);
   const [tipo, setTipo] = useState<string | null>(initialTipo);
   const [gs, setGs] = useState<string | null>(initialGs);
   const [openFilter, setOpenFilter] = useState<FilterKind>(null);
-  const [limit, setLimit] = useState(PAGE_SIZE);
+  const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle } = useFavorites();
 
@@ -66,8 +78,24 @@ export function BestiarioBrowser({
     });
   }, [collection, deferredQ, taglia, tipo, gs]);
 
-  useEffect(() => { setLimit(PAGE_SIZE); }, [raccolta, q, taglia, tipo, gs]);
+  // A new section, search or filter starts again from the first page.
+  const filters = JSON.stringify([raccolta, q, taglia, tipo, gs]);
+  const lastFilters = useRef(filters);
+  useEffect(() => {
+    if (lastFilters.current === filters) return;
+    lastFilters.current = filters;
+    setLimit(PAGE_SIZE);
+  }, [filters]);
   const visible = results.slice(0, limit);
+
+  // Remember the list for "back" from a card; the scroll is taken when a row is opened.
+  const scroll = useRef(initialScroll ?? 0);
+  const save = () => saveListState<MonsterListState>("bestiario",
+    { url: window.location.search, raccolta, q, taglia, tipo, gs, limit, scroll: scroll.current });
+  useEffect(save);
+  useEffect(() => {
+    if (initialScroll) window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo(0, initialScroll)));
+  }, [initialScroll]);
 
   const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0);
 
@@ -212,7 +240,7 @@ export function BestiarioBrowser({
         </div>
       ) : (
         <>
-        <ul className="px-6 py-2">
+        <ul className="px-6 py-2" onClickCapture={() => { scroll.current = window.scrollY; save(); }}>
           {visible.map((monster, i) => (
             <li key={monster.id} className="catalog-row">
               {i > 0 && <div className="ml-[15px] h-px bg-divider" />}

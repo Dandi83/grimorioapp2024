@@ -4,7 +4,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 
 import { monsters } from "@/lib/db/schema";
-import { clean, requireAdmin, uniqueId } from "@/lib/admin-action-helpers";
+import { clean, requireAdmin, uniqueId, type DeleteResult } from "@/lib/admin-action-helpers";
 import { monsterSlugify, parseGs } from "@/lib/monsters-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
@@ -100,10 +100,15 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
   return { ok: true as const, error: null, id };
 }
 
-export async function deleteMonsterAction(formData: FormData) {
+export async function deleteMonsterAction(formData: FormData): Promise<DeleteResult> {
   await requireAdmin();
   const id = clean(formData.get("id"));
-  if (!id) return;
-  await deleteContentWithEdition("monster", id);
+  if (!id) return { ok: false, error: "ID mancante." };
+  try {
+    await deleteContentWithEdition("monster", id);
+  } catch {
+    return { ok: false, error: "Eliminazione non riuscita: la scheda è ancora presente. Riprova." };
+  }
   revalidateMonster(id);
+  return { ok: true };
 }

@@ -66,6 +66,10 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).reason,'identity','old passcode signatures end with the passcode');
  const fresh=await route.POST(request({consent:'accepted'}));assert.ok(fresh.cookies.get('grimorio_statistics_visitor').value.split('.')[1]);
  process.env.ADMIN_PASSCODE='test-only-secret';delete process.env.ANALYTICS_SECRET;
+ // A malformed escape in a card path is a bad request, not a server failure.
+ const storedBefore=stored;
+ const badPath=await route.POST(request(event('card_open',{path:'/spell/%E0%A4%A'}),{cookie:cookies}));
+ assert.equal(badPath.status,400);assert.equal(stored,storedBefore,'nothing is stored for a malformed path');
  // GET tells the banner whether statistics run here, whether this is an admin, and the saved choice.
  const status=async(url,cookie)=>(await route.GET(new NextRequest(url,{headers:cookie?{cookie}:{}}))).json();
  assert.deepEqual(await status('https://ilgrimorio.app/api/analytics'),{enabled:true,excluded:false,consent:null});

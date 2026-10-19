@@ -5,7 +5,7 @@ import { getSpellIndex } from "@/lib/spell-index";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Preferiti — GrimorioApp",
+  title: "Preferiti — Il Grimorio.App",
 };
 
 export default async function PreferitiPage() {

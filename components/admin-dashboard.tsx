@@ -15,11 +15,11 @@ import { SpellProvenanceMarker } from "./spell-provenance-marker";
 import { AdminEditionPicker } from "./admin-edition-picker";
 import { SpellEditor } from "./admin-spell-editor";
 import { AdminPublicLink } from "./admin-public-link";
+import { AdminDeleteButton } from "./admin-delete-button";
 import {
   BookOpen,
   Skull,
   Pencil,
-  Trash2,
   Plus,
   LogOut,
   Search,
@@ -193,23 +193,5 @@ export function AdminDashboard({
 }
 
 function DeleteButton({ id, nome }: { id: string; nome: string }) {
-  return (
-    <form
-      action={deleteSpellAction}
-      onSubmit={(e) => {
-        if (!confirm(`Eliminare "${nome}"? L'operazione è definitiva.`)) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <input type="hidden" name="id" value={id} />
-      <button
-        type="submit"
-        className="rounded-md p-2 text-muted-foreground transition-colors hover:text-destructive"
-        title="Elimina"
-      >
-        <Trash2 className="h-4 w-4" aria-hidden="true" />
-      </button>
-    </form>
-  );
+  return <AdminDeleteButton id={id} nome={nome} action={deleteSpellAction} />;
 }

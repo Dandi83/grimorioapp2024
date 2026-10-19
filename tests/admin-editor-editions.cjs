@@ -33,10 +33,10 @@ function load(relative) {
     await pg.exec(`CREATE TABLE ${config.name} (${columns.join(',')})`);
   }
   const database = drizzle(pg,{schema});
-  let failMetadata = false, admin = true;
+  let failMetadata = false, failDelete = false, admin = true;
   const paths = [], tags = [];
   const pool = {query:(sql,params)=>pg.query(sql,params),connect:async()=>({
-    query:(sql,params)=>failMetadata && sql.startsWith('INSERT INTO grimorio_content_editions') ? Promise.reject(new Error('metadata unavailable')) : pg.query(sql,params),release(){}
+    query:(sql,params)=>(failMetadata && sql.startsWith('INSERT INTO grimorio_content_editions')) || (failDelete && sql.startsWith('DELETE FROM spells')) ? Promise.reject(new Error('database unavailable')) : pg.query(sql,params),release(){}
   })};
   deps['server-only'] = {};
   deps['./db'] = deps['@/lib/db'] = {db:database,pool};
@@ -114,8 +114,13 @@ function load(relative) {
   await assert.rejects(()=>spells.deleteSpellAction(form({id:official.id})),/Non autorizzato/);
   assert.equal((await pg.query('SELECT count(*)::int AS n FROM spells WHERE id=$1',[official.id])).rows[0].n,1,'unauthorized delete changes nothing');
   admin=true;
+  failDelete=true;
+  const failed=await spells.deleteSpellAction(form({id:official.id}));
+  assert.equal(failed.ok,false);assert.match(failed.error,/Eliminazione non riuscita/,'a failed deletion reports a clear message');
+  assert.equal((await pg.query('SELECT count(*)::int AS n FROM spells WHERE id=$1',[official.id])).rows[0].n,1,'nothing is deleted when the database fails');
+  failDelete=false;
   const spellDeleteOffset=paths.length,spellTagOffset=tags.length;
-  await spells.deleteSpellAction(form({id:official.id}));
+  assert.deepEqual(await spells.deleteSpellAction(form({id:official.id})),{ok:true});
   assert.equal((await pg.query('SELECT count(*)::int AS n FROM spells WHERE id=$1',[official.id])).rows[0].n,0);
   assert.equal((await storage.getContentEditions('spell',official.id)).has(official.id),false,'deleting a spell removes its manual label');
   assert.ok(paths.slice(spellDeleteOffset).includes(`/spell/${official.id}`) && tags.slice(spellTagOffset).includes('spells'),'deleting a spell refreshes its sheet and the list');
