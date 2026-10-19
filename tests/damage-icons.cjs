@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),ts=require('typescript');
 const {createElement}=require('react'),{renderToStaticMarkup}=require('react-dom/server');
 const m={exports:{}};
-new Function('require','module','exports',ts.transpileModule(fs.readFileSync('components/html-text.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022}}).outputText)(require,m,m.exports);
+new Function('require','module','exports',ts.transpileModule(fs.readFileSync('components/html-text.tsx','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText)(require,m,m.exports);
 const render=(html,damageIcons=true)=>renderToStaticMarkup(createElement(m.exports.HtmlText,{html,damageIcons}));
 for(const [word,id] of Object.entries({fuoco:'fire',freddo:'cold',fulmine:'lightning',tuono:'thunder',veleno:'poison',acido:'acid',forza:'force',necrotici:'necrotic',radianti:'radiant',psichici:'psychic',contundenti:'bludgeoning',perforanti:'piercing',taglienti:'slashing'})){
  assert.ok(render(`Subisce 2d6 danni da ${word}.`).includes(`/damage-icons/${id}.png`),word);
