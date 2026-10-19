@@ -90,6 +90,7 @@ function load(relative, deps = {}) {
   const monsterReader = load('lib/monsters.ts', {
     'server-only': {}, './db': {db:database(monster)}, './db/schema': {monsters:{}},
     './content-editions': storage, './monsters-types': load('lib/monsters-types.ts'), './srd-monsters': provider,
+    './monster-extra-storage': {getMonsterExtraFields:async()=>new Map()},
   });
   assert.equal((await monsterReader.getAllMonsters())[0].edizione,'2014');
   assert.equal((await monsterReader.getMonsterById(monster.id)).edizione,'2014');

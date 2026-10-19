@@ -27,6 +27,7 @@ export function MonsterContentEditor({name,label,singular,initialHtml="",descrip
     <div className="mt-3 space-y-4">
       {descriptionOnly ? <AdminVisualText id={`${name}-text`} label="Aspetto, comportamento e informazioni" initialHtml={initialHtml} onChange={html=>{setDescription(html);setDescriptionEdited(true);}} /> : <>
         <p className="text-xs leading-5 text-muted-foreground">Scrivi il nome e la descrizione: titolo, paragrafi e spaziatura vengono impaginati automaticamente. Puoi selezionare il testo per applicare grassetto o corsivo.</p>
+        {(name === "azioni" || name === "tratti" || name === "azioni_bonus") && <p className="text-xs leading-5 text-muted-foreground">Per collegare gli incantesimi, usa il nome del catalogo dopo «A volontà:» o «1 volta al giorno ciascuno:», separando le voci con virgole. Puoi verificare i collegamenti nell’anteprima.</p>}
         {state.blocks.map((block,index)=><div key={block.id} className="min-w-0 space-y-3 rounded-xl border border-primary/20 bg-background/40 p-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{singular} {index+1}</p>

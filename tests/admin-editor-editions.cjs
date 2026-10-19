@@ -45,6 +45,9 @@ function load(relative) {
   deps['next/cache'] = {revalidatePath:p=>paths.push(p)};
   const spells = load('app/actions/admin.ts'), monsters = load('app/actions/admin-monsters.ts');
   const storage = load('lib/content-editions.ts');
+  const extraStorage = load('lib/monster-extra-storage.ts');
+  assert.equal((await extraStorage.getMonsterExtraFields()).size,0,'older databases remain readable before any save');
+  assert.equal((await pg.query("SELECT to_regclass('grimorio_monster_details') AS name")).rows[0].name,null,'reads do not create storage');
   const form = data => {const f=new FormData();for(const [k,v] of Object.entries(data))f.set(k,String(v));return f;};
   for (const [kind,actions,nameKey] of [['spell',spells,'nome_italiano'],['monster',monsters,'nome']]) {
     const create = kind==='spell'?actions.createSpellAction:actions.createMonsterAction;
@@ -74,6 +77,31 @@ function load(relative) {
     assert.equal((await update(null,form({id:created.id,[nameKey]:'Scheda automatica',edition:''}))).ok,true);
     assert.equal((await storage.getContentEditions(kind,created.id)).has(created.id),false);
   }
+  const extraCreated=await monsters.createMonsterAction(null,form({nome:'Guardiano dei campi',edition:'2024',iniziativa:'+4 (14)',bonus_competenza:'+3',attrezzatura:'Corazza',azioni_bonus:'<strong>Passo.</strong> Si sposta di 3 m.'}));
+  assert.equal(extraCreated.ok,true);
+  const readExtra=async()=> (await extraStorage.getMonsterExtraFields(extraCreated.id)).get(extraCreated.id);
+  assert.equal((await readExtra()).iniziativa,'+4 (14)');
+  assert.equal((await readExtra()).bonus_competenza,'+3');
+  assert.equal((await readExtra()).attrezzatura,'Corazza');
+  assert.ok((await readExtra()).azioni_bonus.includes('Passo.'));
+  const reader=load('lib/monsters.ts');
+  assert.equal((await reader.getMonsterById(extraCreated.id)).iniziativa,'+4 (14)','detail loads saved optional fields');
+  assert.equal((await reader.getAllMonsters()).find(m=>m.id===extraCreated.id).attrezzatura,'Corazza','admin list loads fields for reopening the editor');
+  assert.equal((await monsters.updateMonsterAction(null,form({id:extraCreated.id,nome:'Guardiano aggiornato'}))).ok,true);
+  assert.equal((await readExtra()).attrezzatura,'Corazza','old open forms do not erase optional fields');
+  assert.equal((await storage.getContentEditions('monster',extraCreated.id)).get(extraCreated.id),'2024');
+  assert.equal((await monsters.updateMonsterAction(null,form({id:extraCreated.id,nome:'Guardiano aggiornato',attrezzatura:''}))).ok,true);
+  assert.equal((await readExtra()).attrezzatura,'','explicit clearing persists');
+  assert.equal((await readExtra()).iniziativa,'+4 (14)','partial save preserves other fields');
+  await pg.exec("ALTER TABLE grimorio_monster_details ADD CONSTRAINT valid_test_bonus CHECK (fields->>'bonus_competenza' <> 'invalid')");
+  assert.equal((await monsters.updateMonsterAction(null,form({id:extraCreated.id,nome:'Non salvare',bonus_competenza:'invalid',edition:'2014'}))).ok,false);
+  assert.equal((await pg.query('SELECT nome FROM monsters WHERE id=$1',[extraCreated.id])).rows[0].nome,'Guardiano aggiornato','optional-field failure rolls back the creature');
+  assert.equal((await readExtra()).bonus_competenza,'+3');
+  assert.equal((await storage.getContentEditions('monster',extraCreated.id)).get(extraCreated.id),'2024','optional-field failure preserves edition');
+  assert.equal((await monsters.updateMonsterAction(null,form({id:extraCreated.id,nome:'Non salvare senza edizione',bonus_competenza:'invalid'}))).ok,false);
+  assert.equal((await pg.query('SELECT nome FROM monsters WHERE id=$1',[extraCreated.id])).rows[0].nome,'Guardiano aggiornato','older forms also save atomically');
+  await monsters.deleteMonsterAction(form({id:extraCreated.id}));
+  assert.equal((await extraStorage.getMonsterExtraFields(extraCreated.id)).size,0,'deleting a creature removes its extra fields');
   const official=JSON.parse(fs.readFileSync('lib/data/srd-italiano-5.2.1.json','utf8')).spells[0];
   await pg.query('INSERT INTO spells (id,nome_italiano,descrizione) VALUES ($1,$2,$3)',[official.id,'Fonte verificata',official.descrizione]);
   assert.equal((await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Fonte verificata',descrizione:official.descrizione,edition:'2014'}))).ok,false,'source safeguard also applies inside editor');

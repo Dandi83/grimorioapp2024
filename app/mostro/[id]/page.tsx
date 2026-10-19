@@ -1,4 +1,4 @@
-import { inlineSpellReferences } from "@/lib/spell-references";
+import { formatMonsterSpellLists, inlineSpellReferences } from "@/lib/spell-references";
 import { inlineConditionReferences } from "@/lib/conditions";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -85,7 +85,7 @@ function Section({ title, html, legacy = false }: { title: string; html: string;
       <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
         {title}
       </h2>
-      <MonsterText html={html} damageIcons references={legacy ? [] : inlineConditionReferences} spellReferences={legacy ? [] : inlineSpellReferences(html)} />
+      <MonsterText html={legacy ? html : formatMonsterSpellLists(html)} damageIcons references={legacy ? [] : inlineConditionReferences} spellReferences={legacy ? [] : inlineSpellReferences(html)} />
     </section>
   );
 }

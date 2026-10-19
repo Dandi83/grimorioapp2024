@@ -15,6 +15,7 @@ const IDENTITY: Field[] = [
   {name:"tipo",label:"Tipo",placeholder:"Es. Costrutto"},
   {name:"taglia",label:"Taglia"},
   {name:"allineamento",label:"Allineamento",placeholder:"Es. neutrale"},
+  {name:"sottotitolo_fonte",label:"Sottotitolo personalizzato",placeholder:"Facoltativo: sostituisce taglia, tipo e allineamento nell’intestazione"},
 ];
 const COMBAT: Field[] = [
   {name:"classe_armatura",label:"Classe armatura",placeholder:"Es. 16 (armatura naturale)"},
@@ -22,6 +23,9 @@ const COMBAT: Field[] = [
   {name:"velocita",label:"Velocità",placeholder:"Es. 9 m, volo 18 m"},
   {name:"grado_sfida",label:"Grado di sfida",placeholder:"Es. 1/4, 2, 10"},
   {name:"px",label:"Punti esperienza",placeholder:"Es. 450"},
+  {name:"iniziativa",label:"Iniziativa",placeholder:"Es. +4 (14)"},
+  {name:"bonus_competenza",label:"Bonus di competenza",placeholder:"Es. +3"},
+  {name:"attrezzatura",label:"Equipaggiamento / armatura",placeholder:"Es. Corazza"},
 ];
 const ABILITIES: Field[] = [{name:"forza",label:"FOR"},{name:"destrezza",label:"DES"},{name:"costituzione",label:"COS"},{name:"intelligenza",label:"INT"},{name:"saggezza",label:"SAG"},{name:"carisma",label:"CAR"}];
 const DETAILS: Field[] = [
@@ -31,10 +35,11 @@ const DETAILS: Field[] = [
   {name:"resistenze",label:"Resistenze",placeholder:"Es. freddo, fulmine"},
   {name:"immunita_danni",label:"Immunità ai danni",placeholder:"Es. veleno"},
   {name:"immunita_condizioni",label:"Immunità alle condizioni",placeholder:"Es. avvelenato, spaventato"},
+  {name:"immunita",label:"Immunità combinate",placeholder:"Facoltativo: danni e condizioni nella stessa voce"},
   {name:"sensi",label:"Sensi",placeholder:"Es. scurovisione 18 m; Percezione passiva 14"},
   {name:"linguaggi",label:"Linguaggi",placeholder:"Es. Comune, Draconico"},
 ];
-const BLOCKS = [{name:"tratti",label:"Tratti",singular:"Tratto"},{name:"azioni",label:"Azioni",singular:"Azione"},{name:"reazioni",label:"Reazioni",singular:"Reazione"},{name:"azioni_leggendarie",label:"Azioni leggendarie",singular:"Azione leggendaria"},{name:"descrizione",label:"Descrizione",singular:"Descrizione"}] as const;
+const BLOCKS = [{name:"tratti",label:"Tratti",singular:"Tratto"},{name:"azioni",label:"Azioni",singular:"Azione"},{name:"azioni_bonus",label:"Azioni bonus",singular:"Azione bonus"},{name:"reazioni",label:"Reazioni",singular:"Reazione"},{name:"azioni_leggendarie",label:"Azioni leggendarie",singular:"Azione leggendaria"},{name:"descrizione",label:"Descrizione",singular:"Descrizione"}] as const;
 const inputClass="w-full min-w-0 rounded-lg border border-border bg-background px-3 py-2.5 text-base text-foreground outline-none focus:border-primary";
 
 function EditorFields({fields,monster}: {fields:Field[];monster:Monster|null}) {

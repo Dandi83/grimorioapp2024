@@ -10,6 +10,8 @@ import { monsterSlugify, parseGs } from "@/lib/monsters-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { getSrdMonsterSource } from "@/lib/srd-monsters";
+import { monsterExtraFieldsFromForm } from "@/lib/monster-extra-fields";
+import { saveMonsterExtraFields } from "@/lib/monster-extra-storage";
 
 async function requireAdmin() {
   if (!(await isAdmin())) throw new Error("Non autorizzato");
@@ -86,11 +88,10 @@ export async function createMonsterAction(_prev: unknown, formData: FormData) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
   const id = await uniqueId(monsterSlugify(input.nome));
-  const result = await saveAdminContent("monster", id, formData, undefined, database => database.insert(monsters).values({
-    id,
-    ...input,
-    sort_key: input.nome.toLowerCase(),
-  }));
+  const result = await saveAdminContent("monster", id, formData, undefined, async database => {
+    await database.insert(monsters).values({ id, ...input, sort_key: input.nome.toLowerCase() });
+    await saveMonsterExtraFields(database, id, monsterExtraFieldsFromForm(formData));
+  });
   if (!result.ok) return result;
   revalidateMonster(id);
   return { ok: true as const, error: null, id };
@@ -104,7 +105,8 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
   if (!input.nome) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
-  const sourceEdition = getSrdMonsterSource({ ...input, id, gs_num: parseGs(input.grado_sfida) })?.edition;
+  const extraFields = monsterExtraFieldsFromForm(formData);
+  const sourceEdition = getSrdMonsterSource({ ...input, ...extraFields, id, gs_num: parseGs(input.grado_sfida) })?.edition;
   const result = await saveAdminContent("monster", id, formData, sourceEdition, async database => {
     const updated = await database.update(monsters)
     .set({
@@ -114,6 +116,7 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     })
     .where(eq(monsters.id, id)).returning({ id: monsters.id });
     if (!updated.length) throw new Error("Scheda non trovata.");
+    await saveMonsterExtraFields(database, id, extraFields);
   });
   if (!result.ok) return result;
   revalidateMonster(id);

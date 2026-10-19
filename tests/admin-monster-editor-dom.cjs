@@ -66,6 +66,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  await choose('immunita_condizioni-add','avvelenato');
  await input(document.getElementById('punti_ferita'),'45 (6d8 + 18)');
  await input(document.getElementById('forza'),'18');
+ for(const [id,value] of [['iniziativa','+4 (14)'],['bonus_competenza','+3'],['attrezzatura','Corazza']])await input(document.getElementById(id),value);
  await click(button('Aggiungi azione'));
  const title=document.querySelector('[id^="azioni-"][id$="-title"]');
  await input(title,'Morso gelido');
@@ -81,11 +82,13 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.ok(document.querySelector('article').textContent.includes('9 m, volo 18 m'));
  assert.ok(document.querySelector('article').textContent.includes('+4'));
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,1);
+ for(const text of ['Iniziativa','+4 (14)','Bonus di competenza','+3','Attrezzatura','Corazza'])assert.ok(document.querySelector('article').textContent.includes(text),text);
  await click(button('Torna al modulo'));
  assert.equal(document.getElementById('nome').value,'Guardiano di prova');
  await act(async()=>document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
  assert.equal(calls,1);
  assert.equal(payload.nome,'Guardiano di prova');
+ for(const [field,value] of [['iniziativa','+4 (14)'],['bonus_competenza','+3'],['attrezzatura','Corazza']])assert.equal(payload[field],value);
  assert.equal(payload.edition,'2024');
  assert.equal(document.getElementById('edition').value,'2024');
  assert.equal(payload.azioni,originalData.get('azioni'));
@@ -121,7 +124,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  // Source editing opens without rewriting imported content.
  const lich=requireProject('./lib/data/srd-monsters-5.2.1-it.json').records.find(r=>r.monster.id==='lich').monster;
  await act(async()=>root.render(React.createElement(MonsterEditor,{key:'lich',monster:lich,onClose:()=>closed++})));
- for(const field of ['tratti','azioni','reazioni','azioni_leggendarie','descrizione'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',field);
+ for(const field of ['tratti','azioni','azioni_bonus','reazioni','azioni_leggendarie','descrizione','iniziativa','bonus_competenza','attrezzatura','immunita','sottotitolo_fonte'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',field);
  for(const field of ['tipo','taglia','allineamento','grado_sfida','velocita','resistenze','immunita_condizioni','sensi','linguaggi'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',`unchanged ${field}`);
  assert.equal(document.getElementById('tipo-custom').value,'Non morto (mago)','existing subtypes remain editable without truncation');
  await choose('edition','2014');

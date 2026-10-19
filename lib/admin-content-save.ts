@@ -1,6 +1,5 @@
 import "server-only";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
-import { db } from "./db";
 import * as schema from "./db/schema";
 import { saveContentEdition, type ContentKind } from "./content-editions";
 
@@ -18,8 +17,7 @@ export async function saveAdminContent(
   }
   try {
     // Older open forms without the field preserve any existing manual label.
-    if (edition === null) await write(db);
-    else await saveContentEdition(kind, id, edition || undefined, client => write(drizzle(client, { schema })));
+    await saveContentEdition(kind, id, edition === null ? null : edition || undefined, client => write(drizzle(client, { schema })));
     return { ok: true };
   } catch {
     return { ok: false, error: "Scheda ed etichetta non salvate. I dati sono conservati nel modulo: riprova." };

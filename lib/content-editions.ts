@@ -19,11 +19,16 @@ export async function getContentEditions(kind: ContentKind, id?: string): Promis
   }
 }
 
-export async function saveContentEdition(kind: ContentKind, id: string, edition?: RulesEdition, writeContent?: (client: PoolClient) => Promise<unknown>): Promise<void> {
+export async function saveContentEdition(kind: ContentKind, id: string, edition?: RulesEdition | null, writeContent?: (client: PoolClient) => Promise<unknown>): Promise<void> {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
     if (writeContent) await writeContent(client);
+    // Older forms omit the edition: preserve it while still saving content atomically.
+    if (edition === null) {
+      await client.query("COMMIT");
+      return;
+    }
     await client.query(`CREATE TABLE IF NOT EXISTS grimorio_content_editions (
       content_kind text NOT NULL CHECK (content_kind IN ('monster', 'spell')),
       content_id text NOT NULL,

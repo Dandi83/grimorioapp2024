@@ -88,6 +88,8 @@ Compilare iOS richiede macOS/Xcode o un servizio appropriato, distinto dall'ambi
 
 ## Verifiche più recenti
 
+- 19 ottobre: correzione web su `fix/admin-creature-fields-20261019` per campi amministrativi iniziativa, bonus competenza, equipaggiamento e azioni bonus; collegamenti automatici per nomi esatti nelle liste incantesimi anche senza corsivo. Nessuna modifica dei record reali. Base live verificata `dcb2633`, ramo iPhone remoto invariato a `e22f06e`. Test locali e build riusciti; pubblicazione ancora da eseguire. Dettagli, persistenza e limiti browser in `docs/releases/2026-10-19-editor-creature-campi-incantesimi.md`.
+
 - Regressione AVIF: Daniele segnala foto più lente/scattose su iPhone dopo `d4d9db9`. Ritirata quella modifica applicativa ripubblicando `96138096486df4f4f4c7ae82baaf48676b1bcff7` (deployment `dpl_6npjg7EhTQB2DMqoZzQVwGso96NT`): WebP predefinito, 336 foto e crediti conservati. Audit con esito negativo in `docs/releases/2026-10-18-prestazioni-immagini.md`. Non considerare il minor peso una validazione della fluidità e non riattivare AVIF automaticamente. Verificare sempre il deployment corrente prima di altri lavori.
 
 - Rilascio illustrazioni autorizzato successivamente da Daniele: branch `release/official-art-20261018`, base crediti compatti `b1c9717`. Selettore abilitato anche in produzione per 336 immagini; cinque schede senza foto restano con sfondo generico. La precedente indicazione «solo preview» descrive la fase iniziale. Verificare il deployment Vercel corrente per il commit live, come sempre; niente integrazione automatica iPhone. Registro in `docs/releases/2026-10-18-illustrazioni-bestiario.md`.
