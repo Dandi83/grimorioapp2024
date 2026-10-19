@@ -9,8 +9,10 @@
     "lint": "eslint .",
     "test": "node tests/prepared-monster-art.cjs && node tests/catalog-list-payload.cjs && node scripts/check-srd-content.mjs && node scripts/check-srd-rendering.mjs && node scripts/check-srd-additions.mjs && node scripts/check-original-descriptions.mjs && node scripts/check-navigation.mjs && node scripts/check-srd-monster-sample.mjs && node scripts/check-srd-monsters.mjs && node scripts/check-srd-monsters-regressions.mjs && node scripts/check-monster-favorites.mjs && node scripts/check-manual.mjs && node tests/characters.cjs && node tests/paper-sheet.cjs && node tests/digital-sheet.cjs && node tests/generated-character.cjs && node tests/damage-icons.cjs && node tests/monster-provenance.cjs && node tests/legacy-monsters.cjs && node tests/admin-editions.cjs && node tests/admin-editor-editions.cjs && node tests/admin-monster-editor.cjs && node tests/admin-monster-editor-dom.cjs && node tests/admin-spell-editor-dom.cjs && node tests/bestiario-browser-dom.cjs && node tests/share-button-dom.cjs && node tests/analytics.cjs && node tests/analytics-consent-dom.cjs",
     "test:creature-editor": "node tests/monster-spell-links.cjs && node tests/admin-monster-editor.cjs && node tests/admin-monster-editor-dom.cjs && node tests/admin-editor-editions.cjs && node tests/admin-editions.cjs",
+    "test:catalog-performance": "node --conditions=react-server tests/catalog-read-cache.cjs && node tests/bestiario-browser-dom.cjs",
     "prepare:art": "node scripts/prepare-monster-art.mjs --ensure",
-    "pretest": "node scripts/prepare-monster-art.mjs --ensure"
+    "pretest": "node scripts/prepare-monster-art.mjs --ensure",
+    "posttest": "node --conditions=react-server tests/catalog-read-cache.cjs"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

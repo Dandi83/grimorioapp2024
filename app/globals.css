@@ -65,6 +65,22 @@
   }
 }
 
+/* Keep the full searchable, keyboard-accessible list and native back/scroll
+   restoration. The browser skips layout/paint of off-screen row contents.
+   Remember actual heights (including larger accessibility text) once measured.
+   Unsupported browsers simply render the normal list. */
+.catalog-row {
+  content-visibility: auto;
+  contain-intrinsic-block-size: auto 69px;
+}
+.catalog-row:first-child { contain-intrinsic-block-size: auto 68px; }
+.catalog-row.catalog-row-first-group { contain-intrinsic-block-size: auto 92.5px; }
+.catalog-row.catalog-row-group { contain-intrinsic-block-size: auto 112.5px; }
+.catalog-row:focus-within { content-visibility: visible; }
+@media print {
+  .catalog-row { content-visibility: visible; contain: none; }
+}
+
 /* Dice medallion animations */
 @keyframes dice-in {
   0% {

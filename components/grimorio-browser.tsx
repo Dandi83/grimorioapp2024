@@ -67,7 +67,7 @@ export function GrimorioBrowser({
   return (
     <div>
       {/* Sticky header */}
-      <div className="sticky top-0 z-30 border-b border-border bg-background/95 px-6 pb-3 pt-6 backdrop-blur">
+      <div className="sticky top-0 z-30 border-b border-border bg-background px-6 pb-3 pt-6">
         <h1 className="mb-4 font-serif text-3xl font-bold text-foreground">
           Incantesimi ({spells.length})
         </h1>
@@ -182,7 +182,7 @@ export function GrimorioBrowser({
             const prev = results[i - 1];
             const newGroup = !prev || prev.livello_num !== spell.livello_num;
             return (
-              <li key={spell.id}>
+              <li key={spell.id} className={`catalog-row${newGroup ? (i > 0 ? " catalog-row-group" : " catalog-row-first-group") : ""}`}>
                 {newGroup ? (
                   <div
                     className={`flex items-center gap-3 ${i > 0 ? "mt-6" : "mt-1"} mb-1`}

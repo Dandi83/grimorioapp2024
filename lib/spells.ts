@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 
 import { asc, eq } from "drizzle-orm";
 
@@ -57,7 +58,8 @@ export async function getAllSpells(options: { includePreview?: boolean } = {}): 
     });
 }
 
-export async function getSpellById(id: string): Promise<Spell | undefined> {
+// Deduplicate metadata/page reads without retaining stale administrative edits.
+export const getSpellById = cache(async (id: string): Promise<Spell | undefined> => {
   const [rows, editions] = await Promise.all([db
     .select()
     .from(spellsTable)
@@ -67,4 +69,4 @@ export async function getSpellById(id: string): Promise<Spell | undefined> {
   if (!row) return undefined;
   const spell = toSpell(row);
   return { ...spell, edizione: editions.get(id) ?? spell.edizione };
-}
+});

@@ -1,5 +1,7 @@
 # Il Grimorio.App — continuità del progetto
 
+Intervento web del 19 ottobre sulla fluidità, branch `fix/catalog-fluidity-20261019`: deduplicazione letture schede nella singola richiesta, rendering differito delle righe fuori schermo, barre/pulsanti senza sfocatura e segnaposto delle schede più coerenti. Suite completa, test RSC reale, test DOM e build locali riusciti. Le righe restano tutte nel DOM; nessun benchmark iPhone eseguito. Dettagli e limiti in `docs/releases/2026-10-19-fluidita-catalogo.md`. Verificare il commit effettivamente pubblicato tramite Vercel prima di proseguire. Il branch mobile rimane separato a `e22f06e`; nessuna integrazione automatica.
+
 Aggiornamento: 18 ottobre 2026. Questo documento raccoglie decisioni e stato verificabile dal codice e dalla conversazione di lavoro. Non è un'esportazione completa di tutte le chat, né un'autorizzazione a pubblicare nuove funzioni.
 
 ## Obiettivo e priorità

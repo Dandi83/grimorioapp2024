@@ -27,6 +27,7 @@ function load(relative){
 }
 const monsters=load('lib/srd-monsters.ts').previewMonsters([],'production');
 const {BestiarioBrowser}=load('components/bestiario-browser.tsx');
+const {GrimorioBrowser}=load('components/grimorio-browser.tsx');
 const root=createRoot(document.getElementById('root'));
 const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(text));
 const click=async el=>{assert.ok(el);await act(async()=>el.dispatchEvent(new MouseEvent('click',{bubbles:true})))};
@@ -55,6 +56,17 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await click(button('Pulisci'));assert.equal(ids().length,100,'reset keeps the selected section');
  await act(async()=>root.render(React.createElement(BestiarioBrowser,{...props,key:'animal-link',initialRaccolta:'animali'})));
  assert.equal(ids().length,100,'existing animal links open the animal section directly');
+ assert.equal(document.querySelectorAll('.catalog-row').length,100,'all animals remain reachable with deferred rendering');
+ const spells=Array.from({length:400},(_,i)=>({id:`spell-${i}`,nome_italiano:`Incantesimo ${String(i).padStart(3,'0')}`,livello_num:Math.floor(i/40),scuola:'invocazione',classi:['mago']}));
+ await act(async()=>root.render(React.createElement(GrimorioBrowser,{spells,meta:{livelli:[0,1,2,3,4,5,6,7,8,9],scuole:['invocazione'],classi:['mago']},initialLivello:null,initialScuola:null,initialClasse:null})));
+ assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,400,'deferred rows never truncate the searchable spell catalog');
+ assert.equal(document.querySelectorAll('.catalog-row-first-group').length,1);
+ assert.equal(document.querySelectorAll('.catalog-row-group').length,9,'level separators retain their own height estimates');
+ const last=document.querySelector('a[href="/spell/spell-399"]');
+ last.focus();assert.strictEqual(document.activeElement,last,'even distant links remain keyboard accessible');
+ await input('399');
+ assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,1);
+ assert.equal(document.querySelector('a[href^="/spell/"]').getAttribute('href'),'/spell/spell-399','search includes the end of the full catalog');
  await act(async()=>root.unmount());
- console.log('Bestiario: 240 monsters, 100 animals, visible section controls, source classification, search, filter reset and direct animal links passed.');
+ console.log('Catalogs: 240 monsters, 100 animals, filters, direct animal links; 400 spells with level groups, full-catalog search and keyboard access passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

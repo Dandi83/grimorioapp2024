@@ -73,7 +73,7 @@ export function BestiarioBrowser({
   return (
     <div>
       {/* Sticky header */}
-      <div className="sticky top-0 z-30 border-b border-border bg-background/95 px-6 pb-3 pt-6 backdrop-blur">
+      <div className="sticky top-0 z-30 border-b border-border bg-background px-6 pb-3 pt-6">
         <h1 className="mb-4 font-serif text-3xl font-bold text-foreground">
           Bestiario ({monsters.length})
         </h1>
@@ -205,7 +205,7 @@ export function BestiarioBrowser({
       ) : (
         <ul className="px-6 py-2">
           {results.map((monster, i) => (
-            <li key={monster.id}>
+            <li key={monster.id} className="catalog-row">
               {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
               <MonsterRow monster={monster} />
             </li>

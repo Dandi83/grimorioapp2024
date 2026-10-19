@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 
 import { asc, eq } from "drizzle-orm";
 
@@ -70,7 +71,9 @@ export async function getAllMonsters(): Promise<Monster[]> {
   });
 }
 
-export async function getMonsterById(id: string): Promise<Monster | undefined> {
+// Metadata and the page share the same read within a server render. This cache
+// is request-scoped: an administrative save is visible on the next request.
+export const getMonsterById = cache(async (id: string): Promise<Monster | undefined> => {
   const [rows, editions, extraFields] = await Promise.all([db
     .select()
     .from(monstersTable)
@@ -79,4 +82,4 @@ export async function getMonsterById(id: string): Promise<Monster | undefined> {
   const monster = rows[0] ? toMonster(rows[0]) : previewMonsterById(id, process.env.VERCEL_ENV);
   if (!monster) return undefined;
   return { ...monster, ...extraFields.get(id), edizione: editions.get(id) };
-}
+});
