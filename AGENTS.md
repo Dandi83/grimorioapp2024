@@ -47,7 +47,7 @@ Regola esplicita di Daniele del 18 ottobre 2026: evitare sovrapposizioni tra que
 - Incantesimi, mostri e animali condivisibili tramite link pubblici alle singole schede.
 - Non sostituire o cancellare modifiche amministrative successive con le fixture SRD. Mantieni verifica delle fonti, attribuzioni, varianti 2014 e separazione tra edizione e licenza.
 - Statistiche con consenso facoltativo; test e amministratori esclusi. Visitatori unici indicano browser/installazioni riconosciute, non persone certificate. Letture e condivisioni sono indicatori con limiti espliciti.
-- Preferiti del browser non si trasferiscono automaticamente nell'app iOS. Offline e Universal Links non sono ancora implementati.
+- Preferiti del browser non si trasferiscono automaticamente nell'app iOS. Il sito web ha un service worker (`app/sw.js/route.ts`, `lib/sw/service-worker.js`) che rende disponibili offline le pagine pubbliche già aperte, con avviso «copia salvata»; interruttore di emergenza `GRIMORIO_SERVICE_WORKER=off` su Vercel. Riguarda solo il sito nel browser: l'app iOS non ha ancora offline né Universal Links.
 
 ## Comunicazione
 
