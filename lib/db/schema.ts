@@ -1,4 +1,4 @@
-import { integer, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const spells = pgTable("spells", {
   id: text("id").primaryKey(),
@@ -54,3 +54,51 @@ export const monsters = pgTable("monsters", {
 
 export type MonsterRow = typeof monsters.$inferSelect;
 export type NewMonsterRow = typeof monsters.$inferInsert;
+
+// The tables below are created at runtime by the code that uses them
+// (CREATE TABLE IF NOT EXISTS). They are described here only for types and
+// documentation: no migration is generated or run from these definitions.
+// tests/schema-runtime-tables.cjs checks that both descriptions match.
+
+/** Manual edition label chosen in the admin area (lib/content-editions.ts). */
+export const contentEditions = pgTable("grimorio_content_editions", {
+  content_kind: text("content_kind").notNull(),
+  content_id: text("content_id").notNull(),
+  edition: text("edition").notNull(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, table => [primaryKey({ columns: [table.content_kind, table.content_id] })]);
+
+/** Optional creature fields saved from the admin editor (lib/monster-extra-storage.ts). */
+export const monsterDetails = pgTable("grimorio_monster_details", {
+  monster_id: text("monster_id").primaryKey().references(() => monsters.id, { onDelete: "cascade" }),
+  fields: jsonb("fields").notNull().default({}),
+});
+
+/** Consented statistics events and their PostHog export state (lib/analytics.ts). */
+export const analyticsEvents = pgTable("grimorio_analytics_events", {
+  id: uuid("id").primaryKey(),
+  visitor_id: text("visitor_id").notNull(),
+  session_id: uuid("session_id").notNull(),
+  view_id: uuid("view_id").notNull(),
+  event_name: text("event_name").notNull(),
+  path: text("path").notNull(),
+  card_kind: text("card_kind"),
+  card_id: text("card_id"),
+  title: text("title"),
+  source: text("source").notNull(),
+  is_test: boolean("is_test").notNull().default(false),
+  active_seconds: integer("active_seconds").notNull().default(0),
+  scroll_percent: integer("scroll_percent").notNull().default(0),
+  received_at: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+  exported: boolean("exported").notNull().default(false),
+  export_claim: uuid("export_claim"),
+  export_claimed_at: timestamp("export_claimed_at", { withTimezone: true }),
+});
+
+export type AnalyticsEventRow = typeof analyticsEvents.$inferSelect;
+
+/** Failed admin logins, stored as address hashes (lib/admin-login-limit.ts). */
+export const adminLoginFailures = pgTable("grimorio_admin_login_failures", {
+  address_hash: text("address_hash").notNull(),
+  failed_at: timestamp("failed_at", { withTimezone: true }).notNull().defaultNow(),
+});

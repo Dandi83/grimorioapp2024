@@ -3,9 +3,8 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 
-import { db } from "@/lib/db";
 import { monsters } from "@/lib/db/schema";
-import { isAdmin } from "@/lib/admin-auth";
+import { clean, requireAdmin, uniqueId } from "@/lib/admin-action-helpers";
 import { monsterSlugify, parseGs } from "@/lib/monsters-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
@@ -13,32 +12,9 @@ import { getSrdMonsterSource } from "@/lib/srd-monsters";
 import { monsterExtraFieldsFromForm } from "@/lib/monster-extra-fields";
 import { saveMonsterExtraFields } from "@/lib/monster-extra-storage";
 
-async function requireAdmin() {
-  if (!(await isAdmin())) throw new Error("Non autorizzato");
-}
-
-function clean(v: FormDataEntryValue | null): string {
-  return typeof v === "string" ? v.trim() : "";
-}
-
 function num(v: FormDataEntryValue | null, fallback = 10): number {
   const n = parseInt(clean(v), 10);
   return Number.isNaN(n) ? fallback : n;
-}
-
-async function uniqueId(base: string, ignoreId?: string): Promise<string> {
-  let id = base || "mostro";
-  let suffix = 2;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const existing = await db
-      .select({ id: monsters.id })
-      .from(monsters)
-      .where(eq(monsters.id, id))
-      .limit(1);
-    if (existing.length === 0 || existing[0].id === ignoreId) return id;
-    id = `${base}-${suffix++}`;
-  }
 }
 
 function fromForm(formData: FormData) {
@@ -88,7 +64,7 @@ export async function createMonsterAction(_prev: unknown, formData: FormData) {
   if (!input.nome) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
-  const id = await uniqueId(monsterSlugify(input.nome));
+  const id = await uniqueId("monster", monsterSlugify(input.nome));
   const result = await saveAdminContent("monster", id, formData, undefined, async database => {
     await database.insert(monsters).values({ id, ...input, sort_key: input.nome.toLowerCase() });
     await saveMonsterExtraFields(database, id, monsterExtraFieldsFromForm(formData));

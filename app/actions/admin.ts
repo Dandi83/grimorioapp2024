@@ -4,14 +4,13 @@ import { revalidatePath, updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 
-import { db } from "@/lib/db";
 import { spells } from "@/lib/db/schema";
 import {
-  isAdmin,
   startAdminSession,
   endAdminSession,
   verifyPasscode,
 } from "@/lib/admin-auth";
+import { clean, requireAdmin, uniqueId } from "@/lib/admin-action-helpers";
 import { addressKey, clearLoginFailures, loginBlocked, recordLoginFailure } from "@/lib/admin-login-limit";
 import { slugify } from "@/lib/spells-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
@@ -27,14 +26,6 @@ export interface SpellInput {
   componenti: string;
   durata: string;
   descrizione: string;
-}
-
-async function requireAdmin() {
-  if (!(await isAdmin())) throw new Error("Non autorizzato");
-}
-
-function clean(v: FormDataEntryValue | null): string {
-  return typeof v === "string" ? v.trim() : "";
 }
 
 const TOO_MANY_ATTEMPTS = "Troppi tentativi. Riprova tra 15 minuti.";
@@ -65,19 +56,9 @@ export async function logoutAction() {
   revalidatePath("/admin");
 }
 
-async function uniqueId(base: string, ignoreId?: string): Promise<string> {
-  let id = base || "incantesimo";
-  let suffix = 2;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const existing = await db
-      .select({ id: spells.id })
-      .from(spells)
-      .where(eq(spells.id, id))
-      .limit(1);
-    if (existing.length === 0 || existing[0].id === ignoreId) return id;
-    id = `${base}-${suffix++}`;
-  }
+function revalidateSpell(id: string) {
+  updateTag("spells");
+  for (const route of ["/", "/grimorio", "/preferiti", "/admin", `/spell/${id}`]) revalidatePath(route);
 }
 
 function fromForm(formData: FormData): SpellInput {
@@ -98,19 +79,14 @@ export async function createSpellAction(_prev: unknown, formData: FormData) {
   if (!input.nome_italiano) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
-  const id = await uniqueId(slugify(input.nome_italiano));
+  const id = await uniqueId("spell", slugify(input.nome_italiano));
   const result = await saveAdminContent("spell", id, formData, undefined, database => database.insert(spells).values({
     id,
     ...input,
     sort_key: input.nome_italiano.toLowerCase(),
   }));
   if (!result.ok) return result;
-  updateTag("spells");
-  revalidatePath("/");
-  revalidatePath("/grimorio");
-  revalidatePath("/preferiti");
-  revalidatePath("/admin");
-  revalidatePath(`/spell/${id}`);
+  revalidateSpell(id);
   return { ok: true as const, error: null, id };
 }
 
@@ -134,12 +110,7 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
     if (!updated.length) throw new Error("Scheda non trovata.");
   });
   if (!result.ok) return result;
-  updateTag("spells");
-  revalidatePath("/");
-  revalidatePath("/grimorio");
-  revalidatePath("/preferiti");
-  revalidatePath("/admin");
-  revalidatePath(`/spell/${id}`);
+  revalidateSpell(id);
   return { ok: true as const, error: null, id };
 }
 
@@ -148,10 +119,5 @@ export async function deleteSpellAction(formData: FormData) {
   const id = clean(formData.get("id"));
   if (!id) return;
   await deleteContentWithEdition("spell", id);
-  updateTag("spells");
-  revalidatePath("/");
-  revalidatePath("/grimorio");
-  revalidatePath("/preferiti");
-  revalidatePath("/admin");
-  revalidatePath(`/spell/${id}`);
+  revalidateSpell(id);
 }

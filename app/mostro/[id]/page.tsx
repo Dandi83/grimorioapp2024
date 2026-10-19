@@ -3,6 +3,7 @@ import { inlineConditionReferences } from "@/lib/conditions";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
+import { MetaCell } from "@/components/meta-cell";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
@@ -40,19 +41,6 @@ export async function generateMetadata({
       images: [],
     },
   };
-}
-
-function MetaCell({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="w-[calc(50%-6px)] rounded-xl border border-border bg-card p-3">
-      <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted">
-        {label}
-      </p>
-      <p className="font-serif text-[15px] leading-5 text-foreground">
-        {value || "—"}
-      </p>
-    </div>
-  );
 }
 
 function AbilityCell({ label, score }: { label: string; score: number }) {
