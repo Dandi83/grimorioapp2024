@@ -34,4 +34,4 @@ Test mirati riusciti: etichetta uniforme, valori conservati, collegamenti incant
 
 Non accedere al sito con browser o vie alternative finché resta il precedente rifiuto esplicito OpenAI. Le verifiche qui usano rendering locale e metadati Vercel, senza interrogare/modificare i dati reali.
 
-Pubblicazione richiesta sul sito pubblico; esito finale da registrare dopo READY e conferma alias.
+Pubblicazione completata: commit `dc36bd670f8d2d727daf7ac01f0dff9a2b39882e`, deployment `dpl_G3Up3AxBDSjnZ3CxxhEBh4ZYdA2M` READY. Alias verificati nei metadati: `ilgrimorio.app`, `www.ilgrimorio.app`, `grimorioapp2024.vercel.app`. Log Vercel: `Build Completed in /vercel/output [14s]`, `Deployment completed`. La preview duplicata di questa attività `dpl_4S5zrXiE6WftXMVvKui8TP5H8cvb` è stata annullata; produzione completata regolarmente. Rollback precedente: `32513f2` / `dpl_4CGFysyZaNchqNKtbjaSjQnWYwjN`.
