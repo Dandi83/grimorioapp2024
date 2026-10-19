@@ -21,18 +21,41 @@ interface FavoritesContextValue {
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
+/** Only a list of IDs is valid: anything else in storage is ignored, never fatal. */
+function parseFavorites(raw: string | null): string[] | null {
+  if (raw === null) return null;
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (!Array.isArray(value)) return null;
+    return [...new Set(value.filter((id): id is string => typeof id === "string"))];
+  } catch {
+    return null;
+  }
+}
+
+function readStoredFavorites(): string[] | null {
+  try {
+    return parseFavorites(window.localStorage.getItem(KEY));
+  } catch {
+    return null;
+  }
+}
+
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(KEY);
-      if (raw) setFavorites(JSON.parse(raw));
-    } catch {
-      // ignore corrupted storage
-    }
+    const stored = readStoredFavorites();
+    if (stored) setFavorites(stored);
     setLoaded(true);
+    // Another tab saved its favorites: adopt them so the next save keeps both.
+    const sync = (event: StorageEvent) => {
+      if (event.key !== KEY) return;
+      setFavorites(parseFavorites(event.newValue) ?? []);
+    };
+    window.addEventListener("storage", sync);
+    return () => window.removeEventListener("storage", sync);
   }, []);
 
   useEffect(() => {
@@ -50,10 +73,11 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   const toggle = useCallback(
     (id: string) => {
       setFavorites((prev) => {
-        const next = prev.includes(id)
-          ? prev.filter((f) => f !== id)
-          : [...prev, id];
-        return next;
+        // Start from the latest saved list in case another tab changed it.
+        const current = readStoredFavorites() ?? prev;
+        return current.includes(id)
+          ? current.filter((f) => f !== id)
+          : [...current, id];
       });
     },
     [],
