@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/admin-auth";
 import { analyticsConfigured, POSTHOG_DASHBOARD, readAnalytics } from "@/lib/analytics";
 export const dynamic="force-dynamic";
-export const metadata={title:"Statistiche — Il Grimorio.App"};
+export const metadata={title:"Statistiche — Il Grimorio.App",robots:{index:false,follow:false}};
 function validDate(value:unknown):value is string {return typeof value==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&!Number.isNaN(new Date(value).getTime())&&new Date(value).toISOString().slice(0,10)===value;}
 export default async function StatisticsPage({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}) {
   if(!(await isAdmin()))redirect("/admin");
