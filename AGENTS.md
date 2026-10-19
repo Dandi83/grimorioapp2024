@@ -32,7 +32,7 @@ Regola esplicita di Daniele del 18 ottobre 2026: evitare sovrapposizioni tra que
 - La root è la web app Next.js attuale. Usa Node.js 24 LTS (22 LTS è accettabile se compatibile con lockfile e build), npm e il `package-lock.json` della root.
 - Setup riproducibile: `bash scripts/setup-codex-cloud.sh`.
 - Comandi: `npm ci`, `npm test`, `npm run build`, `npm run dev`.
-- `frontend/` e `backend/` sono prototipi storici Expo/FastAPI, esclusi dalla build ufficiale. Non avviare i loro script pensando che siano il backend attuale.
+- I prototipi storici Expo/FastAPI (`frontend/`, `backend/`), `uploads/` e l'archivio delle illustrazioni dei mostri sono stati rimossi il 19 ottobre 2026 su decisione di Daniele (vedi `docs/releases/2026-10-19-pulizia-totale.md`). Non ripristinarli.
 - Test e build possono girare senza collegare il database di produzione. Le pagine dinamiche in esecuzione richiedono invece un database dedicato di sviluppo con schema e dati di prova. Se manca, dichiaralo: una build riuscita non prova il funzionamento runtime del catalogo.
 - Non eseguire `scripts/seed.mjs`, migrazioni o script `fill-*` contro database reali. Le vecchie fixture non rappresentano necessariamente tutti i record presenti oggi.
 - Non copiare credenziali di Vercel/Neon/Apple/PostHog in file o output. Nessun segreto privato nell'app mobile.

@@ -7,8 +7,7 @@ un'area riservata per modificare gli incantesimi.
 ## Struttura del repository
 
 - **radice** — l'app web Next.js (questa è quella che Vercel pubblica).
-- `frontend/` — la vecchia app Expo/React Native usata su Emergent (non usata da Vercel).
-- `backend/` — la vecchia API FastAPI + MongoDB usata su Emergent (non usata da Vercel).
+- I vecchi prototipi Expo/FastAPI di Emergent (`frontend/`, `backend/`) sono stati rimossi il 19 ottobre 2026.
 
 ## Dati
 

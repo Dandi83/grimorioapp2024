@@ -20,7 +20,7 @@ La nuova fase è valutare e preparare la versione iPhone con Capacitor, continua
 
 - GitHub: https://github.com/Dandi83/grimorioapp2024.
 - Root: applicazione Next.js 16.3.4 / React 19 / TypeScript / Tailwind, Postgres con Drizzle.
-- `frontend/`: vecchio prototipo Expo/React Native. `backend/`: vecchio prototipo FastAPI/MongoDB. Non sono la versione ufficiale attuale.
+- `frontend/` e `backend/` (vecchi prototipi Expo/FastAPI) sono stati rimossi il 19 ottobre 2026, insieme a `uploads/` e all'archivio delle illustrazioni dei mostri.
 - Vercel progetto `grimorioapp2024`, ID `prj_PjDCPQlG4DMh9p2ZIlBTppZMSGMq`, team `team_2wnC0kx2WC2ryPk53cerZRsn`.
 - Produzione verificata: commit `0dcb9f338255d2a7ef63e40fdf0b95e17abd7c15`, branch `ui/detail-only-edition-badges-20261018`, deployment `dpl_3tsq1WXtTe8X4Fh64H8CfDgqyKDg`.
 - Report iOS: commit `8327e5984b3646190af342fab51af91c8a8493a4`, branch `docs/ios-readiness-20261018`.
