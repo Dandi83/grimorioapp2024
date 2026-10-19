@@ -1,6 +1,6 @@
 # Editor creature: campi completi e collegamenti incantesimi
 
-Stato: implementato e verificato localmente; non pubblicato in produzione da questa attività.
+Stato: implementato e verificato localmente; successivamente pubblicato con autorizzazione esplicita di Daniele. Commit live `32513f2f2529ea4a4e5870c5a833da3019c87f86`, deployment `dpl_4CGFysyZaNchqNKtbjaSjQnWYwjN` READY e assegnato a ilgrimorio.app. Registro in `2026-10-19-pubblicazione-editor-creature.md`.
 
 ## Base e coordinamento
 
