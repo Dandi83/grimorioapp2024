@@ -18,6 +18,7 @@ Lo script `scripts/seed.mjs` ripopola la tabella dal file JSON originale: **non 
 
 ## Verifiche
 
+- `npm run lint` — controllo dello stile del codice (ESLint, regole Next.js).
 - `npm test` — test veloci (nessun database reale, nessuna rete).
 - `npm run test:e2e` — build di produzione e prove nel browser (Playwright, viewport iPhone) su un database PostgreSQL di prova in memoria (PGlite). Con un Chromium già installato: `PW_CHROMIUM_PATH=/percorso/chrome npm run test:e2e`.
 - GitHub Actions (`.github/workflows/ci.yml`) esegue tipi, test e prove nel browser su ogni pull request.

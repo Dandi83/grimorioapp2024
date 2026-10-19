@@ -44,8 +44,8 @@ export function AnalyticsProvider() {
       path.startsWith("/personaggi")
     )
       return;
+    const view = crypto.randomUUID();
     let session: string,
-      view = crypto.randomUUID(),
       isTest = false;
     try {
       const old = JSON.parse(sessionStorage.getItem(SESSION) || "null") as {
