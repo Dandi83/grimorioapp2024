@@ -1,6 +1,5 @@
 import { formatMonsterSpellLists, inlineSpellReferences } from "@/lib/spell-references";
 import { inlineConditionReferences } from "@/lib/conditions";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
@@ -12,8 +11,6 @@ import { getMonsterById } from "@/lib/monsters";
 import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
-import { getPreviewMonsterArt } from "@/lib/monster-art-preview";
-import { getPreparedMonsterArt } from "@/lib/prepared-monster-art";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +31,7 @@ export async function generateMetadata({
     alternates: { canonical: url },
     openGraph: {
       title: `${monster.nome} — Il Grimorio.App`, description, url, type: "website",
-      images: [{ url: "https://ilgrimorio.app/hero-bestiario.png", alt: monster.nome }],
+      images: [],
     },
   };
 }
@@ -102,45 +99,18 @@ export default async function MonsterDetailPage({
   const color = monsterColor(monster.tipo);
   const source = getSrdMonsterSource(monster);
   const legacy = usesLegacyMonsterRules(monster);
-  const artwork = getPreviewMonsterArt(monster.id);
-  const preparedArtwork = getPreparedMonsterArt(monster.id);
   const sottotitolo = monster.sottotitolo_fonte || [monster.taglia, monster.tipo, monster.allineamento]
     .filter(Boolean)
     .join(" · ");
 
   return (
     <article className="monster-sheet">
-      {/* Hero */}
-      <header className={`relative overflow-hidden ${artwork ? "" : "h-[320px]"}`}>
-        {artwork ? <Image
-          src={preparedArtwork ?? artwork.src}
-          alt={`Illustrazione ufficiale di ${artwork.name}`}
-          width={artwork.width}
-          height={artwork.height}
-          unoptimized={!!preparedArtwork}
-          placeholder={preparedArtwork ? "blur" : "empty"}
-          priority
-          sizes="(max-width: 672px) 100vw, 672px"
-          className="h-auto w-full"
-        /> : <Image
-          src="/hero-bestiario.png"
-          alt=""
-          fill
-          priority
-          sizes="(max-width: 672px) 100vw, 672px"
-          className="object-cover"
-        />}
-        {!artwork && <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(to bottom, rgba(10,10,11,0.3), rgba(10,10,11,0.55), rgba(10,10,11,1))",
-          }}
-        />}
+      {/* Artwork archived separately: the public sheet loads no creature photos. */}
+      <header className="relative px-6 pb-5 pt-24">
         <BackButton />
         <ShareButton path={`/mostro/${encodeURIComponent(monster.id)}`} title={monster.nome} />
         <FavoriteButton id={`mostro:${monster.id}`} />
-        <div className={artwork ? "relative bg-background px-6 pb-3 pt-5" : "absolute inset-x-0 bottom-0 p-6"}>
+        <div>
           <span
             className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground"
             style={{ borderColor: color }}
@@ -160,10 +130,6 @@ export default async function MonsterDetailPage({
           )}
         </div>
       </header>
-
-      {artwork && <aside aria-label="Crediti dell’illustrazione" className="mx-6 mb-2 space-y-1 border-b border-border pb-4 text-[11px] leading-5 text-muted">
-        <p>Illustrazione © Wizards of the Coast LLC. <a href={artwork.sourceUrl} target="_blank" rel="noreferrer" className="underline underline-offset-4">Fonte: D&amp;D Beyond</a>.</p>
-      </aside>}
 
       <div className="px-6 pt-3">
         <MonsterProvenanceBadge source={source} edition={monster.edizione} linked />
@@ -218,7 +184,7 @@ export default async function MonsterDetailPage({
             legacy={legacy}
           />
           <StatLine label="Immunità" value={monster.immunita || ""} damageIcons legacy={legacy} />
-          <StatLine label="Attrezzatura" value={monster.attrezzatura || ""} legacy={legacy} />
+          <StatLine label="Equipaggiamento" value={monster.attrezzatura || ""} legacy={legacy} />
           <StatLine label="Sensi" value={monster.sensi} legacy={legacy} />
           <StatLine label="Linguaggi" value={monster.linguaggi} legacy={legacy} />
         </section>

@@ -82,7 +82,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.ok(document.querySelector('article').textContent.includes('9 m, volo 18 m'));
  assert.ok(document.querySelector('article').textContent.includes('+4'));
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,1);
- for(const text of ['Iniziativa','+4 (14)','Bonus di competenza','+3','Attrezzatura','Corazza'])assert.ok(document.querySelector('article').textContent.includes(text),text);
+ for(const text of ['Iniziativa','+4 (14)','Bonus di competenza','+3','Equipaggiamento','Corazza'])assert.ok(document.querySelector('article').textContent.includes(text),text);
  await click(button('Torna al modulo'));
  assert.equal(document.getElementById('nome').value,'Guardiano di prova');
  await act(async()=>document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));

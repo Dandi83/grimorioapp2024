@@ -8,14 +8,14 @@ const {renderToStaticMarkup}=require('react-dom/server');
 const cache=new Map();
 let selected;
 const deps={
- 'next/image':{__esModule:true,default:()=>null},
+ 'next/image':{__esModule:true,default:()=>{throw Error('Public creature artwork must remain disabled')}},
  'next/link':{__esModule:true,default:({children,...props})=>React.createElement('a',props,children)},
  'next/navigation':{notFound:()=>{throw Error('Not found')}},
  '@/components/back-button':{BackButton:()=>null},
  '@/components/share-button':{ShareButton:()=>null},
  '@/components/favorite-button':{FavoriteButton:()=>null},
- '@/lib/monster-art-preview':{getPreviewMonsterArt:()=>undefined},
- '@/lib/prepared-monster-art':{getPreparedMonsterArt:()=>undefined},
+ '@/lib/monster-art-preview':{getPreviewMonsterArt:()=>{throw Error('Public sheets must not load archived artwork')}},
+ '@/lib/prepared-monster-art':{getPreparedMonsterArt:()=>{throw Error('Public sheets must not load archived artwork')}},
  '@/lib/monsters':{getMonsterById:async()=>selected},
 };
 function load(relative){
@@ -44,7 +44,8 @@ function load(relative){
  assert.equal(helpers.formatMonsterSpellLists(italic),italic,'existing source emphasis stays exact');
  assert.equal(helpers.formatMonsterSpellLists(helpers.formatMonsterSpellLists(html)),helpers.formatMonsterSpellLists(html),'formatting is idempotent');
  const {AdminMonsterPreview}=load('components/admin-monster-preview.tsx');
- const page=load('app/mostro/[id]/page.tsx').default;
+ const pageModule=load('app/mostro/[id]/page.tsx');
+ const page=pageModule.default;
  selected={id:'guardiano-incantatore-test',nome:'Guardiano incantatore',edizione:'2024',tipo:'Costrutto',taglia:'Media',allineamento:'neutrale',classe_armatura:'15',punti_ferita:'30',velocita:'9 m',grado_sfida:'2',px:'450',forza:10,destrezza:10,costituzione:10,intelligenza:16,saggezza:10,carisma:10,azioni:html,iniziativa:'+4 (14)',bonus_competenza:'+3',attrezzatura:'Corazza',azioni_bonus:'<strong>Passo.</strong> Si sposta.',gs_num:2};
  for(const legacy of [false,true]){
   selected.edizione=legacy?'2014':'2024';
@@ -53,9 +54,13 @@ function load(relative){
   for(const output of [preview,publicHtml]){
    for(const id of ids)assert.equal(output.includes(`href="/spell/${id}"`),!legacy,'preview/public edition parity');
    for(const text of ['+4 (14)','+3','Corazza','Passo.'])assert.ok(output.includes(text),text);
+   assert.ok(output.includes('Equipaggiamento'),'new and existing creatures use the requested label');
+   assert.ok(!output.includes('Attrezzatura'),'old label is no longer displayed');
+   assert.ok(!output.includes('hero-bestiario.png')&&!output.includes('Illustrazione ufficiale')&&!output.includes('/_next/image'),'no illustration or fallback photo');
    assert.ok(output.includes('solo su se stesso'),'casting qualification preserved');
   }
  }
+ assert.deepEqual((await pageModule.generateMetadata({params:Promise.resolve({id:selected.id})})).openGraph.images,[],'shared cards do not advertise removed artwork');
  for(const filename of ['srd-monsters-5.2.1-it.json','srd-animals-5.2.1-it.json','srd-monsters-5.1-it.json'])for(const {monster} of require('../lib/data/'+filename).records)for(const field of ['tratti','azioni','azioni_bonus','reazioni','azioni_leggendarie']){
   const value=monster[field]||'';
   assert.equal(helpers.formatMonsterSpellLists(value).replace(/<[^>]*>/g,''),value.replace(/<[^>]*>/g,''),`${monster.id}.${field}: rendering must preserve text`);

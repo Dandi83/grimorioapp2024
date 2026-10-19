@@ -25,7 +25,7 @@ const COMBAT: Field[] = [
   {name:"px",label:"Punti esperienza",placeholder:"Es. 450"},
   {name:"iniziativa",label:"Iniziativa",placeholder:"Es. +4 (14)"},
   {name:"bonus_competenza",label:"Bonus di competenza",placeholder:"Es. +3"},
-  {name:"attrezzatura",label:"Equipaggiamento / armatura",placeholder:"Es. Corazza"},
+  {name:"attrezzatura",label:"Equipaggiamento",placeholder:"Es. Corazza"},
 ];
 const ABILITIES: Field[] = [{name:"forza",label:"FOR"},{name:"destrezza",label:"DES"},{name:"costituzione",label:"COS"},{name:"intelligenza",label:"INT"},{name:"saggezza",label:"SAG"},{name:"carisma",label:"CAR"}];
 const DETAILS: Field[] = [
