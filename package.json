@@ -13,23 +13,23 @@
     "posttest": "node --conditions=react-server tests/catalog-read-cache.cjs"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.2",
-    "lucide-react": "^1.43.0",
-    "next": "^16.3.4",
-    "pg": "^8.23.0",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
+    "drizzle-orm": "^0.45.4",
+    "lucide-react": "^1.59.0",
+    "next": "^16.4.2",
+    "pg": "^8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.10",
-    "@tailwindcss/postcss": "4.1.13",
-    "@types/node": "22.10.2",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "22.20.5",
     "@types/pg": "^8.23.1",
-    "@types/react": "19.1.10",
-    "@types/react-dom": "19.1.7",
-    "jsdom": "^26.1.0",
-    "tailwindcss": "4.1.13",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "jsdom": "^29.1.1",
+    "tailwindcss": "4.3.3",
     "typescript": "5.9.3"
   }
 }

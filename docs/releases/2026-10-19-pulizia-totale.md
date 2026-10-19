@@ -31,4 +31,6 @@ Branch `chore/pulizia-totale-20261019`, base `main` a `40d71d6`.
 
 ## Cronologia git
 
-La rimozione dalla cronologia (`git filter-repo`) è un passaggio separato, autorizzato da Daniele, eseguito solo dopo backup e conferma esplicita prima del force push.
+Riscrittura preparata e verificata in ambiente cloud (64 branch, contenuto invariato, file rimossi da tutti i commit), ma il force push è stato rifiutato dal canale GitHub dell'ambiente (HTTP 403) e bloccato dai controlli di sicurezza della sessione. GitHub non è stato modificato.
+
+Decisione di Daniele (19 ottobre): lasciare la cronologia com'è. `manuale.pdf` e le tre immagini restano solo nei commit precedenti a `40000a4`. Backup completo pre-riscrittura salvato da Daniele sul Mac e su iCloud (`grimorioapp2024-completo-20261019.bundle`, SHA-256 `4609ddfaa9d4df477fead5cb53ba3514b6ed4eced5383dd003d2c4975db27830`).
