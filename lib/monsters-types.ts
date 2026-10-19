@@ -129,6 +129,11 @@ export interface MonstersMeta {
 
 export type MonsterListItem = Pick<Monster, "id" | "nome" | "tipo" | "taglia" | "grado_sfida" | "gs_num">;
 
+/** List rows carry only what the catalog shows and filters on, never the full sheet. */
+export function toMonsterListItem({ id, nome, tipo, taglia, grado_sfida, gs_num }: MonsterListItem): MonsterListItem {
+  return { id, nome, tipo, taglia, grado_sfida, gs_num };
+}
+
 export function computeMonstersMeta(list: readonly MonsterListItem[]): MonstersMeta {
   const taglie = new Set<string>();
   const tipi = new Set<string>();

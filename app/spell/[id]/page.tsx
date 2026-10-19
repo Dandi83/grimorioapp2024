@@ -41,7 +41,7 @@ export async function generateMetadata({
     alternates: { canonical: url },
     openGraph: {
       title: `${titolo} — Il Grimorio.App`, description, url, type: "website",
-      images: [{ url: "https://ilgrimorio.app/hero-libro.png", alt: titolo }],
+      images: [{ url: "https://ilgrimorio.app/hero-libro-og.jpg", width: 1024, height: 1024, alt: titolo }],
     },
   };
 }

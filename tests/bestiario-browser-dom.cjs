@@ -40,6 +40,8 @@ const button=text=>[...document.querySelectorAll('button')].find(b=>b.textConten
 const click=async el=>{assert.ok(el);await act(async()=>el.dispatchEvent(new MouseEvent('click',{bubbles:true})))};
 const input=async value=>{const el=document.querySelector('input');await act(async()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new InputEvent('input',{bubbles:true}))})};
 const ids=()=>[...document.querySelectorAll('a[href^="/mostro/"]')].map(a=>a.getAttribute('href').slice('/mostro/'.length));
+// The bestiary shows 40 rows per page: expand every page to check the full result set.
+const allIds=async()=>{while(button('Mostra altri'))await click(button('Mostra altri'));return ids();};
 const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
 (async()=>{
  await act(async()=>root.render(React.createElement(BestiarioBrowser,props)));
@@ -47,23 +49,27 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  assert.ok(document.querySelector('[role="group"][aria-label="Sezioni del bestiario"]'));
  assert.match(button('Mostri').textContent,/240/);assert.match(button('Animali').textContent,/100/);
  assert.equal(button('Mostri').getAttribute('aria-pressed'),'true');
- assert.equal(ids().length,240);assert.ok(ids().includes('duergar'));assert.ok(!ids().includes('gatto'));
+ assert.equal(ids().length,40,'the bestiary renders 40 rows per page');assert.match(button('Mostra altri').textContent,/200/);
+ assert.equal(document.querySelector('[role="status"]').textContent,'240 risultati','the count covers every page');
+ assert.equal((await allIds()).length,240);assert.ok(ids().includes('duergar'));assert.ok(!ids().includes('gatto'));
  await click(button('Tipo'));await click(button('Drago'));
- assert.ok(ids().length>0&&ids().length<240);assert.ok(!ids().includes('duergar'));
+ assert.ok(ids().length>0&&ids().length<=40,'filters reset pagination');assert.ok((await allIds()).length<240);assert.ok(!ids().includes('duergar'));
  await click(button('Animali'));
  assert.equal(button('Animali').getAttribute('aria-pressed'),'true');
- assert.equal(ids().length,100,'switching collection clears incompatible filters');
+ assert.equal(ids().length,40,'switching collection resets pagination');
+ assert.equal((await allIds()).length,100,'switching collection clears incompatible filters');
  assert.ok(ids().includes('gatto'));assert.ok(ids().includes('alce-gigante'),'source animals include Celestial animals');
  assert.ok(ids().includes('sciame-di-scarabei'));assert.ok(!ids().includes('duergar'));
  await input('gatto');assert.deepEqual(ids(),['gatto']);
  await click(button('Mostri'));assert.equal(ids().length,0);assert.equal(document.querySelector('input').value,'gatto');
- await input('');assert.equal(ids().length,240);
+ await input('');assert.equal(ids().length,40);assert.equal((await allIds()).length,240);
  await click(button('Animali'));await click(button('Grado sfida'));await click(button('GS 0'));
- assert.ok(ids().length>0&&ids().length<100);
- await click(button('Pulisci'));assert.equal(ids().length,100,'reset keeps the selected section');
+ assert.ok((await allIds()).length>0&&ids().length<100);
+ await click(button('Pulisci'));assert.equal((await allIds()).length,100,'reset keeps the selected section');
  await act(async()=>root.render(React.createElement(BestiarioBrowser,{...props,key:'animal-link',initialRaccolta:'animali'})));
- assert.equal(ids().length,100,'existing animal links open the animal section directly');
- assert.equal(document.querySelectorAll('.catalog-row').length,100,'all animals remain reachable with deferred rendering');
+ assert.equal(button('Animali').getAttribute('aria-pressed'),'true','existing animal links open the animal section directly');
+ assert.equal((await allIds()).length,100);
+ assert.equal(document.querySelectorAll('.catalog-row').length,100,'all animals remain reachable via show more');
  const spells=Array.from({length:400},(_,i)=>({id:`spell-${i}`,nome_italiano:`Incantesimo ${String(i).padStart(3,'0')}`,livello_num:Math.floor(i/40),scuola:'invocazione',classi:['mago']}));
  await act(async()=>root.render(React.createElement(GrimorioBrowser,{spells,meta:{livelli:[0,1,2,3,4,5,6,7,8,9],scuole:['invocazione'],classi:['mago']},initialLivello:null,initialScuola:null,initialClasse:null})));
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,40,'only the first page is rendered');
@@ -132,9 +138,9 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  assert.equal(button('Animali').getAttribute('aria-pressed'),'true');
  assert.ok(ids().length>0&&ids().length<100);
  await act(async()=>navigateQuery('raccolta=mostri'));await act(async()=>root.render(renderMonsterUrl()));
- assert.equal(ids().length,240,'same-path query changes switch collection and clear old filters');
+ assert.equal((await allIds()).length,240,'same-path query changes switch collection and clear old filters');
  await act(async()=>navigateQuery(''));await act(async()=>root.render(renderMonsterUrl()));
- assert.equal(ids().length,240,'unfiltered URL retains the default collection');
+ assert.equal((await allIds()).length,240,'unfiltered URL retains the default collection');
  // Preserve the original server-filter cases as exact rendered-result checks.
  const filterCases=[
   {id:'url-target',nome_italiano:'Risultato atteso',livello_num:3,scuola:'Evocazione',classi:['mago']},
@@ -150,7 +156,7 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  assert.equal(button('Animali').getAttribute('aria-pressed'),'true','original collection filter is preserved');
  const halfAnimals=monsters.filter(m=>load('lib/monsters-types.ts').isSrdAnimal(m)&&m.grado_sfida==='1/2').map(m=>m.id).sort();
  assert.ok(halfAnimals.length>0,'the original fractional challenge-rating case has real results');
- assert.deepEqual(ids().sort(),halfAnimals,'the original GS 1/2 URL filter selects exactly the matching animals');
+ assert.deepEqual((await allIds()).sort(),halfAnimals,'the original GS 1/2 URL filter selects exactly the matching animals');
  // Server HTML contains real rows even when the browser URL has filters.
  const {renderToStaticMarkup}=require('react-dom/server');
  window.history.replaceState(null,'','/grimorio?livello=9');
@@ -184,5 +190,5 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await act(async()=>new Promise(resolve=>setTimeout(resolve,330)));
  assert.deepEqual(prefetched,['/','/grimorio','/bestiario','/preferiti'],'timer fallback warms the same four routes');
  await act(async()=>root.unmount());
- console.log('Catalogs: bestiary unchanged; 40-row spell pages, show more, full-catalog deferred search, filter/page reset, level groups and keyboard access passed.');
+ console.log('Catalogs: 40-row bestiary and spell pages, show more, full-catalog deferred search, filter/page reset, level groups and keyboard access passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

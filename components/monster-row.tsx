@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 
-import { useFavorites } from "@/components/favorites-provider";
 import {
   gsLabel,
   monsterColor,
@@ -13,10 +12,13 @@ import {
   type MonsterListItem,
 } from "@/lib/monsters-types";
 
-export function MonsterRow({ monster }: { monster: MonsterListItem }) {
-  const { isFavorite, toggle } = useFavorites();
+// Memoized like SpellRow: toggling one star re-renders only that row.
+export const MonsterRow = memo(function MonsterRow({ monster, fav, onToggle }: {
+  monster: MonsterListItem;
+  fav: boolean;
+  onToggle: (id: string) => void;
+}) {
   const favId = `mostro:${monster.id}`;
-  const fav = isFavorite(favId);
 
   const router = useRouter();
   const href = `/mostro/${monster.id}`;
@@ -52,7 +54,7 @@ export function MonsterRow({ monster }: { monster: MonsterListItem }) {
       </Link>
       <button
         type="button"
-        onClick={() => toggle(favId)}
+        onClick={() => onToggle(favId)}
         aria-label={fav ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
         aria-pressed={fav}
         className="p-2 transition-transform active:scale-90"
@@ -64,4 +66,4 @@ export function MonsterRow({ monster }: { monster: MonsterListItem }) {
       </button>
     </div>
   );
-}
+});

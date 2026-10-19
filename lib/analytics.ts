@@ -50,7 +50,7 @@ export async function purgeAnalytics() {
 export async function exportAnalytics() {
   if (!analyticsConfigured()) return;
   await ensureSchema();
-  await purgeAnalytics();
+  // Retention is enforced by the daily maintenance cron, not on every event.
   const claim=randomUUID();
   const {rows}=await pool.query(`UPDATE grimorio_analytics_events SET export_claim=$1,export_claimed_at=now()
     WHERE id IN (SELECT id FROM grimorio_analytics_events WHERE exported=false

@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getManualEntry, manualAvailable } from "@/lib/manual";
+import { getManualEntry, manualAvailable, manualEntries } from "@/lib/manual";
 import { MANUAL_CATEGORIES } from "@/lib/manual-types";
 import { ManualContent } from "@/components/manual-content";
 import { BackButton } from "@/components/back-button";
 
-export const dynamic = "force-dynamic";
+// The text never changes at runtime: pages are generated at build time.
+// Production builds only public conditions; other entries stay preview-only.
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  const preview = manualAvailable(process.env.VERCEL_ENV);
+  return manualEntries.filter(entry => preview || entry.category === "condizioni").map(entry => ({ id: entry.id }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

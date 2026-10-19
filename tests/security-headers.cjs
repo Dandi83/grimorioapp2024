@@ -17,6 +17,8 @@ const {pathToFileURL}=require('node:url');
  assert.equal(headers['Permissions-Policy'],'camera=(), microphone=(), geolocation=()');
  // The CSP only restricts framing: scripts, styles and images keep working as before.
  assert.doesNotMatch(headers['Content-Security-Policy'],/script-src|default-src|style-src|img-src/);
+ // Images stay WebP: AVIF was withdrawn after the iPhone regression of 18 October 2026.
+ assert.deepEqual(config.images.formats,['image/webp']);
  for(const page of ['app/admin/page.tsx','app/admin/statistiche/page.tsx','app/personaggi/page.tsx','app/account/page.tsx']){
   assert.match(fs.readFileSync(page,'utf8'),/robots\s*:\s*\{\s*index\s*:\s*false\s*,\s*follow\s*:\s*false\s*\}/,`${page} is not indexed by search engines`);
  }
