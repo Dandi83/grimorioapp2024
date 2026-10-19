@@ -4,13 +4,13 @@ import { Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
 import { MonsterRow } from "@/components/monster-row";
-import type { Monster } from "@/lib/monsters-types";
+import type { MonsterListItem } from "@/lib/monsters-types";
 import { SpellRow } from "@/components/spell-row";
-import type { Spell } from "@/lib/spells-types";
+import type { SpellListItem } from "@/lib/spells-types";
 
 const sortRank = (value: number) => value >= 0 ? value : Number.POSITIVE_INFINITY;
 
-export function FavoritesList({ spells, monsters = [] }: { spells: Spell[]; monsters?: Monster[] }) {
+export function FavoritesList({ spells, monsters = [] }: { spells: SpellListItem[]; monsters?: MonsterListItem[] }) {
   const { favorites, loaded, isFavorite, toggle } = useFavorites();
 
   const favSpells = spells

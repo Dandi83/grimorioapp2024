@@ -12,7 +12,8 @@ import { abilityMod, monsterColor, gsLabel } from "@/lib/monsters-types";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+export function generateStaticParams() { return []; }
 
 export async function generateMetadata({
   params,

@@ -13,6 +13,9 @@ const artworkFolders = [...new Set(Object.values(artworks).map(({ src }) => {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    staleTimes: { dynamic: 300, static: 300 },
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 2678400,

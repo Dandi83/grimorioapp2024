@@ -16,7 +16,7 @@ function load(file){
  const m={exports:{}};let code=ts.transpileModule(readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2017,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
  new Function('require','module','exports',code)(id=>{
   if(id==='@/components/favorites-provider')return state;
-  if(id==='@/lib/spells')return {getAllSpells:async()=>[spell]};
+  if(id==='@/lib/spell-index')return {getSpellIndex:async()=>[spell]};
   if(id==='@/lib/monsters')return {getAllMonsters:async()=>[monster]};
   if(id==='next/link')return {__esModule:true,default:({children,prefetch,...p})=>createElement('a',p,children)};
   if(id.startsWith('@/')||id.startsWith('.')){let p=id.startsWith('@/')?path.join(root,id.slice(2)):path.resolve(path.dirname(file),id);if(!path.extname(p))p=['.tsx','.ts','.json'].map(e=>p+e).find(existsSync);return load(p);}

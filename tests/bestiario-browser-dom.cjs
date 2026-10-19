@@ -9,6 +9,8 @@ Object.defineProperty(global,'navigator',{value:dom.window.navigator,configurabl
 global.IS_REACT_ACT_ENVIRONMENT=true;
 const React=require('react'),{act}=React,{createRoot}=require('react-dom/client'),ts=require('typescript');
 const cache=new Map();
+let query = '';
+const navigationDependency={useSearchParams:()=>new URLSearchParams(query)};
 const favoritesDependency={useFavorites:()=>({isFavorite:()=>false,toggle:()=>{throw Error('Filtering cannot change favorites')}})};
 function load(relative){
  const filename=path.resolve(relative);
@@ -17,6 +19,7 @@ function load(relative){
  const code=ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
  new Function('require','module','exports',code)(id=>{
   if(id==='@/components/favorites-provider')return favoritesDependency;
+  if(id==='next/navigation')return navigationDependency;
   if(id==='next/link')return {__esModule:true,default:({children,prefetch,...props})=>React.createElement('a',props,children)};
   if(id.startsWith('@/')||id.startsWith('.')){
    let file=id.startsWith('@/')?path.resolve(id.slice(2)):path.resolve(path.dirname(filename),id);
@@ -103,6 +106,27 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await act(async()=>root.render(renderPair()));
  assert.equal(document.querySelector('a[href="/spell/spell-0"]').closest('li').querySelector('button').getAttribute('aria-pressed'),'false','saved state survives remount');
  colors.schoolColor=originalColor;storagePrototype.setItem=originalSet;
+ // Static list shells read URL filters on the client, including same-path navigation.
+ const {GrimorioWithFilters,BestiarioWithFilters}=load('components/catalog-browsers.tsx');
+ query='livello=9&scuola=invocazione&classe=mago';
+ const renderSpellUrl=()=>React.createElement(provider.FavoritesProvider,null,React.createElement(GrimorioWithFilters,{spells,meta:{livelli:[0,9],scuole:['invocazione'],classi:['mago']}}));
+ await act(async()=>root.render(renderSpellUrl()));
+ assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,40);
+ assert.ok(document.querySelector('a[href="/spell/spell-399"]'),'query filters find the last page');
+ query='livello=0';await act(async()=>root.render(renderSpellUrl()));
+ assert.ok(document.querySelector('a[href="/spell/spell-0"]'),'same-path query changes reset the selected level');
+ assert.ok(!document.querySelector('a[href="/spell/spell-399"]'));
+ query='livello=invalid';await act(async()=>root.render(renderSpellUrl()));
+ assert.ok(button('Mostra altri'),'invalid URL level does not hide the catalog');
+ query='raccolta=animali&gs=0';
+ const renderMonsterUrl=()=>React.createElement(provider.FavoritesProvider,null,React.createElement(BestiarioWithFilters,{monsters}));
+ await act(async()=>root.render(renderMonsterUrl()));
+ assert.equal(button('Animali').getAttribute('aria-pressed'),'true');
+ assert.ok(ids().length>0&&ids().length<100);
+ query='raccolta=mostri';await act(async()=>root.render(renderMonsterUrl()));
+ assert.equal(ids().length,240,'same-path query changes switch collection and clear old filters');
+ query='';await act(async()=>root.render(renderMonsterUrl()));
+ assert.equal(ids().length,240,'unfiltered URL retains the default collection');
  await act(async()=>root.unmount());
  console.log('Catalogs: bestiary unchanged; 40-row spell pages, show more, full-catalog deferred search, filter/page reset, level groups and keyboard access passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

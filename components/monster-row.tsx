@@ -24,6 +24,7 @@ export function MonsterRow({ monster }: { monster: MonsterListItem }) {
       />
       <Link
         href={`/mostro/${monster.id}`}
+        prefetch={false}
         className="min-w-0 flex-1 py-3 transition-opacity hover:opacity-70"
       >
         <div className="flex min-w-0 items-center gap-2">

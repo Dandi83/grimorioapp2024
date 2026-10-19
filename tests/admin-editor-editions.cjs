@@ -100,7 +100,9 @@ function load(relative) {
   assert.equal((await storage.getContentEditions('monster',extraCreated.id)).get(extraCreated.id),'2024','optional-field failure preserves edition');
   assert.equal((await monsters.updateMonsterAction(null,form({id:extraCreated.id,nome:'Non salvare senza edizione',bonus_competenza:'invalid'}))).ok,false);
   assert.equal((await pg.query('SELECT nome FROM monsters WHERE id=$1',[extraCreated.id])).rows[0].nome,'Guardiano aggiornato','older forms also save atomically');
+  const deletePathOffset=paths.length;
   await monsters.deleteMonsterAction(form({id:extraCreated.id}));
+  assert.ok(paths.slice(deletePathOffset).includes(`/mostro/${extraCreated.id}`),'deleting a creature invalidates its cached public sheet');
   assert.equal((await extraStorage.getMonsterExtraFields(extraCreated.id)).size,0,'deleting a creature removes its extra fields');
   const official=JSON.parse(fs.readFileSync('lib/data/srd-italiano-5.2.1.json','utf8')).spells[0];
   await pg.query('INSERT INTO spells (id,nome_italiano,descrizione) VALUES ($1,$2,$3)',[official.id,'Fonte verificata',official.descrizione]);

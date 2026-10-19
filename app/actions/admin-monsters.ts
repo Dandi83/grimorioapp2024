@@ -128,7 +128,5 @@ export async function deleteMonsterAction(formData: FormData) {
   const id = clean(formData.get("id"));
   if (!id) return;
   await deleteContentWithEdition("monster", id);
-  revalidatePath("/bestiario");
-  revalidatePath("/preferiti");
-  revalidatePath("/admin");
+  revalidateMonster(id);
 }
