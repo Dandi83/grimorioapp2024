@@ -22,3 +22,7 @@ File condivisi con un futuro client mobile: `lib/monsters.ts`, `lib/spells.ts`, 
 - La prima richiesta dipende ancora da rete e database. Non dichiarare risolti tutti gli scatti senza una nuova prova sul dispositivo di Daniele.
 
 Riferimenti: https://nextjs.org/docs/app/api-reference/functions/generate-metadata e https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/content-visibility.
+
+## Pubblicazione verificata
+
+Commit GitHub `59c5ffbd59e4ab8feec702ce6a9a227cc66c118b` (stesso albero del commit locale `793988f`), deployment produzione `dpl_Hf6MBCyxEghp1U1bEUe7Hg93kPRp`: Vercel READY, SHA corretto, alias `ilgrimorio.app` e `www.ilgrimorio.app` assegnati. Questa è una verifica dei metadati di rilascio, non una prova del sito tramite browser. Anche `npm run test:creature-editor` riuscito. Rollback disponibile: `dc36bd670f8d2d727daf7ac01f0dff9a2b39882e`, deployment `dpl_G3Up3AxBDSjnZ3CxxhEBh4ZYdA2M`.
