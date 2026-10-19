@@ -1,4 +1,6 @@
 import { Fragment, type ReactNode } from "react";
+// Relative path: the test harnesses load this file without the "@/" alias.
+import spellIndex from "../lib/data/spell-reference-index.json";
 
 /**
  * Minimal, safe renderer for spell descriptions.
@@ -59,6 +61,41 @@ export function DamageText({ text, context = "", precedingText = "", softLineBre
   return <>{decorated}</>;
 }
 
+// Game formulas shown the same way on every sheet, whatever italics the source had.
+const RULE_LABEL = new RegExp(
+  "(?<![\\p{L}])(?:" + [
+    "Tiro per colpire (?:in mischia o a distanza|in mischia|a distanza)",
+    "Attacco con (?:arma|incantesimo) (?:da mischia o a distanza|da mischia|a distanza)",
+    "Colpito o mancato", "Colpito", "Mancato",
+    "(?:Esito\\s*[-–]\\s*)?Tiro salvezza su (?:Forza|Destrezza|Costituzione|Intelligenza|Saggezza|Carisma)",
+    "Tiro salvezza (?:fallito|superato)",
+    "Fallimento o successo", "Fallimento di \\d+ o più", "(?:Primo|Secondo|Terzo) fallimento", "Fallimenti successivi",
+    "Fallimento", "Successo", "Attivazione", "Esito", "Effetti aggiuntivi", "Utilizzi di azioni leggendarie",
+  ].join("|") + ")\\s*:",
+  "gu",
+);
+
+const normalizeName = (text: string) => text.toLocaleLowerCase("it").replace(/\s+/g, " ").trim();
+const SPELL_NAMES = new Set(spellIndex.map(spell => normalizeName(spell.name)));
+
+/** True when italic text is only catalog spell names, e.g. "Cono di freddo, volare" or "palla di fuoco (di 4º livello)". */
+function isSpellNameText(text: string) {
+  const parts = text.replace(/\([^)]*\)/g, " ").split(/[,;]/).map(part => normalizeName(part).replace(/[.!:]$/, "").trim()).filter(Boolean);
+  return parts.length > 0 && parts.every(part => SPELL_NAMES.has(part));
+}
+
+/**
+ * One emphasis style for every sheet: italics only on spell names and game formulas.
+ * Other italics in the source (imported or typed in the admin area) are shown as plain text.
+ */
+function normalizeEmphasis(html: string) {
+  return html
+    .replace(/<(em|i)>([\s\S]*?)<\/\1>/gi, (_whole, _tag, inner: string) =>
+      isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " "))) ? `<spellname>${inner}</spellname>` : inner)
+    .replace(/<\s*\/?\s*(?:em|i)\s*>/gi, "")
+    .replace(/(^|>)([^<]*)/g, (_whole, edge: string, text: string) => edge + text.replace(RULE_LABEL, "<rulelabel>$&</rulelabel>"));
+}
+
 type InlineReference = { label: string; href: string };
 type HtmlTextProps = { html: string; damageIcons?: boolean; references?: readonly InlineReference[]; spellReferences?: readonly InlineReference[] };
 
@@ -98,12 +135,14 @@ function InlineHtmlText({ html, damageIcons = false, references = [], spellRefer
     const decoded = decodeEntities(text);
     if (!decoded) return;
     const bold = stack.includes("b") || stack.includes("strong");
-    const italic = stack.includes("i") || stack.includes("em");
+    const italic = stack.includes("spellname");
+    const rule = stack.includes("rulelabel");
     const content = <ReferenceText text={decoded} damageIcons={damageIcons} precedingText={plainEmitted} references={italic ? [...references, ...spellReferences] : references} />;
     plainEmitted += decoded;
     const className = [
       bold ? "font-semibold text-primary" : "",
       italic ? "italic" : "",
+      rule && !bold ? "italic text-foreground" : "",
     ]
       .filter(Boolean)
       .join(" ");
@@ -118,7 +157,7 @@ function InlineHtmlText({ html, damageIcons = false, references = [], spellRefer
     );
   };
 
-  const source = html || "";
+  const source = normalizeEmphasis(html || "");
   let m: RegExpExecArray | null;
   TAG_RE.lastIndex = 0;
   while ((m = TAG_RE.exec(source)) !== null) {

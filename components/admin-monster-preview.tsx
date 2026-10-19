@@ -123,7 +123,7 @@ export function AdminMonsterPreview({
           <section key={key} data-monster-section>
             <h2>{title}</h2>
             <MonsterText
-              html={legacy ? monster[key]! : formatMonsterSpellLists(monster[key]!)}
+              html={formatMonsterSpellLists(monster[key]!)}
               references={references}
               spellReferences={legacy ? [] : inlineSpellReferences(monster[key]!)}
               damageIcons
