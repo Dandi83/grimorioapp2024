@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
 import { isAdmin } from "@/lib/admin-auth";
-import { analyticsConfigured, storeAnalyticsEvent, exportAnalytics, type CardInfo } from "@/lib/analytics";
+import { analyticsConfigured, analyticsSecret, storeAnalyticsEvent, exportAnalytics, type CardInfo } from "@/lib/analytics";
 import { parseAnalyticsInput } from "@/lib/analytics-events";
 import { getSpellById } from "@/lib/spells";
 import { getMonsterById } from "@/lib/monsters";
@@ -9,12 +9,15 @@ import { isSrdAnimal } from "@/lib/monsters-types";
 export const dynamic = "force-dynamic";
 const CONSENT="grimorio_statistics_consent", VISITOR="grimorio_statistics_visitor";
 const options={httpOnly:true,secure:true,sameSite:"lax" as const,path:"/",maxAge:60*60*24*180};
-function sign(id:string) { return createHmac("sha256",process.env.ADMIN_PASSCODE||"").update(`statistics:${id}`).digest("hex"); }
-function visitorFrom(request:NextRequest) {
+// ANALYTICS_SECRET signs new visitor IDs; IDs signed earlier with the admin passcode stay valid and are re-signed.
+function sign(id:string,secret=analyticsSecret()) { return createHmac("sha256",secret).update(`statistics:${id}`).digest("hex"); }
+function matches(signature:string,expected:string) { const a=Buffer.from(signature),b=Buffer.from(expected); return a.length===b.length && timingSafeEqual(a,b); }
+function visitorFrom(request:NextRequest):{id:string;legacy:boolean}|undefined {
   const [id,signature]=request.cookies.get(VISITOR)?.value.split(".")??[];
   if (!id || !signature || !/^[0-9a-f-]{36}$/i.test(id)) return;
-  const expected=Buffer.from(sign(id)),actual=Buffer.from(signature);
-  return expected.length===actual.length && timingSafeEqual(expected,actual) ? id : undefined;
+  if (matches(signature,sign(id))) return {id,legacy:false};
+  const legacy=process.env.ADMIN_PASSCODE;
+  if (legacy && legacy!==analyticsSecret() && matches(signature,sign(id,legacy))) return {id,legacy:true};
 }
 function allowed(request:NextRequest) {
   return analyticsConfigured() && ["ilgrimorio.app","www.ilgrimorio.app","grimorioapp2024.vercel.app"].includes(request.nextUrl.hostname);
@@ -35,13 +38,13 @@ export async function POST(request:NextRequest) {
     if(choice!=="accepted"&&choice!=="rejected")return response({error:"Scelta non valida"},400);
     const result=response({ok:true,consent:choice});
     result.cookies.set(CONSENT,choice,options);
-    if(choice==="accepted") {const id=visitorFrom(request)||randomUUID();result.cookies.set(VISITOR,`${id}.${sign(id)}`,options);}
+    if(choice==="accepted") {const id=visitorFrom(request)?.id||randomUUID();result.cookies.set(VISITOR,`${id}.${sign(id)}`,options);}
     else result.cookies.set(VISITOR,"",{...options,maxAge:0});
     return result;
   }
   if(await isAdmin())return response({ignored:true,reason:"admin"});
   if(request.cookies.get(CONSENT)?.value!=="accepted")return response({ignored:true,reason:"consent"});
-  const visitor=visitorFrom(request);if(!visitor)return response({ignored:true,reason:"identity"});
+  const verified=visitorFrom(request);if(!verified)return response({ignored:true,reason:"identity"});const visitor=verified.id;
   const input=parseAnalyticsInput(body);if(!input)return response({error:"Evento non valido"},400);
   if(!input.test && /bot|crawler|spider|headless|preview|facebookexternalhit|whatsapp/i.test(request.headers.get("user-agent")||""))return response({ignored:true,reason:"bot"});
   let card:CardInfo|undefined;
@@ -50,6 +53,8 @@ export async function POST(request:NextRequest) {
     else if(input.path.startsWith("/mostro/")) {const id=decodeURIComponent(input.path.slice(8)),record=await getMonsterById(id);if(!record)return response({ignored:true});card={id,kind:isSrdAnimal(record)?"animal":"monster",title:record.nome};}
     const stored=await storeAnalyticsEvent(input,visitor,card);
     after(async()=>{try{await exportAnalytics();}catch{console.error("Analytics export pending; event retained for retry.");}});
-    return response({ok:true,stored});
+    const result=response({ok:true,stored});
+    if(verified.legacy)result.cookies.set(VISITOR,`${visitor}.${sign(visitor)}`,options);
+    return result;
   } catch { return response({error:"Statistiche temporaneamente non disponibili"},503); }
 }

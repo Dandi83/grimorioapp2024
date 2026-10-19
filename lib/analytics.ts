@@ -3,7 +3,9 @@ import { randomUUID } from "node:crypto";
 import { pool } from "./db";
 import type { AnalyticsInput } from "./analytics-events";
 export const POSTHOG_DASHBOARD = "https://eu.posthog.com/project/295280/dashboard/1034015";
-export function analyticsConfigured() { return !!(process.env.POSTHOG_PROJECT_TOKEN && process.env.POSTHOG_INGEST_HOST === "https://eu.i.posthog.com" && process.env.ADMIN_PASSCODE); }
+/** Separate from the admin passcode; the passcode remains the fallback until ANALYTICS_SECRET is set. */
+export function analyticsSecret() { return process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSCODE || ""; }
+export function analyticsConfigured() { return !!(process.env.POSTHOG_PROJECT_TOKEN && process.env.POSTHOG_INGEST_HOST === "https://eu.i.posthog.com" && analyticsSecret()); }
 let schemaReady: Promise<void> | undefined;
 async function ensureSchema() {
   if (!schemaReady) schemaReady = (async () => {
