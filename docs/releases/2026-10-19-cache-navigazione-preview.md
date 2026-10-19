@@ -32,4 +32,43 @@ Revisione indipendente del diff: nessun problema sostanziale individuato. Nessun
 
 Verificati deployment produzione e precedente preview: regione funzioni Vercel `iad1`. Il solo hostname PGHOST dell'integrazione Neon indica `us-east-1.aws.neon.tech`. Sono coerenti in Virginia; nessuna modifica geografica o migrazione.
 
-Anteprima del branch: https://grimorioapp2024-git-perf-lista-incantesimi-grimorio-app.vercel.app. Build e controlli HTTP del nuovo commit da registrare dopo il deploy. Nessun merge o deploy produzione autorizzato/eseguito. Nessuna prova fisica iPhone ancora effettuata.
+Anteprima del branch: https://grimorioapp2024-git-perf-lista-incantesimi-grimorio-app.vercel.app. Codice pubblicato nel commit `794f55beeec06c6420b49abf7541a758aac1710c`, deployment `dpl_HAaKMhEhPMy4ovScJscmsWysnXBR` READY, target preview, regione `iad1`. Build Vercel completata: elenchi marcati statici con revalidate 5m; schede marcate SSG on demand. URL immutabile: https://grimorioapp2024-80r6m98us-grimorio-app.vercel.app. Nessun merge o deploy produzione autorizzato/eseguito. Nessuna prova fisica iPhone ancora effettuata.
+
+
+## Verifiche HTTP della preview
+
+GET ripetute, senza credenziali né invio eventi:
+
+| Percorso | Primo accesso | Secondo accesso |
+| --- | --- | --- |
+| /grimorio | 200 PRERENDER | 200 HIT |
+| /bestiario | 200 PRERENDER | 200 HIT |
+| /preferiti | 200 PRERENDER | 200 HIT |
+| /spell/colpo-accurato | 200 MISS | 200 HIT |
+| /mostro/aboleth | 200 MISS | 200 HIT |
+
+La produzione è stata ricontrollata dopo la pubblicazione della preview: invariata a `59c5ffb`, alias ufficiali ancora sul deployment precedente.
+
+La prova aggiuntiva Playwright non è partita: il pacchetto è disponibile ma Chromium non è installato nell'ambiente. Nessun browser o dipendenza installati. I controlli DOM coprono i filtri client e i Preferiti; la persistenza Router Cache nel browser e la fluidità su iPhone fisico restano da verificare. I tempi HTTP includono la rete/proxy di questo ambiente e non sono un benchmark prestazionale.
+
+## File modificati o creati rispetto a b0579c4
+
+- `app/actions/admin-monsters.ts`
+- `app/bestiario/page.tsx`
+- `app/grimorio/page.tsx`
+- `app/mostro/[id]/page.tsx`
+- `app/preferiti/page.tsx`
+- `app/spell/[id]/page.tsx`
+- `components/bottom-nav.tsx`
+- `components/catalog-browsers.tsx (nuovo)`
+- `components/favorites-list.tsx`
+- `components/monster-row.tsx`
+- `next.config.mjs`
+- `scripts/check-monster-favorites.mjs`
+- `scripts/check-navigation.mjs`
+- `tests/admin-editor-editions.cjs`
+- `tests/bestiario-browser-dom.cjs`
+- `tests/catalog-list-payload.cjs`
+- `docs/continuita-progetto.md`
+- `docs/releases/2026-10-19-cache-navigazione-preview.md (nuovo)`
+- `docs/superpowers/plans/2026-10-19-navigation-cache.md (nuovo)`

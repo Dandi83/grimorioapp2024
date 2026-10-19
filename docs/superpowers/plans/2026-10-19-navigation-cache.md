@@ -12,7 +12,7 @@ Ridurre le richieste durante la consultazione. Cache router 300 secondi per pagi
 - [x] Attivare ISR per /spell/[id] e /mostro/[id], generateStaticParams vuoto. Invalidare anche la scheda dopo cancellazione creatura; conservare invalidazione esistente dei salvataggi e delle edizioni.
 - [x] Prefetch completo per i quattro collegamenti della barra; disattivare prefetch automatico delle righe per evitare richieste per centinaia di schede.
 - [x] Adattare i test che presupponevano parametri server. Verificare URL iniziale, cambio query sullo stesso percorso, URL senza filtri, ricerca/paginazione/preferiti, payload ridotto e invalidazione.
-- [ ] Eseguire nell'ordine npx tsc --noEmit, npm run test:catalog-performance, npm test; quindi build Vercel in preview, HTTP cache HIT per elenchi e schede, metadati regioni e produzione invariata.
+- [x] Eseguire nell'ordine npx tsc --noEmit, npm run test:catalog-performance, npm test; quindi build Vercel in preview, HTTP cache HIT per elenchi e schede, metadati regioni e produzione invariata.
 
 ## Regioni e verifica
 
@@ -23,3 +23,5 @@ Produzione Vercel dpl_Hf6MBCyxEghp1U1bEUe7Hg93kPRp: iad1. PGHOST dell'integrazio
 Filtri condivisi dopo cambio query; preferiti locali mai incorporati nella pagina statica; 404 rigenerate dopo creazione; cancellazione e modifica invalidano ISR; prefetch massivo delle schede evitato. La cache del browser di un altro visitatore può restare valida fino alla scadenza; gli update non sono push a sessioni aperte.
 
 Verifica locale: tsc, performance e npm test passati. Revisione indipendente senza rilievi sostanziali. La suite Preferiti è stata adattata a getSpellIndex; invarianti originali preservati.
+
+Preview codice 794f55b READY; build Vercel e HTTP cache verificati. Limite: Chromium assente, prova browser reale non eseguita. Produzione invariata. Risultati nel registro release.
