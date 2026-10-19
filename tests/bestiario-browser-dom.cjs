@@ -135,6 +135,22 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  assert.equal(ids().length,240,'same-path query changes switch collection and clear old filters');
  await act(async()=>navigateQuery(''));await act(async()=>root.render(renderMonsterUrl()));
  assert.equal(ids().length,240,'unfiltered URL retains the default collection');
+ // Preserve the original server-filter cases as exact rendered-result checks.
+ const filterCases=[
+  {id:'url-target',nome_italiano:'Risultato atteso',livello_num:3,scuola:'Evocazione',classi:['mago']},
+  {id:'wrong-level',nome_italiano:'Livello diverso',livello_num:4,scuola:'Evocazione',classi:['mago']},
+  {id:'wrong-school',nome_italiano:'Scuola diversa',livello_num:3,scuola:'Abiurazione',classi:['mago']},
+  {id:'wrong-class',nome_italiano:'Classe diversa',livello_num:3,scuola:'Evocazione',classi:['chierico']},
+ ];
+ await act(async()=>navigateQuery('livello=3&scuola=Evocazione&classe=mago'));
+ await act(async()=>root.render(React.createElement(provider.FavoritesProvider,null,React.createElement(GrimorioWithFilters,{spells:filterCases,meta:{livelli:[3,4],scuole:['Evocazione','Abiurazione'],classi:['mago','chierico']}}))));
+ assert.deepEqual([...document.querySelectorAll('a[href^="/spell/"]')].map(a=>a.getAttribute('href')),['/spell/url-target'],'all three original URL filters exclude independently mismatched records');
+ await act(async()=>navigateQuery('raccolta=animali&gs=1/2'));
+ await act(async()=>root.render(renderMonsterUrl()));
+ assert.equal(button('Animali').getAttribute('aria-pressed'),'true','original collection filter is preserved');
+ const halfAnimals=monsters.filter(m=>load('lib/monsters-types.ts').isSrdAnimal(m)&&m.grado_sfida==='1/2').map(m=>m.id).sort();
+ assert.ok(halfAnimals.length>0,'the original fractional challenge-rating case has real results');
+ assert.deepEqual(ids().sort(),halfAnimals,'the original GS 1/2 URL filter selects exactly the matching animals');
  // Server HTML contains real rows even when the browser URL has filters.
  const {renderToStaticMarkup}=require('react-dom/server');
  window.history.replaceState(null,'','/grimorio?livello=9');
