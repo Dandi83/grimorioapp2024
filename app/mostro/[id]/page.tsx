@@ -13,7 +13,12 @@ import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters"
 import Link from "next/link";
 
 export const revalidate = 300;
-export function generateStaticParams() { return []; }
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const { getMonsterIdIndex } = await import("@/lib/monster-index");
+  return (await getMonsterIdIndex()).map(({ id }) => ({ id }));
+}
 
 export async function generateMetadata({
   params,

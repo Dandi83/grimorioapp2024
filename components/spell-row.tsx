@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { memo } from "react";
+import { memo, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 
 import { capitalizeWords, type SpellListItem } from "@/lib/spells-types";
@@ -19,6 +20,15 @@ export const SpellRow = memo(function SpellRow({ spell, fav, onToggle }: {
   onToggle: (id: string) => void;
 }) {
 
+  const router = useRouter();
+  const href = `/spell/${spell.id}`;
+  const prefetched = useRef<string | null>(null);
+  const prefetch = () => {
+    if (prefetched.current === href) return;
+    prefetched.current = href;
+    router.prefetch(href);
+  };
+
   return (
     <div className="flex items-center pr-4">
       <span
@@ -26,8 +36,10 @@ export const SpellRow = memo(function SpellRow({ spell, fav, onToggle }: {
         style={{ backgroundColor: schoolColor(spell.scuola) }}
       />
       <Link
-        href={`/spell/${spell.id}`}
+        href={href}
         prefetch={false}
+        onTouchStart={prefetch}
+        onMouseEnter={prefetch}
         className="min-w-0 flex-1 py-3 transition-opacity hover:opacity-70"
       >
         <div className="flex min-w-0 items-center gap-2">

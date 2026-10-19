@@ -16,8 +16,12 @@ import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
 
 export const revalidate = 300;
-// Build details on first visit, then reuse HTML/RSC until ISR or an admin save.
-export function generateStaticParams() { return []; }
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  const { getSpellIndex } = await import("@/lib/spell-index");
+  return (await getSpellIndex()).map(({ id }) => ({ id }));
+}
 
 export async function generateMetadata({
   params,

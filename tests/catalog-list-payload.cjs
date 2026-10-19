@@ -12,8 +12,9 @@ function load(relative, deps={}) {
  const mt=load('lib/monsters-types.ts'),st=load('lib/spells-types.ts');
  const all=load('lib/srd-monsters.ts').previewMonsters([],'production');
  const before=JSON.stringify(all);
- const page=load('app/bestiario/page.tsx',{'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/components/catalog-loading':{CatalogLoading:'test-loading'},'@/lib/monsters':{getAllMonsters:async()=>all}}).default;
- const element=(await page()).props.children;
+ const page=load('app/bestiario/page.tsx',{'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/lib/monsters':{getAllMonsters:async()=>all}}).default;
+ const element=await page();
+ assert.equal(element.type,'test-browser','The static page renders the catalog directly, without a Suspense fallback');
  const list=element.props.monsters;
  assert.equal(list.length,340);assert.deepEqual(list.map(m=>m.id),all.map(m=>m.id));
  assert.ok(!list.some(m=>'azioni' in m||'descrizione' in m||'tratti' in m),'Public lists must not ship complete creature sheets');
@@ -23,8 +24,9 @@ function load(relative, deps={}) {
  const spell={id:'custom-admin-spell',nome_italiano:'Incantesimo di prova',livello:'Evocazione di 3° livello (mago)',livello_num:3,scuola:'Evocazione',classi:['mago'],descrizione:'FULL_BODY_NOT_FOR_LIST '.repeat(1000),tempo_di_lancio:'azione',gittata:'18 m',componenti:'V',durata:'1 minuto'};
  const spellBefore=JSON.stringify(spell);
  const index=[{id:spell.id,nome_italiano:spell.nome_italiano,livello_num:spell.livello_num,scuola:spell.scuola,classi:spell.classi}];
- const sp=load('app/grimorio/page.tsx',{'@/components/catalog-browsers':{GrimorioWithFilters:'test-browser'},'@/components/catalog-loading':{CatalogLoading:'test-loading'},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/spells-types':st}).default;
- const se=(await sp()).props.children;
+ const sp=load('app/grimorio/page.tsx',{'@/components/catalog-browsers':{GrimorioWithFilters:'test-browser'},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/spells-types':st}).default;
+ const se=await sp();
+ assert.equal(se.type,'test-browser','The static page renders spell names directly');
  assert.ok(!('descrizione' in se.props.spells[0]),'Spell lists must not ship complete descriptions');
  assert.deepEqual(Object.keys(se.props.spells[0]).sort(),['id','nome_italiano','livello_num','scuola','classi'].sort());
  assert.strictEqual(se.props.spells,index,'the page passes the lightweight index directly');

@@ -1,15 +1,26 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { GrimorioBrowser } from "@/components/grimorio-browser";
 import { BestiarioBrowser } from "@/components/bestiario-browser";
 import type { SpellListItem, SpellsMeta } from "@/lib/spells-types";
 import type { MonsterListItem } from "@/lib/monsters-types";
 
-// Keep request-specific filters out of the static server pages. The key resets
-// local filter state when navigating to a different query on the same route.
+// Server rendering and initial hydration show real, unfiltered rows. URL filters
+// are applied after mount, without a useSearchParams/Suspense client bailout.
+function useCatalogSearch() {
+  const [search, setSearch] = useState("");
+  // Also sync after a same-route client navigation that renders this component.
+  useEffect(() => { setSearch(window.location.search); });
+  useEffect(() => {
+    const sync = () => setSearch(window.location.search);
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
+  }, []);
+  return new URLSearchParams(search);
+}
 export function GrimorioWithFilters({ spells, meta }: { spells: SpellListItem[]; meta: SpellsMeta }) {
-  const params = useSearchParams();
+  const params = useCatalogSearch();
   const level = params.get("livello");
   const parsed = level ? parseInt(level, 10) : NaN;
   const scuola = params.get("scuola") || null;
@@ -21,7 +32,7 @@ export function GrimorioWithFilters({ spells, meta }: { spells: SpellListItem[];
 }
 
 export function BestiarioWithFilters({ monsters }: { monsters: MonsterListItem[] }) {
-  const params = useSearchParams();
+  const params = useCatalogSearch();
   const taglia = params.get("taglia") || null;
   const tipo = params.get("tipo") || null;
   const gs = params.get("gs") || null;

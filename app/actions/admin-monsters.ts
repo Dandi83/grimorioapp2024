@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
@@ -75,6 +75,7 @@ function fromForm(formData: FormData) {
 }
 
 function revalidateMonster(id: string) {
+  updateTag("monsters");
   revalidatePath("/bestiario");
   revalidatePath("/preferiti");
   revalidatePath("/admin");

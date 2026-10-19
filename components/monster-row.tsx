@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
@@ -16,6 +18,15 @@ export function MonsterRow({ monster }: { monster: MonsterListItem }) {
   const favId = `mostro:${monster.id}`;
   const fav = isFavorite(favId);
 
+  const router = useRouter();
+  const href = `/mostro/${monster.id}`;
+  const prefetched = useRef<string | null>(null);
+  const prefetch = () => {
+    if (prefetched.current === href) return;
+    prefetched.current = href;
+    router.prefetch(href);
+  };
+
   return (
     <div className="flex items-center pr-4">
       <span
@@ -23,8 +34,10 @@ export function MonsterRow({ monster }: { monster: MonsterListItem }) {
         style={{ backgroundColor: monsterColor(monster.tipo) }}
       />
       <Link
-        href={`/mostro/${monster.id}`}
+        href={href}
         prefetch={false}
+        onTouchStart={prefetch}
+        onMouseEnter={prefetch}
         className="min-w-0 flex-1 py-3 transition-opacity hover:opacity-70"
       >
         <div className="flex min-w-0 items-center gap-2">

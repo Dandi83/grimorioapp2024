@@ -110,7 +110,8 @@ function load(relative) {
   assert.equal((await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Versione personale',descrizione:'Regole adattate al 2014',edition:'2014'}))).ok,true,'an edited unverified sheet can select 2014');
   assert.equal((await storage.getContentEditions('spell',official.id)).get(official.id),'2014');
   for(const route of ['/admin','/grimorio','/bestiario','/preferiti'])assert.ok(paths.includes(route),route);
-  assert.ok(tags.length>0 && tags.every(tag=>tag==='spells'),'successful spell saves invalidate the index');
+  assert.ok(tags.includes('spells') && tags.includes('monsters'),'successful saves invalidate both catalog indexes');
+  assert.ok(tags.every(tag=>tag==='spells'||tag==='monsters'));
   await pg.close();
   console.log('Editor editions: authenticated create/edit, both editions, reset, older forms, validation, source safeguard and atomic content/label rollback passed with PostgreSQL.');
 })().catch(error=>{console.error(error);process.exitCode=1});

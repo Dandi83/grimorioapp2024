@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { BookOpen, Home, Skull, Star } from "lucide-react";
 import type { ComponentType } from "react";
 
@@ -36,9 +37,22 @@ const ITEMS: NavItem[] = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const admin = pathname.startsWith("/admin");
+
+  useEffect(() => {
+    if (admin) return;
+    const warm = () => { for (const { href } of ITEMS) router.prefetch(href); };
+    if (typeof window.requestIdleCallback === "function") {
+      const handle = window.requestIdleCallback(warm);
+      return () => window.cancelIdleCallback(handle);
+    }
+    const handle = window.setTimeout(warm, 300);
+    return () => window.clearTimeout(handle);
+  }, [router, admin]);
 
   // L'area riservata non fa parte della navigazione pubblica.
-  if (pathname.startsWith("/admin")) return null;
+  if (admin) return null;
 
   return (
     <nav
@@ -52,7 +66,7 @@ export function BottomNav() {
             <li key={href} className="flex-1">
               <Link
                 href={href}
-                prefetch={true}
+                prefetch={false}
                 aria-current={active ? "page" : undefined}
                 className="flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"
               >

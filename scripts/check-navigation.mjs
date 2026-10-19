@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 let pathname = '/';
 const code = ts.transpileModule(readFileSync(new URL('../components/bottom-nav.tsx',import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
 const mod = {exports:{}};
-new Function('require','module','exports',code)(id => id === 'next/navigation' ? { usePathname: () => pathname } : id === 'next/link' ? { __esModule:true, default:({children,prefetch,...props})=>{assert.equal(prefetch,true,'Main navigation links must fully prefetch');return createElement('a',props,children)} } : require(id),mod,mod.exports);
+new Function('require','module','exports',code)(id => id === 'next/navigation' ? { usePathname: () => pathname, useRouter: () => ({prefetch:()=>{}}) } : id === 'next/link' ? { __esModule:true, default:({children,prefetch,...props})=>{assert.equal(prefetch,false,'Main navigation defers prefetch to idle work');return createElement('a',props,children)} } : require(id),mod,mod.exports);
 const {BottomNav} = mod.exports;
 const cases = [
   ['/', '/', 'Home'],
