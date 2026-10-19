@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
@@ -118,10 +119,10 @@ export function CharacterWorkshop({ choices }: { choices: Choices }) {
       {!isGenerated && (
         <header className="-mx-5 border-b border-border bg-gradient-to-b from-primary/10 to-background px-5 pb-7 pt-7">
           <div className="mb-6 flex items-center justify-between gap-3">
-            <a href="/" className="inline-flex min-h-11 items-center gap-2 text-xs text-muted">
+            <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-xs text-muted">
               <ArrowLeft size={15} />
-              GrimorioApp
-            </a>
+              Il Grimorio.App
+            </Link>
             <span className="rounded-full border border-primary/35 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
               Anteprima
             </span>

@@ -45,7 +45,10 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await page.goto(base + "/spell/aiuto");
   await expect(page.getByText("Questa pagina non è ancora salvata sul telefono.")).toBeVisible();
   // The admin area is never served from the phone.
-  await expect(page.goto(base + "/admin")).rejects.toThrow();
+  const adminFailed = await page.goto(base + "/admin").then(() => false, () => true);
+  expect(adminFailed).toBe(true);
+  // Let the browser finish showing its own error page before navigating again.
+  await expect.poll(() => page.url()).toMatch(/^chrome-error:/);
 
   // Back online: fresh page, no notice.
   await startServer();
