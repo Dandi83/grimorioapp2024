@@ -81,3 +81,38 @@ test("admin: wrong passcode, login, logout", async ({ page }) => {
   await page.getByRole("button", { name: "Esci", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Area riservata" })).toBeVisible();
 });
+
+test("back from a card restores search, pages and scroll; the navigation bar starts fresh", async ({ page }) => {
+  await page.goto("/grimorio");
+  const search = page.getByPlaceholder("Cerca incantesimo...");
+  await search.fill("a");
+  await page.getByRole("button", { name: /Mostra altri/ }).click();
+  await page.getByRole("button", { name: /Mostra altri/ }).click();
+  await expect(catalogRows(page)).toHaveCount(120);
+  const target = catalogRows(page).nth(100).getByRole("link");
+  await target.scrollIntoViewIfNeeded();
+  const scrollBefore = await page.evaluate(() => window.scrollY);
+  expect(scrollBefore).toBeGreaterThan(1000);
+  await target.click();
+  await expect(page).toHaveURL(/\/spell\//);
+  await page.getByRole("button", { name: "Torna indietro" }).click();
+  await expect(page).toHaveURL(/\/grimorio$/);
+  await expect(search).toHaveValue("a");
+  await expect(catalogRows(page)).toHaveCount(120);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(scrollBefore - 200);
+  // A new visit from the navigation bar is not a "back": the list starts fresh.
+  const nav = page.getByRole("navigation", { name: "Navigazione principale" });
+  await nav.getByRole("link", { name: "Home" }).click();
+  await nav.getByRole("link", { name: "Incantesimi" }).click();
+  await expect(page.getByPlaceholder("Cerca incantesimo...")).toHaveValue("");
+  await expect(catalogRows(page)).toHaveCount(40);
+});
+
+test("a shared card link: back goes to its list instead of leaving the site", async ({ page }) => {
+  await page.goto("/spell/dardo-incantato?ref=share");
+  await page.getByRole("button", { name: "Torna indietro" }).click();
+  await expect(page).toHaveURL(/\/grimorio$/);
+  await page.goto("/mostro/aboleth?ref=share");
+  await page.getByRole("button", { name: "Torna indietro" }).click();
+  await expect(page).toHaveURL(/\/bestiario$/);
+});

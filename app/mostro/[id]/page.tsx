@@ -33,7 +33,7 @@ export async function generateMetadata({
     `${monster.nome}, ${monster.tipo}.`;
   const url = `https://ilgrimorio.app/mostro/${encodeURIComponent(monster.id)}`;
   return {
-    title: `${monster.nome} — Bestiario GrimorioApp`,
+    title: `${monster.nome} — Bestiario Il Grimorio.App`,
     description,
     alternates: { canonical: url },
     openGraph: {
@@ -101,7 +101,7 @@ export default async function MonsterDetailPage({
     <article className="monster-sheet">
       {/* Artwork archived separately: the public sheet loads no creature photos. */}
       <header className="relative px-6 pb-5 pt-24">
-        <BackButton />
+        <BackButton fallback="/bestiario" />
         <ShareButton path={`/mostro/${encodeURIComponent(monster.id)}`} title={monster.nome} />
         <FavoriteButton id={`mostro:${monster.id}`} />
         <div>

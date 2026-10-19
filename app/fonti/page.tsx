@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AnalyticsPreferencesButton } from "@/components/analytics-provider";
 import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
 
-export const metadata = { title: "Info, fonti e licenze — GrimorioApp" };
+export const metadata = { title: "Info, fonti e licenze — Il Grimorio.App" };
 
 export default function SourcesPage() {
   return (
@@ -73,7 +73,7 @@ export default function SourcesPage() {
       </section>
       <section className="space-y-3 text-sm leading-6 text-muted">
         <h2 className="font-serif text-xl font-bold text-foreground">Icone dei tipi di danno</h2>
-        <p>Icone di Baldur’s Gate 3 © Larian Studios, consultate tramite BG3 Wiki. Sono elementi grafici distinti dai testi SRD; GrimorioApp non è affiliata a Larian Studios.</p>
+        <p>Icone di Baldur’s Gate 3 © Larian Studios, consultate tramite BG3 Wiki. Sono elementi grafici distinti dai testi SRD; Il Grimorio.App non è affiliata a Larian Studios.</p>
         <p><a className="text-primary underline underline-offset-4" href="https://bg3.wiki/wiki/Category:Damage_type_icons" target="_blank" rel="noreferrer">Icone originali e attribuzione</a></p>
       </section>
     </article>

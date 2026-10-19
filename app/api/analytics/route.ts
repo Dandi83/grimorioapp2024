@@ -100,15 +100,23 @@ export async function POST(request: NextRequest) {
     )
   )
     return response({ ignored: true, reason: "bot" });
+  // A malformed escape (e.g. "%E0") is a bad request, not a server failure.
+  let cardId: string | undefined;
+  try {
+    if (/^\/(?:spell|mostro)\//.test(input.path))
+      cardId = decodeURIComponent(input.path.slice(input.path.indexOf("/", 1) + 1));
+  } catch {
+    return response({ error: "Evento non valido" }, 400);
+  }
   let card: CardInfo | undefined;
   try {
     if (input.path.startsWith("/spell/")) {
-      const id = decodeURIComponent(input.path.slice(7)),
+      const id = cardId!,
         record = await getSpellById(id);
       if (!record) return response({ ignored: true });
       card = { id, kind: "spell", title: record.nome_italiano };
     } else if (input.path.startsWith("/mostro/")) {
-      const id = decodeURIComponent(input.path.slice(8)),
+      const id = cardId!,
         record = await getMonsterById(id);
       if (!record) return response({ ignored: true });
       card = { id, kind: isSrdAnimal(record) ? "animal" : "monster", title: record.nome };

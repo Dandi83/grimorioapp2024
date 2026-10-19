@@ -1,5 +1,7 @@
 "use client";
 
+import { AdminDeleteButton } from "./admin-delete-button";
+
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
@@ -7,7 +9,7 @@ import {
 } from "@/app/actions/admin-monsters";
 import type { Monster } from "@/lib/monsters-types";
 import { gsLabel, monsterColor, typeCategory } from "@/lib/monsters-types";
-import { Pencil, Trash2, Plus, Search, ExternalLink } from "lucide-react";
+import { Pencil, Plus, Search, ExternalLink } from "lucide-react";
 import { AdminEditionPicker } from "./admin-edition-picker";
 import { MonsterEditor } from "./admin-monster-editor";
 
@@ -114,23 +116,5 @@ export function AdminMonsters({ monsters }: { monsters: Monster[] }) {
 }
 
 function DeleteButton({ id, nome }: { id: string; nome: string }) {
-  return (
-    <form
-      action={deleteMonsterAction}
-      onSubmit={(e) => {
-        if (!confirm(`Eliminare "${nome}"? L'operazione è definitiva.`)) {
-          e.preventDefault();
-        }
-      }}
-    >
-      <input type="hidden" name="id" value={id} />
-      <button
-        type="submit"
-        className="rounded-md p-2 text-muted-foreground transition-colors hover:text-destructive"
-        title="Elimina"
-      >
-        <Trash2 className="h-4 w-4" aria-hidden="true" />
-      </button>
-    </form>
-  );
+  return <AdminDeleteButton id={id} nome={nome} action={deleteMonsterAction} />;
 }

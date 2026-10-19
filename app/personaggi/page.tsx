@@ -5,7 +5,7 @@ import { manualEntries } from "@/lib/manual";
 import { getAllSpells } from "@/lib/spells";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "I miei personaggi — GrimorioApp",
+  title: "I miei personaggi — Il Grimorio.App",
   robots: { index: false, follow: false },
 };
 export default async function CharactersPage() {

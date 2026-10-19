@@ -17,7 +17,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const entry = getManualEntry(id);
-  return { title: `${entry?.title || "Voce non trovata"} — ${entry?.category === "condizioni" ? "Condizioni" : "Manuale"} GrimorioApp` };
+  return { title: `${entry?.title || "Voce non trovata"} — ${entry?.category === "condizioni" ? "Condizioni" : "Manuale"} · Il Grimorio.App` };
 }
 
 export default async function ManualEntryPage({ params }: { params: Promise<{ id: string }> }) {

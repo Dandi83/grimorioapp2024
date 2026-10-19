@@ -37,7 +37,7 @@ export async function generateMetadata({
     `${titolo}, incantesimo di ${spell.scuola}.`;
   const url = `https://ilgrimorio.app/spell/${encodeURIComponent(spell.id)}`;
   return {
-    title: `${titolo} — GrimorioApp`,
+    title: `${titolo} — Il Grimorio.App`,
     description,
     alternates: { canonical: url },
     openGraph: {
@@ -84,7 +84,7 @@ export default async function SpellDetailPage({
               "linear-gradient(to bottom, rgba(10,10,11,0.3), rgba(10,10,11,0.55), rgba(10,10,11,1))",
           }}
         />
-        <BackButton />
+        <BackButton fallback="/grimorio" />
         <ShareButton path={`/spell/${encodeURIComponent(spell.id)}`} title={titolo} />
         <FavoriteButton id={spell.id} />
         <div className="absolute inset-x-0 bottom-0 p-6">

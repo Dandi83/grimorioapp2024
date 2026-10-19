@@ -10,7 +10,7 @@ import {
   endAdminSession,
   verifyPasscode,
 } from "@/lib/admin-auth";
-import { clean, requireAdmin, uniqueId } from "@/lib/admin-action-helpers";
+import { clean, requireAdmin, uniqueId, type DeleteResult } from "@/lib/admin-action-helpers";
 import { addressKey, clearLoginFailures, loginBlocked, recordLoginFailure } from "@/lib/admin-login-limit";
 import { slugify } from "@/lib/spells-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
@@ -114,10 +114,15 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   return { ok: true as const, error: null, id };
 }
 
-export async function deleteSpellAction(formData: FormData) {
+export async function deleteSpellAction(formData: FormData): Promise<DeleteResult> {
   await requireAdmin();
   const id = clean(formData.get("id"));
-  if (!id) return;
-  await deleteContentWithEdition("spell", id);
+  if (!id) return { ok: false, error: "ID mancante." };
+  try {
+    await deleteContentWithEdition("spell", id);
+  } catch {
+    return { ok: false, error: "Eliminazione non riuscita: la scheda è ancora presente. Riprova." };
+  }
   revalidateSpell(id);
+  return { ok: true };
 }

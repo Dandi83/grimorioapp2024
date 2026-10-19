@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "GrimorioApp — Incantesimi D&D 5e (2024)",
-    short_name: "GrimorioApp",
+    name: "Il Grimorio.App — Incantesimi e Bestiario D&D 5e",
+    short_name: "Grimorio",
     description:
-      "Consulta, cerca e filtra gli incantesimi di D&D 5e (2024) in italiano. Preferiti e tira-dadi.",
+      "Consulta, cerca e filtra incantesimi, mostri e animali di D&D 5e in italiano. Salva i preferiti.",
     start_url: "/",
     display: "standalone",
     background_color: "#0a0a0b",
