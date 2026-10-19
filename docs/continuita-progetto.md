@@ -111,3 +111,9 @@ Compilare iOS richiede macOS/Xcode o un servizio appropriato, distinto dall'ambi
 - Colpo Accurato, Cespuglio risvegliato e Aquila con libro/2024; Sciame di ragni con libro/2014 nei dettagli.
 - Area statistiche non accessibile senza sessione: rimando al login.
 - Documentazione iOS salvata e tracciata in GitHub. Ambiente Codex Cloud da considerare creato/pubblicato **solo dopo conferma nell'interfaccia**, non per la sola presenza di questi file.
+
+## Service worker del sito (19 ottobre 2026)
+
+- Il sito web registra `/sw.js` (pagine pubbliche: prima la rete, copia salvata solo offline o dopo 3 secondi, con avviso; file del programma dalla cache; area riservata, personaggi, API e dati di navigazione Next mai salvati).
+- Interruttore di emergenza: variabile Vercel `GRIMORIO_SERVICE_WORKER=off` e nuovo deploy; il service worker si rimuove e cancella le copie salvate.
+- Coordinamento iPhone: non tocca il client Capacitor né i branch mobile. Se in futuro l'app caricasse pagine del sito, considerare che il sito può rispondere dalla copia salvata quando offline.

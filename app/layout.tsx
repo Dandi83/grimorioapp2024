@@ -6,6 +6,8 @@ import { FavoritesProvider } from "@/components/favorites-provider";
 import { BottomNav } from "@/components/bottom-nav";
 import { AnalyticsProvider } from "@/components/analytics-provider";
 import { InstallPrompt } from "@/components/install-prompt";
+import { ServiceWorker } from "@/components/service-worker";
+import { serviceWorkerEnabled } from "@/lib/service-worker-config";
 import "./globals.css";
 import {CharacterSessionProvider} from "@/components/characters/session";
 
@@ -72,6 +74,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
           <InstallPrompt />
           <AnalyticsProvider />
+          <ServiceWorker enabled={serviceWorkerEnabled()} />
         </FavoritesProvider>
       </body>
     </html>
