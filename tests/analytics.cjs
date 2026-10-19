@@ -42,7 +42,7 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '91 days'");await analytics.purgeAnalytics();assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events')).rows[0].n,0);
  let admin=false,stored=0;const afterCallbacks=[];
  const {NextRequest}=require('next/server');
- const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':{analyticsConfigured:()=>true,storeAnalyticsEvent:async()=>{stored++;return true},exportAnalytics:async()=>{}},'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true}});
+ const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':{analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||process.env.ADMIN_PASSCODE||'',storeAnalyticsEvent:async()=>{stored++;return true},exportAnalytics:async()=>{}},'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true}});
  const request=(body,headers={})=>new NextRequest('https://ilgrimorio.app/api/analytics',{method:'POST',headers:{origin:'https://ilgrimorio.app','content-type':'application/json',...headers},body:JSON.stringify(body)});
  assert.equal((await route.POST(request(event(),{origin:'https://bad.example'}))).status,403);
  assert.equal((await (await route.POST(request(event()))).json()).reason,'consent');assert.equal(stored,0);
@@ -53,6 +53,19 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  admin=true;assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).reason,'admin');assert.equal(stored,1);admin=false;
  assert.equal((await (await route.POST(request(event(),{cookie:'grimorio_statistics_consent=accepted; grimorio_statistics_visitor=forged'}))).json()).reason,'identity');
  const revoked=await route.POST(request({consent:'rejected'},{cookie:cookies}));assert.equal(revoked.cookies.get('grimorio_statistics_visitor').maxAge,0);
+ // A separate ANALYTICS_SECRET signs new IDs; IDs signed with the passcode stay valid and are re-signed without changing the visitor.
+ process.env.ANALYTICS_SECRET='analytics-only-secret';
+ const legacyId=visitorCookie.split('.')[0];
+ const legacy=await route.POST(request(event(),{cookie:cookies}));assert.equal((await legacy.json()).stored,true);
+ const resigned=legacy.cookies.get('grimorio_statistics_visitor').value;
+ assert.equal(resigned.split('.')[0],legacyId,'the visitor keeps the same ID');assert.notEqual(resigned,visitorCookie);
+ const newCookies=`grimorio_statistics_consent=accepted; grimorio_statistics_visitor=${resigned}`;
+ const current=await route.POST(request(event(),{cookie:newCookies}));assert.equal((await current.json()).stored,true);assert.equal(current.cookies.get('grimorio_statistics_visitor'),undefined,'current signatures are not rewritten');
+ process.env.ADMIN_PASSCODE='passcode-changed';
+ assert.equal((await (await route.POST(request(event(),{cookie:newCookies}))).json()).stored,true,'changing the admin passcode no longer resets visitors');
+ assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).reason,'identity','old passcode signatures end with the passcode');
+ const fresh=await route.POST(request({consent:'accepted'}));assert.ok(fresh.cookies.get('grimorio_statistics_visitor').value.split('.')[1]);
+ process.env.ADMIN_PASSCODE='test-only-secret';delete process.env.ANALYTICS_SECRET;
  const maintenance=load('app/api/analytics/maintenance/route.ts',{'@/lib/analytics':{purgeAnalytics:async()=>{},exportAnalytics:async()=>{}}});process.env.CRON_SECRET='maintenance-test';
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance'))).status,401);
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance',{headers:{authorization:'Bearer maintenance-test'}}))).status,200);

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath, updateTag } from "next/cache";
+import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
@@ -11,6 +12,7 @@ import {
   endAdminSession,
   verifyPasscode,
 } from "@/lib/admin-auth";
+import { addressKey, clearLoginFailures, loginBlocked, recordLoginFailure } from "@/lib/admin-login-limit";
 import { slugify } from "@/lib/spells-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
@@ -35,10 +37,23 @@ function clean(v: FormDataEntryValue | null): string {
   return typeof v === "string" ? v.trim() : "";
 }
 
+const TOO_MANY_ATTEMPTS = "Troppi tentativi. Riprova tra 15 minuti.";
+
 export async function loginAction(_prev: unknown, formData: FormData) {
   const passcode = clean(formData.get("passcode"));
-  if (!verifyPasscode(passcode)) {
-    return { ok: false as const, error: "Passcode errata." };
+  const key = addressKey((await headers()).get("x-forwarded-for"));
+  try {
+    if (await loginBlocked(key)) return { ok: false as const, error: TOO_MANY_ATTEMPTS };
+    if (!verifyPasscode(passcode)) {
+      await recordLoginFailure(key);
+      // A short pause slows automated guessing without bothering a person.
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { ok: false as const, error: "Passcode errata." };
+    }
+    await clearLoginFailures(key);
+  } catch {
+    // Without the attempt counter the login stays closed.
+    return { ok: false as const, error: "Accesso temporaneamente non disponibile. Riprova tra poco." };
   }
   await startAdminSession();
   revalidatePath("/admin");

@@ -24,6 +24,7 @@ node scripts/seed.mjs
 
 - URL: `/admin`
 - Protetta da una passcode segreta salvata nella variabile d'ambiente `ADMIN_PASSCODE`.
+- Massimo 5 tentativi errati ogni 15 minuti per indirizzo (100 in un'ora in totale); la sessione scade dopo 30 giorni. Cambiare la passcode chiude tutte le sessioni.
 - Da lì puoi **creare, modificare ed eliminare** incantesimi. Le modifiche
   compaiono subito sul sito pubblico.
 
@@ -31,6 +32,7 @@ node scripts/seed.mjs
 
 - `DATABASE_URL` — fornita automaticamente dall'integrazione Neon.
 - `ADMIN_PASSCODE` — la passcode segreta per accedere a `/admin`.
+- `ANALYTICS_SECRET` — chiave casuale che firma gli identificativi delle statistiche, separata dalla passcode (se manca si usa la passcode).
 
 ## Pubblicare su Vercel
 
