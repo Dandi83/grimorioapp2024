@@ -13,9 +13,12 @@ Branch `chore/pulizia-totale-20261019`, base `main` a `40d71d6`.
 - `next.config.mjs`: `remotePatterns` verso `www.dndbeyond.com`.
 - Simulazioni dei moduli immagine rimossi nei test delle schede mostro.
 
+## Cambiamento visibile
+
+- Rimossa da `/fonti` la sezione «Crediti delle illustrazioni». Le righe sulla Fan Content Policy di Wizards, valide per tutta l’app, sono spostate in «Informazioni sul progetto».
+
 ## Non modificato
 
-- Nessun cambiamento visibile del sito. La sezione «Crediti delle illustrazioni» in `/fonti` resta invariata in attesa di decisione: ora descrive un archivio non più presente.
 - `formats` di `next.config.mjs` (AVIF) resta per il pacchetto E.
 - Nessun dato del database, nessuna variabile Vercel.
 
