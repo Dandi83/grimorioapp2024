@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
+import { MetaCell } from "@/components/meta-cell";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";
 import { HtmlText } from "@/components/html-text";
@@ -44,19 +45,6 @@ export async function generateMetadata({
       images: [{ url: "https://ilgrimorio.app/hero-libro-og.jpg", width: 1024, height: 1024, alt: titolo }],
     },
   };
-}
-
-function MetaCell({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="w-[calc(50%-6px)] rounded-xl border border-border bg-card p-3">
-      <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted">
-        {label}
-      </p>
-      <p className="font-serif text-[15px] leading-5 text-foreground">
-        {value || "—"}
-      </p>
-    </div>
-  );
 }
 
 export default async function SpellDetailPage({

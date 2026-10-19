@@ -1,52 +1,559 @@
 "use client";
-import {useEffect,useRef,useState} from 'react';
-import {ArrowLeft,ArrowRight,Plus,UserRound,Sparkles,Download,History,ShieldCheck,Trash2,BookOpen,FlaskConical} from 'lucide-react';
-import {createCharacter,exampleCharacter,normalizeCharacter,type Character} from '@/lib/characters';
-import {CharacterEditor,IdentityFields,type Choices} from './editor';
-import {button,primary,TextField} from './fields';
-import {useCharacterSession} from './session';
-import {PaperSheet} from './paper';
-import {DigitalSheet} from './digital';
-import {GeneratedCharacterSheet} from './generated';
-import {generateCharacterSheet} from '@/lib/generated-character';
-import {setDashboardPortrait} from '@/lib/character-dashboard';
-export function CharacterWorkshop({choices}:{choices:Choices}) {
- const {characters,setCharacters,snapshots,setSnapshots,setDirty}=useCharacterSession();const [selected,setSelected]=useState<string|null>(null);const [draft,setDraft]=useState<Character|null>(null);const [step,setStep]=useState(1);const [history,setHistory]=useState(false);const [notice,setNotice]=useState('');const [deleteName,setDeleteName]=useState<string|null>(null);
- const [view,setView]=useState<'digital'|'paper'|'quick'>('digital');
- const [generated,setGenerated]=useState<Character|null>(null);
- const creationRef=useRef<HTMLDialogElement>(null);const historyRef=useRef<HTMLDialogElement>(null);const deleteRef=useRef<HTMLDialogElement>(null);
- const c=characters.find(x=>x.id===selected);
- const isGenerated=!!c&&generated?.id===c.id;
+import { useEffect, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Plus,
+  UserRound,
+  Sparkles,
+  Download,
+  History,
+  ShieldCheck,
+  Trash2,
+  BookOpen,
+  FlaskConical,
+} from "lucide-react";
+import {
+  createCharacter,
+  exampleCharacter,
+  normalizeCharacter,
+  type Character,
+} from "@/lib/characters";
+import { CharacterEditor, IdentityFields, type Choices } from "./editor";
+import { button, primary, TextField } from "./fields";
+import { useCharacterSession } from "./session";
+import { PaperSheet } from "./paper";
+import { DigitalSheet } from "./digital";
+import { GeneratedCharacterSheet } from "./generated";
+import { generateCharacterSheet } from "@/lib/generated-character";
+import { setDashboardPortrait } from "@/lib/character-dashboard";
+export function CharacterWorkshop({ choices }: { choices: Choices }) {
+  const { characters, setCharacters, snapshots, setSnapshots, setDirty } = useCharacterSession();
+  const [selected, setSelected] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Character | null>(null);
+  const [step, setStep] = useState(1);
+  const [history, setHistory] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [deleteName, setDeleteName] = useState<string | null>(null);
+  const [view, setView] = useState<"digital" | "paper" | "quick">("digital");
+  const [generated, setGenerated] = useState<Character | null>(null);
+  const creationRef = useRef<HTMLDialogElement>(null);
+  const historyRef = useRef<HTMLDialogElement>(null);
+  const deleteRef = useRef<HTMLDialogElement>(null);
+  const c = characters.find((x) => x.id === selected);
+  const isGenerated = !!c && generated?.id === c.id;
 
- useEffect(()=>{if(draft)creationRef.current?.showModal();else creationRef.current?.close()},[!!draft]);
- useEffect(()=>{if(history)historyRef.current?.showModal();else historyRef.current?.close()},[history]);
- useEffect(()=>{if(deleteName!==null)deleteRef.current?.showModal();else deleteRef.current?.close()},[deleteName!==null]);
+  useEffect(() => {
+    if (draft) creationRef.current?.showModal();
+    else creationRef.current?.close();
+  }, [!!draft]);
+  useEffect(() => {
+    if (history) historyRef.current?.showModal();
+    else historyRef.current?.close();
+  }, [history]);
+  useEffect(() => {
+    if (deleteName !== null) deleteRef.current?.showModal();
+    else deleteRef.current?.close();
+  }, [deleteName !== null]);
 
- function update(patch:Partial<Character>){if(!c)return;setCharacters(prev=>prev.map(x=>x.id===c.id?normalizeCharacter({...x,...patch}):x));setDirty(true);setNotice('')}
- function openCreate(){setDraft(createCharacter(''));setStep(1)}
- function exportSheet(){if(!c)return;const blob=new Blob([JSON.stringify({format:'grimorio-character-preview',schemaVersion:1,exportedAt:new Date().toISOString(),sheet:c},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`${c.name.replace(/[^a-z0-9àèéìòù_-]+/gi,'-')||'personaggio'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setNotice('Copia JSON esportata. La sincronizzazione cloud non è attiva.')}
- function remember(){if(!c)return;setSnapshots(prev=>[{id:crypto.randomUUID(),time:new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'}),sheet:structuredClone(c)},...prev].filter((s,i,all)=>all.filter(x=>x.sheet.id===s.sheet.id).indexOf(s)<20));setNotice('Versione aggiunta allo storico di questa sessione. Si perderà ricaricando la pagina.')}
- return <div className="px-5 pb-8 [overflow-wrap:anywhere]">
- {!isGenerated&&<header className="-mx-5 border-b border-border bg-gradient-to-b from-primary/10 to-background px-5 pb-7 pt-7"><div className="mb-6 flex items-center justify-between gap-3"><a href="/" className="inline-flex min-h-11 items-center gap-2 text-xs text-muted"><ArrowLeft size={15}/>GrimorioApp</a><span className="rounded-full border border-primary/35 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-primary">Anteprima</span></div><div className="flex items-start justify-between gap-3"><div className="min-w-0 flex-1"><p className="mb-2 text-[10px] font-bold uppercase tracking-[.22em] text-primary">Il tuo prossimo capitolo</p><h1 className="break-words font-serif text-4xl font-bold [overflow-wrap:anywhere]">{c?c.name:'I miei personaggi'}</h1><p className="mt-2 break-words text-sm leading-6 text-muted [overflow-wrap:anywhere]">{c?`${c.className||'Classe da definire'} · Livello ${c.level}${c.species?` · ${c.species}`:''}`:'Dai vita al tuo eroe. Porta la sua storia al tavolo.'}</p></div><div className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10"><UserRound size={28} className="text-primary" strokeWidth={1.4}/></div></div></header>}
- <aside className="my-5 rounded-xl border border-amber-300/25 bg-amber-300/5 p-4 text-xs leading-5 text-card-foreground"><div className="mb-1 flex items-center gap-2 font-semibold text-primary"><FlaskConical size={15}/>Modalità dimostrativa · nessun salvataggio cloud</div>Le modifiche restano solo nella memoria di questa scheda del browser: ricaricandola o chiudendola si perdono. Prova con dati di esempio ed esporta una copia JSON per conservarla. <a href="/account" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">Stato account ↗</a></aside>
- {notice&&<p role="status" className="mb-4 rounded-xl border border-primary/25 p-3 text-xs leading-5 text-primary">{notice}</p>}
- {!c?<>
- <div className="my-6 flex items-center justify-between gap-3"><h2 className="font-serif text-2xl font-semibold">I tuoi eroi <span className="ml-1 text-base text-muted">{characters.length}</span></h2><button className={primary} onClick={openCreate}><Plus size={17}/>Crea personaggio</button></div>
- {characters.map(character=><button key={character.id} className="mb-3 flex w-full items-center gap-4 rounded-2xl border border-border bg-card p-5 text-left hover:border-primary" onClick={()=>{setSelected(character.id);setGenerated(null);setNotice('')}}><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 font-serif text-2xl text-primary">{character.name.charAt(0)}</span><span className="min-w-0 flex-1"><strong className="block break-words font-serif text-xl">{character.name}</strong><span className="mt-1 block text-xs text-muted">{character.className||'Classe da definire'} · Livello {character.level} · {character.species||'Specie da definire'}</span></span><ArrowRight size={18} className="shrink-0 text-primary"/></button>)}
- <section className="relative mt-6 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-6"><BookOpen size={90} strokeWidth={.7} className="pointer-events-none absolute -right-2 top-5 -rotate-12 text-primary/10"/><p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">Esplora la nuova scheda</p><h2 className="relative mt-3 max-w-[230px] font-serif text-3xl font-semibold leading-tight">Ogni avventura comincia con un nome.</h2><p className="relative mb-5 mt-3 max-w-xs text-sm leading-6 text-muted">Prova Lyria, una maga di 3° livello. Modifica le caratteristiche, usa gli slot e aggiorna i punti ferita.</p><button className={button} onClick={()=>{const e=exampleCharacter();setCharacters(prev=>[...prev,e]);setSelected(e.id);setGenerated(null);setDirty(true)}}><Sparkles size={16} className="text-primary"/>Apri personaggio di esempio</button></section>
- <div className="mt-6 grid grid-cols-2 gap-3">{[['Al tavolo','PF, attacchi, condizioni e risorse sempre a portata di mano.'],['La tua storia','Capacità, inventario e diario, tutti nella stessa scheda.']].map(([title,detail])=><div key={title} className="rounded-xl border border-border p-4"><h3 className="font-serif text-xl">{title}</h3><p className="mt-2 text-xs leading-5 text-muted">{detail}</p></div>)}</div>
- </>:<>
- <div className="flex flex-wrap items-center justify-between gap-3"><button className="flex min-h-11 items-center gap-2 text-xs text-muted" onClick={()=>{setSelected(null);setGenerated(null);setNotice('')}}><ArrowLeft size={15}/>Tutti i personaggi</button><p role="status" className="flex items-center gap-2 text-[11px] text-primary"><span className="h-1.5 w-1.5 rounded-full bg-primary"/>Modifiche in memoria</p></div><div className="mt-2 flex flex-wrap gap-2"><button className={button} onClick={exportSheet}><Download size={15}/>Esporta</button><button className={button} onClick={remember}><Plus size={15}/>Crea versione</button><button className={button} onClick={()=>setHistory(true)}><History size={15}/>Storico</button></div>
- {!isGenerated&&<><div className="my-5 rounded-2xl border border-primary/30 bg-primary/5 p-4"><p className="mb-3 text-sm leading-6 text-muted">Compila i dati, poi genera la scheda finale da consultare al tavolo.</p><button className={`${primary} w-full`} onClick={()=>{setGenerated(generateCharacterSheet(c));window.scrollTo({top:0,behavior:'smooth'})}}><Sparkles size={17}/>Genera scheda</button></div>
- <div className="paper-mode-switch mt-5 grid grid-cols-3 rounded-xl border border-border bg-card p-1" aria-label="Modalità scheda">{([['digital','Compila scheda'],['quick','Gestione rapida'],['paper','Modello PDF']] as const).map(([id,label])=><button key={id} aria-pressed={view===id} className={`min-h-12 rounded-lg px-2 text-xs font-semibold ${view===id?'bg-primary text-primary-foreground':'text-muted'}`} onClick={()=>setView(id)}>{label}</button>)}</div>
- {view==='digital'?<DigitalSheet key={c.id} c={c} update={update}/>:view==='paper'?<PaperSheet key={c.id} c={c} update={update}/>:<CharacterEditor key={c.id} c={c} update={update} choices={choices}/>}
- <button className={`${primary} mt-5 w-full`} onClick={()=>{setGenerated(generateCharacterSheet(c));window.scrollTo({top:0,behavior:'smooth'})}}><Sparkles size={17}/>Genera scheda</button></>}
- {isGenerated&&generated&&<><div className="mt-4 flex items-center justify-between gap-3"><p role="status" className="text-xs text-primary">Plancia personaggio</p><button className={primary} onClick={()=>{setGenerated(null);setView('digital');window.scrollTo({top:0,behavior:'smooth'})}}>Modifica scheda</button></div><GeneratedCharacterSheet c={generated} onChange={next=>{const normalized=normalizeCharacter(next);setGenerated(normalized);update(normalized)}} onPortrait={portrait=>{const id=c.id;setCharacters(prev=>prev.map(x=>x.id===id?setDashboardPortrait(x,portrait):x));setGenerated(prev=>prev?.id===id?setDashboardPortrait(prev,portrait):prev);setDirty(true)}}/></>}
- <button className={`${button} mt-8 text-red-200`} onClick={()=>setDeleteName('')}><Trash2 size={15}/>Elimina dalla prova</button>
- </>}
- <dialog ref={creationRef} aria-labelledby="creation-title" onCancel={()=>setDraft(null)} onClose={()=>setDraft(null)} className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-24px)] max-w-lg overflow-y-auto rounded-2xl border border-primary/25 bg-card p-5 text-foreground backdrop:bg-black/80">{draft&&<><div className="mb-5 flex items-center justify-between gap-3"><p className="text-[10px] uppercase tracking-widest text-primary">Nuovo personaggio · {step} / 2</p><button className={button} onClick={()=>setDraft(null)}>Chiudi</button></div><h2 id="creation-title" className="mb-2 font-serif text-3xl font-bold">{step===1?'Come si chiama il tuo eroe?':'Dagli un’identità.'}</h2><p className="mb-5 text-sm leading-6 text-muted">{step===1?'Basta un nome per iniziare. Potrai completare ogni dettaglio in seguito.':'Classi, specie e background sono indipendenti. Puoi anche scrivere valori personalizzati.'}</p><form onSubmit={e=>{e.preventDefault();if(!draft.name.trim())return;if(step===1){setStep(2);return}const created=normalizeCharacter({...draft,name:draft.name.trim()});setCharacters(prev=>[...prev,created]);setSelected(created.id);setGenerated(null);setDraft(null);setDirty(true);setNotice('Scheda creata per questa prova. I valori iniziali vanno compilati.')}}>{step===1?<TextField label="Nome del personaggio" value={draft.name==='Nuovo personaggio'?'':draft.name} onChange={name=>setDraft({...draft,name})} placeholder="Es. Aria delle Brume" maxLength={80}/>:<IdentityFields c={draft} update={p=>setDraft({...draft,...p})} choices={choices}/>}<div className="mt-6 flex gap-3">{step===2&&<button type="button" className={button} onClick={()=>setStep(1)}>Indietro</button>}<button className={`${primary} flex-1`} type="submit" disabled={!draft.name.trim()||draft.name==='Nuovo personaggio'}>{step===1?'Continua':'Crea la scheda'}<ArrowRight size={16}/></button></div></form></>}</dialog>
- <dialog ref={historyRef} aria-labelledby="history-title" onCancel={()=>setHistory(false)} onClose={()=>setHistory(false)} className="fixed inset-0 m-auto max-h-[80dvh] w-[calc(100%-24px)] max-w-lg overflow-y-auto rounded-2xl border border-border bg-card p-5 text-foreground backdrop:bg-black/80"><div className="flex justify-between gap-3"><h2 id="history-title" className="font-serif text-2xl">Storico della prova</h2><button className={button} onClick={()=>setHistory(false)}>Chiudi</button></div><p className="my-4 text-xs leading-5 text-muted">Versioni create manualmente, solo in memoria. Il ripristino conserva anche una copia della scheda attuale. Massimo 20 versioni per personaggio.</p>{snapshots.filter(s=>s.sheet.id===selected).length===0&&<p className="my-5 text-sm">Nessuna versione. Usa “Crea versione” prima di una modifica.</p>}{snapshots.filter(s=>s.sheet.id===selected).map(s=><div key={s.id} className="flex items-center justify-between gap-3 border-t border-border py-3"><div><p className="text-sm">{s.sheet.name}</p><p className="text-xs text-muted">{s.time} · PF {s.sheet.hp}/{s.sheet.hpMax} · Liv. {s.sheet.level}</p></div><button className={button} onClick={()=>{remember();setCharacters(prev=>prev.map(x=>x.id===selected?structuredClone(s.sheet):x));setDirty(true);setGenerated(null);setHistory(false);setNotice('Versione ripristinata nella prova.')}}>Ripristina</button></div>)}</dialog>
- <dialog ref={deleteRef} aria-labelledby="delete-title" onCancel={()=>setDeleteName(null)} onClose={()=>setDeleteName(null)} className="fixed inset-0 m-auto w-[calc(100%-24px)] max-w-md rounded-2xl border border-border bg-card p-5 text-foreground backdrop:bg-black/80"><h2 id="delete-title" className="font-serif text-2xl">Elimina dalla prova</h2><p className="my-4 text-sm text-muted">Scrivi il nome completo del personaggio per eliminare la scheda e le sue versioni da questa sessione.</p><TextField label="Conferma nome" value={deleteName||''} onChange={setDeleteName}/><div className="mt-5 flex gap-3"><button className={button} onClick={()=>setDeleteName(null)}>Annulla</button><button className={`${button} text-red-200`} disabled={!deleteName?.trim()||deleteName!==c?.name} onClick={()=>{setCharacters(prev=>prev.filter(x=>x.id!==selected));setSnapshots(prev=>prev.filter(s=>s.sheet.id!==selected));setSelected(null);setDeleteName(null);setNotice('Personaggio eliminato dalla prova.')}}>Elimina</button></div></dialog>
- <footer className="mt-8 border-t border-border pt-5 text-[11px] leading-5 text-muted"><span className="flex items-center gap-2 text-card-foreground"><ShieldCheck size={15}/>Anteprima della scheda compilabile</span><p className="mt-2">Base SRD 5.2.1 italiano e campi personali. Nessuna creazione automatica completa. Account e sincronizzazione non ancora attivi.</p></footer>
- </div>;
+  function update(patch: Partial<Character>) {
+    if (!c) return;
+    setCharacters((prev) =>
+      prev.map((x) => (x.id === c.id ? normalizeCharacter({ ...x, ...patch }) : x)),
+    );
+    setDirty(true);
+    setNotice("");
+  }
+  function openCreate() {
+    setDraft(createCharacter(""));
+    setStep(1);
+  }
+  function exportSheet() {
+    if (!c) return;
+    const blob = new Blob(
+      [
+        JSON.stringify(
+          {
+            format: "grimorio-character-preview",
+            schemaVersion: 1,
+            exportedAt: new Date().toISOString(),
+            sheet: c,
+          },
+          null,
+          2,
+        ),
+      ],
+      { type: "application/json" },
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${c.name.replace(/[^a-z0-9àèéìòù_-]+/gi, "-") || "personaggio"}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setNotice("Copia JSON esportata. La sincronizzazione cloud non è attiva.");
+  }
+  function remember() {
+    if (!c) return;
+    setSnapshots((prev) =>
+      [
+        {
+          id: crypto.randomUUID(),
+          time: new Date().toLocaleTimeString("it-IT", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          }),
+          sheet: structuredClone(c),
+        },
+        ...prev,
+      ].filter((s, i, all) => all.filter((x) => x.sheet.id === s.sheet.id).indexOf(s) < 20),
+    );
+    setNotice(
+      "Versione aggiunta allo storico di questa sessione. Si perderà ricaricando la pagina.",
+    );
+  }
+  return (
+    <div className="px-5 pb-8 [overflow-wrap:anywhere]">
+      {!isGenerated && (
+        <header className="-mx-5 border-b border-border bg-gradient-to-b from-primary/10 to-background px-5 pb-7 pt-7">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <a href="/" className="inline-flex min-h-11 items-center gap-2 text-xs text-muted">
+              <ArrowLeft size={15} />
+              GrimorioApp
+            </a>
+            <span className="rounded-full border border-primary/35 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
+              Anteprima
+            </span>
+          </div>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-[.22em] text-primary">
+                Il tuo prossimo capitolo
+              </p>
+              <h1 className="break-words font-serif text-4xl font-bold [overflow-wrap:anywhere]">
+                {c ? c.name : "I miei personaggi"}
+              </h1>
+              <p className="mt-2 break-words text-sm leading-6 text-muted [overflow-wrap:anywhere]">
+                {c
+                  ? `${c.className || "Classe da definire"} · Livello ${c.level}${c.species ? ` · ${c.species}` : ""}`
+                  : "Dai vita al tuo eroe. Porta la sua storia al tavolo."}
+              </p>
+            </div>
+            <div className="mt-1 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10">
+              <UserRound size={28} className="text-primary" strokeWidth={1.4} />
+            </div>
+          </div>
+        </header>
+      )}
+      <aside className="my-5 rounded-xl border border-amber-300/25 bg-amber-300/5 p-4 text-xs leading-5 text-card-foreground">
+        <div className="mb-1 flex items-center gap-2 font-semibold text-primary">
+          <FlaskConical size={15} />
+          Modalità dimostrativa · nessun salvataggio cloud
+        </div>
+        Le modifiche restano solo nella memoria di questa scheda del browser: ricaricandola o
+        chiudendola si perdono. Prova con dati di esempio ed esporta una copia JSON per conservarla.{" "}
+        <a
+          href="/account"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2"
+        >
+          Stato account ↗
+        </a>
+      </aside>
+      {notice && (
+        <p
+          role="status"
+          className="mb-4 rounded-xl border border-primary/25 p-3 text-xs leading-5 text-primary"
+        >
+          {notice}
+        </p>
+      )}
+      {!c ? (
+        <>
+          <div className="my-6 flex items-center justify-between gap-3">
+            <h2 className="font-serif text-2xl font-semibold">
+              I tuoi eroi <span className="ml-1 text-base text-muted">{characters.length}</span>
+            </h2>
+            <button className={primary} onClick={openCreate}>
+              <Plus size={17} />
+              Crea personaggio
+            </button>
+          </div>
+          {characters.map((character) => (
+            <button
+              key={character.id}
+              className="mb-3 flex w-full items-center gap-4 rounded-2xl border border-border bg-card p-5 text-left hover:border-primary"
+              onClick={() => {
+                setSelected(character.id);
+                setGenerated(null);
+                setNotice("");
+              }}
+            >
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 font-serif text-2xl text-primary">
+                {character.name.charAt(0)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <strong className="block break-words font-serif text-xl">{character.name}</strong>
+                <span className="mt-1 block text-xs text-muted">
+                  {character.className || "Classe da definire"} · Livello {character.level} ·{" "}
+                  {character.species || "Specie da definire"}
+                </span>
+              </span>
+              <ArrowRight size={18} className="shrink-0 text-primary" />
+            </button>
+          ))}
+          <section className="relative mt-6 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-card p-6">
+            <BookOpen
+              size={90}
+              strokeWidth={0.7}
+              className="pointer-events-none absolute -right-2 top-5 -rotate-12 text-primary/10"
+            />
+            <p className="text-[10px] font-bold uppercase tracking-[.2em] text-primary">
+              Esplora la nuova scheda
+            </p>
+            <h2 className="relative mt-3 max-w-[230px] font-serif text-3xl font-semibold leading-tight">
+              Ogni avventura comincia con un nome.
+            </h2>
+            <p className="relative mb-5 mt-3 max-w-xs text-sm leading-6 text-muted">
+              Prova Lyria, una maga di 3° livello. Modifica le caratteristiche, usa gli slot e
+              aggiorna i punti ferita.
+            </p>
+            <button
+              className={button}
+              onClick={() => {
+                const e = exampleCharacter();
+                setCharacters((prev) => [...prev, e]);
+                setSelected(e.id);
+                setGenerated(null);
+                setDirty(true);
+              }}
+            >
+              <Sparkles size={16} className="text-primary" />
+              Apri personaggio di esempio
+            </button>
+          </section>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            {[
+              ["Al tavolo", "PF, attacchi, condizioni e risorse sempre a portata di mano."],
+              ["La tua storia", "Capacità, inventario e diario, tutti nella stessa scheda."],
+            ].map(([title, detail]) => (
+              <div key={title} className="rounded-xl border border-border p-4">
+                <h3 className="font-serif text-xl">{title}</h3>
+                <p className="mt-2 text-xs leading-5 text-muted">{detail}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <button
+              className="flex min-h-11 items-center gap-2 text-xs text-muted"
+              onClick={() => {
+                setSelected(null);
+                setGenerated(null);
+                setNotice("");
+              }}
+            >
+              <ArrowLeft size={15} />
+              Tutti i personaggi
+            </button>
+            <p role="status" className="flex items-center gap-2 text-[11px] text-primary">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              Modifiche in memoria
+            </p>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <button className={button} onClick={exportSheet}>
+              <Download size={15} />
+              Esporta
+            </button>
+            <button className={button} onClick={remember}>
+              <Plus size={15} />
+              Crea versione
+            </button>
+            <button className={button} onClick={() => setHistory(true)}>
+              <History size={15} />
+              Storico
+            </button>
+          </div>
+          {!isGenerated && (
+            <>
+              <div className="my-5 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                <p className="mb-3 text-sm leading-6 text-muted">
+                  Compila i dati, poi genera la scheda finale da consultare al tavolo.
+                </p>
+                <button
+                  className={`${primary} w-full`}
+                  onClick={() => {
+                    setGenerated(generateCharacterSheet(c));
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  <Sparkles size={17} />
+                  Genera scheda
+                </button>
+              </div>
+              <div
+                className="paper-mode-switch mt-5 grid grid-cols-3 rounded-xl border border-border bg-card p-1"
+                aria-label="Modalità scheda"
+              >
+                {(
+                  [
+                    ["digital", "Compila scheda"],
+                    ["quick", "Gestione rapida"],
+                    ["paper", "Modello PDF"],
+                  ] as const
+                ).map(([id, label]) => (
+                  <button
+                    key={id}
+                    aria-pressed={view === id}
+                    className={`min-h-12 rounded-lg px-2 text-xs font-semibold ${view === id ? "bg-primary text-primary-foreground" : "text-muted"}`}
+                    onClick={() => setView(id)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {view === "digital" ? (
+                <DigitalSheet key={c.id} c={c} update={update} />
+              ) : view === "paper" ? (
+                <PaperSheet key={c.id} c={c} update={update} />
+              ) : (
+                <CharacterEditor key={c.id} c={c} update={update} choices={choices} />
+              )}
+              <button
+                className={`${primary} mt-5 w-full`}
+                onClick={() => {
+                  setGenerated(generateCharacterSheet(c));
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                <Sparkles size={17} />
+                Genera scheda
+              </button>
+            </>
+          )}
+          {isGenerated && generated && (
+            <>
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <p role="status" className="text-xs text-primary">
+                  Plancia personaggio
+                </p>
+                <button
+                  className={primary}
+                  onClick={() => {
+                    setGenerated(null);
+                    setView("digital");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  Modifica scheda
+                </button>
+              </div>
+              <GeneratedCharacterSheet
+                c={generated}
+                onChange={(next) => {
+                  const normalized = normalizeCharacter(next);
+                  setGenerated(normalized);
+                  update(normalized);
+                }}
+                onPortrait={(portrait) => {
+                  const id = c.id;
+                  setCharacters((prev) =>
+                    prev.map((x) => (x.id === id ? setDashboardPortrait(x, portrait) : x)),
+                  );
+                  setGenerated((prev) =>
+                    prev?.id === id ? setDashboardPortrait(prev, portrait) : prev,
+                  );
+                  setDirty(true);
+                }}
+              />
+            </>
+          )}
+          <button className={`${button} mt-8 text-red-200`} onClick={() => setDeleteName("")}>
+            <Trash2 size={15} />
+            Elimina dalla prova
+          </button>
+        </>
+      )}
+      <dialog
+        ref={creationRef}
+        aria-labelledby="creation-title"
+        onCancel={() => setDraft(null)}
+        onClose={() => setDraft(null)}
+        className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-24px)] max-w-lg overflow-y-auto rounded-2xl border border-primary/25 bg-card p-5 text-foreground backdrop:bg-black/80"
+      >
+        {draft && (
+          <>
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <p className="text-[10px] uppercase tracking-widest text-primary">
+                Nuovo personaggio · {step} / 2
+              </p>
+              <button className={button} onClick={() => setDraft(null)}>
+                Chiudi
+              </button>
+            </div>
+            <h2 id="creation-title" className="mb-2 font-serif text-3xl font-bold">
+              {step === 1 ? "Come si chiama il tuo eroe?" : "Dagli un’identità."}
+            </h2>
+            <p className="mb-5 text-sm leading-6 text-muted">
+              {step === 1
+                ? "Basta un nome per iniziare. Potrai completare ogni dettaglio in seguito."
+                : "Classi, specie e background sono indipendenti. Puoi anche scrivere valori personalizzati."}
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!draft.name.trim()) return;
+                if (step === 1) {
+                  setStep(2);
+                  return;
+                }
+                const created = normalizeCharacter({ ...draft, name: draft.name.trim() });
+                setCharacters((prev) => [...prev, created]);
+                setSelected(created.id);
+                setGenerated(null);
+                setDraft(null);
+                setDirty(true);
+                setNotice("Scheda creata per questa prova. I valori iniziali vanno compilati.");
+              }}
+            >
+              {step === 1 ? (
+                <TextField
+                  label="Nome del personaggio"
+                  value={draft.name === "Nuovo personaggio" ? "" : draft.name}
+                  onChange={(name) => setDraft({ ...draft, name })}
+                  placeholder="Es. Aria delle Brume"
+                  maxLength={80}
+                />
+              ) : (
+                <IdentityFields
+                  c={draft}
+                  update={(p) => setDraft({ ...draft, ...p })}
+                  choices={choices}
+                />
+              )}
+              <div className="mt-6 flex gap-3">
+                {step === 2 && (
+                  <button type="button" className={button} onClick={() => setStep(1)}>
+                    Indietro
+                  </button>
+                )}
+                <button
+                  className={`${primary} flex-1`}
+                  type="submit"
+                  disabled={!draft.name.trim() || draft.name === "Nuovo personaggio"}
+                >
+                  {step === 1 ? "Continua" : "Crea la scheda"}
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            </form>
+          </>
+        )}
+      </dialog>
+      <dialog
+        ref={historyRef}
+        aria-labelledby="history-title"
+        onCancel={() => setHistory(false)}
+        onClose={() => setHistory(false)}
+        className="fixed inset-0 m-auto max-h-[80dvh] w-[calc(100%-24px)] max-w-lg overflow-y-auto rounded-2xl border border-border bg-card p-5 text-foreground backdrop:bg-black/80"
+      >
+        <div className="flex justify-between gap-3">
+          <h2 id="history-title" className="font-serif text-2xl">
+            Storico della prova
+          </h2>
+          <button className={button} onClick={() => setHistory(false)}>
+            Chiudi
+          </button>
+        </div>
+        <p className="my-4 text-xs leading-5 text-muted">
+          Versioni create manualmente, solo in memoria. Il ripristino conserva anche una copia della
+          scheda attuale. Massimo 20 versioni per personaggio.
+        </p>
+        {snapshots.filter((s) => s.sheet.id === selected).length === 0 && (
+          <p className="my-5 text-sm">
+            Nessuna versione. Usa “Crea versione” prima di una modifica.
+          </p>
+        )}
+        {snapshots
+          .filter((s) => s.sheet.id === selected)
+          .map((s) => (
+            <div
+              key={s.id}
+              className="flex items-center justify-between gap-3 border-t border-border py-3"
+            >
+              <div>
+                <p className="text-sm">{s.sheet.name}</p>
+                <p className="text-xs text-muted">
+                  {s.time} · PF {s.sheet.hp}/{s.sheet.hpMax} · Liv. {s.sheet.level}
+                </p>
+              </div>
+              <button
+                className={button}
+                onClick={() => {
+                  remember();
+                  setCharacters((prev) =>
+                    prev.map((x) => (x.id === selected ? structuredClone(s.sheet) : x)),
+                  );
+                  setDirty(true);
+                  setGenerated(null);
+                  setHistory(false);
+                  setNotice("Versione ripristinata nella prova.");
+                }}
+              >
+                Ripristina
+              </button>
+            </div>
+          ))}
+      </dialog>
+      <dialog
+        ref={deleteRef}
+        aria-labelledby="delete-title"
+        onCancel={() => setDeleteName(null)}
+        onClose={() => setDeleteName(null)}
+        className="fixed inset-0 m-auto w-[calc(100%-24px)] max-w-md rounded-2xl border border-border bg-card p-5 text-foreground backdrop:bg-black/80"
+      >
+        <h2 id="delete-title" className="font-serif text-2xl">
+          Elimina dalla prova
+        </h2>
+        <p className="my-4 text-sm text-muted">
+          Scrivi il nome completo del personaggio per eliminare la scheda e le sue versioni da
+          questa sessione.
+        </p>
+        <TextField label="Conferma nome" value={deleteName || ""} onChange={setDeleteName} />
+        <div className="mt-5 flex gap-3">
+          <button className={button} onClick={() => setDeleteName(null)}>
+            Annulla
+          </button>
+          <button
+            className={`${button} text-red-200`}
+            disabled={!deleteName?.trim() || deleteName !== c?.name}
+            onClick={() => {
+              setCharacters((prev) => prev.filter((x) => x.id !== selected));
+              setSnapshots((prev) => prev.filter((s) => s.sheet.id !== selected));
+              setSelected(null);
+              setDeleteName(null);
+              setNotice("Personaggio eliminato dalla prova.");
+            }}
+          >
+            Elimina
+          </button>
+        </div>
+      </dialog>
+      <footer className="mt-8 border-t border-border pt-5 text-[11px] leading-5 text-muted">
+        <span className="flex items-center gap-2 text-card-foreground">
+          <ShieldCheck size={15} />
+          Anteprima della scheda compilabile
+        </span>
+        <p className="mt-2">
+          Base SRD 5.2.1 italiano e campi personali. Nessuna creazione automatica completa. Account
+          e sincronizzazione non ancora attivi.
+        </p>
+      </footer>
+    </div>
+  );
 }

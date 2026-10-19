@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { memo, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { memo } from "react";
 import { Star } from "lucide-react";
+
+import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 
 import {
   gsLabel,
@@ -20,14 +21,8 @@ export const MonsterRow = memo(function MonsterRow({ monster, fav, onToggle }: {
 }) {
   const favId = `mostro:${monster.id}`;
 
-  const router = useRouter();
   const href = `/mostro/${monster.id}`;
-  const prefetched = useRef<string | null>(null);
-  const prefetch = () => {
-    if (prefetched.current === href) return;
-    prefetched.current = href;
-    router.prefetch(href);
-  };
+  const prefetch = useIntentPrefetch(href);
 
   return (
     <div className="flex items-center pr-4">
