@@ -14,8 +14,6 @@ const deps={
  '@/components/back-button':{BackButton:()=>null},
  '@/components/share-button':{ShareButton:()=>null},
  '@/components/favorite-button':{FavoriteButton:()=>null},
- '@/lib/monster-art-preview':{getPreviewMonsterArt:()=>{throw Error('Public sheets must not load archived artwork')}},
- '@/lib/prepared-monster-art':{getPreparedMonsterArt:()=>{throw Error('Public sheets must not load archived artwork')}},
  '@/lib/monsters':{getMonsterById:async()=>selected},
 };
 function load(relative){
