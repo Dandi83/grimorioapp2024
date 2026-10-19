@@ -1,5 +1,5 @@
 import { BestiarioWithFilters } from "@/components/catalog-browsers";
-import { getAllMonsters } from "@/lib/monsters";
+import { getMonsterListIndex } from "@/lib/monster-index";
 
 export const revalidate = 300;
 
@@ -8,13 +8,7 @@ export const metadata = {
 };
 
 export default async function BestiarioPage() {
-  const monsters = await getAllMonsters();
+  const monsters = await getMonsterListIndex();
 
-  return (
-    <BestiarioWithFilters
-      monsters={monsters.map(({id, nome, tipo, taglia, grado_sfida, gs_num}) => ({
-        id, nome, tipo, taglia, grado_sfida, gs_num,
-      }))}
-    />
-  );
+  return <BestiarioWithFilters monsters={monsters} />;
 }

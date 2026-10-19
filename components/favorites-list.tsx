@@ -63,7 +63,7 @@ export function FavoritesList({ spells, monsters = [] }: { spells: SpellListItem
               <ul>{favMonsters.map((monster, i) => (
                 <li key={monster.id}>
                   {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
-                  <MonsterRow monster={monster} />
+                  <MonsterRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggle} />
                 </li>
               ))}</ul>
             </section>

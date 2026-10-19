@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { ChevronDown, PawPrint, Search, Skull, X } from "lucide-react";
 
 import { MonsterRow } from "@/components/monster-row";
+import { useFavorites } from "@/components/favorites-provider";
 import {
   gsLabel,
   computeMonstersMeta,
@@ -13,6 +14,7 @@ import {
 } from "@/lib/monsters-types";
 
 type FilterKind = "taglia" | "tipo" | "gs" | null;
+const PAGE_SIZE = 40;
 
 interface Props {
   monsters: MonsterListItem[];
@@ -35,6 +37,9 @@ export function BestiarioBrowser({
   const [tipo, setTipo] = useState<string | null>(initialTipo);
   const [gs, setGs] = useState<string | null>(initialGs);
   const [openFilter, setOpenFilter] = useState<FilterKind>(null);
+  const [limit, setLimit] = useState(PAGE_SIZE);
+  const deferredQ = useDeferredValue(q);
+  const { isFavorite, toggle } = useFavorites();
 
   const collections = useMemo(() => ({
     animali: monsters.filter(isSrdAnimal),
@@ -44,7 +49,7 @@ export function BestiarioBrowser({
   const meta = useMemo(() => computeMonstersMeta(collection), [collection]);
 
   const results = useMemo(() => {
-    const needle = q.trim().toLowerCase();
+    const needle = deferredQ.trim().toLowerCase();
     const filtered = collection.filter((m) => {
       if (needle && !m.nome.toLowerCase().includes(needle)) return false;
       if (taglia && m.taglia !== taglia) return false;
@@ -59,7 +64,10 @@ export function BestiarioBrowser({
       if (d !== 0) return d;
       return a.nome.localeCompare(b.nome, "it");
     });
-  }, [collection, q, taglia, tipo, gs]);
+  }, [collection, deferredQ, taglia, tipo, gs]);
+
+  useEffect(() => { setLimit(PAGE_SIZE); }, [raccolta, q, taglia, tipo, gs]);
+  const visible = results.slice(0, limit);
 
   const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0);
 
@@ -203,14 +211,27 @@ export function BestiarioBrowser({
           </p>
         </div>
       ) : (
+        <>
         <ul className="px-6 py-2">
-          {results.map((monster, i) => (
+          {visible.map((monster, i) => (
             <li key={monster.id} className="catalog-row">
               {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
-              <MonsterRow monster={monster} />
+              <MonsterRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggle} />
             </li>
           ))}
         </ul>
+        {visible.length < results.length && (
+          <div className="px-6 pb-6 pt-2">
+            <button
+              type="button"
+              onClick={() => setLimit(current => current + PAGE_SIZE)}
+              className="h-12 w-full rounded-xl border border-border bg-card text-sm font-semibold text-card-foreground"
+            >
+              Mostra altri ({results.length - visible.length})
+            </button>
+          </div>
+        )}
+        </>
       )}
     </div>
   );

@@ -4,7 +4,8 @@ const nextConfig = {
     staleTimes: { dynamic: 300, static: 300 },
   },
   images: {
-    formats: ["image/avif", "image/webp"],
+    // WebP only: AVIF made images load slower and choppier on iPhone (18 October 2026).
+    formats: ["image/webp"],
     minimumCacheTTL: 2678400,
   },
   async headers() {

@@ -12,7 +12,14 @@ function load(relative, deps={}) {
  const mt=load('lib/monsters-types.ts'),st=load('lib/spells-types.ts');
  const all=load('lib/srd-monsters.ts').previewMonsters([],'production');
  const before=JSON.stringify(all);
- const page=load('app/bestiario/page.tsx',{'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/lib/monsters':{getAllMonsters:async()=>all}}).default;
+ // The cached list index projects every record; pages pass it through unchanged.
+ let indexConfigured=false;
+ const monsterIndex=load('lib/monster-index.ts',{'server-only':{},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,
+  'next/cache':{unstable_cache:(fn,key,options)=>{assert.equal(key[0],'monster-list-index');assert.deepEqual(options,{tags:['monsters'],revalidate:3600});indexConfigured=true;return fn;}}});
+ assert.ok(indexConfigured,'the monster list is cached with the tag invalidated by admin saves');
+ const monsterList=await monsterIndex.getMonsterListIndex();
+ assert.deepEqual((await monsterIndex.getMonsterIdIndex()).map(m=>m.id),all.map(m=>m.id),'static generation keeps every creature ID');
+ const page=load('app/bestiario/page.tsx',{'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList}}).default;
  const element=await page();
  assert.equal(element.type,'test-browser','The static page renders the catalog directly, without a Suspense fallback');
  const list=element.props.monsters;
@@ -33,7 +40,7 @@ function load(relative, deps={}) {
  assert.equal(se.props.spells[0].id,spell.id);assert.equal(se.props.spells[0].nome_italiano,spell.nome_italiano);
  assert.deepEqual(se.props.spells[0].classi,['mago']);assert.deepEqual(se.props.meta,st.computeMeta([spell]));
  assert.equal(JSON.stringify(spell),spellBefore);
- const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monsters':{getAllMonsters:async()=>all},'@/lib/spell-index':{getSpellIndex:async()=>index}}).default;
+ const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList},'@/lib/spell-index':{getSpellIndex:async()=>index}}).default;
  const fe=await favorites();
  assert.strictEqual(fe.props.spells,index);
  assert.ok(!fe.props.monsters.some(m=>'azioni' in m||'descrizione' in m));
