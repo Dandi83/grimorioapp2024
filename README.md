@@ -20,6 +20,12 @@ Per ripopolare la tabella dal file JSON originale:
 node scripts/seed.mjs
 ```
 
+## Verifiche
+
+- `npm test` — test veloci (nessun database reale, nessuna rete).
+- `npm run test:e2e` — build di produzione e prove nel browser (Playwright, viewport iPhone) su un database PostgreSQL di prova in memoria (PGlite). Con un Chromium già installato: `PW_CHROMIUM_PATH=/percorso/chrome npm run test:e2e`.
+- GitHub Actions (`.github/workflows/ci.yml`) esegue tipi, test e prove nel browser su ogni pull request.
+
 ## Area riservata (modifica incantesimi)
 
 - URL: `/admin`

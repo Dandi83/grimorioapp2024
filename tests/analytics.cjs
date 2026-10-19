@@ -66,6 +66,14 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).reason,'identity','old passcode signatures end with the passcode');
  const fresh=await route.POST(request({consent:'accepted'}));assert.ok(fresh.cookies.get('grimorio_statistics_visitor').value.split('.')[1]);
  process.env.ADMIN_PASSCODE='test-only-secret';delete process.env.ANALYTICS_SECRET;
+ // GET tells the banner whether statistics run here, whether this is an admin, and the saved choice.
+ const status=async(url,cookie)=>(await route.GET(new NextRequest(url,{headers:cookie?{cookie}:{}}))).json();
+ assert.deepEqual(await status('https://ilgrimorio.app/api/analytics'),{enabled:true,excluded:false,consent:null});
+ assert.deepEqual(await status('https://ilgrimorio.app/api/analytics','grimorio_statistics_consent=rejected'),{enabled:true,excluded:false,consent:'rejected'});
+ assert.equal((await status('https://ilgrimorio.app/api/analytics','grimorio_statistics_consent=altro')).consent,null,'unknown choices are ignored');
+ assert.equal((await status('https://anteprima.example.vercel.app/api/analytics')).enabled,false,'previews and other hosts never collect');
+ admin=true;assert.equal((await status('https://ilgrimorio.app/api/analytics')).excluded,true,'administrators are excluded');admin=false;
+ assert.equal((await route.GET(new NextRequest('https://ilgrimorio.app/api/analytics'))).headers.get('cache-control'),'no-store');
  const maintenance=load('app/api/analytics/maintenance/route.ts',{'@/lib/analytics':{purgeAnalytics:async()=>{},exportAnalytics:async()=>{}}});process.env.CRON_SECRET='maintenance-test';
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance'))).status,401);
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance',{headers:{authorization:'Bearer maintenance-test'}}))).status,200);
