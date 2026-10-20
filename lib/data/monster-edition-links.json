@@ -815,7 +815,8 @@
     },
     "sahuagin-2014": {
       "id2024": "sahuagin-guerriero",
-      "daApprovare": "Sahuagin (2014) = Sahuagin guerriero (2024)"
+      "nomeDiverso": "Sahuagin (2014) = Sahuagin guerriero (2024)",
+      "approvato": "2026-10-20"
     },
     "salamandra-2014": {
       "id2024": "salamandra"
@@ -840,7 +841,8 @@
     },
     "sciame-di-corvi-2014": {
       "id2024": "stormo-di-corvi",
-      "daApprovare": "Sciame di corvi (2014) = Stormo di corvi (2024)"
+      "nomeDiverso": "Sciame di corvi (2014) = Stormo di corvi (2024)",
+      "approvato": "2026-10-20"
     },
     "sciame-di-insetti-2014": {
       "id2024": "sciame-di-insetti"
@@ -850,15 +852,18 @@
     },
     "sciame-di-quipper-2014": {
       "id2024": "banco-di-piranha",
-      "daApprovare": "Sciame di quipper (2014) = Banco di piranha (2024)"
+      "nomeDiverso": "Sciame di quipper (2014) = Banco di piranha (2024)",
+      "approvato": "2026-10-20"
     },
     "sciame-di-serpenti-velenosi-2014": {
       "id2024": "colonia-di-serpenti-velenosi",
-      "daApprovare": "Sciame di serpenti velenosi (2014) = Colonia di serpenti velenosi (2024)"
+      "nomeDiverso": "Sciame di serpenti velenosi (2014) = Colonia di serpenti velenosi (2024)",
+      "approvato": "2026-10-20"
     },
     "sciame-di-topi-2014": {
       "id2024": "colonia-di-topi",
-      "daApprovare": "Sciame di topi (2014) = Colonia di topi (2024)"
+      "nomeDiverso": "Sciame di topi (2014) = Colonia di topi (2024)",
+      "approvato": "2026-10-20"
     },
     "scorpione-2014": {
       "id2024": "scorpione"
@@ -892,7 +897,8 @@
     },
     "spada-volante-2014": {
       "id2024": "spada-volante-animata",
-      "daApprovare": "Spada volante (2014) = Spada volante animata (2024)"
+      "nomeDiverso": "Spada volante (2014) = Spada volante animata (2024)",
+      "approvato": "2026-10-20"
     },
     "spettro-2014": {
       "id2024": "spettro"
@@ -914,11 +920,13 @@
     },
     "succube-incubo-2014": {
       "id2024": "succube",
-      "daApprovare": "Succube/Incubo (2014) = Succube (2024)"
+      "nomeDiverso": "Succube/Incubo (2014) = Succube (2024)",
+      "approvato": "2026-10-20"
     },
     "tappeto-soffocante-2014": {
       "id2024": "tappeto-soffocante-animato",
-      "daApprovare": "Tappeto soffocante (2014) = Tappeto soffocante animato (2024)"
+      "nomeDiverso": "Tappeto soffocante (2014) = Tappeto soffocante animato (2024)",
+      "approvato": "2026-10-20"
     },
     "tarrasque-2014": {
       "id2024": "tarrasque"
