@@ -1,39 +1,54 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, PawPrint, Search, Skull, X } from "lucide-react";
+import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { Skull, Star } from "lucide-react";
 
-import { MonsterRow } from "@/components/monster-row";
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
-import {
-  gsLabel,
-  computeMonstersMeta,
-  isSrdAnimal,
-  typeCategory,
-  type MonsterListItem,
-} from "@/lib/monsters-types";
+import { useIntentPrefetch } from "@/components/use-intent-prefetch";
+import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
+import { computeMonstersMeta, isSrdAnimal, typeCategory, type MonsterListItem } from "@/lib/monsters-types";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
 
-type FilterKind = "taglia" | "tipo" | "gs" | "habitat" | null;
 export type Edition = "2024" | "2014";
 /** The last edition chosen on this phone or browser. */
 export const EDITION_KEY = "grimorio.bestiario.edizione";
 const PAGE_SIZE = 40;
 
-export type MonsterListState = {
-  url: string; raccolta: "mostri" | "animali"; q: string; taglia: string | null; tipo: string | null; gs: string | null;
-  edizione: Edition; habitat: string[]; limit: number; scroll: number;
-};
+export type Category = "tutti" | "mostri" | "animali";
+const CATEGORIES: readonly Category[] = ["tutti", "mostri", "animali"];
+const CATEGORY_LABEL: Record<Category, string> = { tutti: "Tutti", mostri: "Mostri", animali: "Animali" };
+
+/** Challenge-rating bands of the filter panel; several can be chosen. */
+export const GS_BANDS = ["0-1", "2-4", "5-10", "11-16", "17+"] as const;
+export type GsBand = (typeof GS_BANDS)[number];
+const BAND_LABEL: Record<GsBand, string> = { "0-1": "0 – 1", "2-4": "2 – 4", "5-10": "5 – 10", "11-16": "11 – 16", "17+": "17+" };
+export function gsBand(gsNum: number): GsBand {
+  return gsNum <= 1 ? "0-1" : gsNum <= 4 ? "2-4" : gsNum <= 10 ? "5-10" : gsNum <= 16 ? "11-16" : "17+";
+}
+
+export type MonsterFilters = { categoria: Category; gs: GsBand[]; tipo: string[]; taglia: string[]; habitat: string[] };
+export const NO_FILTERS: MonsterFilters = { categoria: "tutti", gs: [], tipo: [], taglia: [], habitat: [] };
+
+export type MonsterListState = MonsterFilters & { url: string; q: string; edizione: Edition; limit: number; scroll: number };
+
+/** "o" inside the same filter, "e" between different filters. */
+export function matchesFilters(monster: MonsterListItem, filters: MonsterFilters): boolean {
+  if (filters.categoria !== "tutti" && (filters.categoria === "animali") !== isSrdAnimal(monster)) return false;
+  if (filters.gs.length && !filters.gs.includes(gsBand(monster.gs_num))) return false;
+  if (filters.tipo.length && !filters.tipo.includes(typeCategory(monster.tipo))) return false;
+  if (filters.taglia.length && !filters.taglia.includes(monster.taglia)) return false;
+  return matchesHabitats(monster.habitat, filters.habitat);
+}
+
+const toggle = <T,>(list: readonly T[], value: T, order: readonly T[]) =>
+  list.includes(value) ? list.filter(item => item !== value) : order.filter(item => item === value || list.includes(item));
 
 interface Props {
   monsters: MonsterListItem[];
-  initialTaglia: string | null;
-  initialTipo: string | null;
-  initialGs: string | null;
+  initialFilters?: MonsterFilters;
   initialEdizione?: Edition;
-  initialHabitat?: string[];
-  initialRaccolta?: "mostri" | "animali" | null;
   initialQuery?: string;
   initialLimit?: number;
   initialScroll?: number;
@@ -41,88 +56,56 @@ interface Props {
 
 export function BestiarioBrowser({
   monsters,
-  initialTaglia,
-  initialTipo,
-  initialGs,
+  initialFilters = NO_FILTERS,
   initialEdizione = "2024",
-  initialHabitat = [],
-  initialRaccolta,
   initialQuery = "",
   initialLimit = PAGE_SIZE,
   initialScroll,
 }: Props) {
-  const [raccolta, setRaccolta] = useState<"mostri" | "animali">(initialRaccolta || "mostri");
   const [q, setQ] = useState(initialQuery);
-  const [taglia, setTaglia] = useState<string | null>(initialTaglia);
-  const [tipo, setTipo] = useState<string | null>(initialTipo);
-  const [gs, setGs] = useState<string | null>(initialGs);
+  const [filters, setFilters] = useState<MonsterFilters>(initialFilters);
+  const [draft, setDraft] = useState<MonsterFilters | null>(null);
   const [edizione, setEdizione] = useState<Edition>(initialEdizione);
-  const [habitat, setHabitat] = useState<string[]>(initialHabitat);
-  const [openFilter, setOpenFilter] = useState<FilterKind>(null);
   const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
-  const { isFavorite, toggle } = useFavorites();
+  const { isFavorite, toggle: toggleFavorite } = useFavorites();
 
   const editionMonsters = useMemo(() => monsters.filter(monster => monster.edizione === edizione), [monsters, edizione]);
-  const collections = useMemo(() => ({
-    animali: editionMonsters.filter(isSrdAnimal),
-    mostri: editionMonsters.filter(monster => !isSrdAnimal(monster)),
-  }), [editionMonsters]);
-  const collection = collections[raccolta];
-  const meta = useMemo(() => computeMonstersMeta(collection), [collection]);
-
-  const results = useMemo(() => {
+  const meta = useMemo(() => computeMonstersMeta(editionMonsters), [editionMonsters]);
+  const searched = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
-    const filtered = collection.filter((m) => {
-      if (needle && !m.nome.toLowerCase().includes(needle)) return false;
-      if (taglia && m.taglia !== taglia) return false;
-      if (tipo && typeCategory(m.tipo) !== tipo) return false;
-      if (gs && m.grado_sfida !== gs) return false;
-      if (!matchesHabitats(m.habitat, habitat)) return false;
-      return true;
-    });
+    return needle ? editionMonsters.filter(m => m.nome.toLowerCase().includes(needle)) : editionMonsters;
+  }, [editionMonsters, deferredQ]);
 
-    // Ordine crescente per grado sfida; a parità, ordine alfabetico.
-    return filtered.sort((a, b) => {
-      const d = a.gs_num - b.gs_num;
-      if (d !== 0) return d;
-      return a.nome.localeCompare(b.nome, "it");
-    });
-  }, [collection, deferredQ, taglia, tipo, gs, habitat]);
+  const results = useMemo(() => searched.filter(m => matchesFilters(m, filters))
+    // By challenge rating, then by name.
+    .sort((a, b) => a.gs_num - b.gs_num || a.nome.localeCompare(b.nome, "it")), [searched, filters]);
+  const draftCount = useMemo(() => draft ? searched.filter(m => matchesFilters(m, draft)).length : 0, [searched, draft]);
 
-  // A new section, search or filter starts again from the first page.
-  const filters = JSON.stringify([edizione, raccolta, q, taglia, tipo, gs, habitat]);
-  const lastFilters = useRef(filters);
+  // A new edition, search or filter starts again from the first page.
+  const key = JSON.stringify([edizione, q, filters]);
+  const lastKey = useRef(key);
   useEffect(() => {
-    if (lastFilters.current === filters) return;
-    lastFilters.current = filters;
+    if (lastKey.current === key) return;
+    lastKey.current = key;
     setLimit(PAGE_SIZE);
-  }, [filters]);
+  }, [key]);
   const visible = results.slice(0, limit);
 
   // Remember the list for "back" from a card; the scroll is taken when a row is opened.
   const scroll = useRef(initialScroll ?? 0);
   const save = () => saveListState<MonsterListState>("bestiario",
-    { url: window.location.search, raccolta, q, taglia, tipo, gs, edizione, habitat, limit, scroll: scroll.current });
+    { url: window.location.search, q, ...filters, edizione, limit, scroll: scroll.current });
   useEffect(save);
   useEffect(() => {
     if (initialScroll) window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo(0, initialScroll)));
   }, [initialScroll]);
 
-  const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0) + (habitat.length ? 1 : 0);
-
-  const clearFilters = () => {
-    setTaglia(null);
-    setTipo(null);
-    setGs(null);
-    setHabitat([]);
-    setOpenFilter(null);
-  };
-
   const chooseEdition = (value: Edition) => {
     if (value === edizione) return;
     setEdizione(value);
-    clearFilters();
+    // Types and sizes differ between editions: start again without filters.
+    setFilters(NO_FILTERS);
     try {
       window.localStorage.setItem(EDITION_KEY, value);
     } catch {
@@ -130,249 +113,110 @@ export function BestiarioBrowser({
     }
   };
 
+  const active: ActiveFilter[] = [
+    ...(filters.categoria !== "tutti" ? [{ key: "categoria", label: CATEGORY_LABEL[filters.categoria], remove: () => setFilters(f => ({ ...f, categoria: "tutti" as const })) }] : []),
+    ...filters.gs.map(band => ({ key: `gs:${band}`, label: `GS ${BAND_LABEL[band]}`, remove: () => setFilters(f => ({ ...f, gs: f.gs.filter(x => x !== band) })) })),
+    ...filters.tipo.map(tipo => ({ key: `tipo:${tipo}`, label: tipo, remove: () => setFilters(f => ({ ...f, tipo: f.tipo.filter(x => x !== tipo) })) })),
+    ...filters.taglia.map(taglia => ({ key: `taglia:${taglia}`, label: taglia, remove: () => setFilters(f => ({ ...f, taglia: f.taglia.filter(x => x !== taglia) })) })),
+    ...filters.habitat.map(habitat => ({ key: `habitat:${habitat}`, label: habitat, remove: () => setFilters(f => ({ ...f, habitat: f.habitat.filter(x => x !== habitat) })) })),
+  ];
+
   return (
     <div>
-      {/* Sticky header */}
-      <div className="sticky top-0 z-30 border-b border-border bg-background px-6 pb-3 pt-6">
-        <h1 className="mb-4 font-serif text-3xl font-bold text-foreground">
-          Bestiario ({editionMonsters.length})
-        </h1>
-
-        <div role="group" aria-label="Edizione delle regole" className="mb-3 grid grid-cols-2 gap-1 rounded-full border border-border bg-card p-1">
-          {(["2024", "2014"] as const).map(value => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={edizione === value}
-              onClick={() => chooseEdition(value)}
-              className={`min-h-9 rounded-full px-3 text-[13px] font-semibold tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${edizione === value ? "bg-primary-faint text-primary" : "text-muted hover:text-foreground"}`}
-            >
-              D&amp;D5e {value}
-            </button>
-          ))}
-        </div>
-
-        <div role="group" aria-label="Sezioni del bestiario" className="mb-4 grid grid-cols-2 gap-1 rounded-2xl border border-border bg-card p-1">
-          {([
-            { value: "mostri", label: "Mostri", Icon: Skull },
-            { value: "animali", label: "Animali", Icon: PawPrint },
-          ] as const).map(({ value, label, Icon }) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={raccolta === value}
-              onClick={() => { if (value !== raccolta) { setRaccolta(value); clearFilters(); } }}
-              className={`flex min-h-11 items-center justify-center gap-2 rounded-xl px-2 py-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${raccolta === value ? "bg-primary text-primary-foreground" : "text-muted hover:text-foreground"}`}
-            >
-              <Icon size={17} aria-hidden="true" className="shrink-0" />
-              {label}
-              <span className="text-xs tabular-nums opacity-75">({collections[value].length})</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Search */}
-        <div className="flex h-12 items-center gap-2 rounded-xl border border-border bg-card px-3">
-          <Search size={18} className="text-muted" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            type="search"
-            aria-label={raccolta === "animali" ? "Cerca un animale" : "Cerca un mostro"}
-            placeholder={raccolta === "animali" ? "Cerca animale..." : "Cerca mostro..."}
-            autoCorrect="off"
-            autoCapitalize="none"
-            className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted"
-          />
-          {q.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setQ("")}
-              aria-label="Cancella ricerca"
-            >
-              <X size={18} className="text-muted" />
-            </button>
-          )}
-        </div>
-
-        {/* Filter chips */}
-        <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto">
-          <Chip
-            label={gs ? gsLabel(gs) : "Grado sfida"}
-            active={!!gs}
-            caret
-            onClick={() => setOpenFilter(openFilter === "gs" ? null : "gs")}
-          />
-          <Chip
-            label={tipo ?? "Tipo"}
-            active={!!tipo}
-            caret
-            onClick={() => setOpenFilter(openFilter === "tipo" ? null : "tipo")}
-          />
-          <Chip
-            label={taglia ?? "Taglia"}
-            active={!!taglia}
-            caret
-            onClick={() =>
-              setOpenFilter(openFilter === "taglia" ? null : "taglia")
-            }
-          />
-          <Chip
-            label={habitat.length === 0 ? "Habitat" : habitat.length === 1 ? habitat[0] : `Habitat (${habitat.length})`}
-            active={habitat.length > 0}
-            caret
-            onClick={() => setOpenFilter(openFilter === "habitat" ? null : "habitat")}
-          />
-          {activeCount > 0 && (
-            <Chip label="Pulisci" active destructive onClick={clearFilters} />
-          )}
-        </div>
-
-        {/* Expanded options */}
-        {openFilter && (
-          <div className="no-scrollbar -mx-6 mt-2 flex gap-2 overflow-x-auto border-t border-divider bg-card px-6 py-3">
-            {openFilter === "gs" &&
-              meta.gradi.map((g) => (
-                <Option
-                  key={g}
-                  label={gsLabel(g)}
-                  active={gs === g}
-                  onClick={() => {
-                    setGs(gs === g ? null : g);
-                    setOpenFilter(null);
-                  }}
-                />
-              ))}
-            {openFilter === "tipo" &&
-              meta.tipi.map((t) => (
-                <Option
-                  key={t}
-                  label={t}
-                  active={tipo === t}
-                  onClick={() => {
-                    setTipo(tipo === t ? null : t);
-                    setOpenFilter(null);
-                  }}
-                />
-              ))}
-            {openFilter === "habitat" &&
-              HABITATS.map((h) => (
-                <Option
-                  key={h}
-                  label={h}
-                  active={habitat.includes(h)}
-                  pressed={habitat.includes(h)}
-                  onClick={() =>
-                    // Several habitats can be chosen: the panel stays open.
-                    setHabitat(current => current.includes(h) ? current.filter(x => x !== h) : HABITATS.filter(x => x === h || current.includes(x)))
-                  }
-                />
-              ))}
-            {openFilter === "taglia" &&
-              meta.taglie.map((t) => (
-                <Option
-                  key={t}
-                  label={t}
-                  active={taglia === t}
-                  onClick={() => {
-                    setTaglia(taglia === t ? null : t);
-                    setOpenFilter(null);
-                  }}
-                />
-              ))}
-          </div>
-        )}
-        <p className="mt-3 text-xs text-muted" role="status" aria-live="polite">
-          {results.length} {results.length === 1 ? "risultato" : "risultati"}
-        </p>
+      <div className="px-6 pb-2 pt-8">
+        <CatalogTitle title="Bestiario" edition={edizione} onEdition={chooseEdition} />
+        <SearchAndFilters query={q} onQuery={setQ} label="Cerca una creatura" active={active.length} onOpen={() => setDraft(filters)} />
+        <ActiveFilters filters={active} />
       </div>
 
-      {/* Results */}
-      {results.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 px-6 py-24 text-center">
-          {raccolta === "animali" ? <PawPrint size={48} className="text-muted" /> : <Skull size={48} className="text-muted" />}
-          <p className="font-serif text-base italic text-muted">
-            {raccolta === "animali" ? "Nessun animale trovato." : "Nessun mostro trovato."}
-          </p>
+      <FilterSheet
+        open={draft !== null}
+        onClose={() => setDraft(null)}
+        onReset={() => setDraft(NO_FILTERS)}
+        onApply={() => { if (draft) setFilters(draft); setDraft(null); }}
+        count={draftCount}
+      >
+        {draft && <>
+          <FilterGroup title="Categoria" segmented options={CATEGORIES} selected={[draft.categoria]} label={c => CATEGORY_LABEL[c]}
+            onToggle={categoria => setDraft({ ...draft, categoria })} />
+          <FilterGroup title="Grado sfida" options={GS_BANDS} selected={draft.gs} label={band => BAND_LABEL[band]}
+            onToggle={band => setDraft({ ...draft, gs: toggle(draft.gs, band, GS_BANDS) })} />
+          <FilterGroup title="Tipo" options={meta.tipi} selected={draft.tipo}
+            onToggle={tipo => setDraft({ ...draft, tipo: toggle(draft.tipo, tipo, meta.tipi) })} />
+          <FilterGroup title="Taglia" options={meta.taglie} selected={draft.taglia}
+            onToggle={taglia => setDraft({ ...draft, taglia: toggle(draft.taglia, taglia, meta.taglie) })} />
+          <FilterGroup title="Habitat" options={HABITATS} selected={draft.habitat}
+            onToggle={habitat => setDraft({ ...draft, habitat: toggle(draft.habitat, habitat, HABITATS) })} />
+        </>}
+      </FilterSheet>
+
+      <div className="px-6">
+        <div className="grid grid-cols-[minmax(0,1.3fr)_48px_minmax(0,0.8fr)_44px] items-end gap-2 border-b-2 border-border-strong pb-2 pt-4 text-[12px] font-bold uppercase tracking-[0.06em] text-muted">
+          <span role="status" className="whitespace-nowrap" aria-live="polite">Nome · {results.length} {results.length === 1 ? "risultato" : "risultati"}</span>
+          <span>GS</span>
+          <span>Tipo</span>
+          <span />
         </div>
-      ) : (
-        <>
-        <ul className="px-6 py-2" onClickCapture={() => { scroll.current = window.scrollY; save(); }}>
-          {visible.map((monster, i) => (
-            <li key={monster.id} className="catalog-row">
-              {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
-              <MonsterRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggle} />
-            </li>
-          ))}
-        </ul>
-        {visible.length < results.length && (
-          <div className="px-6 pb-6 pt-2">
-            <button
-              type="button"
-              onClick={() => setLimit(current => current + PAGE_SIZE)}
-              className="h-12 w-full rounded-xl border border-border bg-card text-sm font-semibold text-card-foreground"
-            >
-              Mostra altri ({results.length - visible.length})
-            </button>
+        {results.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+            <Skull size={48} className="text-muted" aria-hidden="true" />
+            <p className="font-serif text-lg italic text-muted">Nessuna creatura trovata.</p>
           </div>
+        ) : (
+          <ul onClickCapture={() => { scroll.current = window.scrollY; save(); }}>
+            {visible.map(monster => (
+              <li key={monster.id} className="catalog-row border-b border-divider">
+                <BestiaryRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} />
+              </li>
+            ))}
+          </ul>
         )}
-        </>
+      </div>
+      {visible.length < results.length && (
+        <div className="px-6 pb-6 pt-4">
+          <button
+            type="button"
+            onClick={() => setLimit(current => current + PAGE_SIZE)}
+            className="min-h-12 w-full rounded-[8px] border border-border bg-elevated text-base font-bold text-foreground"
+          >
+            Mostra altri ({results.length - visible.length})
+          </button>
+        </div>
       )}
     </div>
   );
 }
 
-function Chip({
-  label,
-  active,
-  caret,
-  destructive,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  caret?: boolean;
-  destructive?: boolean;
-  onClick: () => void;
-}) {
-  const base =
-    "flex h-9 flex-shrink-0 items-center gap-1.5 rounded-full border px-4 text-[13px] font-semibold transition-colors";
-  const cls = destructive
-    ? "border-destructive bg-card text-destructive-foreground"
-    : active
-      ? "border-primary bg-primary text-primary-foreground"
-      : "border-border bg-card text-card-foreground";
+// Memoized: toggling one star re-renders only that row.
+const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void }) {
+  const favId = `mostro:${monster.id}`;
+  const href = `/mostro/${monster.id}`;
+  const prefetch = useIntentPrefetch(href);
   return (
-    <button type="button" onClick={onClick} className={`${base} ${cls}`}>
-      {label}
-      {caret && <ChevronDown size={14} />}
-    </button>
+    <div className="grid min-h-[62px] grid-cols-[minmax(0,1.3fr)_48px_minmax(0,0.8fr)_44px] items-center gap-2">
+      <Link
+        href={href}
+        prefetch={false}
+        onTouchStart={prefetch}
+        onMouseEnter={prefetch}
+        className="col-span-3 grid min-w-0 grid-cols-subgrid items-center py-2.5"
+      >
+        <span className="min-w-0">
+          <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{monster.nome}</span>
+          <span className="block truncate text-[15px] text-muted">{monster.taglia}</span>
+        </span>
+        <span className="font-serif text-[21px] font-bold tabular-nums text-primary">{monster.grado_sfida || "—"}</span>
+        <span className="truncate text-base text-foreground">{typeCategory(monster.tipo)}</span>
+      </Link>
+      <button
+        type="button"
+        onClick={() => onToggle(favId)}
+        aria-label={fav ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
+        aria-pressed={fav}
+        className="grid size-11 place-items-center transition-transform active:scale-90"
+      >
+        <Star size={24} strokeWidth={1.75} className={fav ? "fill-primary text-primary" : "text-primary"} />
+      </button>
+    </div>
   );
-}
-
-function Option({
-  label,
-  active,
-  pressed,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  pressed?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={pressed}
-      onClick={onClick}
-      className={`flex-shrink-0 rounded-xl border px-4 py-2 text-[13px] font-semibold transition-colors ${
-        active
-          ? "border-primary bg-primary-faint text-primary"
-          : "border-border bg-elevated text-card-foreground"
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
+});

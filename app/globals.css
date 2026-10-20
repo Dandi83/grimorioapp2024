@@ -1,29 +1,36 @@
 @import "tailwindcss";
 @import "../components/characters/dashboard.css";
 
+/* Single light theme: parchment, ink and bordeaux (palette chosen by Daniele, 20 Oct 2026).
+   Text contrast on every surface stays at least 4.5:1; amber is a fill, never text. */
 @theme {
-  --color-background: #0a0a0b;
-  --color-foreground: #f0ebe1;
+  --color-background: #F6EFDF;
+  --color-foreground: #2B2118;
 
-  --color-card: #141416;
-  --color-card-foreground: #c8c2b5;
+  --color-card: #FFFBF0;
+  --color-card-foreground: #2B2118;
 
-  --color-elevated: #1d1d20;
-  --color-muted: #a39e93;
+  --color-elevated: #E9DDC2;
+  --color-muted: #5E4E3E;
 
-  --color-primary: #d4af37;
-  --color-primary-foreground: #1a1405;
-  --color-primary-dim: #9e8329;
-  --color-primary-faint: #3d3210;
+  --color-primary: #7A1F2B;
+  --color-primary-foreground: #FFFBF0;
+  --color-primary-dim: #7A1F2B;
+  --color-primary-faint: #F1DDD5;
 
-  --color-destructive: #7d2626;
-  --color-destructive-foreground: #efa1a1;
+  --color-amber: #E0A21A;
+  --color-nav: #EADFC6;
+  --color-chip: #F1DDD5;
+  --color-chip-border: #D9B7AC;
 
-  --color-border: #29292d;
-  --color-border-strong: #45454c;
-  --color-divider: #1f1f24;
+  --color-destructive: #7A1F2B;
+  --color-destructive-foreground: #7A1F2B;
 
-  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --color-border: #CDBB96;
+  --color-border-strong: #2B2118;
+  --color-divider: #DDCFAE;
+
+  --font-sans: var(--font-source-sans), system-ui, -apple-system, sans-serif;
   --font-serif: var(--font-eb-garamond), Georgia, "Times New Roman", serif;
 
   --radius-sm: 6px;
@@ -54,7 +61,7 @@
   }
 }
 
-/* Thin, themed scrollbars for the dark grimoire aesthetic. */
+/* Hidden scrollbars for horizontally scrolling chip rows. */
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -129,7 +136,7 @@
 
 .monster-sheet [data-monster-section] > h2 {
   margin-bottom: 18px;
-  border-bottom: 1px solid rgb(212 175 55 / 40%);
+  border-bottom: 1px solid var(--color-border);
   padding-bottom: 10px;
   font-family: var(--font-serif);
   font-size: 23px;
@@ -165,10 +172,10 @@
   display: inline-block;
   max-width: 100%;
   margin: 2px 1px;
-  border: 1px solid rgb(212 175 55 / 24%);
+  border: 1px solid var(--color-chip-border);
   border-radius: 999px;
   padding: 1px 8px;
-  background: rgb(212 175 55 / 5%);
+  background: var(--color-chip);
   color: var(--color-foreground);
   font-size: 0.94em;
   font-style: normal;
@@ -180,7 +187,7 @@
 
 :is(.monster-sheet, .spell-sheet, .condition-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):hover {
   border-color: var(--color-primary);
-  background: rgb(212 175 55 / 12%);
+  background: var(--color-chip);
 }
 
 :is(.monster-sheet, .spell-sheet, .condition-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):focus-visible {

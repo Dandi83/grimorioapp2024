@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { EB_Garamond, Inter } from "next/font/google";
+import { EB_Garamond, Source_Sans_3 } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { FavoritesProvider } from "@/components/favorites-provider";
@@ -11,14 +11,17 @@ import { serviceWorkerEnabled } from "@/lib/service-worker-config";
 import "./globals.css";
 import {CharacterSessionProvider} from "@/components/characters/session";
 
-const inter = Inter({
+// Variable fonts: one file per style covers every weight used (text 400/600/700,
+// titles 600/700, italic 500), lighter than one file per weight.
+const sourceSans = Source_Sans_3({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-source-sans",
   display: "swap",
 });
 
 const ebGaramond = EB_Garamond({
   subsets: ["latin"],
+  style: ["normal", "italic"],
   variable: "--font-eb-garamond",
   display: "swap",
 });
@@ -31,7 +34,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "Grimorio",
   },
   keywords: [
@@ -54,20 +57,20 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0b",
-  colorScheme: "dark",
+  themeColor: "#F6EFDF",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="it"
-      className={`${inter.variable} ${ebGaramond.variable} bg-background`}
+      className={`${sourceSans.variable} ${ebGaramond.variable} bg-background`}
     >
       <body className="min-h-dvh bg-background text-foreground antialiased">
         <FavoritesProvider>
           <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x">
-            <main className="min-w-0 flex-1 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">
+            <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))]">
               <CharacterSessionProvider>{children}</CharacterSessionProvider>
             </main>
             <BottomNav />

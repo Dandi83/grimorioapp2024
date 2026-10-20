@@ -7,7 +7,8 @@ import type { SpellListItem, SpellsMeta } from "@/lib/spells-types";
 import type { MonsterListItem } from "@/lib/monsters-types";
 import { readListState, returningBack } from "@/components/navigation-memory";
 import type { SpellListState } from "@/components/grimorio-browser";
-import { EDITION_KEY, type Edition, type MonsterListState } from "@/components/bestiario-browser";
+import { EDITION_KEY, GS_BANDS, gsBand, type Edition, type GsBand, type MonsterFilters, type MonsterListState } from "@/components/bestiario-browser";
+import { parseGs } from "@/lib/monsters-types";
 import { normalizeHabitats } from "@/lib/habitats";
 
 // Server rendering and initial hydration show real, unfiltered rows. URL filters
@@ -71,22 +72,34 @@ function useStoredEdition() {
   return stored;
 }
 
+/** Filters from the address: old single values (?gs=1/2, ?raccolta=animali, ?tipo=Drago) keep working. */
+export function filtersFromParams(params: URLSearchParams): MonsterFilters {
+  const list = (name: string) => (params.get(name) || "").split(",").map(value => value.trim()).filter(Boolean);
+  const collection = params.get("raccolta") || params.get("categoria");
+  const gs = list("gs").map(value => (GS_BANDS as readonly string[]).includes(value) ? value as GsBand : gsBand(parseGs(value)))
+    .filter((value, index, all) => all.indexOf(value) === index);
+  return {
+    categoria: collection === "animali" || collection === "mostri" ? collection : "tutti",
+    gs: GS_BANDS.filter(band => gs.includes(band)),
+    tipo: list("tipo"),
+    taglia: list("taglia"),
+    habitat: normalizeHabitats(list("habitat")),
+  };
+}
+
 export function BestiarioWithFilters({ monsters }: { monsters: MonsterListItem[] }) {
   const { params, search } = useCatalogSearch();
-  const taglia = params.get("taglia") || null;
-  const tipo = params.get("tipo") || null;
-  const gs = params.get("gs") || null;
-  const collection = params.get("raccolta");
-  const raccolta = collection === "animali" || collection === "mostri" ? collection : null;
+  const filters = filtersFromParams(params);
   const requested = params.get("edizione");
   const storedEdition = useStoredEdition();
   const edizione = isEdition(requested) ? requested : storedEdition ?? "2024";
-  const habitatParam = params.get("habitat");
-  const habitat = habitatParam ? normalizeHabitats(habitatParam.split(",")) : [];
   const restored = useRestoredList<MonsterListState>("bestiario", search);
-  return <BestiarioBrowser key={JSON.stringify([taglia, tipo, gs, raccolta, edizione, habitat, !!restored])}
-    monsters={monsters} initialTaglia={restored ? restored.taglia : taglia} initialTipo={restored ? restored.tipo : tipo}
-    initialGs={restored ? restored.gs : gs} initialRaccolta={restored ? restored.raccolta : raccolta}
-    initialEdizione={restored?.edizione ?? edizione} initialHabitat={restored?.habitat ?? habitat}
-    initialQuery={restored?.q} initialLimit={restored?.limit} initialScroll={restored?.scroll} />;
+  const restoredFilters: MonsterFilters | null = restored && Array.isArray(restored.gs)
+    ? { categoria: restored.categoria, gs: restored.gs, tipo: restored.tipo, taglia: restored.taglia, habitat: restored.habitat }
+    : null;
+  return <BestiarioBrowser key={JSON.stringify([filters, edizione, !!restoredFilters])}
+    monsters={monsters} initialFilters={restoredFilters ?? filters}
+    initialEdizione={restoredFilters ? restored!.edizione : edizione}
+    initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
+    initialScroll={restoredFilters ? restored!.scroll : undefined} />;
 }

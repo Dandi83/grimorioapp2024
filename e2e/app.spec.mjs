@@ -35,15 +35,19 @@ test("spells: 40-row pages, search, detail, favorite and back", async ({ page })
   await expect(page.getByText("1 incantesimo salvato", { exact: false })).toBeVisible();
 });
 
-test("bestiary: 40-row pages, show more, animals and a creature sheet", async ({ page }) => {
+test("bestiary: one list with 40-row pages, filter panel, animals and a creature sheet", async ({ page }) => {
   await page.goto("/bestiario");
   await expect(catalogRows(page)).toHaveCount(40);
-  await expect(page.getByRole("button", { name: /Mostra altri \(195\)/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Mostra altri \(290\)/ })).toBeVisible();
   await page.getByRole("button", { name: /Mostra altri/ }).click();
   await expect(catalogRows(page)).toHaveCount(80);
-  await page.getByRole("button", { name: /^Animali/ }).click();
+  await page.getByRole("button", { name: "Filtri" }).click();
+  const panel = page.getByRole("dialog", { name: "Filtri" });
+  await panel.getByRole("button", { name: "Animali", exact: true }).click();
+  await panel.getByRole("button", { name: "Mostra 95 risultati" }).click();
+  await expect(page.getByRole("button", { name: "Filtri, 1 attivo" })).toBeVisible();
   await expect(catalogRows(page)).toHaveCount(40);
-  await page.getByRole("searchbox", { name: "Cerca un animale" }).fill("gatto");
+  await page.getByRole("searchbox", { name: "Cerca una creatura" }).fill("gatto");
   await expect(catalogRows(page)).toHaveCount(1);
   await page.getByRole("link", { name: /Gatto/ }).click();
   await expect(page).toHaveURL(/\/mostro\/gatto$/);
@@ -55,13 +59,13 @@ const sheets2014 = JSON.parse(readFileSync(new URL("../lib/data/srd-monsters-5.1
 
 test("bestiary: 2014 edition list, remembered on the phone, and old 2014 links", async ({ page }) => {
   await page.goto("/bestiario");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bestiario (330)");
-  await page.getByRole("button", { name: "D&D5e 2014" }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Bestiario (${sheets2014})`);
+  await expect(page.getByRole("status")).toHaveText("Nome · 330 risultati");
+  await page.getByRole("button", { name: "2014", exact: true }).click();
+  await expect(page.getByRole("status")).toHaveText(`Nome · ${sheets2014} risultati`);
   await page.reload();
-  await expect(page.getByRole("button", { name: "D&D5e 2014" })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Bestiario (${sheets2014})`);
-  await page.getByRole("searchbox", { name: "Cerca un mostro" }).fill("orco");
+  await expect(page.getByRole("button", { name: "2014", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("status")).toHaveText(`Nome · ${sheets2014} risultati`);
+  await page.getByRole("searchbox", { name: "Cerca una creatura" }).fill("orco");
   await page.getByRole("link", { name: /^Orco/ }).click();
   await expect(page).toHaveURL(/\/mostro\/orco-2014$/);
   await page.goto("/mostro/orco");

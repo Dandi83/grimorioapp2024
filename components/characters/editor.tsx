@@ -490,7 +490,7 @@ export function CharacterEditor({
                         type="checkbox"
                         checked={!!c.saves[a]}
                         onChange={(e) => update({ saves: { ...c.saves, [a]: e.target.checked } })}
-                        className="accent-[#d4af37]"
+                        className="accent-[#7A1F2B]"
                       />
                       TS competente
                     </label>

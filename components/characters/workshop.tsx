@@ -385,7 +385,7 @@ export function CharacterWorkshop({ choices }: { choices: Choices }) {
         aria-labelledby="creation-title"
         onCancel={() => setDraft(null)}
         onClose={() => setDraft(null)}
-        className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-24px)] max-w-lg overflow-y-auto rounded-2xl border border-primary/25 bg-card p-5 text-foreground backdrop:bg-black/80"
+        className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-24px)] max-w-lg overflow-y-auto rounded-2xl border border-primary/25 bg-card p-5 text-foreground backdrop:bg-[#2B2118]/50"
       >
         {draft && (
           <>
@@ -461,7 +461,7 @@ export function CharacterWorkshop({ choices }: { choices: Choices }) {
         aria-labelledby="history-title"
         onCancel={() => setHistory(false)}
         onClose={() => setHistory(false)}
-        className="fixed inset-0 m-auto max-h-[80dvh] w-[calc(100%-24px)] max-w-lg overflow-y-auto rounded-2xl border border-border bg-card p-5 text-foreground backdrop:bg-black/80"
+        className="fixed inset-0 m-auto max-h-[80dvh] w-[calc(100%-24px)] max-w-lg overflow-y-auto rounded-2xl border border-border bg-card p-5 text-foreground backdrop:bg-[#2B2118]/50"
       >
         <div className="flex justify-between gap-3">
           <h2 id="history-title" className="font-serif text-2xl">
@@ -516,7 +516,7 @@ export function CharacterWorkshop({ choices }: { choices: Choices }) {
         aria-labelledby="delete-title"
         onCancel={() => setDeleteName(null)}
         onClose={() => setDeleteName(null)}
-        className="fixed inset-0 m-auto w-[calc(100%-24px)] max-w-md rounded-2xl border border-border bg-card p-5 text-foreground backdrop:bg-black/80"
+        className="fixed inset-0 m-auto w-[calc(100%-24px)] max-w-md rounded-2xl border border-border bg-card p-5 text-foreground backdrop:bg-[#2B2118]/50"
       >
         <h2 id="delete-title" className="font-serif text-2xl">
           Elimina dalla prova

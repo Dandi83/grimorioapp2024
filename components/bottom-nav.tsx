@@ -67,9 +67,9 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navigazione principale"
-      className="fixed inset-x-0 bottom-0 z-50 mx-auto h-[calc(88px+env(safe-area-inset-bottom,0px))] w-full max-w-2xl border-t border-border bg-card pb-[env(safe-area-inset-bottom,0px)]"
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto h-[calc(80px+env(safe-area-inset-bottom,0px))] w-full max-w-2xl border-t border-border bg-nav pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
     >
-      <ul className="flex h-[88px] items-stretch">
+      <ul className="flex h-[80px] items-stretch">
         {ITEMS.map(({ href, label, Icon, match }) => {
           const active = match(pathname);
           return (
@@ -81,12 +81,12 @@ export function BottomNav() {
                 className="flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"
               >
                 <Icon
-                  size={28}
-                  strokeWidth={active ? 2.4 : 2}
+                  size={26}
+                  strokeWidth={1.75}
                   className={active ? "text-primary" : "text-muted"}
                 />
                 <span
-                  className={`text-[13px] font-semibold leading-[18px] tracking-wide ${
+                  className={`text-[13px] font-semibold leading-[18px] ${
                     active ? "text-primary" : "text-muted"
                   }`}
                 >

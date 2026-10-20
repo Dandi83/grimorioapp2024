@@ -42,7 +42,7 @@ function Entry({ field, c, update }: { field: DigitalField } & Props) {
     return (
       <label className="digital-check flex min-h-11 items-center gap-2 rounded-lg px-2 text-xs text-muted">
         <input
-          className="h-5 w-5 shrink-0 accent-[#d4af37]"
+          className="h-5 w-5 shrink-0 accent-[#7A1F2B]"
           type="checkbox"
           checked={value === true || value === "Yes"}
           onChange={(e) => update(setPaperValue(c, field.name, e.target.checked))}
@@ -196,7 +196,7 @@ export function DigitalSheet({ c, update }: Props) {
           <Swords size={20} strokeWidth={1.4} />
         </div>
       </div>
-      <section className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-[#292314] via-card to-[#171816] p-5">
+      <section className="relative overflow-hidden rounded-2xl border border-primary/30 bg-card p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-primary">
@@ -218,10 +218,10 @@ export function DigitalSheet({ c, update }: Props) {
           aria-valuemin={0}
           aria-valuemax={c.hpMax}
           aria-valuenow={c.hp}
-          className="my-3 h-1.5 overflow-hidden rounded-full bg-black/30"
+          className="my-3 h-1.5 overflow-hidden rounded-full bg-elevated"
         >
           <div
-            className="h-full rounded-full bg-gradient-to-r from-[#aa6944] to-[#dfc978] transition-all"
+            className="h-full rounded-full bg-primary transition-all"
             style={{ width: `${(c.hp / c.hpMax) * 100}%` }}
           />
         </div>
@@ -381,7 +381,7 @@ export function DigitalSheet({ c, update }: Props) {
                             <label className="mt-2 flex min-h-11 items-center gap-2 text-xs text-muted">
                               <input
                                 type="checkbox"
-                                className="h-5 w-5 accent-[#d4af37]"
+                                className="h-5 w-5 accent-[#7A1F2B]"
                                 checked={c.paperFields?.["digital-armor-penalty"] === true}
                                 onChange={(e) =>
                                   update({

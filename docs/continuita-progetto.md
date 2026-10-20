@@ -118,11 +118,13 @@ Compilare iOS richiede macOS/Xcode o un servizio appropriato, distinto dall'ambi
 - Interruttore di emergenza: variabile Vercel `GRIMORIO_SERVICE_WORKER=off` e nuovo deploy; il service worker si rimuove e cancella le copie salvate.
 - Coordinamento iPhone: non tocca il client Capacitor né i branch mobile. Se in futuro l'app caricasse pagine del sito, considerare che il sito può rispondere dalla copia salvata quando offline.
 
-## Lavori in sospeso (20 ottobre 2026)
+## Lavori in sospeso (aggiornato il 20 ottobre 2026)
 
-Da fare in **una pull request separata**, solo **dopo** il merge del blocco 7 delle schede 2014 e dopo l'OK di Daniele a quel merge:
+Pubblicati, non più in sospeso:
 
-1. **Condizioni nelle schede 2014.** Approvato da Daniele. In lavorazione nella PR «condizioni 2014»: il PDF italiano contiene solo 11 condizioni (mancano Prono, Spaventato, Stordito, Trattenuto), vedi `docs/releases/2026-10-20-condizioni-2014.md`. Oggi le schede 2014 non evidenziano le condizioni, per scelta (`app/mostro/[id]/page.tsx`): il bollino aprirebbe la definizione 2024 (`lib/data/srd-conditions-5.2.1-it.json`), che non vale per il 2014. Da fare: aggiungere le condizioni 2014 trascritte dal PDF SRD 5.1 italiano (Appendice A del Manuale del Giocatore, pp. 406-407; PDF solo in cartella temporanea, mai nel repository), con l'indicazione «regole 2014». Le schede 2014 aprono solo queste definizioni; le schede 2024 restano invariate.
-2. **Ordine dei campi delle schede creatura**: caratteristiche → tratti → azioni → reazioni → azioni leggendarie, come chiesto da Daniele. Prima di applicarlo, confermare con Daniele dove vale (scheda pubblica, editor dell'area riservata, anteprima) e la posizione delle azioni bonus, dato che la richiesta non le nomina.
+- **Condizioni nelle schede 2014** (PR #27): 11 condizioni trascritte dal PDF SRD 5.1 italiano, pp. 406-407; le schede 2014 aprono solo le definizioni 2014. Prono, Spaventato, Stordito e Trattenuto non sono nel PDF italiano (verificato anche guardando le pagine 407-408 come immagine) e restano senza bollino; nessun'altra fonte per decisione di Daniele.
+- **Ordine dei campi delle schede creatura** (PR #26): stesso ordine su scheda pubblica, editor e anteprima; intestazione 2014 dalla riga del PDF; liste di incantesimi 2014 raggruppate come le 2024.
 
-Schede 2014 al 20 ottobre: blocchi 1-6 pubblicati (310 schede), blocco 7 (ultime 12, Vampiro → Zombi ogre) in attesa di OK. Avatar della morte e Mosca gigante restano escluse per decisione di Daniele. Le schede create a mano nell'area riservata non vanno toccate.
+Schede 2014: tutti i 7 blocchi pubblicati (322 schede). Avatar della morte e Mosca gigante restano escluse per decisione di Daniele. Le schede create a mano nell'area riservata non vanno toccate.
+
+In corso: nuovo aspetto (tema chiaro pergamena e bordeaux) in tre PR una sopra l'altra: base e Bestiario, scheda mostro, incantesimi. Il bonus di competenza calcolato dal GS per le schede 2014 entra nella riga «Grado sfida» della scheda mostro.
