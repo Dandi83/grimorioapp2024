@@ -131,7 +131,7 @@ const form = (data, habitats) => {
   const config = (await import(require('node:url').pathToFileURL(path.resolve('next.config.mjs')).href)).default;
   const redirects = await config.redirects();
   const renamed = JSON.parse(fs.readFileSync('lib/data/renamed-monster-ids.json','utf8'));
-  assert.deepEqual(redirects.map(r=>[r.source,r.destination,r.permanent]),renamed.map(id=>[`/mostro/${id}`,`/mostro/${id}-2014`,true]));
+  assert.deepEqual(redirects.map(r=>[r.source,r.destination,r.permanent]),[...renamed.map(id=>[`/mostro/${id}`,`/mostro/${id}-2014`,true]),['/spell/i-re-spirare-sott-acqua','/spell/i-re-spirare-sott-acqua-2',true]]);
   for (const id of renamed) {
     assert.ok(ids2014.has(`${id}-2014`),`${id}: redirects to an existing 2014 sheet`);
     assert.ok(!ids2024.has(id),`${id}: never hides a 2024 sheet`);
@@ -139,6 +139,8 @@ const form = (data, habitats) => {
   const aliases = load('lib/monster-id-aliases.ts');
   assert.equal(aliases.renameFavoriteId('mostro:orco'),'mostro:orco-2014');
   assert.equal(aliases.renameFavoriteId('mostro:aboleth'),'mostro:aboleth');
-  assert.equal(aliases.renameFavoriteId('orco'),'orco','spell favorites are never renamed');
+  assert.equal(aliases.renameFavoriteId('orco'),'orco','spell favorites keep their id');
+  assert.equal(aliases.renameFavoriteId('i-re-spirare-sott-acqua'),'i-re-spirare-sott-acqua-2','a favorite of the hidden duplicate moves to the kept card');
+  assert.equal(aliases.renameFavoriteId('i-re-spirare-sott-acqua-2'),'i-re-spirare-sott-acqua-2');
   console.log('Habitats: fixed list, shared 2014/2024 key, admin create/edit and project sheets, older forms, file fallback, sheet line and renamed 2014 addresses passed.');
 })().catch(error=>{console.error(error);process.exit(1);});

@@ -58,9 +58,10 @@ function load(relative, deps={}) {
  // Exercise the new reader too: the page no longer performs the projection.
  const additions=load('lib/srd-additions.ts');
  const additionId=JSON.parse(fs.readFileSync('lib/data/srd-additions-20261017.json','utf8')).spells[0].id;
- const sourceRows=[{id:'manual-index',nome_italiano:'Manuale',livello:'Divinazione di 2° livello (mago)',tempo_di_lancio:'1 minuto o rituale',durata:'Concentrazione, fino a 1 ora'},{id:additionId,nome_italiano:'Modifica amministrativa',livello:'Abiurazione di 1° livello (chierico)',tempo_di_lancio:'Azione',durata:'Istantanea'}];
+ const sourceRows=[{id:'i-re-spirare-sott-acqua',nome_italiano:'Doppione',livello:'Trasmutazione di 3° livello (mago)'},{id:'manual-index',nome_italiano:'Manuale',livello:'Divinazione di 2° livello (mago)',tempo_di_lancio:'1 minuto o rituale',durata:'Concentrazione, fino a 1 ora'},{id:additionId,nome_italiano:'Modifica amministrativa',livello:'Abiurazione di 1° livello (chierico)',tempo_di_lancio:'Azione',durata:'Istantanea'}];
  const legacySpells=load('lib/srd-spells-2014.ts');
  const repairs=load('lib/spell-catalog-repairs.ts',{'./spells-types':st});
+ const aliases=load('lib/monster-id-aliases.ts');
  const legacyIds=JSON.parse(fs.readFileSync('lib/data/srd-spells-5.1-it.json','utf8')).records.map(r=>r.spell.id);
  const originalEnv=process.env.VERCEL_ENV,spellKeys=new Set();
  try {
@@ -74,9 +75,10 @@ function load(relative, deps={}) {
     './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',tempo_di_lancio:'tempo_di_lancio',durata:'durata',sort_key:'sort_key'}},
     './content-editions':{getContentEditions:async kind=>{assert.equal(kind,'spell');return new Map([['manual-index','2014']]);}},
     './db':{db:{select:columns=>{assert.deepEqual(Object.keys(columns).sort(),['id','nome_italiano','livello','tempo_di_lancio','durata'].sort(),'SQL selects no descriptions');return {from:()=>({orderBy:async()=>sourceRows})};}}},
-    './srd-additions':additions,'./srd-spells-2014':legacySpells,'./spell-catalog-repairs':repairs,'./spells-types':st,
+    './srd-additions':additions,'./srd-spells-2014':legacySpells,'./spell-catalog-repairs':repairs,'./monster-id-aliases':aliases,'./spells-types':st,
    });
    const values=await reader.getSpellIndex();
+   assert.ok(!values.some(s=>s.id==='i-re-spirare-sott-acqua'),'the merged duplicate row is not listed');
    assert.ok(configured);assert.equal(values.length,environment?21+legacyIds.length:2);
    // The 2014 spells come from the project files and carry their edition, so the 2014 selector appears.
    assert.deepEqual(values.filter(s=>s.edizione==='2014'&&s.id!=='manual-index').map(s=>s.id).sort(),environment?[...legacyIds].sort():[]);
@@ -89,7 +91,7 @@ function load(relative, deps={}) {
  // A new 2014 block changes the key, so a deployment never serves the previous list.
  let fewer;
  const smaller={...legacySpells,withLegacySpells:(rows,environment)=>legacySpells.withLegacySpells(rows,environment).slice(0,-1)};
- load('lib/spell-index.ts',{'server-only':{},'./db':{},'./db/schema':{spells:{}},'drizzle-orm':{asc:x=>x},'./content-editions':{},'./srd-additions':additions,'./srd-spells-2014':smaller,'./spell-catalog-repairs':repairs,'./spells-types':st,
+ load('lib/spell-index.ts',{'server-only':{},'./db':{},'./db/schema':{spells:{}},'drizzle-orm':{asc:x=>x},'./content-editions':{},'./srd-additions':additions,'./srd-spells-2014':smaller,'./spell-catalog-repairs':repairs,'./monster-id-aliases':aliases,'./spells-types':st,
   'next/cache':{unstable_cache:(fn,key)=>{fewer=key[2];return fn;}}});
  assert.equal(spellKeys.size,1);assert.notEqual(fewer,[...spellKeys][0]);
  console.log('Catalog payloads: IDs, metadata, filters, animals, admin records and immutable sources preserved; full detail bodies excluded.');
