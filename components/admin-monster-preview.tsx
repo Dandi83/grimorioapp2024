@@ -41,7 +41,8 @@ export function AdminMonsterPreview({
             ["Velocità", monster.velocita],
             ["GS", monster.grado_sfida],
             ["PX", monster.px],
-            ["Iniziativa", monster.iniziativa],
+            // Like the public sheet: 2014 sheets without initiative show the Dexterity modifier.
+            ["Iniziativa", monster.iniziativa || (legacy ? `${abilityMod(monster.destrezza ?? 10)} (calcolata dalla Destrezza)` : "")],
             ["Bonus di competenza", monster.bonus_competenza],
           ] as const
         )

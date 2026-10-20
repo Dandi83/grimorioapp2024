@@ -41,7 +41,8 @@
         "costituzione": 14,
         "intelligenza": 11,
         "saggezza": 10,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Umanoide Medio (nano), legale malvagio"
       },
       "pages": [
         347,
@@ -83,7 +84,8 @@
         "costituzione": 10,
         "intelligenza": 11,
         "saggezza": 11,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Umanoide Medio (elfo), neutrale malvagio"
       }
     },
     {
@@ -121,7 +123,8 @@
         "costituzione": 14,
         "intelligenza": 12,
         "saggezza": 10,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Umanoide Piccolo (gnomo), neutrale buono"
       }
     },
     {
@@ -159,7 +162,8 @@
         "costituzione": 13,
         "intelligenza": 7,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Umanoide Medio (lucertoloide), neutrale"
       }
     },
     {
@@ -197,7 +201,8 @@
         "costituzione": 16,
         "intelligenza": 7,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (orco), caotico malvagio"
       }
     },
     {
@@ -235,7 +240,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       },
       "adaptation": "Scheda base Sciame di insetti (2014) con le sole modifiche della variante SRD 5.1; intestazione autonoma e velocità aggiornate secondo la variante."
     },
@@ -274,7 +280,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       },
       "adaptation": "Scheda base Sciame di insetti (2014) con le sole modifiche della variante SRD 5.1; intestazione autonoma e velocità aggiornate secondo la variante."
     },
@@ -313,7 +320,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       },
       "adaptation": "Scheda base Sciame di insetti (2014) con le sole modifiche della variante SRD 5.1; intestazione autonoma e velocità aggiornate secondo la variante."
     },
@@ -352,7 +360,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       },
       "adaptation": "Scheda base Sciame di insetti (2014) con le sole modifiche della variante SRD 5.1; intestazione autonoma e velocità aggiornate secondo la variante."
     },
@@ -391,7 +400,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       },
       "pages": [
         442,
@@ -434,7 +444,8 @@
         "costituzione": 15,
         "intelligenza": 18,
         "saggezza": 15,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Aberrazione Grande, legale malvagio"
       }
     },
     {
@@ -472,7 +483,8 @@
         "costituzione": 10,
         "intelligenza": 10,
         "saggezza": 14,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       }
     },
     {
@@ -510,7 +522,8 @@
         "costituzione": 15,
         "intelligenza": 10,
         "saggezza": 10,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Vegetale Enorme, senza allineamento"
       }
     },
     {
@@ -548,7 +561,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -586,7 +600,8 @@
         "costituzione": 14,
         "intelligenza": 7,
         "saggezza": 14,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       },
       "pages": [
         414,
@@ -628,7 +643,8 @@
         "costituzione": 14,
         "intelligenza": 2,
         "saggezza": 6,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Melma Grande, senza allineamento"
       }
     },
     {
@@ -666,7 +682,8 @@
         "costituzione": 20,
         "intelligenza": 16,
         "saggezza": 18,
-        "carisma": 23
+        "carisma": 23,
+        "sottotitolo_fonte": "Mostruosità Grande, legale neutrale"
       },
       "pages": [
         393,
@@ -708,7 +725,8 @@
         "costituzione": 13,
         "intelligenza": 1,
         "saggezza": 13,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Mostruosità Grande, senza allineamento"
       }
     },
     {
@@ -746,7 +764,8 @@
         "costituzione": 10,
         "intelligenza": 2,
         "saggezza": 14,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       }
     },
     {
@@ -784,7 +803,8 @@
         "costituzione": 13,
         "intelligenza": 8,
         "saggezza": 14,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Bestia Grande, neutrale buona"
       }
     },
     {
@@ -822,7 +842,8 @@
         "costituzione": 12,
         "intelligenza": 20,
         "saggezza": 15,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       },
       "pages": [
         444,
@@ -864,7 +885,8 @@
         "costituzione": 13,
         "intelligenza": 1,
         "saggezza": 3,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Costrutto Medio, senza allineamento"
       }
     },
     {
@@ -902,7 +924,8 @@
         "costituzione": 12,
         "intelligenza": 7,
         "saggezza": 10,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Mostruosità Media, caotica malvagia"
       }
     },
     {
@@ -940,7 +963,8 @@
         "costituzione": 14,
         "intelligenza": 13,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento non buono"
       },
       "pages": [
         445,
@@ -982,7 +1006,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       },
       "pages": [
         415,
@@ -1024,7 +1049,8 @@
         "costituzione": 15,
         "intelligenza": 6,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Grande, neutrale malvagio"
       }
     },
     {
@@ -1062,7 +1088,8 @@
         "costituzione": 15,
         "intelligenza": 12,
         "saggezza": 13,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Elementale Medio, legale neutrale"
       },
       "pages": [
         304,
@@ -1104,7 +1131,8 @@
         "costituzione": 11,
         "intelligenza": 4,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       }
     },
     {
@@ -1142,7 +1170,8 @@
         "costituzione": 22,
         "intelligenza": 20,
         "saggezza": 16,
-        "carisma": 22
+        "carisma": 22,
+        "sottotitolo_fonte": "Immondo Enorme (demone), caotico malvagio"
       },
       "pages": [
         310,
@@ -1184,7 +1213,8 @@
         "costituzione": 12,
         "intelligenza": 10,
         "saggezza": 10,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento non legale"
       }
     },
     {
@@ -1222,7 +1252,8 @@
         "costituzione": 15,
         "intelligenza": 2,
         "saggezza": 8,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Mostruosità Media, senza allineamento"
       }
     },
     {
@@ -1260,7 +1291,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -1298,7 +1330,8 @@
         "costituzione": 18,
         "intelligenza": 7,
         "saggezza": 14,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Mostruosità Enorme, neutrale malvagio"
       },
       "pages": [
         305,
@@ -1340,7 +1373,8 @@
         "costituzione": 17,
         "intelligenza": 9,
         "saggezza": 11,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento caotico"
       }
     },
     {
@@ -1378,7 +1412,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 3,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Vegetale Medio, senza allineamento"
       }
     },
     {
@@ -1416,7 +1451,8 @@
         "costituzione": 13,
         "intelligenza": 8,
         "saggezza": 11,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Umanoide Medio (goblinoide), caotico malvagio"
       }
     },
     {
@@ -1454,7 +1490,8 @@
         "costituzione": 21,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Mostruosità Grande, senza allineamento"
       }
     },
     {
@@ -1492,7 +1529,8 @@
         "costituzione": 14,
         "intelligenza": 10,
         "saggezza": 15,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Elementale Medio, neutrale"
       }
     },
     {
@@ -1530,7 +1568,8 @@
         "costituzione": 14,
         "intelligenza": 2,
         "saggezza": 8,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -1568,7 +1607,8 @@
         "costituzione": 14,
         "intelligenza": 3,
         "saggezza": 13,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Mostruosità Media, neutrale malvagio"
       }
     },
     {
@@ -1606,7 +1646,8 @@
         "costituzione": 12,
         "intelligenza": 10,
         "saggezza": 13,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Folletto Medio, legale buono"
       }
     },
     {
@@ -1644,7 +1685,8 @@
         "costituzione": 14,
         "intelligenza": 14,
         "saggezza": 11,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento non legale"
       },
       "pages": [
         446,
@@ -1686,7 +1728,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -1724,7 +1767,8 @@
         "costituzione": 12,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -1762,7 +1806,8 @@
         "costituzione": 14,
         "intelligenza": 11,
         "saggezza": 11,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       }
     },
     {
@@ -1800,7 +1845,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 11,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -1838,7 +1884,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       },
       "pages": [
         418,
@@ -1880,7 +1927,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 11,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -1918,7 +1966,8 @@
         "costituzione": 16,
         "intelligenza": 10,
         "saggezza": 13,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Immondo Grande, neutrale malvagio"
       }
     },
     {
@@ -1956,7 +2005,8 @@
         "costituzione": 8,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 2
+        "carisma": 2,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -1994,7 +2044,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -2032,7 +2083,8 @@
         "costituzione": 14,
         "intelligenza": 9,
         "saggezza": 13,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Mostruosità Grande, neutrale buono"
       },
       "pages": [
         307,
@@ -2074,7 +2126,8 @@
         "costituzione": 11,
         "intelligenza": 10,
         "saggezza": 10,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Vegetale Piccolo, senza allineamento"
       },
       "pages": [
         419,
@@ -2116,7 +2169,8 @@
         "costituzione": 19,
         "intelligenza": 3,
         "saggezza": 14,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Mostruosità Grande, caotica malvagia"
       }
     },
     {
@@ -2154,7 +2208,8 @@
         "costituzione": 16,
         "intelligenza": 5,
         "saggezza": 11,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Aberrazione Grande, caotico malvagio"
       }
     },
     {
@@ -2192,7 +2247,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 9,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -2230,7 +2286,8 @@
         "costituzione": 16,
         "intelligenza": 2,
         "saggezza": 7,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -2268,7 +2325,8 @@
         "costituzione": 15,
         "intelligenza": 10,
         "saggezza": 11,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Umanoide Medio (umano, mutaforma), neutrale malvagio"
       }
     },
     {
@@ -2306,7 +2364,8 @@
         "costituzione": 9,
         "intelligenza": 8,
         "saggezza": 7,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Umanoide Piccolo (coboldo), legale malvagio"
       },
       "pages": [
         308,
@@ -2348,7 +2407,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -2386,7 +2446,8 @@
         "costituzione": 17,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       }
     },
     {
@@ -2424,7 +2485,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 13,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Mostruosità Piccola, senza allineamento"
       }
     },
     {
@@ -2462,7 +2524,8 @@
         "costituzione": 12,
         "intelligenza": 8,
         "saggezza": 11,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       },
       "pages": [
         447,
@@ -2504,7 +2567,8 @@
         "costituzione": 8,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -2542,7 +2606,8 @@
         "costituzione": 17,
         "intelligenza": 18,
         "saggezza": 20,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Celestiale Medio, legale buono"
       },
       "pages": [
         309,
@@ -2584,7 +2649,8 @@
         "costituzione": 20,
         "intelligenza": 1,
         "saggezza": 6,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Melma Grande, senza allineamento"
       },
       "pages": [
         376,
@@ -2626,7 +2692,8 @@
         "costituzione": 10,
         "intelligenza": 10,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento non buono"
       }
     },
     {
@@ -2664,7 +2731,8 @@
         "costituzione": 12,
         "intelligenza": 10,
         "saggezza": 13,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento non buono"
       }
     },
     {
@@ -2702,7 +2770,8 @@
         "costituzione": 16,
         "intelligenza": 5,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Vegetale Grande, senza allineamento"
       }
     },
     {
@@ -2740,7 +2809,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 14,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -2778,7 +2848,8 @@
         "costituzione": 18,
         "intelligenza": 17,
         "saggezza": 20,
-        "carisma": 20
+        "carisma": 20,
+        "sottotitolo_fonte": "Celestiale Medio, legale buono"
       },
       "pages": [
         300,
@@ -2820,7 +2891,8 @@
         "costituzione": 15,
         "intelligenza": 9,
         "saggezza": 11,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Immondo Medio (diavolo), legale malvagio"
       },
       "pages": [
         314,
@@ -2862,7 +2934,8 @@
         "costituzione": 21,
         "intelligenza": 12,
         "saggezza": 16,
-        "carisma": 17
+        "carisma": 17,
+        "sottotitolo_fonte": "Immondo Grande (diavolo), legale malvagio"
       }
     },
     {
@@ -2900,7 +2973,8 @@
         "costituzione": 18,
         "intelligenza": 13,
         "saggezza": 14,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Immondo Grande (diavolo), legale malvagio"
       },
       "pages": [
         317,
@@ -2942,7 +3016,8 @@
         "costituzione": 18,
         "intelligenza": 18,
         "saggezza": 15,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Immondo Grande (diavolo), legale malvagio"
       },
       "pages": [
         315,
@@ -2984,7 +3059,8 @@
         "costituzione": 24,
         "intelligenza": 22,
         "saggezza": 18,
-        "carisma": 24
+        "carisma": 24,
+        "sottotitolo_fonte": "Immondo Grande (diavolo), legale malvagio"
       },
       "pages": [
         316,
@@ -3026,7 +3102,8 @@
         "costituzione": 18,
         "intelligenza": 11,
         "saggezza": 12,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Immondo Medio (diavolo), legale malvagio"
       }
     },
     {
@@ -3064,7 +3141,8 @@
         "costituzione": 18,
         "intelligenza": 12,
         "saggezza": 14,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Immondo Medio (diavolo), legale malvagio"
       }
     },
     {
@@ -3102,7 +3180,8 @@
         "costituzione": 22,
         "intelligenza": 15,
         "saggezza": 16,
-        "carisma": 20
+        "carisma": 20,
+        "sottotitolo_fonte": "Elementale Grande, caotico buono"
       }
     },
     {
@@ -3140,7 +3219,8 @@
         "costituzione": 14,
         "intelligenza": 11,
         "saggezza": 12,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Mostruosità Media (mutaforma), neutrale"
       }
     },
     {
@@ -3178,7 +3258,8 @@
         "costituzione": 22,
         "intelligenza": 8,
         "saggezza": 12,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Drago Enorme, caotico malvagio"
       }
     },
     {
@@ -3216,7 +3297,8 @@
         "costituzione": 26,
         "intelligenza": 10,
         "saggezza": 13,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Drago Mastodontico, caotico malvagio"
       }
     },
     {
@@ -3254,7 +3336,8 @@
         "costituzione": 14,
         "intelligenza": 5,
         "saggezza": 10,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Drago Medio, caotico malvagio"
       }
     },
     {
@@ -3292,7 +3375,8 @@
         "costituzione": 18,
         "intelligenza": 6,
         "saggezza": 11,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Drago Grande, caotico malvagio"
       },
       "pages": [
         336,
@@ -3334,7 +3418,8 @@
         "costituzione": 23,
         "intelligenza": 16,
         "saggezza": 15,
-        "carisma": 19
+        "carisma": 19,
+        "sottotitolo_fonte": "Drago Enorme, legale malvagio"
       }
     },
     {
@@ -3372,7 +3457,8 @@
         "costituzione": 27,
         "intelligenza": 18,
         "saggezza": 17,
-        "carisma": 21
+        "carisma": 21,
+        "sottotitolo_fonte": "Drago Mastodontico, legale malvagio"
       },
       "pages": [
         337,
@@ -3414,7 +3500,8 @@
         "costituzione": 15,
         "intelligenza": 12,
         "saggezza": 11,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Drago Medio, legale malvagio"
       }
     },
     {
@@ -3452,7 +3539,8 @@
         "costituzione": 19,
         "intelligenza": 14,
         "saggezza": 13,
-        "carisma": 17
+        "carisma": 17,
+        "sottotitolo_fonte": "Drago Grande, legale malvagio"
       }
     },
     {
@@ -3490,7 +3578,8 @@
         "costituzione": 25,
         "intelligenza": 16,
         "saggezza": 13,
-        "carisma": 21
+        "carisma": 21,
+        "sottotitolo_fonte": "Drago Enorme, legale buono"
       },
       "pages": [
         322,
@@ -3532,7 +3621,8 @@
         "costituzione": 29,
         "intelligenza": 18,
         "saggezza": 15,
-        "carisma": 23
+        "carisma": 23,
+        "sottotitolo_fonte": "Drago Mastodontico, legale buono"
       },
       "pages": [
         321,
@@ -3574,7 +3664,8 @@
         "costituzione": 17,
         "intelligenza": 12,
         "saggezza": 11,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Drago Medio, legale buono"
       },
       "pages": [
         323,
@@ -3616,7 +3707,8 @@
         "costituzione": 21,
         "intelligenza": 14,
         "saggezza": 11,
-        "carisma": 19
+        "carisma": 19,
+        "sottotitolo_fonte": "Drago Grande, legale buono"
       }
     },
     {
@@ -3654,7 +3746,8 @@
         "costituzione": 25,
         "intelligenza": 16,
         "saggezza": 15,
-        "carisma": 24
+        "carisma": 24,
+        "sottotitolo_fonte": "Drago Enorme, legale buono"
       },
       "pages": [
         330,
@@ -3696,7 +3789,8 @@
         "costituzione": 29,
         "intelligenza": 18,
         "saggezza": 17,
-        "carisma": 28
+        "carisma": 28,
+        "sottotitolo_fonte": "Drago Mastodontico, legale buono"
       },
       "pages": [
         329,
@@ -3738,7 +3832,8 @@
         "costituzione": 17,
         "intelligenza": 14,
         "saggezza": 11,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Drago Medio, legale buono"
       }
     },
     {
@@ -3776,7 +3871,8 @@
         "costituzione": 21,
         "intelligenza": 16,
         "saggezza": 13,
-        "carisma": 20
+        "carisma": 20,
+        "sottotitolo_fonte": "Drago Grande, legale buono"
       },
       "pages": [
         331,
@@ -3818,7 +3914,8 @@
         "costituzione": 21,
         "intelligenza": 14,
         "saggezza": 13,
-        "carisma": 17
+        "carisma": 17,
+        "sottotitolo_fonte": "Drago Enorme, caotico buono"
       },
       "pages": [
         333,
@@ -3860,7 +3957,8 @@
         "costituzione": 25,
         "intelligenza": 16,
         "saggezza": 15,
-        "carisma": 19
+        "carisma": 19,
+        "sottotitolo_fonte": "Drago Mastodontico, caotico buono"
       },
       "pages": [
         332,
@@ -3902,7 +4000,8 @@
         "costituzione": 13,
         "intelligenza": 10,
         "saggezza": 11,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Drago Medio, caotico buono"
       },
       "pages": [
         334,
@@ -3944,7 +4043,8 @@
         "costituzione": 17,
         "intelligenza": 12,
         "saggezza": 11,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Drago Grande, caotico buono"
       }
     },
     {
@@ -3982,7 +4082,8 @@
         "costituzione": 23,
         "intelligenza": 16,
         "saggezza": 15,
-        "carisma": 19
+        "carisma": 19,
+        "sottotitolo_fonte": "Drago Enorme, legale buono"
       },
       "pages": [
         325,
@@ -4024,7 +4125,8 @@
         "costituzione": 27,
         "intelligenza": 18,
         "saggezza": 17,
-        "carisma": 21
+        "carisma": 21,
+        "sottotitolo_fonte": "Drago Mastodontico, legale buono"
       },
       "pages": [
         324,
@@ -4066,7 +4168,8 @@
         "costituzione": 15,
         "intelligenza": 12,
         "saggezza": 11,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Drago Medio, legale buono"
       },
       "pages": [
         326,
@@ -4108,7 +4211,8 @@
         "costituzione": 19,
         "intelligenza": 14,
         "saggezza": 13,
-        "carisma": 17
+        "carisma": 17,
+        "sottotitolo_fonte": "Drago Grande, legale buono"
       }
     },
     {
@@ -4146,7 +4250,8 @@
         "costituzione": 21,
         "intelligenza": 18,
         "saggezza": 15,
-        "carisma": 17
+        "carisma": 17,
+        "sottotitolo_fonte": "Drago Enorme, caotico buono"
       }
     },
     {
@@ -4184,7 +4289,8 @@
         "costituzione": 25,
         "intelligenza": 20,
         "saggezza": 17,
-        "carisma": 19
+        "carisma": 19,
+        "sottotitolo_fonte": "Drago Mastodontico, caotico buono"
       }
     },
     {
@@ -4222,7 +4328,8 @@
         "costituzione": 13,
         "intelligenza": 14,
         "saggezza": 11,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Drago Medio, caotico buono"
       }
     },
     {
@@ -4260,7 +4367,8 @@
         "costituzione": 17,
         "intelligenza": 16,
         "saggezza": 13,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Drago Grande, caotico buono"
       },
       "pages": [
         328,
@@ -4302,7 +4410,8 @@
         "costituzione": 21,
         "intelligenza": 14,
         "saggezza": 13,
-        "carisma": 17
+        "carisma": 17,
+        "sottotitolo_fonte": "Drago Enorme, caotico malvagio"
       },
       "pages": [
         340,
@@ -4344,7 +4453,8 @@
         "costituzione": 25,
         "intelligenza": 16,
         "saggezza": 15,
-        "carisma": 19
+        "carisma": 19,
+        "sottotitolo_fonte": "Drago Mastodontico, caotico malvagio"
       },
       "pages": [
         339,
@@ -4386,7 +4496,8 @@
         "costituzione": 13,
         "intelligenza": 10,
         "saggezza": 11,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Drago Medio, caotico malvagio"
       }
     },
     {
@@ -4424,7 +4535,8 @@
         "costituzione": 17,
         "intelligenza": 12,
         "saggezza": 11,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Drago Grande, caotico malvagio"
       }
     },
     {
@@ -4462,7 +4574,8 @@
         "costituzione": 25,
         "intelligenza": 16,
         "saggezza": 13,
-        "carisma": 21
+        "carisma": 21,
+        "sottotitolo_fonte": "Drago Enorme, caotico malvagio"
       },
       "pages": [
         342,
@@ -4504,7 +4617,8 @@
         "costituzione": 29,
         "intelligenza": 18,
         "saggezza": 15,
-        "carisma": 23
+        "carisma": 23,
+        "sottotitolo_fonte": "Drago Mastodontico, caotico malvagio"
       },
       "pages": [
         341,
@@ -4546,7 +4660,8 @@
         "costituzione": 17,
         "intelligenza": 12,
         "saggezza": 11,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Drago Medio, caotico malvagio"
       },
       "pages": [
         343,
@@ -4588,7 +4703,8 @@
         "costituzione": 21,
         "intelligenza": 14,
         "saggezza": 11,
-        "carisma": 19
+        "carisma": 19,
+        "sottotitolo_fonte": "Drago Grande, caotico malvagio"
       }
     },
     {
@@ -4626,7 +4742,8 @@
         "costituzione": 21,
         "intelligenza": 18,
         "saggezza": 15,
-        "carisma": 17
+        "carisma": 17,
+        "sottotitolo_fonte": "Drago Enorme, legale malvagio"
       },
       "pages": [
         344,
@@ -4668,7 +4785,8 @@
         "costituzione": 25,
         "intelligenza": 20,
         "saggezza": 17,
-        "carisma": 19
+        "carisma": 19,
+        "sottotitolo_fonte": "Drago Mastodontico, legale malvagio"
       }
     },
     {
@@ -4706,7 +4824,8 @@
         "costituzione": 13,
         "intelligenza": 14,
         "saggezza": 11,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Drago Medio, legale malvagio"
       }
     },
     {
@@ -4744,7 +4863,8 @@
         "costituzione": 17,
         "intelligenza": 16,
         "saggezza": 13,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Drago Grande, legale malvagio"
       }
     },
     {
@@ -4782,7 +4902,8 @@
         "costituzione": 12,
         "intelligenza": 5,
         "saggezza": 8,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Immondo Piccolo (demone), caotico malvagio"
       }
     },
     {
@@ -4820,7 +4941,8 @@
         "costituzione": 11,
         "intelligenza": 14,
         "saggezza": 15,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Folletto Medio, neutrale"
       }
     },
     {
@@ -4858,7 +4980,8 @@
         "costituzione": 18,
         "intelligenza": 13,
         "saggezza": 14,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Mostruosità Grande, caotico malvagio"
       }
     },
     {
@@ -4896,7 +5019,8 @@
         "costituzione": 13,
         "intelligenza": 12,
         "saggezza": 15,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       }
     },
     {
@@ -4934,7 +5058,8 @@
         "costituzione": 24,
         "intelligenza": 16,
         "saggezza": 15,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Elementale Grande, legale malvagio"
       },
       "pages": [
         355,
@@ -4976,7 +5101,8 @@
         "costituzione": 17,
         "intelligenza": 3,
         "saggezza": 11,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       },
       "pages": [
         421,
@@ -5018,7 +5144,8 @@
         "costituzione": 16,
         "intelligenza": 6,
         "saggezza": 10,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Elementale Grande, neutrale"
       }
     },
     {
@@ -5056,7 +5183,8 @@
         "costituzione": 18,
         "intelligenza": 5,
         "saggezza": 10,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Elementale Grande, neutrale"
       }
     },
     {
@@ -5094,7 +5222,8 @@
         "costituzione": 14,
         "intelligenza": 6,
         "saggezza": 10,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Elementale Grande, neutrale"
       },
       "pages": [
         349,
@@ -5136,7 +5265,8 @@
         "costituzione": 20,
         "intelligenza": 5,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Elementale Grande, neutrale"
       },
       "pages": [
         348,
@@ -5178,7 +5308,8 @@
         "costituzione": 18,
         "intelligenza": 14,
         "saggezza": 14,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Immondo Medio (diavolo), legale malvagia"
       },
       "pages": [
         318,
@@ -5220,7 +5351,8 @@
         "costituzione": 12,
         "intelligenza": 11,
         "saggezza": 13,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       }
     },
     {
@@ -5258,7 +5390,8 @@
         "costituzione": 13,
         "intelligenza": 7,
         "saggezza": 12,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Mostruosità Media, neutrale malvagio"
       },
       "pages": [
         350,
@@ -5300,7 +5433,8 @@
         "costituzione": 17,
         "intelligenza": 6,
         "saggezza": 10,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Gigante Grande, caotico malvagio"
       }
     },
     {
@@ -5338,7 +5472,8 @@
         "costituzione": 8,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -5376,7 +5511,8 @@
         "costituzione": 10,
         "intelligenza": 4,
         "saggezza": 12,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -5414,7 +5550,8 @@
         "costituzione": 8,
         "intelligenza": 2,
         "saggezza": 14,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -5452,7 +5589,8 @@
         "costituzione": 10,
         "intelligenza": 3,
         "saggezza": 14,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       },
       "pages": [
         422,
@@ -5494,7 +5632,8 @@
         "costituzione": 10,
         "intelligenza": 10,
         "saggezza": 12,
-        "carisma": 17
+        "carisma": 17,
+        "sottotitolo_fonte": "Non morto Medio, qualsiasi allineamento"
       },
       "pages": [
         351,
@@ -5536,7 +5675,8 @@
         "costituzione": 16,
         "intelligenza": 3,
         "saggezza": 10,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Aberrazione Media, neutrale"
       }
     },
     {
@@ -5574,7 +5714,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 3,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Vegetale Medio, senza allineamento"
       }
     },
     {
@@ -5612,7 +5753,8 @@
         "costituzione": 10,
         "intelligenza": 13,
         "saggezza": 14,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Non morto Minuscolo, caotico malvagio"
       },
       "pages": [
         353,
@@ -5654,7 +5796,8 @@
         "costituzione": 17,
         "intelligenza": 7,
         "saggezza": 16,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Mostruosità Grande, neutrale malvagio"
       }
     },
     {
@@ -5692,7 +5835,8 @@
         "costituzione": 16,
         "intelligenza": 6,
         "saggezza": 11,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Elementale Medio, caotico malvagio"
       },
       "pages": [
         354,
@@ -5734,7 +5878,8 @@
         "costituzione": 10,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -5772,7 +5917,8 @@
         "costituzione": 10,
         "intelligenza": 11,
         "saggezza": 10,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Non morto Medio, caotico malvagio"
       }
     },
     {
@@ -5810,7 +5956,8 @@
         "costituzione": 10,
         "intelligenza": 7,
         "saggezza": 10,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Non morto Medio, caotico malvagio"
       }
     },
     {
@@ -5848,7 +5995,8 @@
         "costituzione": 23,
         "intelligenza": 10,
         "saggezza": 14,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Gigante Enorme, legale malvagio"
       }
     },
     {
@@ -5886,7 +6034,8 @@
         "costituzione": 21,
         "intelligenza": 9,
         "saggezza": 10,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Gigante Enorme, neutrale malvagio"
       }
     },
     {
@@ -5924,7 +6073,8 @@
         "costituzione": 19,
         "intelligenza": 5,
         "saggezza": 9,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Gigante Enorme, caotico malvagio"
       }
     },
     {
@@ -5962,7 +6112,8 @@
         "costituzione": 22,
         "intelligenza": 12,
         "saggezza": 16,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Gigante Enorme, neutrale buono (50%) o neutrale malvagio (50%)"
       },
       "pages": [
         357,
@@ -6004,7 +6155,8 @@
         "costituzione": 20,
         "intelligenza": 10,
         "saggezza": 12,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Gigante Enorme, neutrale"
       }
     },
     {
@@ -6042,7 +6194,8 @@
         "costituzione": 20,
         "intelligenza": 16,
         "saggezza": 18,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Gigante Enorme, caotico buono"
       },
       "pages": [
         358,
@@ -6084,7 +6237,8 @@
         "costituzione": 16,
         "intelligenza": 18,
         "saggezza": 18,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Mostruosità Grande, legale neutrale"
       }
     },
     {
@@ -6122,7 +6276,8 @@
         "costituzione": 21,
         "intelligenza": 19,
         "saggezza": 17,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Immondo Grande (demone), caotico malvagio"
       },
       "pages": [
         311,
@@ -6164,7 +6319,8 @@
         "costituzione": 16,
         "intelligenza": 10,
         "saggezza": 12,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       },
       "pages": [
         449,
@@ -6206,7 +6362,8 @@
         "costituzione": 11,
         "intelligenza": 6,
         "saggezza": 10,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Umanoide Medio (gnoll), caotico malvagio"
       }
     },
     {
@@ -6244,7 +6401,8 @@
         "costituzione": 10,
         "intelligenza": 10,
         "saggezza": 8,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Umanoide Piccolo (goblinoide), neutrale malvagio"
       }
     },
     {
@@ -6282,7 +6440,8 @@
         "costituzione": 18,
         "intelligenza": 3,
         "saggezza": 8,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Costrutto Grande, senza allineamento"
       }
     },
     {
@@ -6320,7 +6479,8 @@
         "costituzione": 18,
         "intelligenza": 6,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Costrutto Medio, neutrale"
       },
       "pages": [
         360,
@@ -6362,7 +6522,8 @@
         "costituzione": 20,
         "intelligenza": 3,
         "saggezza": 11,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Costrutto Grande, senza allineamento"
       },
       "pages": [
         361,
@@ -6404,7 +6565,8 @@
         "costituzione": 20,
         "intelligenza": 3,
         "saggezza": 11,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Costrutto Grande, senza allineamento"
       }
     },
     {
@@ -6442,7 +6604,8 @@
         "costituzione": 18,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Mostruosità Grande, senza allineamento"
       }
     },
     {
@@ -6480,7 +6643,8 @@
         "costituzione": 14,
         "intelligenza": 6,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -6518,7 +6682,8 @@
         "costituzione": 18,
         "intelligenza": 7,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       }
     },
     {
@@ -6556,7 +6721,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 8,
-        "carisma": 2
+        "carisma": 2,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -6594,7 +6760,8 @@
         "costituzione": 11,
         "intelligenza": 1,
         "saggezza": 9,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -6632,7 +6799,8 @@
         "costituzione": 11,
         "intelligenza": 3,
         "saggezza": 14,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Mostruosità Media, neutrale"
       }
     },
     {
@@ -6670,7 +6838,8 @@
         "costituzione": 16,
         "intelligenza": 2,
         "saggezza": 13,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Mostruosità Grande, senza allineamento"
       }
     },
     {
@@ -6708,7 +6877,8 @@
         "costituzione": 12,
         "intelligenza": 9,
         "saggezza": 8,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Umanoide Medio (grimlock), neutrale malvagio"
       }
     },
     {
@@ -6746,7 +6916,8 @@
         "costituzione": 12,
         "intelligenza": 10,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       }
     },
     {
@@ -6784,7 +6955,8 @@
         "costituzione": 18,
         "intelligenza": 7,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Costrutto Grande, senza allineamento"
       }
     },
     {
@@ -6822,7 +6994,8 @@
         "costituzione": 8,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -6860,7 +7033,8 @@
         "costituzione": 12,
         "intelligenza": 8,
         "saggezza": 13,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Bestia Grande, neutrale"
       },
       "pages": [
         424,
@@ -6902,7 +7076,8 @@
         "costituzione": 20,
         "intelligenza": 5,
         "saggezza": 12,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Immondo Grande (demone), caotico malvagio"
       }
     },
     {
@@ -6940,7 +7115,8 @@
         "costituzione": 12,
         "intelligenza": 10,
         "saggezza": 10,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Umanoide Medio (goblinoide), legale malvagio"
       }
     },
     {
@@ -6978,7 +7154,8 @@
         "costituzione": 20,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Mostruosità Enorme, senza allineamento"
       }
     },
     {
@@ -7016,7 +7193,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -7054,7 +7232,8 @@
         "costituzione": 14,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -7092,7 +7271,8 @@
         "costituzione": 13,
         "intelligenza": 11,
         "saggezza": 12,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Immondo Minuscolo (diavolo, mutaforma), legale malvagio"
       }
     },
     {
@@ -7130,7 +7310,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Mostruosità Grande, senza allineamento"
       }
     },
     {
@@ -7168,7 +7349,8 @@
         "costituzione": 25,
         "intelligenza": 22,
         "saggezza": 18,
-        "carisma": 20
+        "carisma": 20,
+        "sottotitolo_fonte": "Mostruosità Mastodontica (titano), caotico malvagio"
       },
       "pages": [
         365,
@@ -7210,7 +7392,8 @@
         "costituzione": 15,
         "intelligenza": 14,
         "saggezza": 15,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Mostruosità Grande, caotico malvagio"
       },
       "pages": [
         366,
@@ -7252,7 +7435,8 @@
         "costituzione": 11,
         "intelligenza": 1,
         "saggezza": 11,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Immondo Medio (diavolo), legale malvagio"
       },
       "pages": [
         319,
@@ -7294,7 +7478,8 @@
         "costituzione": 13,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       },
       "pages": [
         425,
@@ -7336,7 +7521,8 @@
         "costituzione": 16,
         "intelligenza": 20,
         "saggezza": 14,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Non morto Medio, qualsiasi allineamento malvagio"
       }
     },
     {
@@ -7374,7 +7560,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 8,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -7412,7 +7599,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -7450,7 +7638,8 @@
         "costituzione": 12,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -7488,7 +7677,8 @@
         "costituzione": 15,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       },
       "pages": [
         426,
@@ -7530,7 +7720,8 @@
         "costituzione": 14,
         "intelligenza": 7,
         "saggezza": 12,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Mostruosità Grande, neutrale malvagio"
       }
     },
     {
@@ -7568,7 +7759,8 @@
         "costituzione": 14,
         "intelligenza": 10,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (umano, mutaforma), caotico malvagio"
       },
       "pages": [
         367,
@@ -7610,7 +7802,8 @@
         "costituzione": 12,
         "intelligenza": 8,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Elementale Piccolo, caotico neutrale"
       }
     },
     {
@@ -7648,7 +7841,8 @@
         "costituzione": 11,
         "intelligenza": 17,
         "saggezza": 12,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       },
       "pages": [
         450,
@@ -7690,7 +7884,8 @@
         "costituzione": 14,
         "intelligenza": 10,
         "saggezza": 10,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento non buono"
       }
     },
     {
@@ -7728,7 +7923,8 @@
         "costituzione": 21,
         "intelligenza": 3,
         "saggezza": 11,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       }
     },
     {
@@ -7766,7 +7962,8 @@
         "costituzione": 17,
         "intelligenza": 7,
         "saggezza": 12,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Mostruosità Grande, legale malvagia"
       },
       "pages": [
         371,
@@ -7808,7 +8005,8 @@
         "costituzione": 12,
         "intelligenza": 13,
         "saggezza": 12,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Aberrazione Grande, caotico neutrale"
       }
     },
     {
@@ -7846,7 +8044,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Mostruosità Piccola, senza allineamento"
       },
       "pages": [
         372,
@@ -7888,7 +8087,8 @@
         "costituzione": 20,
         "intelligenza": 18,
         "saggezza": 16,
-        "carisma": 20
+        "carisma": 20,
+        "sottotitolo_fonte": "Immondo Grande (demone), caotica malvagia"
       },
       "pages": [
         312,
@@ -7930,7 +8130,8 @@
         "costituzione": 12,
         "intelligenza": 11,
         "saggezza": 11,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Umanoide Medio (marinide), neutrale"
       }
     },
     {
@@ -7968,7 +8169,8 @@
         "costituzione": 12,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -8006,7 +8208,8 @@
         "costituzione": 16,
         "intelligenza": 12,
         "saggezza": 13,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Mostruosità Media, legale malvagia"
       },
       "pages": [
         373,
@@ -8048,7 +8251,8 @@
         "costituzione": 16,
         "intelligenza": 12,
         "saggezza": 12,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Folletto Medio, caotica malvagia"
       }
     },
     {
@@ -8086,7 +8290,8 @@
         "costituzione": 16,
         "intelligenza": 16,
         "saggezza": 14,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Immondo Medio, neutrale malvagia"
       }
     },
     {
@@ -8124,7 +8329,8 @@
         "costituzione": 16,
         "intelligenza": 13,
         "saggezza": 14,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Folletto Medio, neutrale malvagio"
       },
       "pages": [
         375,
@@ -8166,7 +8372,8 @@
         "costituzione": 16,
         "intelligenza": 1,
         "saggezza": 6,
-        "carisma": 2
+        "carisma": 2,
+        "sottotitolo_fonte": "Melma Media, senza allineamento"
       }
     },
     {
@@ -8204,7 +8411,8 @@
         "costituzione": 10,
         "intelligenza": 9,
         "saggezza": 11,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Elementale Piccolo, neutrale malvagio"
       }
     },
     {
@@ -8242,7 +8450,8 @@
         "costituzione": 12,
         "intelligenza": 7,
         "saggezza": 10,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Elementale Piccolo, neutrale malvagio"
       },
       "pages": [
         378,
@@ -8284,7 +8493,8 @@
         "costituzione": 10,
         "intelligenza": 11,
         "saggezza": 10,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Elementale Piccolo, neutrale malvagio"
       }
     },
     {
@@ -8322,7 +8532,8 @@
         "costituzione": 10,
         "intelligenza": 9,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Elementale Piccolo, neutrale malvagio"
       },
       "pages": [
         379,
@@ -8364,7 +8575,8 @@
         "costituzione": 15,
         "intelligenza": 8,
         "saggezza": 10,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Mostruosità Grande, caotico malvagio"
       }
     },
     {
@@ -8402,7 +8614,8 @@
         "costituzione": 14,
         "intelligenza": 10,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (umano), qualsiasi allineamento"
       },
       "pages": [
         303,
@@ -8444,7 +8657,8 @@
         "costituzione": 12,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       }
     },
     {
@@ -8482,7 +8696,8 @@
         "costituzione": 15,
         "intelligenza": 5,
         "saggezza": 13,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Mostruosità Media (mutaforma), neutrale"
       }
     },
     {
@@ -8520,7 +8735,8 @@
         "costituzione": 16,
         "intelligenza": 6,
         "saggezza": 16,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Mostruosità Grande, caotico malvagio"
       },
       "pages": [
         380,
@@ -8562,7 +8778,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -8600,7 +8817,8 @@
         "costituzione": 15,
         "intelligenza": 6,
         "saggezza": 10,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Non morto Medio, legale malvagia"
       }
     },
     {
@@ -8638,7 +8856,8 @@
         "costituzione": 16,
         "intelligenza": 16,
         "saggezza": 19,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Mostruosità Grande, legale buona"
       }
     },
     {
@@ -8676,7 +8895,8 @@
         "costituzione": 14,
         "intelligenza": 16,
         "saggezza": 15,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Mostruosità Grande, caotica malvagia"
       },
       "pages": [
         383,
@@ -8718,7 +8938,8 @@
         "costituzione": 22,
         "intelligenza": 19,
         "saggezza": 12,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Immondo Grande (demone), caotico malvagio"
       }
     },
     {
@@ -8756,7 +8977,8 @@
         "costituzione": 11,
         "intelligenza": 12,
         "saggezza": 14,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       }
     },
     {
@@ -8794,7 +9016,8 @@
         "costituzione": 16,
         "intelligenza": 5,
         "saggezza": 7,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Gigante Grande, caotico malvagio"
       }
     },
     {
@@ -8832,7 +9055,8 @@
         "costituzione": 13,
         "intelligenza": 6,
         "saggezza": 10,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Non morto Medio, caotica malvagia"
       },
       "pages": [
         385,
@@ -8874,7 +9098,8 @@
         "costituzione": 11,
         "intelligenza": 10,
         "saggezza": 10,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Costrutto Minuscolo, neutrale"
       }
     },
     {
@@ -8912,7 +9137,8 @@
         "costituzione": 16,
         "intelligenza": 14,
         "saggezza": 12,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Gigante Grande, legale malvagio"
       }
     },
     {
@@ -8950,7 +9176,8 @@
         "costituzione": 13,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       },
       "pages": [
         428,
@@ -8992,7 +9219,8 @@
         "costituzione": 16,
         "intelligenza": 2,
         "saggezza": 13,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -9030,7 +9258,8 @@
         "costituzione": 17,
         "intelligenza": 11,
         "saggezza": 12,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Umanoide Medio (umano, mutaforma), neutrale buono"
       }
     },
     {
@@ -9068,7 +9297,8 @@
         "costituzione": 14,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -9106,7 +9336,8 @@
         "costituzione": 16,
         "intelligenza": 2,
         "saggezza": 13,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       },
       "pages": [
         429,
@@ -9148,7 +9379,8 @@
         "costituzione": 17,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Mostruosità Grande, senza allineamento"
       }
     },
     {
@@ -9186,7 +9418,8 @@
         "costituzione": 19,
         "intelligenza": 6,
         "saggezza": 13,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Aberrazione Grande, neutrale"
       },
       "pages": [
         387,
@@ -9228,7 +9461,8 @@
         "costituzione": 10,
         "intelligenza": 3,
         "saggezza": 14,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -9266,7 +9500,8 @@
         "costituzione": 16,
         "intelligenza": 10,
         "saggezza": 15,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Celestiale grande, caotico buono"
       }
     },
     {
@@ -9304,7 +9539,8 @@
         "costituzione": 11,
         "intelligenza": 3,
         "saggezza": 10,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       }
     },
     {
@@ -9342,7 +9578,8 @@
         "costituzione": 13,
         "intelligenza": 4,
         "saggezza": 10,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       },
       "pages": [
         430,
@@ -9384,7 +9621,8 @@
         "costituzione": 8,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -9422,7 +9660,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -9460,7 +9699,8 @@
         "costituzione": 24,
         "intelligenza": 19,
         "saggezza": 22,
-        "carisma": 25
+        "carisma": 25,
+        "sottotitolo_fonte": "Celestiale Grande, legale buono"
       },
       "pages": [
         301,
@@ -9502,7 +9742,8 @@
         "costituzione": 16,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -9540,7 +9781,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 11,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -9578,7 +9820,8 @@
         "costituzione": 10,
         "intelligenza": 10,
         "saggezza": 10,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       },
       "pages": [
         451,
@@ -9620,7 +9863,8 @@
         "costituzione": 16,
         "intelligenza": 11,
         "saggezza": 10,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Non morto Medio, neutrale malvagia"
       }
     },
     {
@@ -9658,7 +9902,8 @@
         "costituzione": 16,
         "intelligenza": 1,
         "saggezza": 6,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Melma Grande, senza allineamento"
       },
       "pages": [
         377,
@@ -9700,7 +9945,8 @@
         "costituzione": 13,
         "intelligenza": 10,
         "saggezza": 12,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Drago Minuscolo, neutrale buono"
       }
     },
     {
@@ -9738,7 +9984,8 @@
         "costituzione": 10,
         "intelligenza": 7,
         "saggezza": 10,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Immondo Minuscolo (demone, mutaforma), caotico malvagio"
       },
       "pages": [
         313,
@@ -9780,7 +10027,8 @@
         "costituzione": 9,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 2
+        "carisma": 2,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       },
       "pages": [
         431,
@@ -9822,7 +10070,8 @@
         "costituzione": 8,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 2
+        "carisma": 2,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -9860,7 +10109,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 11,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       },
       "pages": [
         432,
@@ -9902,7 +10152,8 @@
         "costituzione": 13,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -9940,7 +10191,8 @@
         "costituzione": 12,
         "intelligenza": 6,
         "saggezza": 10,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Mostruosità Grande, senza allineamento"
       }
     },
     {
@@ -9978,7 +10230,8 @@
         "costituzione": 18,
         "intelligenza": 13,
         "saggezza": 16,
-        "carisma": 20
+        "carisma": 20,
+        "sottotitolo_fonte": "Immondo Medio, legale malvagio"
       },
       "pages": [
         388,
@@ -10020,7 +10273,8 @@
         "costituzione": 8,
         "intelligenza": 1,
         "saggezza": 8,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -10058,7 +10312,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -10096,7 +10351,8 @@
         "costituzione": 21,
         "intelligenza": 4,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Mostruosità Enorme, senza allineamento"
       }
     },
     {
@@ -10134,7 +10390,8 @@
         "costituzione": 15,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -10172,7 +10429,8 @@
         "costituzione": 20,
         "intelligenza": 3,
         "saggezza": 10,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Mostruosità Mastodontica, senza allineamento"
       }
     },
     {
@@ -10210,7 +10468,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -10248,7 +10507,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 13,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Mostruosità Media, senza allineamento"
       }
     },
     {
@@ -10286,7 +10546,8 @@
         "costituzione": 12,
         "intelligenza": 13,
         "saggezza": 16,
-        "carisma": 13
+        "carisma": 13,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       }
     },
     {
@@ -10324,7 +10585,8 @@
         "costituzione": 12,
         "intelligenza": 12,
         "saggezza": 13,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Umanoide Medio (sahuagin), legale malvagio"
       },
       "pages": [
         390,
@@ -10366,7 +10628,8 @@
         "costituzione": 15,
         "intelligenza": 11,
         "saggezza": 10,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Elementale Grande, neutrale malvagia"
       }
     },
     {
@@ -10404,7 +10667,8 @@
         "costituzione": 11,
         "intelligenza": 12,
         "saggezza": 10,
-        "carisma": 14
+        "carisma": 14,
+        "sottotitolo_fonte": "Folletto Medio, caotico neutrale"
       },
       "pages": [
         391,
@@ -10446,7 +10710,8 @@
         "costituzione": 12,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       }
     },
     {
@@ -10484,7 +10749,8 @@
         "costituzione": 15,
         "intelligenza": 6,
         "saggezza": 8,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Non morto Medio, legale malvagio"
       }
     },
     {
@@ -10522,7 +10788,8 @@
         "costituzione": 15,
         "intelligenza": 2,
         "saggezza": 8,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Non morto Grande, legale malvagio"
       }
     },
     {
@@ -10560,7 +10827,8 @@
         "costituzione": 15,
         "intelligenza": 6,
         "saggezza": 8,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Non morto Grande, legale malvagio"
       }
     },
     {
@@ -10598,7 +10866,8 @@
         "costituzione": 11,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       },
       "pages": [
         435,
@@ -10640,7 +10909,8 @@
         "costituzione": 8,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       }
     },
     {
@@ -10678,7 +10948,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       }
     },
     {
@@ -10716,7 +10987,8 @@
         "costituzione": 10,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       },
       "pages": [
         436,
@@ -10758,7 +11030,8 @@
         "costituzione": 9,
         "intelligenza": 1,
         "saggezza": 7,
-        "carisma": 2
+        "carisma": 2,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       }
     },
     {
@@ -10796,7 +11069,8 @@
         "costituzione": 11,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       },
       "pages": [
         437,
@@ -10838,7 +11112,8 @@
         "costituzione": 9,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Sciame Medio di bestie Minuscole, senza allineamento"
       }
     },
     {
@@ -10876,7 +11151,8 @@
         "costituzione": 8,
         "intelligenza": 1,
         "saggezza": 8,
-        "carisma": 2
+        "carisma": 2,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -10914,7 +11190,8 @@
         "costituzione": 15,
         "intelligenza": 1,
         "saggezza": 9,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -10952,7 +11229,8 @@
         "costituzione": 14,
         "intelligenza": 6,
         "saggezza": 13,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Immondo Medio, legale malvagio"
       },
       "pages": [
         392,
@@ -10994,7 +11272,8 @@
         "costituzione": 12,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       },
       "pages": [
         438,
@@ -11036,7 +11315,8 @@
         "costituzione": 12,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       }
     },
     {
@@ -11074,7 +11354,8 @@
         "costituzione": 11,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -11112,7 +11393,8 @@
         "costituzione": 13,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -11150,7 +11432,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       },
       "pages": [
         439,
@@ -11192,7 +11475,8 @@
         "costituzione": 17,
         "intelligenza": 11,
         "saggezza": 18,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Non morto Medio, legale malvagio"
       },
       "pages": [
         381,
@@ -11234,7 +11518,8 @@
         "costituzione": 26,
         "intelligenza": 25,
         "saggezza": 25,
-        "carisma": 30
+        "carisma": 30,
+        "sottotitolo_fonte": "Celestiale Grande, legale buono"
       },
       "pages": [
         302,
@@ -11276,7 +11561,8 @@
         "costituzione": 11,
         "intelligenza": 1,
         "saggezza": 5,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Costrutto Piccolo, senza allineamento"
       }
     },
     {
@@ -11314,7 +11600,8 @@
         "costituzione": 11,
         "intelligenza": 10,
         "saggezza": 10,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Non morto Medio, caotico malvagio"
       }
     },
     {
@@ -11352,7 +11639,8 @@
         "costituzione": 10,
         "intelligenza": 12,
         "saggezza": 14,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       },
       "pages": [
         452,
@@ -11394,7 +11682,8 @@
         "costituzione": 10,
         "intelligenza": 14,
         "saggezza": 13,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Folletto Minuscolo, neutrale buono"
       }
     },
     {
@@ -11432,7 +11721,8 @@
         "costituzione": 15,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -11470,7 +11760,8 @@
         "costituzione": 21,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       }
     },
     {
@@ -11508,7 +11799,8 @@
         "costituzione": 13,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       },
       "pages": [
         440,
@@ -11550,7 +11842,8 @@
         "costituzione": 13,
         "intelligenza": 15,
         "saggezza": 12,
-        "carisma": 20
+        "carisma": 20,
+        "sottotitolo_fonte": "Immondo Medio (mutaforma), neutrale malvagio"
       },
       "pages": [
         395,
@@ -11592,7 +11885,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 3,
-        "carisma": 1
+        "carisma": 1,
+        "sottotitolo_fonte": "Costrutto Grande, senza allineamento"
       }
     },
     {
@@ -11630,7 +11924,8 @@
         "costituzione": 30,
         "intelligenza": 3,
         "saggezza": 11,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Mostruosità mastodontica (titano), senza allineamento"
       },
       "pages": [
         396,
@@ -11672,7 +11967,8 @@
         "costituzione": 12,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -11710,7 +12006,8 @@
         "costituzione": 15,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -11748,7 +12045,8 @@
         "costituzione": 20,
         "intelligenza": 10,
         "saggezza": 12,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Drago Mastodontico, neutrale"
       },
       "pages": [
         397,
@@ -11790,7 +12088,8 @@
         "costituzione": 14,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       },
       "pages": [
         441,
@@ -11832,7 +12131,8 @@
         "costituzione": 15,
         "intelligenza": 3,
         "saggezza": 12,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Bestia Grande, senza allineamento"
       }
     },
     {
@@ -11870,7 +12170,8 @@
         "costituzione": 16,
         "intelligenza": 10,
         "saggezza": 13,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Umanoide Medio (umano, mutaforma), neutrale"
       },
       "pages": [
         368,
@@ -11912,7 +12213,8 @@
         "costituzione": 19,
         "intelligenza": 2,
         "saggezza": 12,
-        "carisma": 9
+        "carisma": 9,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       }
     },
     {
@@ -11950,7 +12252,8 @@
         "costituzione": 9,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -11988,7 +12291,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 10,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Bestia Piccola, senza allineamento"
       }
     },
     {
@@ -12026,7 +12330,8 @@
         "costituzione": 12,
         "intelligenza": 11,
         "saggezza": 10,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Umanoide Medio (umano, mutaforma), legale malvagio"
       },
       "pages": [
         369,
@@ -12068,7 +12373,8 @@
         "costituzione": 21,
         "intelligenza": 12,
         "saggezza": 16,
-        "carisma": 12
+        "carisma": 12,
+        "sottotitolo_fonte": "Vegetale Enorme, caotico buono"
       }
     },
     {
@@ -12106,7 +12412,8 @@
         "costituzione": 17,
         "intelligenza": 2,
         "saggezza": 11,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Bestia Enorme, senza allineamento"
       },
       "pages": [
         320,
@@ -12148,7 +12455,8 @@
         "costituzione": 20,
         "intelligenza": 7,
         "saggezza": 9,
-        "carisma": 7
+        "carisma": 7,
+        "sottotitolo_fonte": "Gigante Grande, caotico malvagio"
       }
     },
     {
@@ -12186,7 +12494,8 @@
         "costituzione": 11,
         "intelligenza": 2,
         "saggezza": 8,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Bestia Minuscola, senza allineamento"
       }
     },
     {
@@ -12224,7 +12533,8 @@
         "costituzione": 15,
         "intelligenza": 11,
         "saggezza": 17,
-        "carisma": 16
+        "carisma": 16,
+        "sottotitolo_fonte": "Celestiale Grande, legale buono"
       },
       "pages": [
         399,
@@ -12266,7 +12576,8 @@
         "costituzione": 18,
         "intelligenza": 17,
         "saggezza": 15,
-        "carisma": 18
+        "carisma": 18,
+        "sottotitolo_fonte": "Non morto Medio (mutaforma), legale malvagio"
       },
       "pages": [
         400,
@@ -12309,7 +12620,8 @@
         "costituzione": 22,
         "intelligenza": 1,
         "saggezza": 8,
-        "carisma": 4
+        "carisma": 4,
+        "sottotitolo_fonte": "Mostruosità Mastodontica, senza allineamento"
       }
     },
     {
@@ -12347,7 +12659,8 @@
         "costituzione": 10,
         "intelligenza": 1,
         "saggezza": 10,
-        "carisma": 3
+        "carisma": 3,
+        "sottotitolo_fonte": "Bestia Media, senza allineamento"
       }
     },
     {
@@ -12385,7 +12698,8 @@
         "costituzione": 14,
         "intelligenza": 10,
         "saggezza": 11,
-        "carisma": 10
+        "carisma": 10,
+        "sottotitolo_fonte": "Umanoide Medio (qualsiasi razza), qualsiasi allineamento"
       }
     },
     {
@@ -12423,7 +12737,8 @@
         "costituzione": 16,
         "intelligenza": 5,
         "saggezza": 12,
-        "carisma": 6
+        "carisma": 6,
+        "sottotitolo_fonte": "Drago Grande, senza allineamento"
       },
       "pages": [
         402,
@@ -12465,7 +12780,8 @@
         "costituzione": 18,
         "intelligenza": 8,
         "saggezza": 13,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Immondo Grande (demone), caotico malvagio"
       }
     },
     {
@@ -12503,7 +12819,8 @@
         "costituzione": 16,
         "intelligenza": 10,
         "saggezza": 13,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Non morto Medio, neutrale malvagio"
       }
     },
     {
@@ -12541,7 +12858,8 @@
         "costituzione": 13,
         "intelligenza": 7,
         "saggezza": 11,
-        "carisma": 8
+        "carisma": 8,
+        "sottotitolo_fonte": "Mostruosità Grande, neutrale malvagio"
       }
     },
     {
@@ -12579,7 +12897,8 @@
         "costituzione": 16,
         "intelligenza": 12,
         "saggezza": 14,
-        "carisma": 15
+        "carisma": 15,
+        "sottotitolo_fonte": "Non morto Medio, neutrale malvagio"
       },
       "pages": [
         403,
@@ -12621,7 +12940,8 @@
         "costituzione": 22,
         "intelligenza": 11,
         "saggezza": 10,
-        "carisma": 11
+        "carisma": 11,
+        "sottotitolo_fonte": "Elementale Medio, neutrale"
       }
     },
     {
@@ -12659,7 +12979,8 @@
         "costituzione": 16,
         "intelligenza": 3,
         "saggezza": 6,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Non morto Medio, neutrale malvagio"
       },
       "pages": [
         404,
@@ -12701,7 +13022,8 @@
         "costituzione": 18,
         "intelligenza": 3,
         "saggezza": 6,
-        "carisma": 5
+        "carisma": 5,
+        "sottotitolo_fonte": "Non morto Grande, neutrale malvagio"
       }
     }
   ]

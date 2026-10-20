@@ -210,7 +210,9 @@ def parse_block(lines):
     monster = {key: '' for key in ['tiri_salvezza', 'abilita', 'vulnerabilita', 'resistenze', 'immunita_danni',
                                    'immunita_condizioni', 'linguaggi', 'tratti', 'azioni', 'reazioni',
                                    'azioni_leggendarie', 'descrizione']}
-    monster.update(id=f'{slug(title)}-2014', nome=title, tipo=tipo, taglia=taglia, allineamento=allineamento)
+    # The printed subtitle is kept as is, like the 2024 sheets ("Non morto Medio, qualsiasi allineamento malvagio").
+    monster.update(id=f'{slug(title)}-2014', nome=title, tipo=tipo, taglia=taglia, allineamento=allineamento,
+                   sottotitolo_fonte=subtitle)
     fields, scores = {}, []
     sections = {'tratti': [], 'azioni': [], 'reazioni': [], 'azioni_leggendarie': []}
     section, current_field, after_stats = None, None, False
