@@ -20,7 +20,7 @@ test("spells: 40-row pages, search, detail, favorite and back", async ({ page })
   await expect(catalogRows(page)).toHaveCount(40);
   await page.getByRole("button", { name: /Mostra altri/ }).click();
   await expect(catalogRows(page)).toHaveCount(80);
-  await page.getByPlaceholder("Cerca incantesimo...").fill("dardo incantato");
+  await page.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("dardo incantato");
   await expect(catalogRows(page)).toHaveCount(1);
   await page.getByRole("link", { name: /Dardo Incantato/i }).click();
   await expect(page).toHaveURL(/\/spell\/dardo-incantato$/);
@@ -108,7 +108,7 @@ test("admin: wrong passcode, login, logout", async ({ page }) => {
 
 test("back from a card restores search, pages and scroll; the navigation bar starts fresh", async ({ page }) => {
   await page.goto("/grimorio");
-  const search = page.getByPlaceholder("Cerca incantesimo...");
+  const search = page.getByRole("searchbox", { name: "Cerca un incantesimo" });
   await search.fill("a");
   await page.getByRole("button", { name: /Mostra altri/ }).click();
   await page.getByRole("button", { name: /Mostra altri/ }).click();
@@ -128,7 +128,7 @@ test("back from a card restores search, pages and scroll; the navigation bar sta
   const nav = page.getByRole("navigation", { name: "Navigazione principale" });
   await nav.getByRole("link", { name: "Home" }).click();
   await nav.getByRole("link", { name: "Incantesimi" }).click();
-  await expect(page.getByPlaceholder("Cerca incantesimo...")).toHaveValue("");
+  await expect(page.getByRole("searchbox", { name: "Cerca un incantesimo" })).toHaveValue("");
   await expect(catalogRows(page)).toHaveCount(40);
 });
 

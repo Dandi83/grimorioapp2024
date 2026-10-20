@@ -113,7 +113,10 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await click(button('2024'));
  assert.equal(status(),'Nome · 330 risultati');assert.equal(window.localStorage.getItem('grimorio.bestiario.edizione'),'2024');
  const spells=Array.from({length:400},(_,i)=>({id:`spell-${i}`,nome_italiano:`Incantesimo ${String(i).padStart(3,'0')}`,livello_num:Math.floor(i/40),scuola:'invocazione',classi:['mago']}));
- await act(async()=>root.render(React.createElement(GrimorioBrowser,{spells,meta:{livelli:[0,1,2,3,4,5,6,7,8,9],scuole:['invocazione'],classi:['mago']},initialLivello:null,initialScuola:null,initialClasse:null})));
+ await act(async()=>root.render(React.createElement(GrimorioBrowser,{spells,meta:{livelli:[0,1,2,3,4,5,6,7,8,9],scuole:['invocazione'],classi:['mago']}})));
+ assert.equal(document.querySelector('h1').textContent,'Incantesimi');
+ assert.equal(document.querySelector('li.catalog-row h2').textContent,'Trucchetti');
+ assert.ok(document.querySelector('li.catalog-row').textContent.includes('40 incantesimi'),'level header counts the level, not the page');
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,40,'only the first page is rendered');
  assert.match(button('Mostra altri').textContent,/360/);
  assert.equal(document.querySelectorAll('.catalog-row-first-group').length,1);
@@ -129,9 +132,29 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,40,'changing search resets pagination');
  await click(button('Mostra altri'));
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,80);
- await click(button('Livello'));await click(button('9° liv.'));
+ await click(button('Filtri'));await choose('Livello 9');await click(applyButton());
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,40,'filters search the whole catalog and reset pagination');
  assert.ok(document.querySelector('a[href="/spell/spell-399"]'));
+ // Rows: school and casting time, amber labels written in full only when they apply; 2014 list and filters.
+ const labelled=[
+  {id:'conc',nome_italiano:'Con concentrazione',livello_num:1,scuola:'Evocazione',classi:['mago'],tempo_di_lancio:'Azione',concentrazione:true},
+  {id:'rit',nome_italiano:'Rituale semplice',livello_num:1,scuola:'Divinazione',classi:['chierico'],tempo_di_lancio:'1 minuto o rituale',rituale:true},
+  {id:'both',nome_italiano:'Entrambi',livello_num:2,scuola:'Divinazione',classi:['mago'],tempo_di_lancio:'10 minuti',concentrazione:true,rituale:true},
+  {id:'none',nome_italiano:'Nessuna etichetta',livello_num:0,scuola:'Evocazione',classi:['mago'],tempo_di_lancio:'Azione'},
+  {id:'old',nome_italiano:'Incantesimo 2014',livello_num:3,scuola:'Evocazione',classi:['mago'],tempo_di_lancio:'Azione',edizione:'2014'},
+ ];
+ await act(async()=>root.render(React.createElement(GrimorioBrowser,{key:'labels',spells:labelled,meta:{livelli:[0,1,2,3],scuole:['Divinazione','Evocazione'],classi:['chierico','mago']}})));
+ const row=id=>document.querySelector(`a[href="/spell/${id}"]`).textContent;
+ assert.ok(row('conc').includes('Evocazione · Azione')&&row('conc').includes('Concentrazione')&&!row('conc').includes('Rituale'));
+ assert.ok(row('both').includes('Concentrazione')&&row('both').includes('Rituale'));
+ assert.ok(!row('none').includes('Concentrazione')&&!row('none').includes('Rituale'),'no placeholder labels');
+ assert.ok(!document.querySelector('a[href="/spell/old"]'),'2014 spells only in the 2014 list');
+ await filterWith('Rituale');assert.deepEqual([...document.querySelectorAll('a[href^="/spell/"]')].map(a=>a.getAttribute('href')),['/spell/rit','/spell/both']);
+ await filterWith('Concentrazione');assert.deepEqual([...document.querySelectorAll('a[href^="/spell/"]')].map(a=>a.getAttribute('href')),['/spell/both'],'"e" between filters');
+ await click(button('Filtri'));await click(button('Azzera'));await choose('Livello 1','Livello 2');await click(applyButton());
+ assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,3,'"o" inside the level filter');
+ await click(button('2014'));assert.deepEqual([...document.querySelectorAll('a[href^="/spell/"]')].map(a=>a.getAttribute('href')),['/spell/old']);
+ assert.equal(window.localStorage.getItem('grimorio.incantesimi.edizione'),'2014');window.localStorage.removeItem('grimorio.incantesimi.edizione');
  // Real provider + memoized rows: preserve existing storage on mount and render
  // only the affected row when toggling, including React StrictMode effects.
  const provider=load('components/favorites-provider.tsx');
@@ -140,10 +163,10 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  window.localStorage.setItem(storageKey,JSON.stringify(['spell-0','mostro:gatto']));
  const storagePrototype=Object.getPrototypeOf(window.localStorage),originalSet=storagePrototype.setItem,writes=[];
  storagePrototype.setItem=function(key,value){if(key===storageKey)writes.push(value);return originalSet.call(this,key,value)};
- const colors=load('lib/school-colors.ts'),originalColor=colors.schoolColor,renderCounts=new Map();
- colors.schoolColor=school=>{renderCounts.set(school,(renderCounts.get(school)||0)+1);return originalColor(school)};
- const pair=[{...spells[0],scuola:'Abiurazione'},{...spells[1],scuola:'Evocazione'}];
- const pairProps={spells:pair,meta:{livelli:[0],scuole:['Abiurazione','Evocazione'],classi:['mago']},initialLivello:null,initialScuola:null,initialClasse:null};
+ const types=load('lib/spells-types.ts'),originalCapitalize=types.capitalizeWords,renderCounts=new Map();
+ types.capitalizeWords=text=>{renderCounts.set(text,(renderCounts.get(text)||0)+1);return originalCapitalize(text)};
+ const pair=[{...spells[0],nome_italiano:'Abiurazione',scuola:'Abiurazione'},{...spells[1],nome_italiano:'Evocazione',scuola:'Evocazione'}];
+ const pairProps={spells:pair,meta:{livelli:[0],scuole:['Abiurazione','Evocazione'],classi:['mago']}};
  const renderPair=()=>React.createElement(React.StrictMode,null,React.createElement(provider.FavoritesProvider,null,React.createElement(GrimorioBrowser,pairProps)));
  await act(async()=>root.render(renderPair()));
  assert.deepEqual(JSON.parse(window.localStorage.getItem(storageKey)),['spell-0','mostro:gatto']);
@@ -156,7 +179,7 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await act(async()=>root.render(React.createElement('div')));
  await act(async()=>root.render(renderPair()));
  assert.equal(document.querySelector('a[href="/spell/spell-0"]').closest('li').querySelector('button').getAttribute('aria-pressed'),'false','saved state survives remount');
- colors.schoolColor=originalColor;storagePrototype.setItem=originalSet;
+ types.capitalizeWords=originalCapitalize;storagePrototype.setItem=originalSet;
  // Static list shells read URL filters on the client, including same-path navigation.
  const {GrimorioWithFilters,BestiarioWithFilters}=load('components/catalog-browsers.tsx');
  navigateQuery('livello=9&scuola=invocazione&classe=mago');

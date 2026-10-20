@@ -101,7 +101,23 @@ export interface SpellsMeta {
   livelli: number[];
 }
 
-export type SpellListItem = Pick<Spell, "id" | "nome_italiano" | "livello_num" | "scuola" | "classi">;
+export type SpellListItem = Pick<Spell, "id" | "nome_italiano" | "livello_num" | "scuola" | "classi"> & {
+  /** Shown under the name; short text, never the description. */
+  tempo_di_lancio?: string;
+  /** Present only when true, to keep the list light. */
+  concentrazione?: true;
+  rituale?: true;
+  /** Only 2014 is stored: every other spell belongs to the 2024 list. */
+  edizione?: "2014";
+};
+
+/** Light list fields derived from the stored text (duration and casting time are not changed). */
+export function spellListFlags(row: { tempo_di_lancio?: string | null; durata?: string | null; livello?: string | null }) {
+  return {
+    ...(/^\s*concentrazione\b/i.test(row.durata || "") ? { concentrazione: true as const } : {}),
+    ...(/\brituale\b/i.test(`${row.tempo_di_lancio || ""} ${row.livello || ""}`) ? { rituale: true as const } : {}),
+  };
+}
 
 export function computeMeta(list: readonly SpellListItem[]): SpellsMeta {
   const scuole = new Set<string>();
