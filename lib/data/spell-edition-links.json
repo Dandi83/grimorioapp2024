@@ -1,5 +1,5 @@
 {
-  "_nota": "Abbinamenti incantesimo 2014 -> incantesimo 2024 per identificativo inglese (5e-bits: 'en'), mai per solo nome e livello. 'nomeDiverso' segnala nomi italiani diversi con lo stesso identificativo inglese.",
+  "_nota": "Abbinamenti incantesimo 2014 -> incantesimo 2024 per identificativo inglese (5e-bits: 'en'), mai per solo nome e livello. 'nomeDiverso' segnala nomi italiani diversi con lo stesso identificativo inglese. Senza abbinamento per scelta di Daniele (20/10/2026): Regressione mentale (feeblemind) e Punizione marchiante (branding-smite), identificativi inglesi diversi dal 2024.",
   "links": {
     "aiuto-2014": {
       "id2024": "aiuto",
@@ -202,6 +202,210 @@
     "comprensione-dei-linguaggi-2014": {
       "id2024": "comprensione-dei-linguaggi",
       "en": "comprehend-languages"
+    },
+    "compulsione-2014": {
+      "id2024": "compulsione",
+      "en": "compulsion"
+    },
+    "comunione-2014": {
+      "id2024": "comunione",
+      "en": "commune"
+    },
+    "comunione-con-la-natura-2014": {
+      "id2024": "comunione-con-la-natura",
+      "en": "commune-with-nature"
+    },
+    "confusione-2014": {
+      "id2024": "confusione",
+      "en": "confusion"
+    },
+    "cono-di-freddo-2014": {
+      "id2024": "cono-di-freddo",
+      "en": "cone-of-cold"
+    },
+    "conoscenza-delle-legende-2014": {
+      "id2024": "conoscenza-delle-leggende",
+      "en": "legend-lore",
+      "nomeDiverso": "Conoscenza delle legende (2014) = Conoscenza delle Leggende (2024)"
+    },
+    "contagio-2014": {
+      "id2024": "contagio",
+      "en": "contagion"
+    },
+    "contattare-altri-piani-2014": {
+      "id2024": "contattare-altri-piani",
+      "en": "contact-other-plane"
+    },
+    "contingenza-2014": {
+      "id2024": "contingenza",
+      "en": "contingency"
+    },
+    "controincantesimo-2014": {
+      "id2024": "controincantesimo",
+      "en": "counterspell"
+    },
+    "controllare-acqua-2014": {
+      "id2024": "controllare-acqua",
+      "en": "control-water"
+    },
+    "controllare-tempo-atmosferico-2014": {
+      "id2024": "controllare-tempo-atmosferico",
+      "en": "control-weather"
+    },
+    "costrizione-2014": {
+      "id2024": "costrizione",
+      "en": "geas"
+    },
+    "creare-cibo-e-acqua-2014": {
+      "id2024": "creare-cibo-e-acqua",
+      "en": "create-food-and-water"
+    },
+    "creare-non-morti-2014": {
+      "id2024": "creare-non-morti",
+      "en": "create-undead"
+    },
+    "creare-o-distruggere-acqua-2014": {
+      "id2024": "creare-o-distruggere-acqua",
+      "en": "create-or-destroy-water"
+    },
+    "creazione-2014": {
+      "id2024": "creazione",
+      "en": "creation"
+    },
+    "crescita-di-spine-2014": {
+      "id2024": "crescita-di-spine",
+      "en": "spike-growth"
+    },
+    "crescita-vegetale-2014": {
+      "id2024": "crescita-vegetale",
+      "en": "plant-growth"
+    },
+    "cura-ferite-2014": {
+      "id2024": "cura-ferite",
+      "en": "cure-wounds"
+    },
+    "cura-ferite-di-massa-2014": {
+      "id2024": "cura-ferite-di-massa",
+      "en": "mass-cure-wounds"
+    },
+    "danza-irresistibile-2014": {
+      "id2024": "danza-irresistibile-di-otto",
+      "en": "irresistible-dance",
+      "nomeDiverso": "Danza irresistibile (2014) = DANZA IRRESISTIBILE DI OTTO (2024)"
+    },
+    "dardo-di-fuoco-2014": {
+      "id2024": "dardo-di-fuoco",
+      "en": "fire-bolt"
+    },
+    "dardo-incantato-2014": {
+      "id2024": "dardo-incantato",
+      "en": "magic-missile"
+    },
+    "dardo-tracciante-2014": {
+      "id2024": "dardo-tracciante",
+      "en": "guiding-bolt"
+    },
+    "deflagrazione-occulta-2014": {
+      "id2024": "deflagrazione-occulta",
+      "en": "eldritch-blast"
+    },
+    "desiderio-2014": {
+      "id2024": "desiderio",
+      "en": "wish"
+    },
+    "destriero-fantomatico-2014": {
+      "id2024": "destriero-fantomatico",
+      "en": "phantom-steed"
+    },
+    "disco-fluttuante-2014": {
+      "id2024": "disco-fluttuante-di-tenser",
+      "en": "floating-disk",
+      "nomeDiverso": "Disco fluttuante (2014) = DISCO FLUTTUANTE DI TENSER (2024)"
+    },
+    "disintegrazione-2014": {
+      "id2024": "disintegrazione",
+      "en": "disintegrate"
+    },
+    "dissolvi-il-bene-e-il-male-2014": {
+      "id2024": "dissolvi-il-bene-e-il-male",
+      "en": "dispel-evil-and-good"
+    },
+    "dissolvi-magie-2014": {
+      "id2024": "dissolvi-magie",
+      "en": "dispel-magic"
+    },
+    "dito-della-morte-2014": {
+      "id2024": "dito-della-morte",
+      "en": "finger-of-death"
+    },
+    "divinazione-2014": {
+      "id2024": "divinazione",
+      "en": "divination"
+    },
+    "dominare-bestie-2014": {
+      "id2024": "dominare-bestie",
+      "en": "dominate-beast"
+    },
+    "dominare-mostri-2014": {
+      "id2024": "dominare-mostri",
+      "en": "dominate-monster"
+    },
+    "dominare-persone-2014": {
+      "id2024": "dominare-persone",
+      "en": "dominate-person"
+    },
+    "eroismo-2014": {
+      "id2024": "eroismo",
+      "en": "heroism"
+    },
+    "esilio-2014": {
+      "id2024": "esilio",
+      "en": "banishment"
+    },
+    "esplosione-solare-2014": {
+      "id2024": "esplosione-solare",
+      "en": "sunburst"
+    },
+    "estasiare-2014": {
+      "id2024": "estasiare",
+      "en": "enthrall"
+    },
+    "evoca-animali-2014": {
+      "id2024": "evoca-animali",
+      "en": "conjure-animals"
+    },
+    "evoca-celestiale-2014": {
+      "id2024": "evoca-celestiale",
+      "en": "conjure-celestial"
+    },
+    "evoca-creature-boschive-2014": {
+      "id2024": "evoca-creature-boschive",
+      "en": "conjure-woodland-beings"
+    },
+    "evoca-elementale-2014": {
+      "id2024": "evoca-elementale",
+      "en": "conjure-elemental"
+    },
+    "evoca-elementali-minori-2014": {
+      "id2024": "evoca-elementali-minori",
+      "en": "conjure-minor-elementals"
+    },
+    "evoca-folletto-2014": {
+      "id2024": "evoca-folletto",
+      "en": "conjure-fey"
+    },
+    "evocazioni-istantanee-2014": {
+      "id2024": "evocazioni-istantanee-di-drawmij",
+      "en": "instant-summons",
+      "nomeDiverso": "Evocazioni istantanee (2014) = EVOCAZIONI ISTANTANEE DI DRAWMIJ (2024)"
+    },
+    "fabbricare-2014": {
+      "id2024": "fabbricare",
+      "en": "fabricate"
+    },
+    "faro-di-speranza-2014": {
+      "id2024": "faro-di-speranza",
+      "en": "beacon-of-hope"
     }
   }
 }

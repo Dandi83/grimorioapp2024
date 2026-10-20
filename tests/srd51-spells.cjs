@@ -54,7 +54,8 @@ for(const [id,link] of Object.entries(links)){
  assert.equal(link.en,record.en,`${id}: same English identifier`);
  assert.ok(ids2024.has(link.id2024),`${id}: linked 2024 spell exists`);
 }
-assert.ok(!('regressione-mentale-2014' in links),'Feeblemind is never linked to Mind Blank');
+assert.ok(!('regressione-mentale-2014' in links)&&!('punizione-marchiante-2014' in links),'no link without the same English identifier (approved 20/10/2026)');
+assert.equal(data.records.length,100,'blocks 1 and 2');
 
 const legacy=load('lib/srd-spells-2014.ts');
 // Only preview and production serve the files; local runs and the admin read the database only.
@@ -108,8 +109,13 @@ assert.equal(legacy.spellEditionLink('aiuto',undefined),undefined);
  assert.ok(linked>=10,`2014 sheets link their spells (${linked})`);
  const accolito=renderToStaticMarkup(React.createElement(MonsterSheetBody,{monster:monsters2014.find(m=>m.id==='accolito-2014'),legacy:true}));
  assert.ok(hrefs(accolito).includes('/spell/benedizione-2014'));
+ // The approved aliases are active now that their spells are published.
+ const djinni=renderToStaticMarkup(React.createElement(MonsterSheetBody,{monster:monsters2014.find(m=>m.id==='djinni-2014'),legacy:true}));
+ assert.ok(hrefs(djinni).includes('/spell/creare-cibo-e-acqua-2014'),'«creare cibo e bevande» opens Creare cibo e acqua 2014');
+ const ginosfinge=renderToStaticMarkup(React.createElement(MonsterSheetBody,{monster:monsters2014.find(m=>m.id==='ginosfinge-2014'),legacy:true}));
+ assert.ok(hrefs(ginosfinge).includes('/spell/conoscenza-delle-legende-2014'),'«conoscenza delle leggende» opens Conoscenza delle legende 2014');
  const list='<strong>Incantesimi.</strong> Prepara:<br>A volontà: comando, creare cibo e bevande, conoscenza delle leggende, palla di fuoco';
- assert.deepEqual(refs.inlineSpellReferences(list,true).map(r=>r.href),['/spell/comando-2014'],'aliases wait for their spell; 2024-only names stay plain');
+ assert.deepEqual(refs.inlineSpellReferences(list,true).map(r=>r.href).sort(),['/spell/comando-2014','/spell/conoscenza-delle-legende-2014','/spell/creare-cibo-e-acqua-2014'],'2024-only names stay plain');
  assert.ok(refs.formatMonsterSpellLists(list,true).includes('<em>palla di fuoco</em>'),'2014 sheets keep their italics');
  assert.ok(refs.inlineSpellReferences(list).every(r=>!r.href.endsWith('-2014')),'2024 sheets never open 2014 cards');
  console.log(`SRD 5.1 spells: ${data.records.length} records with fingerprints, English links, 2014 selector and ${linked} creature bollini to 2014 cards verified.`);
