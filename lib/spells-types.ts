@@ -147,3 +147,28 @@ export function capitalizeWords(s: string): string {
     .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : ""))
     .join(" ");
 }
+
+/** Options of the "Tempo di lancio" filter. */
+export const CASTING_TIMES = ["azione", "azione-bonus", "reazione", "lungo"] as const;
+export type CastingTime = (typeof CASTING_TIMES)[number];
+export const CASTING_TIME_LABEL: Record<CastingTime, string> = {
+  "azione": "Azione", "azione-bonus": "Azione bonus", "reazione": "Reazione", "lungo": "1 minuto o più",
+};
+
+const CASTING_WORDS = /reazione|azionebonus|azione|minut|ora|ore|giorn/;
+
+/**
+ * Filter option from the stored casting time, or undefined when it cannot be recognized.
+ * Only letters are read, so stored values broken by the PDF text layer ("a5z°i one",
+ * "2az° ione bonus", "l minuto", "o re") still count; the first time named decides
+ * ("1 azione o 8 ore" is an action).
+ */
+export function castingTimeGroup(tempo: string | undefined): CastingTime | undefined {
+  const letters = (tempo || "").toLowerCase().normalize("NFD").replace(/[^a-z]/g, "");
+  const word = letters.match(CASTING_WORDS)?.[0];
+  if (!word) return undefined;
+  if (word === "reazione") return "reazione";
+  if (word === "azionebonus") return "azione-bonus";
+  if (word === "azione") return "azione";
+  return "lungo";
+}
