@@ -111,9 +111,12 @@ def inline_html(spans):
 def split_name(spans, bold_kind):
     """Leading bold spans form an item name ("Nube di muco."); the rest is the text."""
     name, rest, in_name = [], [], True
-    for span in spans:
+    for index, span in enumerate(spans):
         bold = 'Bold' in span[1] and (bold_kind == 'any' or 'Italic' in span[1] or span[0].strip() in ('', '.'))
-        if in_name and bold:
+        # A space in another font inside a name: "Tocco" + " " + "paralizzante."
+        joins = (not span[0].strip() and not ''.join(name).rstrip().endswith('.')
+                 and index + 1 < len(spans) and 'Bold' in spans[index + 1][1])
+        if in_name and (bold or joins):
             name.append(span[0])
         else:
             in_name = False

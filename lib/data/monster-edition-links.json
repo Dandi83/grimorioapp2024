@@ -497,6 +497,159 @@
     },
     "golem-di-carne-2014": {
       "id2024": "golem-di-carne"
+    },
+    "golem-di-ferro-2014": {
+      "id2024": "golem-di-ferro"
+    },
+    "golem-di-pietra-2014": {
+      "id2024": "golem-di-pietra"
+    },
+    "gorgone-2014": {
+      "id2024": "gorgone"
+    },
+    "gorilla-2014": {
+      "id2024": "gorilla"
+    },
+    "gorilla-gigante-2014": {
+      "id2024": "gorilla-gigante"
+    },
+    "granchio-2014": {
+      "id2024": "granchio"
+    },
+    "granchio-gigante-2014": {
+      "id2024": "granchio-gigante"
+    },
+    "grick-2014": {
+      "id2024": "grick"
+    },
+    "grifone-2014": {
+      "id2024": "grifone"
+    },
+    "grimlock-2014": {
+      "id2024": "grimlock"
+    },
+    "guardia-2014": {
+      "id2024": "guardia"
+    },
+    "guardiano-protettore-2014": {
+      "id2024": "guardiano-protettore"
+    },
+    "gufo-2014": {
+      "id2024": "gufo"
+    },
+    "gufo-gigante-2014": {
+      "id2024": "gufo-gigante"
+    },
+    "hezrou-2014": {
+      "id2024": "hezrou"
+    },
+    "hobgoblin-2014": {
+      "id2024": "hobgoblin-guerriero",
+      "daApprovare": "Hobgoblin (2014) = Hobgoblin guerriero (2024)"
+    },
+    "idra-2014": {
+      "id2024": "idra"
+    },
+    "iena-2014": {
+      "id2024": "iena"
+    },
+    "iena-gigante-2014": {
+      "id2024": "iena-gigante"
+    },
+    "imp-2014": {
+      "id2024": "imp"
+    },
+    "ippogrifo-2014": {
+      "id2024": "ippogrifo"
+    },
+    "kraken-2014": {
+      "id2024": "kraken"
+    },
+    "lamia-2014": {
+      "id2024": "lamia"
+    },
+    "lemure-2014": {
+      "id2024": "lemure"
+    },
+    "leone-2014": {
+      "id2024": "leone"
+    },
+    "lich-2014": {
+      "id2024": "lich"
+    },
+    "lucertola-2014": {
+      "id2024": "lucertola"
+    },
+    "lucertola-gigante-2014": {
+      "id2024": "lucertola-gigante"
+    },
+    "lupo-2014": {
+      "id2024": "lupo"
+    },
+    "lupo-feroce-2014": {
+      "id2024": "lupo-feroce"
+    },
+    "lupo-invernale-2014": {
+      "id2024": "lupo-invernale"
+    },
+    "lupo-mannaro-2014": {
+      "id2024": "lupo-mannaro"
+    },
+    "magmin-2014": {
+      "id2024": "magmin"
+    },
+    "mago-2014": {
+      "id2024": "mago"
+    },
+    "malvivente-2014": {
+      "id2024": "bruto",
+      "daApprovare": "Malvivente (2014) = Bruto (2024)"
+    },
+    "mammut-2014": {
+      "id2024": "mammut"
+    },
+    "manticora-2014": {
+      "id2024": "manticora"
+    },
+    "manto-assassino-2014": {
+      "id2024": "manto-assassino"
+    },
+    "mantoscuro-2014": {
+      "id2024": "mantoscuro"
+    },
+    "marilith-2014": {
+      "id2024": "marilith"
+    },
+    "marinide-2014": {
+      "id2024": "marinide-schermagliatore",
+      "daApprovare": "Marinide (2014) = Marinide schermagliatore (2024)"
+    },
+    "mastino-2014": {
+      "id2024": "mastino"
+    },
+    "medusa-2014": {
+      "id2024": "medusa"
+    },
+    "megera-marina-2014": {
+      "id2024": "megera-marina"
+    },
+    "megera-notturna-2014": {
+      "id2024": "megera-notturna"
+    },
+    "megera-verde-2014": {
+      "id2024": "megera-verde"
+    },
+    "melma-grigia-2014": {
+      "id2024": "melma-grigia"
+    },
+    "mephit-del-ghiaccio-2014": {
+      "id2024": "mephit-del-ghiaccio"
+    },
+    "mephit-del-magma-2014": {
+      "id2024": "mephit-del-magma"
+    },
+    "mephit-del-vapore-2014": {
+      "id2024": "mephit-del-vapore"
     }
   }
 }
