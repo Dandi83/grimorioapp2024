@@ -662,7 +662,8 @@
     },
     "mezzodrago-rosso-veterano-2014": {
       "id2024": "mezzodrago",
-      "daApprovare": "Mezzodrago rosso veterano (2014) = Mezzodrago (2024)"
+      "nomeDiverso": "Mezzodrago rosso veterano (2014) = Mezzodrago (2024)",
+      "approvato": "2026-10-20"
     },
     "millepiedi-gigante-2014": {
       "id2024": "millepiedi-gigante"
@@ -672,7 +673,8 @@
     },
     "minotauro-2014": {
       "id2024": "minotauro-di-baphomet",
-      "daApprovare": "Minotauro (2014) = Minotauro di Baphomet (2024)"
+      "nomeDiverso": "Minotauro (2014) = Minotauro di Baphomet (2024)",
+      "approvato": "2026-10-20"
     },
     "mulo-2014": {
       "id2024": "mulo"
@@ -769,7 +771,8 @@
     },
     "quipper-2014": {
       "id2024": "piranha",
-      "daApprovare": "Quipper (2014) = Piranha (2024)"
+      "nomeDiverso": "Quipper (2014) = Piranha (2024)",
+      "approvato": "2026-10-20"
     },
     "ragno-2014": {
       "id2024": "ragno"
