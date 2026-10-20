@@ -16,8 +16,16 @@ async function startServer() {
   }
   throw new Error("server did not start");
 }
-function stopServer() {
-  if (server) { try { process.kill(-server.pid, "SIGTERM"); } catch { /* already stopped */ } server = undefined; }
+// A hard stop that waits for the process to end: a gentle stop lets the server answer, for
+// a moment, on the connection the browser keeps open, and the page then comes from the
+// network instead of the saved copy (intermittent failures on 20 October 2026).
+async function stopServer() {
+  if (!server) return;
+  const stopping = server;
+  server = undefined;
+  const exited = new Promise(resolve => stopping.once("exit", resolve));
+  try { process.kill(-stopping.pid, "SIGKILL"); } catch { /* already stopped */ }
+  if (stopping.exitCode === null && stopping.signalCode === null) await exited;
 }
 test.afterEach(stopServer);
 
@@ -33,7 +41,7 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/Dardo Incantato/i);
   await expect(banner(page)).toHaveCount(0);
 
-  stopServer();
+  await stopServer();
   await expect.poll(async () => { try { await fetch(base + "/"); return "up"; } catch { return "down"; } }).toBe("down");
   await page.goto(base + "/spell/dardo-incantato");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/Dardo Incantato/i);
