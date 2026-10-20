@@ -40,4 +40,12 @@ assert.ok(html('<pre>Colpito: 1d6</pre>').includes('Colpito: 1d6</pre>'));
 // Casting lists keep one line per frequency.
 const list=renderToStaticMarkup(createElement(MonsterText,{html:'<strong>Incantesimi.</strong> Lancia: <strong>A volontà:</strong> <em>luce</em>'}));
 assert.match(list,/data-spell-frequency="true"[\s\S]*<span class="italic">luce<\/span>/);
-console.log('Sheet emphasis: same formulas italic on every sheet, spell names italic, stray italics plain, bold and tables unchanged.');
+// 2014 casting lists (plain labels) are grouped exactly like the 2024 ones, text unchanged.
+const lich14=renderToStaticMarkup(createElement(MonsterText,{html:'<strong>Incantesimi.</strong> Il lich è un incantatore di 18° livello:<br>Trucchetti (a volontà): <em>mano magica, raggio di gelo</em><br>1° livello (4 slot): <em>dardo incantato, scudo</em><br>3/giorno ciascuno: <em>parola insolita</em>'}));
+const groups=[...lich14.matchAll(/data-spell-frequency="true"/g)].length;
+assert.equal(groups,3,'one group per 2014 casting line');
+for(const label of ['Trucchetti (a volontà):','1° livello (4 slot):','3/giorno ciascuno:'])assert.ok(lich14.includes(`<span class="font-semibold text-primary">${label}</span>`),label);
+assert.match(lich14,/<span class="italic">parola insolita<\/span>/,'2014 names missing from the catalog stay italic in their group');
+assert.equal(lich14.replace(/<[^>]+>/g,'').replace(/\s+/g,''),'Incantesimi.Illichèunincantatoredi18°livello:Trucchetti(avolontà):manomagica,raggiodigelo1°livello(4slot):dardoincantato,scudo3/giornociascuno:parolainsolita','same words in the same order');
+assert.ok(!renderToStaticMarkup(createElement(MonsterText,{html:'Il drago può usare questa azione 3/giorno.'})).includes('data-spell-frequency'),'prose mentioning a frequency is not a list');
+console.log('Sheet emphasis: same formulas italic on every sheet, spell names italic, stray italics plain, bold and tables unchanged, 2014 casting lists grouped like 2024.');
