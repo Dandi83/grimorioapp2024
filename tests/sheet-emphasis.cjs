@@ -19,6 +19,9 @@ assert.equal(official.replace(/\s+/g,' '),plain.replace(/\s+/g,' '),'official an
 assert.ok(html('<em>Primo</em> <em>fallimento:</em> trattenuto.').includes(rule('Primo fallimento:')));
 assert.ok(html('Attacco con arma da mischia: +4 al tiro per colpire.').includes(rule('Attacco con arma da mischia:')));
 assert.ok(html('<em>Attacco con arma da mischia o con arma a distanza:</em> +6').includes(rule('Attacco con arma da mischia o con arma a distanza:')),'SRD 5.1 wording');
+assert.match(html('A volontà: <em>individuazione del magico, creare cibo e bevande</em> (può creare vino)<br>1/giorno ciascuno: <em>desiderio</em>'),/<span class="italic">individuazione del magico, creare cibo e bevande<\/span> \(può creare vino\)<br\/>1\/giorno ciascuno: <span class="italic">desiderio<\/span>/,'casting lists keep 2014 spell names italic');
+assert.ok(html('<em>Attacco a distanza con incantesimo:</em> +7').includes(rule('Attacco a distanza con incantesimo:')),'SRD 5.1 spell attack wording');
+assert.ok(!html('Nel suo covo: <em>parola qualsiasi</em>').includes('italic'),'outside casting lists stray italics stay plain');
 assert.match(html('1° livello (4 slot): <em>armatura magica*, dardo incantato</em>'),/<span class="italic">armatura magica\*, dardo incantato<\/span>/,'2014 spell lists keep italics, footnote marks included');
 assert.ok(html('Tiro salvezza su Destrezza: CD 14. Fallimento: 10 danni. Successo: danni dimezzati.').includes(rule('Tiro salvezza su Destrezza:')));
 assert.ok(html('Tiro salvezza fallito: 4d6 danni.').includes(rule('Tiro salvezza fallito:')));

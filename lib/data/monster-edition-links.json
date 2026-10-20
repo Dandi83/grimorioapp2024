@@ -3,23 +3,28 @@
   "links": {
     "sciame-di-scarabei-2014": {
       "id2024": "sciame-di-insetti",
-      "daApprovare": "Sciame di scarabei (2014) = Sciame di insetti (2024)"
+      "nomeDiverso": "Sciame di scarabei (2014) = Sciame di insetti (2024)",
+      "approvato": "2026-10-20"
     },
     "sciame-di-millepiedi-2014": {
       "id2024": "sciame-di-insetti",
-      "daApprovare": "Sciame di millepiedi (2014) = Sciame di insetti (2024)"
+      "nomeDiverso": "Sciame di millepiedi (2014) = Sciame di insetti (2024)",
+      "approvato": "2026-10-20"
     },
     "sciame-di-ragni-2014": {
       "id2024": "sciame-di-insetti",
-      "daApprovare": "Sciame di ragni (2014) = Sciame di insetti (2024)"
+      "nomeDiverso": "Sciame di ragni (2014) = Sciame di insetti (2024)",
+      "approvato": "2026-10-20"
     },
     "sciame-di-vespe-2014": {
       "id2024": "sciame-di-insetti",
-      "daApprovare": "Sciame di vespe (2014) = Sciame di insetti (2024)"
+      "nomeDiverso": "Sciame di vespe (2014) = Sciame di insetti (2024)",
+      "approvato": "2026-10-20"
     },
     "topo-gigante-contagioso-2014": {
       "id2024": "topo-gigante",
-      "daApprovare": "Topo gigante contagioso (2014) = Topo gigante (2024)"
+      "nomeDiverso": "Topo gigante contagioso (2014) = Topo gigante (2024)",
+      "approvato": "2026-10-20"
     },
     "aboleth-2014": {
       "id2024": "aboleth"
@@ -188,11 +193,13 @@
     },
     "cockatrice-2014": {
       "id2024": "coccatrice",
-      "daApprovare": "Cockatrice (2014) = Coccatrice (2024)"
+      "nomeDiverso": "Cockatrice (2014) = Coccatrice (2024)",
+      "approvato": "2026-10-20"
     },
     "combattente-tribale-2014": {
       "id2024": "guerriero-di-fanteria",
-      "daApprovare": "Combattente tribale (2014) = Guerriero di fanteria (2024)"
+      "nomeDiverso": "Combattente tribale (2014) = Guerriero di fanteria (2024)",
+      "approvato": "2026-10-20"
     },
     "corvo-2014": {
       "id2024": "corvo"
@@ -334,6 +341,159 @@
     },
     "drago-nero-antico-2014": {
       "id2024": "drago-nero-antico"
+    },
+    "drago-nero-cucciolo-2014": {
+      "id2024": "drago-nero-cucciolo"
+    },
+    "drago-nero-giovane-2014": {
+      "id2024": "drago-nero-giovane"
+    },
+    "drago-rosso-adulto-2014": {
+      "id2024": "drago-rosso-adulto"
+    },
+    "drago-rosso-antico-2014": {
+      "id2024": "drago-rosso-antico"
+    },
+    "drago-rosso-cucciolo-2014": {
+      "id2024": "drago-rosso-cucciolo"
+    },
+    "drago-rosso-giovane-2014": {
+      "id2024": "drago-rosso-giovane"
+    },
+    "drago-verde-adulto-2014": {
+      "id2024": "drago-verde-adulto"
+    },
+    "drago-verde-antico-2014": {
+      "id2024": "drago-verde-antico"
+    },
+    "drago-verde-cucciolo-2014": {
+      "id2024": "drago-verde-cucciolo"
+    },
+    "drago-verde-giovane-2014": {
+      "id2024": "drago-verde-giovane"
+    },
+    "dretch-2014": {
+      "id2024": "dretch"
+    },
+    "driade-2014": {
+      "id2024": "driade"
+    },
+    "drider-2014": {
+      "id2024": "drider"
+    },
+    "druido-2014": {
+      "id2024": "druido"
+    },
+    "efreeti-2014": {
+      "id2024": "efreeti"
+    },
+    "elefante-2014": {
+      "id2024": "elefante"
+    },
+    "elementale-del-fuoco-2014": {
+      "id2024": "elementale-del-fuoco"
+    },
+    "elementale-dell-acqua-2014": {
+      "id2024": "elementale-dell-acqua"
+    },
+    "elementale-dell-aria-2014": {
+      "id2024": "elementale-dell-aria"
+    },
+    "elementale-della-terra-2014": {
+      "id2024": "elementale-della-terra"
+    },
+    "erinni-2014": {
+      "id2024": "erinni"
+    },
+    "esploratore-2014": {
+      "id2024": "esploratore"
+    },
+    "ettercap-2014": {
+      "id2024": "ettercap"
+    },
+    "ettin-2014": {
+      "id2024": "ettin"
+    },
+    "faina-2014": {
+      "id2024": "faina"
+    },
+    "faina-gigante-2014": {
+      "id2024": "faina-gigante"
+    },
+    "falco-2014": {
+      "id2024": "falco"
+    },
+    "falco-di-sangue-2014": {
+      "id2024": "falco-di-sangue"
+    },
+    "fantasma-2014": {
+      "id2024": "fantasma"
+    },
+    "fauce-gorgogliante-2014": {
+      "id2024": "fauce-gorgogliante"
+    },
+    "fungo-viola-2014": {
+      "id2024": "fungo-viola"
+    },
+    "fuoco-fatuo-2014": {
+      "id2024": "fuoco-fatuo"
+    },
+    "fustigatore-2014": {
+      "id2024": "fustigatore"
+    },
+    "gargoyle-2014": {
+      "id2024": "gargoyle"
+    },
+    "gatto-2014": {
+      "id2024": "gatto"
+    },
+    "ghast-2014": {
+      "id2024": "ghast"
+    },
+    "ghoul-2014": {
+      "id2024": "ghoul"
+    },
+    "gigante-del-fuoco-2014": {
+      "id2024": "gigante-del-fuoco"
+    },
+    "gigante-del-gelo-2014": {
+      "id2024": "gigante-del-gelo"
+    },
+    "gigante-delle-colline-2014": {
+      "id2024": "gigante-delle-colline"
+    },
+    "gigante-delle-nuvole-2014": {
+      "id2024": "gigante-delle-nuvole"
+    },
+    "gigante-delle-pietre-2014": {
+      "id2024": "gigante-delle-pietre"
+    },
+    "gigante-delle-tempeste-2014": {
+      "id2024": "gigante-delle-tempeste"
+    },
+    "ginosfinge-2014": {
+      "id2024": "sfinge-della-conoscenza",
+      "daApprovare": "Ginosfinge (2014) = Sfinge della conoscenza (2024)"
+    },
+    "glabrezu-2014": {
+      "id2024": "glabrezu"
+    },
+    "gladiatore-2014": {
+      "id2024": "gladiatore"
+    },
+    "gnoll-2014": {
+      "id2024": "gnoll-guerriero",
+      "daApprovare": "Gnoll (2014) = Gnoll guerriero (2024)"
+    },
+    "goblin-2014": {
+      "id2024": "goblin-guerriero",
+      "daApprovare": "Goblin (2014) = Goblin guerriero (2024)"
+    },
+    "golem-di-argilla-2014": {
+      "id2024": "golem-di-argilla"
+    },
+    "golem-di-carne-2014": {
+      "id2024": "golem-di-carne"
     }
   }
 }

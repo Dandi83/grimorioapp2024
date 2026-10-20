@@ -66,6 +66,7 @@ const RULE_LABEL = new RegExp(
   "(?<![\\p{L}])(?:" + [
     "Tiro per colpire (?:in mischia o a distanza|in mischia|a distanza)",
     "Attacco con (?:arma|incantesimo) (?:da mischia o (?:con arma )?a distanza|da mischia|a distanza)",
+    "Attacco (?:in mischia|a distanza) con (?:arma|incantesimo)",
     "Colpito o mancato", "Colpito", "Mancato",
     "(?:Esito\\s*[-–]\\s*)?Tiro salvezza su (?:Forza|Destrezza|Costituzione|Intelligenza|Saggezza|Carisma)",
     "Tiro salvezza (?:fallito|superato)",
@@ -88,10 +89,17 @@ function isSpellNameText(text: string) {
  * One emphasis style for every sheet: italics only on spell names and game formulas.
  * Other italics in the source (imported or typed in the admin area) are shown as plain text.
  */
+// A casting-list line: "1° livello (4 slot):", "A volontà:", "3/giorno ciascuno:"...
+const CASTING_LINE = /^\s*(?:Trucchetti\b[^:]*|\d+°\s*livello[^:]*|A volontà|\d+\s*\/\s*giorno[^:]*|\d+ volte al giorno[^:]*):/i;
+
 function normalizeEmphasis(html: string) {
   return html
-    .replace(/<(em|i)>([\s\S]*?)<\/\1>/gi, (_whole, _tag, inner: string) =>
-      isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " "))) ? `<spellname>${inner}</spellname>` : inner)
+    .replace(/<(em|i)>([\s\S]*?)<\/\1>/gi, (_whole, _tag, inner: string, offset: number, source: string) => {
+      // Italics in a casting list are spell names even when the 2014 name differs from the catalog.
+      const line = source.slice(0, offset).split(/<br\s*\/?>/i).pop()!.replace(/<[^>]+>/g, "");
+      const spells = CASTING_LINE.test(line) || isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " ")));
+      return spells ? `<spellname>${inner}</spellname>` : inner;
+    })
     .replace(/<\s*\/?\s*(?:em|i)\s*>/gi, "")
     .replace(/(^|>)([^<]*)/g, (_whole, edge: string, text: string) => edge + text.replace(RULE_LABEL, "<rulelabel>$&</rulelabel>"));
 }
