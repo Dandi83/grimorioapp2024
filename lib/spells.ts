@@ -11,6 +11,7 @@ import { applySrdDescription, getSrdSource } from "./srd-descriptions";
 import { applyOriginalDescription, getOriginalSource } from "./original-descriptions";
 import { previewSpellRows, previewSpellById } from "./srd-additions";
 import { isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
+import { repairCatalogSpell } from "./spell-catalog-repairs";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
 // keep working. The DB access below is server-only.
@@ -27,8 +28,9 @@ interface RawRow {
   descrizione: string;
 }
 
-function toSpell(r: RawRow): Spell {
-  r = applyOriginalDescription(applySrdDescription(r));
+function toSpell(r: RawRow, repair = true): Spell {
+  // The reserved area edits the stored values, so it never sees the display-only repairs.
+  r = applyOriginalDescription(applySrdDescription(repair ? repairCatalogSpell(r) : r));
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
   return {
     edizione: isLegacySpellId(r.id) ? "2014" : getSrdSource(r.id, r.descrizione) || getOriginalSource(r.id, r.descrizione) ? "2024" : undefined,
@@ -55,7 +57,7 @@ export async function getAllSpells(options: { includePreview?: boolean } = {}): 
   const environment = options.includePreview === false ? undefined : process.env.VERCEL_ENV;
   return withLegacySpells(previewSpellRows(rows, environment), environment)
     .map(row => {
-      const spell = toSpell(row);
+      const spell = toSpell(row, options.includePreview !== false);
       return { ...spell, edizione: editions.get(row.id) ?? spell.edizione };
     });
 }

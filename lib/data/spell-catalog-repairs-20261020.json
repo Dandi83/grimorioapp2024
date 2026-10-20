@@ -1,0 +1,61 @@
+{
+  "_nota": "Correzioni del catalogo 2024 approvate da Daniele il 20/10/2026, applicate solo in lettura (il database non viene scritto). 'livelli': numero di livello, usato SOLO se il livello salvato non è riconoscibile; 'nomi': usato SOLO se il nome salvato è ancora esattamente quello rovinato ('da'). Ogni modifica fatta nell'area riservata vince.",
+  "livelli": {
+    "dito-della-morte": 7,
+    "fabbricare": 4,
+    "i-re-spirare-sott-acqua-2": 3,
+    "imprigionare": 9,
+    "inaridire": 4,
+    "infliggi-ferite": 1,
+    "metamorfosi": 4,
+    "morte-apparente": 3,
+    "muro-prismatico": 9,
+    "parlare-con-i-morti": 3,
+    "parola-del-potere-fortificare": 7,
+    "parola-del-potere-guarire": 9,
+    "parola-del-potere-uccidere": 9,
+    "parola-guaritrice-di-massa": 3,
+    "passare-senza-tracce": 2,
+    "pelle-coriacea": 2,
+    "presenza-regale-di-yolande": 5,
+    "proibizione": 6,
+    "proiezione-astrale": 9,
+    "protezione-dai-veleni": 2,
+    "punizione-demoralizzante": 4,
+    "punizione-splendente": 2,
+    "raggio-di-affaticamento": 2,
+    "raggio-di-infermita": 1,
+    "reincarnazione": 5,
+    "resurrezione": 7,
+    "resurrezione-pura": 9,
+    "rianimare-morti": 5,
+    "richiama-non-morto": 3,
+    "rinascita": 3,
+    "riposo-inviolato": 2,
+    "risveglio": 5,
+    "ritirata-rapida": 1,
+    "santificare": 5,
+    "scagliare-maledizione": 3,
+    "sfera-elastica-di-0tiluke": 4,
+    "sguardo-penetrante": 6,
+    "simbolo": 7,
+    "trucco-della-corda": 2,
+    "vigilanza-e-interdizione": 6,
+    "vita-falsata": 1,
+    "vuoto-mentale": 8
+  },
+  "nomi": {
+    "veleni": {
+      "da": "VELENI",
+      "a": "INDIVIDUAZIONE DELLE MALATTIE E DEI VELENI"
+    },
+    "i-re-spirare-sott-acqua": {
+      "da": "I-'\"RE\" SPIRARE SOTT'ACQUA",
+      "a": "RESPIRARE SOTT'ACQUA"
+    },
+    "i-re-spirare-sott-acqua-2": {
+      "da": "I'\"RE\" SPIRARE SOTT'ACQUA",
+      "a": "RESPIRARE SOTT'ACQUA"
+    }
+  }
+}
