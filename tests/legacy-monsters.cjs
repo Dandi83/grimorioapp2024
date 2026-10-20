@@ -72,6 +72,9 @@ function load(relative, deps = {}) {
     assert.ok(!html.includes('Testo integrale: SRD 5.2.1'));
     assert.ok(html.includes('Attribuzione e licenza'));
     assert.ok(html.includes('regole 2014'));
+    // Initiative is not printed in 2014 sheets: the Dexterity modifier, marked as calculated.
+    const mod = Math.floor((monster.destrezza - 10) / 2);
+    assert.ok(html.includes(`>Iniziativa</p><p class="font-serif text-[15px] leading-5 text-foreground italic">${mod >= 0 ? '+' + mod : mod}</p><p class="mt-1 text-[11px] italic leading-4 text-muted">calcolata dalla Destrezza</p>`), monster.id + ': calculated initiative');
     assert.ok(!html.includes('href="/manuale/condizioni-'), '2014 rules must not silently link to 2024 conditions');
     assert.ok(!html.includes('href="/spell/'), '2014 spells must not silently link to 2024 spell versions');
     if (/danni (?:da )?(?:acido|contundenti|perforanti|taglienti|fuoco|freddo|fulmine|tuono|veleno|necrotici|radiosi|psichici|da forza)/.test(monster.azioni + monster.tratti)) assert.ok(html.includes('data-damage-type='), monster.id + ': approved damage icons remain visible');

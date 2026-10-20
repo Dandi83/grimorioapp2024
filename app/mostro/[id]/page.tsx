@@ -137,7 +137,12 @@ export default async function MonsterDetailPage({
         <MetaCell label="Punti Ferita" value={monster.punti_ferita} />
         <MetaCell label="Velocità" value={monster.velocita} />
         <MetaCell label="Grado Sfida" value={monster.grado_sfida} />
-        {monster.iniziativa && <MetaCell label="Iniziativa" value={monster.iniziativa} />}
+        {monster.iniziativa ? (
+          <MetaCell label="Iniziativa" value={monster.iniziativa} />
+        ) : legacy ? (
+          // 2014 sheets print no initiative: the Dexterity modifier, marked as calculated.
+          <MetaCell label="Iniziativa" value={abilityMod(monster.destrezza)} note="calcolata dalla Destrezza" />
+        ) : null}
         {monster.bonus_competenza && <MetaCell label="Bonus di competenza" value={monster.bonus_competenza} />}
       </div>
 

@@ -118,6 +118,11 @@ def split_name(spans, bold_kind):
         else:
             in_name = False
             rest.append(span)
+    # The closing period is sometimes set in plain type: "Assorbimento del fulmine" + "."
+    if name and rest and rest[0][0].lstrip().startswith('.') and not ''.join(name).rstrip().endswith('.'):
+        text, font, size = rest[0]
+        name.append('.')
+        rest = [(text.lstrip()[1:], font, size)] + rest[1:]
     return ''.join(name).strip(), rest
 
 
