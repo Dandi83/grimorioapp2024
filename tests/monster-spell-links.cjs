@@ -49,9 +49,12 @@ function load(relative){
   selected.edizione=legacy?'2014':'2024';
   const preview=renderToStaticMarkup(React.createElement(AdminMonsterPreview,{monster:selected,legacy}));
   const publicHtml=renderToStaticMarkup(await page({params:Promise.resolve({id:selected.id})}));
+  // Same sheet component: the editor preview shows exactly the public sheet body.
+  const body=html=>html.slice(html.indexOf('<div class="grid grid-cols-3'),html.lastIndexOf('</section>'));
+  assert.ok(body(preview).length>1000);assert.equal(body(preview),body(publicHtml),'preview and public sheet are identical');
   for(const output of [preview,publicHtml]){
    for(const id of ids)assert.equal(output.includes(`href="/spell/${id}"`),!legacy,'preview/public edition parity');
-   for(const text of ['+4 (14)','+3','Corazza','Passo.'])assert.ok(output.includes(text),text);
+   for(const text of ['+4','(14)','bonus di competenza +3','Corazza','Passo.'])assert.ok(output.replace(/<[^>]+>/g,'').includes(text),text);
    assert.ok(output.includes('Equipaggiamento'),'new and existing creatures use the requested label');
    assert.ok(!output.includes('Attrezzatura'),'old label is no longer displayed');
    assert.ok(!output.includes('hero-bestiario.png')&&!output.includes('Illustrazione ufficiale')&&!output.includes('/_next/image'),'no illustration or fallback photo');

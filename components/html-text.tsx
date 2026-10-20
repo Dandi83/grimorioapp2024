@@ -127,7 +127,7 @@ export function ReferenceText({ text, damageIcons = false, precedingText = "", r
     nodes.push(<Fragment key={`text-${match.index}`}>{renderText(text.slice(end, match.index), end)}</Fragment>);
     const label = match[0].replace(/-\s*\n\s*/g, "").replace(/\s+/g, " ").toLowerCase();
     const reference = references.find(item => item.label.toLowerCase() === label)!;
-    nodes.push(<a key={`link-${match.index}`} href={reference.href} className="underline decoration-primary/70 underline-offset-4 hover:text-primary focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-primary">{match[0]}</a>);
+    nodes.push(<a key={`link-${match.index}`} href={reference.href} className="ref-pill">{match[0]}</a>);
     end = match.index + match[0].length;
   }
   nodes.push(<Fragment key="tail">{renderText(text.slice(end), end)}</Fragment>);
@@ -270,6 +270,6 @@ export function MonsterText({ html, ...props }: HtmlTextProps) {
   const paragraphs = formatted.split(/(?:<br\s*\/?>\s*){2,}/gi).filter(part => part.replace(/<[^>]+>/g, "").trim());
   return <div className="min-w-0 space-y-4">{paragraphs.map((part, index) => {
     const frequency = /^\s*<(?:strong|b)>\s*(?:\d+\s*\/|A\s+volontà|Trucchetti|\d+°\s*livello)/i.test(part);
-    return <div key={index} data-spell-frequency={frequency ? "true" : undefined} className={frequency ? "ml-1 border-l-2 border-primary/25 pl-3" : undefined}><HtmlText html={part} {...props} /></div>;
+    return <div key={index} data-spell-frequency={frequency ? "true" : undefined} className={frequency ? "border-l-[3px] border-primary pl-3" : undefined}><HtmlText html={part} {...props} /></div>;
   })}</div>;
 }

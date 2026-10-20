@@ -50,7 +50,7 @@ assert.ok(!render('<pre>Temperatura\n5 Freddo\n6 Gelido</pre>').includes('data-d
 const conditionReferences=[{label:'paralizzato',href:'/manuale/condizioni-paralizzato'}];
 const linked=renderToStaticMarkup(createElement(m.exports.HtmlText,{html:'Il bersaglio è <strong>paralizzato</strong> e subisce 2d6 danni da fuoco.',damageIcons:true,references:conditionReferences}));
 assert.ok(linked.includes('href="/manuale/condizioni-paralizzato"'),'condition mention links to the condition detail');
-assert.ok(linked.includes('underline-offset-4'),'inline reference is visibly underlined');
+assert.ok(linked.includes('class="ref-pill"'),'inline reference is shown as a reference label (bollino)');
 assert.ok(linked.includes('/damage-icons/fire.png'),'damage icons survive beside condition links');
 assert.equal(plain(linked),plain(render('Il bersaglio è <strong>paralizzato</strong> e subisce 2d6 danni da fuoco.')),'reference preserves source words');
 assert.ok(!renderToStaticMarkup(createElement(m.exports.HtmlText,{html:'Una presenza paralizzatissima.',references:conditionReferences})).includes('href='),'only whole condition words link');

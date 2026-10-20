@@ -7,11 +7,14 @@ export function MonsterProvenanceBadge({
   edition,
   linked = false,
   compact = false,
+  variant = "pill",
 }: {
   source?: MonsterProvenance;
   edition?: "2014" | "2024";
   linked?: boolean;
   compact?: boolean;
+  /** "dark": the sheet title label, only the year on a dark background. */
+  variant?: "pill" | "dark";
 }) {
   const rulesEdition = source?.edition ?? edition;
   if (rulesEdition !== "2014" && rulesEdition !== "2024") return null;
@@ -23,10 +26,14 @@ export function MonsterProvenanceBadge({
   const sizeClass = compact
     ? "shrink-0 gap-1 px-1.5 py-0.5 text-[10px] leading-3.5"
     : "gap-1.5 px-2.5 py-1 text-[10px] leading-4";
-  const className = `inline-flex max-w-full items-center rounded-full border font-medium ${sizeClass} ${
-    source ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-card text-muted"
-  }`;
-  const content = <><BookOpen size={compact ? 10 : 12} className="shrink-0" aria-hidden="true" /><span className="whitespace-nowrap">{label}</span></>;
+  const className = variant === "dark"
+    ? "inline-flex items-center gap-1 rounded-full bg-foreground px-2.5 py-1 text-[13px] font-bold leading-4 text-card"
+    : `inline-flex max-w-full items-center rounded-full border font-medium ${sizeClass} ${
+      source ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-card text-muted"
+    }`;
+  const content = variant === "dark"
+    ? <><BookOpen size={12} className="shrink-0" aria-hidden="true" /><span className="whitespace-nowrap">{rulesEdition}</span></>
+    : <><BookOpen size={compact ? 10 : 12} className="shrink-0" aria-hidden="true" /><span className="whitespace-nowrap">{label}</span></>;
 
   if (source && linked) {
     return (

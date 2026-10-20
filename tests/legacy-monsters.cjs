@@ -49,6 +49,7 @@ function load(relative, deps = {}) {
     '@/lib/conditions': load('lib/conditions.ts'),
     '@/lib/monsters-types': types,
     '@/lib/srd-monsters': provider,
+    '@/components/monster-sheet': load('components/monster-sheet.tsx', {'@/components/html-text': load('components/html-text.tsx'), '@/lib/spell-references': load('lib/spell-references.ts'), '@/lib/conditions': load('lib/conditions.ts'), '@/lib/monsters-types': types}),
   }).default;
   for (const r of legacy.records) {
     const monster = provider.previewMonsterById(r.monster.id, 'preview');
@@ -74,7 +75,18 @@ function load(relative, deps = {}) {
     assert.ok(html.includes('regole 2014'));
     // Initiative is not printed in 2014 sheets: the Dexterity modifier, marked as calculated.
     const mod = Math.floor((monster.destrezza - 10) / 2);
-    assert.ok(html.includes(`>Iniziativa</p><p class="font-serif text-[15px] leading-5 text-foreground italic">${mod >= 0 ? '+' + mod : mod}</p><p class="mt-1 text-[11px] italic leading-4 text-muted">calcolata dalla Destrezza</p>`), monster.id + ': calculated initiative');
+    assert.ok(html.includes(`>Iniziativa</p><p class="font-serif text-[28px] font-bold leading-8 text-foreground">${mod >= 0 ? '+' + mod : mod}</p><p class="text-[13px] leading-4 text-muted font-serif italic">dalla Destrezza</p>`), monster.id + ': calculated initiative');
+    // Proficiency bonus is not printed in 2014 sheets: calculated from the challenge rating on the challenge line.
+    const pb = monster.gs_num < 5 ? 2 : Math.ceil(monster.gs_num / 4) + 1;
+    const plainText = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ');
+    assert.ok(plainText.includes(`Grado sfida ${monster.grado_sfida} (`) && plainText.includes(`bonus di competenza +${pb})`), monster.id + ': challenge line with calculated proficiency');
+    // Spellcasting is shown among the actions, after the other actions, as in 2024.
+    if (/^<strong>Incantesimi/m.test(monster.tratti.split(/(?:<br\s*\/?>\s*){2,}/).join('\n'))) {
+      const actions = html.slice(html.indexOf('>Azioni</h2>'));
+      assert.ok(html.indexOf('>Azioni</h2>') > 0 && actions.includes('>Incantesimi'), monster.id + ': spellcasting among the actions');
+      const traits = html.indexOf('>Tratti</h2>') >= 0 ? html.slice(html.indexOf('>Tratti</h2>'), html.indexOf('>Azioni</h2>')) : '';
+      assert.ok(!traits.includes('>Incantesimi'), monster.id + ': no spellcasting left among the traits');
+    }
     // Conditions link only to the 2014 definitions (SRD 5.1); never to the 2024 ones.
     const conditionLinks = [...html.matchAll(/href="\/manuale\/(condizioni-[^"]*)"/g)].map(match => match[1]);
     assert.ok(conditionLinks.every(id => id.endsWith('-2014')), monster.id + ': 2014 rules must not link to 2024 conditions');
