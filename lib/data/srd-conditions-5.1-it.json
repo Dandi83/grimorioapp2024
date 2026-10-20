@@ -1,0 +1,343 @@
+[
+  {
+    "id": "condizioni-accecato-2014",
+    "title": "Accecato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 406,
+    "pages": [
+      406
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura accecata non è in grado di vedere e fallisce automaticamente qualsiasi prova di caratteristica che richieda l'uso della vista.",
+        "page": 406,
+        "sourceHash": "3888155d14bdb5c996823b0763c1bf97966830c8e11fe8300cb08de2bc6df797"
+      },
+      {
+        "kind": "prose",
+        "text": "• I tiri per colpire contro la creatura dispongono di vantaggio, mentre i tiri per colpire della creatura subiscono svantaggio.",
+        "page": 406,
+        "sourceHash": "af1fde60eabacbe412285d66edd0a127048228f4efd563fbbde8ee77088bc2a3"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-affascinato-2014",
+    "title": "Affascinato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 406,
+    "pages": [
+      406
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura affascinata non può attaccare chi l'ha affascinata né bersagliarlo con capacità o effetti magici dannosi.",
+        "page": 406,
+        "sourceHash": "2e86a3c5e5f2bf728d6ef6093463959684de5052df95456b858a7119346983d6"
+      },
+      {
+        "kind": "prose",
+        "text": "• Chi ha affascinato la creatura dispone di vantaggio a qualsiasi prova di caratteristica effettuata per interagire socialmente con essa.",
+        "page": 406,
+        "sourceHash": "d4cfecd775c0d11e241e57ac88178d483c41b14bd4d3c86e967ee4b3506020a8"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-afferrato-2014",
+    "title": "Afferrato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 406,
+    "pages": [
+      406
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• La velocità di una creatura afferrata diventa 0 e la creatura non può beneficiare di alcun bonus alla velocità.",
+        "page": 406,
+        "sourceHash": "b9e1917e3c283bd03f97514da0c352d50e196a56ef7883ac2e04b6b780ea39ed"
+      },
+      {
+        "kind": "prose",
+        "text": "• La condizione termina se chi ha afferrato la creatura è incapacitato (vedi la relativa condizione).",
+        "page": 406,
+        "sourceHash": "f1ef28695a55a93d77963fd02a1a7cb22972a477bf37bfec771a94dbdbfa3917"
+      },
+      {
+        "kind": "prose",
+        "text": "• La condizione termina anche se un effetto rimuove la creatura afferrata dalla portata di chi l'ha afferrata o dell'effetto afferrante, come per esempio se viene scagliata lontano dall'incantesimo onda tonante.",
+        "page": 406,
+        "sourceHash": "741ae1d1eb082e84853c3624cfa10c5473f672a635f2f8564f844a2636a9bf2a"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-assordato-2014",
+    "title": "Assordato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 406,
+    "pages": [
+      406
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura assordata non è in grado di sentire e fallisce automaticamente qualsiasi prova di caratteristica che richieda l'uso dell'udito.",
+        "page": 406,
+        "sourceHash": "df9538d1c0509bd2512cb0d335555873daa687725a490e184c2f8a36c8979365"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-avvelenato-2014",
+    "title": "Avvelenato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 406,
+    "pages": [
+      406
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura avvelenata subisce svantaggio ai tiri per colpire e alle prove di caratteristica.",
+        "page": 406,
+        "sourceHash": "1618610859c538012fc5ef373d2735c7839c2ff13637c11f8af380fbac9fd2ce"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-incapacitato-2014",
+    "title": "Incapacitato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 406,
+    "pages": [
+      406
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura incapacitata non può effettuare azioni o reazioni.",
+        "page": 406,
+        "sourceHash": "588b578a6557ae71954314a4e4590845df6500cc6d2c9af0c56b3372b4d5f452"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-indebolimento-2014",
+    "title": "Indebolimento",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 406,
+    "pages": [
+      406
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "Alcune capacità speciali e pericoli ambientali, come l'inedia e gli effetti a lungo termine di temperature gelide o torride, possono indurre una condizione speciale chiamata indebolimento. L'indebolimento è misurato in sei livelli. Un effetto può indurre nella creatura uno o più livelli di indebolimento, come specificato nella sua descrizione.",
+        "page": 406,
+        "sourceHash": "2250afcd4e29a08cf21aef2656e57e254181d929b85ddb100eab0e874f2e7e7a"
+      },
+      {
+        "kind": "table",
+        "text": "Livello   Effetto\n1         Svantaggio alle prove di caratteristica\n2         Velocità dimezzata\n3         Svantaggio a tiri per colpire e tiri salvezza\n4         Punti ferita massimi dimezzati\n5         Velocità ridotta a 0\n6         Morte",
+        "page": 406,
+        "sourceHash": "2c43226c189e122d01a8f76d4e0a191aee31490e3e65e9692a8261eba6f733f1"
+      },
+      {
+        "kind": "prose",
+        "text": "Se una creatura già indebolita subisce un ulteriore effetto di indebolimento, il suo attuale livello di indebolimento aumenta della quantità specificata nella descrizione dell'effetto.",
+        "page": 406,
+        "sourceHash": "d758d52f3d007070ae926ad8cd3d1bc74ee40e10d5ec7509bcf0498765d9cb2e"
+      },
+      {
+        "kind": "prose",
+        "text": "Una creatura subisce l'effetto del suo livello di indebolimento attuale nonché quelli relativi a tutti i livelli inferiori. Per esempio, se una creatura soffre di un indebolimento di livello 2, la sua velocità è dimezzata e subisce svantaggio alle prove di caratteristica.",
+        "page": 406,
+        "sourceHash": "844c6fbbef846479b01c5505b5e4f9d57499d99951befec43a76fc4da232c0e5"
+      },
+      {
+        "kind": "prose",
+        "text": "Un effetto che rimuove l'indebolimento ne riduce il livello come indicato nella sua descrizione; inoltre, tutti gli effetti di indebolimento terminano se il livello di indebolimento di una creatura scende a meno di 1.",
+        "page": 406,
+        "sourceHash": "73721d6bf8bbba2814dbdd938be1606fbb2af9aee7dc5e0187759d80d96a4e39"
+      },
+      {
+        "kind": "prose",
+        "text": "Il livello di indebolimento di una creatura viene ridotto di 1 quando completa un riposo lungo, purché abbia anche mangiato e bevuto qualcosa.",
+        "page": 406,
+        "sourceHash": "b5ba1b2f5147f1cb03e259b47f4c8021e1e7bf2577c32a2da0341d3b52b4d0f1"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-invisibile-2014",
+    "title": "Invisibile",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 407,
+    "pages": [
+      407
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura invisibile è impossibile da vedere senza l'aiuto della magia o di sensi speciali. Agli effetti del nascondersi, è considerata pesantemente oscurata. La sua ubicazione può essere intuita dai rumori che emette o dalle tracce che lascia.",
+        "page": 407,
+        "sourceHash": "235a2c0c1f0217dc1154732092d68020b18f11c272aa9f516abc6f2add2ed2fe"
+      },
+      {
+        "kind": "prose",
+        "text": "• I tiri per colpire contro la creatura subiscono svantaggio, mentre i tiri per colpire della creatura ottengono vantaggio.",
+        "page": 407,
+        "sourceHash": "5d3f30613f77fb93887ccadfb648b3033aab1585ffed5dc699734c24e3e5fed3"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-paralizzato-2014",
+    "title": "Paralizzato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 407,
+    "pages": [
+      407
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura paralizzata è incapacitata (vedi la relativa condizione) e non può muoversi o parlare.",
+        "page": 407,
+        "sourceHash": "15185bc90b04590ec57eecc40af46adeaf7d2c46ef7d9a0e21d30b52b122ea32"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura fallisce automaticamente i tiri salvezza su Forza e Destrezza.",
+        "page": 407,
+        "sourceHash": "323be26b59bbd4b8515cbf8be5f4dc722c84d14cc9c885c7d26d1743bd288455"
+      },
+      {
+        "kind": "prose",
+        "text": "• I tiri per colpire contro la creatura ottengono vantaggio.",
+        "page": 407,
+        "sourceHash": "cd17604822cca694569929f44022e3917333de60bc8f333ee5a8d78a83b72bea"
+      },
+      {
+        "kind": "prose",
+        "text": "• Ogni attacco che colpisce la creatura è un colpo critico se l'attaccante è situato entro 1,5 metri dalla creatura.",
+        "page": 407,
+        "sourceHash": "056f2354dec4d1291df3774a8ae1c31f04d71e82cb74efb1cd62c8a9b2c24804"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-pietrificato-2014",
+    "title": "Pietrificato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 407,
+    "pages": [
+      407
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura pietrificata viene trasformata, assieme a ogni oggetto non magico che trasporta o indossa, in una sostanza solida inanimata (solitamente pietra). La creatura cessa di invecchiare e il suo peso viene decuplicato.",
+        "page": 407,
+        "sourceHash": "aa75fe76c4863e3fa58f0cfb4c6ad97f4b7c6a9a2979a67f300ee57a7beaf5cd"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura è incapacitata (vedi condizione), non può muoversi o parlare, né è consapevole di ciò che le accade attorno.",
+        "page": 407,
+        "sourceHash": "00f7ed5c0eb9c3fd338261d34089e8ae001abcd5d0fdafde8723a4aad1b350bb"
+      },
+      {
+        "kind": "prose",
+        "text": "• I tiri per colpire contro la creatura ottengono vantaggio.",
+        "page": 407,
+        "sourceHash": "cd17604822cca694569929f44022e3917333de60bc8f333ee5a8d78a83b72bea"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura fallisce automaticamente i tiri salvezza su Forza e Destrezza.",
+        "page": 407,
+        "sourceHash": "323be26b59bbd4b8515cbf8be5f4dc722c84d14cc9c885c7d26d1743bd288455"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura è dotata di resistenza a tutti i danni.",
+        "page": 407,
+        "sourceHash": "6927acfa4bece06635f2fd69122d77eea7a2035627d7830ec68a57596d2234f7"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura è immune a veleni e malattie, ma eventuali veleni o malattie già presenti nel suo sistema vengono solo sospesi, non neutralizzati.",
+        "page": 407,
+        "sourceHash": "561103a45941cf24f77e59bbd65845700099fa32c3602d8862051c5101c2f415"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-privo-di-sensi-2014",
+    "title": "Privo di sensi",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 407,
+    "pages": [
+      407
+    ],
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura priva di sensi è incapacitata (vedi la relativa condizione), non è in grado di muoversi o parlare ed è inconsapevole di ciò che le accade attorno.",
+        "page": 407,
+        "sourceHash": "c4e91eb53a60c72680a295b3aa4968e3d2738b100d816da29ae4c02216413e1d"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura lascia cadere tutto ciò che impugna e cade a terra prona.",
+        "page": 407,
+        "sourceHash": "96b7d83414e6485596809bb837289f1d068442c266af31cf01d0f6681e4bb580"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura fallisce automaticamente i tiri salvezza su Forza e Destrezza.",
+        "page": 407,
+        "sourceHash": "323be26b59bbd4b8515cbf8be5f4dc722c84d14cc9c885c7d26d1743bd288455"
+      },
+      {
+        "kind": "prose",
+        "text": "• I tiri per colpire contro la creatura ottengono vantaggio.",
+        "page": 407,
+        "sourceHash": "cd17604822cca694569929f44022e3917333de60bc8f333ee5a8d78a83b72bea"
+      },
+      {
+        "kind": "prose",
+        "text": "• Ogni attacco che colpisce la creatura è un colpo critico se l'attaccante è situato entro 1,5 metri dalla creatura.",
+        "page": 407,
+        "sourceHash": "056f2354dec4d1291df3774a8ae1c31f04d71e82cb74efb1cd62c8a9b2c24804"
+      }
+    ]
+  }
+]

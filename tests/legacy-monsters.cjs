@@ -75,13 +75,16 @@ function load(relative, deps = {}) {
     // Initiative is not printed in 2014 sheets: the Dexterity modifier, marked as calculated.
     const mod = Math.floor((monster.destrezza - 10) / 2);
     assert.ok(html.includes(`>Iniziativa</p><p class="font-serif text-[15px] leading-5 text-foreground italic">${mod >= 0 ? '+' + mod : mod}</p><p class="mt-1 text-[11px] italic leading-4 text-muted">calcolata dalla Destrezza</p>`), monster.id + ': calculated initiative');
-    assert.ok(!html.includes('href="/manuale/condizioni-'), '2014 rules must not silently link to 2024 conditions');
+    // Conditions link only to the 2014 definitions (SRD 5.1); never to the 2024 ones.
+    const conditionLinks = [...html.matchAll(/href="\/manuale\/(condizioni-[^"]*)"/g)].map(match => match[1]);
+    assert.ok(conditionLinks.every(id => id.endsWith('-2014')), monster.id + ': 2014 rules must not link to 2024 conditions');
+    if (/paralizzat[oaie]/.test(monster.tratti + monster.azioni)) assert.ok(conditionLinks.includes('condizioni-paralizzato-2014'), monster.id + ': 2014 condition link');
     assert.ok(!html.includes('href="/spell/'), '2014 spells must not silently link to 2024 spell versions');
     if (/danni (?:da )?(?:acido|contundenti|perforanti|taglienti|fuoco|freddo|fulmine|tuono|veleno|necrotici|radiosi|psichici|da forza)/.test(monster.azioni + monster.tratti)) assert.ok(html.includes('data-damage-type='), monster.id + ': approved damage icons remain visible');
     selected = edited;
     const editedHtml = renderToStaticMarkup(await page({params: Promise.resolve({id: monster.id})}));
     assert.ok(!editedHtml.includes('data-monster-provenance="verified"'), 'later edits remain unattributed');
-    assert.ok(!editedHtml.includes('href="/manuale/condizioni-'), 'an edited Legacy description must not enable 2024 condition links');
+    assert.ok([...editedHtml.matchAll(/href="\/manuale\/(condizioni-[^"]*)"/g)].every(match => match[1].endsWith('-2014')), 'an edited Legacy description must not enable 2024 condition links');
     assert.ok(!editedHtml.includes('href="/spell/'), 'an edited Legacy description must not enable 2024 spell links');
   }
   const byId = id => provider.previewMonsterById(id, 'preview');
