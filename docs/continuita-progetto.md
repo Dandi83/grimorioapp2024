@@ -117,3 +117,12 @@ Compilare iOS richiede macOS/Xcode o un servizio appropriato, distinto dall'ambi
 - Il sito web registra `/sw.js` (pagine pubbliche: prima la rete, copia salvata solo offline o dopo 3 secondi, con avviso; file del programma dalla cache; area riservata, personaggi, API e dati di navigazione Next mai salvati).
 - Interruttore di emergenza: variabile Vercel `GRIMORIO_SERVICE_WORKER=off` e nuovo deploy; il service worker si rimuove e cancella le copie salvate.
 - Coordinamento iPhone: non tocca il client Capacitor né i branch mobile. Se in futuro l'app caricasse pagine del sito, considerare che il sito può rispondere dalla copia salvata quando offline.
+
+## Lavori in sospeso (20 ottobre 2026)
+
+Da fare in **una pull request separata**, solo **dopo** il merge del blocco 7 delle schede 2014 e dopo l'OK di Daniele a quel merge:
+
+1. **Condizioni nelle schede 2014.** Approvato da Daniele. Oggi le schede 2014 non evidenziano le condizioni, per scelta (`app/mostro/[id]/page.tsx`): il bollino aprirebbe la definizione 2024 (`lib/data/srd-conditions-5.2.1-it.json`), che non vale per il 2014. Da fare: aggiungere le 15 condizioni 2014 trascritte dal PDF SRD 5.1 italiano (Appendice A del Manuale del Giocatore, pp. 406-407; PDF solo in cartella temporanea, mai nel repository), con l'indicazione «regole 2014». Le schede 2014 aprono solo queste definizioni; le schede 2024 restano invariate.
+2. **Ordine dei campi delle schede creatura**: caratteristiche → tratti → azioni → reazioni → azioni leggendarie, come chiesto da Daniele. Prima di applicarlo, confermare con Daniele dove vale (scheda pubblica, editor dell'area riservata, anteprima) e la posizione delle azioni bonus, dato che la richiesta non le nomina.
+
+Schede 2014 al 20 ottobre: blocchi 1-6 pubblicati (310 schede), blocco 7 (ultime 12, Vampiro → Zombi ogre) in attesa di OK. Avatar della morte e Mosca gigante restano escluse per decisione di Daniele. Le schede create a mano nell'area riservata non vanno toccate.

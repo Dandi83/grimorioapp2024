@@ -975,6 +975,43 @@
     },
     "unicorno-2014": {
       "id2024": "unicorno"
+    },
+    "vampiro-2014": {
+      "id2024": "vampiro"
+    },
+    "verme-purpureo-2014": {
+      "id2024": "verme-purpureo"
+    },
+    "vespa-gigante-2014": {
+      "id2024": "vespa-gigante"
+    },
+    "veterano-2014": {
+      "id2024": "guerriero-veterano",
+      "daApprovare": "Veterano (2014) = Guerriero veterano (2024)"
+    },
+    "viverna-2014": {
+      "id2024": "viverna"
+    },
+    "vrock-2014": {
+      "id2024": "vrock"
+    },
+    "wight-2014": {
+      "id2024": "wight"
+    },
+    "worg-2014": {
+      "id2024": "worg"
+    },
+    "wraith-2014": {
+      "id2024": "wraith"
+    },
+    "xorn-2014": {
+      "id2024": "xorn"
+    },
+    "zombi-2014": {
+      "id2024": "zombi"
+    },
+    "zombi-ogre-2014": {
+      "id2024": "zombi-ogre"
     }
   }
 }
