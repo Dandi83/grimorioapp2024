@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowRight, Swords } from "lucide-react";
+import { ArrowRight, Shield, Swords } from "lucide-react";
+import { armors } from "@/lib/armor";
 import { weapons } from "@/lib/equipment";
 
 export const metadata = { title: "Equipaggiamento — Il Grimorio.App" };
@@ -7,7 +8,8 @@ export const metadata = { title: "Equipaggiamento — Il Grimorio.App" };
 /** Hub of the Equipaggiamento section; tools, adventuring gear, mounts and magic items will join here. */
 export default function EquipmentPage() {
   const sections = [
-    { href: "/equipaggiamento/armi", title: "Armi", text: `${weapons.length} armi, 2014 e 2024 a confronto`, Icon: Swords },
+    { href: "/equipaggiamento/armi", title: "Armi", text: `${weapons.filter(w => w.editions["2024"]).length} armi nel 2024, ${weapons.filter(w => w.editions["2014"]).length} nel 2014`, Icon: Swords },
+    { href: "/equipaggiamento/armature", title: "Armature", text: `${armors.length - 1} armature e lo scudo, 2014 e 2024`, Icon: Shield },
   ];
   return (
     <div className="px-4 pb-8 pt-8 sm:px-6">

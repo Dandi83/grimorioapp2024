@@ -1,0 +1,13 @@
+Imbottita / Armatura imbottita | leggera | 11 + Des | — | Svantaggio | 4 kg | 5 mo
+Cuoio / Armatura di cuoio | leggera | 11 + Des | — | — | 5 kg | 10 mo
+Cuoio borchiato / Armatura di cuoio borchiato | leggera | 12 + Des | — | — | 6,5 kg | 45 mo
+Pelle / Armatura di pelle | media | 12 + Des (max 2) | — | — | 6 kg | 10 mo
+Giaco di maglia | media | 13 + Des (max 2) | — | — | 10 kg | 50 mo
+Corazza a scaglie | media | 14 + Des (max 2) | — | Svantaggio | 22,5 kg | 50 mo
+Corazza di piastre | media | 14 + Des (max 2) | — | — | 10 kg | 400 mo
+Mezza armatura | media | 15 + Des (max 2) | — | Svantaggio | 20 kg | 750 mo
+Corazza ad anelli | pesante | 14 | — | Svantaggio | 20 kg | 30 mo
+Cotta di maglia | pesante | 16 | For 13 | Svantaggio | 27,5 kg | 75 mo
+Corazza a strisce | pesante | 17 | For 15 | Svantaggio | 30 kg | 200 mo
+Armatura a piastre | pesante | 18 | For 15 | Svantaggio | 32,5 kg | 1.500 mo
+Scudo | scudo | +2 | — | — | 3 kg | 10 mo

@@ -59,7 +59,7 @@ export function ManualBrowser({
         >
           <span>
             <span className="block font-serif text-lg font-semibold">Equipaggiamento</span>
-            <span className="text-xs text-muted">Armi delle edizioni 2014 e 2024 a confronto</span>
+            <span className="text-xs text-muted">Armi e armature delle edizioni 2014 e 2024 a confronto</span>
           </span>
           <ArrowRight size={18} className="text-primary" />
         </Link>

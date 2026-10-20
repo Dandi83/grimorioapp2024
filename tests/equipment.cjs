@@ -73,4 +73,34 @@ const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
 const pattern=new RegExp(sw.match(/const PUBLIC_PAGE = (\/.*\/);/)[1].slice(1,-1));
 for(const p of ['/equipaggiamento','/equipaggiamento/armi','/equipaggiamento/armi/pugnale','/equipaggiamento/armature','/equipaggiamento/armature/cotta-di-maglia'])assert.ok(pattern.test(p),p);
 assert.ok(!pattern.test('/equipaggiamento/altro'));
+// Armor: 13 entries per edition, same numbers, names per edition, cross-checked with the request.
+const ar=load('lib/armor.ts');
+const armorData=JSON.parse(fs.readFileSync('lib/data/srd-armor-it.json','utf8'));
+assert.equal(ar.armors.length,13);
+assert.equal(new Set(ar.armors.map(a=>a.id)).size,13);
+assert.equal(ar.sameNumbers,true);
+const CATEGORY={leggera:0,media:1,pesante:2,scudo:3};
+const armorLines=fs.readFileSync('tests/fixtures/equipment-armor-request.txt','utf8').trim().split('\n');
+armorLines.forEach((line,i)=>{
+ const [names,categoria,ca,forza,furtivita,peso,costo]=line.split(' | ');
+ const [n2014,n2024=n2014]=names.split(' / ');
+ const a=ar.armors[i];
+ assert.equal(a.editions['2014'].nome,n2014);assert.equal(a.editions['2024'].nome,n2024);assert.equal(a.categoria,CATEGORY[categoria],n2014);
+ for(const e of ['2014','2024']){const v=a.editions[e];
+  assert.equal(v.caTesto.replace('modificatore di ',''),ca,n2014);assert.equal(v.forza?`For ${v.forza}`:'—',forza,n2014);
+  assert.equal(v.furtivitaSvantaggio,furtivita==='Svantaggio',n2014);assert.equal(v.peso,peso,n2014);assert.equal(v.costo,costo,n2014);}
+});
+assert.deepEqual(ar.armorTimes['2014'],['Indossare 1 minuto · togliere 1 minuto','Indossare 5 minuti · togliere 1 minuto','Indossare 10 minuti · togliere 5 minuti','Indossare 1 azione · togliere 1 azione']);
+// PDF 2024: the shield takes the Utilize action, not "1 azione" as in 2014.
+assert.equal(ar.armorTimes['2024'][3],'Indossare o togliere: azione di Utilizzo');
+assert.deepEqual(ar.armorBadge(ar.getArmor('cotta-di-maglia').editions['2024'],2),{ca:'16',caNote:'fissa',chips:[{kind:'fixed',label:'CA fissa'},{kind:'strength',label:'Forza 13'},{kind:'stealth',label:'Furtività: svantaggio'}]});
+assert.deepEqual(ar.armorBadge(ar.getArmor('pelle').editions['2014'],1).chips,[{kind:'dex',label:'+ Des (max 2)'}]);
+assert.deepEqual(ar.armorBadge(ar.getArmor('scudo').editions['2024'],3),{ca:'+2',caNote:'alla CA',chips:[{kind:'proficiency',label:'Serve competenza'}]});
+for(const a of ar.armors)for(const e of ['2014','2024']){const v=a.editions[e];const cards=ar.armorRuleCards(v,a.categoria);
+ assert.ok(cards.length>=4&&cards.every(c=>c.text.length>30),`${e} ${a.id}`);
+ assert.equal(cards.some(c=>c.title==='Forza'),!!v.forza);assert.equal(cards.some(c=>c.title==='Furtività'),v.furtivitaSvantaggio);
+ if(e==='2014'&&a.categoria<3)assert.ok(ar.armorDescription(v).testo.length>60,a.id);}
+assert.ok(ar.armorRuleCards(ar.getArmor('cuoio').editions['2024'],0).find(c=>c.title==='Classe Armatura (CA)').text.startsWith('La colonna Classe Armatura della tabella'));
+assert.ok(!JSON.stringify(ar.armorListItems()).includes(armorData.regole2014.generali['Furtività'].testo.slice(0,30)));
+console.log(`Armor: 13 entries per edition with the same numbers, ${armorLines.length} rows cross-checked, times per edition, rule cards for every sheet.`);
 console.log(`Equipment: 37 weapons 2014 and 38 2024, ${checked} rows cross-checked with the request, 8 changes computed, texts for every property and mastery, offline pages.`);

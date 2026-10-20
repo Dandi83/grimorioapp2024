@@ -41,7 +41,7 @@ export default function HomePage() {
           <span className={styles.tileIcon}><Swords size={26} aria-hidden="true" /></span>
           <span className={styles.tileText}>
             <span className={styles.tileTitle}>Equipaggiamento</span>
-            <span className={styles.tileNote}>Armi delle edizioni 2014 e 2024</span>
+            <span className={styles.tileNote}>Armi e armature delle edizioni 2014 e 2024</span>
           </span>
           <ArrowRight size={20} aria-hidden="true" className={styles.tileArrow} />
         </Link>

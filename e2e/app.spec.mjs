@@ -227,3 +227,24 @@ test("equipment: home tile, weapons list and cards per edition, combined filters
   for (const id of ids) expect((await request.get(`/equipaggiamento/armi/${id}`)).status(), id).toBe(200);
   expect((await request.get("/equipaggiamento/armi/inesistente")).status()).toBe(404);
 });
+
+test("equipment: armor list per edition with times, sheets in both editions, no horizontal scroll", async ({ page, request }) => {
+  await page.setViewportSize({ width: 375, height: 800 });
+  await page.goto("/equipaggiamento");
+  await page.getByRole("link", { name: /Armature/ }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/armature$/);
+  await expect(page.getByRole("link", { name: /Armatura imbottita/ })).toBeVisible();
+  await expect(page.getByText("Indossare o togliere: azione di Utilizzo")).toBeVisible();
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(page.getByRole("link", { name: /^\s*11\s*\+ Des\s*Imbottita/ })).toBeVisible();
+  await expect(page.getByText("Indossare 1 azione · togliere 1 azione")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  await page.getByRole("link", { name: /Cotta di maglia/ }).click();
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Cotta di maglia");
+  await expect(page.locator('[data-edition="2014"]')).toContainText("Forza 13");
+  await expect(page.locator('[data-edition="2014"]')).toContainText("Una cotta di maglia, composta da anelli di metallo");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  const ids = JSON.parse(readFileSync("lib/data/srd-armor-it.json", "utf8")).armature.map(a => a.id);
+  expect(ids).toHaveLength(13);
+  for (const id of ids) expect((await request.get(`/equipaggiamento/armature/${id}`)).status(), id).toBe(200);
+});
