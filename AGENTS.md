@@ -51,4 +51,25 @@ Regola esplicita di Daniele del 18 ottobre 2026: evitare sovrapposizioni tra que
 
 ## Comunicazione
 
+### Report finale (regola fissa di Daniele, 20 ottobre 2026)
+
+Per ogni richiesta, a lavoro finito, scrivi UN SOLO messaggio finale di report, come unico blocco di testo da copiare, con questa struttura e niente altro:
+
+```
+REPORT FINALE
+1) Richiesta: in una riga, cosa è stato chiesto.
+2) Stato: pronto da provare / in attesa di ok / bloccato (e perché).
+3) Link: anteprima Vercel e pull request (sempre, in cima, anche se già inviati prima).
+4) Cosa ho fatto: elenco breve dei punti, con i file principali.
+5) Verifiche: esito di ogni controllo (tipi, test, build, prove nel browser) e se qualcosa è fallito o instabile.
+6) Differenze o sorprese: cose inattese, dati discordanti, scelte fatte in autonomia.
+7) Da approvare: elenco numerato di tutto ciò che aspetta l'ok (abbinamenti, merge, scelte), con tutti i dettagli per decidere, senza rimandare a messaggi precedenti.
+8) Da provare su iPhone: 2-4 punti precisi, con gli indirizzi esatti da aprire.
+9) Rischi e cosa NON è stato verificato.
+10) Prossimo passo proposto.
+```
+
+Niente messaggi intermedi con pezzi di report. Italiano semplice, completo e comprensibile anche senza aver letto la conversazione. Se la richiesta ha più passaggi, il report arriva alla fine di ognuno.
+
+
 Comunica in italiano, con aggiornamenti brevi e concreti. Distingui stato verificato, ipotesi e lavoro mancante. Daniele vuole continuità da iPhone anche con il Mac spento: non proporre una sessione sul Mac come equivalente a Codex Cloud. La compilazione/firma iOS richiede un ambiente macOS appropriato; non prometterla da un semplice ambiente Linux.

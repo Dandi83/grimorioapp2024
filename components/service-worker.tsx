@@ -24,7 +24,11 @@ export function ServiceWorker({ enabled }: { enabled: boolean }) {
       const urls = performance.getEntriesByType("resource").map(entry => entry.name);
       registration.active?.postMessage({ type: "cache-files", urls });
     });
-    // Was this page shown from the copy saved on the phone?
+    // Was this page shown from the copy saved on the phone? The worker marks the page, so
+    // the notice survives a worker stopped in the meantime. Asking is still needed: it also
+    // clears the worker's own record, which must not reach the next page loaded online.
+    const marked = Number(document.querySelector('meta[name="grimorio-saved-at"]')?.getAttribute("content"));
+    if (marked) setSavedAt(marked);
     const controller = navigator.serviceWorker.controller;
     if (controller) {
       const channel = new MessageChannel();
