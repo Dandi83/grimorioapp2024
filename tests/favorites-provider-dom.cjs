@@ -10,7 +10,10 @@ global.IS_REACT_ACT_ENVIRONMENT=true;
 const React=require('react'),{act}=React,{createRoot}=require('react-dom/client'),ts=require('typescript');
 const filename=path.resolve('components/favorites-provider.tsx');
 const mod={exports:{}};
-new Function('require','module','exports',ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText)(createRequire(filename),mod,mod.exports);
+const transpile=file=>ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
+const aliases={exports:{}};
+new Function('require','module','exports',transpile(path.resolve('lib/monster-id-aliases.ts')))(createRequire(path.resolve('lib/monster-id-aliases.ts')),aliases,aliases.exports);
+new Function('require','module','exports',transpile(filename))(id=>id==='@/lib/monster-id-aliases'?aliases.exports:createRequire(filename)(id),mod,mod.exports);
 const {FavoritesProvider,useFavorites}=mod.exports;
 const KEY='grimorio.favorites.v1';
 let api;
@@ -63,6 +66,11 @@ const saved=()=>JSON.parse(window.localStorage.getItem(KEY));
  assert.deepEqual(api.favorites,['scudo']);
  proto.getItem=get;proto.setItem=set;
 
+ // 2014 sheets saved before their "-2014" address keep pointing at the same sheet.
+ window.localStorage.setItem(KEY,JSON.stringify(['mostro:orco','mostro:aboleth','spell-x','mostro:orco-2014']));
+ await mount();
+ assert.deepEqual(saved(),['mostro:orco-2014','mostro:aboleth','spell-x'],'old 2014 favorites are renamed once, without duplicates');
+
  await act(async()=>root.unmount());
- console.log('Favorites: corrupted storage ignored, text IDs only, multi-tab sync and merge on toggle, unavailable storage tolerated.');
+ console.log('Favorites: corrupted storage ignored, text IDs only, multi-tab sync and merge on toggle, unavailable storage tolerated, renamed 2014 sheets kept.');
 })().catch(error=>{console.error(error);process.exit(1);});

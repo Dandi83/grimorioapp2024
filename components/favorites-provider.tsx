@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { renameFavoriteId } from "@/lib/monster-id-aliases";
 
 const KEY = "grimorio.favorites.v1";
 
@@ -27,7 +28,8 @@ function parseFavorites(raw: string | null): string[] | null {
   try {
     const value: unknown = JSON.parse(raw);
     if (!Array.isArray(value)) return null;
-    return [...new Set(value.filter((id): id is string => typeof id === "string"))];
+    // 2014 sheets saved before their "-2014" address keep pointing at the same sheet.
+    return [...new Set(value.filter((id): id is string => typeof id === "string").map(renameFavoriteId))];
   } catch {
     return null;
   }

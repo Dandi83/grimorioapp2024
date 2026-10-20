@@ -41,6 +41,7 @@ async function render(check) {
       'drizzle-orm':{eq:() => ({}), asc:() => ({})},
       './content-editions':{getContentEditions:async () => {editionReads++; return new Map([['manual', revision === 1 ? '2014' : '2024']]);}},
       './monster-extra-storage':{getMonsterExtraFields:async () => {extraReads++; return new Map([['manual', {iniziativa:`+${revision}`}]]);}},
+      './monster-habitats':{getMonsterHabitatOverrides:async () => new Map(), resolveHabitats:() => []},
       './monsters-types':load('lib/monsters-types.ts'),
       './spells-types':load('lib/spells-types.ts'),
       './srd-monsters':{previewMonsterById:() => undefined},

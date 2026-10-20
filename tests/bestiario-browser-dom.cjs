@@ -32,11 +32,14 @@ function load(relative){
   return createRequire(filename)(id);
  },mod,mod.exports);return mod.exports;
 }
-const monsters=load('lib/srd-monsters.ts').previewMonsters([],'production');
+const srd=load('lib/srd-monsters.ts');
+// Catalog rows as the list index builds them: each with its rules edition.
+const monsters=srd.previewMonsters([],'production').map(m=>({...m,edizione:srd.usesLegacyMonsterRules(m)?'2014':'2024',...(m.id==='gatto'?{habitat:['Urbano']}:m.id==='aquila'?{habitat:['Montagna','Collina']}:m.id==='topo'?{habitat:['Qualsiasi']}:{})}));
 const {BestiarioBrowser}=load('components/bestiario-browser.tsx');
 const {GrimorioBrowser}=load('components/grimorio-browser.tsx');
 const root=createRoot(document.getElementById('root'));
 const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(text));
+const option=text=>[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.trim()===text);
 const click=async el=>{assert.ok(el);await act(async()=>el.dispatchEvent(new MouseEvent('click',{bubbles:true})))};
 const input=async value=>{const el=document.querySelector('input');await act(async()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new InputEvent('input',{bubbles:true}))})};
 const ids=()=>[...document.querySelectorAll('a[href^="/mostro/"]')].map(a=>a.getAttribute('href').slice('/mostro/'.length));
@@ -45,31 +48,53 @@ const allIds=async()=>{while(button('Mostra altri'))await click(button('Mostra a
 const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
 (async()=>{
  await act(async()=>root.render(React.createElement(BestiarioBrowser,props)));
- assert.equal(document.querySelector('h1').textContent,'Bestiario (340)');
+ assert.equal(document.querySelector('h1').textContent,'Bestiario (330)','the 2024 edition opens by default');
  assert.ok(document.querySelector('[role="group"][aria-label="Sezioni del bestiario"]'));
- assert.match(button('Mostri').textContent,/240/);assert.match(button('Animali').textContent,/100/);
+ assert.match(button('Mostri').textContent,/235/);assert.match(button('Animali').textContent,/95/);
  assert.equal(button('Mostri').getAttribute('aria-pressed'),'true');
- assert.equal(ids().length,40,'the bestiary renders 40 rows per page');assert.match(button('Mostra altri').textContent,/200/);
- assert.equal(document.querySelector('[role="status"]').textContent,'240 risultati','the count covers every page');
- assert.equal((await allIds()).length,240);assert.ok(ids().includes('duergar'));assert.ok(!ids().includes('gatto'));
+ assert.equal(ids().length,40,'the bestiary renders 40 rows per page');assert.match(button('Mostra altri').textContent,/195/);
+ assert.equal(document.querySelector('[role="status"]').textContent,'235 risultati','the count covers every page');
+ assert.equal((await allIds()).length,235);assert.ok(ids().includes('aboleth'));assert.ok(!ids().includes('duergar-2014'),'2014 sheets are only in the 2014 list');assert.ok(!ids().includes('gatto'));
  await click(button('Tipo'));await click(button('Drago'));
- assert.ok(ids().length>0&&ids().length<=40,'filters reset pagination');assert.ok((await allIds()).length<240);assert.ok(!ids().includes('duergar'));
+ assert.ok(ids().length>0&&ids().length<=40,'filters reset pagination');assert.ok((await allIds()).length<235);assert.ok(!ids().includes('aboleth'));
  await click(button('Animali'));
  assert.equal(button('Animali').getAttribute('aria-pressed'),'true');
  assert.equal(ids().length,40,'switching collection resets pagination');
- assert.equal((await allIds()).length,100,'switching collection clears incompatible filters');
+ assert.equal((await allIds()).length,95,'switching collection clears incompatible filters');
  assert.ok(ids().includes('gatto'));assert.ok(ids().includes('alce-gigante'),'source animals include Celestial animals');
- assert.ok(ids().includes('sciame-di-scarabei'));assert.ok(!ids().includes('duergar'));
+ assert.ok(!ids().includes('sciame-di-scarabei-2014'));
  await input('gatto');assert.deepEqual(ids(),['gatto']);
  await click(button('Mostri'));assert.equal(ids().length,0);assert.equal(document.querySelector('input').value,'gatto');
- await input('');assert.equal(ids().length,40);assert.equal((await allIds()).length,240);
+ await input('');assert.equal(ids().length,40);assert.equal((await allIds()).length,235);
  await click(button('Animali'));await click(button('Grado sfida'));await click(button('GS 0'));
- assert.ok((await allIds()).length>0&&ids().length<100);
- await click(button('Pulisci'));assert.equal((await allIds()).length,100,'reset keeps the selected section');
+ assert.ok((await allIds()).length>0&&ids().length<95);
+ await click(button('Pulisci'));assert.equal((await allIds()).length,95,'reset keeps the selected section');
  await act(async()=>root.render(React.createElement(BestiarioBrowser,{...props,key:'animal-link',initialRaccolta:'animali'})));
  assert.equal(button('Animali').getAttribute('aria-pressed'),'true','existing animal links open the animal section directly');
- assert.equal((await allIds()).length,100);
- assert.equal(document.querySelectorAll('.catalog-row').length,100,'all animals remain reachable via show more');
+ assert.equal((await allIds()).length,95);
+ assert.equal(document.querySelectorAll('.catalog-row').length,95,'all animals remain reachable via show more');
+ // Habitat: several can be chosen; a creature living in at least one is shown, "Qualsiasi" lives everywhere.
+ await click(button('Habitat'));
+ assert.equal([...document.querySelectorAll('button[aria-pressed]')].filter(b=>['Artico','Qualsiasi'].includes(b.textContent)).length,2,'the fixed list of 13 habitats is offered');
+ await click(option('Urbano'));
+ assert.deepEqual((await allIds()).sort(),['gatto','topo']);
+ await click(option('Montagna'));
+ assert.deepEqual((await allIds()).sort(),['aquila','gatto','topo'],'either habitat matches');
+ assert.equal(button('Habitat (2)').getAttribute('aria-pressed'),null,'the chip counts the chosen habitats');
+ await click(option('Urbano'));await click(option('Montagna'));
+ assert.equal((await allIds()).length,95,'unticking every habitat shows the whole section again');
+ // Edition selector above the sections: the 2014 list holds the SRD 5.1 sheets, remembered on this phone.
+ assert.equal(button('D&D5e 2024').getAttribute('aria-pressed'),'true');
+ await click(button('D&D5e 2014'));
+ assert.equal(document.querySelector('h1').textContent,'Bestiario (10)');
+ assert.equal(button('D&D5e 2014').getAttribute('aria-pressed'),'true');
+ assert.deepEqual((await allIds()).sort(),['sciame-di-millepiedi-2014','sciame-di-ragni-2014','sciame-di-scarabei-2014','sciame-di-vespe-2014','topo-gigante-contagioso-2014']);
+ await click(button('Mostri'));
+ assert.deepEqual((await allIds()).sort(),['duergar-2014','elfo-drow-2014','gnomo-delle-profondita-svirfneblin-2014','lucertoloide-2014','orco-2014']);
+ assert.equal(window.localStorage.getItem('grimorio.bestiario.edizione'),'2014');
+ await click(button('Tipo'));assert.ok(button('Umanoide'),'filters offer the values of the chosen edition');
+ await click(button('D&D5e 2024'));
+ assert.equal(document.querySelector('h1').textContent,'Bestiario (330)');assert.equal(window.localStorage.getItem('grimorio.bestiario.edizione'),'2024');
  const spells=Array.from({length:400},(_,i)=>({id:`spell-${i}`,nome_italiano:`Incantesimo ${String(i).padStart(3,'0')}`,livello_num:Math.floor(i/40),scuola:'invocazione',classi:['mago']}));
  await act(async()=>root.render(React.createElement(GrimorioBrowser,{spells,meta:{livelli:[0,1,2,3,4,5,6,7,8,9],scuole:['invocazione'],classi:['mago']},initialLivello:null,initialScuola:null,initialClasse:null})));
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,40,'only the first page is rendered');
@@ -136,11 +161,22 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  const renderMonsterUrl=()=>React.createElement(provider.FavoritesProvider,null,React.createElement(BestiarioWithFilters,{monsters}));
  await act(async()=>root.render(renderMonsterUrl()));
  assert.equal(button('Animali').getAttribute('aria-pressed'),'true');
- assert.ok(ids().length>0&&ids().length<100);
+ assert.ok(ids().length>0&&ids().length<95);
  await act(async()=>navigateQuery('raccolta=mostri'));await act(async()=>root.render(renderMonsterUrl()));
- assert.equal((await allIds()).length,240,'same-path query changes switch collection and clear old filters');
+ assert.equal((await allIds()).length,235,'same-path query changes switch collection and clear old filters');
  await act(async()=>navigateQuery(''));await act(async()=>root.render(renderMonsterUrl()));
- assert.equal((await allIds()).length,240,'unfiltered URL retains the default collection');
+ assert.equal((await allIds()).length,235,'unfiltered URL retains the default collection');
+ // The edition last chosen on this phone is used when no address asks for one; the address wins.
+ window.localStorage.setItem('grimorio.bestiario.edizione','2014');
+ await act(async()=>root.render(React.createElement('div')));
+ await new Promise(r=>setTimeout(r,3100)); // a fresh arrival, not "back" from a card
+ await act(async()=>root.render(renderMonsterUrl()));
+ assert.equal(button('D&D5e 2014').getAttribute('aria-pressed'),'true','the remembered edition opens');
+ await act(async()=>navigateQuery('edizione=2024&habitat=Urbano,Inventato'));await act(async()=>root.render(renderMonsterUrl()));
+ assert.equal(button('D&D5e 2024').getAttribute('aria-pressed'),'true','an address with an edition wins');
+ await click(button('Animali'));await act(async()=>navigateQuery('edizione=2024&raccolta=animali&habitat=Urbano,Inventato'));await act(async()=>root.render(renderMonsterUrl()));
+ assert.deepEqual((await allIds()).sort(),['gatto','topo'],'habitat filters from the address, unknown names ignored');
+ window.localStorage.removeItem('grimorio.bestiario.edizione');await act(async()=>navigateQuery(''));
  // Preserve the original server-filter cases as exact rendered-result checks.
  const filterCases=[
   {id:'url-target',nome_italiano:'Risultato atteso',livello_num:3,scuola:'Evocazione',classi:['mago']},
@@ -154,7 +190,7 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await act(async()=>navigateQuery('raccolta=animali&gs=1/2'));
  await act(async()=>root.render(renderMonsterUrl()));
  assert.equal(button('Animali').getAttribute('aria-pressed'),'true','original collection filter is preserved');
- const halfAnimals=monsters.filter(m=>load('lib/monsters-types.ts').isSrdAnimal(m)&&m.grado_sfida==='1/2').map(m=>m.id).sort();
+ const halfAnimals=monsters.filter(m=>load('lib/monsters-types.ts').isSrdAnimal(m)&&m.grado_sfida==='1/2'&&m.edizione==='2024').map(m=>m.id).sort();
  assert.ok(halfAnimals.length>0,'the original fractional challenge-rating case has real results');
  assert.deepEqual((await allIds()).sort(),halfAnimals,'the original GS 1/2 URL filter selects exactly the matching animals');
  // Back from a card restores search, filters, pages shown and scroll; other arrivals start fresh.
@@ -222,5 +258,5 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await act(async()=>new Promise(resolve=>setTimeout(resolve,330)));
  assert.deepEqual(prefetched,['/','/grimorio','/bestiario','/preferiti'],'timer fallback warms the same four routes');
  await act(async()=>root.unmount());
- console.log('Catalogs: 40-row bestiary and spell pages, show more, list restored after back, full-catalog deferred search, filter/page reset, level groups and keyboard access passed.');
+ console.log('Catalogs: 40-row bestiary and spell pages, 2024|2014 edition remembered, multi-habitat filter, show more, list restored after back, full-catalog deferred search, filter/page reset, level groups and keyboard access passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

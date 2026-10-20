@@ -50,6 +50,12 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  await input(document.getElementById('nome'),'Guardiano di prova');
  assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D5e 2024','D&D5e 2014']);
  await choose('edition','2024');
+ // Habitat: several boxes from the fixed list, sent with a marker so older forms keep the saved value.
+ const habitatBoxes=[...document.querySelectorAll('input[name="habitat"]')];
+ assert.equal(habitatBoxes.length,13);
+ for(const box of habitatBoxes.filter(b=>['Foresta','Palude'].includes(b.value)))await click(box);
+ assert.deepEqual(new FormData(document.querySelector('form')).getAll('habitat'),['Foresta','Palude']);
+ assert.equal(new FormData(document.querySelector('form')).get('habitat_present'),'1');
  for(const [id,value] of [['tipo','Costrutto'],['taglia','Grande'],['allineamento','neutrale'],['grado_sfida','1/4'],['velocita','9 m']]) {
   await choose(id,value);
   assert.equal(new FormData(document.querySelector('form')).get(id),value);
@@ -127,6 +133,9 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  for(const field of ['tratti','azioni','azioni_bonus','reazioni','azioni_leggendarie','descrizione','iniziativa','bonus_competenza','attrezzatura','immunita','sottotitolo_fonte'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',field);
  for(const field of ['tipo','taglia','allineamento','grado_sfida','velocita','resistenze','immunita_condizioni','sensi','linguaggi'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',`unchanged ${field}`);
  assert.equal(document.getElementById('tipo-custom').value,'Non morto (mago)','existing subtypes remain editable without truncation');
+ await act(async()=>root.render(React.createElement(MonsterEditor,{key:'lich-habitat',monster:{...lich,habitat:['Sottosuolo'],solo_progetto:true},onClose:()=>closed++})));
+ assert.deepEqual(new FormData(document.querySelector('form')).getAll('habitat'),['Sottosuolo'],'saved habitats start ticked');
+ assert.ok(document.querySelector('dialog').textContent.includes('il salvataggio aggiorna solo habitat ed etichetta'),'project sheets say what is saved');
  await choose('edition','2014');
  await click(button('Anteprima'));
  assert.ok(document.querySelector('article').textContent.includes('D&D5e 2014'));

@@ -108,6 +108,12 @@ export function AdminMonsterPreview({
             </div>
           ) : null,
         )}
+        {monster.habitat?.length ? (
+          <div>
+            <dt className="inline font-semibold text-primary">Habitat: </dt>
+            <dd className="inline">{monster.habitat.join(", ")}</dd>
+          </div>
+        ) : null}
       </dl>
       {(
         [

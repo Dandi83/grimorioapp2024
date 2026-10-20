@@ -10,11 +10,12 @@ function load(relative, deps={}) {
 }
 (async()=>{
  const mt=load('lib/monsters-types.ts'),st=load('lib/spells-types.ts');
- const all=load('lib/srd-monsters.ts').previewMonsters([],'production');
+ const srd=load('lib/srd-monsters.ts');
+ const all=srd.previewMonsters([],'production');
  const before=JSON.stringify(all);
  // The cached list index projects every record; pages pass it through unchanged.
  let indexConfigured=false;
- const monsterIndex=load('lib/monster-index.ts',{'server-only':{},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,
+ const monsterIndex=load('lib/monster-index.ts',{'server-only':{},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,'./srd-monsters':srd,
   'next/cache':{unstable_cache:(fn,key,options)=>{assert.equal(key[0],'monster-list-index');assert.deepEqual(options,{tags:['monsters'],revalidate:3600});indexConfigured=true;return fn;}}});
  assert.ok(indexConfigured,'the monster list is cached with the tag invalidated by admin saves');
  const monsterList=await monsterIndex.getMonsterListIndex();
@@ -27,6 +28,9 @@ function load(relative, deps={}) {
  assert.ok(!list.some(m=>'azioni' in m||'descrizione' in m||'tratti' in m),'Public lists must not ship complete creature sheets');
  assert.deepEqual(mt.computeMonstersMeta(list),mt.computeMonstersMeta(all));
  assert.equal(list.filter(mt.isSrdAnimal).length,100);
+ // Every row carries its rules edition for the 2024 | 2014 selector: the SRD 5.1 sheets are 2014.
+ assert.deepEqual(list.filter(m=>m.edizione==='2014').map(m=>m.id).sort(),JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.1-it.json','utf8')).records.map(r=>r.monster.id).sort());
+ assert.ok(list.every(m=>m.edizione==='2014'||m.edizione==='2024'));
  assert.equal(JSON.stringify(all),before,'Projection cannot modify source records');
  const spell={id:'custom-admin-spell',nome_italiano:'Incantesimo di prova',livello:'Evocazione di 3° livello (mago)',livello_num:3,scuola:'Evocazione',classi:['mago'],descrizione:'FULL_BODY_NOT_FOR_LIST '.repeat(1000),tempo_di_lancio:'azione',gittata:'18 m',componenti:'V',durata:'1 minuto'};
  const spellBefore=JSON.stringify(spell);

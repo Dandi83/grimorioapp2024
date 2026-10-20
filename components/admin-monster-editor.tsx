@@ -8,6 +8,7 @@ import { AdminMonsterField } from "./admin-monster-field";
 import { MonsterContentEditor } from "./admin-monster-content";
 import { AdminMonsterPreview } from "./admin-monster-preview";
 import { AdminEditionField } from "./admin-edition-field";
+import { AdminHabitatField } from "./admin-habitat-field";
 
 type Field = { name: keyof Monster; label: string; placeholder?: string };
 const IDENTITY: Field[] = [
@@ -119,6 +120,7 @@ export function MonsterEditor({
     const entries = Object.fromEntries(new FormData(form.current).entries());
     const snapshot: Record<string, unknown> = {
       ...entries,
+      habitat: new FormData(form.current).getAll("habitat"),
       id: monster?.id || "unsaved-monster",
       edizione: entries.edition || undefined,
     };
@@ -164,6 +166,11 @@ export function MonsterEditor({
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Compila la scheda: alla formattazione pensa il Grimorio.
           </p>
+          {monster?.solo_progetto && (
+            <p className="mt-1 text-xs leading-5 text-primary">
+              Scheda dai file del progetto: il salvataggio aggiorna solo habitat ed etichetta, il testo resta quello ufficiale.
+            </p>
+          )}
         </div>
         <button
           type="button"
@@ -193,6 +200,7 @@ export function MonsterEditor({
               <EditorFields fields={IDENTITY} monster={monster} />
             </details>
             <AdminEditionField edition={initialEdition} />
+            <AdminHabitatField habitats={monster?.habitat} projectOnly={!!monster?.solo_progetto} />
             <details open className="rounded-xl border border-border p-4">
               <summary className="mb-3 min-h-11 cursor-pointer font-serif text-xl text-primary">
                 Statistiche di combattimento

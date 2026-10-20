@@ -8,9 +8,12 @@ import { clean, requireAdmin, uniqueId, type DeleteResult } from "@/lib/admin-ac
 import { monsterSlugify, parseGs } from "@/lib/monsters-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
-import { getSrdMonsterSource } from "@/lib/srd-monsters";
+import { db } from "@/lib/db";
+import { getSrdMonsterSource, previewMonsterById, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import { monsterExtraFieldsFromForm } from "@/lib/monster-extra-fields";
 import { saveMonsterExtraFields } from "@/lib/monster-extra-storage";
+import { habitatsFromForm } from "@/lib/habitats";
+import { saveMonsterHabitats } from "@/lib/monster-habitats";
 
 function num(v: FormDataEntryValue | null, fallback = 10): number {
   const n = parseInt(clean(v), 10);
@@ -68,6 +71,7 @@ export async function createMonsterAction(_prev: unknown, formData: FormData) {
   const result = await saveAdminContent("monster", id, formData, undefined, async database => {
     await database.insert(monsters).values({ id, ...input, sort_key: input.nome.toLowerCase() });
     await saveMonsterExtraFields(database, id, monsterExtraFieldsFromForm(formData));
+    await saveMonsterHabitats(database, id, habitatsFromForm(formData));
   });
   if (!result.ok) return result;
   revalidateMonster(id);
@@ -83,6 +87,17 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
   const extraFields = monsterExtraFieldsFromForm(formData);
+  const habitats = habitatsFromForm(formData);
+  // A sheet that exists only in the project files is not in the database:
+  // only its habitat (and matching edition label) is saved, the text stays the official one.
+  const inDatabase = (await db.select({ id: monsters.id }).from(monsters).where(eq(monsters.id, id)).limit(1)).length > 0;
+  if (!inDatabase && previewMonsterById(id, process.env.VERCEL_ENV)) {
+    const projectEdition = usesLegacyMonsterRules({ id }) ? "2014" : "2024";
+    const saved = await saveAdminContent("monster", id, formData, projectEdition, database => saveMonsterHabitats(database, id, habitats));
+    if (!saved.ok) return saved;
+    revalidateMonster(id);
+    return { ok: true as const, error: null, id };
+  }
   const sourceEdition = getSrdMonsterSource({ ...input, ...extraFields, id, gs_num: parseGs(input.grado_sfida) })?.edition;
   const result = await saveAdminContent("monster", id, formData, sourceEdition, async database => {
     const updated = await database.update(monsters)
@@ -94,6 +109,7 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     .where(eq(monsters.id, id)).returning({ id: monsters.id });
     if (!updated.length) throw new Error("Scheda non trovata.");
     await saveMonsterExtraFields(database, id, extraFields);
+    await saveMonsterHabitats(database, id, habitats);
   });
   if (!result.ok) return result;
   revalidateMonster(id);

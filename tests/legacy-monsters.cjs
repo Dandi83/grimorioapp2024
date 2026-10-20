@@ -22,7 +22,7 @@ function load(relative, deps = {}) {
   assert.equal(catalog.length, 340, '330 existing creatures plus exactly 10 approved D&D 2014 additions');
   assert.equal(new Set(catalog.map(m => m.id)).size, 340);
   const legacy = JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.1-it.json'));
-  const ids = ['duergar', 'elfo-drow', 'gnomo-delle-profondita-svirfneblin', 'lucertoloide', 'orco', 'sciame-di-scarabei', 'sciame-di-millepiedi', 'sciame-di-ragni', 'sciame-di-vespe', 'topo-gigante-contagioso'];
+  const ids = ['duergar-2014', 'elfo-drow-2014', 'gnomo-delle-profondita-svirfneblin-2014', 'lucertoloide-2014', 'orco-2014', 'sciame-di-scarabei-2014', 'sciame-di-millepiedi-2014', 'sciame-di-ragni-2014', 'sciame-di-vespe-2014', 'topo-gigante-contagioso-2014'];
   assert.deepEqual(legacy.records.map(r => r.monster.id), ids);
   assert.deepEqual(provider.previewMonsters([], 'production'), catalog);
   assert.deepEqual(provider.previewMonsters([], undefined), []);
@@ -81,23 +81,27 @@ function load(relative, deps = {}) {
     assert.ok(!editedHtml.includes('href="/spell/'), 'an edited Legacy description must not enable 2024 spell links');
   }
   const byId = id => provider.previewMonsterById(id, 'preview');
-  assert.ok(byId('duergar').azioni.includes('massimo di 1 ora'), 'continued action from PDF page 348 is included');
-  assert.equal(byId('sciame-di-scarabei').velocita, '6 m, scalare 6 m, scavare 1,5 m');
-  assert.equal(byId('sciame-di-vespe').velocita, '1,5 m, volare 9 m');
-  assert.ok(byId('sciame-di-millepiedi').tratti.includes('0 punti ferita'));
-  assert.ok(byId('sciame-di-millepiedi').tratti.includes('paralizzata'));
-  assert.ok(byId('sciame-di-ragni').tratti.includes('Percezione della ragnatela'));
-  assert.ok(byId('topo-gigante-contagioso').azioni.includes('3 (1d6) ogni 24 ore'));
-  assert.equal(byId('topo-gigante-contagioso').punti_ferita, '7 (2d6)');
-  assert.equal(byId('sciame-di-ragni').punti_ferita, '22 (5d8)', '2014 base, not the current 2024 swarm');
+  assert.ok(byId('duergar-2014').azioni.includes('massimo di 1 ora'), 'continued action from PDF page 348 is included');
+  assert.equal(byId('sciame-di-scarabei-2014').velocita, '6 m, scalare 6 m, scavare 1,5 m');
+  assert.equal(byId('sciame-di-vespe-2014').velocita, '1,5 m, volare 9 m');
+  assert.ok(byId('sciame-di-millepiedi-2014').tratti.includes('0 punti ferita'));
+  assert.ok(byId('sciame-di-millepiedi-2014').tratti.includes('paralizzata'));
+  assert.ok(byId('sciame-di-ragni-2014').tratti.includes('Percezione della ragnatela'));
+  assert.ok(byId('topo-gigante-contagioso-2014').azioni.includes('3 (1d6) ogni 24 ore'));
+  assert.equal(byId('topo-gigante-contagioso-2014').punti_ferita, '7 (2d6)');
+  assert.equal(byId('sciame-di-ragni-2014').punti_ferita, '22 (5d8)', '2014 base, not the current 2024 swarm');
   const sources = load('app/fonti/page.tsx', {
     '@/components/analytics-provider': {AnalyticsPreferencesButton: () => null},
     'next/link': {__esModule: true, default: ({children, ...props}) => createElement('a', props, children)},
     '@/lib/srd-descriptions': load('lib/srd-descriptions.ts'),
+    '@/lib/data/srd-monsters-5.1-it.json': legacy,
   }).default;
   const attribution = renderToStaticMarkup(createElement(sources));
   assert.ok(attribution.includes('Questo lavoro include materiale del System Reference Document 5.1'));
   assert.ok(attribution.includes('https://creativecommons.org/licenses/by/4.0/legalcode.it'));
   assert.ok(attribution.includes(legacy.sourceUrl));
+  // The count follows the data, and the CC BY note says what was changed.
+  assert.ok(attribution.includes(`Le ${legacy.records.length} schede «D&amp;D5e 2014» sono trascritte dall’SRD 5.1 italiano`));
+  assert.ok(attribution.includes('le regole non sono state modificate né convertite alle regole 2024'));
   console.log('D&D 2014: 10 approved records, 340 catalog entries, correct variant bases, sources, edition labels, no cross-edition links, precedence and license attribution passed.');
 })().catch(error => {console.error(error); process.exit(1);});

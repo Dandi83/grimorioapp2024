@@ -9,6 +9,7 @@ import { monsters as monstersTable } from "./db/schema";
 import { parseGs, type Monster } from "./monsters-types";
 import { previewMonsters, previewMonsterById, getSrdMonsterSource } from "./srd-monsters";
 import { getMonsterExtraFields } from "./monster-extra-storage";
+import { getMonsterHabitatOverrides, resolveHabitats } from "./monster-habitats";
 
 // Re-export dei tipi/utility puri per comodità (l'accesso DB resta server-only).
 export * from "./monsters-types";
@@ -51,15 +52,18 @@ function toMonster(r: RawRow): Monster {
 }
 
 export async function getAllMonsters(): Promise<Monster[]> {
-  const [rows, editions, extraFields] = await Promise.all([db
+  const [rows, editions, extraFields, habitats] = await Promise.all([db
     .select()
     .from(monstersTable)
-    .orderBy(asc(monstersTable.sort_key)), getContentEditions("monster"), getMonsterExtraFields()]);
+    .orderBy(asc(monstersTable.sort_key)), getContentEditions("monster"), getMonsterExtraFields(), getMonsterHabitatOverrides()]);
+  const inDatabase = new Set(rows.map(row => row.id));
   return previewMonsters(rows.map(toMonster), process.env.VERCEL_ENV).map(record => {
     const monster = { ...record, ...extraFields.get(record.id) };
     const source = getSrdMonsterSource(monster);
     return {
       ...monster,
+      habitat: resolveHabitats(monster.id, habitats),
+      solo_progetto: inDatabase.has(monster.id) ? undefined : true,
       edizione: editions.get(monster.id),
       provenienza: source ? {
         document: source.document,
@@ -74,12 +78,15 @@ export async function getAllMonsters(): Promise<Monster[]> {
 // Metadata and the page share the same read within a server render. This cache
 // is request-scoped: an administrative save is visible on the next request.
 export const getMonsterById = cache(async (id: string): Promise<Monster | undefined> => {
-  const [rows, editions, extraFields] = await Promise.all([db
+  const [rows, editions, extraFields, habitats] = await Promise.all([db
     .select()
     .from(monstersTable)
     .where(eq(monstersTable.id, id))
-    .limit(1), getContentEditions("monster", id), getMonsterExtraFields(id)]);
+    .limit(1), getContentEditions("monster", id), getMonsterExtraFields(id), getMonsterHabitatOverrides()]);
   const monster = rows[0] ? toMonster(rows[0]) : previewMonsterById(id, process.env.VERCEL_ENV);
   if (!monster) return undefined;
-  return { ...monster, ...extraFields.get(id), edizione: editions.get(id) };
+  return {
+    ...monster, ...extraFields.get(id), edizione: editions.get(id), habitat: resolveHabitats(id, habitats),
+    solo_progetto: rows[0] ? undefined : true,
+  };
 });

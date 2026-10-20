@@ -37,7 +37,7 @@ test("spells: 40-row pages, search, detail, favorite and back", async ({ page })
 test("bestiary: 40-row pages, show more, animals and a creature sheet", async ({ page }) => {
   await page.goto("/bestiario");
   await expect(catalogRows(page)).toHaveCount(40);
-  await expect(page.getByRole("button", { name: /Mostra altri \(200\)/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Mostra altri \(195\)/ })).toBeVisible();
   await page.getByRole("button", { name: /Mostra altri/ }).click();
   await expect(catalogRows(page)).toHaveCount(80);
   await page.getByRole("button", { name: /^Animali/ }).click();
@@ -47,6 +47,22 @@ test("bestiary: 40-row pages, show more, animals and a creature sheet", async ({
   await page.getByRole("link", { name: /Gatto/ }).click();
   await expect(page).toHaveURL(/\/mostro\/gatto$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Gatto");
+});
+
+test("bestiary: 2014 edition list, remembered on the phone, and old 2014 links", async ({ page }) => {
+  await page.goto("/bestiario");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bestiario (330)");
+  await page.getByRole("button", { name: "D&D5e 2014" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bestiario (10)");
+  await expect(catalogRows(page)).toHaveCount(5);
+  await page.reload();
+  await expect(page.getByRole("button", { name: "D&D5e 2014" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bestiario (10)");
+  await page.getByRole("link", { name: /Orco/ }).click();
+  await expect(page).toHaveURL(/\/mostro\/orco-2014$/);
+  await page.goto("/mostro/orco");
+  await expect(page).toHaveURL(/\/mostro\/orco-2014$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Orco");
 });
 
 test("conditions: inline links open the prebuilt condition page", async ({ page }) => {
