@@ -54,7 +54,7 @@ for(const [id,link] of Object.entries(links)){
  assert.equal(link.en,record.en,`${id}: same English identifier`);
  assert.ok(ids2024.has(link.id2024),`${id}: linked 2024 spell exists`);
 }
-assert.ok(!('regressione-mentale-2014' in links)&&!('punizione-marchiante-2014' in links),'no link without the same English identifier (approved 20/10/2026)');
+assert.ok(data.records.some(r=>r.spell.id==='regressione-mentale-2014')&&!('regressione-mentale-2014' in links)&&!('punizione-marchiante-2014' in links),'no link without the same English identifier (approved 20/10/2026)');
 // Blocks follow the PDF without gaps: each one starts right after the previous one.
 let next=0;
 for(const block of data.blocks){
@@ -63,6 +63,17 @@ for(const block of data.blocks){
  assert.equal(data.records[next-1].sourceName,block.to,`block ${block.block} ends at ${block.to}`);
 }
 for(let i=1;i<data.records.length;i++)assert.ok(data.records[i].page>=data.records[i-1].page,`${data.records[i].spell.id}: PDF page order`);
+// Final check (block 7): every spell of the PDF (pp. 129-222), once, with every English 2014 identifier once.
+const english2014=fs.readFileSync(path.resolve('tests/fixtures/srd51-spells-en-index.json'),'utf8');
+assert.equal(data.records.length,319,'all 319 spells of the SRD 5.1 are published');
+assert.equal(new Set(data.records.map(r=>r.en)).size,319,'319 different English identifiers');
+assert.deepEqual(data.records.map(r=>r.en).sort(),JSON.parse(english2014).sort(),'exactly the English 2014 list: none skipped, none doubled');
+assert.equal(data.records[0].page,129);assert.equal(data.records.at(-1).sourceName,'Zona di verità');
+const perLevel=[0,0,0,0,0,0,0,0,0,0];for(const r of data.records)perLevel[parseLivello(r.spell.livello).livello_num]++;
+assert.deepEqual(perLevel,[24,49,54,42,31,37,31,20,16,15],'spells per level as in the SRD 5.1');
+// One 2014 card per 2024 card: the "Versione 2014 →" row is never ambiguous.
+const targets=Object.values(links).map(l=>l.id2024);assert.equal(new Set(targets).size,targets.length);
+assert.equal(Object.keys(links).length,317,'317 links; Regressione mentale and Punizione marchiante have none');
 
 const legacy=load('lib/srd-spells-2014.ts');
 // Only preview and production serve the files; local runs and the admin read the database only.
@@ -78,7 +89,9 @@ assert.equal(legacy.getLegacySpellSource({...aiuto,durata:'1 ora'}),undefined,'a
 assert.deepEqual(legacy.spellEditionLink('aiuto-2014','preview'),{href:'/spell/aiuto',label:'Versione 2024'});
 assert.deepEqual(legacy.spellEditionLink('aiuto','preview'),{href:'/spell/aiuto-2014',label:'Versione 2014'});
 assert.deepEqual(legacy.spellEditionLink('capanna-2014','preview'),{href:'/spell/capanna-di-leomund',label:'Versione 2024'});
-assert.equal(legacy.spellEditionLink('vuoto-mentale','preview'),undefined,'no link without a published 2014 spell');
+assert.deepEqual(legacy.spellEditionLink('vuoto-mentale','preview'),{href:'/spell/vuoto-mentale-2014',label:'Versione 2014'},'Mind Blank leads to Mind Blank');
+for(const id of ['disorientare','punizione-splendente'])assert.equal(legacy.spellEditionLink(id,'preview'),undefined,`${id}: no 2014 link with a different English identifier`);
+assert.equal(legacy.spellEditionLink('regressione-mentale-2014','preview'),undefined);
 assert.equal(legacy.spellEditionLink('aiuto',undefined),undefined);
 
 (async()=>{
@@ -121,6 +134,13 @@ assert.equal(legacy.spellEditionLink('aiuto',undefined),undefined);
  assert.ok(hrefs(djinni).includes('/spell/creare-cibo-e-acqua-2014'),'«creare cibo e bevande» opens Creare cibo e acqua 2014');
  const ginosfinge=renderToStaticMarkup(React.createElement(MonsterSheetBody,{monster:monsters2014.find(m=>m.id==='ginosfinge-2014'),legacy:true}));
  assert.ok(hrefs(ginosfinge).includes('/spell/conoscenza-delle-legende-2014'),'«conoscenza delle leggende» opens Conoscenza delle legende 2014');
+ // Lists already in italics are kept as they are: the first and last names keep their bollino too.
+ const couatl=renderToStaticMarkup(React.createElement(MonsterSheetBody,{monster:monsters2014.find(m=>m.id==='couatl-2014'),legacy:true}));
+ for(const id of ['individuazione-dei-pensieri-2014','individuazione-del-magico-2014','benedizione-2014','scudo-2014','ristorare-superiore-2014','sogno-2014'])assert.ok(hrefs(couatl).includes('/spell/'+id),`couatl-2014: ${id}`);
+ const italicList='A volontà: <em>luce, mano magica, sonno</em>';
+ assert.equal(refs.formatMonsterSpellLists(italicList,true),italicList,'no italics inside italics');
+ const arcimago=renderToStaticMarkup(React.createElement(MonsterSheetBody,{monster:monsters2014.find(m=>m.id==='arcimago-2014'),legacy:true}));
+ for(const id of ['armatura-magica-2014','pelle-di-pietra-2014','vuoto-mentale-2014'])assert.ok(hrefs(arcimago).includes('/spell/'+id),`arcimago-2014: ${id} (name followed by *)`);
  const list='<strong>Incantesimi.</strong> Prepara:<br>A volontà: comando, creare cibo e bevande, conoscenza delle leggende, aculeo mentale';
  assert.deepEqual(refs.inlineSpellReferences(list,true).map(r=>r.href).sort(),['/spell/comando-2014','/spell/conoscenza-delle-legende-2014','/spell/creare-cibo-e-acqua-2014'],'2024-only names stay plain');
  assert.ok(refs.formatMonsterSpellLists(list,true).includes('<em>aculeo mentale</em>'),'2014 sheets keep their italics');

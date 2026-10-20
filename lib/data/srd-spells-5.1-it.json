@@ -41,6 +41,12 @@
       "from": "Salvare i morenti",
       "to": "Terreno illusorio",
       "count": 50
+    },
+    {
+      "block": 7,
+      "from": "Tocco del vampiro",
+      "to": "Zona di verità",
+      "count": 19
     }
   ],
   "records": [
@@ -5683,6 +5689,360 @@
         "descrizione": "L'incantatore fa in modo che un terreno naturale in un cubo di 45 metri abbia l'aspetto, i suoni e gli odori di un altro tipo di terreno naturale. Un campo aperto o una strada potrebbe così sembrare una palude, una collina, un crepaccio o qualche altro tipo di terreno difficile e invalicabile. Allo stesso modo, uno stagno potrebbe apparire come un prato erboso, un precipizio come un dolce pendio o un fosso erto di rocce come una strada ampia e accogliente. Tuttavia, le strutture artificiali, l'equipaggiamento e le creature all'interno dell'area non cambiano aspetto.<br><br>Inoltre, le caratteristiche tattili del terreno rimangono invariate, quindi le creature che entrano nell'area hanno buone probabilità di accorgersi dell'illusione. Se la differenza non è ovvia al tatto, una creatura che esamina attentamente l'illusione può tentare una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo per non essere tratta in inganno. Una creatura che riconosce l'illusione per ciò che è la vede come un'immagine nebulosa sovrapposta al terreno."
       },
       "en": "hallucinatory-terrain"
+    },
+    {
+      "page": 216,
+      "sourceName": "Tocco del vampiro",
+      "sourceLevel": "Necromanzia di 3° livello",
+      "sourceText": "Tocco del vampiro Necromanzia di 3° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S Durata: Concentrazione, fino a 1 minuto Il tocco della mano dell'incantatore, avviluppata in una cortina d'ombra, può risucchiare l'energia vitale delle altre creature per curare le proprie ferite. L'incantatore effettua un attacco in mischia con incantesimo contro una creatura entro gittata. Se il colpo va a segno, il bersaglio subisce 3d6 danni necrotici e l'incantatore recupera una quantità di punti ferita pari alla metà dei danni necrotici inflitti. Fino al termine dell'incantesimo, l'incantatore con un'azione può effettuare di nuovo l'attacco a ogni suo turno. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, i danni aumentano di 1d6 per ogni slot di livello superiore al 3°.",
+      "sourceSha256": "a4fdfcc1b3cb4b786ef50fe61c4b1cd6edf2d33f9f82d9c3c5aeda6c6a0628de",
+      "spell": {
+        "id": "tocco-del-vampiro-2014",
+        "nome_italiano": "Tocco del vampiro",
+        "livello": "Necromanzia di 3° livello (mago, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Il tocco della mano dell'incantatore, avviluppata in una cortina d'ombra, può risucchiare l'energia vitale delle altre creature per curare le proprie ferite. L'incantatore effettua un attacco in mischia con incantesimo contro una creatura entro gittata. Se il colpo va a segno, il bersaglio subisce 3d6 danni necrotici e l'incantatore recupera una quantità di punti ferita pari alla metà dei danni necrotici inflitti. Fino al termine dell'incantesimo, l'incantatore con un'azione può effettuare di nuovo l'attacco a ogni suo turno.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, i danni aumentano di 1d6 per ogni slot di livello superiore al 3°."
+      },
+      "en": "vampiric-touch"
+    },
+    {
+      "page": 216,
+      "sourceName": "Tocco gelido",
+      "sourceLevel": "Trucchetto di necromanzia",
+      "sourceText": "Tocco gelido Trucchetto di necromanzia Tempo di lancio: 1 azione Gittata: 36 metri Componenti: V, S Durata: 1 round L'incantatore crea una mano scheletrica e spettrale nello spazio di una creatura entro gittata ed effettua contro di lei un attacco a distanza con incantesimo, investendola con un flusso di gelo sepolcrale. Se il colpo va a segno, il bersaglio subisce 1d8 danni necrotici e non può recuperare punti ferita fino all'inizio del turno successivo dell'incantatore. Fino ad allora, la mano rimane avvinghiata al bersaglio. Se il bersaglio colpito è un non morto, subisce svantaggio ai tiri per colpire contro l'incantatore fino al termine del turno successivo di quest'ultimo. I danni di questo incantesimo aumentano di 1d8 quando l'incantatore raggiunge il 5° livello (2d8), l'11° livello (3d8) e il 17° livello (4d8).",
+      "sourceSha256": "83747cb7e9e7586f9323357b52bd4838f902b108eda6835e91fc2c9670599493",
+      "spell": {
+        "id": "tocco-gelido-2014",
+        "nome_italiano": "Tocco gelido",
+        "livello": "Trucchetto di necromanzia (mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "36 metri",
+        "componenti": "V, S",
+        "durata": "1 round",
+        "descrizione": "L'incantatore crea una mano scheletrica e spettrale nello spazio di una creatura entro gittata ed effettua contro di lei un attacco a distanza con incantesimo, investendola con un flusso di gelo sepolcrale. Se il colpo va a segno, il bersaglio subisce 1d8 danni necrotici e non può recuperare punti ferita fino all'inizio del turno successivo dell'incantatore. Fino ad allora, la mano rimane avvinghiata al bersaglio.<br><br>Se il bersaglio colpito è un non morto, subisce svantaggio ai tiri per colpire contro l'incantatore fino al termine del turno successivo di quest'ultimo.<br><br>I danni di questo incantesimo aumentano di 1d8 quando l'incantatore raggiunge il 5° livello (2d8), l'11° livello (3d8) e il 17° livello (4d8)."
+      },
+      "pages": [
+        216,
+        217
+      ],
+      "en": "chill-touch"
+    },
+    {
+      "page": 217,
+      "sourceName": "Trama ipnotica",
+      "sourceLevel": "Illusione di 3° livello",
+      "sourceText": "Trama ipnotica Illusione di 3° livello Tempo di lancio: 1 azione Gittata: 36 metri Componenti: S, M (un bastoncino d'incenso acceso o una fiala di cristallo piena di materiale fosforescente) Durata: Concentrazione, fino a 1 minuto L'incantatore crea un intreccio di colori che si snoda nell'aria all'interno di un cubo di 9 metri entro gittata, apparendo per qualche secondo prima di svanire. Ogni creatura presente nell'area che vede l'intreccio deve effettuare un tiro salvezza su Saggezza. Se lo fallisce, rimane affascinata per tutta la durata dell'incantesimo, in quel momento è incapacitata e ha una velocità di movimento pari a 0. L'incantesimo su una creatura influenzata termina se questa subisce danni o se qualcuno usa un'azione per scuoterla, destandola dal suo stato confusionale.",
+      "sourceSha256": "992e057e9ef6d31027d98178c1fe8df724f96725d1ee3f53b7c05b90c64451c7",
+      "spell": {
+        "id": "trama-ipnotica-2014",
+        "nome_italiano": "Trama ipnotica",
+        "livello": "Illusione di 3° livello (bardo, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "36 metri",
+        "componenti": "S, M (un bastoncino d'incenso acceso o una fiala di cristallo piena di materiale fosforescente)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore crea un intreccio di colori che si snoda nell'aria all'interno di un cubo di 9 metri entro gittata, apparendo per qualche secondo prima di svanire. Ogni creatura presente nell'area che vede l'intreccio deve effettuare un tiro salvezza su Saggezza. Se lo fallisce, rimane affascinata per tutta la durata dell'incantesimo, in quel momento è incapacitata e ha una velocità di movimento pari a 0.<br><br>L'incantesimo su una creatura influenzata termina se questa subisce danni o se qualcuno usa un'azione per scuoterla, destandola dal suo stato confusionale."
+      },
+      "en": "hypnotic-pattern"
+    },
+    {
+      "page": 217,
+      "sourceName": "Trasformazione",
+      "sourceLevel": "Trasmutazione di 9° livello",
+      "sourceText": "Trasformazione Trasmutazione di 9° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S, M (un diadema di giada del valore di almeno 1.500 mo, che l'incantatore deve indossare prima di lanciare l'incantesimo) Durata: Concentrazione, fino a 1 ora L'incantatore assume la forma di una creatura diversa per la durata dell'incantesimo. La nuova forma può essere quella di una qualsiasi creatura con un grado di sfida pari o inferiore al suo. La creatura non può essere un costrutto o un non morto e deve essere di un tipo che l'incantatore abbia già visto almeno una volta. L'incantatore si trasforma in un normale esemplare di quella creatura, privo di livelli di classe o di tratto Incantesimi. Le sue statistiche di gioco vengono sostituite dalle statistiche della creatura scelta, benché l'incantatore conservi il proprio allineamento e i punteggi di Intelligenza, Saggezza e Carisma. Conserva inoltre tutte le sue abilità e competenze nei tiri salvezza, oltre a ottenere quelle della creatura. Se la creatura possiede una competenza che anche l'incantatore possiede e il bonus nelle sue statistiche è superiore a quello dell'incantatore, quest'ultimo usa il bonus della creatura anziché il proprio. L'incantatore non può usare azioni leggendarie o azioni di tana nella sua nuova forma. L'incantatore assume i punti ferita e i dadi vita della nuova forma e, una volta tornato nella sua forma normale, riassume il numero di punti ferita che possedeva prima della trasformazione. Se torna nella sua forma normale per essere sceso a 0 punti ferita, gli eventuali danni in eccesso si trasmettono a essa. Fintantoché i danni in eccesso non portano la sua forma normale a 0 punti ferita, non cade privo di sensi. L'incantatore mantiene i benefici di tutti i privilegi forniti dalla sua classe, razza e da qualsiasi altra fonte e può usarli se, nella nuova forma, è fisicamente in grado di farlo. Tuttavia, non può usare nessuno dei suoi sensi speciali, come per esempio la scurovisione, a meno che non li possieda anche nella nuova forma, potendo parlare solo se la creatura è normalmente in grado di farlo. Quando si trasforma, l'incantatore può scegliere se lasciare cadere a terra l'equipaggiamento, se permettere che si fonda nella sua nuova forma o se indossarlo. L'equipaggiamento indossato funziona normalmente, ma spetta al GM decidere se è pratico o meno che la nuova forma indossi ogni determinato oggetto d'equipaggiamento, in base alla forma e alla taglia della creatura. L'equipaggiamento dell'incantatore non cambia per adattarsi alla nuova forma e ogni oggetto di equipaggiamento che non può indossare deve cadere a terra o fondersi con essa. L'equipaggiamento fuso nella nuova forma non ha alcun effetto in quello stato. Per la durata dell'incantesimo, l'incantatore può usare un'azione per assumere una forma diversa seguendo le stesse regole e restrizioni relative alla forma originale, con un'eccezione: se la nuova forma possiede più punti ferita rispetto a quelli attuali dell'incantatore, i punti ferita di quest'ultimo rimangono al valore attuale.",
+      "sourceSha256": "f49ba5193650ffa33cb6b845bb51dfb348f015ace81a8c73c6a573a1f78ff012",
+      "spell": {
+        "id": "trasformazione-2014",
+        "nome_italiano": "Trasformazione",
+        "livello": "Trasmutazione di 9° livello (druido, mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S, M (un diadema di giada del valore di almeno 1.500 mo, che l'incantatore deve indossare prima di lanciare l'incantesimo)",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "L'incantatore assume la forma di una creatura diversa per la durata dell'incantesimo. La nuova forma può essere quella di una qualsiasi creatura con un grado di sfida pari o inferiore al suo. La creatura non può essere un costrutto o un non morto e deve essere di un tipo che l'incantatore abbia già visto almeno una volta. L'incantatore si trasforma in un normale esemplare di quella creatura, privo di livelli di classe o di tratto Incantesimi.<br><br>Le sue statistiche di gioco vengono sostituite dalle statistiche della creatura scelta, benché l'incantatore conservi il proprio allineamento e i punteggi di Intelligenza, Saggezza e Carisma. Conserva inoltre tutte le sue abilità e competenze nei tiri salvezza, oltre a ottenere quelle della creatura. Se la creatura possiede una competenza che anche l'incantatore possiede e il bonus nelle sue statistiche è superiore a quello dell'incantatore, quest'ultimo usa il bonus della creatura anziché il proprio. L'incantatore non può usare azioni leggendarie o azioni di tana nella sua nuova forma.<br><br>L'incantatore assume i punti ferita e i dadi vita della nuova forma e, una volta tornato nella sua forma normale, riassume il numero di punti ferita che possedeva prima della trasformazione. Se torna nella sua forma normale per essere sceso a 0 punti ferita, gli eventuali danni in eccesso si trasmettono a essa. Fintantoché i danni in eccesso non portano la sua forma normale a 0 punti ferita, non cade privo di sensi.<br><br>L'incantatore mantiene i benefici di tutti i privilegi forniti dalla sua classe, razza e da qualsiasi altra fonte e può usarli se, nella nuova forma, è fisicamente in grado di farlo. Tuttavia, non può usare nessuno dei suoi sensi speciali, come per esempio la scurovisione, a meno che non li possieda anche nella nuova forma, potendo parlare solo se la creatura è normalmente in grado di farlo.<br><br>Quando si trasforma, l'incantatore può scegliere se lasciare cadere a terra l'equipaggiamento, se permettere che si fonda nella sua nuova forma o se indossarlo. L'equipaggiamento indossato funziona normalmente, ma spetta al GM decidere se è pratico o meno che la nuova forma indossi ogni determinato oggetto d'equipaggiamento, in base alla forma e alla taglia della creatura. L'equipaggiamento dell'incantatore non cambia per adattarsi alla nuova forma e ogni oggetto di equipaggiamento che non può indossare deve cadere a terra o fondersi con essa. L'equipaggiamento fuso nella nuova forma non ha alcun effetto in quello stato.<br><br>Per la durata dell'incantesimo, l'incantatore può usare un'azione per assumere una forma diversa seguendo le stesse regole e restrizioni relative alla forma originale, con un'eccezione: se la nuova forma possiede più punti ferita rispetto a quelli attuali dell'incantatore, i punti ferita di quest'ultimo rimangono al valore attuale."
+      },
+      "en": "shapechange"
+    },
+    {
+      "page": 217,
+      "sourceName": "Traslazione arborea",
+      "sourceLevel": "Evocazione di 5° livello",
+      "sourceText": "Traslazione arborea Evocazione di 5° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S Durata: Concentrazione, fino a 1 minuto L'incantatore ottiene la capacità di entrare in un albero e muoversi al suo interno fino ad arrivare a un altro albero dello stesso tipo posto entro 150 metri. Entrambi gli alberi devono essere vivi e di taglia pari o superiore a quella dell'incantatore, che deve usare 1,5 metri di movimento per entrare in uno di essi. L'incantatore apprende immediatamente l'ubicazione di tutti gli altri alberi dello stesso tipo entro 150 metri e, come parte del movimento usato per entrare nell'albero, può scegliere se passare in uno di quegli alberi o riemergere da quello in cui si trova. L'incantatore ricompare in un punto a sua scelta entro 1,5 metri dall'albero di destinazione, usando ulteriori 1,5 metri di movimento. Se non gli rimane più alcun movimento, ricompare entro 1,5 metri dall'albero in cui è entrato. Per la durata dell'incantesimo, l'incantatore può usare questa abilità di trasporto una volta per round e deve concludere ogni suo turno fuori dall'albero.",
+      "sourceSha256": "1e5bbb2595b5d2268059cdcb44ee7ad00d3793266020405595980179fff69351",
+      "spell": {
+        "id": "traslazione-arborea-2014",
+        "nome_italiano": "Traslazione arborea",
+        "livello": "Evocazione di 5° livello (druido, ranger)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore ottiene la capacità di entrare in un albero e muoversi al suo interno fino ad arrivare a un altro albero dello stesso tipo posto entro 150 metri. Entrambi gli alberi devono essere vivi e di taglia pari o superiore a quella dell'incantatore, che deve usare 1,5 metri di movimento per entrare in uno di essi. L'incantatore apprende immediatamente l'ubicazione di tutti gli altri alberi dello stesso tipo entro 150 metri e, come parte del movimento usato per entrare nell'albero, può scegliere se passare in uno di quegli alberi o riemergere da quello in cui si trova. L'incantatore ricompare in un punto a sua scelta entro 1,5 metri dall'albero di destinazione, usando ulteriori 1,5 metri di movimento. Se non gli rimane più alcun movimento, ricompare entro 1,5 metri dall'albero in cui è entrato.<br><br>Per la durata dell'incantesimo, l'incantatore può usare questa abilità di trasporto una volta per round e deve concludere ogni suo turno fuori dall'albero."
+      },
+      "pages": [
+        217,
+        218
+      ],
+      "en": "tree-stride"
+    },
+    {
+      "page": 218,
+      "sourceName": "Trasporto vegetale",
+      "sourceLevel": "Evocazione di 6° livello",
+      "sourceText": "Trasporto vegetale Evocazione di 6° livello Tempo di lancio: 1 azione Gittata: 3 metri Componenti: V, S Durata: 1 round Questo incantesimo crea un legame magico tra un vegetale inanimato di taglia Grande o superiore situato entro gittata e un altro vegetale, situato a qualsiasi distanza sullo stesso piano di esistenza. L'incantatore deve aver visto o toccato il vegetale di destinazione almeno una volta in precedenza. Per la durata dell'incantesimo, qualsiasi creatura può entrare nel vegetale bersaglio e uscire da quello di destinazione usando 1,5 metri di movimento.",
+      "sourceSha256": "034165316f9b18b785d08112a4b4b5e764c589520093d7e861ab09057d183846",
+      "spell": {
+        "id": "trasporto-vegetale-2014",
+        "nome_italiano": "Trasporto vegetale",
+        "livello": "Evocazione di 6° livello (druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "3 metri",
+        "componenti": "V, S",
+        "durata": "1 round",
+        "descrizione": "Questo incantesimo crea un legame magico tra un vegetale inanimato di taglia Grande o superiore situato entro gittata e un altro vegetale, situato a qualsiasi distanza sullo stesso piano di esistenza. L'incantatore deve aver visto o toccato il vegetale di destinazione almeno una volta in precedenza. Per la durata dell'incantesimo, qualsiasi creatura può entrare nel vegetale bersaglio e uscire da quello di destinazione usando 1,5 metri di movimento."
+      },
+      "en": "transport-via-plants"
+    },
+    {
+      "page": 218,
+      "sourceName": "Trova cavalcatura",
+      "sourceLevel": "Evocazione di 2° livello",
+      "sourceText": "Trova cavalcatura Evocazione di 2° livello Tempo di lancio: 10 minuti Gittata: 9 metri Componenti: V, S Durata: Istantanea L'incantatore evoca uno spirito che assume la forma di una cavalcatura insolitamente intelligente, forte e leale, stringendovi un legame duraturo. La cavalcatura appare in uno spazio libero entro gittata e assume la forma scelta dall'incantatore: cavallo da guerra, pony, cammello, alce o mastino. (Il GM potrebbe consentire ad altri animali di essere evocati come cavalcature.) La cavalcatura usa le statistiche della forma scelta, anche se si tratta di un celestiale, un folletto o un immondo (a scelta dell'incantatore) anziché di un tipo normale. Inoltre, se la cavalcatura ha un'Intelligenza pari o inferiore a 5, questa diventa 6 e ottiene l'abilità di comprendere un linguaggio a scelta dell'incantatore che quest'ultimo sia in grado di parlare. La cavalcatura serve l'incantatore sia in combattimento che in altri momenti e, grazie al legame istintivo che li unisce, i due combattono come un'unica entità. Mentre è in sella alla cavalcatura, l'incantatore può fare in modo che ogni incantesimo che bersaglia solo se stesso bersagli anche la sua cavalcatura. Quando una cavalcatura scende a 0 punti ferita, scompare, non lasciando dietro di sé alcuna forma fisica. Inoltre, l'incantatore può in ogni momento congedare la cavalcatura con un'azione, causandone la scomparsa. In ogni caso, lanciare nuovamente questo incantesimo evocherà la medesima cavalcatura, con i suoi punti ferita massimi ripristinati. Finché la cavalcatura si trova a 1,5 km dall'incantatore, quest'ultimo può comunicare con lei telepaticamente. Un incantatore non può legarsi a più di una cavalcatura alla volta tramite questo incantesimo. Con un'azione, l'incantatore può liberare in ogni momento la cavalcatura dal legame che li unisce, causandone la scomparsa.",
+      "sourceSha256": "7bb803e944f5d3c6c8a22c8d4c27b352a1889461360992b983fd8130a59db154",
+      "spell": {
+        "id": "trova-cavalcatura-2014",
+        "nome_italiano": "Trova cavalcatura",
+        "livello": "Evocazione di 2° livello (paladino)",
+        "tempo_di_lancio": "10 minuti",
+        "gittata": "9 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore evoca uno spirito che assume la forma di una cavalcatura insolitamente intelligente, forte e leale, stringendovi un legame duraturo. La cavalcatura appare in uno spazio libero entro gittata e assume la forma scelta dall'incantatore: cavallo da guerra, pony, cammello, alce o mastino. (Il GM potrebbe consentire ad altri animali di essere evocati come cavalcature.) La cavalcatura usa le statistiche della forma scelta, anche se si tratta di un celestiale, un folletto o un immondo (a scelta dell'incantatore) anziché di un tipo normale. Inoltre, se la cavalcatura ha un'Intelligenza pari o inferiore a 5, questa diventa 6 e ottiene l'abilità di comprendere un linguaggio a scelta dell'incantatore che quest'ultimo sia in grado di parlare.<br><br>La cavalcatura serve l'incantatore sia in combattimento che in altri momenti e, grazie al legame istintivo che li unisce, i due combattono come un'unica entità. Mentre è in sella alla cavalcatura, l'incantatore può fare in modo che ogni incantesimo che bersaglia solo se stesso bersagli anche la sua cavalcatura.<br><br>Quando una cavalcatura scende a 0 punti ferita, scompare, non lasciando dietro di sé alcuna forma fisica. Inoltre, l'incantatore può in ogni momento congedare la cavalcatura con un'azione, causandone la scomparsa. In ogni caso, lanciare nuovamente questo incantesimo evocherà la medesima cavalcatura, con i suoi punti ferita massimi ripristinati.<br><br>Finché la cavalcatura si trova a 1,5 km dall'incantatore, quest'ultimo può comunicare con lei telepaticamente.<br><br>Un incantatore non può legarsi a più di una cavalcatura alla volta tramite questo incantesimo. Con un'azione, l'incantatore può liberare in ogni momento la cavalcatura dal legame che li unisce, causandone la scomparsa."
+      },
+      "en": "find-steed"
+    },
+    {
+      "page": 218,
+      "sourceName": "Trova famiglio",
+      "sourceLevel": "Evocazione di 1° livello (rituale)",
+      "sourceText": "Trova famiglio Evocazione di 1° livello (rituale) Tempo di lancio: 1 ora Gittata: 3 metri Componenti: V, S, M (carbone, incenso ed erbe del valore di 10 mo da bruciare in un braciere d'ottone) Durata: Istantanea L'incantatore ottiene il servizio di un famiglio, uno spirito che assume la forma di un animale a sua scelta: cavalluccio marino, corvo, donnola, falco, gatto, granchio, gufo, lucertola, pesce (quipper), piovra, pipistrello, ragno, rana (rospo), serpente velenoso, topo. Il famiglio appare in uno spazio libero entro gittata, ha le statistiche della forma scelta, anche se si tratta di un celestiale, un folletto o un immondo (a scelta dell'incantatore) invece di una bestia. Il famiglio è indipendente dall'incantatore, ma obbedisce sempre ai suoi comandi. In combattimento, tira per la propria iniziativa e agisce nel proprio turno. Un famiglio non può attaccare, ma può effettuare altre azioni normalmente. Quando un famiglio scende a 0 punti ferita, scompare, non lasciando dietro di sé alcuna forma fisica e riappare quando l'incantatore lancia nuovamente questo incantesimo. Finché il famiglio si trova a 30 metri dall'incantatore, quest'ultimo può comunicare con lui telepaticamente. Inoltre, con un'azione, l'incantatore è in grado di vedere attraverso gli occhi del famiglio e sentire ciò che sente fino all'inizio del turno successivo, ottenendo i benefici di eventuali sensi speciali posseduti dal famiglio. Durante questo periodo, l'incantatore non vede o sente nulla con i propri sensi. Con un'azione, l'incantatore può temporaneamente congedare il suo famiglio, che scompare in una sacca dimensionale dove attende di essere nuovamente evocato. In alternativa, l'incantatore può farlo sparire per sempre. Con un'azione, finché il famiglio è congedato temporaneamente, l'incantatore può farlo ricomparire in un spazio libero entro 9 metri da sé. Un incantatore non può avere più di un famiglio alla volta. Se lancia questo incantesimo mentre è già presente un famiglio, l'incantatore gli impartisce una nuova forma. L'incantatore sceglie una delle forme dalla lista soprastante e il famiglio si trasformerà nella creatura scelta. Infine, quando l'incantatore lancia un incantesimo con gittata a contatto, il suo famiglio può trasmettere l'incantesimo come se fosse stato lui a lanciarlo. Il famiglio deve trovarsi entro 30 metri dall'incantatore e deve usare la sua reazione per trasmettere l'incantesimo lanciato. Se l'incantesimo richiede un tiro per colpire, l'incantatore può utilizzare il suo modificatore di attacco per quel tiro.",
+      "sourceSha256": "7d32f70bbf4b7993d507c92edc1e162067d4cceb0a20ee0d7ebb16e7ee1585cd",
+      "spell": {
+        "id": "trova-famiglio-2014",
+        "nome_italiano": "Trova famiglio",
+        "livello": "Evocazione di 1° livello (mago)",
+        "tempo_di_lancio": "1 ora o rituale",
+        "gittata": "3 metri",
+        "componenti": "V, S, M (carbone, incenso ed erbe del valore di 10 mo da bruciare in un braciere d'ottone)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore ottiene il servizio di un famiglio, uno spirito che assume la forma di un animale a sua scelta: cavalluccio marino, corvo, donnola, falco, gatto, granchio, gufo, lucertola, pesce (quipper), piovra, pipistrello, ragno, rana (rospo), serpente velenoso, topo. Il famiglio appare in uno spazio libero entro gittata, ha le statistiche della forma scelta, anche se si tratta di un celestiale, un folletto o un immondo (a scelta dell'incantatore) invece di una bestia.<br><br>Il famiglio è indipendente dall'incantatore, ma obbedisce sempre ai suoi comandi. In combattimento, tira per la propria iniziativa e agisce nel proprio turno. Un famiglio non può attaccare, ma può effettuare altre azioni normalmente.<br><br>Quando un famiglio scende a 0 punti ferita, scompare, non lasciando dietro di sé alcuna forma fisica e riappare quando l'incantatore lancia nuovamente questo incantesimo.<br><br>Finché il famiglio si trova a 30 metri dall'incantatore, quest'ultimo può comunicare con lui telepaticamente. Inoltre, con un'azione, l'incantatore è in grado di vedere attraverso gli occhi del famiglio e sentire ciò che sente fino all'inizio del turno successivo, ottenendo i benefici di eventuali sensi speciali posseduti dal famiglio. Durante questo periodo, l'incantatore non vede o sente nulla con i propri sensi.<br><br>Con un'azione, l'incantatore può temporaneamente congedare il suo famiglio, che scompare in una sacca dimensionale dove attende di essere nuovamente evocato. In alternativa, l'incantatore può farlo sparire per sempre. Con un'azione, finché il famiglio è congedato temporaneamente, l'incantatore può farlo ricomparire in un spazio libero entro 9 metri da sé.<br><br>Un incantatore non può avere più di un famiglio alla volta. Se lancia questo incantesimo mentre è già presente un famiglio, l'incantatore gli impartisce una nuova forma. L'incantatore sceglie una delle forme dalla lista soprastante e il famiglio si trasformerà nella creatura scelta.<br><br>Infine, quando l'incantatore lancia un incantesimo con gittata a contatto, il suo famiglio può trasmettere l'incantesimo come se fosse stato lui a lanciarlo. Il famiglio deve trovarsi entro 30 metri dall'incantatore e deve usare la sua reazione per trasmettere l'incantesimo lanciato. Se l'incantesimo richiede un tiro per colpire, l'incantatore può utilizzare il suo modificatore di attacco per quel tiro."
+      },
+      "pages": [
+        218,
+        219
+      ],
+      "en": "find-familiar"
+    },
+    {
+      "page": 219,
+      "sourceName": "Trucco della corda",
+      "sourceLevel": "Trasmutazione di 2° livello",
+      "sourceText": "Trucco della corda Trasmutazione di 2° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (estratto di mais in polvere e un pezzo di pergamena intrecciato) Durata: 1 ora L'incantatore tocca un pezzo di corda della lunghezza massima di 18 metri. Un'estremità della corda sale in aria finché non pende perpendicolarmente al terreno. All'estremità superiore della corda, si apre un'entrata invisibile verso uno spazio extradimensionale che permane fino al termine dell'incantesimo. Lo spazio extradimensionale può essere raggiunto arrampicandosi in cima alla corda e può contenere un massimo di otto creature di taglia Media o inferiore. La corda può essere ritratta all'interno dello spazio, facendola sparire dalla vista di chi osserva dall'esterno. Gli attacchi e gli incantesimi non possono attraversare lo spazio extradimensionale in entrata o uscita, ma coloro che si trovano all'interno possono vedere all'esterno come da una finestra di 90 cm per 1,5 metri centrata sulla corda. Tutto ciò che si trova all'interno dello spazio extradimensionale cade all'esterno al termine dell'incantesimo.",
+      "sourceSha256": "67a02e23023c1639f5137b6e9e822096f56fedbddcd4deef9b249b01774b9716",
+      "spell": {
+        "id": "trucco-della-corda-2014",
+        "nome_italiano": "Trucco della corda",
+        "livello": "Trasmutazione di 2° livello (mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (estratto di mais in polvere e un pezzo di pergamena intrecciato)",
+        "durata": "1 ora",
+        "descrizione": "L'incantatore tocca un pezzo di corda della lunghezza massima di 18 metri. Un'estremità della corda sale in aria finché non pende perpendicolarmente al terreno. All'estremità superiore della corda, si apre un'entrata invisibile verso uno spazio extradimensionale che permane fino al termine dell'incantesimo.<br><br>Lo spazio extradimensionale può essere raggiunto arrampicandosi in cima alla corda e può contenere un massimo di otto creature di taglia Media o inferiore. La corda può essere ritratta all'interno dello spazio, facendola sparire dalla vista di chi osserva dall'esterno.<br><br>Gli attacchi e gli incantesimi non possono attraversare lo spazio extradimensionale in entrata o uscita, ma coloro che si trovano all'interno possono vedere all'esterno come da una finestra di 90 cm per 1,5 metri centrata sulla corda.<br><br>Tutto ciò che si trova all'interno dello spazio extradimensionale cade all'esterno al termine dell'incantesimo."
+      },
+      "en": "rope-trick"
+    },
+    {
+      "page": 219,
+      "sourceName": "Unto",
+      "sourceLevel": "Evocazione di 1° livello",
+      "sourceText": "Unto Evocazione di 1° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S, M (un pezzo di cotenna di maiale o burro) Durata: 1 minuto Una patina viscida di unto ricopre un'area di terreno di 3 metri per lato centrata su un punto entro gittata che diventa terreno difficile per la durata dell'incantesimo. Quando l'unto compare, ogni creatura nell'area deve superare un tiro salvezza su Destrezza, altrimenti cade a terra prona. Anche una creatura che entra nell'area o vi termina il proprio turno deve superare un tiro salvezza su Destrezza, altrimenti cade prona.",
+      "sourceSha256": "ce73088ee76eaed9ac151ed2ee014e232fa4d986457ce616cd784eced8d0db43",
+      "spell": {
+        "id": "unto-2014",
+        "nome_italiano": "Unto",
+        "livello": "Evocazione di 1° livello (mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S, M (un pezzo di cotenna di maiale o burro)",
+        "durata": "1 minuto",
+        "descrizione": "Una patina viscida di unto ricopre un'area di terreno di 3 metri per lato centrata su un punto entro gittata che diventa terreno difficile per la durata dell'incantesimo.<br><br>Quando l'unto compare, ogni creatura nell'area deve superare un tiro salvezza su Destrezza, altrimenti cade a terra prona. Anche una creatura che entra nell'area o vi termina il proprio turno deve superare un tiro salvezza su Destrezza, altrimenti cade prona."
+      },
+      "en": "grease"
+    },
+    {
+      "page": 219,
+      "sourceName": "Vedere invisibilità",
+      "sourceLevel": "Divinazione di 2° livello",
+      "sourceText": "Vedere invisibilità Divinazione di 2° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S, M (un pizzico di talco e una spolverata di polvere d'argento) Durata: 1 ora Per la durata dell'incantesimo, l'incantatore è in grado di vedere le creature e gli oggetti invisibili e proiettare la sua vista sul Piano Etereo. Le creature e gli oggetti eterei gli appaiono spettrali e trasparenti.",
+      "sourceSha256": "8a0e1e0decfc76521ca6332266a721680735cf52bb58ed2d3c720643222d9149",
+      "spell": {
+        "id": "vedere-invisibilita-2014",
+        "nome_italiano": "Vedere invisibilità",
+        "livello": "Divinazione di 2° livello (bardo, mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S, M (un pizzico di talco e una spolverata di polvere d'argento)",
+        "durata": "1 ora",
+        "descrizione": "Per la durata dell'incantesimo, l'incantatore è in grado di vedere le creature e gli oggetti invisibili e proiettare la sua vista sul Piano Etereo. Le creature e gli oggetti eterei gli appaiono spettrali e trasparenti."
+      },
+      "en": "see-invisibility"
+    },
+    {
+      "page": 220,
+      "sourceName": "Velocità",
+      "sourceLevel": "Trasmutazione di 3° livello",
+      "sourceText": "Velocità Trasmutazione di 3° livello Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V, S, M (una scaglia di radice di liquirizia) Durata: Concentrazione, fino a 1 minuto L'incantatore sceglie una creatura consenziente entro gittata che è in grado di vedere. Finché l'incantesimo non termina, il bersaglio ottiene un bonus di +2 alla CA, dispone di vantaggio ai tiri salvezza su Destrezza, la sua velocità raddoppia e ottiene un'azione aggiuntiva per ogni turno. L'azione aggiuntiva può essere usata soltanto per effettuare un'azione Attacco (solo attacchi con un'arma), Disimpegno, Nascondersi, Scatto o Usare un oggetto. Quando l'incantesimo termina, il bersaglio non può muoversi o effettuare azioni fino alla fine del turno successivo, essendo sopraffatto da un'ondata di spossatezza.",
+      "sourceSha256": "8527a42295e5099054fc1dbe1357d51c12b3a600309212e9e94e1cc0af626a7f",
+      "spell": {
+        "id": "velocita-2014",
+        "nome_italiano": "Velocità",
+        "livello": "Trasmutazione di 3° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "V, S, M (una scaglia di radice di liquirizia)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore sceglie una creatura consenziente entro gittata che è in grado di vedere. Finché l'incantesimo non termina, il bersaglio ottiene un bonus di +2 alla CA, dispone di vantaggio ai tiri salvezza su Destrezza, la sua velocità raddoppia e ottiene un'azione aggiuntiva per ogni turno. L'azione aggiuntiva può essere usata soltanto per effettuare un'azione Attacco (solo attacchi con un'arma), Disimpegno, Nascondersi, Scatto o Usare un oggetto.<br><br>Quando l'incantesimo termina, il bersaglio non può muoversi o effettuare azioni fino alla fine del turno successivo, essendo sopraffatto da un'ondata di spossatezza."
+      },
+      "en": "haste"
+    },
+    {
+      "page": 220,
+      "sourceName": "Vigilanza e interdizione",
+      "sourceLevel": "Abiurazione di 6° livello",
+      "sourceText": "Vigilanza e interdizione Abiurazione di 6° livello Tempo di lancio: 10 minuti Gittata: Contatto Componenti: V, S, M (incenso bruciato, una piccola dose di zolfo e olio, uno spago annodato, una piccola quantità di sangue di umber hulk e una piccola verga d'argento del valore di almeno 10 mo) Durata: 24 ore L'incantatore crea una difesa che protegge un'area quadrata di terreno di massimo 750 metri (un'area di 15 metri per lato, cento aree di 1,5 metri per lato o venticinque aree di 3 metri per lato). L'area protetta può essere alta fino a 6 metri e avere la forma desiderata dall'incantatore. È anche possibile proteggere diversi piani di una roccaforte dividendo l'area su di essi, purché l'incantatore possa camminare in ogni area contigua mentre lancia l'incantesimo. Al momento del lancio, l'incantatore può specificare quali individui non subiscono alcuni o tutti gli effetti da lui scelti. Può anche specificare una parola d'ordine che, quando pronunciata a voce alta, rende chi la pronuncia immune a questi effetti. Vigilanza e interdizione crea i seguenti effetti nell'area protetta. Corridoi. La nebbia riempie tutti i corridoi protetti, oscurandoli pesantemente. Inoltre, a ogni incrocio o diramazione che richieda di scegliere una direzione, una creatura diversa dall'incantatore ha una probabilità del 50% di credere di andare in una direzione differente da quella che ha scelto. Porte. Tutte le porte nell'area protetta vengono chiuse a chiave magicamente, come sigillate da un incantesimo serratura arcana. Inoltre, l'incantatore può coprire fino a dieci porte con un'illusione (equivalente alla funzione di oggetto illusorio dell'incantesimo illusione minore) per farle apparire come normali sezioni di parete. Scale. Tutte le scale nell'area protetta si riempiono da cima a fondo di ragnatele, come succederebbe lanciando un incantesimo ragnatela. Per la durata dell'incantesimo vigilanza e interdizione, i fili di queste ragnatele si riformano in 10 minuti se vengono bruciate o strappate. Altri effetti dell'incantesimo. L'incantatore può collocare uno dei seguenti effetti magici a sua scelta all'interno dell'area protetta della roccaforte. • Collocare bocca magica in due luoghi. • Collocare una folata di vento costante in un corridoio o in una stanza. • Collocare luci danzanti in quattro corridoi, specificando anche un semplice schema che le luci ripetono per la durata di vigilanza e interdizione. • Collocare nube maleodorante in due luoghi. Il vapore compare nei luoghi scelti e riappare nel giro di 10 minuti se disperso dal vento fintantoché vigilanza e interdizione permane. • Collocare una suggestione in un luogo. L'incantatore seleziona un'area di un massimo di 1,5 metri per lato e qualsiasi creatura che vi entri o la attraversi riceve mentalmente la suggestione. L'intera area protetta emana magia. Un incantesimo dissolvi magie lanciato con successo su un effetto specifico rimuove solamente quello. L'incantatore può creare una struttura permanentemente protetta da vigilanza e interdizione lanciando l'incantesimo sulla struttura ogni giorno per un anno.",
+      "sourceSha256": "69d14cab133083bc23d5ead5a8f819e70282a5dfa1b33cbcd578c6c34701fcc2",
+      "spell": {
+        "id": "vigilanza-e-interdizione-2014",
+        "nome_italiano": "Vigilanza e interdizione",
+        "livello": "Abiurazione di 6° livello (bardo, mago)",
+        "tempo_di_lancio": "10 minuti",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (incenso bruciato, una piccola dose di zolfo e olio, uno spago annodato, una piccola quantità di sangue di umber hulk e una piccola verga d'argento del valore di almeno 10 mo)",
+        "durata": "24 ore",
+        "descrizione": "L'incantatore crea una difesa che protegge un'area quadrata di terreno di massimo 750 metri (un'area di 15 metri per lato, cento aree di 1,5 metri per lato o venticinque aree di 3 metri per lato). L'area protetta può essere alta fino a 6 metri e avere la forma desiderata dall'incantatore. È anche possibile proteggere diversi piani di una roccaforte dividendo l'area su di essi, purché l'incantatore possa camminare in ogni area contigua mentre lancia l'incantesimo.<br><br>Al momento del lancio, l'incantatore può specificare quali individui non subiscono alcuni o tutti gli effetti da lui scelti. Può anche specificare una parola d'ordine che, quando pronunciata a voce alta, rende chi la pronuncia immune a questi effetti.<br><br><em>Vigilanza e interdizione</em> crea i seguenti effetti nell'area protetta.<br><br><strong>Corridoi.</strong> La nebbia riempie tutti i corridoi protetti, oscurandoli pesantemente. Inoltre, a ogni incrocio o diramazione che richieda di scegliere una direzione, una creatura diversa dall'incantatore ha una probabilità del 50% di credere di andare in una direzione differente da quella che ha scelto.<br><br><strong>Porte.</strong> Tutte le porte nell'area protetta vengono chiuse a chiave magicamente, come sigillate da un incantesimo <em>serratura arcana</em>. Inoltre, l'incantatore può coprire fino a dieci porte con un'illusione (equivalente alla funzione di oggetto illusorio dell'incantesimo <em>illusione minore</em>) per farle apparire come normali sezioni di parete.<br><br><strong>Scale.</strong> Tutte le scale nell'area protetta si riempiono da cima a fondo di ragnatele, come succederebbe lanciando un incantesimo <em>ragnatela</em>. Per la durata dell'incantesimo <em>vigilanza e interdizione</em>, i fili di queste ragnatele si riformano in 10 minuti se vengono bruciate o strappate.<br><br><strong>Altri effetti dell'incantesimo.</strong> L'incantatore può collocare uno dei seguenti effetti magici a sua scelta all'interno dell'area protetta della roccaforte.<br><br>• Collocare <em>bocca magica</em> in due luoghi.<br><br>• Collocare una <em>folata di vento</em> costante in un corridoio o in una stanza.<br><br>• Collocare <em>luci danzanti</em> in quattro corridoi, specificando anche un semplice schema che le luci ripetono per la durata di <em>vigilanza e interdizione</em>.<br><br>• Collocare <em>nube maleodorante</em> in due luoghi. Il vapore compare nei luoghi scelti e riappare nel giro di 10 minuti se disperso dal vento fintantoché <em>vigilanza e interdizione</em> permane.<br><br>• Collocare una <em>suggestione</em> in un luogo. L'incantatore seleziona un'area di un massimo di 1,5 metri per lato e qualsiasi creatura che vi entri o la attraversi riceve mentalmente la suggestione.<br><br>L'intera area protetta emana magia. Un incantesimo <em>dissolvi magie</em> lanciato con successo su un effetto specifico rimuove solamente quello.<br><br>L'incantatore può creare una struttura permanentemente protetta da <em>vigilanza</em> <em>e interdizione</em> lanciando l'incantesimo sulla struttura ogni giorno per un anno."
+      },
+      "en": "guards-and-wards"
+    },
+    {
+      "page": 221,
+      "sourceName": "Vincolo di interdizione",
+      "sourceLevel": "Abiurazione di 2° livello",
+      "sourceText": "Vincolo di interdizione Abiurazione di 2° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (un paio di anelli di platino del valore di almeno 50 mo, che l'incantatore e il bersaglio devono indossare per la durata dell'incantesimo) Durata: 1 ora Questo incantesimo protegge una creatura consenziente toccata dall'incantatore e crea tra i due un legame mistico che permane finché l'incantesimo non termina. Finché il bersaglio si trova entro 18 metri dall'incantatore, ottiene un bonus di +1 alla CA e ai tiri salvezza e resistenza a tutti i danni. Inoltre, ogni volta che subisce danni, l'incantatore ne subisce la stessa quantità. L'incantesimo termina se l'incantatore scende a 0 punti ferita, se lui e il bersaglio si allontanano per più di 18 metri o se l'incantesimo viene lanciato di nuovo su una delle due creature collegate. Inoltre, l'incantatore può interrompere l'incantesimo con un'azione.",
+      "sourceSha256": "d482f2ceb450e1e06185366caed784d0a2a48eb6e394bc04e988ca0731d923e9",
+      "spell": {
+        "id": "vincolo-di-interdizione-2014",
+        "nome_italiano": "Vincolo di interdizione",
+        "livello": "Abiurazione di 2° livello (chierico)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un paio di anelli di platino del valore di almeno 50 mo, che l'incantatore e il bersaglio devono indossare per la durata dell'incantesimo)",
+        "durata": "1 ora",
+        "descrizione": "Questo incantesimo protegge una creatura consenziente toccata dall'incantatore e crea tra i due un legame mistico che permane finché l'incantesimo non termina. Finché il bersaglio si trova entro 18 metri dall'incantatore, ottiene un bonus di +1 alla CA e ai tiri salvezza e resistenza a tutti i danni. Inoltre, ogni volta che subisce danni, l'incantatore ne subisce la stessa quantità.<br><br>L'incantesimo termina se l'incantatore scende a 0 punti ferita, se lui e il bersaglio si allontanano per più di 18 metri o se l'incantesimo viene lanciato di nuovo su una delle due creature collegate. Inoltre, l'incantatore può interrompere l'incantesimo con un'azione."
+      },
+      "en": "warding-bond"
+    },
+    {
+      "page": 221,
+      "sourceName": "Visione del vero",
+      "sourceLevel": "Divinazione di 6° livello",
+      "sourceText": "Visione del vero Divinazione di 6° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (un unguento per gli occhi del costo di 25 mo, realizzato con polvere di funghi, zafferano e grasso, che l'incantesimo consuma) Durata: 1 ora Questo incantesimo conferisce alla creatura consenziente toccata dall'incantatore la capacità di vedere le cose per ciò che sono. Per la durata dell'incantesimo, la creatura è dotata di vista pura, nota le porte segrete nascoste dalla magia ed è in grado di vedere sul Piano Etereo, entro un raggio di 36 metri.",
+      "sourceSha256": "267ccc499e74fb99c8e4ae6b919f49fcb4b61d14ad5a35292f2ee7c4266406ef",
+      "spell": {
+        "id": "visione-del-vero-2014",
+        "nome_italiano": "Visione del vero",
+        "livello": "Divinazione di 6° livello (bardo, chierico, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un unguento per gli occhi del costo di 25 mo, realizzato con polvere di funghi, zafferano e grasso, che l'incantesimo consuma)",
+        "durata": "1 ora",
+        "descrizione": "Questo incantesimo conferisce alla creatura consenziente toccata dall'incantatore la capacità di vedere le cose per ciò che sono. Per la durata dell'incantesimo, la creatura è dotata di vista pura, nota le porte segrete nascoste dalla magia ed è in grado di vedere sul Piano Etereo, entro un raggio di 36 metri."
+      },
+      "en": "true-seeing"
+    },
+    {
+      "page": 221,
+      "sourceName": "Vita falsata",
+      "sourceLevel": "Necromanzia di 1° livello",
+      "sourceText": "Vita falsata Necromanzia di 1° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S, M (una piccola quantità di alcol o liquori distillati) Durata: 1 ora L'incantatore si rafforza con un duplicato necromantico di vita, ottenendo 1d4 + 4 punti ferita temporanei per la durata dell'incantesimo. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, può ottenere 5 punti ferita temporanei aggiuntivi per ogni slot di livello superiore al 1°.",
+      "sourceSha256": "fc595e43eef8b0c3370e62cf30caaaead584740a4d9cac48f27fa3f34b018077",
+      "spell": {
+        "id": "vita-falsata-2014",
+        "nome_italiano": "Vita falsata",
+        "livello": "Necromanzia di 1° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S, M (una piccola quantità di alcol o liquori distillati)",
+        "durata": "1 ora",
+        "descrizione": "L'incantatore si rafforza con un duplicato necromantico di vita, ottenendo 1d4 + 4 punti ferita temporanei per la durata dell'incantesimo.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, può ottenere 5 punti ferita temporanei aggiuntivi per ogni slot di livello superiore al 1°."
+      },
+      "en": "false-life"
+    },
+    {
+      "page": 221,
+      "sourceName": "Volare",
+      "sourceLevel": "Trasmutazione di 3° livello",
+      "sourceText": "Volare Trasmutazione di 3° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (la piuma dell'ala di un qualsiasi uccello) Durata: Concentrazione, fino a 10 minuti L'incantatore tocca una creatura consenziente. Il bersaglio ottiene una velocità di volo di 18 metri per round per la durata dell'incantesimo. Quando l'incantesimo termina, il bersaglio ancora sospeso in aria cade, sempre che non abbia modo di impedire la caduta. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, può bersagliare una creatura aggiuntiva per ogni slot superiore al 3°.",
+      "sourceSha256": "aea02e47522153915143e9fb449ead15794b8455b34476f39a331fc6b8fbc2a7",
+      "spell": {
+        "id": "volare-2014",
+        "nome_italiano": "Volare",
+        "livello": "Trasmutazione di 3° livello (mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (la piuma dell'ala di un qualsiasi uccello)",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "L'incantatore tocca una creatura consenziente. Il bersaglio ottiene una velocità di volo di 18 metri per round per la durata dell'incantesimo. Quando l'incantesimo termina, il bersaglio ancora sospeso in aria cade, sempre che non abbia modo di impedire la caduta.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, può bersagliare una creatura aggiuntiva per ogni slot superiore al 3°."
+      },
+      "en": "fly"
+    },
+    {
+      "page": 221,
+      "sourceName": "Vuoto mentale",
+      "sourceLevel": "Abiurazione di 8° livello",
+      "sourceText": "Vuoto mentale Abiurazione di 8° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: 24 ore Finché l'incantesimo non termina, una creatura consenziente toccata dall'incantatore è immune ai danni psichici, a qualsiasi effetto che possa percepirne le emozioni o leggerne i pensieri, agli incantesimi di divinazione e alla condizione affascinato. L'incantesimo annulla perfino gli incantesimi desiderio e gli incantesimi o effetti di potenza analoga usati per influenzare la mente del bersaglio o per ottenere informazioni su quest'ultimo.",
+      "sourceSha256": "cc4909b2af2114c849895c5269d093b7c90c66971f1ff6eddc3c9c92d9e1e24b",
+      "spell": {
+        "id": "vuoto-mentale-2014",
+        "nome_italiano": "Vuoto mentale",
+        "livello": "Abiurazione di 8° livello (bardo, mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "24 ore",
+        "descrizione": "Finché l'incantesimo non termina, una creatura consenziente toccata dall'incantatore è immune ai danni psichici, a qualsiasi effetto che possa percepirne le emozioni o leggerne i pensieri, agli incantesimi di divinazione e alla condizione affascinato. L'incantesimo annulla perfino gli incantesimi <em>desiderio</em> e gli incantesimi o effetti di potenza analoga usati per influenzare la mente del bersaglio o per ottenere informazioni su quest'ultimo."
+      },
+      "en": "mind-blank"
+    },
+    {
+      "page": 222,
+      "sourceName": "Zona di verità",
+      "sourceLevel": "Ammaliamento di 2° livello",
+      "sourceText": "Zona di verità Ammaliamento di 2° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S Durata: 10 minuti L'incantatore crea una zona magica che protegge dagli inganni all'interno di una sfera con raggio di 4,5 metri, centrata su un punto entro gittata a sua scelta. Fino al termine dell'incantesimo, una creatura che entra nell'area dell'incantesimo per la prima volta in un turno o vi inizia il suo turno deve superare un tiro salvezza su Carisma. Se lo fallisce, non può mentire deliberatamente mentre si trova nell'area. Inoltre, l'incantatore è a conoscenza di quali creature hanno superato o fallito il proprio tiro salvezza. Una creatura influenzata è consapevole dell'incantesimo e può quindi evitare di rispondere alle domande a cui normalmente risponderebbe mentendo. Una tale creatura può fornire riposte sfuggenti, purché rimanga entro i confini della verità.",
+      "sourceSha256": "f7aa774328a8f71d3bbe2687a73f20ea2f35801985d47c97f275ea91c0fcae94",
+      "spell": {
+        "id": "zona-di-verita-2014",
+        "nome_italiano": "Zona di verità",
+        "livello": "Ammaliamento di 2° livello (bardo, chierico, paladino)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "10 minuti",
+        "descrizione": "L'incantatore crea una zona magica che protegge dagli inganni all'interno di una sfera con raggio di 4,5 metri, centrata su un punto entro gittata a sua scelta. Fino al termine dell'incantesimo, una creatura che entra nell'area dell'incantesimo per la prima volta in un turno o vi inizia il suo turno deve superare un tiro salvezza su Carisma. Se lo fallisce, non può mentire deliberatamente mentre si trova nell'area. Inoltre, l'incantatore è a conoscenza di quali creature hanno superato o fallito il proprio tiro salvezza.<br><br>Una creatura influenzata è consapevole dell'incantesimo e può quindi evitare di rispondere alle domande a cui normalmente risponderebbe mentendo. Una tale creatura può fornire riposte sfuggenti, purché rimanga entro i confini della verità."
+      },
+      "en": "zone-of-truth"
     }
   ]
 }

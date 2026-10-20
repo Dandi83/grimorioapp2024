@@ -26,9 +26,12 @@ export function formatMonsterSpellLists(html: string, legacy = false): string {
     else if (!line.trim() || /^\s*<(?:strong|b)>/i.test(line)) inList = false;
     if (!inList) return line;
     const list = frequency ? frequency[2] : line;
+    let italic = 0;
     const linked = list.split(/([,;])/).map(entry => {
-      // Imported italic markup is preserved byte-for-byte. Only plain entries need decoration.
-      if (entry.includes("<")) return entry;
+      // Imported italic markup is preserved byte-for-byte. Only plain entries outside it need decoration.
+      const inside = italic > 0;
+      italic += (entry.match(/<(?:em|i)>/gi) || []).length - (entry.match(/<\/(?:em|i)>/gi) || []).length;
+      if (inside || entry.includes("<")) return entry;
       const parts = entry.match(/^(\s*)([^()]*?)(\s*(?:\([^)]*\))?[.!]?\s*)$/);
       if (!parts || !known.has(normalize(parts[2]))) return entry;
       return `${parts[1]}<em>${parts[2]}</em>${parts[3]}`;
@@ -40,7 +43,7 @@ export function formatMonsterSpellLists(html: string, legacy = false): string {
 /** Explicit italics and exact names in casting lists are eligible for links. */
 export function findReferencedSpells(html: string, legacy = false): SpellReference[] {
   const italic = [...formatMonsterSpellLists(html, legacy).matchAll(/<(em|i)>([\s\S]*?)<\/\1>/gi)].map(match => normalize(match[2].replace(/<[^>]*>/g," ").replace(/\([^)]*\)/g,"")));
-  return (legacy ? legacySpellReferenceIndex : index).filter(spell => italic.some(text => text.split(/[,;]/).some(part => normalize(part).replace(/[.!]$/, "") === normalize(spell.name))));
+  return (legacy ? legacySpellReferenceIndex : index).filter(spell => italic.some(text => text.split(/[,;]/).some(part => normalize(part).replace(/[.!*]+$/, "") === normalize(spell.name))));
 }
 
 export function inlineSpellReferences(html: string, legacy = false) {
