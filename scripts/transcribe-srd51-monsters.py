@@ -294,7 +294,9 @@ def main():
         for offset, line in enumerate(block[1:], 1):
             first = next((span for span in line['spans'] if span[0].strip()), None)
             # Descriptive text (PNG lore, magic item text) is set in Cambria, stat blocks in Calibri.
-            if is_heading(line) or (is_title(line) and offset > 1) or (first and first[1].startswith('Cambria')):
+            # A "Variante: ..." box (Calibri 11) is a sidebar printed after the sheet, not part of it.
+            sidebar = first and first[1] == 'Calibri' and first[2] == 11 and first[0].startswith('Variante')
+            if is_heading(line) or (is_title(line) and offset > 1) or (first and first[1].startswith('Cambria')) or sidebar:
                 block = block[:offset]
                 break
         source = re.sub(r'\s+', ' ', ' '.join(line['text'] for line in block)).strip()
