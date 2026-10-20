@@ -40,6 +40,8 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await page.goto(base + "/spell/dardo-incantato");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/Dardo Incantato/i);
   await expect(banner(page)).toHaveCount(0);
+  await page.goto(base + "/equipaggiamento/armi/tridente");
+  await expect(page.locator('[data-edition="2024"]')).toContainText("1d8");
 
   await stopServer();
   await expect.poll(async () => { try { await fetch(base + "/"); return "up"; } catch { return "down"; } }).toBe("down");
@@ -48,6 +50,12 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   // The saved copy carries its date, so the notice does not depend on the worker's memory.
   await expect(page.locator('meta[name="grimorio-saved-at"]')).toHaveCount(1);
   await expect(banner(page)).toBeVisible();
+  // A weapon sheet: both editions are in the saved copy.
+  await page.goto(base + "/equipaggiamento/armi/tridente");
+  await expect(banner(page)).toBeVisible();
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(page.locator('[data-edition="2014"]')).toBeVisible();
+  await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
   // The main sections were saved when the service worker was installed.
   await page.goto(base + "/bestiario");
   await expect(page.locator("li.catalog-row")).toHaveCount(40);

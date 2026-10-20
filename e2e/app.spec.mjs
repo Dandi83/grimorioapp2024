@@ -190,3 +190,40 @@ test("a shared card link: back goes to its list instead of leaving the site", as
   await page.getByRole("button", { name: "Torna indietro" }).click();
   await expect(page).toHaveURL(/\/bestiario$/);
 });
+
+test("equipment: home tile, weapons list and cards per edition, combined filters, every sheet", async ({ page, request }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /Equipaggiamento/ }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento$/);
+  await page.getByRole("link", { name: /Armi/ }).click();
+  await expect(page.getByText(/^38 armi ·/)).toBeVisible();
+  const edition = page.getByRole("group", { name: "Edizione delle regole" });
+  await edition.getByRole("button", { name: "2014" }).click();
+  await expect(page.getByText(/^37 armi ·/)).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Rete/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Pistola/ })).toHaveCount(0);
+  await page.getByRole("button", { name: "Vedi come carte" }).click();
+  await expect(page).toHaveURL(/vista=carte/);
+  await page.getByRole("group", { name: "Categoria" }).getByRole("button", { name: "Da guerra" }).click();
+  await page.getByRole("group", { name: "Distanza" }).getByRole("button", { name: "Distanza" }).click();
+  await expect(page.getByRole("status").filter({ hasText: /armi?$/ })).toHaveText("5 armi");
+  await edition.getByRole("button", { name: "2024" }).click();
+  await expect(page.getByRole("status").filter({ hasText: /armi?$/ })).toHaveText("6 armi");
+  await expect(page.getByRole("link", { name: /Moschetto/ })).toBeVisible();
+  await page.getByRole("group", { name: "Categoria" }).getByRole("button", { name: "Semplici" }).click();
+  await expect(page.getByRole("status").filter({ hasText: /armi?$/ })).toHaveText("4 armi");
+  // No horizontal scrolling on a narrow phone, in the cards and in a sheet with its comparison.
+  await page.setViewportSize({ width: 375, height: 800 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  await page.goto("/equipaggiamento/armi/lancia-da-cavaliere");
+  await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Lancia da cavaliere");
+  await expect(page.getByRole("heading", { name: "2014 → 2024" })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { name: "Arma speciale" })).toBeVisible();
+  await page.goto("/equipaggiamento/armi/rete");
+  await expect(page.getByText(/Non presente nella tabella 2024/).first()).toBeVisible();
+  const ids = JSON.parse(readFileSync("lib/data/srd-weapons-it.json", "utf8")).armi.map(w => w.id);
+  for (const id of ids) expect((await request.get(`/equipaggiamento/armi/${id}`)).status(), id).toBe(200);
+  expect((await request.get("/equipaggiamento/armi/inesistente")).status()).toBe(404);
+});
