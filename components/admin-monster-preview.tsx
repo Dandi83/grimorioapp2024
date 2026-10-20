@@ -1,6 +1,6 @@
 import type { Monster } from "@/lib/monsters-types";
 import { abilityMod } from "@/lib/monsters-types";
-import { inlineConditionReferences } from "@/lib/conditions";
+import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
 import { formatMonsterSpellLists, inlineSpellReferences } from "@/lib/spell-references";
 import { MonsterText, ReferenceText } from "./html-text";
 import { RulesEditionBadge } from "./rules-edition-badge";
@@ -12,7 +12,7 @@ export function AdminMonsterPreview({
   monster: Partial<Monster>;
   legacy: boolean;
 }) {
-  const references = legacy ? [] : inlineConditionReferences;
+  const references = legacy ? legacyInlineConditionReferences : inlineConditionReferences;
   return (
     <article className="monster-sheet min-w-0 rounded-xl border border-primary/20 bg-background py-5">
       <header className="px-6 pb-6">
@@ -29,7 +29,7 @@ export function AdminMonsterPreview({
         </p>
         {legacy && (
           <p className="mt-2 text-xs text-muted-foreground">
-            Regole D&D 2014: richiami alle regole 2024 disattivati.
+            Regole D&D 2014: condizioni con le definizioni 2014, richiami agli incantesimi 2024 disattivati.
           </p>
         )}
       </header>

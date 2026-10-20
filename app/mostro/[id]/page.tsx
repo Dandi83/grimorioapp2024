@@ -1,5 +1,5 @@
 import { formatMonsterSpellLists, inlineSpellReferences } from "@/lib/spell-references";
-import { inlineConditionReferences } from "@/lib/conditions";
+import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
@@ -64,7 +64,7 @@ function StatLine({ label, value, damageIcons = false, legacy = false }: { label
   return (
     <p className="text-[15px] leading-6 text-foreground">
       <span className="font-bold text-primary">{label}</span>{" "}
-      {<ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={legacy ? [] : inlineConditionReferences} />}
+      {<ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={legacy ? legacyInlineConditionReferences : inlineConditionReferences} />}
     </p>
   );
 }
@@ -76,7 +76,7 @@ function Section({ title, html, legacy = false }: { title: string; html: string;
       <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
         {title}
       </h2>
-      <MonsterText html={formatMonsterSpellLists(html)} damageIcons references={legacy ? [] : inlineConditionReferences} spellReferences={legacy ? [] : inlineSpellReferences(html)} />
+      <MonsterText html={formatMonsterSpellLists(html)} damageIcons references={legacy ? legacyInlineConditionReferences : inlineConditionReferences} spellReferences={legacy ? [] : inlineSpellReferences(html)} />
     </section>
   );
 }
@@ -128,7 +128,7 @@ export default async function MonsterDetailPage({
 
       <div className="px-6 pt-3">
         <MonsterProvenanceBadge source={source} edition={monster.edizione} linked />
-        {legacy && <p className="mt-2 text-xs leading-5 text-muted">Questa scheda utilizza le regole 2014. I richiami alle condizioni e agli incantesimi 2024 non sono applicati.</p>}
+        {legacy && <p className="mt-2 text-xs leading-5 text-muted">Questa scheda utilizza le regole 2014. Le condizioni rimandano alle definizioni 2014; i richiami agli incantesimi 2024 non sono applicati.</p>}
       </div>
 
       {/* Statistiche base */}

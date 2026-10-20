@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getManualEntry, manualAvailable, manualEntries } from "@/lib/manual";
+import { legacyConditions } from "@/lib/conditions";
+import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { MANUAL_CATEGORIES } from "@/lib/manual-types";
 import { ManualContent } from "@/components/manual-content";
 import { BackButton } from "@/components/back-button";
@@ -11,7 +13,7 @@ export const dynamicParams = true;
 
 export function generateStaticParams() {
   const preview = manualAvailable(process.env.VERCEL_ENV);
-  return manualEntries.filter(entry => preview || entry.category === "condizioni").map(entry => ({ id: entry.id }));
+  return [...manualEntries.filter(entry => preview || entry.category === "condizioni"), ...legacyConditions].map(entry => ({ id: entry.id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
@@ -38,6 +40,7 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
       <header className={isCondition ? "mb-6 mt-3 border-b border-primary/40 pb-5" : "mb-6 mt-6"}>
         <p className="mb-2 text-xs uppercase tracking-widest text-primary">{entry.subgroup || (isCondition ? "Condizione" : "")}</p>
         <h1 className="font-serif text-4xl font-bold leading-tight text-foreground">{entry.title}</h1>
+        {entry.edizione === "2014" && <RulesEditionBadge edition="2014" />}
       </header>
       {entry.subgroup === "Classi" && ["Bardo", "Chierico", "Druido", "Mago", "Paladino", "Ranger", "Stregone", "Warlock"].includes(entry.title) && (
         <Link href={`/grimorio?classe=${entry.title.toLowerCase()}`} className="mb-6 inline-block rounded-full border border-primary/40 px-4 py-2 text-sm font-semibold text-primary">Consulta gli incantesimi della classe →</Link>

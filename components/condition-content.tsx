@@ -1,5 +1,5 @@
 import { ReferenceText } from "@/components/html-text";
-import { inlineConditionReferences } from "@/lib/conditions";
+import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
 import type { ManualEntry } from "@/lib/manual-types";
 
 /** Present the original condition paragraphs as scan-friendly effect sections. */
@@ -32,6 +32,34 @@ export function ConditionContent({ entry }: { entry: ManualEntry }) {
           </section>
         ))}
       </div>
+    </div>
+  );
+}
+
+/** 2014 conditions (SRD 5.1): the printed bullets, the Indebolimento table and links to other 2014 conditions only. */
+export function LegacyConditionContent({ entry }: { entry: ManualEntry }) {
+  const references = legacyInlineConditionReferences.filter(reference => reference.href !== `/manuale/${entry.id}`);
+  const bullets = entry.blocks.filter(block => block.text.startsWith("•"));
+  return (
+    <div className="condition-sheet min-w-0 space-y-5">
+      <p className="text-xs leading-5 text-muted">Definizione delle regole 2014 (SRD 5.1). Le regole 2024 di questa condizione sono diverse.</p>
+      {bullets.length === entry.blocks.length ? (
+        <ul className="list-disc space-y-3 pl-5 marker:text-primary">
+          {bullets.map((block, index) => (
+            <li key={index} className="font-serif text-[17px] leading-relaxed text-card-foreground">
+              <ReferenceText text={block.text.replace(/^•\s*/, "")} references={references} />
+            </li>
+          ))}
+        </ul>
+      ) : entry.blocks.map((block, index) => block.kind === "table" ? (
+        <div key={index} className="min-w-0 max-w-full overflow-x-auto rounded-xl border border-border bg-card" tabIndex={0} role="region" aria-label={`Tabella di ${entry.title}, scorribile orizzontalmente`}>
+          <pre className="w-max min-w-full p-4 font-mono text-xs leading-5 text-card-foreground">{block.text}</pre>
+        </div>
+      ) : (
+        <p key={index} className="font-serif text-[17px] leading-relaxed text-card-foreground">
+          <ReferenceText text={block.text} references={references} />
+        </p>
+      ))}
     </div>
   );
 }
