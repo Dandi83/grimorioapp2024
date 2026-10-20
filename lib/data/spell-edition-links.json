@@ -607,6 +607,208 @@
     "invisibilita-superiore-2014": {
       "id2024": "invisibilita-superiore",
       "en": "greater-invisibility"
+    },
+    "invocare-il-fulmine-2014": {
+      "id2024": "invocare-il-fulmine",
+      "en": "call-lightning"
+    },
+    "labirinto-2014": {
+      "id2024": "labirinto",
+      "en": "maze"
+    },
+    "lama-infuocata-2014": {
+      "id2024": "lama-infuocata",
+      "en": "flame-blade"
+    },
+    "legame-planare-2014": {
+      "id2024": "legame-planare",
+      "en": "planar-binding"
+    },
+    "legame-telepatico-2014": {
+      "id2024": "legame-telepatico-di-rary",
+      "en": "telepathic-bond",
+      "nomeDiverso": "Legame telepatico (2014) = LEGAME TELEPATICO DI RARY (2024)"
+    },
+    "lentezza-2014": {
+      "id2024": "lentezza",
+      "en": "slow"
+    },
+    "levitazione-2014": {
+      "id2024": "levitazione",
+      "en": "levitate"
+    },
+    "liberta-di-movimento-2014": {
+      "id2024": "liberta-di-movimento",
+      "en": "freedom-of-movement"
+    },
+    "linguaggi-2014": {
+      "id2024": "linguaggi",
+      "en": "tongues"
+    },
+    "localizza-animali-o-vegetali-2014": {
+      "id2024": "localizza-animali-o-vegetali",
+      "en": "locate-animals-or-plants"
+    },
+    "localizza-creatura-2014": {
+      "id2024": "localizza-creatura",
+      "en": "locate-creature"
+    },
+    "localizza-oggetto-2014": {
+      "id2024": "localizza-oggetto",
+      "en": "locate-object"
+    },
+    "loquacita-2014": {
+      "id2024": "loquacita",
+      "en": "glibness"
+    },
+    "luce-2014": {
+      "id2024": "luce",
+      "en": "light"
+    },
+    "luce-diurna-2014": {
+      "id2024": "luce-diurna",
+      "en": "daylight"
+    },
+    "luci-danzanti-2014": {
+      "id2024": "luci-danzanti",
+      "en": "dancing-lights"
+    },
+    "luminescenza-2014": {
+      "id2024": "luminescenza",
+      "en": "faerie-fire"
+    },
+    "mani-brucianti-2014": {
+      "id2024": "mani-brucianti",
+      "en": "burning-hands"
+    },
+    "mano-arcana-2014": {
+      "id2024": "mano-di-bigby",
+      "en": "arcane-hand",
+      "nomeDiverso": "Mano arcana (2014) = MANO DI BIGBY (2024)"
+    },
+    "mano-magica-2014": {
+      "id2024": "mano-magica",
+      "en": "mage-hand"
+    },
+    "marchio-del-cacciatore-2014": {
+      "id2024": "marchio-del-cacciatore",
+      "en": "hunters-mark"
+    },
+    "messaggio-2014": {
+      "id2024": "messaggio",
+      "en": "message"
+    },
+    "metamorfosi-2014": {
+      "id2024": "metamorfosi",
+      "en": "polymorph"
+    },
+    "metamorfosi-pura-2014": {
+      "id2024": "metamorfosi-pura",
+      "en": "true-polymorph"
+    },
+    "miraggio-arcano-2014": {
+      "id2024": "miraggio-arcano",
+      "en": "mirage-arcane"
+    },
+    "modificare-memoria-2014": {
+      "id2024": "modificare-memoria",
+      "en": "modify-memory"
+    },
+    "movimenti-del-ragno-2014": {
+      "id2024": "movimenti-del-ragno",
+      "en": "spider-climb"
+    },
+    "muovere-il-terreno-2014": {
+      "id2024": "muovere-il-terreno",
+      "en": "move-earth"
+    },
+    "muro-di-forza-2014": {
+      "id2024": "muro-di-forza",
+      "en": "wall-of-force"
+    },
+    "muro-di-fuoco-2014": {
+      "id2024": "muro-di-fuoco",
+      "en": "wall-of-fire"
+    },
+    "muro-di-ghiaccio-2014": {
+      "id2024": "muro-di-ghiaccio",
+      "en": "wall-of-ice"
+    },
+    "muro-di-pietra-2014": {
+      "id2024": "muro-di-pietra",
+      "en": "wall-of-stone"
+    },
+    "muro-di-spine-2014": {
+      "id2024": "muro-di-spine",
+      "en": "wall-of-thorns"
+    },
+    "muro-di-vento-2014": {
+      "id2024": "muro-di-vento",
+      "en": "wind-wall"
+    },
+    "muro-prismatico-2014": {
+      "id2024": "muro-prismatico",
+      "en": "prismatic-wall"
+    },
+    "nube-di-nebbia-2014": {
+      "id2024": "nube-di-nebbia",
+      "en": "fog-cloud"
+    },
+    "nube-incendiaria-2014": {
+      "id2024": "nube-incendiaria",
+      "en": "incendiary-cloud"
+    },
+    "nube-maleodorante-2014": {
+      "id2024": "nube-maleodorante",
+      "en": "stinking-cloud"
+    },
+    "nube-mortale-2014": {
+      "id2024": "nube-mortale",
+      "en": "cloudkill"
+    },
+    "occhio-arcano-2014": {
+      "id2024": "occhio-arcano",
+      "en": "arcane-eye"
+    },
+    "onda-tonante-2014": {
+      "id2024": "onda-tonante",
+      "en": "thunderwave"
+    },
+    "oscurita-2014": {
+      "id2024": "oscurita",
+      "en": "darkness"
+    },
+    "palla-di-fuoco-2014": {
+      "id2024": "palla-di-fuoco",
+      "en": "fireball"
+    },
+    "palla-di-fuoco-ritardata-2014": {
+      "id2024": "palla-di-fuoco-ritardata",
+      "en": "delayed-blast-fireball"
+    },
+    "parlare-con-gli-animali-2014": {
+      "id2024": "parlare-con-gli-animali",
+      "en": "speak-with-animals"
+    },
+    "parlare-con-i-morti-2014": {
+      "id2024": "parlare-con-i-morti",
+      "en": "speak-with-dead"
+    },
+    "parlare-con-i-vegetali-2014": {
+      "id2024": "parlare-con-i-vegetali",
+      "en": "speak-with-plants"
+    },
+    "parola-del-potere-stordire-2014": {
+      "id2024": "parola-del-potere-stordire",
+      "en": "power-word-stun"
+    },
+    "parola-del-potere-uccidere-2014": {
+      "id2024": "parola-del-potere-uccidere",
+      "en": "power-word-kill"
+    },
+    "parola-del-ritiro-2014": {
+      "id2024": "parola-del-ritiro",
+      "en": "word-of-recall"
     }
   }
 }

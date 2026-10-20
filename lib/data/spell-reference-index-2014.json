@@ -604,6 +604,206 @@
   {
    "id": "invisibilita-superiore-2014",
    "name": "Invisibilità superiore"
+  },
+  {
+   "id": "invocare-il-fulmine-2014",
+   "name": "Invocare il fulmine"
+  },
+  {
+   "id": "labirinto-2014",
+   "name": "Labirinto"
+  },
+  {
+   "id": "lama-infuocata-2014",
+   "name": "Lama infuocata"
+  },
+  {
+   "id": "legame-planare-2014",
+   "name": "Legame planare"
+  },
+  {
+   "id": "legame-telepatico-2014",
+   "name": "Legame telepatico"
+  },
+  {
+   "id": "lentezza-2014",
+   "name": "Lentezza"
+  },
+  {
+   "id": "levitazione-2014",
+   "name": "Levitazione"
+  },
+  {
+   "id": "liberta-di-movimento-2014",
+   "name": "Libertà di movimento"
+  },
+  {
+   "id": "linguaggi-2014",
+   "name": "Linguaggi"
+  },
+  {
+   "id": "localizza-animali-o-vegetali-2014",
+   "name": "Localizza animali o vegetali"
+  },
+  {
+   "id": "localizza-creatura-2014",
+   "name": "Localizza creatura"
+  },
+  {
+   "id": "localizza-oggetto-2014",
+   "name": "Localizza oggetto"
+  },
+  {
+   "id": "loquacita-2014",
+   "name": "Loquacità"
+  },
+  {
+   "id": "luce-2014",
+   "name": "Luce"
+  },
+  {
+   "id": "luce-diurna-2014",
+   "name": "Luce diurna"
+  },
+  {
+   "id": "luci-danzanti-2014",
+   "name": "Luci danzanti"
+  },
+  {
+   "id": "luminescenza-2014",
+   "name": "Luminescenza"
+  },
+  {
+   "id": "mani-brucianti-2014",
+   "name": "Mani brucianti"
+  },
+  {
+   "id": "mano-arcana-2014",
+   "name": "Mano arcana"
+  },
+  {
+   "id": "mano-magica-2014",
+   "name": "Mano magica"
+  },
+  {
+   "id": "marchio-del-cacciatore-2014",
+   "name": "Marchio del cacciatore"
+  },
+  {
+   "id": "messaggio-2014",
+   "name": "Messaggio"
+  },
+  {
+   "id": "metamorfosi-2014",
+   "name": "Metamorfosi"
+  },
+  {
+   "id": "metamorfosi-pura-2014",
+   "name": "Metamorfosi pura"
+  },
+  {
+   "id": "miraggio-arcano-2014",
+   "name": "Miraggio arcano"
+  },
+  {
+   "id": "modificare-memoria-2014",
+   "name": "Modificare memoria"
+  },
+  {
+   "id": "movimenti-del-ragno-2014",
+   "name": "Movimenti del ragno"
+  },
+  {
+   "id": "muovere-il-terreno-2014",
+   "name": "Muovere il terreno"
+  },
+  {
+   "id": "muro-di-forza-2014",
+   "name": "Muro di forza"
+  },
+  {
+   "id": "muro-di-fuoco-2014",
+   "name": "Muro di fuoco"
+  },
+  {
+   "id": "muro-di-ghiaccio-2014",
+   "name": "Muro di ghiaccio"
+  },
+  {
+   "id": "muro-di-pietra-2014",
+   "name": "Muro di pietra"
+  },
+  {
+   "id": "muro-di-spine-2014",
+   "name": "Muro di spine"
+  },
+  {
+   "id": "muro-di-vento-2014",
+   "name": "Muro di vento"
+  },
+  {
+   "id": "muro-prismatico-2014",
+   "name": "Muro prismatico"
+  },
+  {
+   "id": "nube-di-nebbia-2014",
+   "name": "Nube di nebbia"
+  },
+  {
+   "id": "nube-incendiaria-2014",
+   "name": "Nube incendiaria"
+  },
+  {
+   "id": "nube-maleodorante-2014",
+   "name": "Nube maleodorante"
+  },
+  {
+   "id": "nube-mortale-2014",
+   "name": "Nube mortale"
+  },
+  {
+   "id": "occhio-arcano-2014",
+   "name": "Occhio arcano"
+  },
+  {
+   "id": "onda-tonante-2014",
+   "name": "Onda tonante"
+  },
+  {
+   "id": "oscurita-2014",
+   "name": "Oscurità"
+  },
+  {
+   "id": "palla-di-fuoco-2014",
+   "name": "Palla di fuoco"
+  },
+  {
+   "id": "palla-di-fuoco-ritardata-2014",
+   "name": "Palla di fuoco ritardata"
+  },
+  {
+   "id": "parlare-con-gli-animali-2014",
+   "name": "Parlare con gli animali"
+  },
+  {
+   "id": "parlare-con-i-morti-2014",
+   "name": "Parlare con i morti"
+  },
+  {
+   "id": "parlare-con-i-vegetali-2014",
+   "name": "Parlare con i vegetali"
+  },
+  {
+   "id": "parola-del-potere-stordire-2014",
+   "name": "Parola del potere stordire"
+  },
+  {
+   "id": "parola-del-potere-uccidere-2014",
+   "name": "Parola del potere uccidere"
+  },
+  {
+   "id": "parola-del-ritiro-2014",
+   "name": "Parola del ritiro"
   }
  ]
 }
