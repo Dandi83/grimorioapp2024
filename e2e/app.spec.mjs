@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
 
 const catalogRows = page => page.locator("li.catalog-row");
 
@@ -49,16 +50,19 @@ test("bestiary: 40-row pages, show more, animals and a creature sheet", async ({
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Gatto");
 });
 
+// Every SRD 5.1 sheet in the project files belongs to the 2014 list.
+const sheets2014 = JSON.parse(readFileSync(new URL("../lib/data/srd-monsters-5.1-it.json", import.meta.url), "utf8")).records.length;
+
 test("bestiary: 2014 edition list, remembered on the phone, and old 2014 links", async ({ page }) => {
   await page.goto("/bestiario");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bestiario (330)");
   await page.getByRole("button", { name: "D&D5e 2014" }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bestiario (10)");
-  await expect(catalogRows(page)).toHaveCount(5);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Bestiario (${sheets2014})`);
   await page.reload();
   await expect(page.getByRole("button", { name: "D&D5e 2014" })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bestiario (10)");
-  await page.getByRole("link", { name: /Orco/ }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Bestiario (${sheets2014})`);
+  await page.getByRole("searchbox", { name: "Cerca un mostro" }).fill("orco");
+  await page.getByRole("link", { name: /^Orco/ }).click();
   await expect(page).toHaveURL(/\/mostro\/orco-2014$/);
   await page.goto("/mostro/orco");
   await expect(page).toHaveURL(/\/mostro\/orco-2014$/);

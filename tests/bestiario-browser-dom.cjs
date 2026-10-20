@@ -86,11 +86,15 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  // Edition selector above the sections: the 2014 list holds the SRD 5.1 sheets, remembered on this phone.
  assert.equal(button('D&D5e 2024').getAttribute('aria-pressed'),'true');
  await click(button('D&D5e 2014'));
- assert.equal(document.querySelector('h1').textContent,'Bestiario (10)');
+ const sheets2014=monsters.filter(m=>m.edizione==='2014');
+ const animal=load('lib/monsters-types.ts').isSrdAnimal;
+ assert.equal(document.querySelector('h1').textContent,`Bestiario (${sheets2014.length})`);
  assert.equal(button('D&D5e 2014').getAttribute('aria-pressed'),'true');
- assert.deepEqual((await allIds()).sort(),['sciame-di-millepiedi-2014','sciame-di-ragni-2014','sciame-di-scarabei-2014','sciame-di-vespe-2014','topo-gigante-contagioso-2014']);
+ assert.deepEqual((await allIds()).sort(),sheets2014.filter(animal).map(m=>m.id).sort());
+ assert.ok(ids().includes('topo-gigante-contagioso-2014')&&ids().every(id=>id.endsWith('-2014')));
  await click(button('Mostri'));
- assert.deepEqual((await allIds()).sort(),['duergar-2014','elfo-drow-2014','gnomo-delle-profondita-svirfneblin-2014','lucertoloide-2014','orco-2014']);
+ assert.deepEqual((await allIds()).sort(),sheets2014.filter(m=>!animal(m)).map(m=>m.id).sort());
+ assert.ok(ids().includes('orco-2014')&&ids().every(id=>id.endsWith('-2014')));
  assert.equal(window.localStorage.getItem('grimorio.bestiario.edizione'),'2014');
  await click(button('Tipo'));assert.ok(button('Umanoide'),'filters offer the values of the chosen edition');
  await click(button('D&D5e 2024'));

@@ -14,20 +14,26 @@ function load(relative, deps={}) {
  const all=srd.previewMonsters([],'production');
  const before=JSON.stringify(all);
  // The cached list index projects every record; pages pass it through unchanged.
- let indexConfigured=false;
+ let indexConfigured=false,monsterKey;
  const monsterIndex=load('lib/monster-index.ts',{'server-only':{},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,'./srd-monsters':srd,
-  'next/cache':{unstable_cache:(fn,key,options)=>{assert.equal(key[0],'monster-list-index');assert.deepEqual(options,{tags:['monsters'],revalidate:3600});indexConfigured=true;return fn;}}});
+  'next/cache':{unstable_cache:(fn,key,options)=>{assert.equal(key[0],'monster-list-index');assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');monsterKey=key;assert.deepEqual(options,{tags:['monsters'],revalidate:3600});indexConfigured=true;return fn;}}});
  assert.ok(indexConfigured,'the monster list is cached with the tag invalidated by admin saves');
+ // A new SRD sheet or habitat file changes the key, so a deployment never serves the previous list.
+ let changedKey;
+ load('lib/monster-index.ts',{'server-only':{},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,'./srd-monsters':srd,
+  './data/habitat-mostri.json':{aboleth:['Sottosuolo']},'next/cache':{unstable_cache:(fn,key)=>{changedKey=key;return fn;}}});
+ assert.notEqual(changedKey[2],monsterKey[2]);
  const monsterList=await monsterIndex.getMonsterListIndex();
  assert.deepEqual((await monsterIndex.getMonsterIdIndex()).map(m=>m.id),all.map(m=>m.id),'static generation keeps every creature ID');
  const page=load('app/bestiario/page.tsx',{'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList}}).default;
  const element=await page();
  assert.equal(element.type,'test-browser','The static page renders the catalog directly, without a Suspense fallback');
  const list=element.props.monsters;
- assert.equal(list.length,340);assert.deepEqual(list.map(m=>m.id),all.map(m=>m.id));
+ const legacyCount=JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.1-it.json','utf8')).records.length;
+ assert.equal(list.length,330+legacyCount);assert.deepEqual(list.map(m=>m.id),all.map(m=>m.id));
  assert.ok(!list.some(m=>'azioni' in m||'descrizione' in m||'tratti' in m),'Public lists must not ship complete creature sheets');
  assert.deepEqual(mt.computeMonstersMeta(list),mt.computeMonstersMeta(all));
- assert.equal(list.filter(mt.isSrdAnimal).length,100);
+ assert.equal(list.filter(mt.isSrdAnimal).length,JSON.parse(fs.readFileSync('lib/data/srd-animal-ids.json','utf8')).length);
  // Every row carries its rules edition for the 2024 | 2014 selector: the SRD 5.1 sheets are 2014.
  assert.deepEqual(list.filter(m=>m.edizione==='2014').map(m=>m.id).sort(),JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.1-it.json','utf8')).records.map(r=>r.monster.id).sort());
  assert.ok(list.every(m=>m.edizione==='2014'||m.edizione==='2024'));
@@ -74,5 +80,5 @@ function load(relative, deps={}) {
    assert.deepEqual(JSON.parse(JSON.stringify(values)),values,'index consists only of JSON-serializable values');
   }
  } finally {if(originalEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=originalEnv;}
- console.log('Catalog payloads: IDs, metadata, filters, 100 animals, admin records and immutable sources preserved; full detail bodies excluded.');
+ console.log('Catalog payloads: IDs, metadata, filters, animals, admin records and immutable sources preserved; full detail bodies excluded.');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -19,19 +19,20 @@ function load(relative, deps = {}) {
 (async () => {
   const provider = load('lib/srd-monsters.ts');
   const catalog = provider.previewMonsters([], 'preview');
-  assert.equal(catalog.length, 340, '330 existing creatures plus exactly 10 approved D&D 2014 additions');
-  assert.equal(new Set(catalog.map(m => m.id)).size, 340);
   const legacy = JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.1-it.json'));
+  assert.equal(catalog.length, 330 + legacy.records.length, '330 current creatures plus every approved D&D 2014 sheet');
+  assert.equal(new Set(catalog.map(m => m.id)).size, 330 + legacy.records.length, 'no 2014 sheet duplicates another one');
   const ids = ['duergar-2014', 'elfo-drow-2014', 'gnomo-delle-profondita-svirfneblin-2014', 'lucertoloide-2014', 'orco-2014', 'sciame-di-scarabei-2014', 'sciame-di-millepiedi-2014', 'sciame-di-ragni-2014', 'sciame-di-vespe-2014', 'topo-gigante-contagioso-2014'];
-  assert.deepEqual(legacy.records.map(r => r.monster.id), ids);
+  assert.deepEqual(legacy.records.slice(0, 10).map(r => r.monster.id), ids, 'the ten first 2014 sheets keep their place');
+  assert.ok(legacy.records.every(r => r.monster.id.endsWith('-2014')), 'every 2014 sheet has a -2014 address');
   assert.deepEqual(provider.previewMonsters([], 'production'), catalog);
   assert.deepEqual(provider.previewMonsters([], undefined), []);
-  for (const id of ['oggetto-animato', 'cavalcatura-ultraterrena', 'insetto-gigante', 'spirito-draconico', 'mosca-gigante', 'avatar-della-morte']) {
+  for (const id of ['oggetto-animato', 'cavalcatura-ultraterrena', 'insetto-gigante', 'spirito-draconico', 'mosca-gigante', 'avatar-della-morte', 'mosca-gigante-2014', 'avatar-della-morte-2014']) {
     assert.equal(provider.previewMonsterById(id, 'preview'), undefined, id + ' stays excluded');
   }
   const {MonsterProvenanceBadge} = load('components/monster-provenance-badge.tsx');
   const types = load('lib/monsters-types.ts');
-  assert.equal(catalog.filter(types.isSrdAnimal).length, 100, 'five Legacy animal variants join the 95 existing animals');
+  assert.equal(catalog.filter(types.isSrdAnimal).length, require('../lib/data/srd-animal-ids.json').length, 'every animal ID belongs to a catalog sheet');
   for (const id of ids.slice(5)) assert.ok(types.isSrdAnimal({id}), id + ' belongs to the animal collection');
   let selected;
   const page = load('app/mostro/[id]/page.tsx', {
@@ -59,7 +60,7 @@ function load(relative, deps = {}) {
     assert.equal(source.sourceUrl, legacy.sourceUrl);
     assert.equal(provider.getSrdMonsterSource({...monster, azioni: 'Modifica successiva'}), undefined);
     assert.equal(provider.getSrdMonsterSource({...monster, iniziativa: '+99'}), undefined);
-    assert.ok(monster.punti_ferita && monster.azioni && monster.tratti);
+    assert.ok(monster.punti_ferita && (monster.azioni || monster.reazioni || monster.tratti), monster.id + ': hit points and a rules block'); // the shrieker only reacts, the sea horse only breathes water
     const edited = {...monster, descrizione: 'Testo personalizzato'};
     assert.equal(provider.previewMonsters([edited], 'preview').find(m => m.id === edited.id), edited);
     const badge = renderToStaticMarkup(createElement(MonsterProvenanceBadge, {source, linked: true}));
@@ -73,7 +74,7 @@ function load(relative, deps = {}) {
     assert.ok(html.includes('regole 2014'));
     assert.ok(!html.includes('href="/manuale/condizioni-'), '2014 rules must not silently link to 2024 conditions');
     assert.ok(!html.includes('href="/spell/'), '2014 spells must not silently link to 2024 spell versions');
-    assert.ok(html.includes('data-damage-type='), 'approved damage icons remain visible');
+    if (/danni (?:da )?(?:acido|contundenti|perforanti|taglienti|fuoco|freddo|fulmine|tuono|veleno|necrotici|radiosi|psichici|da forza)/.test(monster.azioni + monster.tratti)) assert.ok(html.includes('data-damage-type='), monster.id + ': approved damage icons remain visible');
     selected = edited;
     const editedHtml = renderToStaticMarkup(await page({params: Promise.resolve({id: monster.id})}));
     assert.ok(!editedHtml.includes('data-monster-provenance="verified"'), 'later edits remain unattributed');
@@ -103,5 +104,5 @@ function load(relative, deps = {}) {
   // The count follows the data, and the CC BY note says what was changed.
   assert.ok(attribution.includes(`Le ${legacy.records.length} schede «D&amp;D5e 2014» sono trascritte dall’SRD 5.1 italiano`));
   assert.ok(attribution.includes('le regole non sono state modificate né convertite alle regole 2024'));
-  console.log('D&D 2014: 10 approved records, 340 catalog entries, correct variant bases, sources, edition labels, no cross-edition links, precedence and license attribution passed.');
+  console.log(`D&D 2014: ${legacy.records.length} approved records, ${330 + legacy.records.length} catalog entries, correct variant bases, sources, edition labels, no cross-edition links, precedence and license attribution passed.`);
 })().catch(error => {console.error(error); process.exit(1);});
