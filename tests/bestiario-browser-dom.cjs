@@ -155,6 +155,10 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,3,'"o" inside the level filter');
  await click(button('2014'));assert.deepEqual([...document.querySelectorAll('a[href^="/spell/"]')].map(a=>a.getAttribute('href')),['/spell/old']);
  assert.equal(window.localStorage.getItem('grimorio.incantesimi.edizione'),'2014');window.localStorage.removeItem('grimorio.incantesimi.edizione');
+ // Without 2014 spells in the catalog there is no 2014 selector and no empty list, even if 2014 was remembered.
+ await act(async()=>root.render(React.createElement(GrimorioBrowser,{key:'no-2014',spells:labelled.filter(s=>!s.edizione),meta:{livelli:[0,1,2],scuole:['Divinazione','Evocazione'],classi:['chierico','mago']},initialEdizione:'2014'})));
+ assert.ok(!document.querySelector('[aria-label="Edizione delle regole"]'),'no edition selector while the catalog has no 2014 spells');
+ assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,4,'the 2024 list is shown');
  // Real provider + memoized rows: preserve existing storage on mount and render
  // only the affected row when toggling, including React StrictMode effects.
  const provider=load('components/favorites-provider.tsx');

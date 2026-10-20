@@ -56,7 +56,10 @@ export function GrimorioBrowser({
   const [q, setQ] = useState(initialQuery);
   const [filters, setFilters] = useState<SpellFilters>(initialFilters);
   const [draft, setDraft] = useState<SpellFilters | null>(null);
-  const [edizione, setEdizione] = useState<SpellEdition>(initialEdizione);
+  // Until 2014 spells are in the catalog the 2014 list would be empty: no selector, 2024 only.
+  const hasLegacy = useMemo(() => spells.some(spell => spell.edizione === "2014"), [spells]);
+  const [chosenEdizione, setEdizione] = useState<SpellEdition>(initialEdizione);
+  const edizione: SpellEdition = hasLegacy ? chosenEdizione : "2024";
   const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
@@ -120,7 +123,7 @@ export function GrimorioBrowser({
   return (
     <div>
       <div className="px-6 pb-2 pt-8">
-        <CatalogTitle title="Incantesimi" edition={edizione} onEdition={chooseEdition} />
+        <CatalogTitle title="Incantesimi" edition={edizione} onEdition={hasLegacy ? chooseEdition : undefined} />
         <SearchAndFilters query={q} onQuery={setQ} label="Cerca un incantesimo" active={active.length} onOpen={() => setDraft(filters)} />
         <ActiveFilters filters={active} />
       </div>
@@ -150,7 +153,7 @@ export function GrimorioBrowser({
         <div className="flex flex-col items-center justify-center gap-3 px-6 py-24 text-center">
           <FileText size={48} className="text-muted" aria-hidden="true" />
           <p className="font-serif text-lg italic text-muted">
-            {sorted.length === 0 ? `Nessun incantesimo ${edizione} nel catalogo.` : "Nessun incantesimo trovato."}
+            Nessun incantesimo trovato.
           </p>
         </div>
       ) : (
