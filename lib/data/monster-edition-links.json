@@ -473,7 +473,8 @@
     },
     "ginosfinge-2014": {
       "id2024": "sfinge-della-conoscenza",
-      "daApprovare": "Ginosfinge (2014) = Sfinge della conoscenza (2024)"
+      "nomeDiverso": "Ginosfinge (2014) = Sfinge della conoscenza (2024)",
+      "approvato": "2026-10-20"
     },
     "glabrezu-2014": {
       "id2024": "glabrezu"
@@ -483,11 +484,13 @@
     },
     "gnoll-2014": {
       "id2024": "gnoll-guerriero",
-      "daApprovare": "Gnoll (2014) = Gnoll guerriero (2024)"
+      "nomeDiverso": "Gnoll (2014) = Gnoll guerriero (2024)",
+      "approvato": "2026-10-20"
     },
     "goblin-2014": {
       "id2024": "goblin-guerriero",
-      "daApprovare": "Goblin (2014) = Goblin guerriero (2024)"
+      "nomeDiverso": "Goblin (2014) = Goblin guerriero (2024)",
+      "approvato": "2026-10-20"
     },
     "golem-di-argilla-2014": {
       "id2024": "golem-di-argilla"
