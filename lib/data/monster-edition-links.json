@@ -987,7 +987,8 @@
     },
     "veterano-2014": {
       "id2024": "guerriero-veterano",
-      "daApprovare": "Veterano (2014) = Guerriero veterano (2024)"
+      "nomeDiverso": "Veterano (2014) = Guerriero veterano (2024)",
+      "approvato": "2026-10-20"
     },
     "viverna-2014": {
       "id2024": "viverna"
