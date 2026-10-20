@@ -1211,6 +1211,82 @@
     "terreno-illusorio-2014": {
       "id2024": "terreno-illusorio",
       "en": "hallucinatory-terrain"
+    },
+    "tocco-del-vampiro-2014": {
+      "id2024": "tocco-del-vampiro",
+      "en": "vampiric-touch"
+    },
+    "tocco-gelido-2014": {
+      "id2024": "tocco-gelido",
+      "en": "chill-touch"
+    },
+    "trama-ipnotica-2014": {
+      "id2024": "trama-ipnotica",
+      "en": "hypnotic-pattern"
+    },
+    "trasformazione-2014": {
+      "id2024": "trasformazione",
+      "en": "shapechange"
+    },
+    "traslazione-arborea-2014": {
+      "id2024": "traslazione-arborea",
+      "en": "tree-stride"
+    },
+    "trasporto-vegetale-2014": {
+      "id2024": "trasporto-vegetale",
+      "en": "transport-via-plants"
+    },
+    "trova-cavalcatura-2014": {
+      "id2024": "trova-cavalcatura",
+      "en": "find-steed"
+    },
+    "trova-famiglio-2014": {
+      "id2024": "trova-famiglio",
+      "en": "find-familiar"
+    },
+    "trucco-della-corda-2014": {
+      "id2024": "trucco-della-corda",
+      "en": "rope-trick"
+    },
+    "unto-2014": {
+      "id2024": "unto",
+      "en": "grease"
+    },
+    "vedere-invisibilita-2014": {
+      "id2024": "vedere-invisibilita",
+      "en": "see-invisibility"
+    },
+    "velocita-2014": {
+      "id2024": "velocita",
+      "en": "haste"
+    },
+    "vigilanza-e-interdizione-2014": {
+      "id2024": "vigilanza-e-interdizione",
+      "en": "guards-and-wards"
+    },
+    "vincolo-di-interdizione-2014": {
+      "id2024": "vincolo-di-interdizione",
+      "en": "warding-bond"
+    },
+    "visione-del-vero-2014": {
+      "id2024": "visione-del-vero",
+      "en": "true-seeing"
+    },
+    "vita-falsata-2014": {
+      "id2024": "vita-falsata",
+      "en": "false-life"
+    },
+    "volare-2014": {
+      "id2024": "volare",
+      "en": "fly"
+    },
+    "vuoto-mentale-2014": {
+      "id2024": "vuoto-mentale",
+      "en": "mind-blank"
+    },
+    "zona-di-verita-2014": {
+      "id2024": "zona-di-verita",
+      "en": "zone-of-truth"
     }
   }
 }
