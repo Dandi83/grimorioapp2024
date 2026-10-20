@@ -17,3 +17,9 @@ Blocco 2: 3 differenze, si tiene il PDF italiano:
 - Cura ferite di massa: scuola Invocazione (EN conjuration).
 - Divinazione: classe chierico (EN druid).
 Correzione da immagine: «Dominare persone», livello stampato danneggiato → «Ammaliamento di 5° livello» (EN dominate-person, 5th-level enchantment).
+
+## Correzione del catalogo 2024 (PR separata, approvata il 20/10/2026)
+`lib/spell-catalog-repairs.ts` + `lib/data/spell-catalog-repairs-20261020.json`: solo in lettura, il database non viene scritto.
+- 42 livelli: il numero viene sostituito **solo** se il livello salvato non è riconoscibile (nessun numero o fuori da 0-9); scuola e classi restano quelle salvate.
+- 3 nomi (`veleni`, `i-re-spirare-sott-acqua`, `i-re-spirare-sott-acqua-2`): sostituiti **solo** se il nome salvato è ancora esattamente quello rovinato.
+- Ogni correzione fatta nell'area riservata vince; l'area riservata vede sempre i valori salvati.
