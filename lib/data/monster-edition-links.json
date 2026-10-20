@@ -1,10 +1,181 @@
 {
   "_nota": "Abbinamenti scheda 2014 -> scheda 2024 dello stesso mostro: l'habitat è condiviso. \"daApprovare\" segnala i casi in cui il nome cambia.",
   "links": {
-    "sciame-di-scarabei-2014": { "id2024": "sciame-di-insetti", "daApprovare": "Sciame di scarabei (2014) = Sciame di insetti (2024)" },
-    "sciame-di-millepiedi-2014": { "id2024": "sciame-di-insetti", "daApprovare": "Sciame di millepiedi (2014) = Sciame di insetti (2024)" },
-    "sciame-di-ragni-2014": { "id2024": "sciame-di-insetti", "daApprovare": "Sciame di ragni (2014) = Sciame di insetti (2024)" },
-    "sciame-di-vespe-2014": { "id2024": "sciame-di-insetti", "daApprovare": "Sciame di vespe (2014) = Sciame di insetti (2024)" },
-    "topo-gigante-contagioso-2014": { "id2024": "topo-gigante", "daApprovare": "Topo gigante contagioso (2014) = Topo gigante (2024)" }
+    "sciame-di-scarabei-2014": {
+      "id2024": "sciame-di-insetti",
+      "daApprovare": "Sciame di scarabei (2014) = Sciame di insetti (2024)"
+    },
+    "sciame-di-millepiedi-2014": {
+      "id2024": "sciame-di-insetti",
+      "daApprovare": "Sciame di millepiedi (2014) = Sciame di insetti (2024)"
+    },
+    "sciame-di-ragni-2014": {
+      "id2024": "sciame-di-insetti",
+      "daApprovare": "Sciame di ragni (2014) = Sciame di insetti (2024)"
+    },
+    "sciame-di-vespe-2014": {
+      "id2024": "sciame-di-insetti",
+      "daApprovare": "Sciame di vespe (2014) = Sciame di insetti (2024)"
+    },
+    "topo-gigante-contagioso-2014": {
+      "id2024": "topo-gigante",
+      "daApprovare": "Topo gigante contagioso (2014) = Topo gigante (2024)"
+    },
+    "aboleth-2014": {
+      "id2024": "aboleth"
+    },
+    "accolito-2014": {
+      "id2024": "sacerdote-accolito",
+      "daApprovare": "Accolito (2014) = Sacerdote accolito (2024)"
+    },
+    "albero-risvegliato-2014": {
+      "id2024": "albero-risvegliato"
+    },
+    "alce-2014": {
+      "id2024": "alce"
+    },
+    "alce-gigante-2014": {
+      "id2024": "alce-gigante"
+    },
+    "ameba-paglierina-2014": {
+      "id2024": "ameba-paglierina"
+    },
+    "androsfinge-2014": {
+      "id2024": "sfinge-del-valore",
+      "daApprovare": "Androsfinge (2014) = Sfinge del valore (2024)"
+    },
+    "ankheg-2014": {
+      "id2024": "ankheg"
+    },
+    "aquila-2014": {
+      "id2024": "aquila"
+    },
+    "aquila-gigante-2014": {
+      "id2024": "aquila-gigante"
+    },
+    "arcimago-2014": {
+      "id2024": "arcimago"
+    },
+    "armatura-animata-2014": {
+      "id2024": "armatura-animata"
+    },
+    "arpia-2014": {
+      "id2024": "arpia"
+    },
+    "assassino-2014": {
+      "id2024": "assassino"
+    },
+    "avvoltoio-2014": {
+      "id2024": "avvoltoio"
+    },
+    "avvoltoio-gigante-2014": {
+      "id2024": "avvoltoio-gigante"
+    },
+    "azer-2014": {
+      "id2024": "azer-sentinella",
+      "daApprovare": "Azer (2014) = Azer sentinella (2024)"
+    },
+    "babbuino-2014": {
+      "id2024": "babbuino"
+    },
+    "balor-2014": {
+      "id2024": "balor"
+    },
+    "bandito-2014": {
+      "id2024": "bandito"
+    },
+    "basilisco-2014": {
+      "id2024": "basilisco"
+    },
+    "beccoaguzzo-2014": {
+      "id2024": "beccoaguzzo"
+    },
+    "behir-2014": {
+      "id2024": "behir"
+    },
+    "berserker-2014": {
+      "id2024": "berserker"
+    },
+    "boleto-stridente-2014": {
+      "id2024": "boleto-stridente"
+    },
+    "bugbear-2014": {
+      "id2024": "bugbear-guerriero",
+      "daApprovare": "Bugbear (2014) = Bugbear guerriero (2024)"
+    },
+    "bulette-2014": {
+      "id2024": "bulette"
+    },
+    "cacciatore-invisibile-2014": {
+      "id2024": "cacciatore-invisibile"
+    },
+    "cammello-2014": {
+      "id2024": "cammello"
+    },
+    "cane-della-morte-2014": {
+      "id2024": "cane-della-morte"
+    },
+    "cane-intermittente-2014": {
+      "id2024": "cane-intermittente"
+    },
+    "capo-dei-banditi-2014": {
+      "id2024": "capo-dei-banditi"
+    },
+    "capra-2014": {
+      "id2024": "capra"
+    },
+    "capra-gigante-2014": {
+      "id2024": "capra-gigante"
+    },
+    "cavaliere-2014": {
+      "id2024": "cavaliere"
+    },
+    "cavallo-da-galoppo-2014": {
+      "id2024": "cavallo-da-galoppo"
+    },
+    "cavallo-da-guerra-2014": {
+      "id2024": "cavallo-da-guerra"
+    },
+    "cavallo-da-tiro-2014": {
+      "id2024": "cavallo-da-tiro"
+    },
+    "cavallo-degli-incubi-2014": {
+      "id2024": "cavallo-degli-incubi"
+    },
+    "cavalluccio-marino-2014": {
+      "id2024": "cavalluccio-marino"
+    },
+    "cavalluccio-marino-gigante-2014": {
+      "id2024": "cavalluccio-marino-gigante"
+    },
+    "centauro-2014": {
+      "id2024": "centauro-combattente",
+      "daApprovare": "Centauro (2014) = Centauro combattente (2024)"
+    },
+    "cespuglio-risvegliato-2014": {
+      "id2024": "cespuglio-risvegliato"
+    },
+    "chimera-2014": {
+      "id2024": "chimera"
+    },
+    "chuul-2014": {
+      "id2024": "chuul"
+    },
+    "cinghiale-2014": {
+      "id2024": "cinghiale"
+    },
+    "cinghiale-gigante-2014": {
+      "id2024": "cinghiale-gigante"
+    },
+    "cinghiale-mannaro-2014": {
+      "id2024": "cinghiale-mannaro"
+    },
+    "coboldo-2014": {
+      "id2024": "coboldo-guerriero",
+      "daApprovare": "Coboldo (2014) = Coboldo guerriero (2024)"
+    },
+    "coccodrillo-2014": {
+      "id2024": "coccodrillo"
+    }
   }
 }

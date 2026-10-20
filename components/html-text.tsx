@@ -65,7 +65,7 @@ export function DamageText({ text, context = "", precedingText = "", softLineBre
 const RULE_LABEL = new RegExp(
   "(?<![\\p{L}])(?:" + [
     "Tiro per colpire (?:in mischia o a distanza|in mischia|a distanza)",
-    "Attacco con (?:arma|incantesimo) (?:da mischia o a distanza|da mischia|a distanza)",
+    "Attacco con (?:arma|incantesimo) (?:da mischia o (?:con arma )?a distanza|da mischia|a distanza)",
     "Colpito o mancato", "Colpito", "Mancato",
     "(?:Esito\\s*[-–]\\s*)?Tiro salvezza su (?:Forza|Destrezza|Costituzione|Intelligenza|Saggezza|Carisma)",
     "Tiro salvezza (?:fallito|superato)",
@@ -78,9 +78,9 @@ const RULE_LABEL = new RegExp(
 const normalizeName = (text: string) => text.toLocaleLowerCase("it").replace(/\s+/g, " ").trim();
 const SPELL_NAMES = new Set(spellIndex.map(spell => normalizeName(spell.name)));
 
-/** True when italic text is only catalog spell names, e.g. "Cono di freddo, volare" or "palla di fuoco (di 4º livello)". */
+/** True when italic text is only catalog spell names, e.g. "Cono di freddo, volare", "palla di fuoco (di 4º livello)" or "armatura magica*". */
 function isSpellNameText(text: string) {
-  const parts = text.replace(/\([^)]*\)/g, " ").split(/[,;]/).map(part => normalizeName(part).replace(/[.!:]$/, "").trim()).filter(Boolean);
+  const parts = text.replace(/\([^)]*\)/g, " ").split(/[,;]/).map(part => normalizeName(part).replace(/\*+$/, "").replace(/[.!:]$/, "").trim()).filter(Boolean);
   return parts.length > 0 && parts.every(part => SPELL_NAMES.has(part));
 }
 

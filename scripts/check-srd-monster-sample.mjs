@@ -3,6 +3,7 @@ import {readFileSync, existsSync} from 'node:fs';
 import {createRequire} from 'node:module';
 import ts from 'typescript';
 import {createElement} from 'react';
+const legacyCount=JSON.parse(readFileSync(new URL('../lib/data/srd-monsters-5.1-it.json',import.meta.url),'utf8')).records.length;
 import {renderToStaticMarkup} from 'react-dom/server';
 
 const require=createRequire(import.meta.url);
@@ -15,13 +16,13 @@ new Function('require','module','exports',code)(id=>id.endsWith('.json')?JSON.pa
 const {previewMonsters,previewMonsterById,getSrdMonsterSource}=mod.exports;
 const goblin={id:'goblin',nome:'Goblin',descrizione:'Existing custom text'};
 const rows=[goblin];
-assert.equal(previewMonsters(rows,'production').length,341,'Publishing must include Aboleth in the production catalog');
+assert.equal(previewMonsters(rows,'production').length,331+legacyCount,'Publishing must include Aboleth in the production catalog');
 assert.equal(previewMonsters(rows,undefined),rows);
 assert.equal(previewMonsterById('aboleth','production')?.nome,'Aboleth','Publishing must enable the Aboleth detail page in production');
 assert.equal(previewMonsterById('aboleth',undefined),undefined);
 assert.equal(previewMonsterById('unknown','preview'),undefined);
 const staged=previewMonsters(rows,'preview');
-assert.equal(staged.length,341);
+assert.equal(staged.length,331+legacyCount);
 assert.equal(rows.length,1);
 assert.equal(staged.find(m=>m.id==='goblin'),goblin);
 const sample=previewMonsterById('aboleth','preview');
@@ -44,7 +45,7 @@ assert.equal(getSrdMonsterSource(sample).page,294);
 assert.equal(getSrdMonsterSource({...sample,azioni:'Custom edit'}),undefined,'Edited content must not be labeled as an exact SRD transcription');
 const custom={...sample,azioni:'Custom edit'};
 assert.equal(previewMonsters([goblin,custom],'preview').find(m=>m.id==='aboleth'),custom);
-assert.equal(previewMonsters([goblin,custom],'preview').length,341);
+assert.equal(previewMonsters([goblin,custom],'preview').length,331+legacyCount);
 assert.equal(previewMonsters([goblin,custom],'production').find(m=>m.id==='aboleth'),custom);
 
 // Render the real detail page: a missing PX label must fail this assertion.

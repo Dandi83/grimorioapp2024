@@ -18,6 +18,8 @@ assert.equal(official.replace(/\s+/g,' '),plain.replace(/\s+/g,' '),'official an
 // Formulas split across tags, 2014 wording, saving throws and spell outcomes.
 assert.ok(html('<em>Primo</em> <em>fallimento:</em> trattenuto.').includes(rule('Primo fallimento:')));
 assert.ok(html('Attacco con arma da mischia: +4 al tiro per colpire.').includes(rule('Attacco con arma da mischia:')));
+assert.ok(html('<em>Attacco con arma da mischia o con arma a distanza:</em> +6').includes(rule('Attacco con arma da mischia o con arma a distanza:')),'SRD 5.1 wording');
+assert.match(html('1° livello (4 slot): <em>armatura magica*, dardo incantato</em>'),/<span class="italic">armatura magica\*, dardo incantato<\/span>/,'2014 spell lists keep italics, footnote marks included');
 assert.ok(html('Tiro salvezza su Destrezza: CD 14. Fallimento: 10 danni. Successo: danni dimezzati.').includes(rule('Tiro salvezza su Destrezza:')));
 assert.ok(html('Tiro salvezza fallito: 4d6 danni.').includes(rule('Tiro salvezza fallito:')));
 assert.ok(!html('in caso di fallimento: nulla').includes('italic'),'ordinary prose is never italic');
