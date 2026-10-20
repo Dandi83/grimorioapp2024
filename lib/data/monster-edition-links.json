@@ -809,6 +809,164 @@
     },
     "rugginofago-2014": {
       "id2024": "rugginofago"
+    },
+    "sacerdote-2014": {
+      "id2024": "sacerdote"
+    },
+    "sahuagin-2014": {
+      "id2024": "sahuagin-guerriero",
+      "daApprovare": "Sahuagin (2014) = Sahuagin guerriero (2024)"
+    },
+    "salamandra-2014": {
+      "id2024": "salamandra"
+    },
+    "satiro-2014": {
+      "id2024": "satiro"
+    },
+    "scarabeo-di-fuoco-gigante-2014": {
+      "id2024": "scarabeo-di-fuoco-gigante"
+    },
+    "scheletro-2014": {
+      "id2024": "scheletro"
+    },
+    "scheletro-di-cavallo-da-guerra-2014": {
+      "id2024": "scheletro-di-cavallo-da-guerra"
+    },
+    "scheletro-di-minotauro-2014": {
+      "id2024": "scheletro-di-minotauro"
+    },
+    "sciacallo-2014": {
+      "id2024": "sciacallo"
+    },
+    "sciame-di-corvi-2014": {
+      "id2024": "stormo-di-corvi",
+      "daApprovare": "Sciame di corvi (2014) = Stormo di corvi (2024)"
+    },
+    "sciame-di-insetti-2014": {
+      "id2024": "sciame-di-insetti"
+    },
+    "sciame-di-pipistrelli-2014": {
+      "id2024": "sciame-di-pipistrelli"
+    },
+    "sciame-di-quipper-2014": {
+      "id2024": "banco-di-piranha",
+      "daApprovare": "Sciame di quipper (2014) = Banco di piranha (2024)"
+    },
+    "sciame-di-serpenti-velenosi-2014": {
+      "id2024": "colonia-di-serpenti-velenosi",
+      "daApprovare": "Sciame di serpenti velenosi (2014) = Colonia di serpenti velenosi (2024)"
+    },
+    "sciame-di-topi-2014": {
+      "id2024": "colonia-di-topi",
+      "daApprovare": "Sciame di topi (2014) = Colonia di topi (2024)"
+    },
+    "scorpione-2014": {
+      "id2024": "scorpione"
+    },
+    "scorpione-gigante-2014": {
+      "id2024": "scorpione-gigante"
+    },
+    "segugio-infernale-2014": {
+      "id2024": "segugio-infernale"
+    },
+    "serpente-stritolatore-2014": {
+      "id2024": "serpente-stritolatore"
+    },
+    "serpente-stritolatore-gigante-2014": {
+      "id2024": "serpente-stritolatore-gigante"
+    },
+    "serpente-velenoso-2014": {
+      "id2024": "serpente-velenoso"
+    },
+    "serpente-velenoso-gigante-2014": {
+      "id2024": "serpente-velenoso-gigante"
+    },
+    "serpente-volante-2014": {
+      "id2024": "serpente-volante"
+    },
+    "signore-delle-mummie-2014": {
+      "id2024": "signore-delle-mummie"
+    },
+    "solar-2014": {
+      "id2024": "solar"
+    },
+    "spada-volante-2014": {
+      "id2024": "spada-volante-animata",
+      "daApprovare": "Spada volante (2014) = Spada volante animata (2024)"
+    },
+    "spettro-2014": {
+      "id2024": "spettro"
+    },
+    "spia-2014": {
+      "id2024": "spia"
+    },
+    "spiritello-2014": {
+      "id2024": "spiritello"
+    },
+    "squalo-cacciatore-2014": {
+      "id2024": "squalo-cacciatore"
+    },
+    "squalo-gigante-2014": {
+      "id2024": "squalo-gigante"
+    },
+    "squalo-tropicale-2014": {
+      "id2024": "squalo-tropicale"
+    },
+    "succube-incubo-2014": {
+      "id2024": "succube",
+      "daApprovare": "Succube/Incubo (2014) = Succube (2024)"
+    },
+    "tappeto-soffocante-2014": {
+      "id2024": "tappeto-soffocante-animato",
+      "daApprovare": "Tappeto soffocante (2014) = Tappeto soffocante animato (2024)"
+    },
+    "tarrasque-2014": {
+      "id2024": "tarrasque"
+    },
+    "tasso-2014": {
+      "id2024": "tasso"
+    },
+    "tasso-gigante-2014": {
+      "id2024": "tasso-gigante"
+    },
+    "testuggine-dragona-2014": {
+      "id2024": "testuggine-dragona"
+    },
+    "tigre-2014": {
+      "id2024": "tigre"
+    },
+    "tigre-dai-denti-a-sciabola-2014": {
+      "id2024": "tigre-dai-denti-a-sciabola"
+    },
+    "tigre-mannara-2014": {
+      "id2024": "tigre-mannara"
+    },
+    "tirannosauro-2014": {
+      "id2024": "tirannosauro"
+    },
+    "topo-2014": {
+      "id2024": "topo"
+    },
+    "topo-gigante-2014": {
+      "id2024": "topo-gigante"
+    },
+    "topo-mannaro-2014": {
+      "id2024": "topo-mannaro"
+    },
+    "treant-2014": {
+      "id2024": "treant"
+    },
+    "triceratopo-2014": {
+      "id2024": "triceratopo"
+    },
+    "troll-2014": {
+      "id2024": "troll"
+    },
+    "uccello-stigeo-2014": {
+      "id2024": "uccello-stigeo"
+    },
+    "unicorno-2014": {
+      "id2024": "unicorno"
     }
   }
 }
