@@ -12,6 +12,7 @@ import { applyOriginalDescription, getOriginalSource } from "./original-descript
 import { previewSpellRows, previewSpellById } from "./srd-additions";
 import { isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
 import { repairCatalogSpell } from "./spell-catalog-repairs";
+import { repairSpellText } from "./spell-text-repairs";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
 // keep working. The DB access below is server-only.
@@ -31,6 +32,7 @@ interface RawRow {
 function toSpell(r: RawRow, repair = true): Spell {
   // The reserved area edits the stored values, so it never sees the display-only repairs.
   r = applyOriginalDescription(applySrdDescription(repair ? repairCatalogSpell(r) : r));
+  if (repair) r = { ...r, descrizione: repairSpellText(r.id, r.descrizione) };
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
   return {
     edizione: isLegacySpellId(r.id) ? "2014" : getSrdSource(r.id, r.descrizione) || getOriginalSource(r.id, r.descrizione) ? "2024" : undefined,

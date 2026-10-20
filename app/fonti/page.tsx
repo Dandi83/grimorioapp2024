@@ -31,6 +31,10 @@ export default function SourcesPage() {
           Sono stati normalizzati gli spazi, gli a capo e la sillabazione tipografica, conservando le regole, le tabelle e le schede delle statistiche.
         </p>
         <p>
+          Sono stati corretti alcuni refusi di stampa (parole spezzate, spazi mancanti, una frase troncata in Insetto gigante).
+          Unica correzione che si discosta dal testo del PDF: in Nube mortale «superiore al 4º» è diventato «superiore al 5º», perché l’incantesimo è di 5º livello.
+        </p>
+        <p>
           <a className="text-primary underline underline-offset-4" href={srdSourceUrl} target="_blank" rel="noreferrer">Consulta il documento originale in italiano</a>
         </p>
         <p>

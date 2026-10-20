@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import data from "./data/srd-italiano-5.2.1.json";
 import review from "./data/srd-revisions-20261017.json";
+import { repairSpellText } from "./spell-text-repairs";
 
 const descriptions = new Map(data.spells.map((spell) => [spell.id, spell]));
 const approvedReplacements = new Map(review.replacements.map((spell) => [spell.id, spell.previousDescriptionSha256]));
@@ -31,7 +32,8 @@ export function applySrdDescription<T extends { id: string; descrizione: string 
 /** Only an exact source transcription receives the SRD source label. */
 export function getSrdSource(id: string, description: string) {
   const source = descriptions.get(id);
-  return source?.descrizione === description ? source : undefined;
+  // An approved display repair of the same text keeps the source label.
+  return source && (source.descrizione === description || repairSpellText(id, source.descrizione) === description) ? source : undefined;
 }
 
 export const srdAttribution = data.attribution;

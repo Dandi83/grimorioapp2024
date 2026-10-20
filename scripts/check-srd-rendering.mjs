@@ -13,7 +13,7 @@ assert.ok(existsSync(helperUrl), 'The app must resolve audited source descriptio
 function loadTs(url) {
   const source = ts.transpileModule(readFileSync(url,'utf8'), {compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
   const mod = {exports:{}};
-  new Function('require','module','exports',source)(id => id.endsWith('spells-types') ? loadTs(new URL('../lib/spells-types.ts',import.meta.url)) : id.endsWith('srd-italiano-5.2.1.json') ? data : id.endsWith('srd-revisions-20261017.json') ? review : id.endsWith('original-description-ids.json') ? JSON.parse(readFileSync(new URL('../lib/data/original-description-ids.json',import.meta.url),'utf8')) : require(id),mod,mod.exports);
+  new Function('require','module','exports',source)(id => id.endsWith('spells-types') ? loadTs(new URL('../lib/spells-types.ts',import.meta.url)) : id === './spell-text-repairs' ? loadTs(new URL('../lib/spell-text-repairs.ts',import.meta.url)) : id.endsWith('spell-text-repairs-20261021.json') ? JSON.parse(readFileSync(new URL('../lib/data/spell-text-repairs-20261021.json',import.meta.url),'utf8')) : id.endsWith('srd-italiano-5.2.1.json') ? data : id.endsWith('srd-revisions-20261017.json') ? review : id.endsWith('original-description-ids.json') ? JSON.parse(readFileSync(new URL('../lib/data/original-description-ids.json',import.meta.url),'utf8')) : require(id),mod,mod.exports);
   return mod.exports;
 }
 const { applySrdDescription, getSrdSource } = loadTs(helperUrl);

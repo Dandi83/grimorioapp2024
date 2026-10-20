@@ -1,0 +1,116 @@
+{
+  "_nota": "Correzioni di visualizzazione dei testi degli incantesimi approvate da Daniele il 21/10/2026. Il database non viene scritto. Le sostituzioni si applicano SOLO se la descrizione è ancora esattamente quella danneggiata (sha256 dell'intero testo): ogni modifica fatta nell'area riservata prevale.",
+  "testi": {
+    "confusione": {
+      "sha256": "75dbf89a5fbb903753186552efa2274fe3f11a5573fd2928fae5c30e6908e90d",
+      "sostituzioni": [
+        {
+          "da": "      Se nessuna creatura si trova entro la sua por-\n      tata, il bersaglio non effettua azioni.",
+          "a": "      Se nessuna creatura si trova entro la sua portata,\n      il bersaglio non effettua azioni."
+        }
+      ]
+    },
+    "muro-prismatico": {
+      "sha256": "37a0195c119a72280708a7df3f1a9c382ac3e93923bea10ef2bb67d958cac234",
+      "sostituzioni": [
+        {
+          "da": "ful-\n        mine. ",
+          "a": "fulmine.\n        "
+        },
+        {
+          "da": "trat-\n        tenuto ",
+          "a": "trattenuto\n        "
+        },
+        {
+          "da": "Costitu-\n        zione ",
+          "a": "Costituzione\n        "
+        },
+        {
+          "da": "acce-\n        cato ",
+          "a": "accecato\n        "
+        }
+      ]
+    },
+    "parola-divina": {
+      "sha256": "11e47a932e123f16c1fb87fa2cbef2e89e5c79894fd3f4f641109f75f8c5c200",
+      "sostituzioni": [
+        {
+          "da": "stor-\n           dito ",
+          "a": "stordito\n           "
+        }
+      ]
+    },
+    "spruzzo-prismatico": {
+      "sha256": "3f035cb6b1b5fc167a02aaf56b9ada6d847ea59cc51a3ee21c1af224ebfc7ba8",
+      "sostituzioni": [
+        {
+          "da": "tratte-\n     nuto ",
+          "a": "trattenuto\n     "
+        },
+        {
+          "da": "risto-\n     rare ",
+          "a": "ristorare\n     "
+        },
+        {
+          "da": "risul-\n     tato ",
+          "a": "risultato\n     "
+        }
+      ]
+    },
+    "teletrasporto": {
+      "sha256": "a11695e7a5474954d499de8114d8423d6d0e152e1a375486b985d713d0b544cb",
+      "sostituzioni": [
+        {
+          "da": "<pre>Risultato del teletrasporto\n                        Area       Fuori        Sul\nFamiliarità    Errore   simile   bersaglio   bersaglio\nCerchio         —        —          —         01–00\npermanente\nOggetto         —        —          —         01–00\ncollegato\nMolto          01–05    06–13     14–24       25–00\nfamiliare\nVisto occa-    01–33    34–43     44–53       54–00\nsionalmente\nVisto una      01–43    44–53     54–73       74–00\nvolta o\ndescritto\nFalsa          01–50    51–00       —           —\ndestinazione</pre>",
+          "a": "<pre>Risultato del teletrasporto\n                                Area       Fuori        Sul\nFamiliarità            Errore   simile   bersaglio   bersaglio\nCerchio                 —        —          —         01–00\npermanente\nOggetto                 —        —          —         01–00\ncollegato\nMolto                  01–05    06–13     14–24       25–00\nfamiliare\nVisto occasionalmente  01–33    34–43     44–53       54–00\nVisto una              01–43    44–53     54–73       74–00\nvolta o\ndescritto\nFalsa                  01–50    51–00       —           —\ndestinazione</pre>"
+        }
+      ]
+    },
+    "sembrare": {
+      "sha256": "34afa3d37b5dd243f9f0a034f7a7390349d17373af126d6e2614f9f21e9ca59c",
+      "sostituzioni": [
+        {
+          "da": "lo stesso aspetto oaspetti diversi ai bersagli",
+          "a": "lo stesso aspetto o aspetti diversi ai bersagli"
+        }
+      ]
+    },
+    "semipiano": {
+      "sha256": "5fa60dae381db650a41c221df0ce8453d90085cde8c07df1e9adb30c5b94273e",
+      "sostituzioni": [
+        {
+          "da": "atterrando prone sugli spazi liberi",
+          "a": "atterrando proni sugli spazi liberi"
+        }
+      ]
+    },
+    "insetto-gigante": {
+      "sha256": "527754f68b6234f9beba31fe8487b2043605214ecc46d3a3a30173fe8fba8ccd",
+      "sostituzioni": [
+        {
+          "da": "<br><br>ed è un alleato per il personaggio e i suoi alleati.",
+          "a": "<br><br>La creatura è un alleato per l'incantatore e i suoi alleati."
+        }
+      ]
+    },
+    "nube-mortale": {
+      "sha256": "3536c091a4236be88c086ce6dfdfc9fce3d25abf18cca08bf00a2f02c2f73c5d",
+      "sostituzioni": [
+        {
+          "da": "per ogni slot di livello superiore al 4º.",
+          "a": "per ogni slot di livello superiore al 5º."
+        }
+      ],
+      "nota": "Unica correzione che si discosta dal PDF: il PDF stampa «superiore al 4º», ma l'incantesimo è di 5º livello (errore di stampa)."
+    },
+    "evoca-folletto-2014": {
+      "sha256": "435c6776a7f93ddd2c5674e98bbc00fe01599e66d7ca2f687ddf6d0d30ea6b07",
+      "sostituzioni": [
+        {
+          "da": "Il celestiale obbedisce ai comandi verbali",
+          "a": "Il folletto obbedisce ai comandi verbali"
+        }
+      ]
+    }
+  }
+}

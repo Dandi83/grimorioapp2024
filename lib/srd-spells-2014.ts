@@ -1,5 +1,6 @@
 import data from "./data/srd-spells-5.1-it.json";
 import editionLinks from "./data/spell-edition-links.json";
+import { repairSpellText } from "./spell-text-repairs";
 
 type LegacySpellRow = (typeof data.records)[number]["spell"];
 
@@ -32,7 +33,10 @@ export function getLegacySpellSource(spell: Partial<Record<keyof LegacySpellRow,
   if (!record) return undefined;
   const expected = record.spell as Record<keyof LegacySpellRow, string>;
   const fields = Object.keys(expected) as (keyof LegacySpellRow)[];
-  if (!fields.every(key => (spell[key] ?? "") === expected[key])) return undefined;
+  // An approved display repair of the description keeps the source label.
+  const same = (key: keyof LegacySpellRow) => (spell[key] ?? "") === expected[key]
+    || (key === "descrizione" && spell[key] === repairSpellText(spell.id, expected[key]));
+  if (!fields.every(same)) return undefined;
   return {
     document: data.document,
     sourceUrl: data.sourceUrl,
