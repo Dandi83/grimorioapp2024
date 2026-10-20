@@ -6,7 +6,7 @@ const path = require('node:path');
 (async () => {
   const { sheetFingerprints, findLeaks } = await import('../scripts/check-client-bundle.mjs');
   const prints = sheetFingerprints();
-  for (const file of ['srd-monsters-5.1-it.json', 'srd-monsters-5.2.1-it.json', 'srd-animals-5.2.1-it.json'])
+  for (const file of ['srd-monsters-5.1-it.json', 'srd-monsters-5.2.1-it.json', 'srd-animals-5.2.1-it.json', 'srd-spells-5.1-it.json'])
     assert.ok(prints.some(print => print.file === file), `${file} has fingerprints`);
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'grimorio-client-'));
   try {
@@ -18,8 +18,12 @@ const path = require('node:path');
     const leaked = prints.find(print => print.file === 'srd-monsters-5.1-it.json');
     fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), `JSON.parse('{"azioni":"<strong>x</strong> ${leaked.fragment}"}')`);
     assert.deepEqual(findLeaks(dir, prints).map(leak => leak.id), [leaked.id]);
+    // A 2014 spell text in the browser code is rejected the same way.
+    const spell = prints.find(print => print.file === 'srd-spells-5.1-it.json');
+    fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), `JSON.parse('{"descrizione":"${spell.fragment}"}')`);
+    assert.deepEqual(findLeaks(dir, prints).map(leak => leak.id), [spell.id]);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
-  console.log('Client bundle guard: light index allowed, full 2014 and 2024 sheets in browser code rejected.');
+  console.log('Client bundle guard: light index allowed, full 2014 and 2024 sheets and 2014 spell texts in browser code rejected.');
 })().catch(error => { console.error(error); process.exit(1); });

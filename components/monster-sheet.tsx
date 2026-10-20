@@ -69,9 +69,9 @@ function Section({ title, html, legacy }: { title: string; html?: string; legacy
   return (
     <section data-monster-section>
       <h2>{title}</h2>
-      <MonsterText html={formatMonsterSpellLists(html)} damageIcons
+      <MonsterText html={formatMonsterSpellLists(html, legacy)} damageIcons
         references={legacy ? legacyInlineConditionReferences : inlineConditionReferences}
-        spellReferences={legacy ? [] : inlineSpellReferences(html)} />
+        spellReferences={inlineSpellReferences(html, legacy)} />
     </section>
   );
 }

@@ -19,7 +19,9 @@ export default async function CharactersPage() {
         classes: pick("classi"),
         species: pick("specie"),
         backgrounds: pick("background"),
+        // The character workshop follows the 2024 rules.
         spells: spells
+          .filter((s) => s.edizione !== "2014")
           .map((s) => ({ id: s.id, name: s.nome_italiano, level: s.livello_num }))
           .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name, "it")),
       }}

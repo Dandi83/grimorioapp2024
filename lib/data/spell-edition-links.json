@@ -1,0 +1,207 @@
+{
+  "_nota": "Abbinamenti incantesimo 2014 -> incantesimo 2024 per identificativo inglese (5e-bits: 'en'), mai per solo nome e livello. 'nomeDiverso' segnala nomi italiani diversi con lo stesso identificativo inglese.",
+  "links": {
+    "aiuto-2014": {
+      "id2024": "aiuto",
+      "en": "aid"
+    },
+    "allarme-2014": {
+      "id2024": "allarme",
+      "en": "alarm"
+    },
+    "alleato-planare-2014": {
+      "id2024": "alleato-planare",
+      "en": "planar-ally"
+    },
+    "allucinazione-mortale-2014": {
+      "id2024": "allucinazione-mortale",
+      "en": "phantasmal-killer"
+    },
+    "alterare-se-stesso-2014": {
+      "id2024": "alterare-se-stesso",
+      "en": "alter-self"
+    },
+    "amicizia-con-gli-animali-2014": {
+      "id2024": "amicizia-con-gli-animali",
+      "en": "animal-friendship"
+    },
+    "anatema-2014": {
+      "id2024": "anatema",
+      "en": "bane"
+    },
+    "animale-messaggero-2014": {
+      "id2024": "animale-messaggero",
+      "en": "animal-messenger"
+    },
+    "animare-morti-2014": {
+      "id2024": "animare-morti",
+      "en": "animate-dead"
+    },
+    "animare-oggetti-2014": {
+      "id2024": "animare-oggetti",
+      "en": "animate-objects"
+    },
+    "anti-individuazione-2014": {
+      "id2024": "anti-individuazione",
+      "en": "nondetection"
+    },
+    "antipatia-simpatia-2014": {
+      "id2024": "antipatia-simpatia",
+      "en": "antipathy-sympathy"
+    },
+    "arma-magica-2014": {
+      "id2024": "arma-magica",
+      "en": "magic-weapon"
+    },
+    "arma-spirituale-2014": {
+      "id2024": "arma-spirituale",
+      "en": "spiritual-weapon"
+    },
+    "armatura-magica-2014": {
+      "id2024": "armatura-magica",
+      "en": "mage-armor"
+    },
+    "artificio-druidico-2014": {
+      "id2024": "artificio-druidico",
+      "en": "druidcraft"
+    },
+    "aura-magica-dell-arcanista-2014": {
+      "id2024": "aura-magica-di-nystul",
+      "en": "arcanists-magic-aura",
+      "nomeDiverso": "Aura magica dell'arcanista (2014) = AURA MAGICA DI NYSTUL (2024)"
+    },
+    "aura-sacra-2014": {
+      "id2024": "aura-sacra",
+      "en": "holy-aura"
+    },
+    "bacche-benefiche-2014": {
+      "id2024": "bacche-benefiche",
+      "en": "goodberry"
+    },
+    "bagliore-lunare-2014": {
+      "id2024": "bagliore-lunare",
+      "en": "moonbeam"
+    },
+    "bagliore-solare-2014": {
+      "id2024": "bagliore-solare",
+      "en": "sunbeam"
+    },
+    "banchetto-degli-eroi-2014": {
+      "id2024": "banchetto-degli-eroi",
+      "en": "heroes-feast"
+    },
+    "barriera-di-lame-2014": {
+      "id2024": "barriera-di-lame",
+      "en": "blade-barrier"
+    },
+    "beffa-crudele-2014": {
+      "id2024": "beffa-crudele",
+      "en": "vicious-mockery"
+    },
+    "benedizione-2014": {
+      "id2024": "benedizione",
+      "en": "bless"
+    },
+    "blocca-mostri-2014": {
+      "id2024": "blocca-mostri",
+      "en": "hold-monster"
+    },
+    "blocca-persone-2014": {
+      "id2024": "blocca-persone",
+      "en": "hold-person"
+    },
+    "bocca-magica-2014": {
+      "id2024": "bocca-magica",
+      "en": "magic-mouth"
+    },
+    "caduta-morbida-2014": {
+      "id2024": "caduta-morbida",
+      "en": "feather-fall"
+    },
+    "calmare-emozioni-2014": {
+      "id2024": "calmare-emozioni",
+      "en": "calm-emotions"
+    },
+    "camminare-nel-vento-2014": {
+      "id2024": "camminare-nel-vento",
+      "en": "wind-walk"
+    },
+    "camminare-sull-acqua-2014": {
+      "id2024": "camminare-sull-acqua",
+      "en": "water-walk"
+    },
+    "campo-anti-magia-2014": {
+      "id2024": "campo-anti-magia",
+      "en": "antimagic-field"
+    },
+    "camuffare-se-stesso-2014": {
+      "id2024": "camuffare-se-stesso",
+      "en": "disguise-self"
+    },
+    "capanna-2014": {
+      "id2024": "capanna-di-leomund",
+      "en": "tiny-hut",
+      "nomeDiverso": "Capanna (2014) = CAPANNA DI LEOMUND (2024)"
+    },
+    "caratteristica-potenziata-2014": {
+      "id2024": "caratteristica-potenziata",
+      "en": "enhance-ability"
+    },
+    "carne-in-pietra-2014": {
+      "id2024": "carne-in-pietra",
+      "en": "flesh-to-stone"
+    },
+    "catena-di-fulmini-2014": {
+      "id2024": "catena-di-fulmini",
+      "en": "chain-lightning"
+    },
+    "cecita-sordita-2014": {
+      "id2024": "cecita-sordita",
+      "en": "blindness-deafness"
+    },
+    "celare-2014": {
+      "id2024": "celare",
+      "en": "sequester"
+    },
+    "cerchio-di-morte-2014": {
+      "id2024": "cerchio-di-morte",
+      "en": "circle-of-death"
+    },
+    "cerchio-di-teletrasporto-2014": {
+      "id2024": "cerchio-di-teletrasporto",
+      "en": "teleportation-circle"
+    },
+    "cerchio-magico-2014": {
+      "id2024": "cerchio-magico",
+      "en": "magic-circle"
+    },
+    "charme-su-persone-2014": {
+      "id2024": "charme-su-persone",
+      "en": "charm-person"
+    },
+    "chiaroveggenza-2014": {
+      "id2024": "chiaroveggenza",
+      "en": "clairvoyance"
+    },
+    "clone-2014": {
+      "id2024": "clone",
+      "en": "clone"
+    },
+    "colpo-accurato-2014": {
+      "id2024": "colpo-accurato",
+      "en": "true-strike"
+    },
+    "colpo-infuocato-2014": {
+      "id2024": "colpo-infuocato",
+      "en": "flame-strike"
+    },
+    "comando-2014": {
+      "id2024": "comando",
+      "en": "command"
+    },
+    "comprensione-dei-linguaggi-2014": {
+      "id2024": "comprensione-dei-linguaggi",
+      "en": "comprehend-languages"
+    }
+  }
+}

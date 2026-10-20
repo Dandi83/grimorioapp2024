@@ -1,0 +1,209 @@
+{
+ "_nota": "Indice leggero (id, nome) degli incantesimi 2014 pubblicati, per i bollini delle schede 2014. 'alias': nomi usati dalle schede dei mostri 2014 diversi dal titolo dell'incantesimo, approvati da Daniele il 20/10/2026; valgono solo quando l'incantesimo è pubblicato.",
+ "alias": {
+  "creare cibo e bevande": "creare-cibo-e-acqua-2014",
+  "conoscenza delle leggende": "conoscenza-delle-legende-2014"
+ },
+ "spells": [
+  {
+   "id": "aiuto-2014",
+   "name": "Aiuto"
+  },
+  {
+   "id": "allarme-2014",
+   "name": "Allarme"
+  },
+  {
+   "id": "alleato-planare-2014",
+   "name": "Alleato planare"
+  },
+  {
+   "id": "allucinazione-mortale-2014",
+   "name": "Allucinazione mortale"
+  },
+  {
+   "id": "alterare-se-stesso-2014",
+   "name": "Alterare se stesso"
+  },
+  {
+   "id": "amicizia-con-gli-animali-2014",
+   "name": "Amicizia con gli animali"
+  },
+  {
+   "id": "anatema-2014",
+   "name": "Anatema"
+  },
+  {
+   "id": "animale-messaggero-2014",
+   "name": "Animale messaggero"
+  },
+  {
+   "id": "animare-morti-2014",
+   "name": "Animare morti"
+  },
+  {
+   "id": "animare-oggetti-2014",
+   "name": "Animare oggetti"
+  },
+  {
+   "id": "anti-individuazione-2014",
+   "name": "Anti-individuazione"
+  },
+  {
+   "id": "antipatia-simpatia-2014",
+   "name": "Antipatia/Simpatia"
+  },
+  {
+   "id": "arma-magica-2014",
+   "name": "Arma magica"
+  },
+  {
+   "id": "arma-spirituale-2014",
+   "name": "Arma spirituale"
+  },
+  {
+   "id": "armatura-magica-2014",
+   "name": "Armatura magica"
+  },
+  {
+   "id": "artificio-druidico-2014",
+   "name": "Artificio druidico"
+  },
+  {
+   "id": "aura-magica-dell-arcanista-2014",
+   "name": "Aura magica dell'arcanista"
+  },
+  {
+   "id": "aura-sacra-2014",
+   "name": "Aura sacra"
+  },
+  {
+   "id": "bacche-benefiche-2014",
+   "name": "Bacche benefiche"
+  },
+  {
+   "id": "bagliore-lunare-2014",
+   "name": "Bagliore lunare"
+  },
+  {
+   "id": "bagliore-solare-2014",
+   "name": "Bagliore solare"
+  },
+  {
+   "id": "banchetto-degli-eroi-2014",
+   "name": "Banchetto degli eroi"
+  },
+  {
+   "id": "barriera-di-lame-2014",
+   "name": "Barriera di lame"
+  },
+  {
+   "id": "beffa-crudele-2014",
+   "name": "Beffa crudele"
+  },
+  {
+   "id": "benedizione-2014",
+   "name": "Benedizione"
+  },
+  {
+   "id": "blocca-mostri-2014",
+   "name": "Blocca mostri"
+  },
+  {
+   "id": "blocca-persone-2014",
+   "name": "Blocca persone"
+  },
+  {
+   "id": "bocca-magica-2014",
+   "name": "Bocca magica"
+  },
+  {
+   "id": "caduta-morbida-2014",
+   "name": "Caduta morbida"
+  },
+  {
+   "id": "calmare-emozioni-2014",
+   "name": "Calmare emozioni"
+  },
+  {
+   "id": "camminare-nel-vento-2014",
+   "name": "Camminare nel vento"
+  },
+  {
+   "id": "camminare-sull-acqua-2014",
+   "name": "Camminare sull'acqua"
+  },
+  {
+   "id": "campo-anti-magia-2014",
+   "name": "Campo anti-magia"
+  },
+  {
+   "id": "camuffare-se-stesso-2014",
+   "name": "Camuffare se stesso"
+  },
+  {
+   "id": "capanna-2014",
+   "name": "Capanna"
+  },
+  {
+   "id": "caratteristica-potenziata-2014",
+   "name": "Caratteristica potenziata"
+  },
+  {
+   "id": "carne-in-pietra-2014",
+   "name": "Carne in pietra"
+  },
+  {
+   "id": "catena-di-fulmini-2014",
+   "name": "Catena di fulmini"
+  },
+  {
+   "id": "cecita-sordita-2014",
+   "name": "Cecità/Sordità"
+  },
+  {
+   "id": "celare-2014",
+   "name": "Celare"
+  },
+  {
+   "id": "cerchio-di-morte-2014",
+   "name": "Cerchio di morte"
+  },
+  {
+   "id": "cerchio-di-teletrasporto-2014",
+   "name": "Cerchio di teletrasporto"
+  },
+  {
+   "id": "cerchio-magico-2014",
+   "name": "Cerchio magico"
+  },
+  {
+   "id": "charme-su-persone-2014",
+   "name": "Charme su persone"
+  },
+  {
+   "id": "chiaroveggenza-2014",
+   "name": "Chiaroveggenza"
+  },
+  {
+   "id": "clone-2014",
+   "name": "Clone"
+  },
+  {
+   "id": "colpo-accurato-2014",
+   "name": "Colpo accurato"
+  },
+  {
+   "id": "colpo-infuocato-2014",
+   "name": "Colpo infuocato"
+  },
+  {
+   "id": "comando-2014",
+   "name": "Comando"
+  },
+  {
+   "id": "comprensione-dei-linguaggi-2014",
+   "name": "Comprensione dei linguaggi"
+  }
+ ]
+}

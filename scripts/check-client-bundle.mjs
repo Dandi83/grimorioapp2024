@@ -1,20 +1,24 @@
-// Fails the build when full creature sheets reach the code sent to the browser.
+// Fails the build when full creature sheets or 2014 spell texts reach the code sent to the browser.
 // Lists use the light index (id, name, type, size, CR); full sheets are read on the server only.
 // Usage: node scripts/check-client-bundle.mjs [client dir, default .next/static]
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const SHEET_FILES = ['srd-monsters-5.1-it.json', 'srd-monsters-5.2.1-it.json', 'srd-animals-5.2.1-it.json'];
-const FIELDS = ['azioni', 'tratti', 'reazioni', 'azioni_leggendarie'];
+const MONSTER_FIELDS = ['azioni', 'tratti', 'reazioni', 'azioni_leggendarie'];
+const SHEET_FILES = [
+  ...['srd-monsters-5.1-it.json', 'srd-monsters-5.2.1-it.json', 'srd-animals-5.2.1-it.json'].map(file => ({ file, key: 'monster', fields: MONSTER_FIELDS })),
+  { file: 'srd-spells-5.1-it.json', key: 'spell', fields: ['descrizione'] },
+];
 
 /** One plain-ASCII sentence fragment per sheet: it survives minification and string escaping. */
 export function sheetFingerprints(dataDir = new URL('../lib/data/', import.meta.url)) {
   const prints = [];
-  for (const file of SHEET_FILES) {
-    for (const { monster } of JSON.parse(readFileSync(new URL(file, dataDir), 'utf8')).records) {
-      const text = FIELDS.map(field => monster[field] || '').join(' ').replace(/<[^>]*>/g, ' ');
+  for (const { file, key, fields } of SHEET_FILES) {
+    for (const record of JSON.parse(readFileSync(new URL(file, dataDir), 'utf8')).records) {
+      const sheet = record[key];
+      const text = fields.map(field => sheet[field] || '').join(' ').replace(/<[^>]*>/g, ' ');
       const fragment = text.match(/[A-Za-z][A-Za-z ,]{38,}[A-Za-z]/)?.[0];
-      if (fragment) prints.push({ file, id: monster.id, fragment });
+      if (fragment) prints.push({ file, id: sheet.id, fragment });
     }
   }
   return prints;
@@ -41,8 +45,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const leaks = findLeaks(clientDir, prints);
   if (leaks.length) {
     for (const leak of leaks.slice(0, 10)) console.error(`Full sheet ${leak.id} (${leak.file}) found in ${leak.path}`);
-    console.error(`${leaks.length} full creature sheets in the browser code: lists must use the light index.`);
+    console.error(`${leaks.length} full sheets in the browser code: lists must use the light index.`);
     process.exit(1);
   }
-  console.log(`Client bundle: no full creature sheets (${prints.length} sheets checked).`);
+  console.log(`Client bundle: no full creature sheets or 2014 spell texts (${prints.length} sheets checked).`);
 }

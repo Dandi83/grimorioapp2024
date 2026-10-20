@@ -10,6 +10,7 @@ import { parseLivello, type Spell } from "./spells-types";
 import { applySrdDescription, getSrdSource } from "./srd-descriptions";
 import { applyOriginalDescription, getOriginalSource } from "./original-descriptions";
 import { previewSpellRows, previewSpellById } from "./srd-additions";
+import { isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
 // keep working. The DB access below is server-only.
@@ -30,7 +31,7 @@ function toSpell(r: RawRow): Spell {
   r = applyOriginalDescription(applySrdDescription(r));
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
   return {
-    edizione: getSrdSource(r.id, r.descrizione) || getOriginalSource(r.id, r.descrizione) ? "2024" : undefined,
+    edizione: isLegacySpellId(r.id) ? "2014" : getSrdSource(r.id, r.descrizione) || getOriginalSource(r.id, r.descrizione) ? "2024" : undefined,
     id: r.id,
     nome_italiano: r.nome_italiano,
     livello: r.livello || "",
@@ -51,7 +52,8 @@ export async function getAllSpells(options: { includePreview?: boolean } = {}): 
     .from(spellsTable)
     .orderBy(asc(spellsTable.sort_key)), getContentEditions("spell")]);
   // The admin always sees only real, editable database rows.
-  return previewSpellRows(rows, options.includePreview === false ? undefined : process.env.VERCEL_ENV)
+  const environment = options.includePreview === false ? undefined : process.env.VERCEL_ENV;
+  return withLegacySpells(previewSpellRows(rows, environment), environment)
     .map(row => {
       const spell = toSpell(row);
       return { ...spell, edizione: editions.get(row.id) ?? spell.edizione };
@@ -65,7 +67,7 @@ export const getSpellById = cache(async (id: string): Promise<Spell | undefined>
     .from(spellsTable)
     .where(eq(spellsTable.id, id))
     .limit(1), getContentEditions("spell", id)]);
-  const row = rows[0] ?? previewSpellById(id, process.env.VERCEL_ENV);
+  const row = rows[0] ?? previewSpellById(id, process.env.VERCEL_ENV) ?? legacySpellById(id, process.env.VERCEL_ENV);
   if (!row) return undefined;
   const spell = toSpell(row);
   return { ...spell, edizione: editions.get(id) ?? spell.edizione };

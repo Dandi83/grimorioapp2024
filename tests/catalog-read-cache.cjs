@@ -48,6 +48,7 @@ async function render(check) {
       './srd-descriptions':{applySrdDescription:row => row, getSrdSource:() => undefined},
       './original-descriptions':{applyOriginalDescription:row => row, getOriginalSource:() => undefined},
       './srd-additions':{previewSpellById:() => undefined},
+      './srd-spells-2014':{legacySpellById:() => undefined, isLegacySpellId:() => false},
     };
     const reader = load(`lib/${kind === 'monster' ? 'monsters' : 'spells'}.ts`, deps);
     const read = kind === 'monster' ? reader.getMonsterById : reader.getSpellById;
