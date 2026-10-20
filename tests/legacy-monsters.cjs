@@ -91,13 +91,14 @@ function load(relative, deps = {}) {
     const conditionLinks = [...html.matchAll(/href="\/manuale\/(condizioni-[^"]*)"/g)].map(match => match[1]);
     assert.ok(conditionLinks.every(id => id.endsWith('-2014')), monster.id + ': 2014 rules must not link to 2024 conditions');
     if (/paralizzat[oaie]/.test(monster.tratti + monster.azioni)) assert.ok(conditionLinks.includes('condizioni-paralizzato-2014'), monster.id + ': 2014 condition link');
-    assert.ok(!html.includes('href="/spell/'), '2014 spells must not silently link to 2024 spell versions');
+    // Spells link only to the published 2014 cards (SRD 5.1); never to the 2024 versions.
+    assert.ok([...html.matchAll(/href="\/spell\/([^"]*)"/g)].every(match => match[1].endsWith('-2014')), monster.id + ': 2014 spells must not silently link to 2024 spell versions');
     if (/danni (?:da )?(?:acido|contundenti|perforanti|taglienti|fuoco|freddo|fulmine|tuono|veleno|necrotici|radiosi|psichici|da forza)/.test(monster.azioni + monster.tratti)) assert.ok(html.includes('data-damage-type='), monster.id + ': approved damage icons remain visible');
     selected = edited;
     const editedHtml = renderToStaticMarkup(await page({params: Promise.resolve({id: monster.id})}));
     assert.ok(!editedHtml.includes('data-monster-provenance="verified"'), 'later edits remain unattributed');
     assert.ok([...editedHtml.matchAll(/href="\/manuale\/(condizioni-[^"]*)"/g)].every(match => match[1].endsWith('-2014')), 'an edited Legacy description must not enable 2024 condition links');
-    assert.ok(!editedHtml.includes('href="/spell/'), 'an edited Legacy description must not enable 2024 spell links');
+    assert.ok([...editedHtml.matchAll(/href="\/spell\/([^"]*)"/g)].every(match => match[1].endsWith('-2014')), 'an edited Legacy description must not enable 2024 spell links');
   }
   const byId = id => provider.previewMonsterById(id, 'preview');
   assert.ok(byId('duergar-2014').azioni.includes('massimo di 1 ora'), 'continued action from PDF page 348 is included');
@@ -114,6 +115,7 @@ function load(relative, deps = {}) {
     'next/link': {__esModule: true, default: ({children, ...props}) => createElement('a', props, children)},
     '@/lib/srd-descriptions': load('lib/srd-descriptions.ts'),
     '@/lib/data/srd-monsters-5.1-it.json': legacy,
+    '@/lib/data/spell-reference-index-2014.json': require('../lib/data/spell-reference-index-2014.json'),
   }).default;
   const attribution = renderToStaticMarkup(createElement(sources));
   assert.ok(attribution.includes('Questo lavoro include materiale del System Reference Document 5.1'));
@@ -122,5 +124,6 @@ function load(relative, deps = {}) {
   // The count follows the data, and the CC BY note says what was changed.
   assert.ok(attribution.includes(`Le ${legacy.records.length} schede «D&amp;D5e 2014» sono trascritte dall’SRD 5.1 italiano`));
   assert.ok(attribution.includes('le regole non sono state modificate né convertite alle regole 2024'));
+  assert.ok(attribution.includes(`I ${require('../lib/data/srd-spells-5.1-it.json').records.length} incantesimi «D&amp;D5e 2014» pubblicati finora`), 'the 2014 spells are attributed too');
   console.log(`D&D 2014: ${legacy.records.length} approved records, ${330 + legacy.records.length} catalog entries, correct variant bases, sources, edition labels, no cross-edition links, precedence and license attribution passed.`);
 })().catch(error => {console.error(error); process.exit(1);});

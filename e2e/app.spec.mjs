@@ -73,6 +73,26 @@ test("bestiary: 2014 edition list, remembered on the phone, and old 2014 links",
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Orco");
 });
 
+// The 2014 spells published so far (SRD 5.1) come from the project files.
+const spells2014 = JSON.parse(readFileSync(new URL("../lib/data/srd-spells-5.1-it.json", import.meta.url), "utf8")).records.length;
+
+test("spells: 2014 selector, 2014 card with its source and 2024 link, 2014 creature bollini", async ({ page }) => {
+  await page.goto("/grimorio");
+  await page.getByRole("button", { name: "2014", exact: true }).click();
+  await expect(page.getByRole("status")).toHaveText(`${spells2014} risultati`);
+  await page.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("aiuto");
+  await page.getByRole("link", { name: /^Aiuto/ }).click();
+  await expect(page).toHaveURL(/\/spell\/aiuto-2014$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aiuto");
+  await expect(page.getByRole("link", { name: "Versione 2024 →" })).toHaveAttribute("href", "/spell/aiuto");
+  await expect(page.getByText("Testo integrale: SRD 5.1 italiano — Aiuto.")).toBeVisible();
+  await page.goto("/mostro/accolito-2014");
+  const bollino = page.getByRole("link", { name: /^benedizione$/i });
+  await expect(bollino).toHaveAttribute("href", "/spell/benedizione-2014");
+  await bollino.click();
+  await expect(page).toHaveURL(/\/spell\/benedizione-2014$/);
+});
+
 test("conditions: inline links open the prebuilt condition page", async ({ page }) => {
   await page.goto("/mostro/aboleth");
   const condition = page.locator('a[href^="/manuale/condizioni-"]').first();

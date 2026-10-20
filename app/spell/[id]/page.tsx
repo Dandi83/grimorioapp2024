@@ -1,5 +1,5 @@
 import { inlineSpellReferences } from "@/lib/spell-references";
-import { inlineConditionReferences } from "@/lib/conditions";
+import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,6 +15,7 @@ import { capitalizeWords, getSpellById } from "@/lib/spells";
 import { schoolColor } from "@/lib/school-colors";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
+import { getLegacySpellSource, spellEditionLink } from "@/lib/srd-spells-2014";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -64,6 +65,9 @@ export default async function SpellDetailPage({
       : `${spell.livello_num}° Livello · ${spell.scuola}`;
   const source = getSrdSource(spell.id, spell.descrizione);
   const original = getOriginalSource(spell.id, spell.descrizione);
+  const legacy = spell.edizione === "2014";
+  const legacySource = getLegacySpellSource(spell);
+  const otherEdition = spellEditionLink(spell.id, process.env.VERCEL_ENV);
 
   return (
     <article className="spell-sheet">
@@ -103,6 +107,13 @@ export default async function SpellDetailPage({
             <SpellProvenanceMarker id={spell.id} />
           </h1>
           <RulesEditionBadge edition={spell.edizione} />
+          {otherEdition && (
+            <p className="mt-2">
+              <Link href={otherEdition.href} className="text-sm font-semibold text-primary underline underline-offset-4">
+                {otherEdition.label} →
+              </Link>
+            </p>
+          )}
         </div>
       </header>
 
@@ -139,7 +150,7 @@ export default async function SpellDetailPage({
           Descrizione
         </h2>
         {spell.descrizione ? (
-          <HtmlText html={spell.descrizione} damageIcons references={spell.edizione === "2014" ? undefined : inlineConditionReferences} spellReferences={spell.edizione === "2014" ? undefined : inlineSpellReferences(spell.descrizione)} />
+          <HtmlText html={spell.descrizione} damageIcons references={legacy ? legacyInlineConditionReferences : inlineConditionReferences} spellReferences={inlineSpellReferences(spell.descrizione, legacy)} />
         ) : (
           <p className="font-serif text-[15px] italic leading-6 text-muted">
             Descrizione non disponibile per questo incantesimo.
@@ -162,6 +173,17 @@ export default async function SpellDetailPage({
           {original.statBlockUrl && (
             <p><a className="underline underline-offset-4" href={original.statBlockUrl} target="_blank" rel="noreferrer">Scheda completa dello spirito 2024</a></p>
           )}
+        </aside>
+      )}
+      {legacySource && (
+        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
+          <p>Testo integrale: {legacySource.document} italiano — {legacySource.sourceName}.</p>
+          <p>
+            <a className="underline underline-offset-4" href={`${legacySource.sourceUrl}#page=${legacySource.page}`} target="_blank" rel="noreferrer">
+              Fonte ufficiale, {legacySource.pages.length === 1 ? "pagina" : "pagine"} {legacySource.pages.join(", ")}
+            </a>
+            {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
+          </p>
         </aside>
       )}
       {source && (

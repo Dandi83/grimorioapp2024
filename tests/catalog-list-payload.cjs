@@ -59,6 +59,8 @@ function load(relative, deps={}) {
  const additions=load('lib/srd-additions.ts');
  const additionId=JSON.parse(fs.readFileSync('lib/data/srd-additions-20261017.json','utf8')).spells[0].id;
  const sourceRows=[{id:'manual-index',nome_italiano:'Manuale',livello:'Divinazione di 2° livello (mago)',tempo_di_lancio:'1 minuto o rituale',durata:'Concentrazione, fino a 1 ora'},{id:additionId,nome_italiano:'Modifica amministrativa',livello:'Abiurazione di 1° livello (chierico)',tempo_di_lancio:'Azione',durata:'Istantanea'}];
+ const legacySpells=load('lib/srd-spells-2014.ts');
+ const legacyIds=JSON.parse(fs.readFileSync('lib/data/srd-spells-5.1-it.json','utf8')).records.map(r=>r.spell.id);
  const originalEnv=process.env.VERCEL_ENV;
  try {
   for(const environment of ['preview','production',undefined]) {
@@ -71,10 +73,12 @@ function load(relative, deps={}) {
     './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',tempo_di_lancio:'tempo_di_lancio',durata:'durata',sort_key:'sort_key'}},
     './content-editions':{getContentEditions:async kind=>{assert.equal(kind,'spell');return new Map([['manual-index','2014']]);}},
     './db':{db:{select:columns=>{assert.deepEqual(Object.keys(columns).sort(),['id','nome_italiano','livello','tempo_di_lancio','durata'].sort(),'SQL selects no descriptions');return {from:()=>({orderBy:async()=>sourceRows})};}}},
-    './srd-additions':additions,'./spells-types':st,
+    './srd-additions':additions,'./srd-spells-2014':legacySpells,'./spells-types':st,
    });
    const values=await reader.getSpellIndex();
-   assert.ok(configured);assert.equal(values.length,environment?21:2);
+   assert.ok(configured);assert.equal(values.length,environment?21+legacyIds.length:2);
+   // The 2014 spells come from the project files and carry their edition, so the 2014 selector appears.
+   assert.deepEqual(values.filter(s=>s.edizione==='2014'&&s.id!=='manual-index').map(s=>s.id).sort(),environment?[...legacyIds].sort():[]);
    assert.equal(values.find(s=>s.id===additionId).nome_italiano,'Modifica amministrativa','virtual additions never replace an existing manual row');
    assert.deepEqual(values.find(s=>s.id==='manual-index'),{id:'manual-index',nome_italiano:'Manuale',livello_num:2,scuola:'Divinazione',classi:['mago'],tempo_di_lancio:'1 minuto o rituale',concentrazione:true,rituale:true,edizione:'2014'});
    for(const value of values){assert.ok(!('descrizione' in value)&&!('durata' in value),'list rows carry no description or duration text');assert.ok(Object.keys(value).every(key=>['id','nome_italiano','livello_num','scuola','classi','tempo_di_lancio','concentrazione','rituale','edizione'].includes(key)));}
