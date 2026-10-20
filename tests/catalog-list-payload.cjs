@@ -61,14 +61,14 @@ function load(relative, deps={}) {
  const sourceRows=[{id:'manual-index',nome_italiano:'Manuale',livello:'Divinazione di 2° livello (mago)',tempo_di_lancio:'1 minuto o rituale',durata:'Concentrazione, fino a 1 ora'},{id:additionId,nome_italiano:'Modifica amministrativa',livello:'Abiurazione di 1° livello (chierico)',tempo_di_lancio:'Azione',durata:'Istantanea'}];
  const legacySpells=load('lib/srd-spells-2014.ts');
  const legacyIds=JSON.parse(fs.readFileSync('lib/data/srd-spells-5.1-it.json','utf8')).records.map(r=>r.spell.id);
- const originalEnv=process.env.VERCEL_ENV;
+ const originalEnv=process.env.VERCEL_ENV,spellKeys=new Set();
  try {
   for(const environment of ['preview','production',undefined]) {
    if(environment===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=environment;
    let configured=false;
    const reader=load('lib/spell-index.ts',{
     'server-only':{},
-    'next/cache':{unstable_cache:(fn,key,options)=>{assert.deepEqual(key,['spell-index',environment??'local']);assert.deepEqual(options,{tags:['spells'],revalidate:3600});configured=true;return fn;}},
+    'next/cache':{unstable_cache:(fn,key,options)=>{assert.deepEqual(key.slice(0,2),['spell-index',environment??'local']);assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');spellKeys.add(key[2]);assert.deepEqual(options,{tags:['spells'],revalidate:3600});configured=true;return fn;}},
     'drizzle-orm':{asc:column=>{assert.equal(column,'sort_key');return column;}},
     './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',tempo_di_lancio:'tempo_di_lancio',durata:'durata',sort_key:'sort_key'}},
     './content-editions':{getContentEditions:async kind=>{assert.equal(kind,'spell');return new Map([['manual-index','2014']]);}},
@@ -85,5 +85,11 @@ function load(relative, deps={}) {
    assert.deepEqual(JSON.parse(JSON.stringify(values)),values,'index consists only of JSON-serializable values');
   }
  } finally {if(originalEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=originalEnv;}
+ // A new 2014 block changes the key, so a deployment never serves the previous list.
+ let fewer;
+ const smaller={...legacySpells,withLegacySpells:(rows,environment)=>legacySpells.withLegacySpells(rows,environment).slice(0,-1)};
+ load('lib/spell-index.ts',{'server-only':{},'./db':{},'./db/schema':{spells:{}},'drizzle-orm':{asc:x=>x},'./content-editions':{},'./srd-additions':additions,'./srd-spells-2014':smaller,'./spells-types':st,
+  'next/cache':{unstable_cache:(fn,key)=>{fewer=key[2];return fn;}}});
+ assert.equal(spellKeys.size,1);assert.notEqual(fewer,[...spellKeys][0]);
  console.log('Catalog payloads: IDs, metadata, filters, animals, admin records and immutable sources preserved; full detail bodies excluded.');
 })().catch(e=>{console.error(e);process.exitCode=1});

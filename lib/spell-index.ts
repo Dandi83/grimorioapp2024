@@ -10,6 +10,19 @@ import { isLegacySpellId, withLegacySpells } from "./srd-spells-2014";
 import { parseLivello, spellListFlags, type SpellListItem } from "./spells-types";
 import { getContentEditions } from "./content-editions";
 
+/**
+ * Changes whenever the project files change what the list shows (new 2014 blocks, SRD additions).
+ * The cached list survives deployments, so without it new spells would appear only after the hourly refresh.
+ */
+function projectCatalogVersion(): string {
+  const listed = withLegacySpells(previewSpellRows([], "production"), "production")
+    .map(({ id, nome_italiano, livello, tempo_di_lancio, durata }) => [id, nome_italiano, livello, tempo_di_lancio, durata]);
+  const text = JSON.stringify(listed);
+  let hash = 2166136261; // FNV-1a
+  for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);
+  return (hash >>> 0).toString(36);
+}
+
 export const getSpellIndex = unstable_cache(
   async (): Promise<SpellListItem[]> => {
     const [rows, editions] = await Promise.all([db.select({
@@ -29,6 +42,6 @@ export const getSpellIndex = unstable_cache(
       };
     });
   },
-  ["spell-index", process.env.VERCEL_ENV ?? "local"],
+  ["spell-index", process.env.VERCEL_ENV ?? "local", projectCatalogVersion()],
   { tags: ["spells"], revalidate: 3600 },
 );

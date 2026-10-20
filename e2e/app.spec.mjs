@@ -91,6 +91,9 @@ test("spells: 2014 selector, 2014 card with its source and 2024 link, 2014 creat
   await expect(bollino).toHaveAttribute("href", "/spell/benedizione-2014");
   await bollino.click();
   await expect(page).toHaveURL(/\/spell\/benedizione-2014$/);
+  // Approved alias: the 2014 sheet says «conoscenza delle leggende», the 2014 spell is «Conoscenza delle legende».
+  await page.goto("/mostro/ginosfinge-2014");
+  await expect(page.getByRole("link", { name: /^conoscenza delle leggende$/i })).toHaveAttribute("href", "/spell/conoscenza-delle-legende-2014");
 });
 
 test("conditions: inline links open the prebuilt condition page", async ({ page }) => {
