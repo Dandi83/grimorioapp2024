@@ -1,0 +1,225 @@
+{
+  "_nota": "Tempi di lancio dell'elenco 2024 rovinati dall'estrazione del testo (approvato da Daniele il 21/10/2026). Solo visualizzazione: il database non viene scritto. Si sostituisce SOLO se il valore salvato è ancora esattamente quello rovinato ('da'); 'a' è il tempo di lancio già mostrato nella scheda. Ogni modifica fatta nell'area riservata prevale.",
+  "tempi": {
+    "dito-della-morte": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "fabbricare": {
+      "da": "minuti",
+      "a": "10 minuti"
+    },
+    "freccia-folgorante": {
+      "da": "azione bonus, che l'incantatore effettua",
+      "a": "Azione bonus, subito dopo aver colpito o mancato un bersaglio con un attacco a distanza usando un’arma"
+    },
+    "giara-magica": {
+      "da": "l minuto",
+      "a": "1 minuto"
+    },
+    "glifo-di-interdizione": {
+      "da": "l ora",
+      "a": "1 ora"
+    },
+    "imprigionare": {
+      "da": "° l minuto",
+      "a": "1 minuto"
+    },
+    "inaridire": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "infliggi-ferite": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "intimorire-infernale": {
+      "da": "reazione, che l'incantatore effettua quando",
+      "a": "reazione, che l'incantatore effettua quando subisce danni da una creatura che egli è in grado di vedere entro 18 metri da sé"
+    },
+    "metamorfosi": {
+      "da": "4a z° ione",
+      "a": "azione"
+    },
+    "morte-apparente": {
+      "da": "°azione o rituale",
+      "a": "Azione o rituale"
+    },
+    "muro-prismatico": {
+      "da": "° azione",
+      "a": "azione"
+    },
+    "parlare-con-i-morti": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "parola-del-potere-fortificare": {
+      "da": "a7z°i one",
+      "a": "Azione"
+    },
+    "parola-del-potere-guarire": {
+      "da": "a9z°i one",
+      "a": "azione"
+    },
+    "parola-del-potere-uccidere": {
+      "da": "a9z°i one",
+      "a": "azione"
+    },
+    "parola-guaritrice-di-massa": {
+      "da": "° azione bonus",
+      "a": "azione bonus"
+    },
+    "passare-senza-tracce": {
+      "da": "° azione",
+      "a": "azione"
+    },
+    "pelle-coriacea": {
+      "da": "2az° ione bonus",
+      "a": "azione bonus"
+    },
+    "presenza-regale-di-yolande": {
+      "da": "a5z°i one",
+      "a": "Azione"
+    },
+    "previsione": {
+      "da": "l minuto",
+      "a": "1 minuto"
+    },
+    "proibizione": {
+      "da": "° 10 minuti o rituale",
+      "a": "10 minuti o rituale"
+    },
+    "proiezione-astrale": {
+      "da": "°1 ora",
+      "a": "1 ora"
+    },
+    "protezione-dai-veleni": {
+      "da": "° azione",
+      "a": "azione"
+    },
+    "punizione-collerica": {
+      "da": "azione bonus che l'incantatore effettua",
+      "a": "Azione bonus, subito dopo aver colpito una creatura con un’arma da mischia o un colpo senz’armi"
+    },
+    "punizione-demoralizzante": {
+      "da": "a4z ° i one bonus che l'incantatore effettua",
+      "a": "Azione bonus, subito dopo aver colpito una creatura con un’arma da mischia o un colpo senz’armi"
+    },
+    "punizione-divina": {
+      "da": "azione bonus che l'incantatore effettua",
+      "a": "azione bonus che l'incantatore effettua subito dopo aver colpito un bersaglio con un'arma da mischia o con un colpo senz'armi"
+    },
+    "punizione-esiliante": {
+      "da": "azione bonus che l'incantatore effettua",
+      "a": "Azione bonus, subito dopo aver colpito una creatura con un’arma da mischia o un colpo senz’armi"
+    },
+    "punizione-incandescente": {
+      "da": "azione bonus che l'incantatore effettua",
+      "a": "azione bonus che l'incantatore effettua subito dopo aver colpito un bersaglio con un'arma da mischia o con un colpo senz'armi"
+    },
+    "punizione-splendente": {
+      "da": "2az° ione bonus che l'incantatore effettua",
+      "a": "azione bonus che l'incantatore effettua subito dopo aver colpito una creatura con un'arma da mischia o con un colpo senz'armi"
+    },
+    "punizione-tonante": {
+      "da": "azione bonus che l'incantatore effettua",
+      "a": "Azione bonus, subito dopo aver colpito un bersaglio con un’arma da mischia o un colpo senz’armi"
+    },
+    "raffica-di-spine": {
+      "da": "azione bonus che l'incantatore effettua",
+      "a": "Azione bonus, subito dopo aver colpito una creatura con un’arma a distanza"
+    },
+    "raggio-di-affaticamento": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "raggio-di-infermita": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "reincarnazione": {
+      "da": "°1 ora",
+      "a": "1 ora"
+    },
+    "i-re-spirare-sott-acqua-2": {
+      "da": "3az° ione o rituale",
+      "a": "azione o rituale"
+    },
+    "resurrezione": {
+      "da": "°1 ora",
+      "a": "1 ora"
+    },
+    "resurrezione-pura": {
+      "da": "°l ora",
+      "a": "1 ora"
+    },
+    "rianimare-morti": {
+      "da": "°l ora",
+      "a": "1 ora"
+    },
+    "richiama-non-morto": {
+      "da": "°azione",
+      "a": "Azione"
+    },
+    "rigenerazione": {
+      "da": "lm inuto",
+      "a": "1 minuto"
+    },
+    "rinascita": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "riposo-inviolato": {
+      "da": "°azione o rituale",
+      "a": "azione o rituale"
+    },
+    "risveglio": {
+      "da": "o re",
+      "a": "8 ore"
+    },
+    "ritirata-rapida": {
+      "da": "Ia 0 z ione bonus",
+      "a": "azione bonus"
+    },
+    "santificare": {
+      "da": "° 24 ore",
+      "a": "24 ore"
+    },
+    "scagliare-maledizione": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "scudo": {
+      "da": "reazione, che l'incantatore effettua quando",
+      "a": "reazione, che l'incantatore effettua quando è colpito da un tiro per colpire o bersagliato dall'incantesimo dardo incantato"
+    },
+    "sfera-elastica-di-0tiluke": {
+      "da": "° azione",
+      "a": "azione"
+    },
+    "sguardo-penetrante": {
+      "da": "°azione",
+      "a": "azione"
+    },
+    "simbolo": {
+      "da": "° 1 minuto",
+      "a": "1 minuto"
+    },
+    "trova-famiglio": {
+      "da": "l ora o rituale",
+      "a": "1 ora o rituale"
+    },
+    "tsunami": {
+      "da": "l minuto",
+      "a": "1 minuto"
+    },
+    "vigilanza-e-interdizione": {
+      "da": "° l ora",
+      "a": "1 ora"
+    },
+    "vuoto-mentale": {
+      "da": "° azione",
+      "a": "azione"
+    }
+  }
+}
