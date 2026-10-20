@@ -29,6 +29,12 @@
       "from": "Invocare il fulmine",
       "to": "Parola del ritiro",
       "count": 50
+    },
+    {
+      "block": 5,
+      "from": "Parola divina",
+      "to": "Saltare",
+      "count": 50
     }
   ],
   "records": [
@@ -3803,6 +3809,926 @@
         "descrizione": "L'incantatore e un massimo di cinque creature consenzienti entro 1,5 metri da lui si teletrasportano immediatamente in un santuario indicato in precedenza. L'incantatore e le creature che si teletrasportano con lui appaiono nello spazio libero più vicino al punto indicato dall'incantatore quando ha preparato il suo santuario (vedi di seguito). Se lancia questo incantesimo senza prima preparare un santuario, l'incantesimo non ha effetto.<br><br>L'incantatore deve prima indicare un santuario lanciando l'incantesimo all'interno di un luogo dedicato o fortemente legato alla sua divinità, come per esempio un tempio. Se l'incantatore cerca di lanciare l'incantesimo in questo modo in un'area che non è dedicata alla sua divinità, non ha effetto."
       },
       "en": "word-of-recall"
+    },
+    {
+      "page": 188,
+      "sourceName": "Parola divina",
+      "sourceLevel": "Invocazione di 7° livello",
+      "sourceText": "Parola divina Invocazione di 7° livello Tempo di lancio: 1 azione bonus Gittata: 9 metri Componenti: V Durata: Istantanea L'incantatore pronuncia una parola divina, pregna del potere che plasmò il mondo all'alba della creazione. L'incantatore sceglie un qualsiasi numero di creature entro gittata che è in grado di vedere: ogni creatura in grado di sentirlo deve effettuare un tiro salvezza su Carisma. Se lo fallisce, una creatura soffre un effetto basato sui suoi punti ferita attuali: • 50 punti ferita o meno: assordata per 1 minuto • 40 punti ferita o meno: assordata e accecata per 10 minuti • 30 punti ferita o meno: assordata, accecata e stordita per 1 ora • 20 punti ferita o meno: uccisa istantaneamente Indipendentemente dai suoi punti ferita, un celestiale, un elementale, un folletto o un immondo che fallisce il suo tiro salvezza viene respinto sul suo piano d'origine (se non vi si trova già) e non può ritornare sul piano attuale dell'incantatore per 24 ore in alcun modo a eccezione che tramite un incantesimo desiderio.",
+      "sourceSha256": "fc265806fb6a6850055f0566bc92da652a1f0d008695d18880481e14c28fe9e0",
+      "spell": {
+        "id": "parola-divina-2014",
+        "nome_italiano": "Parola divina",
+        "livello": "Invocazione di 7° livello (chierico)",
+        "tempo_di_lancio": "1 azione bonus",
+        "gittata": "9 metri",
+        "componenti": "V",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore pronuncia una parola divina, pregna del potere che plasmò il mondo all'alba della creazione. L'incantatore sceglie un qualsiasi numero di creature entro gittata che è in grado di vedere: ogni creatura in grado di sentirlo deve effettuare un tiro salvezza su Carisma. Se lo fallisce, una creatura soffre un effetto basato sui suoi punti ferita attuali:<br><br>• 50 punti ferita o meno: assordata per 1 minuto<br><br>• 40 punti ferita o meno: assordata e accecata per 10 minuti<br><br>• 30 punti ferita o meno: assordata, accecata e stordita per 1 ora<br><br>• 20 punti ferita o meno: uccisa istantaneamente Indipendentemente dai suoi punti ferita, un celestiale, un elementale, un folletto o un immondo che fallisce il suo tiro salvezza viene respinto sul suo piano d'origine (se non vi si trova già) e non può ritornare sul piano attuale dell'incantatore per 24 ore in alcun modo a eccezione che tramite un incantesimo <em>desiderio</em>."
+      },
+      "en": "divine-word"
+    },
+    {
+      "page": 188,
+      "sourceName": "Parola guaritrice",
+      "sourceLevel": "Invocazione di 1° livello",
+      "sourceText": "Parola guaritrice Invocazione di 1° livello Tempo di lancio: 1 azione bonus Gittata: 18 metri Componenti: V Durata: Istantanea Una creatura scelta dall'incantatore entro gittata e che egli sia in grado di vedere recupera un ammontare di punti ferita pari a 1d4 + il modificatore di caratteristica da incantatore. Questo incantesimo non ha effetto sui non morti o sui costrutti. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, la guarigione aumenta di 1d4 per ogni slot di livello superiore al 1°.",
+      "sourceSha256": "e08f3e2111ce6bd29390f3979cd510600b9c872c5eed32aebbc2be4854d286f4",
+      "spell": {
+        "id": "parola-guaritrice-2014",
+        "nome_italiano": "Parola guaritrice",
+        "livello": "Invocazione di 1° livello (bardo, chierico, druido)",
+        "tempo_di_lancio": "1 azione bonus",
+        "gittata": "18 metri",
+        "componenti": "V",
+        "durata": "Istantanea",
+        "descrizione": "Una creatura scelta dall'incantatore entro gittata e che egli sia in grado di vedere recupera un ammontare di punti ferita pari a 1d4 + il modificatore di caratteristica da incantatore. Questo incantesimo non ha effetto sui non morti o sui costrutti.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, la guarigione aumenta di 1d4 per ogni slot di livello superiore al 1°."
+      },
+      "en": "healing-word"
+    },
+    {
+      "page": 189,
+      "sourceName": "Parola guaritrice di massa",
+      "sourceLevel": "Invocazione di 3° livello",
+      "sourceText": "Parola guaritrice di massa Invocazione di 3° livello Tempo di lancio: 1 azione bonus Gittata: 18 metri Componenti: V Durata: Istantanea L'incantatore pronuncia una serie di parole di guarigione e fino a sei creature a sua scelta, entro gittata e che è in grado di vedere, recuperano una quantità di punti ferita pari a 1d4 + il modificatore di caratteristica da incantatore. Questo incantesimo non ha effetto sui non morti o sui costrutti. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, la guarigione aumenta di 1d4 per ogni slot di livello superiore al 3°.",
+      "sourceSha256": "34a6ad62dc86effe247379cfeeb30782d9a98518dafdabeb26b255e4c4cf0021",
+      "spell": {
+        "id": "parola-guaritrice-di-massa-2014",
+        "nome_italiano": "Parola guaritrice di massa",
+        "livello": "Invocazione di 3° livello (chierico)",
+        "tempo_di_lancio": "1 azione bonus",
+        "gittata": "18 metri",
+        "componenti": "V",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore pronuncia una serie di parole di guarigione e fino a sei creature a sua scelta, entro gittata e che è in grado di vedere, recuperano una quantità di punti ferita pari a 1d4 + il modificatore di caratteristica da incantatore. Questo incantesimo non ha effetto sui non morti o sui costrutti.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, la guarigione aumenta di 1d4 per ogni slot di livello superiore al 3°."
+      },
+      "en": "mass-healing-word"
+    },
+    {
+      "page": 189,
+      "sourceName": "Passapareti",
+      "sourceLevel": "Trasmutazione di 5° livello",
+      "sourceText": "Passapareti Trasmutazione di 5° livello Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V, S, M (un pizzico di semi di sesamo) Durata: 1 ora L'incantatore sceglie un punto entro gittata e che è in grado di vedere su una superficie di legno, pietra o intonaco (come una parete, un soffitto o un pavimento), dove si apre un passaggio che permane per la durata dell'incantesimo. L'incantatore sceglie inoltre le dimensioni dell'apertura, che non possono superare una larghezza di 1,5 metri, un'altezza di 2,4 metri e una profondità di 6 metri. Il passaggio non crea alcuna instabilità nella struttura che lo circonda. Quando l'apertura scompare, qualsiasi creatura o oggetto all'interno del passaggio creato dall'incantesimo viene espulso senza subire danni nello spazio libero più vicino alla superficie su cui l'incantesimo è stato lanciato.",
+      "sourceSha256": "dcaa4200a5cead7f9fb7cd8f222d7adff7d9efb487dcc54d1a46c06132c3e6b8",
+      "spell": {
+        "id": "passapareti-2014",
+        "nome_italiano": "Passapareti",
+        "livello": "Trasmutazione di 5° livello (mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "V, S, M (un pizzico di semi di sesamo)",
+        "durata": "1 ora",
+        "descrizione": "L'incantatore sceglie un punto entro gittata e che è in grado di vedere su una superficie di legno, pietra o intonaco (come una parete, un soffitto o un pavimento), dove si apre un passaggio che permane per la durata dell'incantesimo. L'incantatore sceglie inoltre le dimensioni dell'apertura, che non possono superare una larghezza di 1,5 metri, un'altezza di 2,4 metri e una profondità di 6 metri. Il passaggio non crea alcuna instabilità nella struttura che lo circonda.<br><br>Quando l'apertura scompare, qualsiasi creatura o oggetto all'interno del passaggio creato dall'incantesimo viene espulso senza subire danni nello spazio libero più vicino alla superficie su cui l'incantesimo è stato lanciato."
+      },
+      "en": "passwall"
+    },
+    {
+      "page": 189,
+      "sourceName": "Passare senza tracce",
+      "sourceLevel": "Abiurazione di 2° livello",
+      "sourceText": "Passare senza tracce Abiurazione di 2° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S, M (cenere di una foglia di vischio bruciata e un rametto di abete) Durata: Concentrazione, fino a 1 ora L'incantatore è avvolto da un velo d'ombra e di silenzio che impedisce a lui e ai suoi compagni di essere individuati. Per la durata dell'incantesimo, ogni creatura scelta dall'incantatore e situata entro 9 metri da lui (incluso se stesso) ha un bonus di +10 alle prove di Destrezza (Furtività) e le sue tracce sono impossibili da seguire se non tramite mezzi magici. Una creatura che riceve questo bonus non lascia impronte o altre tracce del proprio passaggio.",
+      "sourceSha256": "c334379a86009a94c3b5a6f61de5da5461c0d2132166c1ed4506b1d4b304ea73",
+      "spell": {
+        "id": "passare-senza-tracce-2014",
+        "nome_italiano": "Passare senza tracce",
+        "livello": "Abiurazione di 2° livello (druido, ranger)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S, M (cenere di una foglia di vischio bruciata e un rametto di abete)",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "L'incantatore è avvolto da un velo d'ombra e di silenzio che impedisce a lui e ai suoi compagni di essere individuati. Per la durata dell'incantesimo, ogni creatura scelta dall'incantatore e situata entro 9 metri da lui (incluso se stesso) ha un bonus di +10 alle prove di Destrezza (Furtività) e le sue tracce sono impossibili da seguire se non tramite mezzi magici. Una creatura che riceve questo bonus non lascia impronte o altre tracce del proprio passaggio."
+      },
+      "en": "pass-without-trace"
+    },
+    {
+      "page": 189,
+      "sourceName": "Passo velato",
+      "sourceLevel": "Evocazione di 2° livello",
+      "sourceText": "Passo velato Evocazione di 2° livello Tempo di lancio: 1 azione bonus Gittata: Incantatore Componenti: V Durata: Istantanea L'incantatore è avvolto per un istante da una foschia argentata e si teletrasporta di un massimo di 9 metri fino a uno spazio libero che è in grado di vedere.",
+      "sourceSha256": "59f0ec5531bd4e1aa02625920a61a6ecd8fda814e7d9d5787edcee4ca4d3624c",
+      "spell": {
+        "id": "passo-velato-2014",
+        "nome_italiano": "Passo velato",
+        "livello": "Evocazione di 2° livello (mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione bonus",
+        "gittata": "Incantatore",
+        "componenti": "V",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore è avvolto per un istante da una foschia argentata e si teletrasporta di un massimo di 9 metri fino a uno spazio libero che è in grado di vedere."
+      },
+      "en": "misty-step"
+    },
+    {
+      "page": 189,
+      "sourceName": "Passo veloce",
+      "sourceLevel": "Trasmutazione di 1° livello",
+      "sourceText": "Passo veloce Trasmutazione di 1° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (un pizzico di terriccio) Durata: 1 ora L'incantatore tocca una creatura, la cui velocità aumenta di 3 metri fino al termine dell'incantesimo. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 1°.",
+      "sourceSha256": "de94d133b6812398a939af2e68057bd7f8d906fc79b1c7d5fdab333c366e6e4d",
+      "spell": {
+        "id": "passo-veloce-2014",
+        "nome_italiano": "Passo veloce",
+        "livello": "Trasmutazione di 1° livello (bardo, druido, mago, ranger)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un pizzico di terriccio)",
+        "durata": "1 ora",
+        "descrizione": "L'incantatore tocca una creatura, la cui velocità aumenta di 3 metri fino al termine dell'incantesimo.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, può bersagliare una creatura aggiuntiva per ogni slot di livello superiore al 1°."
+      },
+      "en": "longstrider"
+    },
+    {
+      "page": 189,
+      "sourceName": "Paura",
+      "sourceLevel": "Illusione di 3° livello",
+      "sourceText": "Paura Illusione di 3° livello Tempo di lancio: 1 azione Gittata: Incantatore (cono di 9 metri) Componenti: V, S, M (una piuma bianca o un cuore di pollo) Durata: Concentrazione, fino a 1 minuto L'incantatore proietta la rappresentazione illusoria delle più grandi paure di una creatura. Ogni creatura entro un cono di 9 metri deve superare un tiro salvezza su Saggezza, altrimenti lascia cadere ciò che tiene in mano e diventa spaventata per la durata dell'incantesimo. Finché è spaventata da questo incantesimo, una creatura deve effettuare l'azione Scatto e muoversi a ogni suo turno per allontanarsi dall'incantatore lungo il percorso più sicuro possibile, sempre che abbia lo spazio per muoversi. Se la creatura termina il suo turno in un luogo dove l'incantatore non è in vista, può effettuare un tiro salvezza su Saggezza. Se lo supera, l'incantesimo termina il suo effetto su quella creatura.",
+      "sourceSha256": "d5c95de56f973f41753ed1b991ce6336997fc74ddc0452453ea24a3f2b585dc4",
+      "spell": {
+        "id": "paura-2014",
+        "nome_italiano": "Paura",
+        "livello": "Illusione di 3° livello (bardo, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore (cono di 9 metri)",
+        "componenti": "V, S, M (una piuma bianca o un cuore di pollo)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore proietta la rappresentazione illusoria delle più grandi paure di una creatura. Ogni creatura entro un cono di 9 metri deve superare un tiro salvezza su Saggezza, altrimenti lascia cadere ciò che tiene in mano e diventa spaventata per la durata dell'incantesimo.<br><br>Finché è spaventata da questo incantesimo, una creatura deve effettuare l'azione Scatto e muoversi a ogni suo turno per allontanarsi dall'incantatore lungo il percorso più sicuro possibile, sempre che abbia lo spazio per muoversi. Se la creatura termina il suo turno in un luogo dove l'incantatore non è in vista, può effettuare un tiro salvezza su Saggezza. Se lo supera, l'incantesimo termina il suo effetto su quella creatura."
+      },
+      "pages": [
+        189,
+        190
+      ],
+      "en": "fear"
+    },
+    {
+      "page": 190,
+      "sourceName": "Pelle coriacea",
+      "sourceLevel": "Trasmutazione di 2° livello",
+      "sourceText": "Pelle coriacea Trasmutazione di 2° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (una manciata di corteccia di quercia) Durata: Concentrazione, fino a 1 ora L'incantatore tocca una creatura consenziente. Finché l'incantesimo non termina, la pelle del bersaglio assume un aspetto ruvido simile alla corteccia e la sua CA non può essere inferiore a 16, a prescindere dal tipo di armatura indossata.",
+      "sourceSha256": "4c7dbf4f82dcb7bb0c99a490011a83b6e0674e04c4537ce4d2f6db3fb7eddf2b",
+      "spell": {
+        "id": "pelle-coriacea-2014",
+        "nome_italiano": "Pelle coriacea",
+        "livello": "Trasmutazione di 2° livello (druido, ranger)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (una manciata di corteccia di quercia)",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "L'incantatore tocca una creatura consenziente. Finché l'incantesimo non termina, la pelle del bersaglio assume un aspetto ruvido simile alla corteccia e la sua CA non può essere inferiore a 16, a prescindere dal tipo di armatura indossata."
+      },
+      "en": "barkskin"
+    },
+    {
+      "page": 190,
+      "sourceName": "Pelle di pietra",
+      "sourceLevel": "Abiurazione di 4° livello",
+      "sourceText": "Pelle di pietra Abiurazione di 4° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (polvere di diamante del valore di 100 mo, che l'incantesimo consuma) Durata: Concentrazione, fino a 1 ora Questo incantesimo rende la pelle di una creatura consenziente dura come la pietra. Fino al termine dell'incantesimo, il bersaglio è resistente ai danni contundenti, perforanti e taglienti non magici.",
+      "sourceSha256": "dc47b7afafa15d8bf8ec13a1490193a3ceec4fe2d672133f740d09c2614ef1f1",
+      "spell": {
+        "id": "pelle-di-pietra-2014",
+        "nome_italiano": "Pelle di pietra",
+        "livello": "Abiurazione di 4° livello (druido, mago, ranger, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (polvere di diamante del valore di 100 mo, che l'incantesimo consuma)",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "Questo incantesimo rende la pelle di una creatura consenziente dura come la pietra. Fino al termine dell'incantesimo, il bersaglio è resistente ai danni contundenti, perforanti e taglienti non magici."
+      },
+      "en": "stoneskin"
+    },
+    {
+      "page": 190,
+      "sourceName": "Piaga degli insetti",
+      "sourceLevel": "Evocazione di 5° livello",
+      "sourceText": "Piaga degli insetti Evocazione di 5° livello Tempo di lancio: 1 azione Gittata: 90 metri Componenti: V, S, M (qualche granello di zucchero, alcuni chicchi di grano e uno sbaffo di grasso) Durata: Concentrazione, fino a 10 minuti Uno sciame di locuste fameliche riempie una sfera del raggio di 6 metri centrata su un punto a scelta dell'incantatore situato entro gittata che si estende oltre gli angoli, permane per tutta la durata dell'incantesimo e la cui area è leggermente oscurata. La sfera è inoltre terreno difficile. Quando appare l'area, ogni creatura al suo interno deve effettuare un tiro salvezza su Costituzione, subendo 4d10 danni perforanti in caso di fallimento, o la metà dei danni in caso di successo. Inoltre, una creatura deve superare tale tiro salvezza anche quando entra nell'area dell'incantesimo per la prima volta in un turno o termina il suo turno qui. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 6° livello o superiore, i danni aumentano di 1d10 per ogni slot di livello superiore al 5°.",
+      "sourceSha256": "df0ddd62c82338686fa8455888126b23fec4346c948722263dfa5ac8c6fcf1f7",
+      "spell": {
+        "id": "piaga-degli-insetti-2014",
+        "nome_italiano": "Piaga degli insetti",
+        "livello": "Evocazione di 5° livello (chierico, druido, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "90 metri",
+        "componenti": "V, S, M (qualche granello di zucchero, alcuni chicchi di grano e uno sbaffo di grasso)",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "Uno sciame di locuste fameliche riempie una sfera del raggio di 6 metri centrata su un punto a scelta dell'incantatore situato entro gittata che si estende oltre gli angoli, permane per tutta la durata dell'incantesimo e la cui area è leggermente oscurata. La sfera è inoltre terreno difficile.<br><br>Quando appare l'area, ogni creatura al suo interno deve effettuare un tiro salvezza su Costituzione, subendo 4d10 danni perforanti in caso di fallimento, o la metà dei danni in caso di successo. Inoltre, una creatura deve superare tale tiro salvezza anche quando entra nell'area dell'incantesimo per la prima volta in un turno o termina il suo turno qui.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 6° livello o superiore, i danni aumentano di 1d10 per ogni slot di livello superiore al 5°."
+      },
+      "en": "insect-plague"
+    },
+    {
+      "page": 190,
+      "sourceName": "Porta dimensionale",
+      "sourceLevel": "Evocazione di 4° livello",
+      "sourceText": "Porta dimensionale Evocazione di 4° livello Tempo di lancio: 1 azione Gittata: 150 metri Componenti: V Durata: Istantanea L'incantatore si teletrasporta dalla posizione in cui si trova a un altro punto entro gittata. L'incantatore arriva precisamente nel luogo desiderato, che può essere un punto che è in grado di vedere, che riesce a visualizzare o che è in grado di descrivere dichiarandone la distanza e la direzione, come per esempio \"60 metri in linea retta verso il basso\" o \"verso nord-ovest, a un'angolazione ascendente di 45 gradi per 90 metri\". L'incantatore può portare con sé degli oggetti il cui peso non superi quello che è in grado di trasportare. Può inoltre portare con sé una creatura consenziente di taglia pari o inferiore alla sua, che trasporti dell'attrezzatura il cui peso non superi la sua capacità di trasporto. Al momento del lancio dell'incantesimo, la creatura non deve trovarsi a più di 1,5 metri dall'incantatore. Se il luogo d'arrivo è già occupato da un oggetto o una creatura, l'incantatore e la creatura che viaggia con lui subiscono 4d6 danni da forza e l'incantesimo di teletrasporto fallisce.",
+      "sourceSha256": "f450c589aa529f57a94da3a220aec288688d75c7e49e3e049e4cf44bd0b4abce",
+      "spell": {
+        "id": "porta-dimensionale-2014",
+        "nome_italiano": "Porta dimensionale",
+        "livello": "Evocazione di 4° livello (bardo, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "150 metri",
+        "componenti": "V",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore si teletrasporta dalla posizione in cui si trova a un altro punto entro gittata. L'incantatore arriva precisamente nel luogo desiderato, che può essere un punto che è in grado di vedere, che riesce a visualizzare o che è in grado di descrivere dichiarandone la distanza e la direzione, come per esempio \"60 metri in linea retta verso il basso\" o \"verso nord-ovest, a un'angolazione ascendente di 45 gradi per 90 metri\".<br><br>L'incantatore può portare con sé degli oggetti il cui peso non superi quello che è in grado di trasportare. Può inoltre portare con sé una creatura consenziente di taglia pari o inferiore alla sua, che trasporti dell'attrezzatura il cui peso non superi la sua capacità di trasporto. Al momento del lancio dell'incantesimo, la creatura non deve trovarsi a più di 1,5 metri dall'incantatore.<br><br>Se il luogo d'arrivo è già occupato da un oggetto o una creatura, l'incantatore e la creatura che viaggia con lui subiscono 4d6 danni da forza e l'incantesimo di teletrasporto fallisce."
+      },
+      "en": "dimension-door"
+    },
+    {
+      "page": 190,
+      "sourceName": "Portale",
+      "sourceLevel": "Evocazione di 9° livello",
+      "sourceText": "Portale Evocazione di 9° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S, M (un diamante del valore di almeno 5.000 mo) Durata: Concentrazione, fino a 1 minuto L'incantatore evoca un portale che collega uno spazio libero che è in grado di vedere a un luogo preciso su un piano di esistenza differente. Il portale è un'apertura circolare, del diametro variabile tra 1,5 e 6 metri a scelta dell'incantatore e può essere orientato in qualsiasi direzione, permanendo per tutta la durata dell'incantesimo. Il portale ha un lato anteriore e un lato posteriore su ogni piano dove appare e i viaggi sono possibili solo attraversandolo dalla parte anteriore. Tutto ciò che lo attraversa è trasportato immediatamente sull'altro piano, apparendo nello spazio libero più vicino al portale. Divinità e altri signori planari possono impedire che i portali creati tramite questo incantesimo si aprano in loro presenza o nei loro domini. Quando lancia questo incantesimo, l'incantatore può pronunciare il nome di una creatura specifica (pseudonimi, titoli o soprannomi non funzionano). Se la creatura nominata si trova su un piano diverso da quello in cui si trova l'incantatore, il portale si apre nelle sue immediate vicinanze attirandola attraverso di esso, fino alla spazio libero più vicino sul lato del portale in cui si trova l'incantatore. L'incantatore non ottiene alcun potere speciale sulla creatura, che è libera di agire come il GM ritiene più appropriato: potrebbe andarsene, attaccarlo o aiutarlo.",
+      "sourceSha256": "4917bd7b9b872faa35a6a7b299b79c266222b4263fcfc3b9c267e329be6289b8",
+      "spell": {
+        "id": "portale-2014",
+        "nome_italiano": "Portale",
+        "livello": "Evocazione di 9° livello (chierico, mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S, M (un diamante del valore di almeno 5.000 mo)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore evoca un portale che collega uno spazio libero che è in grado di vedere a un luogo preciso su un piano di esistenza differente. Il portale è un'apertura circolare, del diametro variabile tra 1,5 e 6 metri a scelta dell'incantatore e può essere orientato in qualsiasi direzione, permanendo per tutta la durata dell'incantesimo.<br><br>Il portale ha un lato anteriore e un lato posteriore su ogni piano dove appare e i viaggi sono possibili solo attraversandolo dalla parte anteriore. Tutto ciò che lo attraversa è trasportato immediatamente sull'altro piano, apparendo nello spazio libero più vicino al portale.<br><br>Divinità e altri signori planari possono impedire che i portali creati tramite questo incantesimo si aprano in loro presenza o nei loro domini.<br><br>Quando lancia questo incantesimo, l'incantatore può pronunciare il nome di una creatura specifica (pseudonimi, titoli o soprannomi non funzionano). Se la creatura nominata si trova su un piano diverso da quello in cui si trova l'incantatore, il portale si apre nelle sue immediate vicinanze attirandola attraverso di esso, fino alla spazio libero più vicino sul lato del portale in cui si trova l'incantatore. L'incantatore non ottiene alcun potere speciale sulla creatura, che è libera di agire come il GM ritiene più appropriato: potrebbe andarsene, attaccarlo o aiutarlo."
+      },
+      "pages": [
+        190,
+        191
+      ],
+      "en": "gate"
+    },
+    {
+      "page": 191,
+      "sourceName": "Preghiera di guarigione",
+      "sourceLevel": "Invocazione di 2° livello",
+      "sourceText": "Preghiera di guarigione Invocazione di 2° livello Tempo di lancio: 10 minuti Gittata: 9 metri Componenti: V Durata: Istantanea Fino a sei creature scelte dall'incantatore, entro gittata e che è in grado di vedere, recuperano un ammontare di punti ferita pari a 2d8 + il modificatore di caratteristica da incantatore. Questo incantesimo non ha effetto sui non morti o sui costrutti. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, la guarigione aumenta di 1d8 per ogni slot di livello superiore al 2°.",
+      "sourceSha256": "a004dc8cbec950f625476aee6e1838884d5718cb92ddac2d9eb04ef86b24c8bf",
+      "spell": {
+        "id": "preghiera-di-guarigione-2014",
+        "nome_italiano": "Preghiera di guarigione",
+        "livello": "Invocazione di 2° livello (chierico)",
+        "tempo_di_lancio": "10 minuti",
+        "gittata": "9 metri",
+        "componenti": "V",
+        "durata": "Istantanea",
+        "descrizione": "Fino a sei creature scelte dall'incantatore, entro gittata e che è in grado di vedere, recuperano un ammontare di punti ferita pari a 2d8 + il modificatore di caratteristica da incantatore. Questo incantesimo non ha effetto sui non morti o sui costrutti.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, la guarigione aumenta di 1d8 per ogni slot di livello superiore al 2°."
+      },
+      "en": "prayer-of-healing"
+    },
+    {
+      "page": 191,
+      "sourceName": "Presagio",
+      "sourceLevel": "Divinazione di 2° livello (rituale)",
+      "sourceText": "Presagio Divinazione di 2° livello (rituale) Tempo di lancio: 1 minuto Gittata: Incantatore Componenti: V, S, M (bastoncini, ossa o oggetti simili dotati di contrassegni speciali, del valore di almeno 25 mo) Durata: Istantanea Lanciando bastoncini incastonati di gemme o ossa di drago, rivelando carte illustrate o usando altri strumenti di divinazione, l'incantatore riceve un segno da un'entità ultraterrena riguardo al risultato di un corso d'azione specifico che intende intraprendere entro i prossimi 30 minuti. Il GM sceglie tra i seguenti presagi possibili: • Ventura, se l'azione fornisce risultati positivi • Sventura, se l'azione fornisce risultati negativi • Ventura e sventura, se l'azione fornisce risultati sia positivi che negativi • Nulla, se non ci sono risultati positivi o negativi rilevanti L'incantesimo non prende in considerazione le potenziali circostanze che potrebbero alterare l'esito del presagio, come per esempio il lancio di incantesimi aggiuntivi o la perdita o l'acquisizione di un compagno. Se l'incantatore lancia l'incantesimo due o più volte prima di completare il suo riposo lungo successivo, esiste una probabilità cumulativa del 25% di ottenere un responso casuale per ogni lancio dopo il primo. Il GM effettua questo tiro in segreto.",
+      "sourceSha256": "b2228461d316c3e9cf21b2eb6fe77eeb43e96631e54f7bc94615a4aa854ff30b",
+      "spell": {
+        "id": "presagio-2014",
+        "nome_italiano": "Presagio",
+        "livello": "Divinazione di 2° livello (chierico)",
+        "tempo_di_lancio": "1 minuto o rituale",
+        "gittata": "Incantatore",
+        "componenti": "V, S, M (bastoncini, ossa o oggetti simili dotati di contrassegni speciali, del valore di almeno 25 mo)",
+        "durata": "Istantanea",
+        "descrizione": "Lanciando bastoncini incastonati di gemme o ossa di drago, rivelando carte illustrate o usando altri strumenti di divinazione, l'incantatore riceve un segno da un'entità ultraterrena riguardo al risultato di un corso d'azione specifico che intende intraprendere entro i prossimi 30 minuti. Il GM sceglie tra i seguenti presagi possibili:<br><br>• <em>Ventura</em>, se l'azione fornisce risultati positivi<br><br>• <em>Sventura</em>, se l'azione fornisce risultati negativi<br><br>• <em>Ventura e sventura</em>, se l'azione fornisce risultati sia positivi che negativi<br><br>• <em>Nulla</em>, se non ci sono risultati positivi o negativi rilevanti L'incantesimo non prende in considerazione le potenziali circostanze che potrebbero alterare l'esito del presagio, come per esempio il lancio di incantesimi aggiuntivi o la perdita o l'acquisizione di un compagno.<br><br>Se l'incantatore lancia l'incantesimo due o più volte prima di completare il suo riposo lungo successivo, esiste una probabilità cumulativa del 25% di ottenere un responso casuale per ogni lancio dopo il primo. Il GM effettua questo tiro in segreto."
+      },
+      "en": "augury"
+    },
+    {
+      "page": 191,
+      "sourceName": "Prestidigitazione",
+      "sourceLevel": "Trucchetto di Trasmutazione",
+      "sourceText": "Prestidigitazione Trucchetto di Trasmutazione Tempo di lancio: 1 azione Gittata: 3 metri Componenti: V, S Durata: Fino a 1 ora Questo incantesimo è un trucco magico che gli incantatori novizi usano per fare pratica. Crei uno degli effetti magici seguenti entro gittata: • Crea un effetto sensoriale innocuo e istantaneo, come una pioggia di scintille, una folata di vento, una tenue melodia musicale o uno strano odore. • Accendi o spegni istantaneamente una candela, una torcia o un piccolo fuoco da campo. • Pulisci o sporca istantaneamente un oggetto non più grande di un cubo con spigolo di 30 cm. • Riscalda, raffredda o condisci materiale non vivente del volume massimo di un cubo con spigolo di 30 cm per 1 ora. • Fai comparire un colore, un piccolo segno o un simbolo su un oggetto o una superficie per 1 ora. • Crea un ninnolo non magico o un'immagine illusoria che può stare nel palmo della tua mano e che permane fino alla fine del tuo turno successivo. Se l'incantatore lancia questo incantesimo più volte, può tenere attivi fino a tre dei suoi effetti non istantanei contemporaneamente e può eliminare ognuno di questi effetti con un'azione.",
+      "sourceSha256": "ea3c387fa44a0a08d7573321f70648bf0b8aaff6ada1d82bb8be4d7ef9b2cc82",
+      "spell": {
+        "id": "prestidigitazione-2014",
+        "nome_italiano": "Prestidigitazione",
+        "livello": "Trucchetto di Trasmutazione (bardo, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "3 metri",
+        "componenti": "V, S",
+        "durata": "Fino a 1 ora",
+        "descrizione": "Questo incantesimo è un trucco magico che gli incantatori novizi usano per fare pratica. Crei uno degli effetti magici seguenti entro gittata:<br><br>• Crea un effetto sensoriale innocuo e istantaneo, come una pioggia di scintille, una folata di vento, una tenue melodia musicale o uno strano odore.<br><br>• Accendi o spegni istantaneamente una candela, una torcia o un piccolo fuoco da campo.<br><br>• Pulisci o sporca istantaneamente un oggetto non più grande di un cubo con spigolo di 30 cm.<br><br>• Riscalda, raffredda o condisci materiale non vivente del volume massimo di un cubo con spigolo di 30 cm per 1 ora.<br><br>• Fai comparire un colore, un piccolo segno o un simbolo su un oggetto o una superficie per 1 ora.<br><br>• Crea un ninnolo non magico o un'immagine illusoria che può stare nel palmo della tua mano e che permane fino alla fine del tuo turno successivo. Se l'incantatore lancia questo incantesimo più volte, può tenere attivi fino a tre dei suoi effetti non istantanei contemporaneamente e può eliminare ognuno di questi effetti con un'azione."
+      },
+      "pages": [
+        191,
+        192
+      ],
+      "en": "prestidigitation"
+    },
+    {
+      "page": 192,
+      "sourceName": "Previsione",
+      "sourceLevel": "Divinazione di 9° livello",
+      "sourceText": "Previsione Divinazione di 9° livello Tempo di lancio: 1 minuto Gittata: Contatto Componenti: V, S, M (una piuma di colibrì) Durata: 8 ore L'incantatore tocca una creatura consenziente e le conferisce una capacità limitata di vedere nell'immediato futuro. Per la durata dell'incantesimo, il bersaglio non può essere sorpreso e dispone di vantaggio ai tiri per colpire, prove di caratteristica e tiri salvezza. Inoltre, le altre creature subiscono svantaggio ai tiri per colpire indirizzati contro il bersaglio. Questo incantesimo termina immediatamente se l'incantatore lo lancia nuovamente prima che la sua durata termini.",
+      "sourceSha256": "d038dd0abcd71182f18bb5b8f0946213054a309fa4f7704f0f451fae67c685f2",
+      "spell": {
+        "id": "previsione-2014",
+        "nome_italiano": "Previsione",
+        "livello": "Divinazione di 9° livello (bardo, druido, mago, warlock)",
+        "tempo_di_lancio": "1 minuto",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (una piuma di colibrì)",
+        "durata": "8 ore",
+        "descrizione": "L'incantatore tocca una creatura consenziente e le conferisce una capacità limitata di vedere nell'immediato futuro. Per la durata dell'incantesimo, il bersaglio non può essere sorpreso e dispone di vantaggio ai tiri per colpire, prove di caratteristica e tiri salvezza. Inoltre, le altre creature subiscono svantaggio ai tiri per colpire indirizzati contro il bersaglio.<br><br>Questo incantesimo termina immediatamente se l'incantatore lo lancia nuovamente prima che la sua durata termini."
+      },
+      "en": "foresight"
+    },
+    {
+      "page": 192,
+      "sourceName": "Produrre fiamma",
+      "sourceLevel": "Trucchetto di Evocazione",
+      "sourceText": "Produrre fiamma Trucchetto di Evocazione Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S Durata: 10 minuti Nella mano dell'incantatore appare una fiamma tremolante che permane per la durata dell'incantesimo e non infligge danni né all'incantatore né al suo equipaggiamento. La fiamma emana luce intensa in un raggio di 3 metri e luce fioca per ulteriori 3 metri. L'incantesimo termina se l'incantatore lo interrompe con un'azione o se lo lancia di nuovo. L'incantatore può anche attaccare con la fiamma, ponendo tuttavia fine all'incantesimo. Quando lancia questo incantesimo o con un'azione in un turno successivo, l'incantatore può scagliare la fiamma contro una creatura situata entro 9 metri da lui, effettuando un attacco a distanza con incantesimo. Se il colpo va a segno, il bersaglio subisce 1d8 danni da fuoco. I danni di questo incantesimo aumentano di 1d8 quando l'incantatore raggiunge il 5° livello (2d8), l'11° livello (3d8) e il 17° livello (4d8).",
+      "sourceSha256": "f73d93843264154128f19a5802e8ba30bfb91afce948b4408c294f7220e59f6e",
+      "spell": {
+        "id": "produrre-fiamma-2014",
+        "nome_italiano": "Produrre fiamma",
+        "livello": "Trucchetto di Evocazione (druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "10 minuti",
+        "descrizione": "Nella mano dell'incantatore appare una fiamma tremolante che permane per la durata dell'incantesimo e non infligge danni né all'incantatore né al suo equipaggiamento. La fiamma emana luce intensa in un raggio di 3 metri e luce fioca per ulteriori 3 metri. L'incantesimo termina se l'incantatore lo interrompe con un'azione o se lo lancia di nuovo.<br><br>L'incantatore può anche attaccare con la fiamma, ponendo tuttavia fine all'incantesimo. Quando lancia questo incantesimo o con un'azione in un turno successivo, l'incantatore può scagliare la fiamma contro una creatura situata entro 9 metri da lui, effettuando un attacco a distanza con incantesimo. Se il colpo va a segno, il bersaglio subisce 1d8 danni da fuoco.<br><br>I danni di questo incantesimo aumentano di 1d8 quando l'incantatore raggiunge il 5° livello (2d8), l'11° livello (3d8) e il 17° livello (4d8)."
+      },
+      "en": "produce-flame"
+    },
+    {
+      "page": 192,
+      "sourceName": "Proibizione",
+      "sourceLevel": "Abiurazione di 6° livello (rituale)",
+      "sourceText": "Proibizione Abiurazione di 6° livello (rituale) Tempo di lancio: 10 minuti Gittata: Contatto Componenti: V, S, M (uno spruzzo di acqua santa, incenso raro e polvere di rubino del valore di almeno 1.000 mo) Durata: 1 giorno L'incantatore crea una difesa contro i viaggi magici che protegge un'area quadrata di terreno di 60 metri e un'altezza di massimo 9 metri. Per la durata dell'incantesimo, per entrare in tale area le creature non possono utilizzare teletrasporto o portali, come quelli creati dall'incantesimo portale. L'incantesimo protegge l'area contro i viaggi planari, impedendo perciò alle creature di accedervi tramite il Piano Astrale, il Piano Etereo, la Selva Fatata, la Coltre Oscura e l'incantesimo spostamento planare. Inoltre, infligge danni a uno o più tipi di creature indicati dall'incantatore al momento del lancio scelti tra i seguenti: celestiali, elementali, folletti, immondi e non morti. Quando una creatura scelta entra nell'area dell'incantesimo per la prima volta in un turno o inizia il suo turno qui, subisce 5d10 danni necrotici o radiosi (a scelta dell'incantatore al momento del lancio). Quando lancia questo incantesimo, l'incantatore può indicare una parola d'ordine: una creatura che la pronuncia accedendo all'area non subisce danni. L'area di questo incantesimo non può sovrapporsi all'area di un altro incantesimo proibizione. Se l'incantatore lancia proibizione ogni giorno nello stesso luogo per 30 giorni, l'incantesimo permane finché non viene dissolto e i componenti materiali vengono consumati al momento dell'ultimo lancio.",
+      "sourceSha256": "1cd8b642c0ffd4c5159e0e3d36a998d4562a4270a635e5e843a86c0430eafae0",
+      "spell": {
+        "id": "proibizione-2014",
+        "nome_italiano": "Proibizione",
+        "livello": "Abiurazione di 6° livello (chierico)",
+        "tempo_di_lancio": "10 minuti o rituale",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (uno spruzzo di acqua santa, incenso raro e polvere di rubino del valore di almeno 1.000 mo)",
+        "durata": "1 giorno",
+        "descrizione": "L'incantatore crea una difesa contro i viaggi magici che protegge un'area quadrata di terreno di 60 metri e un'altezza di massimo 9 metri. Per la durata dell'incantesimo, per entrare in tale area le creature non possono utilizzare teletrasporto o portali, come quelli creati dall'incantesimo <em>portale</em>. L'incantesimo protegge l'area contro i viaggi planari, impedendo perciò alle creature di accedervi tramite il Piano Astrale, il Piano Etereo, la Selva Fatata, la Coltre Oscura e l'incantesimo <em>spostamento planare</em>.<br><br>Inoltre, infligge danni a uno o più tipi di creature indicati dall'incantatore al momento del lancio scelti tra i seguenti: celestiali, elementali, folletti, immondi e non morti. Quando una creatura scelta entra nell'area dell'incantesimo per la prima volta in un turno o inizia il suo turno qui, subisce 5d10 danni necrotici o radiosi (a scelta dell'incantatore al momento del lancio).<br><br>Quando lancia questo incantesimo, l'incantatore può indicare una parola d'ordine: una creatura che la pronuncia accedendo all'area non subisce danni.<br><br>L'area di questo incantesimo non può sovrapporsi all'area di un altro incantesimo <em>proibizione</em>. Se l'incantatore lancia <em>proibizione</em> ogni giorno nello stesso luogo per 30 giorni, l'incantesimo permane finché non viene dissolto e i componenti materiali vengono consumati al momento dell'ultimo lancio."
+      },
+      "en": "forbiddance"
+    },
+    {
+      "page": 193,
+      "sourceName": "Proiezione astrale",
+      "sourceLevel": "Necromanzia di 9° livello",
+      "sourceText": "Proiezione astrale Necromanzia di 9° livello Tempo di lancio: 1 ora Gittata: 3 metri Componenti: V, S, M (per ogni creatura influenzata da questo incantesimo, l'incantatore deve fornire un giacinto del valore di almeno 1.000 mo e un lingotto d'argento finemente decorato del valore di almeno 100 mo, che l'incantesimo consuma) Durata: Speciale L'incantatore e un massimo di otto creature consenzienti entro gittata proiettano i loro corpi astrali sul Piano Astrale (l'incantesimo fallisce e il lancio è sprecato se l'incantatore si trova già su quel piano). Il corpo materiale abbandonato cade privo di sensi e in uno stato di animazione sospesa; non ha bisogno di cibo o aria e non invecchia. Il corpo astrale assomiglia alla forma mortale dell'incantatore in ogni particolare e replica le sue statistiche di gioco e proprietà. La differenza principale consiste nell'aggiunta di un cordone argentato che si snoda tra le scapole dell'incantatore e fluttua alle sue spalle, diventando invisibile dopo 30 cm. Questo cordone tiene ancorato l'incantatore al suo corpo materiale e, finché rimane intatto, l'incantatore può trovare la strada del ritorno. Se il cordone viene reciso, cosa che può accadere solo quando un effetto lo specifica chiaramente, l'anima e il corpo vengono separati, uccidendo l'incantatore all'istante. La forma astrale dell'incantatore può viaggiare liberamente per il Piano Astrale e passare attraverso i portali che da lì conducono su altri piani. Se l'incantatore si sposta su un nuovo piano o ritorna al piano in cui si trovava quando ha lanciato l'incantesimo, il suo corpo e le sue proprietà vengono trasportati lungo il cordone argentato, permettendogli di rientrare nel suo corpo nel momento in cui accede al nuovo piano. La forma astrale è un'incarnazione separata: ogni danno o altro effetto che si applichi a essa non ha effetto sul corpo fisico dell'incantatore e non persiste quando vi fa ritorno. L'incantesimo termina per l'incantatore e i suoi compagni quando l'incantatore utilizza la sua azione per interromperlo. Al termine dell'incantesimo, la creatura influenzata ritorna nel suo corpo fisico e si risveglia. È anche possibile che l'incantesimo termini prematuramente per l'incantatore e i suoi compagni: un incantesimo dissolvi magie lanciato con successo contro una forma astrale o un corpo fisico termina l'incantesimo per quella creatura. Inoltre, l'incantesimo termina se il corpo originale o la forma astrale di una creatura scende a 0 punti ferita. Se l'incantesimo termina e il cordone argentato è ancora intatto, questo trascina la forma astrale della creatura all'interno del suo corpo, ponendo fine allo stato di animazione sospesa. Se l'incantatore è tornano prematuramente nel suo corpo, i suoi compagni rimangono nelle loro forme astrali e devono trovare da soli il modo di rientrare nei loro corpi, solitamente scendendo a 0 punti ferita.",
+      "sourceSha256": "221f92e39b98e3b8abcab46b091ad07b9dbcf60a8fab50d634cc9f30141cb737",
+      "spell": {
+        "id": "proiezione-astrale-2014",
+        "nome_italiano": "Proiezione astrale",
+        "livello": "Necromanzia di 9° livello (chierico, mago, warlock)",
+        "tempo_di_lancio": "1 ora",
+        "gittata": "3 metri",
+        "componenti": "V, S, M (per ogni creatura influenzata da questo incantesimo, l'incantatore deve fornire un giacinto del valore di almeno 1.000 mo e un lingotto d'argento finemente decorato del valore di almeno 100 mo, che l'incantesimo consuma)",
+        "durata": "Speciale",
+        "descrizione": "L'incantatore e un massimo di otto creature consenzienti entro gittata proiettano i loro corpi astrali sul Piano Astrale (l'incantesimo fallisce e il lancio è sprecato se l'incantatore si trova già su quel piano). Il corpo materiale abbandonato cade privo di sensi e in uno stato di animazione sospesa; non ha bisogno di cibo o aria e non invecchia.<br><br>Il corpo astrale assomiglia alla forma mortale dell'incantatore in ogni particolare e replica le sue statistiche di gioco e proprietà. La differenza principale consiste nell'aggiunta di un cordone argentato che si snoda tra le scapole dell'incantatore e fluttua alle sue spalle, diventando invisibile dopo 30 cm. Questo cordone tiene ancorato l'incantatore al suo corpo materiale e, finché rimane intatto, l'incantatore può trovare la strada del ritorno. Se il cordone viene reciso, cosa che può accadere solo quando un effetto lo specifica chiaramente, l'anima e il corpo vengono separati, uccidendo l'incantatore all'istante.<br><br>La forma astrale dell'incantatore può viaggiare liberamente per il Piano Astrale e passare attraverso i portali che da lì conducono su altri piani. Se l'incantatore si sposta su un nuovo piano o ritorna al piano in cui si trovava quando ha lanciato l'incantesimo, il suo corpo e le sue proprietà vengono trasportati lungo il cordone argentato, permettendogli di rientrare nel suo corpo nel momento in cui accede al nuovo piano. La forma astrale è un'incarnazione separata: ogni danno o altro effetto che si applichi a essa non ha effetto sul corpo fisico dell'incantatore e non persiste quando vi fa ritorno.<br><br>L'incantesimo termina per l'incantatore e i suoi compagni quando l'incantatore utilizza la sua azione per interromperlo. Al termine dell'incantesimo, la creatura influenzata ritorna nel suo corpo fisico e si risveglia.<br><br>È anche possibile che l'incantesimo termini prematuramente per l'incantatore e i suoi compagni: un incantesimo <em>dissolvi magie</em> lanciato con successo contro una forma astrale o un corpo fisico termina l'incantesimo per quella creatura. Inoltre, l'incantesimo termina se il corpo originale o la forma astrale di una creatura scende a 0 punti ferita. Se l'incantesimo termina e il cordone argentato è ancora intatto, questo trascina la forma astrale della creatura all'interno del suo corpo, ponendo fine allo stato di animazione sospesa.<br><br>Se l'incantatore è tornano prematuramente nel suo corpo, i suoi compagni rimangono nelle loro forme astrali e devono trovare da soli il modo di rientrare nei loro corpi, solitamente scendendo a 0 punti ferita."
+      },
+      "en": "astral-projection"
+    },
+    {
+      "page": 193,
+      "sourceName": "Protezione dai veleni",
+      "sourceLevel": "Abiurazione di 2° livello",
+      "sourceText": "Protezione dai veleni Abiurazione di 2° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: 1 ora L'incantatore tocca una creatura, neutralizzandone il veleno nel caso fosse avvelenata. Se il bersaglio è afflitto da più veleni, l'incantatore neutralizza un veleno di cui conosce la presenza o ne neutralizza uno casuale. Per la durata dell'incantesimo, il bersaglio dispone di vantaggio ai tiri salvezza per non essere avvelenato e di resistenza ai danni da veleno.",
+      "sourceSha256": "b57d75d6b7f799ae8424d1938efd44fb584083d6d7d2723ce7616cdec7ed22d4",
+      "spell": {
+        "id": "protezione-dai-veleni-2014",
+        "nome_italiano": "Protezione dai veleni",
+        "livello": "Abiurazione di 2° livello (chierico, druido, paladino, ranger)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "1 ora",
+        "descrizione": "L'incantatore tocca una creatura, neutralizzandone il veleno nel caso fosse avvelenata. Se il bersaglio è afflitto da più veleni, l'incantatore neutralizza un veleno di cui conosce la presenza o ne neutralizza uno casuale.<br><br>Per la durata dell'incantesimo, il bersaglio dispone di vantaggio ai tiri salvezza per non essere avvelenato e di resistenza ai danni da veleno."
+      },
+      "en": "protection-from-poison"
+    },
+    {
+      "page": 193,
+      "sourceName": "Protezione dal bene e dal male",
+      "sourceLevel": "Abiurazione di 1° livello",
+      "sourceText": "Protezione dal bene e dal male Abiurazione di 1° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (acqua santa o polvere d'argento e ferro, che l'incantesimo consuma) Durata: Concentrazione, fino a 10 minuti Fino al termine dell'incantesimo, una creatura consenziente toccata è protetta contro i seguenti tipi di creature: aberrazioni, celestiali, elementali, folletti, immondi e non morti. La protezione garantisce diversi vantaggi. Le creature contro cui è attiva subiscono svantaggio ai tiri per colpire indirizzati contro il bersaglio; inoltre, il bersaglio non può essere affascinato, spaventato o posseduto da creature analoghe. Se il bersaglio è già affascinato, spaventato o posseduto da una tale creatura, possiede vantaggio a qualsiasi nuovo tiro salvezza contro il relativo effetto.",
+      "sourceSha256": "f9a581be299d1e531ea0fa2de20c1bc05ebed88dbe799fe1520d8fa74dfa9a32",
+      "spell": {
+        "id": "protezione-dal-bene-e-dal-male-2014",
+        "nome_italiano": "Protezione dal bene e dal male",
+        "livello": "Abiurazione di 1° livello (chierico, mago, paladino, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (acqua santa o polvere d'argento e ferro, che l'incantesimo consuma)",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "Fino al termine dell'incantesimo, una creatura consenziente toccata è protetta contro i seguenti tipi di creature: aberrazioni, celestiali, elementali, folletti, immondi e non morti.<br><br>La protezione garantisce diversi vantaggi. Le creature contro cui è attiva subiscono svantaggio ai tiri per colpire indirizzati contro il bersaglio; inoltre, il bersaglio non può essere affascinato, spaventato o posseduto da creature analoghe. Se il bersaglio è già affascinato, spaventato o posseduto da una tale creatura, possiede vantaggio a qualsiasi nuovo tiro salvezza contro il relativo effetto."
+      },
+      "en": "protection-from-evil-and-good"
+    },
+    {
+      "page": 194,
+      "sourceName": "Protezione dall'energia",
+      "sourceLevel": "Abiurazione di 3° livello",
+      "sourceText": "Protezione dall'energia Abiurazione di 3° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: Concentrazione, fino a 1 ora Per la durata dell'incantesimo, una creatura consenziente toccata dall'incantatore dispone di resistenza a un tipo di danni a scelta di quest'ultimo: acido, freddo, fulmine, fuoco o tuono.",
+      "sourceSha256": "8e2051d06a1d70b1d6668aa75b19caadd822845406aaea706557142e3521a599",
+      "spell": {
+        "id": "protezione-dall-energia-2014",
+        "nome_italiano": "Protezione dall'energia",
+        "livello": "Abiurazione di 3° livello (chierico, druido, mago, ranger, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "Per la durata dell'incantesimo, una creatura consenziente toccata dall'incantatore dispone di resistenza a un tipo di danni a scelta di quest'ultimo: acido, freddo, fulmine, fuoco o tuono."
+      },
+      "en": "protection-from-energy"
+    },
+    {
+      "page": 194,
+      "sourceName": "Punizione marchiante",
+      "sourceLevel": "Invocazione di 2° livello",
+      "sourceText": "Punizione marchiante Invocazione di 2° livello Tempo di lancio: 1 azione bonus Gittata: Incantatore Componenti: V Durata: Concentrazione, fino a 1 minuto La prossima volta che l'incantatore colpisce una creatura con un attacco con arma prima della fine di questo incantesimo, l'arma risplende di un bagliore astrale. L'attacco infligge 2d6 danni radiosi extra al bersaglio, che diventa visibile nel caso fosse invisibile, proietta luce fioca in un raggio di 1,5 metri e non può tornare invisibile fino alla fine dell'incantesimo. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, i danni extra aumentano di 1d6 per ogni slot di livello superiore al 2°.",
+      "sourceSha256": "bab34b9c92f9a8c3bd5ecbcf0b10ab560acbee6063f5b8191604b713783b4691",
+      "spell": {
+        "id": "punizione-marchiante-2014",
+        "nome_italiano": "Punizione marchiante",
+        "livello": "Invocazione di 2° livello (paladino)",
+        "tempo_di_lancio": "1 azione bonus",
+        "gittata": "Incantatore",
+        "componenti": "V",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "La prossima volta che l'incantatore colpisce una creatura con un attacco con arma prima della fine di questo incantesimo, l'arma risplende di un bagliore astrale. L'attacco infligge 2d6 danni radiosi extra al bersaglio, che diventa visibile nel caso fosse invisibile, proietta luce fioca in un raggio di 1,5 metri e non può tornare invisibile fino alla fine dell'incantesimo.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, i danni extra aumentano di 1d6 per ogni slot di livello superiore al 2°."
+      },
+      "en": "branding-smite"
+    },
+    {
+      "page": 194,
+      "sourceName": "Purificare cibo e bevande",
+      "sourceLevel": "Trasmutazione di 1° livello (rituale)",
+      "sourceText": "Purificare cibo e bevande Trasmutazione di 1° livello (rituale) Tempo di lancio: 1 azione Gittata: 3 metri Componenti: V, S Durata: Istantanea Tutti i cibi e le bevande non magiche all'interno di una sfera del raggio di 1,5 metri, centrata su un punto a scelta dell'incantatore ed entro gittata, vengono purificati e liberati dai veleni e dalle malattie.",
+      "sourceSha256": "9eeb08636edfc1d3c7c0cac1d7c791cc818683df29bca6bef9b7b3063cd4aeba",
+      "spell": {
+        "id": "purificare-cibo-e-bevande-2014",
+        "nome_italiano": "Purificare cibo e bevande",
+        "livello": "Trasmutazione di 1° livello (chierico, druido, paladino)",
+        "tempo_di_lancio": "1 azione o rituale",
+        "gittata": "3 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "Tutti i cibi e le bevande non magiche all'interno di una sfera del raggio di 1,5 metri, centrata su un punto a scelta dell'incantatore ed entro gittata, vengono purificati e liberati dai veleni e dalle malattie."
+      },
+      "en": "purify-food-and-drink"
+    },
+    {
+      "page": 194,
+      "sourceName": "Raggio di affaticamento",
+      "sourceLevel": "Necromanzia di 2° livello",
+      "sourceText": "Raggio di affaticamento Necromanzia di 2° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S Durata: Concentrazione, fino a 1 minuto Un raggio nero di energia logorante scaturisce dal dito dell'incantatore puntato contro una creatura entro gittata. Con questo incantesimo, l'incantatore effettua un attacco a distanza contro il bersaglio. Se il colpo va a segno, fino al termine dell'incantesimo il bersaglio infligge solo la metà dei danni con attacchi con armi che usano Forza. Alla fine di ogni suo turno, il bersaglio può effettuare un tiro salvezza su Costituzione contro l'incantesimo. In caso di successo, l'incantesimo termina.",
+      "sourceSha256": "7b40e53719cb8515ab19ea8fb15f7ee184007d7ba0df88c9ff44883e9c619d5e",
+      "spell": {
+        "id": "raggio-di-affaticamento-2014",
+        "nome_italiano": "Raggio di affaticamento",
+        "livello": "Necromanzia di 2° livello (mago, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Un raggio nero di energia logorante scaturisce dal dito dell'incantatore puntato contro una creatura entro gittata. Con questo incantesimo, l'incantatore effettua un attacco a distanza contro il bersaglio. Se il colpo va a segno, fino al termine dell'incantesimo il bersaglio infligge solo la metà dei danni con attacchi con armi che usano Forza.<br><br>Alla fine di ogni suo turno, il bersaglio può effettuare un tiro salvezza su Costituzione contro l'incantesimo. In caso di successo, l'incantesimo termina."
+      },
+      "en": "ray-of-enfeeblement"
+    },
+    {
+      "page": 194,
+      "sourceName": "Raggio di gelo",
+      "sourceLevel": "Trucchetto di Invocazione",
+      "sourceText": "Raggio di gelo Trucchetto di Invocazione Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S Durata: Istantanea Un raggio gelido di luce bianco-azzurra sfreccia verso una creatura entro gittata, contro cui l'incantatore effettua un attacco a distanza con incantesimo. Se il colpo va a segno, il bersaglio subisce 1d8 danni da freddo e la sua velocità è ridotta di 3 metri fino all'inizio del turno successivo dell'incantatore. I danni di questo incantesimo aumentano di 1d8 quando l'incantatore raggiunge il 5° livello (2d8), l'11° livello (3d8) e il 17° livello (4d8).",
+      "sourceSha256": "ceb7fff96342a670a29094f538d2708a8c4f9f9a305250548cbd892275e21405",
+      "spell": {
+        "id": "raggio-di-gelo-2014",
+        "nome_italiano": "Raggio di gelo",
+        "livello": "Trucchetto di Invocazione (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "Un raggio gelido di luce bianco-azzurra sfreccia verso una creatura entro gittata, contro cui l'incantatore effettua un attacco a distanza con incantesimo. Se il colpo va a segno, il bersaglio subisce 1d8 danni da freddo e la sua velocità è ridotta di 3 metri fino all'inizio del turno successivo dell'incantatore.<br><br>I danni di questo incantesimo aumentano di 1d8 quando l'incantatore raggiunge il 5° livello (2d8), l'11° livello (3d8) e il 17° livello (4d8)."
+      },
+      "en": "ray-of-frost"
+    },
+    {
+      "page": 194,
+      "sourceName": "Raggio rovente",
+      "sourceLevel": "Invocazione di 2° livello",
+      "sourceText": "Raggio rovente Invocazione di 2° livello Tempo di lancio: 1 azione Gittata: 36 metri Componenti: V, S Durata: Istantanea L'incantatore crea tre raggi di fuoco e li scaglia contro dei bersagli entro gittata, che possono essere uno o più. Con questo incantesimo, l'incantatore effettua un attacco a distanza per ogni raggio. Se il colpo va a segno, il bersaglio subisce 2d6 danni da fuoco. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, crea un raggio aggiuntivo per ogni slot superiore al 2°.",
+      "sourceSha256": "13f7b2c17e717fd0edd64f29dbf177a7aedfaca30c8afa03cb44ada47d94fc4d",
+      "spell": {
+        "id": "raggio-rovente-2014",
+        "nome_italiano": "Raggio rovente",
+        "livello": "Invocazione di 2° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "36 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore crea tre raggi di fuoco e li scaglia contro dei bersagli entro gittata, che possono essere uno o più.<br><br>Con questo incantesimo, l'incantatore effettua un attacco a distanza per ogni raggio. Se il colpo va a segno, il bersaglio subisce 2d6 danni da fuoco.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, crea un raggio aggiuntivo per ogni slot superiore al 2°."
+      },
+      "en": "scorching-ray"
+    },
+    {
+      "page": 195,
+      "sourceName": "Ragnatela",
+      "sourceLevel": "Evocazione di 2° livello",
+      "sourceText": "Ragnatela Evocazione di 2° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S, M (un frammento di ragnatela comune) Durata: Concentrazione, fino a 1 ora L'incantatore evoca una massa di spessi e viscosi filamenti di ragnatela in un punto a sua scelta situato entro gittata. A partire da quel punto, le ragnatele riempiono un cubo con spigolo di 6 metri per la durata dell'incantesimo. Le ragnatele sono terreno difficile e la loro area è considerata leggermente oscurata. Se le ragnatele non sono ancorate tra due masse solide (per esempio pareti o alberi) o stese su un pavimento, un muro o un soffitto, collassano su se stesse e l'incantesimo termina all'inizio del turno successivo dell'incantatore. Le ragnatele stese su una superficie piatta hanno una profondità di 1,5 metri. Ogni creatura che inizia il suo turno nelle ragnatele o che vi entra durante il proprio turno deve effettuare un tiro salvezza su Destrezza. Se lo fallisce, la creatura è trattenuta fintanto che rimane tra le ragnatele o finché non si libera. Una creatura trattenuta dalle ragnatele può usare la sua azione per effettuare una prova di Forza contro la CD del tiro salvezza sull'incantesimo. Se ha successo, non è più trattenuta. Le ragnatele sono infiammabili. Un cubo di ragnatele di 1,5 metri brucia in 1 round, infliggendo 2d4 danni da fuoco a ogni creatura che inizi il suo turno tra le fiamme.",
+      "sourceSha256": "62db9d4dcdc01576f168d65ba608709054eb9079f8196d11b74bb9674ff64acc",
+      "spell": {
+        "id": "ragnatela-2014",
+        "nome_italiano": "Ragnatela",
+        "livello": "Evocazione di 2° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S, M (un frammento di ragnatela comune)",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "L'incantatore evoca una massa di spessi e viscosi filamenti di ragnatela in un punto a sua scelta situato entro gittata. A partire da quel punto, le ragnatele riempiono un cubo con spigolo di 6 metri per la durata dell'incantesimo. Le ragnatele sono terreno difficile e la loro area è considerata leggermente oscurata.<br><br>Se le ragnatele non sono ancorate tra due masse solide (per esempio pareti o alberi) o stese su un pavimento, un muro o un soffitto, collassano su se stesse e l'incantesimo termina all'inizio del turno successivo dell'incantatore. Le ragnatele stese su una superficie piatta hanno una profondità di 1,5 metri.<br><br>Ogni creatura che inizia il suo turno nelle ragnatele o che vi entra durante il proprio turno deve effettuare un tiro salvezza su Destrezza. Se lo fallisce, la creatura è trattenuta fintanto che rimane tra le ragnatele o finché non si libera.<br><br>Una creatura trattenuta dalle ragnatele può usare la sua azione per effettuare una prova di Forza contro la CD del tiro salvezza sull'incantesimo. Se ha successo, non è più trattenuta.<br><br>Le ragnatele sono infiammabili. Un cubo di ragnatele di 1,5 metri brucia in 1 round, infliggendo 2d4 danni da fuoco a ogni creatura che inizi il suo turno tra le fiamme."
+      },
+      "en": "web"
+    },
+    {
+      "page": 195,
+      "sourceName": "Randello incantato",
+      "sourceLevel": "Trucchetto di Trasmutazione",
+      "sourceText": "Randello incantato Trucchetto di Trasmutazione Tempo di lancio: 1 azione bonus Gittata: Contatto Componenti: V, S, M (vischio, una foglia di trifoglio e un randello o un bastone ferrato) Durata: 1 minuto Il legno di un randello o di un bastone ferrato impugnato dall'incantatore è pervaso dal potere della natura. Per la durata dell'incantesimo, l'incantatore usa la propria caratteristica da incantatore anziché la Forza per i tiri per i danni e i tiri per colpire effettuati negli attacchi in mischia usando quell'arma: inoltre, i danni dell'arma sono calcolati con un d8. Se già non lo è, l'arma diventa magica. L'incantesimo termina se l'incantatore lo lancia di nuovo o lascia andare l'arma.",
+      "sourceSha256": "a14ebab6037c75ffde0369c409df80ee502215865e80fb6368cab3ef00533221",
+      "spell": {
+        "id": "randello-incantato-2014",
+        "nome_italiano": "Randello incantato",
+        "livello": "Trucchetto di Trasmutazione (druido)",
+        "tempo_di_lancio": "1 azione bonus",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (vischio, una foglia di trifoglio e un randello o un bastone ferrato)",
+        "durata": "1 minuto",
+        "descrizione": "Il legno di un randello o di un bastone ferrato impugnato dall'incantatore è pervaso dal potere della natura. Per la durata dell'incantesimo, l'incantatore usa la propria caratteristica da incantatore anziché la Forza per i tiri per i danni e i tiri per colpire effettuati negli attacchi in mischia usando quell'arma: inoltre, i danni dell'arma sono calcolati con un d8. Se già non lo è, l'arma diventa magica. L'incantesimo termina se l'incantatore lo lancia di nuovo o lascia andare l'arma."
+      },
+      "en": "shillelagh"
+    },
+    {
+      "page": 195,
+      "sourceName": "Reggia meravigliosa",
+      "sourceLevel": "Evocazione di 7° livello",
+      "sourceText": "Reggia meravigliosa Evocazione di 7° livello Tempo di lancio: 1 minuto Gittata: 90 metri Componenti: V, S, M (un portale in miniatura scolpito in avorio, un frammento di marmo lucido, un cucchiaino d'argento, del valore di almeno 5 mo ciascuno) Durata: 24 ore L'incantatore evoca entro gittata una dimora extradimensionale che permane per la durata dell'incantesimo. Sceglie inoltre l'ubicazione della sua entrata, che risplende di un debole bagliore ed è larga 1,5 metri e alta 3 metri. L'incantatore e una qualsiasi creatura da lui scelta al momento del lancio possono entrare nella dimora extradimensionale fintantoché il portale rimane aperto. L'incantatore può aprire o chiudere il portale se si trova entro 9 metri da esso; quando è chiuso, il portale è invisibile. Oltre il portale si trova un atrio sfarzoso su cui si aprono numerose stanze. L'atmosfera è pulita, fresca e accogliente. L'incantatore può definire la planimetria della dimora, ma lo spazio non può superare la grandezza di 50 cubi, ciascuno con lato di 3 metri. Inoltre, la dimora è ammobiliata e decorata come l'incantatore preferisce e contiene cibo a sufficienza per servire un banchetto di nove portate per un massimo di 100 persone. A provvedere a ogni bisogno degli ospiti è presente una schiera di 100 servitori semitrasparenti, il cui aspetto e abbigliamento è deciso dall'incantatore, ai cui ordini sono totalmente ubbidienti. Ogni servitore può eseguire qualsiasi compito allo stesso modo di un servitore umano, ma non può attaccare o effettuare azioni che ferirebbero in modo diretto un'altra creatura. I servitori possono perciò trasportare oggetti, pulire, riparare, piegare abiti, accendere fuochi, servire cibo, versare vino e così via. Possono inoltre spostarsi ovunque nell'edificio, ma non possono uscirne. Arredi e altri oggetti creati da questo incantesimo si dissolvono in fumo quando vengono rimossi dalla dimora. Al termine dell'incantesimo, tutte le creature all'interno dello spazio extradimensionale vengono espulse negli spazi aperti più vicini all'entrata.",
+      "sourceSha256": "40196ae0f45c237d9d156eec024a94f518fc66f2a5353a2e5618b1332ab0ec10",
+      "spell": {
+        "id": "reggia-meravigliosa-2014",
+        "nome_italiano": "Reggia meravigliosa",
+        "livello": "Evocazione di 7° livello (bardo, mago)",
+        "tempo_di_lancio": "1 minuto",
+        "gittata": "90 metri",
+        "componenti": "V, S, M (un portale in miniatura scolpito in avorio, un frammento di marmo lucido, un cucchiaino d'argento, del valore di almeno 5 mo ciascuno)",
+        "durata": "24 ore",
+        "descrizione": "L'incantatore evoca entro gittata una dimora extradimensionale che permane per la durata dell'incantesimo. Sceglie inoltre l'ubicazione della sua entrata, che risplende di un debole bagliore ed è larga 1,5 metri e alta 3 metri. L'incantatore e una qualsiasi creatura da lui scelta al momento del lancio possono entrare nella dimora extradimensionale fintantoché il portale rimane aperto. L'incantatore può aprire o chiudere il portale se si trova entro 9 metri da esso; quando è chiuso, il portale è invisibile.<br><br>Oltre il portale si trova un atrio sfarzoso su cui si aprono numerose stanze. L'atmosfera è pulita, fresca e accogliente.<br><br>L'incantatore può definire la planimetria della dimora, ma lo spazio non può superare la grandezza di 50 cubi, ciascuno con lato di 3 metri. Inoltre, la dimora è ammobiliata e decorata come l'incantatore preferisce e contiene cibo a sufficienza per servire un banchetto di nove portate per un massimo di 100 persone. A provvedere a ogni bisogno degli ospiti è presente una schiera di 100 servitori semitrasparenti, il cui aspetto e abbigliamento è deciso dall'incantatore, ai cui ordini sono totalmente ubbidienti. Ogni servitore può eseguire qualsiasi compito allo stesso modo di un servitore umano, ma non può attaccare o effettuare azioni che ferirebbero in modo diretto un'altra creatura. I servitori possono perciò trasportare oggetti, pulire, riparare, piegare abiti, accendere fuochi, servire cibo, versare vino e così via. Possono inoltre spostarsi ovunque nell'edificio, ma non possono uscirne. Arredi e altri oggetti creati da questo incantesimo si dissolvono in fumo quando vengono rimossi dalla dimora. Al termine dell'incantesimo, tutte le creature all'interno dello spazio extradimensionale vengono espulse negli spazi aperti più vicini all'entrata."
+      },
+      "en": "magnificent-mansion"
+    },
+    {
+      "page": 196,
+      "sourceName": "Regressione mentale",
+      "sourceLevel": "Ammaliamento di 8° livello",
+      "sourceText": "Regressione mentale Ammaliamento di 8° livello Tempo di lancio: 1 azione Gittata: 45 metri Componenti: V, S, M (una manciata di argilla, cristallo, vetro o sfere di minerali) Durata: Istantanea L'incantatore assale la mente di una creatura entro gittata che è in grado di vedere, nel tentativo di frantumare il suo intelletto e la sua personalità. Il bersaglio subisce 4d6 danni psichici e deve effettuare un tiro salvezza su Intelligenza. Se lo fallisce, i suoi punteggi di Intelligenza e Carisma si riducono a 1: la creatura non può lanciare incantesimi, attivare oggetti magici, comprendere linguaggi o comunicare in alcun modo intelligibile. Tuttavia, può identificare i propri amici, seguirli e anche proteggerli. Alla fine di ogni 30 giorni, la creatura può ripetere il tiro salvezza contro questo incantesimo. In caso di successo, l'incantesimo termina. Anche gli incantesimi desiderio, guarigione o ristorare superiore possono porre fine a questo incantesimo.",
+      "sourceSha256": "052a4db1f9f55e0bd3b115d4ee06bdc0ba2c7a5632aef9057917bb14be32512b",
+      "spell": {
+        "id": "regressione-mentale-2014",
+        "nome_italiano": "Regressione mentale",
+        "livello": "Ammaliamento di 8° livello (bardo, druido, mago, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "45 metri",
+        "componenti": "V, S, M (una manciata di argilla, cristallo, vetro o sfere di minerali)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore assale la mente di una creatura entro gittata che è in grado di vedere, nel tentativo di frantumare il suo intelletto e la sua personalità. Il bersaglio subisce 4d6 danni psichici e deve effettuare un tiro salvezza su Intelligenza.<br><br>Se lo fallisce, i suoi punteggi di Intelligenza e Carisma si riducono a 1: la creatura non può lanciare incantesimi, attivare oggetti magici, comprendere linguaggi o comunicare in alcun modo intelligibile. Tuttavia, può identificare i propri amici, seguirli e anche proteggerli.<br><br>Alla fine di ogni 30 giorni, la creatura può ripetere il tiro salvezza contro questo incantesimo. In caso di successo, l'incantesimo termina.<br><br>Anche gli incantesimi <em>desiderio</em>, <em>guarigione</em> o <em>ristorare superiore</em> possono porre fine a questo incantesimo."
+      },
+      "en": "feeblemind"
+    },
+    {
+      "page": 196,
+      "sourceName": "Reincarnazione",
+      "sourceLevel": "Trasmutazione di 5° livello",
+      "sourceText": "Reincarnazione Trasmutazione di 5° livello Tempo di lancio: 1 ora Gittata: Contatto Componenti: V, S, M (oli e unguenti rari del valore di almeno 1.000 mo, che l'incantesimo consuma) Durata: Istantanea L'incantatore tocca un umanoide defunto o una parte di umanoide defunto. Se la creatura non è morta da più di 10 giorni, l'incantesimo le forma un nuovo corpo adulto e poi richiama la sua anima all'interno di quel corpo. Se l'anima del bersaglio non è consenziente o libera di tornare, l'incantesimo non funziona. La magia crea un nuovo corpo in cui l'umanoide possa vivere, perciò è probabile che anche la razza della creatura cambi. Il GM tira un d100 e consulta la tabella seguente per determinare quale forma assume la creatura quando torna in vita o, in alternativa, la può scegliere lui stesso. d100 Razza 01–04 Dragonide 05–13 Elfo alto 14–21 Elfo dei boschi 22–25 Elfo oscuro 26–29 Gnomo delle foreste 30–35 Gnomo delle rocce 36–43 Halfling piedelesto 44–51 Halfling tozzo 52–55 Mezzelfo 56–59 Mezzorco 60–68 Nano delle colline 69–76 Nano delle montagne 77–80 Tiefling 81–100 Umano La creatura reincarnata ricorda la sua vita e le sue esperienze passate. Conserva le capacità che possedeva nella sua forma originale, ma la sua razza precedente viene sostituita dalla nuova, così come i suoi tratti razziali.",
+      "sourceSha256": "4eefdc45cbe62117fd300d5e55350140eb234367c96b8ecf5d98fe7c738b883a",
+      "spell": {
+        "id": "reincarnazione-2014",
+        "nome_italiano": "Reincarnazione",
+        "livello": "Trasmutazione di 5° livello (druido)",
+        "tempo_di_lancio": "1 ora",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (oli e unguenti rari del valore di almeno 1.000 mo, che l'incantesimo consuma)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore tocca un umanoide defunto o una parte di umanoide defunto. Se la creatura non è morta da più di 10 giorni, l'incantesimo le forma un nuovo corpo adulto e poi richiama la sua anima all'interno di quel corpo. Se l'anima del bersaglio non è consenziente o libera di tornare, l'incantesimo non funziona.<br><br>La magia crea un nuovo corpo in cui l'umanoide possa vivere, perciò è probabile che anche la razza della creatura cambi. Il GM tira un d100 e consulta la tabella seguente per determinare quale forma assume la creatura quando torna in vita o, in alternativa, la può scegliere lui stesso.<br><br><pre> d100   Razza\n01–04   Dragonide\n05–13   Elfo alto\n14–21   Elfo dei boschi\n22–25   Elfo oscuro\n26–29   Gnomo delle foreste\n30–35   Gnomo delle rocce\n36–43   Halfling piedelesto\n44–51   Halfling tozzo\n52–55   Mezzelfo\n56–59   Mezzorco\n60–68   Nano delle colline\n69–76   Nano delle montagne\n77–80   Tiefling\n81–100  Umano</pre><br><br>La creatura reincarnata ricorda la sua vita e le sue esperienze passate. Conserva le capacità che possedeva nella sua forma originale, ma la sua razza precedente viene sostituita dalla nuova, così come i suoi tratti razziali."
+      },
+      "en": "reincarnate"
+    },
+    {
+      "page": 196,
+      "sourceName": "Resistenza",
+      "sourceLevel": "Trucchetto di Abiurazione",
+      "sourceText": "Resistenza Trucchetto di Abiurazione Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (un mantello in miniatura) Durata: Concentrazione, fino a 1 minuto L'incantatore tocca una creatura consenziente. Prima che l'incantesimo termini, il bersaglio può tirare un d4 e aggiungere il risultato ottenuto a un tiro salvezza a sua scelta. Può tirare il dado prima o dopo avere effettuato il tiro salvezza, dopodiché l'incantesimo termina.",
+      "sourceSha256": "6572a71996cc5bff8024a37c37b305284c280837034087f7bdd81fd7251724ee",
+      "spell": {
+        "id": "resistenza-2014",
+        "nome_italiano": "Resistenza",
+        "livello": "Trucchetto di Abiurazione (chierico, druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un mantello in miniatura)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore tocca una creatura consenziente. Prima che l'incantesimo termini, il bersaglio può tirare un d4 e aggiungere il risultato ottenuto a un tiro salvezza a sua scelta. Può tirare il dado prima o dopo avere effettuato il tiro salvezza, dopodiché l'incantesimo termina."
+      },
+      "en": "resistance"
+    },
+    {
+      "page": 196,
+      "sourceName": "Respirare sott'acqua",
+      "sourceLevel": "Trasmutazione di 3° livello (rituale)",
+      "sourceText": "Respirare sott'acqua Trasmutazione di 3° livello (rituale) Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V, S, M (un piccolo giunco o una pagliuzza) Durata: 24 ore Questo incantesimo concede a un massimo di dieci creature consenzienti, che si trovano entro gittata e che l'incantatore è in grado di vedere, la capacità di respirare sott'acqua per tutta la sua durata. Le creature influenzate conservano inoltre la loro normale modalità di respirazione.",
+      "sourceSha256": "088ba54edd44950b976c07f195f53b92e51a46f651735d5438c635b10ff28143",
+      "spell": {
+        "id": "respirare-sott-acqua-2014",
+        "nome_italiano": "Respirare sott'acqua",
+        "livello": "Trasmutazione di 3° livello (druido, mago, ranger, stregone)",
+        "tempo_di_lancio": "1 azione o rituale",
+        "gittata": "9 metri",
+        "componenti": "V, S, M (un piccolo giunco o una pagliuzza)",
+        "durata": "24 ore",
+        "descrizione": "Questo incantesimo concede a un massimo di dieci creature consenzienti, che si trovano entro gittata e che l'incantatore è in grado di vedere, la capacità di respirare sott'acqua per tutta la sua durata. Le creature influenzate conservano inoltre la loro normale modalità di respirazione."
+      },
+      "en": "water-breathing"
+    },
+    {
+      "page": 197,
+      "sourceName": "Resurrezione",
+      "sourceLevel": "Necromanzia di 7° livello",
+      "sourceText": "Resurrezione Necromanzia di 7° livello Tempo di lancio: 1 ora Gittata: Contatto Componenti: V, S, M (un diamante del valore di almeno 1.000 mo, che l'incantesimo consuma) Durata: Istantanea L'incantatore tocca una creatura defunta da non più di un secolo, che non sia morta di vecchiaia e non sia un non morto. Se la sua anima è libera e consenziente, il bersaglio torna in vita con tutti i suoi punti ferita. Questo incantesimo neutralizza qualsiasi veleno e cura le normali malattie che influenzavano la creatura al momento della morte. Non rimuove tuttavia malattie magiche, maledizioni e altre afflizioni analoghe; se tali effetti non vengono rimossi prima del lancio dell'incantesimo, affliggeranno il bersaglio una volta tornato in vita. Questo incantesimo richiude tutte le ferite mortali e ripristina le eventuali parti del corpo mancanti. Il ritorno dalla morte è un vero e proprio travaglio. Il bersaglio subisce una penalità di -4 a tutti i tiri per colpire, tiri salvezza e prove di caratteristica. Ogni volta che completa un riposo lungo, questa penalità viene ridotta di 1 finché non sparisce del tutto. Lanciare questo incantesimo per riportare in vita una creatura morta da un anno o più risulta estremamente spossante per l'incantatore. Finché non completa un riposo lungo, non può lanciare di nuovo incantesimi e subisce svantaggio a tutti i tiri per colpire, alle prove di caratteristica e ai tiri salvezza.",
+      "sourceSha256": "4663184964ee3daa4a6a1efbb69d639cf0a57cb323839c43a98e1f718e1201e8",
+      "spell": {
+        "id": "resurrezione-2014",
+        "nome_italiano": "Resurrezione",
+        "livello": "Necromanzia di 7° livello (bardo, chierico)",
+        "tempo_di_lancio": "1 ora",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un diamante del valore di almeno 1.000 mo, che l'incantesimo consuma)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore tocca una creatura defunta da non più di un secolo, che non sia morta di vecchiaia e non sia un non morto. Se la sua anima è libera e consenziente, il bersaglio torna in vita con tutti i suoi punti ferita.<br><br>Questo incantesimo neutralizza qualsiasi veleno e cura le normali malattie che influenzavano la creatura al momento della morte. Non rimuove tuttavia malattie magiche, maledizioni e altre afflizioni analoghe; se tali effetti non vengono rimossi prima del lancio dell'incantesimo, affliggeranno il bersaglio una volta tornato in vita.<br><br>Questo incantesimo richiude tutte le ferite mortali e ripristina le eventuali parti del corpo mancanti.<br><br>Il ritorno dalla morte è un vero e proprio travaglio. Il bersaglio subisce una penalità di -4 a tutti i tiri per colpire, tiri salvezza e prove di caratteristica. Ogni volta che completa un riposo lungo, questa penalità viene ridotta di 1 finché non sparisce del tutto.<br><br>Lanciare questo incantesimo per riportare in vita una creatura morta da un anno o più risulta estremamente spossante per l'incantatore. Finché non completa un riposo lungo, non può lanciare di nuovo incantesimi e subisce svantaggio a tutti i tiri per colpire, alle prove di caratteristica e ai tiri salvezza."
+      },
+      "en": "resurrection"
+    },
+    {
+      "page": 197,
+      "sourceName": "Resurrezione pura",
+      "sourceLevel": "Necromanzia di 9° livello",
+      "sourceText": "Resurrezione pura Necromanzia di 9° livello Tempo di lancio: 1 ora Gittata: Contatto Componenti: V, S, M (uno spruzzo di acqua santa e diamanti del valore di almeno 25.000 mo, che l'incantesimo consuma) Durata: Istantanea L'incantatore tocca una creatura morta da non più di 200 anni a causa di un qualsiasi motivo fuorché la vecchiaia. Se la sua anima è libera e consenziente, essa torna in vita con tutti i suoi punti ferita. Questo incantesimo chiude tutte le ferite, neutralizza ogni veleno, cura tutte le malattie e annulla ogni maledizione che affiggeva la creatura al momento della morte. Inoltre, ripristina gli eventuali organi e arti danneggiati o mancanti. L'incantesimo può perfino fornire al bersaglio un nuovo corpo se l'originale non esiste più, nel qual caso l'incantatore deve pronunciare il nome della creatura, che appare in uno spazio libero a scelta dell'incantatore entro 3 metri da lui.",
+      "sourceSha256": "52d68525b1ed5e46d39d1c7f2332b826bbdaf7de390e21a5dda9df34f4a3d61a",
+      "spell": {
+        "id": "resurrezione-pura-2014",
+        "nome_italiano": "Resurrezione pura",
+        "livello": "Necromanzia di 9° livello (chierico, druido)",
+        "tempo_di_lancio": "1 ora",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (uno spruzzo di acqua santa e diamanti del valore di almeno 25.000 mo, che l'incantesimo consuma)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore tocca una creatura morta da non più di 200 anni a causa di un qualsiasi motivo fuorché la vecchiaia. Se la sua anima è libera e consenziente, essa torna in vita con tutti i suoi punti ferita.<br><br>Questo incantesimo chiude tutte le ferite, neutralizza ogni veleno, cura tutte le malattie e annulla ogni maledizione che affiggeva la creatura al momento della morte. Inoltre, ripristina gli eventuali organi e arti danneggiati o mancanti.<br><br>L'incantesimo può perfino fornire al bersaglio un nuovo corpo se l'originale non esiste più, nel qual caso l'incantatore deve pronunciare il nome della creatura, che appare in uno spazio libero a scelta dell'incantatore entro 3 metri da lui."
+      },
+      "en": "true-resurrection"
+    },
+    {
+      "page": 197,
+      "sourceName": "Rianimare morti",
+      "sourceLevel": "Necromanzia di 5° livello",
+      "sourceText": "Rianimare morti Necromanzia di 5° livello Tempo di lancio: 1 ora Gittata: Contatto Componenti: V, S, M (un diamante del valore di almeno 500 mo, che l'incantesimo consuma) Durata: Istantanea L'incantatore riporta in vita con il suo tocco una creatura morta da meno di 10 giorni. Se la sua anima è consenziente e libera di riunirsi al corpo, la creatura torna in vita con 1 punto ferita. Questo incantesimo inoltre neutralizza qualsiasi veleno e cura le malattie non magiche che influenzavano la creatura al momento della morte. Tuttavia, non rimuove malattie magiche, maledizioni o effetti simili che, se non vengono rimossi prima del lancio, affliggeranno il bersaglio una volta tornato in vita. Questo incantesimo non può riportare in vita una creatura non morta. L'incantesimo richiude tutte le ferite mortali, ma non ripristina le parti del corpo mancanti. Se una creatura è priva di organi o parti del corpo essenziali per la sua sopravvivenza, come per esempio la testa, l'incantesimo fallisce automaticamente. Il ritorno dalla morte è un vero e proprio travaglio. Il bersaglio subisce una penalità di -4 a tutti i tiri per colpire, tiri salvezza e prove di caratteristica. Ogni volta che completa un riposo lungo, questa penalità viene ridotta di 1 finché non sparisce del tutto.",
+      "sourceSha256": "bf58d34321443322856b9b735ef76173f61414b7427b36dddf0f21da33822592",
+      "spell": {
+        "id": "rianimare-morti-2014",
+        "nome_italiano": "Rianimare morti",
+        "livello": "Necromanzia di 5° livello (bardo, chierico, paladino)",
+        "tempo_di_lancio": "1 ora",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un diamante del valore di almeno 500 mo, che l'incantesimo consuma)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore riporta in vita con il suo tocco una creatura morta da meno di 10 giorni. Se la sua anima è consenziente e libera di riunirsi al corpo, la creatura torna in vita con 1 punto ferita.<br><br>Questo incantesimo inoltre neutralizza qualsiasi veleno e cura le malattie non magiche che influenzavano la creatura al momento della morte. Tuttavia, non rimuove malattie magiche, maledizioni o effetti simili che, se non vengono rimossi prima del lancio, affliggeranno il bersaglio una volta tornato in vita. Questo incantesimo non può riportare in vita una creatura non morta.<br><br>L'incantesimo richiude tutte le ferite mortali, ma non ripristina le parti del corpo mancanti. Se una creatura è priva di organi o parti del corpo essenziali per la sua sopravvivenza, come per esempio la testa, l'incantesimo fallisce automaticamente.<br><br>Il ritorno dalla morte è un vero e proprio travaglio. Il bersaglio subisce una penalità di -4 a tutti i tiri per colpire, tiri salvezza e prove di caratteristica. Ogni volta che completa un riposo lungo, questa penalità viene ridotta di 1 finché non sparisce del tutto."
+      },
+      "en": "raise-dead"
+    },
+    {
+      "page": 197,
+      "sourceName": "Rigenerazione",
+      "sourceLevel": "Trasmutazione di 7° livello",
+      "sourceText": "Rigenerazione Trasmutazione di 7° livello Tempo di lancio: 1 minuto Gittata: Contatto Componenti: V, S, M (un ruota della preghiera e acqua santa) Durata: 1 ora L'incantatore tocca una creatura e amplifica le sue capacità curative naturali, facendole recuperare 4d8 + 15 punti ferita. Per la durata dell'incantesimo, il bersaglio recupera 1 punto ferita all'inizio di ogni suo turno (10 punti ferita al minuto). Se al bersaglio sono state recise delle parti del corpo (dita, gambe, coda e così via), quelle parti ricrescono dopo 2 minuti e, se è in possesso della parte recisa, appoggiandola al moncone l'incantesimo rinsalda istantaneamente l'arto.",
+      "sourceSha256": "497b84ec61b9cc3a2ae34b861426898ec88962416a03dd82564bb923479009aa",
+      "spell": {
+        "id": "rigenerazione-2014",
+        "nome_italiano": "Rigenerazione",
+        "livello": "Trasmutazione di 7° livello (bardo, chierico, druido)",
+        "tempo_di_lancio": "1 minuto",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un ruota della preghiera e acqua santa)",
+        "durata": "1 ora",
+        "descrizione": "L'incantatore tocca una creatura e amplifica le sue capacità curative naturali, facendole recuperare 4d8 + 15 punti ferita. Per la durata dell'incantesimo, il bersaglio recupera 1 punto ferita all'inizio di ogni suo turno (10 punti ferita al minuto).<br><br>Se al bersaglio sono state recise delle parti del corpo (dita, gambe, coda e così via), quelle parti ricrescono dopo 2 minuti e, se è in possesso della parte recisa, appoggiandola al moncone l'incantesimo rinsalda istantaneamente l'arto."
+      },
+      "pages": [
+        197,
+        198
+      ],
+      "en": "regenerate"
+    },
+    {
+      "page": 198,
+      "sourceName": "Rimuovi maledizione",
+      "sourceLevel": "Abiurazione di 3° livello",
+      "sourceText": "Rimuovi maledizione Abiurazione di 3° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: Istantanea Al tocco dell'incantatore, tutte le maledizioni che affliggono una creatura o un oggetto terminano. Nel caso di un oggetto magico maledetto, la sua maledizione permane, ma l'incantesimo spezza la sintonia del suo proprietario, consentendogli di rimuoverlo o di liberarsene.",
+      "sourceSha256": "7acfc93b3faf6ee4e4c828d6e36137ff602f630ba8ebd91560de90a39d246fed",
+      "spell": {
+        "id": "rimuovi-maledizione-2014",
+        "nome_italiano": "Rimuovi maledizione",
+        "livello": "Abiurazione di 3° livello (chierico, mago, paladino, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "Al tocco dell'incantatore, tutte le maledizioni che affliggono una creatura o un oggetto terminano. Nel caso di un oggetto magico maledetto, la sua maledizione permane, ma l'incantesimo spezza la sintonia del suo proprietario, consentendogli di rimuoverlo o di liberarsene."
+      },
+      "en": "remove-curse"
+    },
+    {
+      "page": 198,
+      "sourceName": "Rinascita",
+      "sourceLevel": "Necromanzia di 3° livello",
+      "sourceText": "Rinascita Necromanzia di 3° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (diamanti del valore di 300 mo, che vengono consumati dall'incantesimo) Durata: Istantanea L'incantatore tocca una creatura morta nell'ultimo minuto e la creatura torna in vita con 1 punto ferita. Questo incantesimo non può riportare in vita una creatura morta di vecchiaia e non può ripristinare le eventuali parti del corpo mancanti.",
+      "sourceSha256": "f5c3123b1e5d722c2889a0aecb3981b768a60386c8083459f0a1c863c9d0380e",
+      "spell": {
+        "id": "rinascita-2014",
+        "nome_italiano": "Rinascita",
+        "livello": "Necromanzia di 3° livello (chierico, paladino)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (diamanti del valore di 300 mo, che vengono consumati dall'incantesimo)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore tocca una creatura morta nell'ultimo minuto e la creatura torna in vita con 1 punto ferita. Questo incantesimo non può riportare in vita una creatura morta di vecchiaia e non può ripristinare le eventuali parti del corpo mancanti."
+      },
+      "en": "revivify"
+    },
+    {
+      "page": 198,
+      "sourceName": "Riparare",
+      "sourceLevel": "Trucchetto di Trasmutazione",
+      "sourceText": "Riparare Trucchetto di Trasmutazione Tempo di lancio: 1 minuto Gittata: Contatto Componenti: V, S, M (due calamite) Durata: Istantanea Questo incantesimo ripara una singola crepa o uno squarcio in un oggetto toccato dall'incantatore, come l'anello spezzato di una catena, due metà di una chiave spezzata, un mantello strappato o un otre forato. Se le dimensioni della crepa o dello squarcio non superano i 30 cm, l'incantatore ripara l'oggetto senza lasciare traccia del danno precedente. Questo incantesimo può riparare un oggetto magico o un costrutto solo fisicamente, senza ripristinare la magia in esso contenuta.",
+      "sourceSha256": "082494b523eb64a791616055be9d9e7489c765c6fb9f78d707acdf49f6e32b34",
+      "spell": {
+        "id": "riparare-2014",
+        "nome_italiano": "Riparare",
+        "livello": "Trucchetto di Trasmutazione (bardo, chierico, druido, mago, stregone)",
+        "tempo_di_lancio": "1 minuto",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (due calamite)",
+        "durata": "Istantanea",
+        "descrizione": "Questo incantesimo ripara una singola crepa o uno squarcio in un oggetto toccato dall'incantatore, come l'anello spezzato di una catena, due metà di una chiave spezzata, un mantello strappato o un otre forato. Se le dimensioni della crepa o dello squarcio non superano i 30 cm, l'incantatore ripara l'oggetto senza lasciare traccia del danno precedente.<br><br>Questo incantesimo può riparare un oggetto magico o un costrutto solo fisicamente, senza ripristinare la magia in esso contenuta."
+      },
+      "en": "mending"
+    },
+    {
+      "page": 198,
+      "sourceName": "Riposo inviolato",
+      "sourceLevel": "Necromanzia di 2° livello (rituale)",
+      "sourceText": "Riposo inviolato Necromanzia di 2° livello (rituale) Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (un pizzico di sale e due monete di rame da posizionare sugli occhi del cadavere, che deve rimanere in quella posizione per la durata dell'incantesimo) Durata: 10 giorni L'incantatore tocca un cadavere o altri resti: per la durata dell'incantesimo, il bersaglio è protetto dalla decomposizione e non può diventare un non morto. Inoltre, l'incantesimo estende il limite di tempo entro cui rianimare il bersaglio dalla morte, in quanto i giorni trascorsi sotto l'influenza di questo incantesimo non contano al fine di determinare il limite di tempo di incantesimi come rianimare morti.",
+      "sourceSha256": "85d08d2067f96f09657689eefbf9574109c6776a3c1f926f26aefb3799d03e1a",
+      "spell": {
+        "id": "riposo-inviolato-2014",
+        "nome_italiano": "Riposo inviolato",
+        "livello": "Necromanzia di 2° livello (chierico, mago)",
+        "tempo_di_lancio": "1 azione o rituale",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un pizzico di sale e due monete di rame da posizionare sugli occhi del cadavere, che deve rimanere in quella posizione per la durata dell'incantesimo)",
+        "durata": "10 giorni",
+        "descrizione": "L'incantatore tocca un cadavere o altri resti: per la durata dell'incantesimo, il bersaglio è protetto dalla decomposizione e non può diventare un non morto.<br><br>Inoltre, l'incantesimo estende il limite di tempo entro cui rianimare il bersaglio dalla morte, in quanto i giorni trascorsi sotto l'influenza di questo incantesimo non contano al fine di determinare il limite di tempo di incantesimi come <em>rianimare morti</em>."
+      },
+      "en": "gentle-repose"
+    },
+    {
+      "page": 198,
+      "sourceName": "Risata incontenibile",
+      "sourceLevel": "Ammaliamento di 1° livello",
+      "sourceText": "Risata incontenibile Ammaliamento di 1° livello Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V, S, M (una manciata di briciole e una piuma da agitare in aria) Durata: Concentrazione, fino a 1 minuto Sotto l'influenza di questo incantesimo, una creatura scelta dall'incantatore, situata entro gittata e che è in grado di vedere, percepisce ogni cosa come esilarante ed è scossa da risate incontrollabili. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti cade prono, rimanendo incapacitato e immobilizzato per la durata dell'incantesimo. Una creatura con un punteggio di Intelligenza pari o inferiore a 4 non è influenzata dall'incantesimo. Il bersaglio può effettuare un altro tiro salvezza su Saggezza alla fine di ogni suo turno e ogni volta che subisce danni; in quest'ultimo caso dispone di vantaggio al tiro salvezza. In caso di successo, l'incantesimo termina.",
+      "sourceSha256": "c839f7643b070eab2dcf2370e368f4fdaf790f11f2cd6fe171bc38ecd8effd00",
+      "spell": {
+        "id": "risata-incontenibile-2014",
+        "nome_italiano": "Risata incontenibile",
+        "livello": "Ammaliamento di 1° livello (bardo, mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "V, S, M (una manciata di briciole e una piuma da agitare in aria)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Sotto l'influenza di questo incantesimo, una creatura scelta dall'incantatore, situata entro gittata e che è in grado di vedere, percepisce ogni cosa come esilarante ed è scossa da risate incontrollabili. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti cade prono, rimanendo incapacitato e immobilizzato per la durata dell'incantesimo. Una creatura con un punteggio di Intelligenza pari o inferiore a 4 non è influenzata dall'incantesimo.<br><br>Il bersaglio può effettuare un altro tiro salvezza su Saggezza alla fine di ogni suo turno e ogni volta che subisce danni; in quest'ultimo caso dispone di vantaggio al tiro salvezza. In caso di successo, l'incantesimo termina."
+      },
+      "en": "hideous-laughter"
+    },
+    {
+      "page": 199,
+      "sourceName": "Riscaldare il metallo",
+      "sourceLevel": "Trasmutazione di 2° livello",
+      "sourceText": "Riscaldare il metallo Trasmutazione di 2° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S, M (un pezzo di ferro e una fiamma) Durata: Concentrazione, fino a 1 minuto L'incantatore sceglie un oggetto lavorato in metallo, come un'arma in metallo o un'armatura di metallo media o pesante entro gittata che è in grado di vedere e la rende incandescente. Qualsiasi creatura a contatto fisico con l'oggetto subisce 2d8 danni da fuoco al momento del lancio dell'incantesimo, fino al termine del quale l'incantatore può usare un'azione bonus in ogni suo turno successivo per causare nuovamente questo danno. Se una creatura sta stringendo o indossando l'oggetto e ne subisce i danni, deve superare un tiro salvezza su Costituzione o, se possibile, lasciar cadere l'oggetto. Se ciò non avviene, il bersaglio ha svantaggio ai tiri per colpire e alle prove di caratteristica effettuati prima dell'inizio del turno successivo dell'incantatore. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, i danni aumentano di 1d8 per ogni slot di livello superiore al 2°.",
+      "sourceSha256": "40c64b2de75968f569446f5763df575f7f95fe6a39756cf7338a67e3176fd510",
+      "spell": {
+        "id": "riscaldare-il-metallo-2014",
+        "nome_italiano": "Riscaldare il metallo",
+        "livello": "Trasmutazione di 2° livello (bardo, druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S, M (un pezzo di ferro e una fiamma)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore sceglie un oggetto lavorato in metallo, come un'arma in metallo o un'armatura di metallo media o pesante entro gittata che è in grado di vedere e la rende incandescente. Qualsiasi creatura a contatto fisico con l'oggetto subisce 2d8 danni da fuoco al momento del lancio dell'incantesimo, fino al termine del quale l'incantatore può usare un'azione bonus in ogni suo turno successivo per causare nuovamente questo danno.<br><br>Se una creatura sta stringendo o indossando l'oggetto e ne subisce i danni, deve superare un tiro salvezza su Costituzione o, se possibile, lasciar cadere l'oggetto. Se ciò non avviene, il bersaglio ha svantaggio ai tiri per colpire e alle prove di caratteristica effettuati prima dell'inizio del turno successivo dell'incantatore.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, i danni aumentano di 1d8 per ogni slot di livello superiore al 2°."
+      },
+      "en": "heat-metal"
+    },
+    {
+      "page": 199,
+      "sourceName": "Ristorare inferiore",
+      "sourceLevel": "Abiurazione di 2° livello",
+      "sourceText": "Ristorare inferiore Abiurazione di 2° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: Istantanea L'incantatore tocca una creatura e può porre termine a una malattia o una condizione che lo affligge tra accecato, assordato, avvelenato o paralizzato.",
+      "sourceSha256": "722caafb85c38b5fe575e994d8ed4cc5a179ebe294134535c79792544ae343ee",
+      "spell": {
+        "id": "ristorare-inferiore-2014",
+        "nome_italiano": "Ristorare inferiore",
+        "livello": "Abiurazione di 2° livello (bardo, chierico, druido, paladino, ranger)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore tocca una creatura e può porre termine a una malattia o una condizione che lo affligge tra accecato, assordato, avvelenato o paralizzato."
+      },
+      "en": "lesser-restoration"
+    },
+    {
+      "page": 199,
+      "sourceName": "Ristorare superiore",
+      "sourceLevel": "Abiurazione di 5° livello",
+      "sourceText": "Ristorare superiore Abiurazione di 5° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (polvere di diamante del valore di almeno 100 mo, che l'incantesimo consuma) Durata: Istantanea L'incantatore infonde energia positiva in una creatura toccata per annullare un effetto debilitante. Può ridurre di uno il livello di indebolimento del bersaglio o porre fine a uno dei seguenti effetti su di esso: • Un effetto che ha affascinato o pietrificato il bersaglio • Una maledizione, inclusa la sintonia del bersaglio con un oggetto magico maledetto • Qualsiasi riduzione di un punteggio di caratteristica del bersaglio • Un effetto che riduce i punti ferita massimi del bersaglio",
+      "sourceSha256": "67e931a7ebb824908a2500be0631c422d8bddf09ea2d291bf7bb4c82720cb9f5",
+      "spell": {
+        "id": "ristorare-superiore-2014",
+        "nome_italiano": "Ristorare superiore",
+        "livello": "Abiurazione di 5° livello (bardo, chierico, druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (polvere di diamante del valore di almeno 100 mo, che l'incantesimo consuma)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore infonde energia positiva in una creatura toccata per annullare un effetto debilitante. Può ridurre di uno il livello di indebolimento del bersaglio o porre fine a uno dei seguenti effetti su di esso:<br><br>• Un effetto che ha affascinato o pietrificato il bersaglio<br><br>• Una maledizione, inclusa la sintonia del bersaglio con un oggetto magico maledetto<br><br>• Qualsiasi riduzione di un punteggio di caratteristica del bersaglio<br><br>• Un effetto che riduce i punti ferita massimi del bersaglio"
+      },
+      "en": "greater-restoration"
+    },
+    {
+      "page": 199,
+      "sourceName": "Risveglio",
+      "sourceLevel": "Trasmutazione di 5° livello",
+      "sourceText": "Risveglio Trasmutazione di 5° livello Tempo di lancio: 8 ore Gittata: Contatto Componenti: V, S, M (un'agata del valore di almeno 1.000 mo, che l'incantesimo consuma) Durata: Istantanea Dopo aver trascorso il tempo di lancio tracciando percorsi magici su una pietra preziosa, l'incantatore tocca una bestia o un vegetale di taglia Enorme o inferiore. Il bersaglio deve essere privo di un punteggio di Intelligenza o possedere Intelligenza pari o inferiore a 3. Il bersaglio ottiene Intelligenza pari a 10 e la capacità di parlare un linguaggio conosciuto dall'incantatore. Se il bersaglio è un vegetale, ottiene l'abilità di muovere i suoi rami, radici, liane, rampicanti e così via e sviluppa sensi simili a quelli umani. Il GM sceglie le statistiche appropriate per il vegetale risvegliato, come per esempio nel caso di un cespuglio o un albero risvegliato. La bestia o il vegetale risvegliato rimane affascinato dall'incantatore per 30 giorni o finché quest'ultimo o i suoi compagni non lo danneggiano in qualche modo. Quando la condizione di affascinato termina, la creatura risvegliata sceglie se rimanere amichevole o meno nei confronti dell'incantatore, in base a com'è stata trattata quando affascinata.",
+      "sourceSha256": "62d26f815815a8ece1f50dd9e2843f9528343565c0f947ce6660fc2001d61cc2",
+      "spell": {
+        "id": "risveglio-2014",
+        "nome_italiano": "Risveglio",
+        "livello": "Trasmutazione di 5° livello (bardo, druido)",
+        "tempo_di_lancio": "8 ore",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un'agata del valore di almeno 1.000 mo, che l'incantesimo consuma)",
+        "durata": "Istantanea",
+        "descrizione": "Dopo aver trascorso il tempo di lancio tracciando percorsi magici su una pietra preziosa, l'incantatore tocca una bestia o un vegetale di taglia Enorme o inferiore. Il bersaglio deve essere privo di un punteggio di Intelligenza o possedere Intelligenza pari o inferiore a 3. Il bersaglio ottiene Intelligenza pari a 10 e la capacità di parlare un linguaggio conosciuto dall'incantatore. Se il bersaglio è un vegetale, ottiene l'abilità di muovere i suoi rami, radici, liane, rampicanti e così via e sviluppa sensi simili a quelli umani. Il GM sceglie le statistiche appropriate per il vegetale risvegliato, come per esempio nel caso di un cespuglio o un albero risvegliato.<br><br>La bestia o il vegetale risvegliato rimane affascinato dall'incantatore per 30 giorni o finché quest'ultimo o i suoi compagni non lo danneggiano in qualche modo. Quando la condizione di affascinato termina, la creatura risvegliata sceglie se rimanere amichevole o meno nei confronti dell'incantatore, in base a com'è stata trattata quando affascinata."
+      },
+      "en": "awaken"
+    },
+    {
+      "page": 199,
+      "sourceName": "Ritirata rapida",
+      "sourceLevel": "Trasmutazione di 1° livello",
+      "sourceText": "Ritirata rapida Trasmutazione di 1° livello Tempo di lancio: 1 azione bonus Gittata: Incantatore Componenti: V, S Durata: Concentrazione, fino a 10 minuti Questo incantesimo permette all'incantatore di muoversi a una velocità straordinaria. Quando lancia questo incantesimo e poi come azione bonus a ogni suo turno, può effettuare l'azione Scatto.",
+      "sourceSha256": "e1b8eaeecf2cc5c1936c61665cb80b4c02bfcc1836a00fa98bfce73cb9ec38bc",
+      "spell": {
+        "id": "ritirata-rapida-2014",
+        "nome_italiano": "Ritirata rapida",
+        "livello": "Trasmutazione di 1° livello (mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione bonus",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "Questo incantesimo permette all'incantatore di muoversi a una velocità straordinaria. Quando lancia questo incantesimo e poi come azione bonus a ogni suo turno, può effettuare l'azione Scatto."
+      },
+      "pages": [
+        199,
+        200
+      ],
+      "en": "expeditious-retreat"
+    },
+    {
+      "page": 200,
+      "sourceName": "Saltare",
+      "sourceLevel": "Trasmutazione di 1° livello",
+      "sourceText": "Saltare Trasmutazione di 1° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (la zampa posteriore di una cavalletta) Durata: 1 minuto L'incantatore tocca una creatura, la cui distanza di salto viene triplicata fino al termine dell'incantesimo.",
+      "sourceSha256": "d449c08448bf86409df9b4744e31a957f7032914efa07f3c377cfbf77f77e106",
+      "spell": {
+        "id": "saltare-2014",
+        "nome_italiano": "Saltare",
+        "livello": "Trasmutazione di 1° livello (druido, mago, ranger, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (la zampa posteriore di una cavalletta)",
+        "durata": "1 minuto",
+        "descrizione": "L'incantatore tocca una creatura, la cui distanza di salto viene triplicata fino al termine dell'incantesimo."
+      },
+      "en": "jump"
     }
   ]
 }
