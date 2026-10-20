@@ -97,7 +97,9 @@ function normalizeEmphasis(html: string) {
     .replace(/<(em|i)>([\s\S]*?)<\/\1>/gi, (_whole, _tag, inner: string, offset: number, source: string) => {
       // Italics in a casting list are spell names even when the 2014 name differs from the catalog.
       const line = source.slice(0, offset).split(/<br\s*\/?>/i).pop()!.replace(/<[^>]+>/g, "");
-      const spells = CASTING_LINE.test(line) || isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " ")));
+      // A grouped list (label on its own line, see MonsterText) starts the paragraph with the label.
+      const group = CASTING_LINE.test(source.replace(/<[^>]+>/g, ""));
+      const spells = CASTING_LINE.test(line) || group || isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " ")));
       return spells ? `<spellname>${inner}</spellname>` : inner;
     })
     .replace(/<\s*\/?\s*(?:em|i)\s*>/gi, "")
@@ -261,10 +263,13 @@ export function MonsterText({ html, ...props }: HtmlTextProps) {
     if (repaired === formatted) break;
     formatted = repaired;
   }
-  formatted = formatted.replace(/(<(strong|b)>\s*(?:\d+\s*\/\s*(?:giorno|riposo)[^<:]*|A\s+volontà)\s*:\s*<\/\2>)/gi, "<br><br>$1<br>");
+  // 2014 casting lists print their labels in plain text at the start of a line ("1° livello (4 slot):"):
+  // shown in bold like the 2024 labels, so every sheet groups its spell lists the same way.
+  formatted = formatted.replace(/(^|<br\s*\/?>)\s*((?:Trucchetti\s*\(a volontà\)|\d+°\s*livello\s*\([^)<]*\)|A\s+volontà|\d+\s*\/\s*giorno(?:\s+ciascuno)?|\d+\s+volte\s+al\s+giorno[^:<]*):)\s*/gi, "$1<strong>$2</strong> ");
+  formatted = formatted.replace(/(<(strong|b)>\s*(?:\d+\s*\/\s*(?:giorno|riposo)[^<:]*|A\s+volontà|Trucchetti[^<:]*|\d+°\s*livello[^<:]*)\s*:\s*<\/\2>)/gi, "<br><br>$1<br>");
   const paragraphs = formatted.split(/(?:<br\s*\/?>\s*){2,}/gi).filter(part => part.replace(/<[^>]+>/g, "").trim());
   return <div className="min-w-0 space-y-4">{paragraphs.map((part, index) => {
-    const frequency = /^\s*<(?:strong|b)>\s*(?:\d+\s*\/|A\s+volontà)/i.test(part);
+    const frequency = /^\s*<(?:strong|b)>\s*(?:\d+\s*\/|A\s+volontà|Trucchetti|\d+°\s*livello)/i.test(part);
     return <div key={index} data-spell-frequency={frequency ? "true" : undefined} className={frequency ? "ml-1 border-l-2 border-primary/25 pl-3" : undefined}><HtmlText html={part} {...props} /></div>;
   })}</div>;
 }

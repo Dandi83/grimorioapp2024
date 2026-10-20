@@ -37,7 +37,10 @@ export function getSrdMonsterSource(monster: Monster) {
   const expected = record.monster as unknown as Record<string, unknown>;
   const fields = new Set([...Object.keys(expected), "azioni_bonus", "attrezzatura", "immunita", "sottotitolo_fonte", "iniziativa", "bonus_competenza"]);
   const isLegacy = legacyIds.has(monster.id);
-  return [...fields].every(key => (actual[key] ?? "") === (expected[key] ?? ""))
+  // 2014 sheets saved before the printed subtitle was stored keep their attribution.
+  const matches = (key: string) => (actual[key] ?? "") === (expected[key] ?? "")
+    || (isLegacy && key === "sottotitolo_fonte" && !actual[key]);
+  return [...fields].every(matches)
     ? {
       document: isLegacy ? legacy.document : "SRD 5.2.1",
       edition: isLegacy ? legacy.edition : "2024",

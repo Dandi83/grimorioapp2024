@@ -29,6 +29,12 @@ for (const record of records) {
   assert.equal(getSrdMonsterSource({...record.monster, azioni: 'Scheda modificata'}), undefined);
 }
 assert.equal(getSrdMonsterSource({...records[0].monster, id: 'mostro-non-verificato'}), undefined);
+// 2014 sheets: the printed subtitle is part of the source; a copy saved before it existed keeps its attribution.
+const lich14 = JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.1-it.json')).records.find(record => record.monster.id === 'lich-2014').monster;
+assert.equal(lich14.sottotitolo_fonte, 'Non morto Medio, qualsiasi allineamento malvagio');
+assert.equal(getSrdMonsterSource(lich14).edition, '2014');
+assert.equal(getSrdMonsterSource({...lich14, sottotitolo_fonte: ''}).edition, '2014');
+assert.equal(getSrdMonsterSource({...lich14, sottotitolo_fonte: 'Altro'}), undefined);
 
 const {MonsterProvenanceBadge} = load('components/monster-provenance-badge.tsx');
 const source = getSrdMonsterSource(records[0].monster);

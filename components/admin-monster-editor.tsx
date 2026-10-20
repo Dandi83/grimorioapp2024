@@ -30,7 +30,6 @@ const COMBAT: Field[] = [
   { name: "px", label: "Punti esperienza", placeholder: "Es. 450" },
   { name: "iniziativa", label: "Iniziativa", placeholder: "Es. +4 (14)" },
   { name: "bonus_competenza", label: "Bonus di competenza", placeholder: "Es. +3" },
-  { name: "attrezzatura", label: "Equipaggiamento", placeholder: "Es. Corazza" },
 ];
 const ABILITIES: Field[] = [
   { name: "forza", label: "FOR" },
@@ -56,6 +55,8 @@ const DETAILS: Field[] = [
     label: "Immunità combinate",
     placeholder: "Facoltativo: danni e condizioni nella stessa voce",
   },
+  // Same position as on the sheet: after the immunities, before the senses.
+  { name: "attrezzatura", label: "Equipaggiamento", placeholder: "Es. Corazza" },
   { name: "sensi", label: "Sensi", placeholder: "Es. scurovisione 18 m; Percezione passiva 14" },
   { name: "linguaggi", label: "Linguaggi", placeholder: "Es. Comune, Draconico" },
 ];
