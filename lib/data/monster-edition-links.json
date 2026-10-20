@@ -1,5 +1,5 @@
 {
-  "_nota": "Abbinamenti scheda 2014 -> scheda 2024 dello stesso mostro: l'habitat è condiviso. \"daApprovare\" segnala i casi in cui il nome cambia.",
+  "_nota": "Abbinamenti scheda 2014 -> scheda 2024 dello stesso mostro: l'habitat è condiviso. \"daApprovare\" segnala un nome diverso ancora da approvare; \"nomeDiverso\" con \"approvato\" un nome diverso già approvato da Daniele.",
   "links": {
     "sciame-di-scarabei-2014": {
       "id2024": "sciame-di-insetti",
@@ -26,7 +26,8 @@
     },
     "accolito-2014": {
       "id2024": "sacerdote-accolito",
-      "daApprovare": "Accolito (2014) = Sacerdote accolito (2024)"
+      "nomeDiverso": "Accolito (2014) = Sacerdote accolito (2024)",
+      "approvato": "2026-10-20"
     },
     "albero-risvegliato-2014": {
       "id2024": "albero-risvegliato"
@@ -42,7 +43,8 @@
     },
     "androsfinge-2014": {
       "id2024": "sfinge-del-valore",
-      "daApprovare": "Androsfinge (2014) = Sfinge del valore (2024)"
+      "nomeDiverso": "Androsfinge (2014) = Sfinge del valore (2024)",
+      "approvato": "2026-10-20"
     },
     "ankheg-2014": {
       "id2024": "ankheg"
@@ -73,7 +75,8 @@
     },
     "azer-2014": {
       "id2024": "azer-sentinella",
-      "daApprovare": "Azer (2014) = Azer sentinella (2024)"
+      "nomeDiverso": "Azer (2014) = Azer sentinella (2024)",
+      "approvato": "2026-10-20"
     },
     "babbuino-2014": {
       "id2024": "babbuino"
@@ -101,7 +104,8 @@
     },
     "bugbear-2014": {
       "id2024": "bugbear-guerriero",
-      "daApprovare": "Bugbear (2014) = Bugbear guerriero (2024)"
+      "nomeDiverso": "Bugbear (2014) = Bugbear guerriero (2024)",
+      "approvato": "2026-10-20"
     },
     "bulette-2014": {
       "id2024": "bulette"
@@ -150,7 +154,8 @@
     },
     "centauro-2014": {
       "id2024": "centauro-combattente",
-      "daApprovare": "Centauro (2014) = Centauro combattente (2024)"
+      "nomeDiverso": "Centauro (2014) = Centauro combattente (2024)",
+      "approvato": "2026-10-20"
     },
     "cespuglio-risvegliato-2014": {
       "id2024": "cespuglio-risvegliato"
@@ -172,10 +177,163 @@
     },
     "coboldo-2014": {
       "id2024": "coboldo-guerriero",
-      "daApprovare": "Coboldo (2014) = Coboldo guerriero (2024)"
+      "nomeDiverso": "Coboldo (2014) = Coboldo guerriero (2024)",
+      "approvato": "2026-10-20"
     },
     "coccodrillo-2014": {
       "id2024": "coccodrillo"
+    },
+    "coccodrillo-gigante-2014": {
+      "id2024": "coccodrillo-gigante"
+    },
+    "cockatrice-2014": {
+      "id2024": "coccatrice",
+      "daApprovare": "Cockatrice (2014) = Coccatrice (2024)"
+    },
+    "combattente-tribale-2014": {
+      "id2024": "guerriero-di-fanteria",
+      "daApprovare": "Combattente tribale (2014) = Guerriero di fanteria (2024)"
+    },
+    "corvo-2014": {
+      "id2024": "corvo"
+    },
+    "couatl-2014": {
+      "id2024": "couatl"
+    },
+    "cubo-gelatinoso-2014": {
+      "id2024": "cubo-gelatinoso"
+    },
+    "cultista-2014": {
+      "id2024": "cultista"
+    },
+    "cultista-fanatico-2014": {
+      "id2024": "cultista-fanatico"
+    },
+    "cumulo-strisciante-2014": {
+      "id2024": "cumulo-strisciante"
+    },
+    "daino-2014": {
+      "id2024": "daino"
+    },
+    "deva-2014": {
+      "id2024": "deva"
+    },
+    "diavolo-barbuto-2014": {
+      "id2024": "diavolo-barbuto"
+    },
+    "diavolo-cornuto-2014": {
+      "id2024": "diavolo-cornuto"
+    },
+    "diavolo-d-ossa-2014": {
+      "id2024": "diavolo-d-ossa"
+    },
+    "diavolo-del-ghiaccio-2014": {
+      "id2024": "diavolo-del-ghiaccio"
+    },
+    "diavolo-della-fossa-2014": {
+      "id2024": "diavolo-della-fossa"
+    },
+    "diavolo-delle-catene-2014": {
+      "id2024": "diavolo-delle-catene"
+    },
+    "diavolo-uncinato-2014": {
+      "id2024": "diavolo-uncinato"
+    },
+    "djinni-2014": {
+      "id2024": "djinni"
+    },
+    "doppelganger-2014": {
+      "id2024": "doppelganger"
+    },
+    "drago-bianco-adulto-2014": {
+      "id2024": "drago-bianco-adulto"
+    },
+    "drago-bianco-antico-2014": {
+      "id2024": "drago-bianco-antico"
+    },
+    "drago-bianco-cucciolo-2014": {
+      "id2024": "drago-bianco-cucciolo"
+    },
+    "drago-bianco-giovane-2014": {
+      "id2024": "drago-bianco-giovane"
+    },
+    "drago-blu-adulto-2014": {
+      "id2024": "drago-blu-adulto"
+    },
+    "drago-blu-antico-2014": {
+      "id2024": "drago-blu-antico"
+    },
+    "drago-blu-cucciolo-2014": {
+      "id2024": "drago-blu-cucciolo"
+    },
+    "drago-blu-giovane-2014": {
+      "id2024": "drago-blu-giovane"
+    },
+    "drago-d-argento-adulto-2014": {
+      "id2024": "drago-d-argento-adulto"
+    },
+    "drago-d-argento-antico-2014": {
+      "id2024": "drago-d-argento-antico"
+    },
+    "drago-d-argento-cucciolo-2014": {
+      "id2024": "drago-d-argento-cucciolo"
+    },
+    "drago-d-argento-giovane-2014": {
+      "id2024": "drago-d-argento-giovane"
+    },
+    "drago-d-oro-adulto-2014": {
+      "id2024": "drago-d-oro-adulto"
+    },
+    "drago-d-oro-antico-2014": {
+      "id2024": "drago-d-oro-antico"
+    },
+    "drago-d-oro-cucciolo-2014": {
+      "id2024": "drago-d-oro-cucciolo"
+    },
+    "drago-d-oro-giovane-2014": {
+      "id2024": "drago-d-oro-giovane"
+    },
+    "drago-d-ottone-adulto-2014": {
+      "id2024": "drago-d-ottone-adulto"
+    },
+    "drago-d-ottone-antico-2014": {
+      "id2024": "drago-d-ottone-antico"
+    },
+    "drago-d-ottone-cucciolo-2014": {
+      "id2024": "drago-d-ottone-cucciolo"
+    },
+    "drago-d-ottone-giovane-2014": {
+      "id2024": "drago-d-ottone-giovane"
+    },
+    "drago-di-bronzo-adulto-2014": {
+      "id2024": "drago-di-bronzo-adulto"
+    },
+    "drago-di-bronzo-antico-2014": {
+      "id2024": "drago-di-bronzo-antico"
+    },
+    "drago-di-bronzo-cucciolo-2014": {
+      "id2024": "drago-di-bronzo-cucciolo"
+    },
+    "drago-di-bronzo-giovane-2014": {
+      "id2024": "drago-di-bronzo-giovane"
+    },
+    "drago-di-rame-adulto-2014": {
+      "id2024": "drago-di-rame-adulto"
+    },
+    "drago-di-rame-antico-2014": {
+      "id2024": "drago-di-rame-antico"
+    },
+    "drago-di-rame-cucciolo-2014": {
+      "id2024": "drago-di-rame-cucciolo"
+    },
+    "drago-di-rame-giovane-2014": {
+      "id2024": "drago-di-rame-giovane"
+    },
+    "drago-nero-adulto-2014": {
+      "id2024": "drago-nero-adulto"
+    },
+    "drago-nero-antico-2014": {
+      "id2024": "drago-nero-antico"
     }
   }
 }
