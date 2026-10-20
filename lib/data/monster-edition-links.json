@@ -545,7 +545,8 @@
     },
     "hobgoblin-2014": {
       "id2024": "hobgoblin-guerriero",
-      "daApprovare": "Hobgoblin (2014) = Hobgoblin guerriero (2024)"
+      "nomeDiverso": "Hobgoblin (2014) = Hobgoblin guerriero (2024)",
+      "approvato": "2026-10-20"
     },
     "idra-2014": {
       "id2024": "idra"
@@ -603,7 +604,8 @@
     },
     "malvivente-2014": {
       "id2024": "bruto",
-      "daApprovare": "Malvivente (2014) = Bruto (2024)"
+      "nomeDiverso": "Malvivente (2014) = Bruto (2024)",
+      "approvato": "2026-10-20"
     },
     "mammut-2014": {
       "id2024": "mammut"
@@ -622,7 +624,8 @@
     },
     "marinide-2014": {
       "id2024": "marinide-schermagliatore",
-      "daApprovare": "Marinide (2014) = Marinide schermagliatore (2024)"
+      "nomeDiverso": "Marinide (2014) = Marinide schermagliatore (2024)",
+      "approvato": "2026-10-20"
     },
     "mastino-2014": {
       "id2024": "mastino"
