@@ -72,6 +72,14 @@ const text=r=>r.text();
  const {savedAt}=await sw.ask('/spell/scudo');
  assert.ok(savedAt>Date.now()-60000,'the saved date is reported to the page');
  assert.equal((await sw.ask('/spell/scudo')).savedAt,null,'the notice is reported once');
+ // The saved date also travels inside the page, in case the worker is stopped before the page asks.
+ sw.network.online=true;sw.network.pages['/spell/palla-di-fuoco']='<!DOCTYPE html><html><head><title>Palla</title></head><body>x</body></html>';
+ await sw.fetchEvent(sw.request('/spell/palla-di-fuoco'));
+ sw.network.online=false;
+ ({response}=await sw.fetchEvent(sw.request('/spell/palla-di-fuoco')));
+ const markedHtml=await text(response);
+ assert.match(markedHtml,/^<!DOCTYPE html><html><head><meta name="grimorio-saved-at" content="\d+"><title>Palla<\/title>/,'saved pages carry their date');
+ assert.equal(response.headers.get('Content-Length'),null);
  ({response}=await sw.fetchEvent(sw.request('/spell/mai-aperta')));
  assert.equal(response.status,503);assert.match(await text(response),/Sei offline/,'pages never opened show the offline notice');
  // Slow network: after the timeout the saved copy is shown, and the network answer still refreshes it.

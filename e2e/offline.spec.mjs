@@ -37,6 +37,8 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect.poll(async () => { try { await fetch(base + "/"); return "up"; } catch { return "down"; } }).toBe("down");
   await page.goto(base + "/spell/dardo-incantato");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/Dardo Incantato/i);
+  // The saved copy carries its date, so the notice does not depend on the worker's memory.
+  await expect(page.locator('meta[name="grimorio-saved-at"]')).toHaveCount(1);
   await expect(banner(page)).toBeVisible();
   // The main sections were saved when the service worker was installed.
   await page.goto(base + "/bestiario");
