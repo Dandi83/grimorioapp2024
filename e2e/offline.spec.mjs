@@ -47,8 +47,10 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   // The admin area is never served from the phone.
   const adminFailed = await page.goto(base + "/admin").then(() => false, () => true);
   expect(adminFailed).toBe(true);
-  // Let the browser finish showing its own error page before navigating again.
+  // Let the browser finish showing its own error page, then leave it: Chrome reloads
+  // its error page by itself when the server comes back, which would interrupt the next visit.
   await expect.poll(() => page.url()).toMatch(/^chrome-error:/);
+  await page.goto("about:blank");
 
   // Back online: fresh page, no notice.
   await startServer();
