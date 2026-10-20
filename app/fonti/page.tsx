@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AnalyticsPreferencesButton } from "@/components/analytics-provider";
 import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
+import legacyMonsters from "@/lib/data/srd-monsters-5.1-it.json";
 
 export const metadata = { title: "Info, fonti e licenze — Il Grimorio.App" };
 
@@ -38,7 +39,8 @@ export default function SourcesPage() {
       <section className="space-y-4 font-serif text-[1.05rem] leading-7">
         <h2 className="text-xl font-bold">System Reference Document 5.1 italiano — D&amp;D 2014</h2>
         <p>Questo lavoro include materiale del System Reference Document 5.1 (“SRD 5.1”) di Wizards of the Coast LLC disponibile al sito https://dnd.wizards.com/it/resources/systems-reference-document. L’SRD 5.1 è concesso in licenza sotto l’Attribuzione 4.0 Internazionale di Creative Commons disponibile al sito https://creativecommons.org/licenses/by/4.0/legalcode.it.</p>
-        <p>Le dieci schede contrassegnate “D&amp;D5e 2014” utilizzano esclusivamente le regole SRD 5.1. Sono stati normalizzati spazi, a capo e formattazione. Le cinque varianti sono presentate come schede autonome applicando le modifiche autorizzate alle rispettive schede base del 2014; gli adattamenti sono indicati nella fonte della singola scheda. Non sono conversioni alle regole 2024.</p>
+        <p>Le {legacyMonsters.records.length} schede «D&amp;D5e 2014» sono trascritte dall’SRD 5.1 italiano e si trovano nel Bestiario scegliendo «D&amp;D5e 2014». Sono stati normalizzati spazi, a capo e formattazione e le taglie sono ricondotte alle categorie dei filtri; le regole non sono state modificate né convertite alle regole 2024.</p>
+        <p>Le cinque varianti sono presentate come schede autonome applicando le modifiche autorizzate alle rispettive schede base del 2014; gli adattamenti sono indicati nella fonte della singola scheda.</p>
         <p><a className="text-primary underline underline-offset-4" href="https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf" target="_blank" rel="noreferrer">Consulta lo SRD 5.1 originale in italiano</a></p>
         <p><a className="text-primary underline underline-offset-4" href="https://creativecommons.org/licenses/by/4.0/legalcode.it" target="_blank" rel="noreferrer">Licenza Creative Commons Attribuzione 4.0 Internazionale</a></p>
       </section>

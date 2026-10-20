@@ -13,13 +13,17 @@ import {
   typeCategory,
   type MonsterListItem,
 } from "@/lib/monsters-types";
+import { HABITATS, matchesHabitats } from "@/lib/habitats";
 
-type FilterKind = "taglia" | "tipo" | "gs" | null;
+type FilterKind = "taglia" | "tipo" | "gs" | "habitat" | null;
+export type Edition = "2024" | "2014";
+/** The last edition chosen on this phone or browser. */
+export const EDITION_KEY = "grimorio.bestiario.edizione";
 const PAGE_SIZE = 40;
 
 export type MonsterListState = {
   url: string; raccolta: "mostri" | "animali"; q: string; taglia: string | null; tipo: string | null; gs: string | null;
-  limit: number; scroll: number;
+  edizione: Edition; habitat: string[]; limit: number; scroll: number;
 };
 
 interface Props {
@@ -27,6 +31,8 @@ interface Props {
   initialTaglia: string | null;
   initialTipo: string | null;
   initialGs: string | null;
+  initialEdizione?: Edition;
+  initialHabitat?: string[];
   initialRaccolta?: "mostri" | "animali" | null;
   initialQuery?: string;
   initialLimit?: number;
@@ -38,6 +44,8 @@ export function BestiarioBrowser({
   initialTaglia,
   initialTipo,
   initialGs,
+  initialEdizione = "2024",
+  initialHabitat = [],
   initialRaccolta,
   initialQuery = "",
   initialLimit = PAGE_SIZE,
@@ -48,15 +56,18 @@ export function BestiarioBrowser({
   const [taglia, setTaglia] = useState<string | null>(initialTaglia);
   const [tipo, setTipo] = useState<string | null>(initialTipo);
   const [gs, setGs] = useState<string | null>(initialGs);
+  const [edizione, setEdizione] = useState<Edition>(initialEdizione);
+  const [habitat, setHabitat] = useState<string[]>(initialHabitat);
   const [openFilter, setOpenFilter] = useState<FilterKind>(null);
   const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle } = useFavorites();
 
+  const editionMonsters = useMemo(() => monsters.filter(monster => monster.edizione === edizione), [monsters, edizione]);
   const collections = useMemo(() => ({
-    animali: monsters.filter(isSrdAnimal),
-    mostri: monsters.filter(monster => !isSrdAnimal(monster)),
-  }), [monsters]);
+    animali: editionMonsters.filter(isSrdAnimal),
+    mostri: editionMonsters.filter(monster => !isSrdAnimal(monster)),
+  }), [editionMonsters]);
   const collection = collections[raccolta];
   const meta = useMemo(() => computeMonstersMeta(collection), [collection]);
 
@@ -67,6 +78,7 @@ export function BestiarioBrowser({
       if (taglia && m.taglia !== taglia) return false;
       if (tipo && typeCategory(m.tipo) !== tipo) return false;
       if (gs && m.grado_sfida !== gs) return false;
+      if (!matchesHabitats(m.habitat, habitat)) return false;
       return true;
     });
 
@@ -76,10 +88,10 @@ export function BestiarioBrowser({
       if (d !== 0) return d;
       return a.nome.localeCompare(b.nome, "it");
     });
-  }, [collection, deferredQ, taglia, tipo, gs]);
+  }, [collection, deferredQ, taglia, tipo, gs, habitat]);
 
   // A new section, search or filter starts again from the first page.
-  const filters = JSON.stringify([raccolta, q, taglia, tipo, gs]);
+  const filters = JSON.stringify([edizione, raccolta, q, taglia, tipo, gs, habitat]);
   const lastFilters = useRef(filters);
   useEffect(() => {
     if (lastFilters.current === filters) return;
@@ -91,19 +103,31 @@ export function BestiarioBrowser({
   // Remember the list for "back" from a card; the scroll is taken when a row is opened.
   const scroll = useRef(initialScroll ?? 0);
   const save = () => saveListState<MonsterListState>("bestiario",
-    { url: window.location.search, raccolta, q, taglia, tipo, gs, limit, scroll: scroll.current });
+    { url: window.location.search, raccolta, q, taglia, tipo, gs, edizione, habitat, limit, scroll: scroll.current });
   useEffect(save);
   useEffect(() => {
     if (initialScroll) window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo(0, initialScroll)));
   }, [initialScroll]);
 
-  const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0);
+  const activeCount = (taglia ? 1 : 0) + (tipo ? 1 : 0) + (gs ? 1 : 0) + (habitat.length ? 1 : 0);
 
   const clearFilters = () => {
     setTaglia(null);
     setTipo(null);
     setGs(null);
+    setHabitat([]);
     setOpenFilter(null);
+  };
+
+  const chooseEdition = (value: Edition) => {
+    if (value === edizione) return;
+    setEdizione(value);
+    clearFilters();
+    try {
+      window.localStorage.setItem(EDITION_KEY, value);
+    } catch {
+      // the choice simply is not remembered
+    }
   };
 
   return (
@@ -111,8 +135,22 @@ export function BestiarioBrowser({
       {/* Sticky header */}
       <div className="sticky top-0 z-30 border-b border-border bg-background px-6 pb-3 pt-6">
         <h1 className="mb-4 font-serif text-3xl font-bold text-foreground">
-          Bestiario ({monsters.length})
+          Bestiario ({editionMonsters.length})
         </h1>
+
+        <div role="group" aria-label="Edizione delle regole" className="mb-3 grid grid-cols-2 gap-1 rounded-full border border-border bg-card p-1">
+          {(["2024", "2014"] as const).map(value => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={edizione === value}
+              onClick={() => chooseEdition(value)}
+              className={`min-h-9 rounded-full px-3 text-[13px] font-semibold tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${edizione === value ? "bg-primary-faint text-primary" : "text-muted hover:text-foreground"}`}
+            >
+              D&amp;D5e {value}
+            </button>
+          ))}
+        </div>
 
         <div role="group" aria-label="Sezioni del bestiario" className="mb-4 grid grid-cols-2 gap-1 rounded-2xl border border-border bg-card p-1">
           {([
@@ -179,6 +217,12 @@ export function BestiarioBrowser({
               setOpenFilter(openFilter === "taglia" ? null : "taglia")
             }
           />
+          <Chip
+            label={habitat.length === 0 ? "Habitat" : habitat.length === 1 ? habitat[0] : `Habitat (${habitat.length})`}
+            active={habitat.length > 0}
+            caret
+            onClick={() => setOpenFilter(openFilter === "habitat" ? null : "habitat")}
+          />
           {activeCount > 0 && (
             <Chip label="Pulisci" active destructive onClick={clearFilters} />
           )}
@@ -209,6 +253,19 @@ export function BestiarioBrowser({
                     setTipo(tipo === t ? null : t);
                     setOpenFilter(null);
                   }}
+                />
+              ))}
+            {openFilter === "habitat" &&
+              HABITATS.map((h) => (
+                <Option
+                  key={h}
+                  label={h}
+                  active={habitat.includes(h)}
+                  pressed={habitat.includes(h)}
+                  onClick={() =>
+                    // Several habitats can be chosen: the panel stays open.
+                    setHabitat(current => current.includes(h) ? current.filter(x => x !== h) : HABITATS.filter(x => x === h || current.includes(x)))
+                  }
                 />
               ))}
             {openFilter === "taglia" &&
@@ -296,15 +353,18 @@ function Chip({
 function Option({
   label,
   active,
+  pressed,
   onClick,
 }: {
   label: string;
   active: boolean;
+  pressed?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
+      aria-pressed={pressed}
       onClick={onClick}
       className={`flex-shrink-0 rounded-xl border px-4 py-2 text-[13px] font-semibold transition-colors ${
         active

@@ -1,0 +1,10 @@
+{
+  "_nota": "Abbinamenti scheda 2014 -> scheda 2024 dello stesso mostro: l'habitat è condiviso. \"daApprovare\" segnala i casi in cui il nome cambia.",
+  "links": {
+    "sciame-di-scarabei-2014": { "id2024": "sciame-di-insetti", "daApprovare": "Sciame di scarabei (2014) = Sciame di insetti (2024)" },
+    "sciame-di-millepiedi-2014": { "id2024": "sciame-di-insetti", "daApprovare": "Sciame di millepiedi (2014) = Sciame di insetti (2024)" },
+    "sciame-di-ragni-2014": { "id2024": "sciame-di-insetti", "daApprovare": "Sciame di ragni (2014) = Sciame di insetti (2024)" },
+    "sciame-di-vespe-2014": { "id2024": "sciame-di-insetti", "daApprovare": "Sciame di vespe (2014) = Sciame di insetti (2024)" },
+    "topo-gigante-contagioso-2014": { "id2024": "topo-gigante", "daApprovare": "Topo gigante contagioso (2014) = Topo gigante (2024)" }
+  }
+}

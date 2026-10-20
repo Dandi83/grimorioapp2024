@@ -20,7 +20,7 @@ let shares=[],copies=[];
 Object.defineProperty(navigator,'share',{configurable:true,value:async data=>shares.push(data)});
 Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async url=>copies.push(url)}});
 (async()=>{
-  for(const [route,title] of [['/spell/colpo-accurato','Colpo Accurato'],['/mostro/duergar','Duergar'],['/mostro/gatto','Gatto']]){
+  for(const [route,title] of [['/spell/colpo-accurato','Colpo Accurato'],['/mostro/duergar-2014','Duergar'],['/mostro/gatto','Gatto']]){
     await render(route,title);await click();
     assert.deepEqual(shares.at(-1),{title:`${title} — Il Grimorio.App`,url:`https://ilgrimorio.app${route}?ref=share`});
     assert.equal(document.querySelector('button[aria-label^="Condividi"]').disabled,false);

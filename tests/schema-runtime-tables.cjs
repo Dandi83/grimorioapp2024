@@ -36,13 +36,14 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
  // Let each module create its table exactly as it does in production.
  await load('lib/content-editions.ts').saveContentEdition('monster','m','2024');
  await load('lib/monster-extra-storage.ts').saveMonsterExtraFields(drizzle(pg),'m',{iniziativa:'+2'});
+ await load('lib/monster-habitats.ts').saveMonsterHabitats(drizzle(pg),'m',['Foresta']);
  const analytics=load('lib/analytics.ts');
  const id='11111111-1111-4111-8111-111111111111';
  await analytics.storeAnalyticsEvent({event:'page_view',id,view:id,session:id,path:'/',test:true,source:'direct',activeSeconds:0,scrollPercent:0},'visitor');
  await analytics.purgeAnalytics();
  const limit=load('lib/admin-login-limit.ts');
  await limit.loginBlocked(limit.addressKey('203.0.113.1'));
- for(const table of [schema.contentEditions,schema.monsterDetails,schema.analyticsEvents,schema.adminLoginFailures]){
+ for(const table of [schema.contentEditions,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.adminLoginFailures]){
   const config=getTableConfig(table);
   const {rows}=await pg.query('SELECT column_name,data_type,is_nullable,column_default FROM information_schema.columns WHERE table_name=$1 ORDER BY ordinal_position',[config.name]);
   assert.ok(rows.length,`${config.name} is created by the runtime code`);
@@ -56,5 +57,5 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
   }
  }
  await pg.close();
- console.log('Schema: runtime-created tables (editions, creature details, analytics, login failures) match their schema.ts descriptions.');
+ console.log('Schema: runtime-created tables (editions, creature details, habitats, analytics, login failures) match their schema.ts descriptions.');
 })().catch(error=>{console.error(error);process.exit(1);});

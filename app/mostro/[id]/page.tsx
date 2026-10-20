@@ -89,6 +89,7 @@ export default async function MonsterDetailPage({
   const { id } = await params;
   const monster = await getMonsterById(id);
   if (!monster) notFound();
+  const habitat = monster.habitat?.join(", ") ?? "";
 
   const color = monsterColor(monster.tipo);
   const source = getSrdMonsterSource(monster);
@@ -165,7 +166,8 @@ export default async function MonsterDetailPage({
         monster.immunita_danni ||
         monster.immunita_condizioni ||
         monster.sensi ||
-        monster.linguaggi) && (
+        monster.linguaggi ||
+        habitat) && (
         <section className="mx-6 mb-4 space-y-1 rounded-xl border border-border bg-card p-4">
           <StatLine label="Tiri Salvezza" value={monster.tiri_salvezza} legacy={legacy} />
           <StatLine label="Abilità" value={monster.abilita} legacy={legacy} />
@@ -181,6 +183,8 @@ export default async function MonsterDetailPage({
           <StatLine label="Equipaggiamento" value={monster.attrezzatura || ""} legacy={legacy} />
           <StatLine label="Sensi" value={monster.sensi} legacy={legacy} />
           <StatLine label="Linguaggi" value={monster.linguaggi} legacy={legacy} />
+          {/* Habitat names are plain text, never condition links. */}
+          <StatLine label="Habitat" value={habitat} legacy />
         </section>
       )}
 

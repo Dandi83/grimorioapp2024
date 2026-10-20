@@ -74,6 +74,17 @@ export const monsterDetails = pgTable("grimorio_monster_details", {
   fields: jsonb("fields").notNull().default({}),
 });
 
+/**
+ * Creature habitats saved from the admin editor (lib/monster-habitats.ts), keyed by
+ * the 2024 sheet so both editions share them. No reference to monsters: sheets that
+ * exist only in the project files can have a habitat too.
+ */
+export const monsterHabitats = pgTable("grimorio_monster_habitats", {
+  monster_key: text("monster_key").primaryKey(),
+  habitats: jsonb("habitats").notNull().default([]),
+  updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 /** Consented statistics events and their PostHog export state (lib/analytics.ts). */
 export const analyticsEvents = pgTable("grimorio_analytics_events", {
   id: uuid("id").primaryKey(),

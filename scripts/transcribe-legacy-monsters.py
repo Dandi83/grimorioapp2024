@@ -40,7 +40,7 @@ records = []
 
 
 def record(id, name, page, source, kind, size, alignment, cr, xp, ac, hp, speed, scores, senses, languages, traits, actions, trait_titles, action_titles, **other):
-    monster = dict(empty, id=id, nome=name, tipo=kind, taglia=size, allineamento=alignment,
+    monster = dict(empty, id=id + '-2014', nome=name, tipo=kind, taglia=size, allineamento=alignment,
                    grado_sfida=cr, px=xp, classe_armatura=ac, punti_ferita=hp, velocita=speed,
                    sensi=senses, linguaggi=languages, gs_num=float(Fraction(cr)),
                    tratti=html(traits, trait_titles), azioni=html(actions, action_titles), **other)

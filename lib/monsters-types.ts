@@ -51,6 +51,9 @@ export interface Monster {
   descrizione: string;
   gs_num: number; // valore numerico del grado sfida per l'ordinamento
   provenienza?: MonsterProvenance;
+  habitat?: string[];
+  /** Sheet that exists only in the project files, not in the database. */
+  solo_progetto?: boolean;
 }
 
 export const SIZES = [
@@ -127,11 +130,14 @@ export interface MonstersMeta {
   gradi: string[];
 }
 
-export type MonsterListItem = Pick<Monster, "id" | "nome" | "tipo" | "taglia" | "grado_sfida" | "gs_num">;
+export type MonsterListItem = Pick<Monster, "id" | "nome" | "tipo" | "taglia" | "grado_sfida" | "gs_num" | "habitat"> & {
+  /** Rules edition of the sheet, used by the 2024 | 2014 selector. */
+  edizione: "2014" | "2024";
+};
 
 /** List rows carry only what the catalog shows and filters on, never the full sheet. */
-export function toMonsterListItem({ id, nome, tipo, taglia, grado_sfida, gs_num }: MonsterListItem): MonsterListItem {
-  return { id, nome, tipo, taglia, grado_sfida, gs_num };
+export function toMonsterListItem({ id, nome, tipo, taglia, grado_sfida, gs_num, habitat, edizione }: MonsterListItem): MonsterListItem {
+  return { id, nome, tipo, taglia, grado_sfida, gs_num, edizione, ...(habitat?.length ? { habitat } : {}) };
 }
 
 export function computeMonstersMeta(list: readonly MonsterListItem[]): MonstersMeta {
