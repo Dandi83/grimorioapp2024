@@ -6,7 +6,7 @@ import { BestiarioBrowser } from "@/components/bestiario-browser";
 import type { SpellListItem, SpellsMeta } from "@/lib/spells-types";
 import type { MonsterListItem } from "@/lib/monsters-types";
 import { readListState, returningBack } from "@/components/navigation-memory";
-import type { SpellListState } from "@/components/grimorio-browser";
+import { SPELL_EDITION_KEY, type SpellFilters, type SpellListState } from "@/components/grimorio-browser";
 import { EDITION_KEY, GS_BANDS, gsBand, type Edition, type GsBand, type MonsterFilters, type MonsterListState } from "@/components/bestiario-browser";
 import { parseGs } from "@/lib/monsters-types";
 import { normalizeHabitats } from "@/lib/habitats";
@@ -42,33 +42,48 @@ function useRestoredList<T extends { url: string }>(key: string, search: string)
   // Only while the address is still the one the list was left at.
   return restored && restored.url === search ? restored : null;
 }
+/** Spell filters from the address: older single values (?livello=3&scuola=…&classe=…) keep working. */
+export function spellFiltersFromParams(params: URLSearchParams): SpellFilters {
+  const list = (name: string) => (params.get(name) || "").split(",").map(value => value.trim()).filter(Boolean);
+  return {
+    livello: list("livello").map(value => parseInt(value, 10)).filter(value => !Number.isNaN(value)),
+    scuola: list("scuola"),
+    classe: list("classe"),
+    concentrazione: params.get("concentrazione") === "1",
+    rituale: params.get("rituale") === "1",
+  };
+}
+
 export function GrimorioWithFilters({ spells, meta }: { spells: SpellListItem[]; meta: SpellsMeta }) {
   const { params, search } = useCatalogSearch();
-  const level = params.get("livello");
-  const parsed = level ? parseInt(level, 10) : NaN;
-  const scuola = params.get("scuola") || null;
-  const classe = params.get("classe") || null;
-  const livello = Number.isNaN(parsed) ? null : parsed;
+  const filters = spellFiltersFromParams(params);
+  const requested = params.get("edizione");
+  const storedEdition = useStoredEdition(SPELL_EDITION_KEY);
+  const edizione = isEdition(requested) ? requested : storedEdition ?? "2024";
   const restored = useRestoredList<SpellListState>("grimorio", search);
-  return <GrimorioBrowser key={JSON.stringify([livello, scuola, classe, !!restored])}
-    spells={spells} meta={meta} initialLivello={restored ? restored.livello : livello}
-    initialScuola={restored ? restored.scuola : scuola} initialClasse={restored ? restored.classe : classe}
-    initialQuery={restored?.q} initialLimit={restored?.limit} initialScroll={restored?.scroll} />;
+  const restoredFilters: SpellFilters | null = restored && Array.isArray(restored.livello)
+    ? { livello: restored.livello, scuola: restored.scuola, classe: restored.classe, concentrazione: restored.concentrazione, rituale: restored.rituale }
+    : null;
+  return <GrimorioBrowser key={JSON.stringify([filters, edizione, !!restoredFilters])}
+    spells={spells} meta={meta} initialFilters={restoredFilters ?? filters}
+    initialEdizione={restoredFilters ? restored!.edizione : edizione}
+    initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
+    initialScroll={restoredFilters ? restored!.scroll : undefined} />;
 }
 
 const isEdition = (value: string | null): value is Edition => value === "2024" || value === "2014";
 
 // The edition last chosen on this phone, read after mount like the URL filters.
-function useStoredEdition() {
+function useStoredEdition(storageKey: string = EDITION_KEY) {
   const [stored, setStored] = useState<Edition | null>(null);
   useEffect(() => {
     try {
-      const value = window.localStorage.getItem(EDITION_KEY);
+      const value = window.localStorage.getItem(storageKey);
       if (isEdition(value)) setStored(value);
     } catch {
       // storage unavailable: 2024
     }
-  }, []);
+  }, [storageKey]);
   return stored;
 }
 

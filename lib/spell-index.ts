@@ -6,19 +6,26 @@ import { asc } from "drizzle-orm";
 import { db } from "./db";
 import { spells } from "./db/schema";
 import { previewSpellRows } from "./srd-additions";
-import { parseLivello, type SpellListItem } from "./spells-types";
+import { parseLivello, spellListFlags, type SpellListItem } from "./spells-types";
+import { getContentEditions } from "./content-editions";
 
 export const getSpellIndex = unstable_cache(
   async (): Promise<SpellListItem[]> => {
-    const rows = await db.select({
+    const [rows, editions] = await Promise.all([db.select({
       id: spells.id,
       nome_italiano: spells.nome_italiano,
       livello: spells.livello,
-    }).from(spells).orderBy(asc(spells.sort_key));
+      tempo_di_lancio: spells.tempo_di_lancio,
+      durata: spells.durata,
+    }).from(spells).orderBy(asc(spells.sort_key)), getContentEditions("spell")]);
 
     return previewSpellRows(rows, process.env.VERCEL_ENV).map(row => {
       const { livello_num, scuola, classi } = parseLivello(row.livello || "");
-      return { id: row.id, nome_italiano: row.nome_italiano, livello_num, scuola, classi };
+      return {
+        id: row.id, nome_italiano: row.nome_italiano, livello_num, scuola, classi,
+        tempo_di_lancio: row.tempo_di_lancio || "", ...spellListFlags(row),
+        ...(editions.get(row.id) === "2014" ? { edizione: "2014" as const } : {}),
+      };
     });
   },
   ["spell-index", process.env.VERCEL_ENV ?? "local"],

@@ -58,7 +58,7 @@ function load(relative, deps={}) {
  // Exercise the new reader too: the page no longer performs the projection.
  const additions=load('lib/srd-additions.ts');
  const additionId=JSON.parse(fs.readFileSync('lib/data/srd-additions-20261017.json','utf8')).spells[0].id;
- const sourceRows=[{id:'manual-index',nome_italiano:'Manuale',livello:'Divinazione di 2° livello (mago)'},{id:additionId,nome_italiano:'Modifica amministrativa',livello:'Abiurazione di 1° livello (chierico)'}];
+ const sourceRows=[{id:'manual-index',nome_italiano:'Manuale',livello:'Divinazione di 2° livello (mago)',tempo_di_lancio:'1 minuto o rituale',durata:'Concentrazione, fino a 1 ora'},{id:additionId,nome_italiano:'Modifica amministrativa',livello:'Abiurazione di 1° livello (chierico)',tempo_di_lancio:'Azione',durata:'Istantanea'}];
  const originalEnv=process.env.VERCEL_ENV;
  try {
   for(const environment of ['preview','production',undefined]) {
@@ -68,15 +68,16 @@ function load(relative, deps={}) {
     'server-only':{},
     'next/cache':{unstable_cache:(fn,key,options)=>{assert.deepEqual(key,['spell-index',environment??'local']);assert.deepEqual(options,{tags:['spells'],revalidate:3600});configured=true;return fn;}},
     'drizzle-orm':{asc:column=>{assert.equal(column,'sort_key');return column;}},
-    './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',sort_key:'sort_key'}},
-    './db':{db:{select:columns=>{assert.deepEqual(Object.keys(columns).sort(),['id','nome_italiano','livello'].sort(),'SQL selects no descriptions or edition fields');return {from:()=>({orderBy:async()=>sourceRows})};}}},
+    './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',tempo_di_lancio:'tempo_di_lancio',durata:'durata',sort_key:'sort_key'}},
+    './content-editions':{getContentEditions:async kind=>{assert.equal(kind,'spell');return new Map([['manual-index','2014']]);}},
+    './db':{db:{select:columns=>{assert.deepEqual(Object.keys(columns).sort(),['id','nome_italiano','livello','tempo_di_lancio','durata'].sort(),'SQL selects no descriptions');return {from:()=>({orderBy:async()=>sourceRows})};}}},
     './srd-additions':additions,'./spells-types':st,
    });
    const values=await reader.getSpellIndex();
    assert.ok(configured);assert.equal(values.length,environment?21:2);
    assert.equal(values.find(s=>s.id===additionId).nome_italiano,'Modifica amministrativa','virtual additions never replace an existing manual row');
-   assert.deepEqual(values.find(s=>s.id==='manual-index'),{id:'manual-index',nome_italiano:'Manuale',livello_num:2,scuola:'Divinazione',classi:['mago']});
-   for(const value of values)assert.deepEqual(Object.keys(value).sort(),['id','nome_italiano','livello_num','scuola','classi'].sort());
+   assert.deepEqual(values.find(s=>s.id==='manual-index'),{id:'manual-index',nome_italiano:'Manuale',livello_num:2,scuola:'Divinazione',classi:['mago'],tempo_di_lancio:'1 minuto o rituale',concentrazione:true,rituale:true,edizione:'2014'});
+   for(const value of values){assert.ok(!('descrizione' in value)&&!('durata' in value),'list rows carry no description or duration text');assert.ok(Object.keys(value).every(key=>['id','nome_italiano','livello_num','scuola','classi','tempo_di_lancio','concentrazione','rituale','edizione'].includes(key)));}
    assert.deepEqual(JSON.parse(JSON.stringify(values)),values,'index consists only of JSON-serializable values');
   }
  } finally {if(originalEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=originalEnv;}
