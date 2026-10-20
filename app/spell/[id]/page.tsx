@@ -81,7 +81,7 @@ export default async function SpellDetailPage({
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(10,10,11,0.3), rgba(10,10,11,0.55), rgba(10,10,11,1))",
+              "linear-gradient(to bottom, rgba(246,239,223,0.2), rgba(246,239,223,0.7), rgba(246,239,223,1))",
           }}
         />
         <BackButton fallback="/grimorio" />

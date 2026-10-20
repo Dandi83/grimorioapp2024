@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Consulta, cerca e filtra incantesimi, mostri e animali di D&D 5e in italiano. Salva i preferiti.",
     start_url: "/",
     display: "standalone",
-    background_color: "#0a0a0b",
-    theme_color: "#0a0a0b",
+    background_color: "#F6EFDF",
+    theme_color: "#F6EFDF",
     orientation: "portrait",
     icons: [
       {
