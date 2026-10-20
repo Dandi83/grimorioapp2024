@@ -17,6 +17,12 @@
       "from": "Compulsione",
       "to": "Faro di speranza",
       "count": 50
+    },
+    {
+      "block": 3,
+      "from": "Fatale",
+      "to": "Invisibilità superiore",
+      "count": 50
     }
   ],
   "records": [
@@ -1895,6 +1901,950 @@
         "descrizione": "Questo incantesimo infonde speranza e vitalità. L'incantatore sceglie un qualsiasi numero di creature entro gittata. Per la durata dell'incantesimo, ogni bersaglio dispone di vantaggio ai tiri salvezza su Saggezza, ai tiri salvezza contro morte e recupera il numero massimo di punti ferita possibile da qualsiasi guarigione."
       },
       "en": "beacon-of-hope"
+    },
+    {
+      "page": 159,
+      "sourceName": "Fatale",
+      "sourceLevel": "Illusione di 9° livello",
+      "sourceText": "Fatale Illusione di 9° livello Tempo di lancio: 1 azione Gittata: 36 metri Componenti: V, S Durata: Concentrazione, fino a un minuto Attingendo alle paure più profonde di un gruppo di creature, l'incantatore crea nelle loro menti delle creature illusorie, visibili soltanto a loro. Ogni creatura all'interno di una sfera con raggio di 9 metri, centrata su un punto entro gittata a scelta dell'incantatore, deve effettuare un tiro salvezza su Saggezza. Se lo fallisce, rimane spaventata per tutta la durata dell'incantesimo. L'illusione fa leva sulle paure più profonde di una creatura, manifestando i suoi incubi peggiori come una minaccia implacabile. Al termine di ogni suoi turno, la creatura spaventata deve superare un tiro salvezza su Saggezza, altrimenti subisce 4d10 danni psichici. In caso di successo, l'incantesimo non ha più effetto su di lei.",
+      "sourceSha256": "6dcbc928bab7565ff03b74aa9c1beb0d6e4b87a08d74f3d90d77bedc29f69a0e",
+      "spell": {
+        "id": "fatale-2014",
+        "nome_italiano": "Fatale",
+        "livello": "Illusione di 9° livello (mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "36 metri",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a un minuto",
+        "descrizione": "Attingendo alle paure più profonde di un gruppo di creature, l'incantatore crea nelle loro menti delle creature illusorie, visibili soltanto a loro. Ogni creatura all'interno di una sfera con raggio di 9 metri, centrata su un punto entro gittata a scelta dell'incantatore, deve effettuare un tiro salvezza su Saggezza. Se lo fallisce, rimane spaventata per tutta la durata dell'incantesimo. L'illusione fa leva sulle paure più profonde di una creatura, manifestando i suoi incubi peggiori come una minaccia implacabile. Al termine di ogni suoi turno, la creatura spaventata deve superare un tiro salvezza su Saggezza, altrimenti subisce 4d10 danni psichici. In caso di successo, l'incantesimo non ha più effetto su di lei."
+      },
+      "en": "weird"
+    },
+    {
+      "page": 159,
+      "sourceName": "Favore divino",
+      "sourceLevel": "Invocazione di 1° livello",
+      "sourceText": "Favore divino Invocazione di 1° livello Tempo di lancio: 1 azione bonus Gittata: Incantatore Componenti: V, S Durata: Concentrazione, fino a 1 minuto Intonando una preghiera, l'incantatore è pervaso da radianza divina. Finché l'incantesimo non termina, i suoi attacchi con le armi infliggono 1d4 danni radiosi extra se il colpo va a segno.",
+      "sourceSha256": "bf0d1d7779e150b3fbcc8a75876c41c0d08dc04114ec84392a922ae85e302f5b",
+      "spell": {
+        "id": "favore-divino-2014",
+        "nome_italiano": "Favore divino",
+        "livello": "Invocazione di 1° livello (paladino)",
+        "tempo_di_lancio": "1 azione bonus",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Intonando una preghiera, l'incantatore è pervaso da radianza divina. Finché l'incantesimo non termina, i suoi attacchi con le armi infliggono 1d4 danni radiosi extra se il colpo va a segno."
+      },
+      "en": "divine-favor"
+    },
+    {
+      "page": 159,
+      "sourceName": "Ferire",
+      "sourceLevel": "Necromanzia di 6° livello",
+      "sourceText": "Ferire Necromanzia di 6° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S Durata: Istantanea L'incantatore scatena una malattia virulenta contro una creatura entro gittata che è in grado di vedere. Il bersaglio deve effettuare un tiro salvezza su Costituzione subendo 14d6 danni necrotici in caso di fallimento, o la metà dei danni in caso di successo. Il danno non può ridurre i punti ferita del bersaglio a meno di 1. Se il bersaglio fallisce il tiro salvezza, i suoi punti ferita massimi vengono ridotti di un ammontare pari ai danni necrotici subiti. Qualsiasi effetto che rimuove le malattie riporta i punti ferita massimi della creatura alla normalità prima che quel periodo termini.",
+      "sourceSha256": "eacf4134b52b8240f7b74175ac69f1d9e71bf0175f03531b320c7f36bd365e47",
+      "spell": {
+        "id": "ferire-2014",
+        "nome_italiano": "Ferire",
+        "livello": "Necromanzia di 6° livello (chierico)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore scatena una malattia virulenta contro una creatura entro gittata che è in grado di vedere. Il bersaglio deve effettuare un tiro salvezza su Costituzione subendo 14d6 danni necrotici in caso di fallimento, o la metà dei danni in caso di successo. Il danno non può ridurre i punti ferita del bersaglio a meno di 1. Se il bersaglio fallisce il tiro salvezza, i suoi punti ferita massimi vengono ridotti di un ammontare pari ai danni necrotici subiti. Qualsiasi effetto che rimuove le malattie riporta i punti ferita massimi della creatura alla normalità prima che quel periodo termini."
+      },
+      "en": "harm"
+    },
+    {
+      "page": 159,
+      "sourceName": "Fermare il tempo",
+      "sourceLevel": "Trasmutazione di 9° livello",
+      "sourceText": "Fermare il tempo Trasmutazione di 9° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V Durata: Istantanea L'incantatore interrompe brevemente lo scorrere nel tempo per tutti tranne che per se stesso. Per le altre creature il tempo non passa, mentre l'incantatore effettua 1d4 + 1 turni consecutivamente, nel corso dei quali può usare azioni e muoversi normalmente. Questo incantesimo termina se una delle azioni usate o qualsiasi effetto creato dall'incantatore durante questo periodo influenza una creatura diversa da lui o un oggetto indossato o trasportato da qualcuno diverso da lui. Termina inoltre se l'incantatore si muove in un luogo a più di 300 metri dal punto in cui ha lanciato l'incantesimo.",
+      "sourceSha256": "aeced8e21aa84d44f410a4e7b74e4587e4b151506594abc3dc8470f9f67f9fd2",
+      "spell": {
+        "id": "fermare-il-tempo-2014",
+        "nome_italiano": "Fermare il tempo",
+        "livello": "Trasmutazione di 9° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore interrompe brevemente lo scorrere nel tempo per tutti tranne che per se stesso. Per le altre creature il tempo non passa, mentre l'incantatore effettua 1d4 + 1 turni consecutivamente, nel corso dei quali può usare azioni e muoversi normalmente.<br><br>Questo incantesimo termina se una delle azioni usate o qualsiasi effetto creato dall'incantatore durante questo periodo influenza una creatura diversa da lui o un oggetto indossato o trasportato da qualcuno diverso da lui. Termina inoltre se l'incantatore si muove in un luogo a più di 300 metri dal punto in cui ha lanciato l'incantesimo."
+      },
+      "pages": [
+        159,
+        160
+      ],
+      "en": "time-stop"
+    },
+    {
+      "page": 160,
+      "sourceName": "Fiamma perenne",
+      "sourceLevel": "Invocazione di 2° livello",
+      "sourceText": "Fiamma perenne Invocazione di 2° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (polvere di rubino del valore di 50 mo, che l'incantesimo consuma) Durata: Finché non viene dissolto Una fiamma di intensità equivalente a quella di una torcia si sprigiona da un oggetto toccato dall'incantatore. L'effetto è quello di una fiamma comune, ma non crea calore e non utilizza ossigeno. Una fiamma perenne può essere coperta o nascosta, ma non soffocata o estinta.",
+      "sourceSha256": "15ff32f2098dc55ee41d451b39b0d691c02d4a76dcb8716a18dd649ada267917",
+      "spell": {
+        "id": "fiamma-perenne-2014",
+        "nome_italiano": "Fiamma perenne",
+        "livello": "Invocazione di 2° livello (chierico, mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (polvere di rubino del valore di 50 mo, che l'incantesimo consuma)",
+        "durata": "Finché non viene dissolto",
+        "descrizione": "Una fiamma di intensità equivalente a quella di una torcia si sprigiona da un oggetto toccato dall'incantatore. L'effetto è quello di una fiamma comune, ma non crea calore e non utilizza ossigeno. Una <em>fiamma perenne</em> può essere coperta o nascosta, ma non soffocata o estinta."
+      },
+      "en": "continual-flame"
+    },
+    {
+      "page": 160,
+      "sourceName": "Fiamma sacra",
+      "sourceLevel": "Trucchetto di Invocazione",
+      "sourceText": "Fiamma sacra Trucchetto di Invocazione Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S Durata: Istantanea Un bagliore simile a una fiamma discende su una creatura entro gittata che l'incantatore è in grado di vedere. Il bersaglio deve superare un tiro salvezza su Destrezza, altrimenti subisce 1d8 danni radiosi. Inoltre, per questo tiro salvezza, non trae beneficio dalla copertura. I danni di questo incantesimo aumentano di 1d8 quando l'incantatore raggiunge il 5° livello (2d8), l'11° livello (3d8) e il 17° livello (4d8).",
+      "sourceSha256": "252a81abf03a2c1e3434950c94c8c097ed2df0c9f0232e619bfd424fa8f9f2dc",
+      "spell": {
+        "id": "fiamma-sacra-2014",
+        "nome_italiano": "Fiamma sacra",
+        "livello": "Trucchetto di Invocazione (chierico)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "Un bagliore simile a una fiamma discende su una creatura entro gittata che l'incantatore è in grado di vedere. Il bersaglio deve superare un tiro salvezza su Destrezza, altrimenti subisce 1d8 danni radiosi. Inoltre, per questo tiro salvezza, non trae beneficio dalla copertura.<br><br>I danni di questo incantesimo aumentano di 1d8 quando l'incantatore raggiunge il 5° livello (2d8), l'11° livello (3d8) e il 17° livello (4d8)."
+      },
+      "en": "sacred-flame"
+    },
+    {
+      "page": 160,
+      "sourceName": "Fiotto acido",
+      "sourceLevel": "Trucchetto di Evocazione",
+      "sourceText": "Fiotto acido Trucchetto di Evocazione Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S Durata: Istantanea L'incantatore scaglia una bolla di acido, scegliendo una creatura entro gittata o scegliendone due entro gittata che si trovano a non più di 1,5 metri l'una dall'altra. Un bersaglio deve superare un tiro salvezza su Destrezza, altrimenti subisce 1d6 danni da acido. I danni di questo incantesimo aumentano di 1d6 quando l'incantatore raggiunge il 5° livello (2d6), l'11° livello (3d6) e il 17° livello (4d6).",
+      "sourceSha256": "697eb575908c57032fbc1e88a20f7a23beca9d72b108893cc3899b1912c225df",
+      "spell": {
+        "id": "fiotto-acido-2014",
+        "nome_italiano": "Fiotto acido",
+        "livello": "Trucchetto di Evocazione (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore scaglia una bolla di acido, scegliendo una creatura entro gittata o scegliendone due entro gittata che si trovano a non più di 1,5 metri l'una dall'altra. Un bersaglio deve superare un tiro salvezza su Destrezza, altrimenti subisce 1d6 danni da acido.<br><br>I danni di questo incantesimo aumentano di 1d6 quando l'incantatore raggiunge il 5° livello (2d6), l'11° livello (3d6) e il 17° livello (4d6)."
+      },
+      "en": "acid-splash"
+    },
+    {
+      "page": 160,
+      "sourceName": "Folata di vento",
+      "sourceLevel": "Invocazione di 2° livello",
+      "sourceText": "Folata di vento Invocazione di 2° livello Tempo di lancio: 1 azione Gittata: Incantatore (linea di 18 metri) Componenti: V, S, M (un seme di legume) Durata: Concentrazione, fino a 1 minuto Una linea di vento forte lunga 18 metri e ampia 3 metri viene indirizzata dall'incantatore in una direzione a sua scelta per la durata dell'incantesimo. Ogni creatura che inizia il suo turno nella linea deve superare un tiro salvezza su Forza o viene spinta per 4,5 metri lontano dall'incantatore nella direzione della linea. Qualsiasi creatura nella linea deve usare 60 cm di movimento per ogni 30 cm percorsi per avvicinarsi all'incantatore. La folata può disperdere gas o vapore e spegne candele, torce e simili fiamme non protette nell'area. Le fiamme protette, come quelle delle lanterne, tremolano e hanno il 50% di possibilità di spegnersi. Come azione bonus in ogni suo turno prima del termine dell'incantesimo, l'incantatore può cambiare la direzione della linea da lui originata.",
+      "sourceSha256": "53f17811250cc8563d4982ba642be38db224ad5d41b5ea98037e5b49bda2aaf5",
+      "spell": {
+        "id": "folata-di-vento-2014",
+        "nome_italiano": "Folata di vento",
+        "livello": "Invocazione di 2° livello (druido, mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore (linea di 18 metri)",
+        "componenti": "V, S, M (un seme di legume)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Una linea di vento forte lunga 18 metri e ampia 3 metri viene indirizzata dall'incantatore in una direzione a sua scelta per la durata dell'incantesimo. Ogni creatura che inizia il suo turno nella linea deve superare un tiro salvezza su Forza o viene spinta per 4,5 metri lontano dall'incantatore nella direzione della linea.<br><br>Qualsiasi creatura nella linea deve usare 60 cm di movimento per ogni 30 cm percorsi per avvicinarsi all'incantatore.<br><br>La folata può disperdere gas o vapore e spegne candele, torce e simili fiamme non protette nell'area. Le fiamme protette, come quelle delle lanterne, tremolano e hanno il 50% di possibilità di spegnersi.<br><br>Come azione bonus in ogni suo turno prima del termine dell'incantesimo, l'incantatore può cambiare la direzione della linea da lui originata."
+      },
+      "en": "gust-of-wind"
+    },
+    {
+      "page": 160,
+      "sourceName": "Fondersi nella pietra",
+      "sourceLevel": "Trasmutazione di 3° livello (rituale)",
+      "sourceText": "Fondersi nella pietra Trasmutazione di 3° livello (rituale) Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: 8 ore L'incantatore entra in un oggetto o in una superficie di pietra sufficientemente grande da contenere il suo corpo, fondendosi con esso insieme a tutto l'equipaggiamento che trasporta per la durata dell'incantesimo. Usando il suo movimento, entra nella pietra in un punto che è in grado di toccare e nulla della sua presenza rimane visibile o individuabile da qualsiasi senso non magico. Mentre è fuso nella pietra, l'incantatore non può vedere ciò che accade al di fuori e subisce svantaggio in qualsiasi prova di Saggezza (Percezione) effettuata per udire i suoni all'esterno. Rimane tuttavia cosciente del passare del tempo e può lanciare incantesimi su di sé. L'incantatore può usare il suo movimento per uscire dalla pietra nel punto in cui è entrato, ponendo fine all'incantesimo. Altrimenti, non può muoversi. Eventuali danni fisici minori inflitti alla pietra non danneggiano l'incantatore, ma una distruzione parziale o un'alterazione nella forma (al punto da non contenerne più il corpo) provoca l'espulsione dell'incantatore, infliggendogli 6d6 danni contundenti. La completa distruzione della pietra (o la sua trasmutazione in una sostanza differente) provoca l'espulsione dell'incantatore e gli infligge 50 danni contundenti. Se l'incantatore viene espulso, cade prono nello spazio libero più vicino al punto in cui era entrato.",
+      "sourceSha256": "2c30ba4fa65470adfd9e80c99eea7fc0b26a56993cf004ff21ba79189e185aec",
+      "spell": {
+        "id": "fondersi-nella-pietra-2014",
+        "nome_italiano": "Fondersi nella pietra",
+        "livello": "Trasmutazione di 3° livello (chierico, druido)",
+        "tempo_di_lancio": "1 azione o rituale",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "8 ore",
+        "descrizione": "L'incantatore entra in un oggetto o in una superficie di pietra sufficientemente grande da contenere il suo corpo, fondendosi con esso insieme a tutto l'equipaggiamento che trasporta per la durata dell'incantesimo. Usando il suo movimento, entra nella pietra in un punto che è in grado di toccare e nulla della sua presenza rimane visibile o individuabile da qualsiasi senso non magico.<br><br>Mentre è fuso nella pietra, l'incantatore non può vedere ciò che accade al di fuori e subisce svantaggio in qualsiasi prova di Saggezza (Percezione) effettuata per udire i suoni all'esterno. Rimane tuttavia cosciente del passare del tempo e può lanciare incantesimi su di sé. L'incantatore può usare il suo movimento per uscire dalla pietra nel punto in cui è entrato, ponendo fine all'incantesimo. Altrimenti, non può muoversi.<br><br>Eventuali danni fisici minori inflitti alla pietra non danneggiano l'incantatore, ma una distruzione parziale o un'alterazione nella forma (al punto da non contenerne più il corpo) provoca l'espulsione dell'incantatore, infliggendogli 6d6 danni contundenti. La completa distruzione della pietra (o la sua trasmutazione in una sostanza differente) provoca l'espulsione dell'incantatore e gli infligge 50 danni contundenti. Se l'incantatore viene espulso, cade prono nello spazio libero più vicino al punto in cui era entrato."
+      },
+      "pages": [
+        160,
+        161
+      ],
+      "en": "meld-into-stone"
+    },
+    {
+      "page": 161,
+      "sourceName": "Forma eterea",
+      "sourceLevel": "Trasmutazione di 7° livello",
+      "sourceText": "Forma eterea Trasmutazione di 7° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S Durata: Fino a 8 ore L'incantatore mette piede nelle regioni di confine del Piano Etereo, nell'area in cui si sovrappone al suo piano attuale. Rimane nel Confine Etereo per la durata dell'incantesimo o finché non utilizza la sua azione per terminarlo. Durante questo periodo, l'incantatore può muoversi in ogni direzione. Muovendosi su o giù, ogni 30 cm di movimento gli costano 30 cm extra. L'incantatore può sentire e vedere il piano da cui proviene, ma tutto gli appare grigio e visibile solo fino a una distanza di 18 metri. Mentre l'incantatore si trova sul Piano Etereo, può influenzare ed essere influenzato solo dalle creature che si trovano su quel piano. Le creature che non sono presenti sul Piano Etereo non possono percepire o interagire con l'incantatore, a meno che non siano dotate di magia o di una qualche capacità speciale per farlo. L'incantatore ignora tutti gli oggetti e gli effetti che non si trovano sul Piano Etereo, cosa che gli consente di muoversi attraverso gli oggetti che percepisce sul piano da cui proviene. Al termine dell'incantesimo, l'incantatore ritorna immediatamente sul piano di provenienza, nel punto in cui si trova attualmente. Se quel punto è occupato da un oggetto solido o da una creatura, l'incantatore viene subito sbalzato nello spazio libero più vicino che può occupare e subisce una quantità di danni da forza pari al doppio del numero di metri di cui si è mosso. Questo incantesimo non ha effetto se l'incantatore lo lancia mentre si trova sul Piano Etereo o su un piano non confinante, come uno dei Piani Esterni. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 8° livello o superiore, può bersagliare fino a tre creature consenzienti (incluso sé stesso) per ogni slot superiore al 7°. Al momento del lancio dell'incantesimo, le creature non devono trovarsi a più di 3 metri dall'incantatore.",
+      "sourceSha256": "a9f89e623fd4fbedb83a0b56ddecdc30c13bc9687becb9d5f6e894064dd8edfe",
+      "spell": {
+        "id": "forma-eterea-2014",
+        "nome_italiano": "Forma eterea",
+        "livello": "Trasmutazione di 7° livello (bardo, chierico, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "Fino a 8 ore",
+        "descrizione": "L'incantatore mette piede nelle regioni di confine del Piano Etereo, nell'area in cui si sovrappone al suo piano attuale. Rimane nel Confine Etereo per la durata dell'incantesimo o finché non utilizza la sua azione per terminarlo. Durante questo periodo, l'incantatore può muoversi in ogni direzione. Muovendosi su o giù, ogni 30 cm di movimento gli costano 30 cm extra. L'incantatore può sentire e vedere il piano da cui proviene, ma tutto gli appare grigio e visibile solo fino a una distanza di 18 metri.<br><br>Mentre l'incantatore si trova sul Piano Etereo, può influenzare ed essere influenzato solo dalle creature che si trovano su quel piano. Le creature che non sono presenti sul Piano Etereo non possono percepire o interagire con l'incantatore, a meno che non siano dotate di magia o di una qualche capacità speciale per farlo.<br><br>L'incantatore ignora tutti gli oggetti e gli effetti che non si trovano sul Piano Etereo, cosa che gli consente di muoversi attraverso gli oggetti che percepisce sul piano da cui proviene.<br><br>Al termine dell'incantesimo, l'incantatore ritorna immediatamente sul piano di provenienza, nel punto in cui si trova attualmente. Se quel punto è occupato da un oggetto solido o da una creatura, l'incantatore viene subito sbalzato nello spazio libero più vicino che può occupare e subisce una quantità di danni da forza pari al doppio del numero di metri di cui si è mosso.<br><br>Questo incantesimo non ha effetto se l'incantatore lo lancia mentre si trova sul Piano Etereo o su un piano non confinante, come uno dei Piani Esterni.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 8° livello o superiore, può bersagliare fino a tre creature consenzienti (incluso sé stesso) per ogni slot superiore al 7°. Al momento del lancio dell'incantesimo, le creature non devono trovarsi a più di 3 metri dall'incantatore."
+      },
+      "en": "etherealness"
+    },
+    {
+      "page": 161,
+      "sourceName": "Forma gassosa",
+      "sourceLevel": "Trasmutazione di 3° livello",
+      "sourceText": "Forma gassosa Trasmutazione di 3° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (un frammento di garza e un filo di fumo) Durata: Concentrazione, fino a 1 ora L'incantatore trasforma una creatura consenziente da lui toccata, nonché tutto ciò che indossa o trasporta, in una nube fosca per la durata dell'incantesimo, che termina quando i punti ferita della creatura scendono a 0. Una creatura incorporea non subisce gli effetti dell'incantesimo. Mentre si trova in questa forma, una velocità di volare di 3 metri è l'unico metodo di movimento del bersaglio, che può entrare o occupare lo spazio di un'altra creatura. Inoltre, il bersaglio ha resistenza ai danni non magici e dispone di vantaggio ai tiri salvezza su Forza, Destrezza e Costituzione. Può passare attraverso piccoli fori, aperture strette e perfino semplici crepe, benché tratti i liquidi come fossero superfici solide. Il bersaglio non può cadere e continua a fluttuare nell'aria anche quando è stordito o incapacitato in altri modi. Mentre è sotto forma di nube, il bersaglio non può parlare o manipolare oggetti e quelli che trasporta o impugna non possono essere lasciati cadere, usati o manipolati in alcun modo. Il bersaglio non può attaccare o lanciare incantesimi.",
+      "sourceSha256": "1e513036bc240a3425ae90fc907c96c6b474e2a3b65deea7fd408e4222c6452a",
+      "spell": {
+        "id": "forma-gassosa-2014",
+        "nome_italiano": "Forma gassosa",
+        "livello": "Trasmutazione di 3° livello (mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un frammento di garza e un filo di fumo)",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "L'incantatore trasforma una creatura consenziente da lui toccata, nonché tutto ciò che indossa o trasporta, in una nube fosca per la durata dell'incantesimo, che termina quando i punti ferita della creatura scendono a 0. Una creatura incorporea non subisce gli effetti dell'incantesimo.<br><br>Mentre si trova in questa forma, una velocità di volare di 3 metri è l'unico metodo di movimento del bersaglio, che può entrare o occupare lo spazio di un'altra creatura. Inoltre, il bersaglio ha resistenza ai danni non magici e dispone di vantaggio ai tiri salvezza su Forza, Destrezza e Costituzione. Può passare attraverso piccoli fori, aperture strette e perfino semplici crepe, benché tratti i liquidi come fossero superfici solide. Il bersaglio non può cadere e continua a fluttuare nell'aria anche quando è stordito o incapacitato in altri modi.<br><br>Mentre è sotto forma di nube, il bersaglio non può parlare o manipolare oggetti e quelli che trasporta o impugna non possono essere lasciati cadere, usati o manipolati in alcun modo. Il bersaglio non può attaccare o lanciare incantesimi."
+      },
+      "en": "gaseous-form"
+    },
+    {
+      "page": 161,
+      "sourceName": "Forme animali",
+      "sourceLevel": "Trasmutazione di 8° livello",
+      "sourceText": "Forme animali Trasmutazione di 8° livello Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V, S Durata: Concentrazione, fino a 24 ore La magia dell'incantatore trasforma altre creature in bestie. L'incantatore sceglie un qualsiasi numero di creature consenzienti entro gittata che è in grado di vedere, trasformando ogni bersaglio nella forma di una bestia di taglia Grande o inferiore con un grado di sfida pari o inferiore a 4. Nei turni successivi, l'incantatore può usare la sua azione per trasformare le creature influenzate in altre forme. La trasformazione permane su ogni bersaglio per la durata dell'incantesimo, oppure finché il bersaglio non scende a 0 punti ferita o muore. L'incantatore può scegliere una forma differente per ogni bersaglio, le cui statistiche di gioco vengono sostituite dalle statistiche della bestia scelta, purtuttavia conservando il proprio allineamento e punteggi di Intelligenza, Saggezza e Carisma. Il bersaglio assume i punti ferita della nuova forma e, quando riassume la sua forma normale, ritorna al numero di punti ferita che aveva prima della trasformazione. Se torna alla sua forma normale per essere sceso a 0 punti ferita, gli eventuali danni in eccesso si trasmettono alla sua forma normale. Fintantoché i danni in eccesso non riducono la forma normale della creatura a 0 punti ferita, questa non cade priva di sensi. La creatura è limitata alle azioni che può effettuare in base alla natura della sua nuova forma e non può parlare o lanciare incantesimi. L'attrezzatura del bersaglio si fonde nella sua nuova forma e la creatura non può attivare, usare, impugnare o beneficiare del proprio equipaggiamento.",
+      "sourceSha256": "b991c0f53e44c563d97b305271ecb568edc39160aae8185156e232ad873a60d0",
+      "spell": {
+        "id": "forme-animali-2014",
+        "nome_italiano": "Forme animali",
+        "livello": "Trasmutazione di 8° livello (druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 24 ore",
+        "descrizione": "La magia dell'incantatore trasforma altre creature in bestie. L'incantatore sceglie un qualsiasi numero di creature consenzienti entro gittata che è in grado di vedere, trasformando ogni bersaglio nella forma di una bestia di taglia Grande o inferiore con un grado di sfida pari o inferiore a 4. Nei turni successivi, l'incantatore può usare la sua azione per trasformare le creature influenzate in altre forme.<br><br>La trasformazione permane su ogni bersaglio per la durata dell'incantesimo, oppure finché il bersaglio non scende a 0 punti ferita o muore. L'incantatore può scegliere una forma differente per ogni bersaglio, le cui statistiche di gioco vengono sostituite dalle statistiche della bestia scelta, purtuttavia conservando il proprio allineamento e punteggi di Intelligenza, Saggezza e Carisma. Il bersaglio assume i punti ferita della nuova forma e, quando riassume la sua forma normale, ritorna al numero di punti ferita che aveva prima della trasformazione. Se torna alla sua forma normale per essere sceso a 0 punti ferita, gli eventuali danni in eccesso si trasmettono alla sua forma normale. Fintantoché i danni in eccesso non riducono la forma normale della creatura a 0 punti ferita, questa non cade priva di sensi. La creatura è limitata alle azioni che può effettuare in base alla natura della sua nuova forma e non può parlare o lanciare incantesimi.<br><br>L'attrezzatura del bersaglio si fonde nella sua nuova forma e la creatura non può attivare, usare, impugnare o beneficiare del proprio equipaggiamento."
+      },
+      "pages": [
+        161,
+        162
+      ],
+      "en": "animal-shapes"
+    },
+    {
+      "page": 162,
+      "sourceName": "Frantumare",
+      "sourceLevel": "Invocazione di 2° livello",
+      "sourceText": "Frantumare Invocazione di 2° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S, M (un frammento di mica) Durata: Istantanea Un rumore improvviso e assordante, dolorosamente intenso, si diffonde da un punto a scelta dell'incantatore situato entro gittata. Ogni creatura entro una sfera del raggio di 3 metri centrata su quel punto deve effettuare un tiro salvezza su Costituzione. In caso di fallimento, la creatura subisce 3d8 danni da tuono, mentre se lo supera subisce soltanto la metà di quei danni. Una creatura fatta di materiale inorganico come pietra, cristallo o metallo subisce svantaggio a questo tiro salvezza. Anche un oggetto non magico che non sia indossato o trasportato subisce i danni se si trova entro l'area dell'incantesimo. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, i danni aumentano di 1d8 per ogni slot di livello superiore al 2°.",
+      "sourceSha256": "272549b96c00d1f3c2da60ac9c635ef71b7a6eb486db3c264e46ce01b061075f",
+      "spell": {
+        "id": "frantumare-2014",
+        "nome_italiano": "Frantumare",
+        "livello": "Invocazione di 2° livello (bardo, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S, M (un frammento di mica)",
+        "durata": "Istantanea",
+        "descrizione": "Un rumore improvviso e assordante, dolorosamente intenso, si diffonde da un punto a scelta dell'incantatore situato entro gittata. Ogni creatura entro una sfera del raggio di 3 metri centrata su quel punto deve effettuare un tiro salvezza su Costituzione. In caso di fallimento, la creatura subisce 3d8 danni da tuono, mentre se lo supera subisce soltanto la metà di quei danni. Una creatura fatta di materiale inorganico come pietra, cristallo o metallo subisce svantaggio a questo tiro salvezza.<br><br>Anche un oggetto non magico che non sia indossato o trasportato subisce i danni se si trova entro l'area dell'incantesimo.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, i danni aumentano di 1d8 per ogni slot di livello superiore al 2°."
+      },
+      "en": "shatter"
+    },
+    {
+      "page": 162,
+      "sourceName": "Freccia acida",
+      "sourceLevel": "Invocazione di 2° livello",
+      "sourceText": "Freccia acida Invocazione di 2° livello Tempo di lancio: 1 azione Gittata: 27 metri Componenti: V, S, M (foglia di rabarbaro in polvere e stomaco di vipera) Durata: Istantanea Una freccia verde scintillante sfreccia verso un bersaglio entro gittata ed esplode in uno spruzzo di acido, effettuando un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce immediatamente 4d4 danni da acido e 2d4 danni da acido alla fine del suo turno successivo. Se il colpo manca, la freccia schizza il bersaglio con l'acido per la metà del danno iniziale e non infligge alcun danno alla fine del suo turno successivo. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, i danni (sia iniziali che successivi) aumentano di 1d4 per ogni slot di livello superiore al 2°.",
+      "sourceSha256": "a544a84e03acd41407d8dac5a3fcbf665c4b91cb5b98e8069d19110c8186872b",
+      "spell": {
+        "id": "freccia-acida-2014",
+        "nome_italiano": "Freccia acida",
+        "livello": "Invocazione di 2° livello (mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "27 metri",
+        "componenti": "V, S, M (foglia di rabarbaro in polvere e stomaco di vipera)",
+        "durata": "Istantanea",
+        "descrizione": "Una freccia verde scintillante sfreccia verso un bersaglio entro gittata ed esplode in uno spruzzo di acido, effettuando un attacco a distanza con incantesimo contro il bersaglio. Se il colpo va a segno, il bersaglio subisce immediatamente 4d4 danni da acido e 2d4 danni da acido alla fine del suo turno successivo. Se il colpo manca, la freccia schizza il bersaglio con l'acido per la metà del danno iniziale e non infligge alcun danno alla fine del suo turno successivo.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, i danni (sia iniziali che successivi) aumentano di 1d4 per ogni slot di livello superiore al 2°."
+      },
+      "en": "acid-arrow"
+    },
+    {
+      "page": 162,
+      "sourceName": "Fulmine",
+      "sourceLevel": "Invocazione di 3° livello",
+      "sourceText": "Fulmine Invocazione di 3° livello Tempo di lancio: 1 azione Gittata: Incantatore (linea di 30 metri) Componenti: V, S, M (un ciuffo di pelo e una verga d'ambra, di cristallo o di vetro) Durata: Istantanea Un fulmine parte dall'incantatore in una direzione a sua scelta, formando una linea lunga 30 metri e larga 1,5 metri. Ogni creatura entro la linea deve effettuare un tiro salvezza su Destrezza. Se lo fallisce, la creatura subisce 8d6 danni da fulmine, mentre se lo supera subisce soltanto la metà di quei danni. Il fulmine incendia ogni oggetto infiammabile nell'area che non sia indossato o trasportato. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, i danni aumentano di 1d6 per ogni slot di livello superiore al 3°.",
+      "sourceSha256": "86f821f13efd34a49234378031187192f5cbe338968c9179fcdfeda45805dc29",
+      "spell": {
+        "id": "fulmine-2014",
+        "nome_italiano": "Fulmine",
+        "livello": "Invocazione di 3° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore (linea di 30 metri)",
+        "componenti": "V, S, M (un ciuffo di pelo e una verga d'ambra, di cristallo o di vetro)",
+        "durata": "Istantanea",
+        "descrizione": "Un fulmine parte dall'incantatore in una direzione a sua scelta, formando una linea lunga 30 metri e larga 1,5 metri. Ogni creatura entro la linea deve effettuare un tiro salvezza su Destrezza. Se lo fallisce, la creatura subisce 8d6 danni da fulmine, mentre se lo supera subisce soltanto la metà di quei danni.<br><br>Il fulmine incendia ogni oggetto infiammabile nell'area che non sia indossato o trasportato.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, i danni aumentano di 1d6 per ogni slot di livello superiore al 3°."
+      },
+      "en": "lightning-bolt"
+    },
+    {
+      "page": 162,
+      "sourceName": "Fuorviare",
+      "sourceLevel": "Illusione di 5° livello",
+      "sourceText": "Fuorviare Illusione di 5° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: S Durata: Concentrazione, fino a 1 ora L'incantatore diventa invisibile nello stesso momento in cui un suo sosia illusorio appare nel punto in cui si trova. Il suo sosia permane per la durata dell'incantesimo, ma l'invisibilità termina quando l'incantatore attacca o lancia un incantesimo. L'incantatore può usare la sua azione per muovere il sosia illusorio fino al doppio della sua velocità e farlo gesticolare, parlare e comportare nel modo che ritiene più opportuno. Inoltre, può vedere e sentire attraverso il sosia, come se si trovasse nello stesso punto. In ognuno dei suoi turni come azione bonus, l'incantatore può passare dall'uso dei propri sensi a quelli del sosia e viceversa. Mentre utilizza i sensi del sosia, non può vedere né sentire nulla di ciò che circonda il suo vero corpo.",
+      "sourceSha256": "f7759fb94d96faa6a353a458d0f7171c3522986bbe56c8d82a01a3aa1dbfc957",
+      "spell": {
+        "id": "fuorviare-2014",
+        "nome_italiano": "Fuorviare",
+        "livello": "Illusione di 5° livello (bardo, mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "S",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "L'incantatore diventa invisibile nello stesso momento in cui un suo sosia illusorio appare nel punto in cui si trova. Il suo sosia permane per la durata dell'incantesimo, ma l'invisibilità termina quando l'incantatore attacca o lancia un incantesimo.<br><br>L'incantatore può usare la sua azione per muovere il sosia illusorio fino al doppio della sua velocità e farlo gesticolare, parlare e comportare nel modo che ritiene più opportuno.<br><br>Inoltre, può vedere e sentire attraverso il sosia, come se si trovasse nello stesso punto. In ognuno dei suoi turni come azione bonus, l'incantatore può passare dall'uso dei propri sensi a quelli del sosia e viceversa. Mentre utilizza i sensi del sosia, non può vedere né sentire nulla di ciò che circonda il suo vero corpo."
+      },
+      "pages": [
+        162,
+        163
+      ],
+      "en": "mislead"
+    },
+    {
+      "page": 163,
+      "sourceName": "Gabbia di forza",
+      "sourceLevel": "Invocazione di 7° livello",
+      "sourceText": "Gabbia di forza Invocazione di 7° livello Tempo di lancio: 1 azione Gittata: 30 metri Componenti: V, S, M (polvere di rubino del valore di 1.500 mo) Durata: 1 ora Una prigione cubica di forza magica invisibile e immobile si materializza intorno a un'area entro gittata scelta dall'incantatore. La prigione può essere una gabbia o una struttura solida a sua scelta. Una prigione a forma di gabbia può misurare fino a 6 metri per lato ed essere composta da sbarre di 1,25 cm di diametro disposte a 1,25 cm di distanza. Una prigione a forma di gabbia può misurare fino a 3 metri per lato e crea una barriera compatta che impedisce a ogni tipo di materia di passarle attraverso e blocca qualsiasi incantesimo lanciato verso l'interno o l'esterno dell'area. Al momento del lancio dell'incantesimo, ogni creatura completamente all'interno dell'area della gabbia è intrappolata. Le creature situate solo parzialmente all'interno dell'area o quelle di dimensioni troppo grandi per essere contenute nell'area sono spinte lontano dal centro dell'area finché non ne fuoriescono completamente. Una creatura all'interno della gabbia non può uscirne tramite mezzi non magici. Se la creatura prova a utilizzare il teletrasporto o il viaggio interplanare, deve prima effettuare un tiro salvezza su Carisma. Se lo supera, la creatura può usare quella magia per uscire dalla gabbia, mentre se lo fallisce, non può uscirne e spreca un uso dell'incantesimo o dell'effetto. La gabbia si estende anche sul Piano Etereo, bloccando i viaggi eterei. Questo incantesimo non può essere dissolto con dissolvi magie.",
+      "sourceSha256": "c0037e6103b44b97246212d45600cb5933936704f19f327ff86a54fc016039d0",
+      "spell": {
+        "id": "gabbia-di-forza-2014",
+        "nome_italiano": "Gabbia di forza",
+        "livello": "Invocazione di 7° livello (bardo, mago, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "30 metri",
+        "componenti": "V, S, M (polvere di rubino del valore di 1.500 mo)",
+        "durata": "1 ora",
+        "descrizione": "Una prigione cubica di forza magica invisibile e immobile si materializza intorno a un'area entro gittata scelta dall'incantatore. La prigione può essere una gabbia o una struttura solida a sua scelta.<br><br>Una prigione a forma di gabbia può misurare fino a 6 metri per lato ed essere composta da sbarre di 1,25 cm di diametro disposte a 1,25 cm di distanza.<br><br>Una prigione a forma di gabbia può misurare fino a 3 metri per lato e crea una barriera compatta che impedisce a ogni tipo di materia di passarle attraverso e blocca qualsiasi incantesimo lanciato verso l'interno o l'esterno dell'area.<br><br>Al momento del lancio dell'incantesimo, ogni creatura completamente all'interno dell'area della gabbia è intrappolata. Le creature situate solo parzialmente all'interno dell'area o quelle di dimensioni troppo grandi per essere contenute nell'area sono spinte lontano dal centro dell'area finché non ne fuoriescono completamente.<br><br>Una creatura all'interno della gabbia non può uscirne tramite mezzi non magici. Se la creatura prova a utilizzare il teletrasporto o il viaggio interplanare, deve prima effettuare un tiro salvezza su Carisma. Se lo supera, la creatura può usare quella magia per uscire dalla gabbia, mentre se lo fallisce, non può uscirne e spreca un uso dell'incantesimo o dell'effetto. La gabbia si estende anche sul Piano Etereo, bloccando i viaggi eterei.<br><br>Questo incantesimo non può essere dissolto con <em>dissolvi magie</em>."
+      },
+      "en": "forcecage"
+    },
+    {
+      "page": 163,
+      "sourceName": "Giara magica",
+      "sourceLevel": "Necromanzia di 6° livello",
+      "sourceText": "Giara magica Necromanzia di 6° livello Tempo di lancio: 1 minuto Gittata: Incantatore Componenti: V, S, M (una gemma, un cristallo, un reliquiario o un altro contenitore ornamentale del valore di almeno 500 mo) Durata: Finché non viene dissolto Il corpo dell'incantatore cade in uno stato catatonico e la sua anima lo abbandona entrando nel contenitore utilizzato come componente materiale dell'incantesimo. Mentre la sua anima si trova all'interno del contenitore, l'incantatore è consapevole di ciò che accade intorno a lui come se si trovasse nello spazio del contenitore; non può tuttavia muoversi o usare reazioni. L'unica azione che può effettuare è proiettare la propria anima fino a 30 metri fuori dal contenitore, tornando nel suo corpo (e così terminando l'incantesimo) o provando a prendere possesso di un corpo umanoide. L'incantatore può tentare di possedere un qualsiasi umanoide entro 30 metri da lui che è in grado di vedere (tranne le creature protette da un incantesimo protezione dal bene e dal male o cerchio magico). Il bersaglio deve effettuare un tiro salvezza su Carisma. In caso di fallimento, l'anima dell'incantatore migra nel corpo del bersaglio, la cui anima viene intrappolata nel contenitore. In caso di successo, il bersaglio resiste agli sforzi dell'incantatore di possederlo e quest'ultimo non può riprovare per le 24 ore successive. Quando l'incantatore prende possesso del corpo di una creatura, ne ha il pieno controllo. Le sue statistiche di gioco vengono sostituite dalle statistiche della creatura, benché l'incantatore conservi il proprio allineamento, i punteggi di Intelligenza, Saggezza e Carisma e il beneficio dei suoi privilegi di classe. Se il bersaglio ha dei livelli di classe, l'incantatore non può utilizzare i privilegi di classe della creatura. Nel frattempo, l'anima della creatura posseduta può percepire ciò che accade intorno al contenitore utilizzando i propri sensi, ma non può muoversi o effettuare azioni. Mentre è in possesso di un corpo, l'incantatore può usare la sua azione per tornare nel contenitore se si trova entro 30 metri da lui, riportando l'anima della creatura ospite nel suo corpo. Se il corpo ospite muore mentre l'incantatore si trova al suo interno, anche la creatura muore e l'incantatore deve effettuare un tiro salvezza su Carisma contro la CD del suo stesso incantesimo. In caso di successo, l'incantatore torna nel contenitore, che deve tuttavia trovarsi entro 30 metri da lui; altrimenti muore. Se il contenitore viene distrutto o l'incantesimo termina, l'anima dell'incantatore torna nel suo corpo. Tuttavia, se il corpo si trova a più di 30 metri da lui o se è morto quando l'incantatore tenta di tornarci, anche l'incantatore perirà. Se l'anima di un'altra creatura si trova all'interno del contenitore quando viene distrutto, questa ritorna nel suo corpo, a patto che sia vivo e si trovi entro 30 metri; altrimenti, la creatura muore. Al termine dell'incantesimo, il contenitore viene distrutto.",
+      "sourceSha256": "ec08a476a12f5bde0ae428401860673eb1cbfe19c2f9bd46b8c69da36a588d87",
+      "spell": {
+        "id": "giara-magica-2014",
+        "nome_italiano": "Giara magica",
+        "livello": "Necromanzia di 6° livello (mago)",
+        "tempo_di_lancio": "1 minuto",
+        "gittata": "Incantatore",
+        "componenti": "V, S, M (una gemma, un cristallo, un reliquiario o un altro contenitore ornamentale del valore di almeno 500 mo)",
+        "durata": "Finché non viene dissolto",
+        "descrizione": "Il corpo dell'incantatore cade in uno stato catatonico e la sua anima lo abbandona entrando nel contenitore utilizzato come componente materiale dell'incantesimo. Mentre la sua anima si trova all'interno del contenitore, l'incantatore è consapevole di ciò che accade intorno a lui come se si trovasse nello spazio del contenitore; non può tuttavia muoversi o usare reazioni. L'unica azione che può effettuare è proiettare la propria anima fino a 30 metri fuori dal contenitore, tornando nel suo corpo (e così terminando l'incantesimo) o provando a prendere possesso di un corpo umanoide.<br><br>L'incantatore può tentare di possedere un qualsiasi umanoide entro 30 metri da lui che è in grado di vedere (tranne le creature protette da un incantesimo <em>protezione dal bene e dal male</em> o <em>cerchio</em> <em>magico</em>). Il bersaglio deve effettuare un tiro salvezza su Carisma. In caso di fallimento, l'anima dell'incantatore migra nel corpo del bersaglio, la cui anima viene intrappolata nel contenitore. In caso di successo, il bersaglio resiste agli sforzi dell'incantatore di possederlo e quest'ultimo non può riprovare per le 24 ore successive.<br><br>Quando l'incantatore prende possesso del corpo di una creatura, ne ha il pieno controllo. Le sue statistiche di gioco vengono sostituite dalle statistiche della creatura, benché l'incantatore conservi il proprio allineamento, i punteggi di Intelligenza, Saggezza e Carisma e il beneficio dei suoi privilegi di classe. Se il bersaglio ha dei livelli di classe, l'incantatore non può utilizzare i privilegi di classe della creatura.<br><br>Nel frattempo, l'anima della creatura posseduta può percepire ciò che accade intorno al contenitore utilizzando i propri sensi, ma non può muoversi o effettuare azioni.<br><br>Mentre è in possesso di un corpo, l'incantatore può usare la sua azione per tornare nel contenitore se si trova entro 30 metri da lui, riportando l'anima della creatura ospite nel suo corpo. Se il corpo ospite muore mentre l'incantatore si trova al suo interno, anche la creatura muore e l'incantatore deve effettuare un tiro salvezza su Carisma contro la CD del suo stesso incantesimo. In caso di successo, l'incantatore torna nel contenitore, che deve tuttavia trovarsi entro 30 metri da lui; altrimenti muore.<br><br>Se il contenitore viene distrutto o l'incantesimo termina, l'anima dell'incantatore torna nel suo corpo. Tuttavia, se il corpo si trova a più di 30 metri da lui o se è morto quando l'incantatore tenta di tornarci, anche l'incantatore perirà. Se l'anima di un'altra creatura si trova all'interno del contenitore quando viene distrutto, questa ritorna nel suo corpo, a patto che sia vivo e si trovi entro 30 metri; altrimenti, la creatura muore.<br><br>Al termine dell'incantesimo, il contenitore viene distrutto."
+      },
+      "pages": [
+        163,
+        164
+      ],
+      "en": "magic-jar"
+    },
+    {
+      "page": 164,
+      "sourceName": "Glifo di interdizione",
+      "sourceLevel": "Abiurazione di 3° livello",
+      "sourceText": "Glifo di interdizione Abiurazione di 3° livello Tempo di lancio: 1 ora Gittata: Contatto Componenti: V, S, M (incenso e polvere di diamante del valore di almeno 200 mo, che l'incantesimo consuma) Durata: Finché non viene dissolto o innescato Quando lancia questo incantesimo, l'incantatore traccia un glifo che danneggia le altre creature su una superficie (come un tavolo o una sezione di pavimento o parete) o, al fine di nasconderlo, all'interno di un oggetto che può essere chiuso (come un libro, una pergamena o un forziere del tesoro). Se sceglie una superficie, il glifo può coprire un'area massima del diametro di 3 metri. Se l'incantatore sceglie un oggetto, questo non deve essere spostato; se ciò avviene, una volta che l'oggetto si allontana per più di 3 metri dal luogo in cui è stato lanciato l'incantesimo, il glifo si infrange e l'incantesimo termina senza essere innescato. Il glifo è pressoché invisibile e per scorgerlo è necessario superare una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Quando questo incantesimo viene lanciato, l'incantatore decide cosa innesca il glifo. Nel caso di glifi tracciati su una superficie, gli inneschi più comuni includono: toccare o camminare su di essi, rimuovere un altro oggetto che li copre, avvicinarsi a una certa distanza da loro o manipolare gli oggetti su cui sono tracciati. Nel caso di glifi tracciati all'interno di un oggetto, gli inneschi più comuni includono: aprire l'oggetto, avvicinarsi a una certa distanza da esso, oppure vedere o leggere il glifo. Una volta che un glifo viene innescato, l'incantesimo termina. L'incantatore può definire l'innesco in modo che l'incantesimo si attivi solamente in certe circostanze o in base a certe caratteristiche fisiche (come peso o altezza), al tipo di creature (per esempio, la protezione potrebbe attivarsi solo contro aberrazioni o drow) o all'allineamento. L'incantatore può inoltre impostare condizioni per evitare di innescare il glifo, come pronunciare una specifica parola d'ordine. Quando l'incantatore traccia il glifo, può scegliere tra glifo magico o rune esplosive. Glifo magico. L'incantatore può custodire un incantesimo preparato di 3° livello o inferiore all'interno del glifo lanciandolo come parte del suo processo di creazione. L'incantesimo deve avere come bersaglio una sola creatura o un'area. In questo modo, l'incantesimo custodito non ha effetto immediato, ma viene lanciato quando il glifo si attiva. Se l'incantesimo ha un bersaglio, risulterà essere la creatura che ha attivato il glifo, mentre se influenza un'area, tale area sarà centrata su quella creatura. Se l'incantesimo evoca creature ostili oppure crea oggetti o trappole dannose, ciò che viene evocato o creato appare nel punto più vicino possibile all'intruso e lo attacca. Se l'incantesimo richiede concentrazione, permane per tutta la sua durata. Rune esplosive. Quando attivato, il glifo esplode in una sfera di energia con raggio di 6 metri centrata su di esso che si estende oltre gli angoli. Ogni creatura presente nell'area deve effettuare un tiro salvezza su Destrezza. In caso di fallimento, subisce 5d8 danni da acido, freddo, fulmine, fuoco o tuono (a scelta dell'incantatore al momento della creazione del glifo), o la metà dei danni in caso di successo. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, i danni di un glifo rune esplosive aumentano di 1d8 per ogni slot di livello superiore al 3°. Se l'incantatore crea un glifo magico, può custodirvi qualsiasi incantesimo di livello pari o inferiore a quello dello slot usato per il glifo di interdizione.",
+      "sourceSha256": "790ecd6495fc0f99ed46f7d321db3e31752a7c1860e3b24780acf521a975a6f7",
+      "spell": {
+        "id": "glifo-di-interdizione-2014",
+        "nome_italiano": "Glifo di interdizione",
+        "livello": "Abiurazione di 3° livello (bardo, chierico, mago)",
+        "tempo_di_lancio": "1 ora",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (incenso e polvere di diamante del valore di almeno 200 mo, che l'incantesimo consuma)",
+        "durata": "Finché non viene dissolto o innescato",
+        "descrizione": "Quando lancia questo incantesimo, l'incantatore traccia un glifo che danneggia le altre creature su una superficie (come un tavolo o una sezione di pavimento o parete) o, al fine di nasconderlo, all'interno di un oggetto che può essere chiuso (come un libro, una pergamena o un forziere del tesoro). Se sceglie una superficie, il glifo può coprire un'area massima del diametro di 3 metri. Se l'incantatore sceglie un oggetto, questo non deve essere spostato; se ciò avviene, una volta che l'oggetto si allontana per più di 3 metri dal luogo in cui è stato lanciato l'incantesimo, il glifo si infrange e l'incantesimo termina senza essere innescato.<br><br>Il glifo è pressoché invisibile e per scorgerlo è necessario superare una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo.<br><br>Quando questo incantesimo viene lanciato, l'incantatore decide cosa innesca il glifo. Nel caso di glifi tracciati su una superficie, gli inneschi più comuni includono: toccare o camminare su di essi, rimuovere un altro oggetto che li copre, avvicinarsi a una certa distanza da loro o manipolare gli oggetti su cui sono tracciati. Nel caso di glifi tracciati all'interno di un oggetto, gli inneschi più comuni includono: aprire l'oggetto, avvicinarsi a una certa distanza da esso, oppure vedere o leggere il glifo. Una volta che un glifo viene innescato, l'incantesimo termina.<br><br>L'incantatore può definire l'innesco in modo che l'incantesimo si attivi solamente in certe circostanze o in base a certe caratteristiche fisiche (come peso o altezza), al tipo di creature (per esempio, la protezione potrebbe attivarsi solo contro aberrazioni o drow) o all'allineamento. L'incantatore può inoltre impostare condizioni per evitare di innescare il glifo, come pronunciare una specifica parola d'ordine.<br><br>Quando l'incantatore traccia il glifo, può scegliere tra <em>glifo magico</em> o <em>rune esplosive</em>.<br><br><strong>Glifo magico.</strong> L'incantatore può custodire un incantesimo preparato di 3° livello o inferiore all'interno del glifo lanciandolo come parte del suo processo di creazione. L'incantesimo deve avere come bersaglio una sola creatura o un'area. In questo modo, l'incantesimo custodito non ha effetto immediato, ma viene lanciato quando il glifo si attiva. Se l'incantesimo ha un bersaglio, risulterà essere la creatura che ha attivato il glifo, mentre se influenza un'area, tale area sarà centrata su quella creatura. Se l'incantesimo evoca creature ostili oppure crea oggetti o trappole dannose, ciò che viene evocato o creato appare nel punto più vicino possibile all'intruso e lo attacca. Se l'incantesimo richiede concentrazione, permane per tutta la sua durata.<br><br><strong>Rune esplosive.</strong> Quando attivato, il glifo esplode in una sfera di energia con raggio di 6 metri centrata su di esso che si estende oltre gli angoli. Ogni creatura presente nell'area deve effettuare un tiro salvezza su Destrezza. In caso di fallimento, subisce 5d8 danni da acido, freddo, fulmine, fuoco o tuono (a scelta dell'incantatore al momento della creazione del glifo), o la metà dei danni in caso di successo.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, i danni di un glifo <em>rune</em> <em>esplosive</em> aumentano di 1d8 per ogni slot di livello superiore al 3°. Se l'incantatore crea un <em>glifo magico</em>, può custodirvi qualsiasi incantesimo di livello pari o inferiore a quello dello slot usato per il <em>glifo di</em> <em>interdizione</em>."
+      },
+      "en": "glyph-of-warding"
+    },
+    {
+      "page": 164,
+      "sourceName": "Globo di invulnerabilità",
+      "sourceLevel": "Abiurazione di 6° livello",
+      "sourceText": "Globo di invulnerabilità Abiurazione di 6° livello Tempo di lancio: 1 azione Gittata: Incantatore (raggio di 3 metri) Componenti: V, S, M (una perla di vetro o cristallo che si frantuma al termine dell'incantesimo) Durata: Concentrazione, fino a 1 minuto Una barriera immobile e lievemente scintillante si materializza entro un raggio di 3 metri dall'incantatore e permane per la durata dell'incantesimo. Qualsiasi incantesimo di 5° livello o inferiore lanciato dall'esterno della barriera non ha alcun effetto sulle creature o gli oggetti all'interno, nemmeno se viene lanciato utilizzando uno slot incantesimo di livello superiore. Questo tipo di incantesimo può essere rivolto contro le creature e gli oggetti all'interno della barriera, senza tuttavia avere effetti su di loro. Allo stesso modo, l'area all'interno della barriera è esclusa dalle aree influenzate da questo tipo di incantesimi. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 7° livello o superiore, la barriera blocca gli incantesimi di un livello superiore per ogni slot di livello superiore al 6°.",
+      "sourceSha256": "d55426de98ce8f628b2e6a199a248079f055a0791b5b9c8603716ce2997ef1f9",
+      "spell": {
+        "id": "globo-di-invulnerabilita-2014",
+        "nome_italiano": "Globo di invulnerabilità",
+        "livello": "Abiurazione di 6° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore (raggio di 3 metri)",
+        "componenti": "V, S, M (una perla di vetro o cristallo che si frantuma al termine dell'incantesimo)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Una barriera immobile e lievemente scintillante si materializza entro un raggio di 3 metri dall'incantatore e permane per la durata dell'incantesimo.<br><br>Qualsiasi incantesimo di 5° livello o inferiore lanciato dall'esterno della barriera non ha alcun effetto sulle creature o gli oggetti all'interno, nemmeno se viene lanciato utilizzando uno slot incantesimo di livello superiore. Questo tipo di incantesimo può essere rivolto contro le creature e gli oggetti all'interno della barriera, senza tuttavia avere effetti su di loro. Allo stesso modo, l'area all'interno della barriera è esclusa dalle aree influenzate da questo tipo di incantesimi.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 7° livello o superiore, la barriera blocca gli incantesimi di un livello superiore per ogni slot di livello superiore al 6°."
+      },
+      "pages": [
+        164,
+        165
+      ],
+      "en": "globe-of-invulnerability"
+    },
+    {
+      "page": 165,
+      "sourceName": "Guardiani spirituali",
+      "sourceLevel": "Evocazione di 3° livello",
+      "sourceText": "Guardiani spirituali Evocazione di 3° livello Tempo di lancio: 1 azione Gittata: Incantatore (raggio di 4,5 metri) Componenti: V, S, M (un simbolo sacro) Durata: Concentrazione, fino a 10 minuti L'incantatore chiama a sé degli spiriti che lo proteggano. Gli spiriti fluttuano attorno a lui a una distanza di 4,5 metri per la durata dell'incantesimo. Se l'incantatore è buono o neutrale, la loro forma spettrale appare angelica o fatata (a scelta dell'incantatore). Se è malvagio, appaiono come demoniaci. Quando l'incantatore lancia questo incantesimo, può indicare un qualsiasi numero di creature, che è in grado di vedere, che non ne saranno influenzate. La velocità di una creatura influenzata viene dimezzata all'interno dell'area e quando essa vi entra per la prima volta in un turno o vi inizia il proprio turno, deve effettuare un tiro salvezza su Saggezza. Se lo fallisce, subisce 3d8 danni radiosi (se l'incantatore è buono o neutrale) o 3d8 danni necrotici (se è malvagio), In caso di successo, subisce invece soltanto la metà di quei danni. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, i danni aumentano di 1d8 per ogni slot di livello superiore al 3°.",
+      "sourceSha256": "07160eb93d0be6b3f517691b0f042c6bd3b37ea0ba1612707c42e0a313cf80d7",
+      "spell": {
+        "id": "guardiani-spirituali-2014",
+        "nome_italiano": "Guardiani spirituali",
+        "livello": "Evocazione di 3° livello (chierico)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore (raggio di 4,5 metri)",
+        "componenti": "V, S, M (un simbolo sacro)",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "L'incantatore chiama a sé degli spiriti che lo proteggano. Gli spiriti fluttuano attorno a lui a una distanza di 4,5 metri per la durata dell'incantesimo. Se l'incantatore è buono o neutrale, la loro forma spettrale appare angelica o fatata (a scelta dell'incantatore). Se è malvagio, appaiono come demoniaci.<br><br>Quando l'incantatore lancia questo incantesimo, può indicare un qualsiasi numero di creature, che è in grado di vedere, che non ne saranno influenzate. La velocità di una creatura influenzata viene dimezzata all'interno dell'area e quando essa vi entra per la prima volta in un turno o vi inizia il proprio turno, deve effettuare un tiro salvezza su Saggezza. Se lo fallisce, subisce 3d8 danni radiosi (se l'incantatore è buono o neutrale) o 3d8 danni necrotici (se è malvagio), In caso di successo, subisce invece soltanto la metà di quei danni.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 4° livello o superiore, i danni aumentano di 1d8 per ogni slot di livello superiore al 3°."
+      },
+      "en": "spirit-guardians"
+    },
+    {
+      "page": 165,
+      "sourceName": "Guardiano della fede",
+      "sourceLevel": "Evocazione di 4° livello",
+      "sourceText": "Guardiano della fede Evocazione di 4° livello Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V Durata: 8 ore Per la durata dell'incantesimo, un guardiano spettrale di taglia Grande compare e fluttua in uno spazio libero a scelta dell'incantatore, entro gittata e che è in grado di vedere. Il guardiano occupa quello spazio e appare indefinito, fatta eccezione per una spada e uno scudo scintillanti decorati con il simbolo della divinità dell'incantatore. Ogni creatura ostile all'incantatore che si muove in uno spazio entro 3 metri dal guardiano per la prima volta in un turno deve superare un tiro salvezza su Destrezza. In caso di fallimento, subisce 20 danni radiosi, o la metà dei danni in caso di successo. Il guardiano svanisce quando ha inflitto un totale di 60 danni.",
+      "sourceSha256": "c6380462aa1e986931c5aed8e12de1720406bd68e64cc6fb56a7d42e2f09a4e2",
+      "spell": {
+        "id": "guardiano-della-fede-2014",
+        "nome_italiano": "Guardiano della fede",
+        "livello": "Evocazione di 4° livello (chierico)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "V",
+        "durata": "8 ore",
+        "descrizione": "Per la durata dell'incantesimo, un guardiano spettrale di taglia Grande compare e fluttua in uno spazio libero a scelta dell'incantatore, entro gittata e che è in grado di vedere. Il guardiano occupa quello spazio e appare indefinito, fatta eccezione per una spada e uno scudo scintillanti decorati con il simbolo della divinità dell'incantatore.<br><br>Ogni creatura ostile all'incantatore che si muove in uno spazio entro 3 metri dal guardiano per la prima volta in un turno deve superare un tiro salvezza su Destrezza. In caso di fallimento, subisce 20 danni radiosi, o la metà dei danni in caso di successo. Il guardiano svanisce quando ha inflitto un totale di 60 danni."
+      },
+      "en": "guardian-of-faith"
+    },
+    {
+      "page": 165,
+      "sourceName": "Guarigione",
+      "sourceLevel": "Invocazione di 6° livello",
+      "sourceText": "Guarigione Invocazione di 6° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S Durata: Istantanea L'incantatore sceglie una creatura entro gittata che è in grado di vedere. Un flusso di energia positiva investe la creatura, facendole recuperare 70 punti ferita. Questo incantesimo termina qualsiasi forma di cecità, sordità e malattia che influenza il bersaglio e non ha effetto su costrutti o non morti. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 7° livello o superiore, l'ammontare di guarigione aumenta di 10 per ogni slot di livello superiore al 6°.",
+      "sourceSha256": "f0797284b63b085715fbca7e8317f521d454249f3d9917fbcf81b3ec3f675b6c",
+      "spell": {
+        "id": "guarigione-2014",
+        "nome_italiano": "Guarigione",
+        "livello": "Invocazione di 6° livello (chierico, druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore sceglie una creatura entro gittata che è in grado di vedere. Un flusso di energia positiva investe la creatura, facendole recuperare 70 punti ferita. Questo incantesimo termina qualsiasi forma di cecità, sordità e malattia che influenza il bersaglio e non ha effetto su costrutti o non morti.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 7° livello o superiore, l'ammontare di guarigione aumenta di 10 per ogni slot di livello superiore al 6°."
+      },
+      "en": "heal"
+    },
+    {
+      "page": 165,
+      "sourceName": "Guarigione di massa",
+      "sourceLevel": "Invocazione di 9° livello",
+      "sourceText": "Guarigione di massa Invocazione di 9° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S Durata: Istantanea Un'ondata di energia curativa si sprigiona dall'incantatore, investendo le creature ferite intorno a lui. In questo modo, ripristina fino a 700 punti ferita, ripartendoli come desidera tra un qualsiasi numero di creature entro gittata e che è in grado di vedere. Le creature guarite da questo incantesimo vengono inoltre curate da ogni malattia e qualsiasi effetto che le accechi o assordi. Questo incantesimo non ha effetto sui non morti o sui costrutti.",
+      "sourceSha256": "4cd6a78e915677e2a4f2fc576776e12bb120a876089bdba75772a006174b3aa0",
+      "spell": {
+        "id": "guarigione-di-massa-2014",
+        "nome_italiano": "Guarigione di massa",
+        "livello": "Invocazione di 9° livello (chierico)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "Un'ondata di energia curativa si sprigiona dall'incantatore, investendo le creature ferite intorno a lui. In questo modo, ripristina fino a 700 punti ferita, ripartendoli come desidera tra un qualsiasi numero di creature entro gittata e che è in grado di vedere. Le creature guarite da questo incantesimo vengono inoltre curate da ogni malattia e qualsiasi effetto che le accechi o assordi. Questo incantesimo non ha effetto sui non morti o sui costrutti."
+      },
+      "pages": [
+        165,
+        166
+      ],
+      "en": "mass-heal"
+    },
+    {
+      "page": 166,
+      "sourceName": "Guida",
+      "sourceLevel": "Trucchetto di Divinazione",
+      "sourceText": "Guida Trucchetto di Divinazione Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: Concentrazione, fino a 1 minuto L'incantatore tocca una creatura consenziente. Prima che l'incantesimo termini, il bersaglio può tirare un d4 e aggiungere il risultato a una prova di caratteristica a sua scelta. Può tirare il dado prima o dopo avere effettuato la prova di caratteristica, dopodiché l'incantesimo termina.",
+      "sourceSha256": "ff7d7ec510a7c6af178024c3eada326f42aa38bed5f81837e7923270d44bf1a6",
+      "spell": {
+        "id": "guida-2014",
+        "nome_italiano": "Guida",
+        "livello": "Trucchetto di Divinazione (chierico, druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore tocca una creatura consenziente. Prima che l'incantesimo termini, il bersaglio può tirare un d4 e aggiungere il risultato a una prova di caratteristica a sua scelta. Può tirare il dado prima o dopo avere effettuato la prova di caratteristica, dopodiché l'incantesimo termina."
+      },
+      "en": "guidance"
+    },
+    {
+      "page": 166,
+      "sourceName": "Guscio anti-vita",
+      "sourceLevel": "Abiurazione di 5° livello",
+      "sourceText": "Guscio anti-vita Abiurazione di 5° livello Tempo di lancio: 1 azione Gittata: Incantatore (raggio di 3 metri) Componenti: V, S Durata: Concentrazione, fino a 1 ora Una barriera scintillate si proietta dall'incantatore in un raggio di 3 metri, seguendolo nei suoi movimenti e rimanendo centrata su di lui, respingendo tutte le creature diverse da non morti e costrutti. La barriera permane per tutta la durata dell'incantesimo. La barriera impedisce a una creatura influenzata di attraversarla o protendersi oltre essa. Una creatura influenzata può lanciare incantesimi o effettuare attacchi utilizzando armi a distanza o con portata attraverso la barriera. Se l'incantatore si muove in modo che una creatura influenzata sia costretta ad attraversare la barriera, l'incantesimo termina.",
+      "sourceSha256": "21e31d780d533d862807a3c3dd6d1e07ede42e87f37e19aaaefbc7ce6cbcf2ca",
+      "spell": {
+        "id": "guscio-anti-vita-2014",
+        "nome_italiano": "Guscio anti-vita",
+        "livello": "Abiurazione di 5° livello (druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore (raggio di 3 metri)",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "Una barriera scintillate si proietta dall'incantatore in un raggio di 3 metri, seguendolo nei suoi movimenti e rimanendo centrata su di lui, respingendo tutte le creature diverse da non morti e costrutti. La barriera permane per tutta la durata dell'incantesimo.<br><br>La barriera impedisce a una creatura influenzata di attraversarla o protendersi oltre essa. Una creatura influenzata può lanciare incantesimi o effettuare attacchi utilizzando armi a distanza o con portata attraverso la barriera.<br><br>Se l'incantatore si muove in modo che una creatura influenzata sia costretta ad attraversare la barriera, l'incantesimo termina."
+      },
+      "en": "antilife-shell"
+    },
+    {
+      "page": 166,
+      "sourceName": "Identificare",
+      "sourceLevel": "Divinazione di 1° livello (rituale)",
+      "sourceText": "Identificare Divinazione di 1° livello (rituale) Tempo di lancio: 1 minuto Gittata: Contatto Componenti: V, S, M (una perla del valore di almeno 100 mo e una piuma di gufo) Durata: Istantanea L'incantatore sceglie un oggetto che deve toccare durante il lancio dell'incantesimo. Se si tratta di un oggetto magico o di un altro oggetto infuso di magia, apprende le sue proprietà e come usarlo, se è necessaria la sintonia per usarlo e quante cariche contiene, se ce ne sono. Apprende anche se l'oggetto è influenzato da eventuali incantesimi e di quali si tratta. Se l'oggetto è stato creato da un incantesimo, l'incantatore apprende quale incantesimo l'ha creato. Se invece durante il lancio dell'incantesimo tocca una creatura, apprende quali incantesimi la stanno attualmente influenzando, se ce ne sono.",
+      "sourceSha256": "9eed69b8543db0fe749d0662848388fc67cc58b6543179983f2c2f672ba57f7e",
+      "spell": {
+        "id": "identificare-2014",
+        "nome_italiano": "Identificare",
+        "livello": "Divinazione di 1° livello (bardo, mago)",
+        "tempo_di_lancio": "1 minuto o rituale",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (una perla del valore di almeno 100 mo e una piuma di gufo)",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore sceglie un oggetto che deve toccare durante il lancio dell'incantesimo. Se si tratta di un oggetto magico o di un altro oggetto infuso di magia, apprende le sue proprietà e come usarlo, se è necessaria la sintonia per usarlo e quante cariche contiene, se ce ne sono. Apprende anche se l'oggetto è influenzato da eventuali incantesimi e di quali si tratta. Se l'oggetto è stato creato da un incantesimo, l'incantatore apprende quale incantesimo l'ha creato.<br><br>Se invece durante il lancio dell'incantesimo tocca una creatura, apprende quali incantesimi la stanno attualmente influenzando, se ce ne sono."
+      },
+      "en": "identify"
+    },
+    {
+      "page": 166,
+      "sourceName": "Illusione minore",
+      "sourceLevel": "Trucchetto di Illusione",
+      "sourceText": "Illusione minore Trucchetto di Illusione Tempo di lancio: 1 azione Gittata: 9 metri Componenti: S, M (un ciuffo di lana) Durata: 1 minuto L'incantatore crea un suono o un'immagine di un oggetto entro gittata che permane per la durata dell'incantesimo. Inoltre, l'illusione termina se l'incantatore la interrompe con un'azione o se lancia questo incantesimo di nuovo. Se l'incantatore crea un suono, la sua intensità può variare da quella di un sussurro a quella di un urlo. Può trattarsi della voce dell'incantatore o di altri, del ruggito di un leone, di un rullo di tamburi o di un qualsiasi altro suono a sua scelta. Il suono può echeggiare ininterrottamente per tutta la durata dell'incantesimo, oppure l'incantatore può emettere dei suoni separati in momenti diversi prima che l'incantesimo termini. Se l'incantatore crea l'immagine di un oggetto (come per esempio una sedia, una serie di impronte nel fango o uno scrigno), quell'oggetto non deve essere più grande di un cubo di 1,5 metri. L'illusione non può emettere suoni, luci, odori o qualsiasi altro effetto sensoriale e può essere rivelata da un'interazione fisica, perché gli oggetti possono attraversarla. Se una creatura usa la sua azione per esaminare il suono o l'immagine, può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, risulta attenuata per quella creatura.",
+      "sourceSha256": "6f535fb3b1a2cf1d8045e4045f301e7604378fb82795fac0d7d56868c0aed85c",
+      "spell": {
+        "id": "illusione-minore-2014",
+        "nome_italiano": "Illusione minore",
+        "livello": "Trucchetto di Illusione (bardo, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "S, M (un ciuffo di lana)",
+        "durata": "1 minuto",
+        "descrizione": "L'incantatore crea un suono o un'immagine di un oggetto entro gittata che permane per la durata dell'incantesimo. Inoltre, l'illusione termina se l'incantatore la interrompe con un'azione o se lancia questo incantesimo di nuovo.<br><br>Se l'incantatore crea un suono, la sua intensità può variare da quella di un sussurro a quella di un urlo. Può trattarsi della voce dell'incantatore o di altri, del ruggito di un leone, di un rullo di tamburi o di un qualsiasi altro suono a sua scelta. Il suono può echeggiare ininterrottamente per tutta la durata dell'incantesimo, oppure l'incantatore può emettere dei suoni separati in momenti diversi prima che l'incantesimo termini.<br><br>Se l'incantatore crea l'immagine di un oggetto (come per esempio una sedia, una serie di impronte nel fango o uno scrigno), quell'oggetto non deve essere più grande di un cubo di 1,5 metri. L'illusione non può emettere suoni, luci, odori o qualsiasi altro effetto sensoriale e può essere rivelata da un'interazione fisica, perché gli oggetti possono attraversarla.<br><br>Se una creatura usa la sua azione per esaminare il suono o l'immagine, può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, risulta attenuata per quella creatura."
+      },
+      "en": "minor-illusion"
+    },
+    {
+      "page": 167,
+      "sourceName": "Illusione programmata",
+      "sourceLevel": "Illusione di 6° livello",
+      "sourceText": "Illusione programmata Illusione di 6° livello Tempo di lancio: 1 azione Gittata: 36 metri Componenti: V, S, M (un ciuffo di lana e polvere di giada del valore di almeno 25 mo) Durata: Finché non viene dissolto L'incantatore crea un'illusione di un oggetto, una creatura o qualche altro fenomeno visibile entro gittata che si attiva al verificarsi di una condizione specifica. Fino ad allora, l'illusione è impercettibile. Inoltre, essa non può essere più grande di un cubo di 9 metri ed è l'incantatore al momento del lancio a decidere come si comporta e quali suoni emette. Questa esibizione programmata può durare un massimo di 5 minuti. Quando la condizione specificata si verifica, l'illusione si materializza e si comporta nella maniera descritta dall'incantatore. Al termine della sua esibizione, l'illusione scompare e rimane latente per 10 minuti. Dopo questo periodo, l'illusione può essere attivata di nuovo. La condizione di innesco può essere sia generale che dettagliata, ma deve essere basata su condizioni visibili o udibili che si verificano entro 9 metri dall'area. Per esempio, l'incantatore potrebbe creare un'illusione di se stesso per avvertire coloro che tentano di aprire una porta protetta da una trappola o potrebbe programmare l'illusione per innescarsi solo quando una creatura recita la parola o la frase giusta. L'illusione può essere rivelata da un'interazione fisica, perché è possibile passarle attraverso. Una creatura che usa la sua azione per esaminare l'immagine può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, riesce a vedere attraverso l'immagine e gli eventuali suoni che emette si attenuano alle sue orecchie.",
+      "sourceSha256": "77413bb44a8e2d9b5205cf224b54890bef39469f6b382e9d43d1c045c7ffd3af",
+      "spell": {
+        "id": "illusione-programmata-2014",
+        "nome_italiano": "Illusione programmata",
+        "livello": "Illusione di 6° livello (bardo, mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "36 metri",
+        "componenti": "V, S, M (un ciuffo di lana e polvere di giada del valore di almeno 25 mo)",
+        "durata": "Finché non viene dissolto",
+        "descrizione": "L'incantatore crea un'illusione di un oggetto, una creatura o qualche altro fenomeno visibile entro gittata che si attiva al verificarsi di una condizione specifica. Fino ad allora, l'illusione è impercettibile. Inoltre, essa non può essere più grande di un cubo di 9 metri ed è l'incantatore al momento del lancio a decidere come si comporta e quali suoni emette. Questa esibizione programmata può durare un massimo di 5 minuti.<br><br>Quando la condizione specificata si verifica, l'illusione si materializza e si comporta nella maniera descritta dall'incantatore. Al termine della sua esibizione, l'illusione scompare e rimane latente per 10 minuti. Dopo questo periodo, l'illusione può essere attivata di nuovo.<br><br>La condizione di innesco può essere sia generale che dettagliata, ma deve essere basata su condizioni visibili o udibili che si verificano entro 9 metri dall'area. Per esempio, l'incantatore potrebbe creare un'illusione di se stesso per avvertire coloro che tentano di aprire una porta protetta da una trappola o potrebbe programmare l'illusione per innescarsi solo quando una creatura recita la parola o la frase giusta.<br><br>L'illusione può essere rivelata da un'interazione fisica, perché è possibile passarle attraverso. Una creatura che usa la sua azione per esaminare l'immagine può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, riesce a vedere attraverso l'immagine e gli eventuali suoni che emette si attenuano alle sue orecchie."
+      },
+      "en": "programmed-illusion"
+    },
+    {
+      "page": 167,
+      "sourceName": "Immagine maggiore",
+      "sourceLevel": "Illusione di 3° livello",
+      "sourceText": "Immagine maggiore Illusione di 3° livello Tempo di lancio: 1 azione Gittata: 36 metri Componenti: V, S, M (un ciuffo di lana) Durata: Concentrazione, fino a 10 minuti L'incantatore crea l'immagine di un oggetto, una creatura o qualche altro fenomeno visibile che non sia più grande di un cubo di 6 metri. L'immagine, apparendo in un punto situato entro gittata che l'incantatore sia in grado di vedere, permane per la durata dell'incantesimo. L'immagine illusoria sembra completamente reale e include suoni, odori e temperatura dell'oggetto che rappresenta. L'incantatore non può creare calore o freddo sufficienti a infliggere danni, un rumore abbastanza forte da infliggere danni da tuono o assordare una creatura, oppure un odore in grado di rendere una creatura inferma (come il fetore di un troglodita). Finché l'incantatore si trova entro la gittata dell'immagine illusoria, può usare la sua azione per fare in modo che essa si muova fino a un qualsiasi altro punto entro gittata. Mentre l'immagine è in movimento, l'incantatore può alterarne l'aspetto in modo che i movimenti risultino naturali. Ad esempio, se l'incantatore crea l'immagine di una creatura e decide di farla muovere, può alterare l'immagine in modo da simulare che stia camminando. Analogamente, può fare in modo che l'illusione generi suoni diversi in momenti diversi, in modo per esempio da farla perfino partecipare a una conversazione. L'illusione può essere rivelata da un'interazione fisica, perché è possibile passarle attraverso. Una creatura che usa la sua azione per esaminare l'immagine può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, riesce a vedere attraverso l'immagine, di cui si attenuano le altre caratteristiche sensoriali. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 6° livello o superiore, l'incantesimo dura finché non viene dissolto, senza richiedere la concentrazione dell'incantatore.",
+      "sourceSha256": "67c21d63e9970a7f5a8f2a3fda961ba207b6073d8db60e07f4b6dd7b50b87862",
+      "spell": {
+        "id": "immagine-maggiore-2014",
+        "nome_italiano": "Immagine maggiore",
+        "livello": "Illusione di 3° livello (bardo, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "36 metri",
+        "componenti": "V, S, M (un ciuffo di lana)",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "L'incantatore crea l'immagine di un oggetto, una creatura o qualche altro fenomeno visibile che non sia più grande di un cubo di 6 metri. L'immagine, apparendo in un punto situato entro gittata che l'incantatore sia in grado di vedere, permane per la durata dell'incantesimo. L'immagine illusoria sembra completamente reale e include suoni, odori e temperatura dell'oggetto che rappresenta. L'incantatore non può creare calore o freddo sufficienti a infliggere danni, un rumore abbastanza forte da infliggere danni da tuono o assordare una creatura, oppure un odore in grado di rendere una creatura inferma (come il fetore di un troglodita).<br><br>Finché l'incantatore si trova entro la gittata dell'immagine illusoria, può usare la sua azione per fare in modo che essa si muova fino a un qualsiasi altro punto entro gittata. Mentre l'immagine è in movimento, l'incantatore può alterarne l'aspetto in modo che i movimenti risultino naturali. Ad esempio, se l'incantatore crea l'immagine di una creatura e decide di farla muovere, può alterare l'immagine in modo da simulare che stia camminando. Analogamente, può fare in modo che l'illusione generi suoni diversi in momenti diversi, in modo per esempio da farla perfino partecipare a una conversazione.<br><br>L'illusione può essere rivelata da un'interazione fisica, perché è possibile passarle attraverso. Una creatura che usa la sua azione per esaminare l'immagine può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, riesce a vedere attraverso l'immagine, di cui si attenuano le altre caratteristiche sensoriali.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 6° livello o superiore, l'incantesimo dura finché non viene dissolto, senza richiedere la concentrazione dell'incantatore."
+      },
+      "en": "major-image"
+    },
+    {
+      "page": 167,
+      "sourceName": "Immagine proiettata",
+      "sourceLevel": "Illusione di 7° livello",
+      "sourceText": "Immagine proiettata Illusione di 7° livello Tempo di lancio: 1 azione Gittata: 750 km Componenti: V, S, M (una piccola replica dell'incantatore realizzata con materiali del valore di almeno 5 mo) Durata: Concentrazione, fino a 1 giorno L'incantatore crea una copia illusoria di se stesso che permane per la durata dell'incantesimo. La copia può apparire in qualsiasi luogo entro gittata che l'incantatore abbia visto in precedenza, a prescindere dalla presenza di ostacoli. L'illusione assomiglia in tutto e per tutto all'incantatore, ma è intangibile. Inoltre, se subisce danni, scompare e l'incantesimo termina. L'incantatore può usare la sua azione per muovere questa illusione fino al doppio della sua velocità e farla gesticolare, parlare e comportare nel modo che ritiene più opportuno. L'illusione imita i modi di fare dell'incantatore alla perfezione. L'incantatore può vedere e sentire attraverso l'illusione, come se si trovasse nel suo spazio. Nel suo turno come azione bonus, l'incantatore può passare dall'uso dei propri sensi a quelli dell'illusione e viceversa. Mentre utilizza i sensi del sosia, non può vedere né sentire nulla di ciò che circonda il suo vero corpo. L'illusione può essere rivelata da un'interazione fisica, perché è possibile passarle attraverso. Una creatura che usa la sua azione per esaminare l'immagine può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, riesce a vedere attraverso l'immagine e gli eventuali suoni che emette si attenuano alle sue orecchie.",
+      "sourceSha256": "9b96cf86f0020642ef525866ed6acbc93acd4ce91e705118273ad6d843e70476",
+      "spell": {
+        "id": "immagine-proiettata-2014",
+        "nome_italiano": "Immagine proiettata",
+        "livello": "Illusione di 7° livello (bardo, mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "750 km",
+        "componenti": "V, S, M (una piccola replica dell'incantatore realizzata con materiali del valore di almeno 5 mo)",
+        "durata": "Concentrazione, fino a 1 giorno",
+        "descrizione": "L'incantatore crea una copia illusoria di se stesso che permane per la durata dell'incantesimo. La copia può apparire in qualsiasi luogo entro gittata che l'incantatore abbia visto in precedenza, a prescindere dalla presenza di ostacoli. L'illusione assomiglia in tutto e per tutto all'incantatore, ma è intangibile. Inoltre, se subisce danni, scompare e l'incantesimo termina.<br><br>L'incantatore può usare la sua azione per muovere questa illusione fino al doppio della sua velocità e farla gesticolare, parlare e comportare nel modo che ritiene più opportuno. L'illusione imita i modi di fare dell'incantatore alla perfezione.<br><br>L'incantatore può vedere e sentire attraverso l'illusione, come se si trovasse nel suo spazio. Nel suo turno come azione bonus, l'incantatore può passare dall'uso dei propri sensi a quelli dell'illusione e viceversa. Mentre utilizza i sensi del sosia, non può vedere né sentire nulla di ciò che circonda il suo vero corpo.<br><br>L'illusione può essere rivelata da un'interazione fisica, perché è possibile passarle attraverso. Una creatura che usa la sua azione per esaminare l'immagine può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, riesce a vedere attraverso l'immagine e gli eventuali suoni che emette si attenuano alle sue orecchie."
+      },
+      "pages": [
+        167,
+        168
+      ],
+      "en": "project-image"
+    },
+    {
+      "page": 168,
+      "sourceName": "Immagine silenziosa",
+      "sourceLevel": "Illusione di 1° livello",
+      "sourceText": "Immagine silenziosa Illusione di 1° livello Tempo di lancio: 1 azione Gittata: 18 metri Componenti: V, S, M (un ciuffo di lana) Durata: Concentrazione, fino a 10 minuti L'incantatore crea l'immagine di un oggetto, una creatura o un altro fenomeno visibile che non sia più grande di un cubo di 4,5 metri. L'immagine compare in un punto situato entro gittata e permane per la durata dell'incantesimo. L'immagine è puramente visiva; non è accompagnata da suoni, odori o altri effetti sensoriali. L'incantatore può usare la sua azione per fare in modo che l'immagine si muova fino a un qualsiasi altro punto entro gittata. Mentre l'immagine è in movimento, l'incantatore può alterarne l'aspetto in modo che i movimenti risultino naturali. Ad esempio, se l'incantatore crea l'immagine di una creatura e decide di farla muovere, può alterarla in modo da simulare che stia camminando. L'illusione può essere rivelata da un'interazione fisica, perché è possibile passarle attraverso. Una creatura che usa la sua azione per esaminare l'immagine può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, riesce a vedere attraverso l'immagine.",
+      "sourceSha256": "44314586f5f044df87508c807901bab48257fc21075549dec0f3f95c3183f1d8",
+      "spell": {
+        "id": "immagine-silenziosa-2014",
+        "nome_italiano": "Immagine silenziosa",
+        "livello": "Illusione di 1° livello (bardo, mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "18 metri",
+        "componenti": "V, S, M (un ciuffo di lana)",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "L'incantatore crea l'immagine di un oggetto, una creatura o un altro fenomeno visibile che non sia più grande di un cubo di 4,5 metri. L'immagine compare in un punto situato entro gittata e permane per la durata dell'incantesimo. L'immagine è puramente visiva; non è accompagnata da suoni, odori o altri effetti sensoriali.<br><br>L'incantatore può usare la sua azione per fare in modo che l'immagine si muova fino a un qualsiasi altro punto entro gittata. Mentre l'immagine è in movimento, l'incantatore può alterarne l'aspetto in modo che i movimenti risultino naturali. Ad esempio, se l'incantatore crea l'immagine di una creatura e decide di farla muovere, può alterarla in modo da simulare che stia camminando.<br><br>L'illusione può essere rivelata da un'interazione fisica, perché è possibile passarle attraverso. Una creatura che usa la sua azione per esaminare l'immagine può determinare che si tratta di un'illusione superando una prova di Intelligenza (Indagare) contro la CD del tiro salvezza sull'incantesimo. Se una creatura riconosce l'illusione per ciò che è, riesce a vedere attraverso l'immagine."
+      },
+      "en": "silent-image"
+    },
+    {
+      "page": 168,
+      "sourceName": "Immagine speculare",
+      "sourceLevel": "Illusione di 2° livello",
+      "sourceText": "Immagine speculare Illusione di 2° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S Durata: 1 minuto Tre duplicati illusori dell'incantatore appaiono nel suo spazio. Fino al termine dell'incantesimo, i duplicati si muovono con l'incantatore e imitano le sue azioni, cambiando posizione in modo che sia impossibile individuare quale sia l'immagine reale. L'incantatore può utilizzare la sua azione per rimuovere i duplicati illusori. Nel corso della durata dell'incantesimo, ogni volta che una creatura bersaglia l'incantatore con un attacco, quest'ultimo tira un d20 per determinare se l'attacco bersagli invece uno dei suoi duplicati. Se l'incantatore ha tre duplicati, per spostare il bersaglio dell'attacco su un duplicato deve ottenere al tiro un 6 o più. Con due duplicati, deve ottenere un 8 o più. Con un duplicato, deve ottenere un 11 o più. La CA di un duplicato è pari a 10 + il modificatore di Destrezza dell'incantatore. Se un attacco colpisce un duplicato, questo viene distrutto. I duplicati possono essere distrutti solo da un attacco che li colpisce, mentre ignorano tutti gli altri tipi di danni ed effetti. L'incantesimo termina quando tutti e i tre duplicati sono distrutti. Una creatura non è influenzata da questo incantesimo se non può vedere, se si affida a sensi diversi dalla vista, come la vista cieca, o se può percepire la falsità delle illusioni, come nel caso sia dotata di vista pura.",
+      "sourceSha256": "4771ffa2c2a926578024d8ff2a57f42a45a2bdae4d09fc39403aff0facdc99f6",
+      "spell": {
+        "id": "immagine-speculare-2014",
+        "nome_italiano": "Immagine speculare",
+        "livello": "Illusione di 2° livello (mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "1 minuto",
+        "descrizione": "Tre duplicati illusori dell'incantatore appaiono nel suo spazio. Fino al termine dell'incantesimo, i duplicati si muovono con l'incantatore e imitano le sue azioni, cambiando posizione in modo che sia impossibile individuare quale sia l'immagine reale. L'incantatore può utilizzare la sua azione per rimuovere i duplicati illusori.<br><br>Nel corso della durata dell'incantesimo, ogni volta che una creatura bersaglia l'incantatore con un attacco, quest'ultimo tira un d20 per determinare se l'attacco bersagli invece uno dei suoi duplicati.<br><br>Se l'incantatore ha tre duplicati, per spostare il bersaglio dell'attacco su un duplicato deve ottenere al tiro un 6 o più. Con due duplicati, deve ottenere un 8 o più. Con un duplicato, deve ottenere un 11 o più.<br><br>La CA di un duplicato è pari a 10 + il modificatore di Destrezza dell'incantatore. Se un attacco colpisce un duplicato, questo viene distrutto. I duplicati possono essere distrutti solo da un attacco che li colpisce, mentre ignorano tutti gli altri tipi di danni ed effetti. L'incantesimo termina quando tutti e i tre duplicati sono distrutti.<br><br>Una creatura non è influenzata da questo incantesimo se non può vedere, se si affida a sensi diversi dalla vista, come la vista cieca, o se può percepire la falsità delle illusioni, come nel caso sia dotata di vista pura."
+      },
+      "en": "mirror-image"
+    },
+    {
+      "page": 168,
+      "sourceName": "Imprigionare",
+      "sourceLevel": "Abiurazione di 9° livello",
+      "sourceText": "Imprigionare Abiurazione di 9° livello Tempo di lancio: 1 minuto Gittata: 9 metri Componenti: V, S, M (un ritratto su pergamena o una statuetta intagliata con le fattezze del bersaglio e una componente speciale che varia in base alla versione dell'incantesimo scelta, del valore di almeno 500 mo per ogni Dado Vita del bersaglio) Durata: Finché non viene dissolto L'incantatore crea una costrizione magica per trattenere una creatura entro gittata che è in grado di vedere. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti sarà vincolato dall'incantesimo; in caso di successo, ne diventa immune qualora l'incantatore volesse lanciarlo di nuovo. Finché è influenzata da questo incantesimo, la creatura non ha bisogno di respirare, mangiare o bere e non invecchia. Gli incantesimi di divinazione non possono localizzare o individuare il bersaglio. Quando questo incantesimo viene lanciato, l'incantatore sceglie una delle forme di reclusione seguenti. Ceppi. Il bersaglio è bloccato da una serie di pesanti catene saldamente ancorate al terreno ed è trattenuto fino al termine dell'incantesimo, non potendo muoversi o essere mosso in alcun modo fino a allora. Prigione protetta. L'incantesimo trasporta il bersaglio in un semipiano minuscolo protetto da teletrasporto e viaggi planari. Il semipiano può essere un labirinto, una gabbia, una torre o un'analoga struttura o area delimitata a scelta dell'incantatore. La componente speciale per questa versione dell'incantesimo è una rappresentazione in miniatura della prigione realizzata in giada. Prigionia ridotta. Il bersaglio viene rimpicciolito a un'altezza di 2,5 centimetri e imprigionato all'interno di una gemma o un oggetto simile. La luce passa normalmente attraverso la gemma (permettendo al bersaglio di guardare all'esterno e alle altre creature di guardare all'interno), ma nient'altro può attraversarla, nemmeno utilizzando il teletrasporto o i viaggi planari. La gemma non può essere tagliata o rotta mentre l'incantesimo è attivo. La componente speciale per questa versione dell'incantesimo è una grande gemma trasparente, come un corindone, un diamante o un rubino. Sepoltura. Il bersaglio viene sepolto nelle viscere della terra in una sfera di forza magica sufficientemente ampia da contenerlo. Nulla può attraversare la sfera e nessuna creatura può utilizzare il teletrasporto o i viaggi planari per entrarvi o uscirvi. La componente speciale per questa versione dell'incantesimo è un piccolo globo di mithral. La componente speciale per questa versione dell'incantesimo è una sottile catena di metallo prezioso. Sonno. Il bersaglio si addormenta e non può essere svegliato. La componente speciale per questa versione dell'incantesimo consiste in rare erbe soporifere. Porre fine all'incantesimo. Durante il lancio dell'incantesimo, in qualsiasi sua versione, l'incantatore può specificare una condizione che vi pone fine, liberando il bersaglio. La condizione può essere specifica e complessa quanto l'incantatore desidera, ma il GM deve considerarla ragionevole e ritenere che abbia una possibilità di verificarsi. Le condizioni possono essere basate sul nome, l'identità o la divinità di una creatura, ma devono fondarsi su azioni o qualità osservabili e non su concetti intangibili come livello, classe o punti ferita. Dissolvi magie può porre fine a questo incantesimo solo se viene lanciato come un incantesimo di 9° livello, bersagliando la prigione o la componente speciale usata per crearla. L'incantatore può utilizzare una particolare componente speciale per creare una sola prigione alla volta. Se l'incantatore lancia nuovamente l'incantesimo usando la stessa componente, il bersaglio del primo lancio viene subito liberato dalla sua prigionia.",
+      "sourceSha256": "89f9142f1d9684de3d313c7188c8df99bba512123dc6eb03ed09169098b4cd76",
+      "spell": {
+        "id": "imprigionare-2014",
+        "nome_italiano": "Imprigionare",
+        "livello": "Abiurazione di 9° livello (mago, warlock)",
+        "tempo_di_lancio": "1 minuto",
+        "gittata": "9 metri",
+        "componenti": "V, S, M (un ritratto su pergamena o una statuetta intagliata con le fattezze del bersaglio e una componente speciale che varia in base alla versione dell'incantesimo scelta, del valore di almeno 500 mo per ogni Dado Vita del bersaglio)",
+        "durata": "Finché non viene dissolto",
+        "descrizione": "L'incantatore crea una costrizione magica per trattenere una creatura entro gittata che è in grado di vedere. Il bersaglio deve superare un tiro salvezza su Saggezza, altrimenti sarà vincolato dall'incantesimo; in caso di successo, ne diventa immune qualora l'incantatore volesse lanciarlo di nuovo. Finché è influenzata da questo incantesimo, la creatura non ha bisogno di respirare, mangiare o bere e non invecchia. Gli incantesimi di divinazione non possono localizzare o individuare il bersaglio.<br><br>Quando questo incantesimo viene lanciato, l'incantatore sceglie una delle forme di reclusione seguenti.<br><br><strong>Ceppi.</strong> Il bersaglio è bloccato da una serie di pesanti catene saldamente ancorate al terreno ed è trattenuto fino al termine dell'incantesimo, non potendo muoversi o essere mosso in alcun modo fino a allora.<br><br><strong>Prigione protetta.</strong> L'incantesimo trasporta il bersaglio in un semipiano minuscolo protetto da teletrasporto e viaggi planari. Il semipiano può essere un labirinto, una gabbia, una torre o un'analoga struttura o area delimitata a scelta dell'incantatore.<br><br>La componente speciale per questa versione dell'incantesimo è una rappresentazione in miniatura della prigione realizzata in giada.<br><br><strong>Prigionia ridotta.</strong> Il bersaglio viene rimpicciolito a un'altezza di 2,5 centimetri e imprigionato all'interno di una gemma o un oggetto simile. La luce passa normalmente attraverso la gemma (permettendo al bersaglio di guardare all'esterno e alle altre creature di guardare all'interno), ma nient'altro può attraversarla, nemmeno utilizzando il teletrasporto o i viaggi planari. La gemma non può essere tagliata o rotta mentre l'incantesimo è attivo.<br><br>La componente speciale per questa versione dell'incantesimo è una grande gemma trasparente, come un corindone, un diamante o un rubino.<br><br><strong>Sepoltura.</strong> Il bersaglio viene sepolto nelle viscere della terra in una sfera di forza magica sufficientemente ampia da contenerlo. Nulla può attraversare la sfera e nessuna creatura può utilizzare il teletrasporto o i viaggi planari per entrarvi o uscirvi.<br><br>La componente speciale per questa versione dell'incantesimo è un piccolo globo di mithral.<br><br>La componente speciale per questa versione dell'incantesimo è una sottile catena di metallo prezioso.<br><br><strong>Sonno.</strong> Il bersaglio si addormenta e non può essere svegliato. La componente speciale per questa versione dell'incantesimo consiste in rare erbe soporifere.<br><br><strong>Porre fine all'incantesimo.</strong> Durante il lancio dell'incantesimo, in qualsiasi sua versione, l'incantatore può specificare una condizione che vi pone fine, liberando il bersaglio. La condizione può essere specifica e complessa quanto l'incantatore desidera, ma il GM deve considerarla ragionevole e ritenere che abbia una possibilità di verificarsi. Le condizioni possono essere basate sul nome, l'identità o la divinità di una creatura, ma devono fondarsi su azioni o qualità osservabili e non su concetti intangibili come livello, classe o punti ferita.<br><br><em>Dissolvi magie</em> può porre fine a questo incantesimo solo se viene lanciato come un incantesimo di 9° livello, bersagliando la prigione o la componente speciale usata per crearla.<br><br>L'incantatore può utilizzare una particolare componente speciale per creare una sola prigione alla volta. Se l'incantatore lancia nuovamente l'incantesimo usando la stessa componente, il bersaglio del primo lancio viene subito liberato dalla sua prigionia."
+      },
+      "pages": [
+        168,
+        169
+      ],
+      "en": "imprisonment"
+    },
+    {
+      "page": 169,
+      "sourceName": "Inaridire",
+      "sourceLevel": "Necromanzia di 4° livello",
+      "sourceText": "Inaridire Necromanzia di 4° livello Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V, S Durata: Istantanea L'energia necromantica si riversa su una creatura a scelta dell'incantatore, situata entro la sua gittata e che è in grado di vedere. Il bersaglio deve effettuare un tiro salvezza su Costituzione. In caso di fallimento, subisce 8d8 danni necrotici, o la metà dei danni in caso di successo. Questo incantesimo non ha effetto sui non morti o sui costrutti. Se l'incantatore bersaglia una creatura vegetale o un vegetale magico, tale bersaglio effettua il tiro salvezza con svantaggio e l'incantesimo infligge il massimo dei danni. Se l'incantatore bersaglia un vegetale non magico che non è una creatura, come un albero o un arbusto, tale bersaglio non effettua un tiro salvezza, ma semplicemente avvizzisce e muore. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 5° livello o superiore, i danni aumentano di 1d8 per ogni slot di livello superiore al 4°.",
+      "sourceSha256": "9854e7d9ee91c93536882604b01bd57c94c0bb64818ec9b6928bb556ac6ed3a3",
+      "spell": {
+        "id": "inaridire-2014",
+        "nome_italiano": "Inaridire",
+        "livello": "Necromanzia di 4° livello (druido, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "L'energia necromantica si riversa su una creatura a scelta dell'incantatore, situata entro la sua gittata e che è in grado di vedere. Il bersaglio deve effettuare un tiro salvezza su Costituzione. In caso di fallimento, subisce 8d8 danni necrotici, o la metà dei danni in caso di successo. Questo incantesimo non ha effetto sui non morti o sui costrutti.<br><br>Se l'incantatore bersaglia una creatura vegetale o un vegetale magico, tale bersaglio effettua il tiro salvezza con svantaggio e l'incantesimo infligge il massimo dei danni.<br><br>Se l'incantatore bersaglia un vegetale non magico che non è una creatura, come un albero o un arbusto, tale bersaglio non effettua un tiro salvezza, ma semplicemente avvizzisce e muore.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 5° livello o superiore, i danni aumentano di 1d8 per ogni slot di livello superiore al 4°."
+      },
+      "en": "blight"
+    },
+    {
+      "page": 170,
+      "sourceName": "Individuazione dei pensieri",
+      "sourceLevel": "Divinazione di 2° livello",
+      "sourceText": "Individuazione dei pensieri Divinazione di 2° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S, M (una moneta di rame) Durata: Concentrazione, fino a 1 minuto Per la durata dell'incantesimo, l'incantatore può leggere i pensieri di alcune creature. Quando lancia l'incantesimo e come azione in ogni turno finché l'incantesimo non termina, l'incantatore può concentrarsi su una creatura che è in grado di vedere entro 9 metri da lui. Se la creatura scelta ha un'Intelligenza pari o inferiore a 3 o non parla alcun linguaggio, l'incantesimo non avrà effetti su di lei. All'inizio, l'incantatore apprende i pensieri superficiali della creatura, ciò che sta pensando in quel momento. Con un'azione, l'incantatore può spostare l'attenzione verso i pensieri di un'altra creatura o provare a scavare più in profondità nella mente della creatura su cui era già concentrato. Nell'ultimo caso, il bersaglio deve effettuare un tiro salvezza su Saggezza. Se lo fallisce, l'incantatore riesce ad avere accesso ai suoi ragionamenti (se ne fa), al suo stato emotivo e a ciò che principalmente riempie la sua mente (qualcosa di cui si preoccupa, che ama o odia). In caso di successo, l'incantesimo termina. In ogni caso, il bersaglio è consapevole che l'incantatore ha accesso alla sua mente e, se quest'ultimo non sposta la sua attenzione verso i pensieri di un'altra creatura, può usare la sua azione nel proprio turno per effettuare una prova di Intelligenza contrapposta alla prova di Intelligenza dell'incantatore; in caso di successo, l'incantesimo termina. Le domande rivolte verbalmente alla creatura bersagliata plasmano naturalmente il corso dei suoi pensieri, per questo l'incantesimo è particolarmente efficace nel corso di un interrogatorio. L'incantatore può inoltre utilizzare questo incantesimo per individuare la presenza di creature pensanti che non è in grado di vedere. Quando lancia l'incantesimo o come azione durante la sua durata, l'incantatore può cercare pensieri in un raggio di 9 metri da sé. L'incantesimo può penetrare le barriere, ma viene bloccato da 60 cm di roccia, 5 cm di un metallo diverso dal piombo o da una sottile lamina di piombo. L'incantatore non può rilevare una creatura con un'Intelligenza pari o inferiore a 3, oppure una creatura che non parla alcun linguaggio. Una volta rilevata la presenza di una creatura in questo modo, l'incantatore può leggere i suoi pensieri per il resto della durata dell'incantesimo come descritto in precedenza, anche se non è in grado di vederla; la creatura, tuttavia, deve comunque trovarsi entro gittata.",
+      "sourceSha256": "5bf244ac9234e9de4e51fe9763cb89d4f31c8f6fd93a2ac44ff71a49bf0e0f27",
+      "spell": {
+        "id": "individuazione-dei-pensieri-2014",
+        "nome_italiano": "Individuazione dei pensieri",
+        "livello": "Divinazione di 2° livello (bardo, mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S, M (una moneta di rame)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Per la durata dell'incantesimo, l'incantatore può leggere i pensieri di alcune creature. Quando lancia l'incantesimo e come azione in ogni turno finché l'incantesimo non termina, l'incantatore può concentrarsi su una creatura che è in grado di vedere entro 9 metri da lui. Se la creatura scelta ha un'Intelligenza pari o inferiore a 3 o non parla alcun linguaggio, l'incantesimo non avrà effetti su di lei.<br><br>All'inizio, l'incantatore apprende i pensieri superficiali della creatura, ciò che sta pensando in quel momento. Con un'azione, l'incantatore può spostare l'attenzione verso i pensieri di un'altra creatura o provare a scavare più in profondità nella mente della creatura su cui era già concentrato. Nell'ultimo caso, il bersaglio deve effettuare un tiro salvezza su Saggezza. Se lo fallisce, l'incantatore riesce ad avere accesso ai suoi ragionamenti (se ne fa), al suo stato emotivo e a ciò che principalmente riempie la sua mente (qualcosa di cui si preoccupa, che ama o odia). In caso di successo, l'incantesimo termina. In ogni caso, il bersaglio è consapevole che l'incantatore ha accesso alla sua mente e, se quest'ultimo non sposta la sua attenzione verso i pensieri di un'altra creatura, può usare la sua azione nel proprio turno per effettuare una prova di Intelligenza contrapposta alla prova di Intelligenza dell'incantatore; in caso di successo, l'incantesimo termina.<br><br>Le domande rivolte verbalmente alla creatura bersagliata plasmano naturalmente il corso dei suoi pensieri, per questo l'incantesimo è particolarmente efficace nel corso di un interrogatorio.<br><br>L'incantatore può inoltre utilizzare questo incantesimo per individuare la presenza di creature pensanti che non è in grado di vedere. Quando lancia l'incantesimo o come azione durante la sua durata, l'incantatore può cercare pensieri in un raggio di 9 metri da sé. L'incantesimo può penetrare le barriere, ma viene bloccato da 60 cm di roccia, 5 cm di un metallo diverso dal piombo o da una sottile lamina di piombo. L'incantatore non può rilevare una creatura con un'Intelligenza pari o inferiore a 3, oppure una creatura che non parla alcun linguaggio.<br><br>Una volta rilevata la presenza di una creatura in questo modo, l'incantatore può leggere i suoi pensieri per il resto della durata dell'incantesimo come descritto in precedenza, anche se non è in grado di vederla; la creatura, tuttavia, deve comunque trovarsi entro gittata."
+      },
+      "en": "detect-thoughts"
+    },
+    {
+      "page": 170,
+      "sourceName": "Individuazione del bene e del male",
+      "sourceLevel": "Divinazione di 1° livello",
+      "sourceText": "Individuazione del bene e del male Divinazione di 1° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S Durata: Concentrazione, fino a 10 minuti Per tutta la durata dell'incantesimo, l'incantatore è a conoscenza della presenza e dell'esatta posizione di un'aberrazione, un celestiale, un elementale, un folletto, un immondo o un non morto entro 9 metri da lui. Allo stesso modo, sa se entro 9 metri da lui c'è un luogo o un oggetto consacrato o dissacrato magicamente. L'incantesimo può penetrare la maggior parte delle barriere, ma viene bloccato da 30 cm di pietra, 2,5 cm di metallo comune, una sottile lamina di piombo o 90 cm di legno o terriccio.",
+      "sourceSha256": "6c030934bf27a6aba6fe1ce0feb0448157225ebe87296b8e957e8b5c47a00547",
+      "spell": {
+        "id": "individuazione-del-bene-e-del-male-2014",
+        "nome_italiano": "Individuazione del bene e del male",
+        "livello": "Divinazione di 1° livello (chierico, paladino)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "Per tutta la durata dell'incantesimo, l'incantatore è a conoscenza della presenza e dell'esatta posizione di un'aberrazione, un celestiale, un elementale, un folletto, un immondo o un non morto entro 9 metri da lui. Allo stesso modo, sa se entro 9 metri da lui c'è un luogo o un oggetto consacrato o dissacrato magicamente.<br><br>L'incantesimo può penetrare la maggior parte delle barriere, ma viene bloccato da 30 cm di pietra, 2,5 cm di metallo comune, una sottile lamina di piombo o 90 cm di legno o terriccio."
+      },
+      "en": "detect-evil-and-good"
+    },
+    {
+      "page": 170,
+      "sourceName": "Individuazione del magico",
+      "sourceLevel": "Divinazione di 1° livello (rituale)",
+      "sourceText": "Individuazione del magico Divinazione di 1° livello (rituale) Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S Durata: Concentrazione, fino a 10 minuti Per la durata dell'incantesimo, l'incantesimo percepisce la presenza della magia entro 9 metri. Se percepisce la magia in questo modo, può usare la sua azione per vedere una debole aura attorno a ogni creatura o oggetto visibile nell'area che contenga magia e apprende di che scuola di magia si tratta, se ne esiste una. L'incantesimo può penetrare la maggior parte delle barriere, ma viene bloccato da 30 cm di pietra, 2,5 cm di metallo comune, una sottile lamina di piombo o 90 cm di legno o terriccio.",
+      "sourceSha256": "410f9fe639c6169bef58d689a82f3ac332ca5f8265bf6e7bb6ccd8c78f08f805",
+      "spell": {
+        "id": "individuazione-del-magico-2014",
+        "nome_italiano": "Individuazione del magico",
+        "livello": "Divinazione di 1° livello (bardo, chierico, druido, mago, paladino, ranger, stregone)",
+        "tempo_di_lancio": "1 azione o rituale",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "Per la durata dell'incantesimo, l'incantesimo percepisce la presenza della magia entro 9 metri. Se percepisce la magia in questo modo, può usare la sua azione per vedere una debole aura attorno a ogni creatura o oggetto visibile nell'area che contenga magia e apprende di che scuola di magia si tratta, se ne esiste una.<br><br>L'incantesimo può penetrare la maggior parte delle barriere, ma viene bloccato da 30 cm di pietra, 2,5 cm di metallo comune, una sottile lamina di piombo o 90 cm di legno o terriccio."
+      },
+      "en": "detect-magic"
+    },
+    {
+      "page": 170,
+      "sourceName": "Individuazione delle malattie e dei veleni",
+      "sourceLevel": "Divinazione di 1° livello (rituale)",
+      "sourceText": "Individuazione delle malattie e dei veleni Divinazione di 1° livello (rituale) Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S, M (una foglia di tasso) Durata: Concentrazione, fino a 10 minuti Per la durata dell'incantesimo, l'incantatore può percepire la presenza o l'ubicazione di veleni, creature velenose o malattie entro 9 metri. Inoltre, in ciascun caso può identificare il tipo di pozione, di creatura velenosa o di malattia. L'incantesimo può penetrare la maggior parte delle barriere, ma viene bloccato da 30 cm di pietra, 2,5 cm di metallo comune, una sottile lamina di piombo o 90 cm di legno o terriccio.",
+      "sourceSha256": "a600235dc9231aaebb0356a6b6fba292f8d5dfcdbea1c27aa5356ac055f4d784",
+      "spell": {
+        "id": "individuazione-delle-malattie-e-dei-veleni-2014",
+        "nome_italiano": "Individuazione delle malattie e dei veleni",
+        "livello": "Divinazione di 1° livello (chierico, druido, paladino, ranger)",
+        "tempo_di_lancio": "1 azione o rituale",
+        "gittata": "Incantatore",
+        "componenti": "V, S, M (una foglia di tasso)",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "Per la durata dell'incantesimo, l'incantatore può percepire la presenza o l'ubicazione di veleni, creature velenose o malattie entro 9 metri. Inoltre, in ciascun caso può identificare il tipo di pozione, di creatura velenosa o di malattia.<br><br>L'incantesimo può penetrare la maggior parte delle barriere, ma viene bloccato da 30 cm di pietra, 2,5 cm di metallo comune, una sottile lamina di piombo o 90 cm di legno o terriccio."
+      },
+      "pages": [
+        170,
+        171
+      ],
+      "en": "detect-poison-and-disease"
+    },
+    {
+      "page": 171,
+      "sourceName": "Infliggi ferite",
+      "sourceLevel": "Necromanzia di 1° livello",
+      "sourceText": "Infliggi ferite Necromanzia di 1° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: Istantanea Con questo incantesimo l'incantatore effettua un attacco in mischia contro una creatura entro la sua portata. Se il colpo va a segno, il bersaglio subisce 3d10 danni necrotici. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, i danni aumentano di 1d10 per ogni slot di livello superiore al 1°.",
+      "sourceSha256": "09f53d6f13f6028a9de17e0b08f48914eb67e1fbf54fa481ad97ee48b991f388",
+      "spell": {
+        "id": "infliggi-ferite-2014",
+        "nome_italiano": "Infliggi ferite",
+        "livello": "Necromanzia di 1° livello (chierico)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "Con questo incantesimo l'incantatore effettua un attacco in mischia contro una creatura entro la sua portata. Se il colpo va a segno, il bersaglio subisce 3d10 danni necrotici.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, i danni aumentano di 1d10 per ogni slot di livello superiore al 1°."
+      },
+      "en": "inflict-wounds"
+    },
+    {
+      "page": 171,
+      "sourceName": "Ingrandire/Ridurre",
+      "sourceLevel": "Trasmutazione di 2° livello",
+      "sourceText": "Ingrandire/Ridurre Trasmutazione di 2° livello Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V, S, M (un pizzico di polvere di ferro) Durata: Concentrazione, fino a 1 minuto Per tutta la durata dell'incantesimo, l'incantatore ingrandisce o riduce la taglia di una creatura o un oggetto entro gittata che è in grado di vedere, scegliendo una creatura o un oggetto che non sia né indossato né trasportato. Il bersaglio può effettuare un tiro salvezza su Costituzione se non è consenziente. Se lo supera, l'incantesimo non sortisce alcun effetto. Se il bersaglio è una creatura, tutto ciò che indossa o trasporta cambia di taglia insieme a lei e, se lascia cadere un oggetto, questo torna immediatamente alla sua taglia normale. Ingrandire. La taglia del bersaglio raddoppia in tutte le dimensioni e il suo peso aumenta di otto volte. Questa crescita aumenta la sua taglia di una categoria (da Media a Grande, per esempio). Se non c'è abbastanza spazio per consentire al bersaglio di raddoppiare la sua taglia, la creatura o l'oggetto in questione cresce fino a raggiungere la taglia maggiore possibile nello spazio disponibile. Fino al termine dell'incantesimo, il bersaglio dispone anche di vantaggio alle prove di Forza e ai tiri salvezza su Forza. Inoltre, le sue armi crescono fino ad adattarsi alla sua nuova taglia. Finché queste armi sono ingrandite, gli attacchi effettuati dal bersaglio con esse infliggono 1d4 danni extra. Ridurre. La taglia del bersaglio è dimezzata in tutte le dimensioni e il suo peso si riduce a un ottavo del peso normale. Questa riduzione diminuisce la sua taglia di una categoria (da Media a Piccola, per esempio). Fino al termine dell'incantesimo, il bersaglio subisce anche svantaggio alle prove di Forza e ai tiri salvezza su Forza. Inoltre, le sue armi si riducono fino ad adattarsi alla sua nuova taglia. Finché queste armi sono ridotte, gli attacchi effettuati dal bersaglio con esse infliggono 1d4 danni in meno (i danni non possono scendere a meno di 1).",
+      "sourceSha256": "f4db56a1c4232d3565d6a3b6bcd0359d3334c494e5428d396165191639c9f5e2",
+      "spell": {
+        "id": "ingrandire-ridurre-2014",
+        "nome_italiano": "Ingrandire/Ridurre",
+        "livello": "Trasmutazione di 2° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "V, S, M (un pizzico di polvere di ferro)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Per tutta la durata dell'incantesimo, l'incantatore ingrandisce o riduce la taglia di una creatura o un oggetto entro gittata che è in grado di vedere, scegliendo una creatura o un oggetto che non sia né indossato né trasportato. Il bersaglio può effettuare un tiro salvezza su Costituzione se non è consenziente. Se lo supera, l'incantesimo non sortisce alcun effetto.<br><br>Se il bersaglio è una creatura, tutto ciò che indossa o trasporta cambia di taglia insieme a lei e, se lascia cadere un oggetto, questo torna immediatamente alla sua taglia normale.<br><br><strong>Ingrandire.</strong> La taglia del bersaglio raddoppia in tutte le dimensioni e il suo peso aumenta di otto volte. Questa crescita aumenta la sua taglia di una categoria (da Media a Grande, per esempio). Se non c'è abbastanza spazio per consentire al bersaglio di raddoppiare la sua taglia, la creatura o l'oggetto in questione cresce fino a raggiungere la taglia maggiore possibile nello spazio disponibile. Fino al termine dell'incantesimo, il bersaglio dispone anche di vantaggio alle prove di Forza e ai tiri salvezza su Forza. Inoltre, le sue armi crescono fino ad adattarsi alla sua nuova taglia. Finché queste armi sono ingrandite, gli attacchi effettuati dal bersaglio con esse infliggono 1d4 danni extra.<br><br><strong>Ridurre.</strong> La taglia del bersaglio è dimezzata in tutte le dimensioni e il suo peso si riduce a un ottavo del peso normale. Questa riduzione diminuisce la sua taglia di una categoria (da Media a Piccola, per esempio). Fino al termine dell'incantesimo, il bersaglio subisce anche svantaggio alle prove di Forza e ai tiri salvezza su Forza. Inoltre, le sue armi si riducono fino ad adattarsi alla sua nuova taglia. Finché queste armi sono ridotte, gli attacchi effettuati dal bersaglio con esse infliggono 1d4 danni in meno (i danni non possono scendere a meno di 1)."
+      },
+      "en": "enlarge-reduce"
+    },
+    {
+      "page": 171,
+      "sourceName": "Insetto gigante",
+      "sourceLevel": "Trasmutazione di 4° livello",
+      "sourceText": "Insetto gigante Trasmutazione di 4° livello Tempo di lancio: 1 azione Gittata: 9 metri Componenti: V, S Durata: Concentrazione, fino a 10 minuti Per la durata dell'incantesimo, l'incantatore trasforma un massimo di dieci millepiedi, tre ragni, cinque vespe o uno scorpione entro gittata in versioni giganti delle loro forme naturali. Un millepiedi diventa un millepiedi gigante, un ragno diventa un ragno gigante, una vespa diventa una vespa gigante e uno scorpione diventa uno scorpione gigante. Ogni creatura obbedisce ai comandi verbali dell'incantatore e, durante il combattimento, agisce nel turno dell'incantatore in ogni round. Il GM possiede le statistiche di queste creature e risolve le loro azioni e i loro movimenti. Una creatura rimane nella sua forma gigante per la durata dell'incantesimo, finché scende a 0 punti ferita o finché l'incantatore usa un'azione per terminare l'effetto su di essa. Il GM potrebbe permettere all'incantatore di scegliere bersagli differenti. Per esempio, se trasforma un'ape, le statistiche generali della sua versione gigante potrebbero essere le stesse della vespa gigante.",
+      "sourceSha256": "2b28153a1bb296e364667ae2dd5ab08798ab83fa627d2fd6849bd600287b1b62",
+      "spell": {
+        "id": "insetto-gigante-2014",
+        "nome_italiano": "Insetto gigante",
+        "livello": "Trasmutazione di 4° livello (druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "9 metri",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 10 minuti",
+        "descrizione": "Per la durata dell'incantesimo, l'incantatore trasforma un massimo di dieci millepiedi, tre ragni, cinque vespe o uno scorpione entro gittata in versioni giganti delle loro forme naturali. Un millepiedi diventa un millepiedi gigante, un ragno diventa un ragno gigante, una vespa diventa una vespa gigante e uno scorpione diventa uno scorpione gigante.<br><br>Ogni creatura obbedisce ai comandi verbali dell'incantatore e, durante il combattimento, agisce nel turno dell'incantatore in ogni round. Il GM possiede le statistiche di queste creature e risolve le loro azioni e i loro movimenti.<br><br>Una creatura rimane nella sua forma gigante per la durata dell'incantesimo, finché scende a 0 punti ferita o finché l'incantatore usa un'azione per terminare l'effetto su di essa.<br><br>Il GM potrebbe permettere all'incantatore di scegliere bersagli differenti. Per esempio, se trasforma un'ape, le statistiche generali della sua versione gigante potrebbero essere le stesse della vespa gigante."
+      },
+      "en": "giant-insect"
+    },
+    {
+      "page": 172,
+      "sourceName": "Interdizione alla morte",
+      "sourceLevel": "Abiurazione di 4° livello",
+      "sourceText": "Interdizione alla morte Abiurazione di 4° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: 8 ore L'incantatore tocca una creatura e le concede una misura di protezione dalla morte. La prima volta che il bersaglio subisce una quantità di danni tale da farlo scendere a 0 punti ferita, scende invece a 1 punto ferita e l'incantesimo termina. Se l'incantesimo è ancora attivo quando il bersaglio è soggetto a un effetto che ne provocherebbe la morte istantanea senza infliggere danni, quell'effetto viene invece annullato e l'incantesimo termina.",
+      "sourceSha256": "6235084ec176e3e31f654c6630e958cd019af780506830f05190f5bfce0bffd5",
+      "spell": {
+        "id": "interdizione-alla-morte-2014",
+        "nome_italiano": "Interdizione alla morte",
+        "livello": "Abiurazione di 4° livello (chierico, paladino)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "8 ore",
+        "descrizione": "L'incantatore tocca una creatura e le concede una misura di protezione dalla morte.<br><br>La prima volta che il bersaglio subisce una quantità di danni tale da farlo scendere a 0 punti ferita, scende invece a 1 punto ferita e l'incantesimo termina.<br><br>Se l'incantesimo è ancora attivo quando il bersaglio è soggetto a un effetto che ne provocherebbe la morte istantanea senza infliggere danni, quell'effetto viene invece annullato e l'incantesimo termina."
+      },
+      "en": "death-ward"
+    },
+    {
+      "page": 172,
+      "sourceName": "Intermittenza",
+      "sourceLevel": "Trasmutazione di 3° livello",
+      "sourceText": "Intermittenza Trasmutazione di 3° livello Tempo di lancio: 1 azione Gittata: Incantatore Componenti: V, S Durata: 1 minuto L'incantatore tira un d20 alla fine di ogni suo turno per la durata dell'incantesimo. Con un risultato pari o superiore a 11, l'incantatore svanisce dal piano di esistenza in cui si trova per riapparire sul Piano Etereo (l'incantesimo non funziona e il lancio va sprecato se l'incantatore si trova già su quel piano). All'inizio del suo turno successivo, e quando l'incantesimo termina nel caso l'incantatore si trovi già sul Piano Etereo, l'incantatore ritorna in uno spazio libero a sua scelta, che è in grado di vedere e situato entro 3 metri dal punto in cui è svanito. Se nessuno spazio libero è disponibile entro quel raggio, l'incantatore appare nello spazio libero più vicino (scelto casualmente se più spazi liberi si trovano a pari distanza). Con un'azione, l'incantatore può terminare questo incantesimo. Mentre si trova sul Piano Etereo, l'incantatore può sentire e vedere il piano da cui proviene, che è proiettato in scala di grigi ed è visibile solo fino a una distanza di 18 metri. L'incantatore può influenzare ed essere influenzato solo dalle creature che si trovano sul Piano Etereo. Quelle che non sono presenti sul piano non possono percepire o interagire con l'incantatore, a meno che non siano dotate di una qualche capacità per farlo.",
+      "sourceSha256": "0b4b5686647defa995772109e49305420c42292e17f3d8c64f6809c349b42c51",
+      "spell": {
+        "id": "intermittenza-2014",
+        "nome_italiano": "Intermittenza",
+        "livello": "Trasmutazione di 3° livello (mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Incantatore",
+        "componenti": "V, S",
+        "durata": "1 minuto",
+        "descrizione": "L'incantatore tira un d20 alla fine di ogni suo turno per la durata dell'incantesimo. Con un risultato pari o superiore a 11, l'incantatore svanisce dal piano di esistenza in cui si trova per riapparire sul Piano Etereo (l'incantesimo non funziona e il lancio va sprecato se l'incantatore si trova già su quel piano). All'inizio del suo turno successivo, e quando l'incantesimo termina nel caso l'incantatore si trovi già sul Piano Etereo, l'incantatore ritorna in uno spazio libero a sua scelta, che è in grado di vedere e situato entro 3 metri dal punto in cui è svanito. Se nessuno spazio libero è disponibile entro quel raggio, l'incantatore appare nello spazio libero più vicino (scelto casualmente se più spazi liberi si trovano a pari distanza). Con un'azione, l'incantatore può terminare questo incantesimo.<br><br>Mentre si trova sul Piano Etereo, l'incantatore può sentire e vedere il piano da cui proviene, che è proiettato in scala di grigi ed è visibile solo fino a una distanza di 18 metri. L'incantatore può influenzare ed essere influenzato solo dalle creature che si trovano sul Piano Etereo. Quelle che non sono presenti sul piano non possono percepire o interagire con l'incantatore, a meno che non siano dotate di una qualche capacità per farlo."
+      },
+      "en": "blink"
+    },
+    {
+      "page": 172,
+      "sourceName": "Intimorire infernale",
+      "sourceLevel": "Invocazione di 1° livello",
+      "sourceText": "Intimorire infernale Invocazione di 1° livello Tempo di lancio: 1 reazione, che l'incantatore può effettuare quando subisce danni da una creatura entro 18 metri che è in grado di vedere. Gittata: 18 metri Componenti: V, S Durata: Istantanea L'incantatore punta il dito contro la creatura che gli ha inferto danni, la quale viene momentaneamente avvolta da fiamme infernali. La creatura deve effettuare un tiro salvezza su Destrezza e subisce 2d10 danni da fuoco in caso di fallimento, o la metà dei danni in caso di successo. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, i danni aumentano di 1d10 per ogni slot di livello superiore al 1°.",
+      "sourceSha256": "11d694df15f686ac981fee0aef2cbf30543f446f8045597d770e9edb4f7f4103",
+      "spell": {
+        "id": "intimorire-infernale-2014",
+        "nome_italiano": "Intimorire infernale",
+        "livello": "Invocazione di 1° livello (warlock)",
+        "tempo_di_lancio": "1 reazione, che l'incantatore può effettuare quando subisce danni da una creatura entro 18 metri che è in grado di vedere.",
+        "gittata": "18 metri",
+        "componenti": "V, S",
+        "durata": "Istantanea",
+        "descrizione": "L'incantatore punta il dito contro la creatura che gli ha inferto danni, la quale viene momentaneamente avvolta da fiamme infernali. La creatura deve effettuare un tiro salvezza su Destrezza e subisce 2d10 danni da fuoco in caso di fallimento, o la metà dei danni in caso di successo.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 2° livello o superiore, i danni aumentano di 1d10 per ogni slot di livello superiore al 1°."
+      },
+      "en": "hellish-rebuke"
+    },
+    {
+      "page": 172,
+      "sourceName": "Intralciare",
+      "sourceLevel": "Evocazione di 1° livello",
+      "sourceText": "Intralciare Evocazione di 1° livello Tempo di lancio: 1 azione Gittata: 27 metri Componenti: V, S Durata: Concentrazione, fino a 1 minuto Erbacce e rampicanti spuntano dal terreno in un'area di 6 metri per lato che ha origine da un punto situato entro gittata. Per la durata dell'incantesimo, i vegetali trasformano quell'area in un terreno difficile. Una creatura all'interno dell'area quando viene lanciato l'incantesimo deve superare un tiro salvezza su Forza, altrimenti è trattenuta da vegetali intralcianti fino al termine dell'incantesimo. Una creatura così trattenuta può usare la sua azione per effettuare una prova di Forza contro la CD del tiro salvezza sull'incantesimo. In caso di successo, si libera. Al termine dell'incantesimo, i vegetali evocati avvizziscono.",
+      "sourceSha256": "4ead38ca9c622abcfd12260e652af566d5007c408a219a7c35dd59823eff676c",
+      "spell": {
+        "id": "intralciare-2014",
+        "nome_italiano": "Intralciare",
+        "livello": "Evocazione di 1° livello (druido)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "27 metri",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Erbacce e rampicanti spuntano dal terreno in un'area di 6 metri per lato che ha origine da un punto situato entro gittata. Per la durata dell'incantesimo, i vegetali trasformano quell'area in un terreno difficile.<br><br>Una creatura all'interno dell'area quando viene lanciato l'incantesimo deve superare un tiro salvezza su Forza, altrimenti è trattenuta da vegetali intralcianti fino al termine dell'incantesimo. Una creatura così trattenuta può usare la sua azione per effettuare una prova di Forza contro la CD del tiro salvezza sull'incantesimo. In caso di successo, si libera.<br><br>Al termine dell'incantesimo, i vegetali evocati avvizziscono."
+      },
+      "en": "entangle"
+    },
+    {
+      "page": 172,
+      "sourceName": "Inversione della gravità",
+      "sourceLevel": "Trasmutazione di 7° livello",
+      "sourceText": "Inversione della gravità Trasmutazione di 7° livello Tempo di lancio: 1 azione Gittata: 30 metri Componenti: V, S, M (una calamita e limatura di ferro) Durata: Concentrazione, fino a 1 minuto Questo incantesimo inverte la gravità all'interno di un cilindro del raggio di 15 metri e dell'altezza di 30 metri centrato su un punto entro gittata. Quando viene lanciato, tutte le creature e gli oggetti presenti nell'area che non sono in qualche modo ancorati al terreno vengono trascinati verso l'alto e raggiungono la parte superiore del cilindro. Una creatura può effettuare un tiro salvezza su Destrezza per afferrare un oggetto ancorato entro portata, evitando di essere trascinata verso l'alto. Se un oggetto solido di qualche tipo (come per esempio un soffitto) viene urtato durante l'ascesa, gli oggetti e le creature subiscono un impatto identico a quello di una normale caduta verso il basso. Se un oggetto o una creatura raggiunge la sommità dell'area senza colpire nulla, rimane sospeso lassù a oscillare leggermente per la durata dell'incantesimo. Al termine dell'incantesimo, gli oggetti e le creature influenzati ricadono a terra.",
+      "sourceSha256": "5c141673bc7053665c6e82d1c76eea6afcbcad4597780e067a7e8dbcf5a32a06",
+      "spell": {
+        "id": "inversione-della-gravita-2014",
+        "nome_italiano": "Inversione della gravità",
+        "livello": "Trasmutazione di 7° livello (druido, mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "30 metri",
+        "componenti": "V, S, M (una calamita e limatura di ferro)",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "Questo incantesimo inverte la gravità all'interno di un cilindro del raggio di 15 metri e dell'altezza di 30 metri centrato su un punto entro gittata. Quando viene lanciato, tutte le creature e gli oggetti presenti nell'area che non sono in qualche modo ancorati al terreno vengono trascinati verso l'alto e raggiungono la parte superiore del cilindro. Una creatura può effettuare un tiro salvezza su Destrezza per afferrare un oggetto ancorato entro portata, evitando di essere trascinata verso l'alto.<br><br>Se un oggetto solido di qualche tipo (come per esempio un soffitto) viene urtato durante l'ascesa, gli oggetti e le creature subiscono un impatto identico a quello di una normale caduta verso il basso. Se un oggetto o una creatura raggiunge la sommità dell'area senza colpire nulla, rimane sospeso lassù a oscillare leggermente per la durata dell'incantesimo.<br><br>Al termine dell'incantesimo, gli oggetti e le creature influenzati ricadono a terra."
+      },
+      "pages": [
+        172,
+        173
+      ],
+      "en": "reverse-gravity"
+    },
+    {
+      "page": 173,
+      "sourceName": "Inviare",
+      "sourceLevel": "Invocazione di 3° livello",
+      "sourceText": "Inviare Invocazione di 3° livello Tempo di lancio: 1 azione Gittata: Illimitata Componenti: V, S, M (un piccolo pezzo di filo di rame) Durata: 1 round L'incantatore invia un breve messaggio di un massimo di venticinque parole a una creatura che gli sia familiare. La creatura sente il messaggio nella sua mente, riconosce l'incantatore come colui che l'ha inviato e può rispondere immediatamente allo stesso modo. L'incantesimo consente alle creature con un punteggio di Intelligenza pari o superiore a 1 di capire il significato del messaggio. L'incantatore può inviare il messaggio a qualsiasi distanza e perfino ad altri piani di esistenza, ma se il bersaglio si trova su un piano di esistenza diverso dal suo, c'è una probabilità del 5% che il messaggio non arrivi.",
+      "sourceSha256": "116d7603924246f53d877a9b06de999fdc0c293ea1984f108715a0e40039840e",
+      "spell": {
+        "id": "inviare-2014",
+        "nome_italiano": "Inviare",
+        "livello": "Invocazione di 3° livello (bardo, chierico, mago)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Illimitata",
+        "componenti": "V, S, M (un piccolo pezzo di filo di rame)",
+        "durata": "1 round",
+        "descrizione": "L'incantatore invia un breve messaggio di un massimo di venticinque parole a una creatura che gli sia familiare. La creatura sente il messaggio nella sua mente, riconosce l'incantatore come colui che l'ha inviato e può rispondere immediatamente allo stesso modo. L'incantesimo consente alle creature con un punteggio di Intelligenza pari o superiore a 1 di capire il significato del messaggio.<br><br>L'incantatore può inviare il messaggio a qualsiasi distanza e perfino ad altri piani di esistenza, ma se il bersaglio si trova su un piano di esistenza diverso dal suo, c'è una probabilità del 5% che il messaggio non arrivi."
+      },
+      "en": "sending"
+    },
+    {
+      "page": 173,
+      "sourceName": "Invisibilità",
+      "sourceLevel": "Illusione di 2° livello",
+      "sourceText": "Invisibilità Illusione di 2° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S, M (un ciglio ricoperto da uno strato di resina) Durata: Concentrazione, fino a 1 ora Una creatura toccata dall'incantatore diventa invisibile fino al termine dell'incantesimo. Ciò accade anche a tutto ciò che il bersaglio indossa o trasporta, sempre che non se ne separi. L'incantesimo termina quando il bersaglio attacca o lancia un incantesimo. Ai livelli superiori. Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, può bersagliare una creatura aggiuntiva per ogni slot superiore al 2°.",
+      "sourceSha256": "ab9f3dda19bce9e8b07061a83559b7f8ee4b6d0e8443578a99f9367a03b8a425",
+      "spell": {
+        "id": "invisibilita-2014",
+        "nome_italiano": "Invisibilità",
+        "livello": "Illusione di 2° livello (bardo, mago, stregone, warlock)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S, M (un ciglio ricoperto da uno strato di resina)",
+        "durata": "Concentrazione, fino a 1 ora",
+        "descrizione": "Una creatura toccata dall'incantatore diventa invisibile fino al termine dell'incantesimo. Ciò accade anche a tutto ciò che il bersaglio indossa o trasporta, sempre che non se ne separi. L'incantesimo termina quando il bersaglio attacca o lancia un incantesimo.<br><br><strong>Ai livelli superiori.</strong> Quando l'incantatore lancia questo incantesimo usando uno slot incantesimo di 3° livello o superiore, può bersagliare una creatura aggiuntiva per ogni slot superiore al 2°."
+      },
+      "en": "invisibility"
+    },
+    {
+      "page": 173,
+      "sourceName": "Invisibilità superiore",
+      "sourceLevel": "Illusione di 4° livello",
+      "sourceText": "Invisibilità superiore Illusione di 4° livello Tempo di lancio: 1 azione Gittata: Contatto Componenti: V, S Durata: Concentrazione, fino a 1 minuto L'incantatore o una creatura da lui toccata diventa invisibile fino al termine dell'incantesimo. Ciò accade anche a tutto ciò che il bersaglio indossa o trasporta, sempre che non se ne separi.",
+      "sourceSha256": "0bbf1acfbd66f0f05dacc5ff6138503cf1436d27ae0ca8f6f1e8c37832610652",
+      "spell": {
+        "id": "invisibilita-superiore-2014",
+        "nome_italiano": "Invisibilità superiore",
+        "livello": "Illusione di 4° livello (bardo, mago, stregone)",
+        "tempo_di_lancio": "1 azione",
+        "gittata": "Contatto",
+        "componenti": "V, S",
+        "durata": "Concentrazione, fino a 1 minuto",
+        "descrizione": "L'incantatore o una creatura da lui toccata diventa invisibile fino al termine dell'incantesimo. Ciò accade anche a tutto ciò che il bersaglio indossa o trasporta, sempre che non se ne separi."
+      },
+      "en": "greater-invisibility"
     }
   ]
 }
