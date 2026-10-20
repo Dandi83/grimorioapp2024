@@ -809,6 +809,201 @@
     "parola-del-ritiro-2014": {
       "id2024": "parola-del-ritiro",
       "en": "word-of-recall"
+    },
+    "parola-divina-2014": {
+      "id2024": "parola-divina",
+      "en": "divine-word"
+    },
+    "parola-guaritrice-2014": {
+      "id2024": "parola-guaritrice",
+      "en": "healing-word"
+    },
+    "parola-guaritrice-di-massa-2014": {
+      "id2024": "parola-guaritrice-di-massa",
+      "en": "mass-healing-word"
+    },
+    "passapareti-2014": {
+      "id2024": "passapareti",
+      "en": "passwall"
+    },
+    "passare-senza-tracce-2014": {
+      "id2024": "passare-senza-tracce",
+      "en": "pass-without-trace"
+    },
+    "passo-velato-2014": {
+      "id2024": "passo-velato",
+      "en": "misty-step"
+    },
+    "passo-veloce-2014": {
+      "id2024": "passo-veloce",
+      "en": "longstrider"
+    },
+    "paura-2014": {
+      "id2024": "paura",
+      "en": "fear"
+    },
+    "pelle-coriacea-2014": {
+      "id2024": "pelle-coriacea",
+      "en": "barkskin"
+    },
+    "pelle-di-pietra-2014": {
+      "id2024": "pelle-di-pietra",
+      "en": "stoneskin"
+    },
+    "piaga-degli-insetti-2014": {
+      "id2024": "piaga-degli-insetti",
+      "en": "insect-plague"
+    },
+    "porta-dimensionale-2014": {
+      "id2024": "porta-dimensionale",
+      "en": "dimension-door"
+    },
+    "portale-2014": {
+      "id2024": "portale",
+      "en": "gate"
+    },
+    "preghiera-di-guarigione-2014": {
+      "id2024": "preghiera-di-guarigione",
+      "en": "prayer-of-healing"
+    },
+    "presagio-2014": {
+      "id2024": "presagio",
+      "en": "augury"
+    },
+    "prestidigitazione-2014": {
+      "id2024": "prestidigitazione",
+      "en": "prestidigitation"
+    },
+    "previsione-2014": {
+      "id2024": "previsione",
+      "en": "foresight"
+    },
+    "produrre-fiamma-2014": {
+      "id2024": "produrre-fiamma",
+      "en": "produce-flame"
+    },
+    "proibizione-2014": {
+      "id2024": "proibizione",
+      "en": "forbiddance"
+    },
+    "proiezione-astrale-2014": {
+      "id2024": "proiezione-astrale",
+      "en": "astral-projection"
+    },
+    "protezione-dai-veleni-2014": {
+      "id2024": "protezione-dai-veleni",
+      "en": "protection-from-poison"
+    },
+    "protezione-dal-bene-e-dal-male-2014": {
+      "id2024": "protezione-dal-bene-e-dal-male",
+      "en": "protection-from-evil-and-good"
+    },
+    "protezione-dall-energia-2014": {
+      "id2024": "protezione-dall-energia",
+      "en": "protection-from-energy"
+    },
+    "purificare-cibo-e-bevande-2014": {
+      "id2024": "purificare-cibo-e-bevande",
+      "en": "purify-food-and-drink"
+    },
+    "raggio-di-affaticamento-2014": {
+      "id2024": "raggio-di-affaticamento",
+      "en": "ray-of-enfeeblement"
+    },
+    "raggio-di-gelo-2014": {
+      "id2024": "raggio-di-gelo",
+      "en": "ray-of-frost"
+    },
+    "raggio-rovente-2014": {
+      "id2024": "raggio-rovente",
+      "en": "scorching-ray"
+    },
+    "ragnatela-2014": {
+      "id2024": "ragnatela",
+      "en": "web"
+    },
+    "randello-incantato-2014": {
+      "id2024": "randello-incantato",
+      "en": "shillelagh"
+    },
+    "reggia-meravigliosa-2014": {
+      "id2024": "reggia-meravigliosa-di-mordenkainen",
+      "en": "magnificent-mansion",
+      "nomeDiverso": "Reggia meravigliosa (2014) = REGGIA MERAVIGLIOSA DI MORDENKAINEN (2024)"
+    },
+    "reincarnazione-2014": {
+      "id2024": "reincarnazione",
+      "en": "reincarnate"
+    },
+    "resistenza-2014": {
+      "id2024": "resistenza",
+      "en": "resistance"
+    },
+    "respirare-sott-acqua-2014": {
+      "id2024": "i-re-spirare-sott-acqua-2",
+      "en": "water-breathing"
+    },
+    "resurrezione-2014": {
+      "id2024": "resurrezione",
+      "en": "resurrection"
+    },
+    "resurrezione-pura-2014": {
+      "id2024": "resurrezione-pura",
+      "en": "true-resurrection"
+    },
+    "rianimare-morti-2014": {
+      "id2024": "rianimare-morti",
+      "en": "raise-dead"
+    },
+    "rigenerazione-2014": {
+      "id2024": "rigenerazione",
+      "en": "regenerate"
+    },
+    "rimuovi-maledizione-2014": {
+      "id2024": "rimuovi-maledizione",
+      "en": "remove-curse"
+    },
+    "rinascita-2014": {
+      "id2024": "rinascita",
+      "en": "revivify"
+    },
+    "riparare-2014": {
+      "id2024": "riparare",
+      "en": "mending"
+    },
+    "riposo-inviolato-2014": {
+      "id2024": "riposo-inviolato",
+      "en": "gentle-repose"
+    },
+    "risata-incontenibile-2014": {
+      "id2024": "risata-incontenibile-di-tasha",
+      "en": "hideous-laughter",
+      "nomeDiverso": "Risata incontenibile (2014) = RISATA INCONTENIBILE DI TASHA (2024)"
+    },
+    "riscaldare-il-metallo-2014": {
+      "id2024": "riscaldare-il-metallo",
+      "en": "heat-metal"
+    },
+    "ristorare-inferiore-2014": {
+      "id2024": "ristorare-inferiore",
+      "en": "lesser-restoration"
+    },
+    "ristorare-superiore-2014": {
+      "id2024": "ristorare-superiore",
+      "en": "greater-restoration"
+    },
+    "risveglio-2014": {
+      "id2024": "risveglio",
+      "en": "awaken"
+    },
+    "ritirata-rapida-2014": {
+      "id2024": "ritirata-rapida",
+      "en": "expeditious-retreat"
+    },
+    "saltare-2014": {
+      "id2024": "salto",
+      "en": "jump",
+      "nomeDiverso": "Saltare (2014) = SALTO (2024)"
     }
   }
 }
