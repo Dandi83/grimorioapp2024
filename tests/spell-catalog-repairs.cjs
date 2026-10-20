@@ -35,6 +35,19 @@ for(const [id,{da,a}] of Object.entries(catalogRepairs.nomi)){
  const edited={id,nome_italiano:'Nome scelto nell’area riservata'};
  assert.strictEqual(repairCatalogSpell(edited),edited,`${id}: an edited name wins`);
 }
+// Casting times of the 2024 list: the card value, only while the stored value is still the broken one.
+const times=catalogRepairs.tempi;
+assert.equal(Object.keys(times).length,55);
+for(const [id,{da,a}] of Object.entries(times)){
+ const reference=srd.get(id)||original.get(id);
+ assert.equal(a,reference.tempo_di_lancio,`${id}: the card's casting time`);
+ assert.notEqual(da.toLowerCase().replace(/\s+/g,' ').trim(),a.toLowerCase().replace(/\s+/g,' ').trim(),`${id}: more than a capital letter`);
+ const row={id,nome_italiano:'X',tempo_di_lancio:da};
+ assert.equal(repairCatalogSpell(row).tempo_di_lancio,a,id);
+ const edited={id,nome_italiano:'X',tempo_di_lancio:'Azione (scelta del master)'};
+ assert.strictEqual(repairCatalogSpell(edited),edited,`${id}: an edited casting time wins`);
+}
+assert.ok(!('caduta-morbida' in times),'complete wordings are not touched');
 const other={id:'palla-di-fuoco',nome_italiano:'VELENI',livello:'Invocazione di livello (mago)'};
 assert.strictEqual(repairCatalogSpell(other),other,'only the approved IDs are repaired');
-console.log(`Catalog repairs: ${repaired} unreadable levels and ${Object.keys(catalogRepairs.nomi).length} damaged names repaired only while still damaged.`);
+console.log(`Catalog repairs: ${repaired} unreadable levels, ${Object.keys(catalogRepairs.nomi).length} damaged names and ${Object.keys(times).length} broken casting times repaired only while still damaged.`);

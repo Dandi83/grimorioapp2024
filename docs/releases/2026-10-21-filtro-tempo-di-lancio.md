@@ -9,3 +9,6 @@ Nuovo gruppo separato nel pannello Filtri di /grimorio: Azione, Azione bonus, Re
 Conteggi (tutti i valori riconosciuti):
 - 2014 (319): Azione 242 · Azione bonus 14 · Reazione 4 · 1 minuto o più 59.
 - 2024 in produzione (388 in elenco): Azione 295 · Azione bonus 34 · Reazione 4 · 1 minuto o più 55; per tutti i 388 il gruppo coincide con quello del tempo di lancio mostrato nella scheda.
+
+## Tempi di lancio dell'elenco 2024 (PR successiva)
+`lib/data/spell-casting-time-repairs-20261021.json`, applicato da `repairCatalogSpell`: 55 tempi di lancio dell'elenco 2024 rovinati dall'estrazione («°azione», «a5z°i one», «2az° ione bonus», «l minuto», «o re», «minuti», frasi tronche dopo «che l'incantatore effettua») sostituiti con il tempo già mostrato nella scheda, solo finché il valore salvato è ancora quello rovinato. Non toccati: 56 valori che differiscono solo per la maiuscola iniziale e Caduta morbida (testo completo, manca solo «egli»).
