@@ -8,6 +8,7 @@ import { spells } from "./db/schema";
 import { previewSpellRows } from "./srd-additions";
 import { isLegacySpellId, withLegacySpells } from "./srd-spells-2014";
 import { catalogRepairs, repairCatalogSpell } from "./spell-catalog-repairs";
+import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { parseLivello, spellListFlags, type SpellListItem } from "./spells-types";
 import { getContentEditions } from "./content-editions";
 
@@ -18,7 +19,7 @@ import { getContentEditions } from "./content-editions";
 function projectCatalogVersion(): string {
   const listed = withLegacySpells(previewSpellRows([], "production"), "production")
     .map(({ id, nome_italiano, livello, tempo_di_lancio, durata }) => [id, nome_italiano, livello, tempo_di_lancio, durata]);
-  const text = JSON.stringify([listed, catalogRepairs]);
+  const text = JSON.stringify([listed, catalogRepairs, MERGED_SPELL_IDS]);
   let hash = 2166136261; // FNV-1a
   for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);
   return (hash >>> 0).toString(36);
@@ -34,7 +35,9 @@ export const getSpellIndex = unstable_cache(
       durata: spells.durata,
     }).from(spells).orderBy(asc(spells.sort_key)), getContentEditions("spell")]);
 
-    return withLegacySpells(previewSpellRows(rows.map(repairCatalogSpell), process.env.VERCEL_ENV), process.env.VERCEL_ENV).map(row => {
+    // A duplicate row merged into another card is not listed (its address redirects).
+    const listed = rows.filter(row => !(row.id in MERGED_SPELL_IDS)).map(repairCatalogSpell);
+    return withLegacySpells(previewSpellRows(listed, process.env.VERCEL_ENV), process.env.VERCEL_ENV).map(row => {
       const { livello_num, scuola, classi } = parseLivello(row.livello || "");
       return {
         id: row.id, nome_italiano: row.nome_italiano, livello_num, scuola, classi,

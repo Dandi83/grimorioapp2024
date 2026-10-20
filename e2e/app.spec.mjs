@@ -96,6 +96,15 @@ test("spells: 2014 selector, 2014 card with its source and 2024 link, 2014 creat
   await expect(page.getByRole("link", { name: /^conoscenza delle leggende$/i })).toHaveAttribute("href", "/spell/conoscenza-delle-legende-2014");
 });
 
+test("spells: the duplicate Water Breathing address opens the kept card", async ({ page }) => {
+  await page.goto("/spell/i-re-spirare-sott-acqua");
+  await expect(page).toHaveURL(/\/spell\/i-re-spirare-sott-acqua-2$/);
+  await page.goto("/grimorio");
+  await page.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("respirare");
+  await expect(page.locator('a[href="/spell/i-re-spirare-sott-acqua"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/spell/i-re-spirare-sott-acqua-2"]')).toHaveCount(1);
+});
+
 test("conditions: inline links open the prebuilt condition page", async ({ page }) => {
   await page.goto("/mostro/aboleth");
   const condition = page.locator('a[href^="/manuale/condizioni-"]').first();
