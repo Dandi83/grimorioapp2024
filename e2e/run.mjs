@@ -23,6 +23,8 @@ console.log(`[e2e] Test database ready with ${database.spells} spells.`);
 let code = 1;
 try {
   code = process.argv.includes("--skip-build") ? 0 : await run("npx", ["next", "build"], E2E_ENV);
+  // Same guard as `npm run build` on Vercel: no full creature sheets in the browser code.
+  if (code === 0) code = await run("node", ["scripts/check-client-bundle.mjs"], {});
   if (code === 0) code = await run("npx", ["playwright", "test", ...process.argv.slice(2).filter(arg => arg !== "--skip-build")], E2E_ENV);
 } finally {
   await database.stop();
