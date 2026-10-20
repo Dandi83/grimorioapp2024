@@ -88,7 +88,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.ok(document.querySelector('article').textContent.includes('9 m, volo 18 m'));
  assert.ok(document.querySelector('article').textContent.includes('+4'));
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,1);
- for(const text of ['Iniziativa','+4 (14)','Bonus di competenza','+3','Equipaggiamento','Corazza'])assert.ok(document.querySelector('article').textContent.includes(text),text);
+ for(const text of ['Iniziativa','+4','(14)','bonus di competenza +3','Equipaggiamento','Corazza'])assert.ok(document.querySelector('article').textContent.includes(text),text);
  await click(button('Torna al modulo'));
  assert.equal(document.getElementById('nome').value,'Guardiano di prova');
  await act(async()=>document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
@@ -138,7 +138,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.ok(document.querySelector('dialog').textContent.includes('il salvataggio aggiorna solo habitat ed etichetta'),'project sheets say what is saved');
  await choose('edition','2014');
  await click(button('Anteprima'));
- assert.ok(document.querySelector('article').textContent.includes('D&D5e 2014'));
+ assert.equal(document.querySelector('article [data-monster-provenance]').textContent,'2014','preview shows the 2014 edition label');
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,0,'preview uses selected edition');
  await act(async()=>root.unmount());
  console.log('DOM interactions: named blocks, body formatting, ability modifiers, preview with links and no writes, return-to-form, failed-save draft retention, clear formatting, exact existing-source submission passed.');

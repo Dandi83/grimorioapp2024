@@ -72,18 +72,20 @@ const page=loadTs('../app/mostro/[id]/page.tsx',{
   '@/lib/conditions':loadTs('../lib/conditions.ts'),
   '@/lib/monsters-types':loadTs('../lib/monsters-types.ts'),
   '@/lib/srd-monsters':mod.exports,
+  '@/components/monster-sheet':loadTs('../components/monster-sheet.tsx',{'@/components/html-text':loadTs('../components/html-text.tsx'),'@/lib/spell-references':loadTs('../lib/spell-references.ts'),'@/lib/conditions':loadTs('../lib/conditions.ts'),'@/lib/monsters-types':loadTs('../lib/monsters-types.ts')}),
 }).default;
 const html=renderToStaticMarkup(await page({params:Promise.resolve({id:'aboleth'})}));
-const header=html.match(/<header[\s\S]*?<\/header>/)[0].replace(/<[^>]+>/g,'');
-assert.ok(header.includes('GS 10 · PX 5.900, o 7.200 nella tana'),'Experience values must be explicitly labeled PX in the monster header');
+// Challenge line below the languages: GS, experience (PE) and proficiency bonus.
+const text=markup=>markup.replace(/<[^>]+>/g,'').replace(/\s+/g,' ');
+assert.ok(text(html).includes(`Grado sfida 10 (5.900 PE, o 7.200 nella tana; bonus di competenza ${sample.bonus_competenza})`),'Experience values must be labeled PE on the challenge line');
+assert.ok(text(html).indexOf('Linguaggi')<text(html).indexOf('Grado sfida'),'the challenge line follows the languages');
 assert.ok(html.includes('#page=294'));
 assert.ok(html.includes('Attribuzione e licenza'));
 selected={...sample,px:'50 PX'};
 const labeledHtml=renderToStaticMarkup(await page({params:Promise.resolve({id:'aboleth'})}));
-const labeledHeader=labeledHtml.match(/<header[\s\S]*?<\/header>/)[0].replace(/<[^>]+>/g,'');
-assert.ok(labeledHeader.includes('GS 10 · 50 PX'),'Existing PX labels must be preserved without duplication');
-assert.ok(!labeledHeader.includes('PX 50 PX'));
+assert.ok(text(labeledHtml).includes('Grado sfida 10 (50 PX;'),'Existing labels must be preserved without duplication');
+assert.ok(!text(labeledHtml).includes('50 PX PE'));
 selected={...sample,px:''};
 const noXpHtml=renderToStaticMarkup(await page({params:Promise.resolve({id:'aboleth'})}));
-assert.ok(!noXpHtml.match(/<header[\s\S]*?<\/header>/)[0].includes(' · PX'),'An empty XP value must not leave a dangling label');
-console.log('[monsters] Aboleth statistics, production/preview parity, existing records, PX label and exact-source attribution verified.');
+assert.ok(!text(noXpHtml).includes(' PE'),'An empty XP value must not leave a dangling label');
+console.log('[monsters] Aboleth statistics, production/preview parity, existing records, PE on the challenge line and exact-source attribution verified.');

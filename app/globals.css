@@ -128,73 +128,90 @@
  .paper-field{box-shadow:none!important;background:transparent!important;outline:0!important}
 }
 
-/* Shared creature-sheet typography and section separators. */
+/* Shared creature-sheet typography and section separators (same for 2014, 2024 and the editor preview). */
 .monster-sheet [data-monster-section] {
-  margin: 0 24px 36px;
+  margin: 28px 24px 0;
   padding: 0;
 }
 
 .monster-sheet [data-monster-section] > h2 {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   border-bottom: 1px solid var(--color-border);
-  padding-bottom: 10px;
+  padding-bottom: 6px;
+  color: var(--color-primary);
   font-family: var(--font-serif);
-  font-size: 23px;
+  font-size: 26px;
   font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: 0.025em;
-  text-transform: none;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
   font-variant-caps: small-caps;
 }
 
+/* Running text in Source Sans; entry names and game formulas in EB Garamond. */
 .monster-sheet [data-monster-section] p {
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
   font-size: 17px;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
-/* Entry names stay distinct from the larger gold section headings. */
 .monster-sheet [data-monster-section] p > span.font-semibold {
   color: var(--color-foreground);
+  font-family: var(--font-serif);
+  font-size: 1.12em;
+  font-weight: 700;
+}
+
+.monster-sheet [data-monster-section] p span.italic {
+  font-family: var(--font-serif);
+  font-size: 1.08em;
+  font-weight: 500;
 }
 
 .monster-sheet [data-monster-section] > div.min-w-0 {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 }
 
 .monster-sheet [data-monster-section] > div.min-w-0 > div {
   margin-top: 0;
 }
 
-/* Compact inline reference pills for conditions and cited spells. */
-:is(.monster-sheet, .spell-sheet, .condition-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"]) {
+/* Spell lists: the label on its own line, names as reference labels separated by commas. */
+.monster-sheet [data-spell-frequency] p > span.font-semibold {
+  font-size: 1.06em;
+}
+
+/* Reference labels ("bollini"): every link inside a text, on every page, looks the same. */
+a.ref-pill {
   display: inline-block;
   max-width: 100%;
-  margin: 2px 1px;
+  margin: 1px 0;
   border: 1px solid var(--color-chip-border);
-  border-radius: 999px;
-  padding: 1px 8px;
+  border-radius: 6px;
+  padding: 0 7px;
   background: var(--color-chip);
-  color: var(--color-foreground);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
   font-size: 0.94em;
   font-style: normal;
-  line-height: 1.45;
+  font-weight: 700;
+  line-height: 1.4;
   text-decoration: none;
   vertical-align: baseline;
-  transition: background-color 150ms, border-color 150ms;
 }
 
-:is(.monster-sheet, .spell-sheet, .condition-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):hover {
+/* Capitalized catalog names read as part of the sentence ("lancia dissolvi magie"). */
+a.ref-pill::first-letter {
+  text-transform: lowercase;
+}
+
+a.ref-pill:hover {
   border-color: var(--color-primary);
-  background: var(--color-chip);
 }
 
-:is(.monster-sheet, .spell-sheet, .condition-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"]):focus-visible {
+a.ref-pill:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
-}
-
-:is(.monster-sheet, .spell-sheet, .condition-sheet) :is(p, pre) a:is([href^="/spell/"], [href^="/manuale/condizioni-"])::first-letter {
-  text-transform: lowercase;
 }

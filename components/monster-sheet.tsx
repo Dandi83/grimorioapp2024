@@ -1,0 +1,159 @@
+import type { ReactNode } from "react";
+import { formatMonsterSpellLists, inlineSpellReferences } from "@/lib/spell-references";
+import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
+import { ReferenceText, MonsterText } from "@/components/html-text";
+import { abilityMod, type Monster } from "@/lib/monsters-types";
+
+/**
+ * One creature sheet for every source: 2024 and 2014 SRD sheets, sheets made in the
+ * reserved area and the editor preview. Only order and layout are decided here; the
+ * stored text is shown unchanged.
+ */
+
+/** "17 (armatura naturale)" → value "17", note "armatura naturale". Anything else stays whole. */
+export function splitBoxValue(text: string | undefined): { value: string; note?: string } {
+  const match = /^\s*([+-]?\d+)\s*\((.+)\)\s*$/.exec(text || "");
+  return match ? { value: match[1], note: match[2] } : { value: text || "—" };
+}
+
+/** Proficiency bonus from the challenge rating (5e table): +2 up to GS 4, then +1 every 4. */
+export function proficiencyFromChallenge(gsNum: number): string | undefined {
+  if (!(gsNum >= 0)) return undefined;
+  return `+${2 + (Math.max(0, Math.ceil(gsNum) - 1) >> 2)}`;
+}
+
+/** "13 (10.000 PE; bonus di competenza +5)": GS, experience and proficiency on one line. */
+export function challengeDetails(monster: Pick<Monster, "px" | "bonus_competenza" | "gs_num">, legacy: boolean): string {
+  const px = (monster.px || "").trim();
+  const xp = !px ? "" : /\b(?:PX|PE|XP)\b/i.test(px) ? px : px.replace(/^([\d.]+)/, "$1 PE");
+  const bonus = monster.bonus_competenza || (legacy ? proficiencyFromChallenge(monster.gs_num) : undefined);
+  return [xp, bonus ? `bonus di competenza ${bonus}` : ""].filter(Boolean).join("; ");
+}
+
+const PARAGRAPHS = /(?:<br\s*\/?>\s*){2,}/i;
+const SPELLCASTING = /^\s*<(?:strong|b)>\s*Incantesimi\b/i;
+
+/** 2014 sheets print spellcasting among the traits: shown after the other actions, as in 2024. */
+export function placeLegacySpellcasting(tratti: string, azioni: string): { tratti: string; azioni: string } {
+  const parts = (tratti || "").split(PARAGRAPHS);
+  const casting = parts.filter(part => SPELLCASTING.test(part));
+  if (!casting.length) return { tratti, azioni };
+  return {
+    tratti: parts.filter(part => !SPELLCASTING.test(part)).join("<br><br>"),
+    azioni: [azioni, ...casting].filter(part => part && part.replace(/<[^>]+>/g, "").trim()).join("<br><br>"),
+  };
+}
+
+function Box({ label, value, note, noteItalic = false }: { label: string; value: string; note?: string; noteItalic?: boolean }) {
+  return (
+    <div className="min-w-0 rounded-[8px] border border-border bg-elevated px-3 py-2.5">
+      <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-muted">{label}</p>
+      <p className="font-serif text-[28px] font-bold leading-8 text-foreground">{value}</p>
+      {note && <p className={`text-[13px] leading-4 text-muted${noteItalic ? " font-serif italic" : ""}`}>{note}</p>}
+    </div>
+  );
+}
+
+function Line({ label, value, legacy, damageIcons = false }: { label: string; value?: string; legacy: boolean; damageIcons?: boolean }) {
+  if (!value) return null;
+  return (
+    <p className="text-[16px] leading-6 text-foreground">
+      <span className="font-bold">{label}</span>{" "}
+      <ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={legacy ? legacyInlineConditionReferences : inlineConditionReferences} />
+    </p>
+  );
+}
+
+function Section({ title, html, legacy }: { title: string; html?: string; legacy: boolean }) {
+  if (!html || !html.replace(/<[^>]+>/g, "").trim()) return null;
+  return (
+    <section data-monster-section>
+      <h2>{title}</h2>
+      <MonsterText html={formatMonsterSpellLists(html)} damageIcons
+        references={legacy ? legacyInlineConditionReferences : inlineConditionReferences}
+        spellReferences={legacy ? [] : inlineSpellReferences(html)} />
+    </section>
+  );
+}
+
+/** Title, edition label, 4 px rule and the italic type line. */
+export function MonsterSheetTitle({ monster, label, before }: { monster: Partial<Monster>; label?: ReactNode; before?: ReactNode }) {
+  const sottotitolo = monster.sottotitolo_fonte || [monster.taglia, monster.tipo, monster.allineamento].filter(Boolean).join(" · ");
+  return (
+    <header className="px-6">
+      {before}
+      <div className="flex items-start justify-between gap-3 border-b-4 border-primary pb-2">
+        <h1 className="min-w-0 break-words font-serif text-[42px] font-bold leading-[1.05] text-foreground">{monster.nome || "Nome del mostro"}</h1>
+        {label && <div className="shrink-0 pt-3">{label}</div>}
+      </div>
+      {sottotitolo && <p className="mt-2 font-serif text-[19px] italic text-muted">{sottotitolo}</p>}
+    </header>
+  );
+}
+
+export function MonsterSheetBody({ monster, legacy }: { monster: Partial<Monster>; legacy: boolean }) {
+  const ca = splitBoxValue(monster.classe_armatura);
+  const pf = splitBoxValue(monster.punti_ferita);
+  // The official initiative keeps its passive value in brackets: "+17" and "(27)" below.
+  const official = splitBoxValue(monster.iniziativa);
+  const ini = monster.iniziativa
+    ? { value: official.value, note: official.note && `(${official.note})` }
+    : legacy ? { value: abilityMod(monster.destrezza ?? 10), note: "dalla Destrezza" } : null;
+  const { tratti, azioni } = legacy ? placeLegacySpellcasting(monster.tratti || "", monster.azioni || "") : { tratti: monster.tratti, azioni: monster.azioni };
+  const gs = monster.grado_sfida;
+  const details = challengeDetails({ px: monster.px || "", bonus_competenza: monster.bonus_competenza, gs_num: monster.gs_num ?? -1 }, legacy);
+  return (
+    <>
+      <div className="grid grid-cols-3 gap-2.5 px-6 pt-5">
+        <Box label="CA" value={ca.value} note={ca.note} />
+        <Box label="PF" value={pf.value} note={pf.note} />
+        {ini && <Box label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} />}
+      </div>
+      {monster.velocita && <p className="px-6 pt-3 text-[16px] leading-6 text-foreground"><span className="font-bold">Velocità</span> {monster.velocita}</p>}
+
+      <section data-monster-section className="mt-6">
+        <h2>Caratteristiche</h2>
+        <div className="grid grid-cols-6 gap-1.5">
+          {([["FOR", "forza"], ["DES", "destrezza"], ["COS", "costituzione"], ["INT", "intelligenza"], ["SAG", "saggezza"], ["CAR", "carisma"]] as const).map(([label, key]) => {
+            const score = monster[key] ?? 10;
+            return (
+              <div key={key} className="flex min-w-0 flex-col items-center rounded-[8px] border border-border bg-card py-2">
+                <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-muted">{label}</span>
+                <span className="font-serif text-[24px] font-bold leading-7 text-foreground">{score}</span>
+                <span className="text-[13px] font-semibold text-muted">{abilityMod(score)}</span>
+              </div>
+            );
+          })}
+        </div>
+        <div className="mt-4 space-y-1">
+          <Line label="Tiri salvezza" value={monster.tiri_salvezza} legacy={legacy} />
+          <Line label="Abilità" value={monster.abilita} legacy={legacy} />
+          <Line label="Vulnerabilità" value={monster.vulnerabilita} legacy={legacy} damageIcons />
+          <Line label="Resistenze" value={monster.resistenze} legacy={legacy} damageIcons />
+          <Line label="Immunità ai danni" value={monster.immunita_danni} legacy={legacy} damageIcons />
+          <Line label="Immunità alle condizioni" value={monster.immunita_condizioni} legacy={legacy} />
+          <Line label="Immunità" value={monster.immunita} legacy={legacy} damageIcons />
+          <Line label="Equipaggiamento" value={monster.attrezzatura} legacy={legacy} />
+          <Line label="Sensi" value={monster.sensi} legacy={legacy} />
+          <Line label="Linguaggi" value={monster.linguaggi} legacy={legacy} />
+          {gs && (
+            <p className="text-[16px] leading-6 text-foreground">
+              <span className="font-bold">Grado sfida</span>{" "}
+              <span className="font-serif text-[20px] font-bold text-primary">{gs}</span>
+              {details && <> ({details})</>}
+            </p>
+          )}
+          {/* Habitat names are plain text, never condition links. */}
+          {monster.habitat?.length ? <p className="text-[16px] leading-6 text-foreground"><span className="font-bold">Habitat</span> {monster.habitat.join(", ")}</p> : null}
+        </div>
+      </section>
+
+      <Section title="Tratti" html={tratti} legacy={legacy} />
+      <Section title="Azioni" html={azioni} legacy={legacy} />
+      <Section title="Azioni bonus" html={monster.azioni_bonus} legacy={legacy} />
+      <Section title="Reazioni" html={monster.reazioni} legacy={legacy} />
+      <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} legacy={legacy} />
+      <Section title="Descrizione" html={monster.descrizione} legacy={legacy} />
+    </>
+  );
+}
