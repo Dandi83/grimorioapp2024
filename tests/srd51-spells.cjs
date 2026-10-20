@@ -55,7 +55,14 @@ for(const [id,link] of Object.entries(links)){
  assert.ok(ids2024.has(link.id2024),`${id}: linked 2024 spell exists`);
 }
 assert.ok(!('regressione-mentale-2014' in links)&&!('punizione-marchiante-2014' in links),'no link without the same English identifier (approved 20/10/2026)');
-assert.equal(data.records.length,100,'blocks 1 and 2');
+// Blocks follow the PDF without gaps: each one starts right after the previous one.
+let next=0;
+for(const block of data.blocks){
+ assert.equal(data.records[next].sourceName,block.from,`block ${block.block} starts where the previous one ended`);
+ next+=block.count;
+ assert.equal(data.records[next-1].sourceName,block.to,`block ${block.block} ends at ${block.to}`);
+}
+for(let i=1;i<data.records.length;i++)assert.ok(data.records[i].page>=data.records[i-1].page,`${data.records[i].spell.id}: PDF page order`);
 
 const legacy=load('lib/srd-spells-2014.ts');
 // Only preview and production serve the files; local runs and the admin read the database only.

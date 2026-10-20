@@ -406,6 +406,207 @@
     "faro-di-speranza-2014": {
       "id2024": "faro-di-speranza",
       "en": "beacon-of-hope"
+    },
+    "fatale-2014": {
+      "id2024": "fatale",
+      "en": "weird"
+    },
+    "favore-divino-2014": {
+      "id2024": "favore-divino",
+      "en": "divine-favor"
+    },
+    "ferire-2014": {
+      "id2024": "ferire",
+      "en": "harm"
+    },
+    "fermare-il-tempo-2014": {
+      "id2024": "fermare-il-tempo",
+      "en": "time-stop"
+    },
+    "fiamma-perenne-2014": {
+      "id2024": "fiamma-perenne",
+      "en": "continual-flame"
+    },
+    "fiamma-sacra-2014": {
+      "id2024": "fiamma-sacra",
+      "en": "sacred-flame"
+    },
+    "fiotto-acido-2014": {
+      "id2024": "fiotto-acido",
+      "en": "acid-splash"
+    },
+    "folata-di-vento-2014": {
+      "id2024": "folata-di-vento",
+      "en": "gust-of-wind"
+    },
+    "fondersi-nella-pietra-2014": {
+      "id2024": "fondersi-nella-pietra",
+      "en": "meld-into-stone"
+    },
+    "forma-eterea-2014": {
+      "id2024": "forma-eterea",
+      "en": "etherealness"
+    },
+    "forma-gassosa-2014": {
+      "id2024": "forma-gassosa",
+      "en": "gaseous-form"
+    },
+    "forme-animali-2014": {
+      "id2024": "forme-animali",
+      "en": "animal-shapes"
+    },
+    "frantumare-2014": {
+      "id2024": "frantumare",
+      "en": "shatter"
+    },
+    "freccia-acida-2014": {
+      "id2024": "freccia-acida-di-melf",
+      "en": "acid-arrow",
+      "nomeDiverso": "Freccia acida (2014) = FRECCIA ACIDA DI MELF (2024)"
+    },
+    "fulmine-2014": {
+      "id2024": "fulmine",
+      "en": "lightning-bolt"
+    },
+    "fuorviare-2014": {
+      "id2024": "fuorviare",
+      "en": "mislead"
+    },
+    "gabbia-di-forza-2014": {
+      "id2024": "gabbia-di-forza",
+      "en": "forcecage"
+    },
+    "giara-magica-2014": {
+      "id2024": "giara-magica",
+      "en": "magic-jar"
+    },
+    "glifo-di-interdizione-2014": {
+      "id2024": "glifo-di-interdizione",
+      "en": "glyph-of-warding"
+    },
+    "globo-di-invulnerabilita-2014": {
+      "id2024": "globo-di-invulnerabilita",
+      "en": "globe-of-invulnerability"
+    },
+    "guardiani-spirituali-2014": {
+      "id2024": "guardiani-spirituali",
+      "en": "spirit-guardians"
+    },
+    "guardiano-della-fede-2014": {
+      "id2024": "guardiano-della-fede",
+      "en": "guardian-of-faith"
+    },
+    "guarigione-2014": {
+      "id2024": "guarigione",
+      "en": "heal"
+    },
+    "guarigione-di-massa-2014": {
+      "id2024": "guarigione-di-massa",
+      "en": "mass-heal"
+    },
+    "guida-2014": {
+      "id2024": "guida",
+      "en": "guidance"
+    },
+    "guscio-anti-vita-2014": {
+      "id2024": "guscio-anti-vita",
+      "en": "antilife-shell"
+    },
+    "identificare-2014": {
+      "id2024": "identificare",
+      "en": "identify"
+    },
+    "illusione-minore-2014": {
+      "id2024": "illusione-minore",
+      "en": "minor-illusion"
+    },
+    "illusione-programmata-2014": {
+      "id2024": "illusione-programmata",
+      "en": "programmed-illusion"
+    },
+    "immagine-maggiore-2014": {
+      "id2024": "immagine-maggiore",
+      "en": "major-image"
+    },
+    "immagine-proiettata-2014": {
+      "id2024": "immagine-proiettata",
+      "en": "project-image"
+    },
+    "immagine-silenziosa-2014": {
+      "id2024": "immagine-silenziosa",
+      "en": "silent-image"
+    },
+    "immagine-speculare-2014": {
+      "id2024": "immagine-speculare",
+      "en": "mirror-image"
+    },
+    "imprigionare-2014": {
+      "id2024": "imprigionare",
+      "en": "imprisonment"
+    },
+    "inaridire-2014": {
+      "id2024": "inaridire",
+      "en": "blight"
+    },
+    "individuazione-dei-pensieri-2014": {
+      "id2024": "individuazione-dei-pensieri",
+      "en": "detect-thoughts"
+    },
+    "individuazione-del-bene-e-del-male-2014": {
+      "id2024": "individuazione-del-bene-e-del-male",
+      "en": "detect-evil-and-good"
+    },
+    "individuazione-del-magico-2014": {
+      "id2024": "individuazione-del-magico",
+      "en": "detect-magic"
+    },
+    "individuazione-delle-malattie-e-dei-veleni-2014": {
+      "id2024": "veleni",
+      "en": "detect-poison-and-disease"
+    },
+    "infliggi-ferite-2014": {
+      "id2024": "infliggi-ferite",
+      "en": "inflict-wounds"
+    },
+    "ingrandire-ridurre-2014": {
+      "id2024": "ingrandire-ridurre",
+      "en": "enlarge-reduce"
+    },
+    "insetto-gigante-2014": {
+      "id2024": "insetto-gigante",
+      "en": "giant-insect"
+    },
+    "interdizione-alla-morte-2014": {
+      "id2024": "interdizione-alla-morte",
+      "en": "death-ward"
+    },
+    "intermittenza-2014": {
+      "id2024": "intermittenza",
+      "en": "blink"
+    },
+    "intimorire-infernale-2014": {
+      "id2024": "intimorire-infernale",
+      "en": "hellish-rebuke"
+    },
+    "intralciare-2014": {
+      "id2024": "intralciare",
+      "en": "entangle"
+    },
+    "inversione-della-gravita-2014": {
+      "id2024": "inversione-della-gravita",
+      "en": "reverse-gravity"
+    },
+    "inviare-2014": {
+      "id2024": "inviare",
+      "en": "sending"
+    },
+    "invisibilita-2014": {
+      "id2024": "invisibilita",
+      "en": "invisibility"
+    },
+    "invisibilita-superiore-2014": {
+      "id2024": "invisibilita-superiore",
+      "en": "greater-invisibility"
     }
   }
 }
