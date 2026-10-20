@@ -1004,6 +1004,213 @@
       "id2024": "salto",
       "en": "jump",
       "nomeDiverso": "Saltare (2014) = SALTO (2024)"
+    },
+    "salvare-i-morenti-2014": {
+      "id2024": "salvare-i-morenti",
+      "en": "spare-the-dying"
+    },
+    "santificare-2014": {
+      "id2024": "santificare",
+      "en": "hallow"
+    },
+    "santuario-2014": {
+      "id2024": "santuario",
+      "en": "sanctuary"
+    },
+    "santuario-privato-2014": {
+      "id2024": "santuario-privato-di-mordenkainen",
+      "en": "private-sanctum",
+      "nomeDiverso": "Santuario privato (2014) = SANTUARIO PRIVATO DI MORDENKAINEN (2024)"
+    },
+    "scagliare-maledizione-2014": {
+      "id2024": "scagliare-maledizione",
+      "en": "bestow-curse"
+    },
+    "scassinare-2014": {
+      "id2024": "scassinare",
+      "en": "knock"
+    },
+    "sciame-di-meteore-2014": {
+      "id2024": "sciame-di-meteore",
+      "en": "meteor-swarm"
+    },
+    "scolpire-pietra-2014": {
+      "id2024": "scolpire-pietra",
+      "en": "stone-shape"
+    },
+    "scopri-il-percorso-2014": {
+      "id2024": "scopri-il-percorso",
+      "en": "find-the-path"
+    },
+    "scopri-trappole-2014": {
+      "id2024": "scopri-trappole",
+      "en": "find-traps"
+    },
+    "scrigno-segreto-2014": {
+      "id2024": "scrigno-segreto-di-leomund",
+      "en": "secret-chest",
+      "nomeDiverso": "Scrigno segreto (2014) = SCRIGNO SEGRETO DI LEOMUND (2024)"
+    },
+    "scritto-illusorio-2014": {
+      "id2024": "scritto-illusorio",
+      "en": "illusory-script"
+    },
+    "scrutare-2014": {
+      "id2024": "scrutare",
+      "en": "scrying"
+    },
+    "scudo-2014": {
+      "id2024": "scudo",
+      "en": "shield"
+    },
+    "scudo-della-fede-2014": {
+      "id2024": "scudo-della-fede",
+      "en": "shield-of-faith"
+    },
+    "scudo-di-fuoco-2014": {
+      "id2024": "scudo-di-fuoco",
+      "en": "fire-shield"
+    },
+    "scurovisione-2014": {
+      "id2024": "scurovisione",
+      "en": "darkvision"
+    },
+    "segugio-fedele-2014": {
+      "id2024": "segugio-fedele-di-mordenkainen",
+      "en": "faithful-hound",
+      "nomeDiverso": "Segugio fedele (2014) = SEGUGIO FEDELE DI MORDENKAINEN (2024)"
+    },
+    "sembrare-2014": {
+      "id2024": "sembrare",
+      "en": "seeming"
+    },
+    "semipiano-2014": {
+      "id2024": "semipiano",
+      "en": "demiplane"
+    },
+    "serratura-arcana-2014": {
+      "id2024": "serratura-arcana",
+      "en": "arcane-lock"
+    },
+    "servitore-inosservato-2014": {
+      "id2024": "servitore-inosservato",
+      "en": "unseen-servant"
+    },
+    "sfera-congelante-2014": {
+      "id2024": "sfera-congelante-di-0tiluke",
+      "en": "freezing-sphere",
+      "nomeDiverso": "Sfera congelante (2014) = SFERA CONGELANTE DI 0TILUKE (2024)"
+    },
+    "sfera-elastica-2014": {
+      "id2024": "sfera-elastica-di-0tiluke",
+      "en": "resilient-sphere",
+      "nomeDiverso": "Sfera elastica (2014) = SFERA ELASTICA DI 0TILUKE (2024)"
+    },
+    "sfera-infuocata-2014": {
+      "id2024": "sfera-infuocata",
+      "en": "flaming-sphere"
+    },
+    "sfocatura-2014": {
+      "id2024": "sfocatura",
+      "en": "blur"
+    },
+    "sguardo-penetrante-2014": {
+      "id2024": "sguardo-penetrante",
+      "en": "eyebite"
+    },
+    "silenzio-2014": {
+      "id2024": "silenzio",
+      "en": "silence"
+    },
+    "simbolo-2014": {
+      "id2024": "simbolo",
+      "en": "symbol"
+    },
+    "simulacro-2014": {
+      "id2024": "simulacro",
+      "en": "simulacrum"
+    },
+    "sogno-2014": {
+      "id2024": "sogno",
+      "en": "dream"
+    },
+    "sonno-2014": {
+      "id2024": "sonno",
+      "en": "sleep"
+    },
+    "spada-arcana-2014": {
+      "id2024": "spada-di-mordenkainen",
+      "en": "arcane-sword",
+      "nomeDiverso": "Spada arcana (2014) = SPADA DI MORDENKAINEN (2024)"
+    },
+    "spostamento-planare-2014": {
+      "id2024": "spostamento-planare",
+      "en": "plane-shift"
+    },
+    "spruzzo-colorato-2014": {
+      "id2024": "spruzzo-colorato",
+      "en": "color-spray"
+    },
+    "spruzzo-prismatico-2014": {
+      "id2024": "spruzzo-prismatico",
+      "en": "prismatic-spray"
+    },
+    "spruzzo-velenoso-2014": {
+      "id2024": "spruzzo-velenoso",
+      "en": "poison-spray"
+    },
+    "stretta-folgorante-2014": {
+      "id2024": "stretta-folgorante",
+      "en": "shocking-grasp"
+    },
+    "suggestione-2014": {
+      "id2024": "suggestione",
+      "en": "suggestion"
+    },
+    "suggestione-di-massa-2014": {
+      "id2024": "suggestione-di-massa",
+      "en": "mass-suggestion"
+    },
+    "taumaturgia-2014": {
+      "id2024": "taumaturgia",
+      "en": "thaumaturgy"
+    },
+    "telecinesi-2014": {
+      "id2024": "telecinesi",
+      "en": "telekinesis"
+    },
+    "teletrasporto-2014": {
+      "id2024": "teletrasporto",
+      "en": "teleport"
+    },
+    "tempesta-di-fuoco-2014": {
+      "id2024": "tempesta-di-fuoco",
+      "en": "fire-storm"
+    },
+    "tempesta-di-ghiaccio-2014": {
+      "id2024": "tempesta-di-ghiaccio",
+      "en": "ice-storm"
+    },
+    "tempesta-di-nevischio-2014": {
+      "id2024": "tempesta-di-nevischio",
+      "en": "sleet-storm"
+    },
+    "tempesta-di-vendetta-2014": {
+      "id2024": "tempesta-di-vendetta",
+      "en": "storm-of-vengeance"
+    },
+    "tentacoli-neri-2014": {
+      "id2024": "tentacoli-neri-di-evard",
+      "en": "black-tentacles",
+      "nomeDiverso": "Tentacoli neri (2014) = TENTACOLI NERI DI EVARD (2024)"
+    },
+    "terremoto-2014": {
+      "id2024": "terremoto",
+      "en": "earthquake"
+    },
+    "terreno-illusorio-2014": {
+      "id2024": "terreno-illusorio",
+      "en": "hallucinatory-terrain"
     }
   }
 }
