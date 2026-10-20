@@ -8,15 +8,15 @@ import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
-import { capitalizeWords, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
+import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
 
 const PAGE_SIZE = 40;
 export type SpellEdition = "2024" | "2014";
 /** The last spell edition chosen on this phone or browser. */
 export const SPELL_EDITION_KEY = "grimorio.incantesimi.edizione";
 
-export type SpellFilters = { livello: number[]; scuola: string[]; classe: string[]; concentrazione: boolean; rituale: boolean };
-export const NO_SPELL_FILTERS: SpellFilters = { livello: [], scuola: [], classe: [], concentrazione: false, rituale: false };
+export type SpellFilters = { livello: number[]; scuola: string[]; classe: string[]; tempo: CastingTime[]; concentrazione: boolean; rituale: boolean };
+export const NO_SPELL_FILTERS: SpellFilters = { livello: [], scuola: [], classe: [], tempo: [], concentrazione: false, rituale: false };
 export type SpellListState = SpellFilters & { url: string; q: string; edizione: SpellEdition; limit: number; scroll: number };
 
 const levelName = (n: number) => n < 0 ? "Altro" : n === 0 ? "Trucchetti" : `Livello ${n}`;
@@ -26,6 +26,7 @@ export function matchesSpellFilters(spell: SpellListItem, filters: SpellFilters)
   if (filters.livello.length && !filters.livello.includes(spell.livello_num)) return false;
   if (filters.scuola.length && !filters.scuola.some(s => s.toLowerCase() === spell.scuola.toLowerCase())) return false;
   if (filters.classe.length && !filters.classe.some(c => spell.classi.includes(c.toLowerCase()))) return false;
+  if (filters.tempo.length && !filters.tempo.includes(castingTimeGroup(spell.tempo_di_lancio) as CastingTime)) return false;
   if (filters.concentrazione && !spell.concentrazione) return false;
   if (filters.rituale && !spell.rituale) return false;
   return true;
@@ -116,6 +117,7 @@ export function GrimorioBrowser({
     ...filters.livello.map(n => ({ key: `livello:${n}`, label: levelName(n), remove: () => setFilters(f => ({ ...f, livello: f.livello.filter(x => x !== n) })) })),
     ...filters.scuola.map(s => ({ key: `scuola:${s}`, label: s, remove: () => setFilters(f => ({ ...f, scuola: f.scuola.filter(x => x !== s) })) })),
     ...filters.classe.map(c => ({ key: `classe:${c}`, label: capitalizeWords(c), remove: () => setFilters(f => ({ ...f, classe: f.classe.filter(x => x !== c) })) })),
+    ...filters.tempo.map(t => ({ key: `tempo:${t}`, label: CASTING_TIME_LABEL[t], remove: () => setFilters(f => ({ ...f, tempo: f.tempo.filter(x => x !== t) })) })),
     ...(filters.concentrazione ? [{ key: "concentrazione", label: "Concentrazione", remove: () => setFilters(f => ({ ...f, concentrazione: false })) }] : []),
     ...(filters.rituale ? [{ key: "rituale", label: "Rituale", remove: () => setFilters(f => ({ ...f, rituale: false })) }] : []),
   ];
@@ -142,6 +144,8 @@ export function GrimorioBrowser({
             onToggle={s => setDraft({ ...draft, scuola: toggle(draft.scuola, s, meta.scuole) })} />
           <FilterGroup title="Classe" options={meta.classi} selected={draft.classe} label={capitalizeWords}
             onToggle={c => setDraft({ ...draft, classe: toggle(draft.classe, c, meta.classi) })} />
+          <FilterGroup title="Tempo di lancio" options={CASTING_TIMES} selected={draft.tempo} label={t => CASTING_TIME_LABEL[t]}
+            onToggle={t => setDraft({ ...draft, tempo: toggle(draft.tempo, t, CASTING_TIMES) })} />
           <FilterGroup title="Caratteristiche" options={["Concentrazione", "Rituale"] as const}
             selected={[...(draft.concentrazione ? ["Concentrazione" as const] : []), ...(draft.rituale ? ["Rituale" as const] : [])]}
             onToggle={value => setDraft(value === "Concentrazione" ? { ...draft, concentrazione: !draft.concentrazione } : { ...draft, rituale: !draft.rituale })} />

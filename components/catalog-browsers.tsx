@@ -7,6 +7,7 @@ import type { SpellListItem, SpellsMeta } from "@/lib/spells-types";
 import type { MonsterListItem } from "@/lib/monsters-types";
 import { readListState, returningBack } from "@/components/navigation-memory";
 import { SPELL_EDITION_KEY, type SpellFilters, type SpellListState } from "@/components/grimorio-browser";
+import { CASTING_TIMES, type CastingTime } from "@/lib/spells-types";
 import { EDITION_KEY, GS_BANDS, gsBand, type Edition, type GsBand, type MonsterFilters, type MonsterListState } from "@/components/bestiario-browser";
 import { parseGs } from "@/lib/monsters-types";
 import { normalizeHabitats } from "@/lib/habitats";
@@ -49,6 +50,7 @@ export function spellFiltersFromParams(params: URLSearchParams): SpellFilters {
     livello: list("livello").map(value => parseInt(value, 10)).filter(value => !Number.isNaN(value)),
     scuola: list("scuola"),
     classe: list("classe"),
+    tempo: list("tempo").filter((value): value is CastingTime => (CASTING_TIMES as readonly string[]).includes(value)),
     concentrazione: params.get("concentrazione") === "1",
     rituale: params.get("rituale") === "1",
   };
@@ -62,7 +64,7 @@ export function GrimorioWithFilters({ spells, meta }: { spells: SpellListItem[];
   const edizione = isEdition(requested) ? requested : storedEdition ?? "2024";
   const restored = useRestoredList<SpellListState>("grimorio", search);
   const restoredFilters: SpellFilters | null = restored && Array.isArray(restored.livello)
-    ? { livello: restored.livello, scuola: restored.scuola, classe: restored.classe, concentrazione: restored.concentrazione, rituale: restored.rituale }
+    ? { livello: restored.livello, scuola: restored.scuola, classe: restored.classe, tempo: Array.isArray(restored.tempo) ? restored.tempo : [], concentrazione: restored.concentrazione, rituale: restored.rituale }
     : null;
   return <GrimorioBrowser key={JSON.stringify([filters, edizione, !!restoredFilters])}
     spells={spells} meta={meta} initialFilters={restoredFilters ?? filters}
