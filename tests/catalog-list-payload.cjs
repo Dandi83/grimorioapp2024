@@ -6,7 +6,7 @@ const {createRequire} = require('node:module');
 function load(relative, deps={}) {
  const f=path.resolve(relative),mod={exports:{}};
  const code=ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
- new Function('require','module','exports',code)(id=>deps[id]??createRequire(f)(id),mod,mod.exports);return mod.exports;
+ new Function('require','module','exports',code)(id=>deps[id]??(id==='./spell-text-repairs'?load('lib/spell-text-repairs.ts'):createRequire(f)(id)),mod,mod.exports);return mod.exports;
 }
 (async()=>{
  const mt=load('lib/monsters-types.ts'),st=load('lib/spells-types.ts');

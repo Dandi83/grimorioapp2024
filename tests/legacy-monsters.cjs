@@ -12,7 +12,7 @@ function load(relative, deps = {}) {
   const code = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
     compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX, esModuleInterop: true},
   }).outputText;
-  new Function('require', 'module', 'exports', code)(id => deps[id] ?? createRequire(filename)(id), module, module.exports);
+  new Function('require', 'module', 'exports', code)(id => deps[id] ?? (id === './spell-text-repairs' ? load('lib/spell-text-repairs.ts') : createRequire(filename)(id)), module, module.exports);
   return module.exports;
 }
 
