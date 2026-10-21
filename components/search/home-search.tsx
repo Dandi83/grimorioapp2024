@@ -7,9 +7,6 @@ import { Search } from "lucide-react";
 import type { SearchPanelProps } from "@/components/search/search-panel";
 import styles from "./home-search.module.css";
 
-/** Quick suggestions under the field: they open the panel already filled. */
-const SUGGESTIONS = ["palla di fuoco", "avvelenato", "spada lunga"];
-
 let loading: Promise<ComponentType<SearchPanelProps>> | undefined;
 // The panel code arrives after the Home (idle time) or at the first tap: the Home stays light.
 const loadPanel = () => (loading ??= import("@/components/search/search-panel").then(module => module.SearchPanel));
@@ -55,11 +52,6 @@ export function HomeSearch() {
         <Search size={22} strokeWidth={2.2} aria-hidden="true" className={styles.lens} />
         <span>Cerca in tutto il Grimorio…</span>
       </button>
-      <ul className={styles.suggestions} aria-label="Ricerche rapide">
-        {SUGGESTIONS.map(text => (
-          <li key={text}><button type="button" onClick={() => show(text)}>{text}</button></li>
-        ))}
-      </ul>
       {/* On the body: the picture of the Home is its own stacking context, under the header. */}
       {open && Panel && createPortal(<Panel initialQuery={open.query} initialSection={open.section} onClose={close} />, document.body)}
     </div>
