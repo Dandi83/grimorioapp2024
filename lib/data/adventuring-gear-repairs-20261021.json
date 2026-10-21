@@ -1,0 +1,13 @@
+{
+  "_nota": "Correzioni di sola visualizzazione per l'Equipaggiamento d'avventura 2024 (lib/adventuring-gear.ts). Il dato di origine (srd-manual-5.2.1-it.json, voce equipaggiamento-equipaggiamento-d-avventura) non cambia.",
+  "nomiTabella": {
+    "Acciarino e pietra focaia": "Acciarino con pietra focaia",
+    "Campanella": "Campana",
+    "Veleno, base": "Veleno base",
+    "Pergamena magica (livello 1)": "Pergamena magica",
+    "Pergamena magica (trucchetto)": "Pergamena magica"
+  },
+  "testi": [
+    { "da": "contiene i seguenti i oggetti", "a": "contiene i seguenti oggetti", "nota": "Dotazione da intrattenitore: «i» ripetuto nel PDF." }
+  ]
+}

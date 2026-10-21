@@ -313,6 +313,41 @@ test("equipment: armor list per edition with times, sheets in both editions, no 
   for (const id of ids) expect((await request.get(`/equipaggiamento/armature/${id}`)).status(), id).toBe(200);
 });
 
+test("adventuring gear 2024: tile, packs, search, a sheet with its table, narrow phones", async ({ page, request }) => {
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/equipaggiamento");
+  await page.locator("main").getByRole("link", { name: /Equipaggiamento d’avventura/ }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/avventura$/);
+  await expect(page.getByText("Edizione 2024. La 2014 arriva presto.")).toBeVisible();
+  await expect(page.locator('section[aria-labelledby="dotazioni"] li')).toHaveCount(7);
+  await expect(page.locator('section[aria-labelledby="tutti"] li')).toHaveCount(81);
+  const search = page.getByRole("searchbox", { name: "Cerca un oggetto" });
+  await search.fill("corda");
+  await expect(page.locator('section[aria-labelledby="tutti"] li')).toHaveText([/Corda/]);
+  await search.fill("piede di porco");
+  await expect(page.locator('section[aria-labelledby="tutti"] li')).toHaveText([/Piede di porco/]);
+  await search.fill("");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `list ${width}`).toBeLessThanOrEqual(width);
+  }
+  await page.getByRole("link", { name: /^Munizioni/ }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Munizioni");
+  await expect(page.getByRole("heading", { name: "Munizioni", level: 2 })).toBeVisible();
+  await expect(page.getByText("Proiettili, arma da fuoco")).toBeVisible();
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `sheet ${width}`).toBeLessThanOrEqual(width);
+  }
+  await expect(page.getByRole("navigation", { name: "Navigazione principale" }).locator('a[aria-current="page"]')).toHaveText("Compendio");
+  const ids = await page.evaluate(async () => [...new DOMParser().parseFromString(await (await fetch("/equipaggiamento/avventura")).text(), "text/html").querySelectorAll('section[aria-labelledby="tutti"] a')].map(a => a.getAttribute("href")));
+  expect(ids).toHaveLength(81);
+  for (const href of ids) expect((await request.get(href)).status(), href).toBe(200);
+  expect(errors).toEqual([]);
+});
+
 test("advancement: Compendio tile, table, hit points, bonus feats and XP calculator on narrow phones", async ({ page }) => {
   const errors = [];
   page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
