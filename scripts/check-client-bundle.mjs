@@ -41,6 +41,10 @@ export function sheetFingerprints(dataDir = new URL('../lib/data/', import.meta.
   return prints;
 }
 
+function allFiles(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? allFiles(join(dir, entry.name)) : [join(dir, entry.name)]);
+}
+
 function jsFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap(entry =>
     entry.isDirectory() ? jsFiles(join(dir, entry.name)) : entry.name.endsWith('.js') ? [join(dir, entry.name)] : []);
@@ -55,15 +59,32 @@ export function findLeaks(clientDir, prints = sheetFingerprints()) {
   return leaks;
 }
 
+/** The search index sent to the browser: names, labels and addresses only (lib/search-index.ts). */
+export const SEARCH_INDEX_FILE = '.next/server/app/ricerca-indice.json.body';
+
+export function findIndexLeaks(file = SEARCH_INDEX_FILE, prints = sheetFingerprints()) {
+  const text = readFileSync(file, 'utf8');
+  const leaks = prints.filter(print => text.includes(print.fragment)).map(print => ({ path: file, ...print }));
+  const index = JSON.parse(text);
+  // A row is [section, name, label, address, address 2014?]: short strings, never a text.
+  for (const row of index.rows) {
+    if (row.length > 5 || row.slice(1).some(cell => typeof cell !== 'string' || cell.length > 120)) leaks.push({ path: file, id: String(row[1]), file: 'search index', fragment: 'row too long' });
+  }
+  return leaks;
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const clientDir = process.argv[2] || '.next/static';
   if (!existsSync(clientDir)) throw new Error(`${clientDir} not found: run next build first`);
   const prints = sheetFingerprints();
-  const leaks = findLeaks(clientDir, prints);
+  // The prerendered index sits in .next/server, where the build output puts it (the layout differs on Vercel).
+  const indexFiles = existsSync('.next/server') ? allFiles('.next/server').filter(file => /ricerca-indice\.json(\.body)?$/.test(file) && !file.endsWith('.js')) : [];
+  if (!indexFiles.length) console.warn('Search index not found among the build files: checked by the browser tests and in CI.');
+  const leaks = [...findLeaks(clientDir, prints), ...indexFiles.flatMap(file => findIndexLeaks(file, prints))];
   if (leaks.length) {
     for (const leak of leaks.slice(0, 10)) console.error(`Full sheet ${leak.id} (${leak.file}) found in ${leak.path}`);
     console.error(`${leaks.length} full sheets in the browser code: lists must use the light index.`);
     process.exit(1);
   }
-  console.log(`Client bundle: no full creature sheets or 2014 spell texts (${prints.length} sheets checked).`);
+  console.log(`Client bundle and search index (${indexFiles.length} file): no full creature sheets or 2014 spell texts (${prints.length} sheets checked).`);
 }
