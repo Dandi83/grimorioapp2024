@@ -1,0 +1,77 @@
+2014
+Ascia | 0 | 5 mo | 1d6 taglienti | 1 kg | Lancio (gittata 6/18), Leggera
+Bastone ferrato | 0 | 2 ma | 1d6 contundenti | 2 kg | Versatile (1d8)
+Falcetto | 0 | 1 mo | 1d4 taglienti | 1 kg | Leggera
+Giavellotto | 0 | 5 ma | 1d6 perforanti | 1 kg | Lancio (gittata 9/36)
+Lancia | 0 | 1 mo | 1d6 perforanti | 1,5 kg | Lancio (gittata 6/18), Versatile (1d8)
+Martello leggero | 0 | 2 mo | 1d4 contundenti | 1 kg | Lancio (gittata 6/18), Leggera
+Mazza | 0 | 5 mo | 1d6 contundenti | 2 kg | —
+Pugnale | 0 | 2 mo | 1d4 perforanti | 0,5 kg | Accurata, Lancio (gittata 6/18), Leggera
+Randello | 0 | 1 ma | 1d4 contundenti | 1 kg | Leggera
+Randello pesante | 0 | 2 ma | 1d8 contundenti | 5 kg | Due mani
+Arco corto | 1 | 25 mo | 1d6 perforanti | 1 kg | Due mani, Munizioni (gittata 24/96)
+Balestra leggera | 1 | 25 mo | 1d8 perforanti | 2,5 kg | Due mani, Munizioni (gittata 24/96), Ricarica
+Dardo | 1 | 5 mr | 1d4 perforanti | 0,125 kg | Accurata, Lancio (gittata 6/18)
+Fionda | 1 | 1 ma | 1d4 contundenti | — | Munizioni (gittata 9/36)
+Alabarda | 2 | 20 mo | 1d10 taglienti | 3 kg | Due mani, Pesante, Portata
+Ascia bipenne | 2 | 30 mo | 1d12 taglienti | 3,5 kg | Due mani, Pesante
+Ascia da battaglia | 2 | 10 mo | 1d8 taglienti | 2 kg | Versatile (1d10)
+Falcione | 2 | 20 mo | 1d10 taglienti | 3 kg | Due mani, Pesante, Portata
+Frusta | 2 | 2 mo | 1d4 taglienti | 1,5 kg | Accurata, Portata
+Lancia da cavaliere | 2 | 10 mo | 1d12 perforanti | 3 kg | Portata, Speciale
+Maglio | 2 | 10 mo | 2d6 contundenti | 5 kg | Due mani, Pesante
+Martello da guerra | 2 | 15 mo | 1d8 contundenti | 1 kg | Versatile (1d10)
+Mazza chiodata | 2 | 15 mo | 1d8 perforanti | 2 kg | —
+Mazzafrusto | 2 | 10 mo | 1d8 contundenti | 1 kg | —
+Picca | 2 | 5 mo | 1d10 perforanti | 9 kg | Due mani, Pesante, Portata
+Piccone da guerra | 2 | 5 mo | 1d8 perforanti | 1 kg | —
+Scimitarra | 2 | 25 mo | 1d6 taglienti | 1,5 kg | Accurata, Leggera
+Spada corta | 2 | 10 mo | 1d6 perforanti | 1 kg | Accurata, Leggera
+Spada lunga | 2 | 15 mo | 1d8 taglienti | 1,5 kg | Versatile (1d10)
+Spadone | 2 | 50 mo | 2d6 taglienti | 3 kg | Due mani, Pesante
+Stocco | 2 | 25 mo | 1d8 perforanti | 1 kg | Accurata
+Tridente | 2 | 5 mo | 1d6 perforanti | 2 kg | Lancio (gittata 6/18), Versatile (1d8)
+Arco lungo | 3 | 50 mo | 1d8 perforanti | 1 kg | Due mani, Munizioni (gittata 45/180), Pesante
+Balestra a mano | 3 | 75 mo | 1d6 perforanti | 1,5 kg | Leggera, Munizioni (gittata 9/36), Ricarica
+Balestra pesante | 3 | 50 mo | 1d10 perforanti | 9 kg | Due mani, Munizioni (gittata 30/120), Pesante, Ricarica
+Cerbottana | 3 | 10 mo | 1 perforante | 0,5 kg | Munizioni (gittata 7,5/30), Ricarica
+Rete | 3 | 1 mo | — | 1,5 kg | Lancio (gittata 1,5/4,5), Speciale
+2024
+Ascia | 5 mo | 1d6 taglienti | 1 kg | Lancio (6/18), leggera | Vessazione
+Bastone ferrato | 2 ma | 1d6 contundenti | 2 kg | Versatile (1d8) | Rovesciamento
+Falcetto | 1 mo | 1d4 taglienti | 1 kg | Leggera | Graffio
+Giavellotto | 5 ma | 1d6 perforanti | 1 kg | Lancio (9/36) | Lentezza
+Lancia | 1 mo | 1d6 perforanti | 1,5 kg | Lancio (6/18), versatile (1d8) | Fiaccare
+Martello leggero | 2 mo | 1d4 contundenti | 1 kg | Lancio (6/18), leggera | Graffio
+Mazza | 5 mo | 1d6 contundenti | 2 kg | — | Fiaccare
+Pugnale | 2 mo | 1d4 perforanti | 0,5 kg | Accurata, lancio (6/18), leggera | Graffio
+Randello | 1 ma | 1d4 contundenti | 1 kg | Leggera | Lentezza
+Randello pesante | 2 ma | 1d8 contundenti | 5 kg | Due mani | Spinta
+Arco corto | 25 mo | 1d6 perforanti | 1 kg | Due mani, munizioni (24/96; freccia) | Vessazione
+Balestra leggera | 25 mo | 1d8 perforanti | 2,5 kg | Due mani, munizioni (24/96; quadrello), ricarica | Lentezza
+Dardo | 5 mr | 1d4 perforanti | 0,125 kg | Accurata, lancio (6/18) | Vessazione
+Fionda | 1 ma | 1d4 contundenti | — | Munizioni (9/36; proiettile) | Lentezza
+Alabarda | 20 mo | 1d10 taglienti | 3 kg | Due mani, pesante, portata | Doppio fendente
+Ascia bipenne | 30 mo | 1d12 taglienti | 3,5 kg | Due mani, pesante | Doppio fendente
+Ascia da battaglia | 10 mo | 1d8 taglienti | 2 kg | Versatile (1d10) | Rovesciamento
+Falcione | 20 mo | 1d10 taglienti | 3 kg | Due mani, pesante, portata | Colpo di striscio
+Frusta | 2 mo | 1d4 taglienti | 1,5 kg | Accurata, portata | Lentezza
+Lancia da cavaliere | 10 mo | 1d10 perforanti | 3 kg | Due mani (eccetto in sella), pesante, portata | Rovesciamento
+Maglio | 10 mo | 2d6 contundenti | 5 kg | Due mani, pesante | Rovesciamento
+Martello da guerra | 15 mo | 1d8 contundenti | 2,5 kg | Versatile (1d10) | Spinta
+Mazza chiodata | 15 mo | 1d8 perforanti | 2 kg | — | Fiaccare
+Mazzafrusto | 10 mo | 1d8 contundenti | 1 kg | — | Fiaccare
+Picca | 5 mo | 1d10 perforanti | 9 kg | Due mani, pesante, portata | Spinta
+Piccone da guerra | 5 mo | 1d8 perforanti | 1 kg | Versatile (1d10) | Fiaccare
+Scimitarra | 25 mo | 1d6 taglienti | 1,5 kg | Accurata, leggera | Graffio
+Spada corta | 10 mo | 1d6 perforanti | 1 kg | Accurata, leggera | Vessazione
+Spada lunga | 15 mo | 1d8 taglienti | 1,5 kg | Versatile (1d10) | Fiaccare
+Spadone | 50 mo | 2d6 taglienti | 3 kg | Due mani, pesante | Colpo di striscio
+Stocco | 25 mo | 1d8 perforanti | 1 kg | Accurata | Vessazione
+Tridente | 5 mo | 1d8 perforanti | 2 kg | Lancio (6/18), versatile (1d10) | Rovesciamento
+Arco lungo | 50 mo | 1d8 perforanti | 1 kg | Due mani, munizioni (45/180; freccia), pesante | Lentezza
+Balestra a mano | 75 mo | 1d6 perforanti | 1,5 kg | Leggera, munizioni (9/36; quadrello), ricarica | Vessazione
+Balestra pesante | 50 mo | 1d10 perforanti | 9 kg | Due mani, munizioni (30/120; quadrello), pesante, ricarica | Spinta
+Cerbottana | 10 mo | 1 perforante | 0,5 kg | Munizioni (7/30; ago), ricarica | Vessazione
+Moschetto | 500 mo | 1d12 perforanti | 5 kg | Due mani, munizioni (12/36; proiettile), ricarica | Lentezza
+Pistola | 250 mo | 1d10 perforanti | 1,5 kg | Munizioni (9/27; proiettile), ricarica | Vessazione

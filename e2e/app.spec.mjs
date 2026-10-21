@@ -190,3 +190,78 @@ test("a shared card link: back goes to its list instead of leaving the site", as
   await page.getByRole("button", { name: "Torna indietro" }).click();
   await expect(page).toHaveURL(/\/bestiario$/);
 });
+
+test("compendium: five-item navigation on narrow phones, Compendio active inside Equipaggiamento", async ({ page }) => {
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 780 });
+    await page.goto("/");
+    await expect(page.locator('a[href="/equipaggiamento"]')).toHaveCount(0);
+    const nav = page.getByRole("navigation", { name: "Navigazione principale" });
+    const links = nav.getByRole("link");
+    await expect(links).toHaveText(["Home", "Incantesimi", "Bestiario", "Compendio", "Preferiti"]);
+    const boxes = await links.evaluateAll(items => items.map(a => {
+      const box = a.getBoundingClientRect(), label = a.querySelector("span");
+      return { left: box.left, right: box.right, width: box.width, height: box.height, labelLines: Math.round(label.getBoundingClientRect().height / parseFloat(getComputedStyle(label).lineHeight)), labelOverflow: label.scrollWidth > label.clientWidth + 1 };
+    }));
+    for (const [i, box] of boxes.entries()) {
+      expect(box.width, `width ${width} item ${i}`).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.labelLines, `label lines ${width} item ${i}`).toBe(1);
+      expect(box.labelOverflow).toBe(false);
+      if (i) expect(box.left).toBeGreaterThanOrEqual(boxes[i - 1].right - 0.5);
+    }
+    expect(boxes.at(-1).right).toBeLessThanOrEqual(width + 0.5);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+  const nav = page.getByRole("navigation", { name: "Navigazione principale" });
+  await nav.getByRole("link", { name: "Compendio" }).click();
+  await expect(page).toHaveURL(/\/compendio$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
+  await expect(page.getByText("Regole, equipaggiamento e strumenti per il tavolo")).toBeVisible();
+  await expect(page.locator("main ul > li")).toHaveCount(1);
+  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale"]) {
+    await page.goto(path);
+    await expect(nav.locator('a[aria-current="page"]'), path).toHaveText("Compendio");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
+  }
+  await page.goto("/equipaggiamento");
+  await page.locator("main").getByRole("link", { name: "Compendio", exact: true }).click();
+  await expect(page).toHaveURL(/\/compendio$/);
+});
+
+test("equipment: Compendio tile, weapons list and cards per edition, combined filters, every sheet", async ({ page, request }) => {
+  await page.goto("/compendio");
+  await page.locator("main").getByRole("link", { name: /Equipaggiamento/ }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento$/);
+  await page.getByRole("link", { name: /Armi/ }).click();
+  await expect(page.getByText(/^38 armi ·/)).toBeVisible();
+  const edition = page.getByRole("group", { name: "Edizione delle regole" });
+  await edition.getByRole("button", { name: "2014" }).click();
+  await expect(page.getByText(/^37 armi ·/)).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Rete/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Pistola/ })).toHaveCount(0);
+  await page.getByRole("button", { name: "Vedi come carte" }).click();
+  await expect(page).toHaveURL(/vista=carte/);
+  await page.getByRole("group", { name: "Categoria" }).getByRole("button", { name: "Da guerra" }).click();
+  await page.getByRole("group", { name: "Distanza" }).getByRole("button", { name: "Distanza" }).click();
+  await expect(page.getByRole("status").filter({ hasText: /armi?$/ })).toHaveText("5 armi");
+  await edition.getByRole("button", { name: "2024" }).click();
+  await expect(page.getByRole("status").filter({ hasText: /armi?$/ })).toHaveText("6 armi");
+  await expect(page.getByRole("link", { name: /Moschetto/ })).toBeVisible();
+  await page.getByRole("group", { name: "Categoria" }).getByRole("button", { name: "Semplici" }).click();
+  await expect(page.getByRole("status").filter({ hasText: /armi?$/ })).toHaveText("4 armi");
+  // No horizontal scrolling on a narrow phone, in the cards and in a sheet with its comparison.
+  await page.setViewportSize({ width: 375, height: 800 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  await page.goto("/equipaggiamento/armi/lancia-da-cavaliere");
+  await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Lancia da cavaliere");
+  await expect(page.getByRole("heading", { name: "2014 → 2024" })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { name: "Arma speciale" })).toBeVisible();
+  await page.goto("/equipaggiamento/armi/rete");
+  await expect(page.getByText(/Non presente nella tabella 2024/).first()).toBeVisible();
+  const ids = JSON.parse(readFileSync("lib/data/srd-weapons-it.json", "utf8")).armi.map(w => w.id);
+  for (const id of ids) expect((await request.get(`/equipaggiamento/armi/${id}`)).status(), id).toBe(200);
+  expect((await request.get("/equipaggiamento/armi/inesistente")).status()).toBe(404);
+});

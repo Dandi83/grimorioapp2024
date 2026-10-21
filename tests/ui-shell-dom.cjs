@@ -48,13 +48,13 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  assert.deepEqual(calls,['push:/grimorio'],'returning to the shared card restores the fallback');
  await render(React.createElement('div'));
 
- // Bottom navigation: four public sections, active item marked, hidden in the admin area.
+ // Bottom navigation: five public sections, active item marked, hidden in the admin area.
  pathname='/spell/dardo-incantato';calls.length=0;
  await render(React.createElement(BottomNav));
  const links=[...document.querySelectorAll('nav a')];
- assert.deepEqual(links.map(a=>a.textContent),['Home','Incantesimi','Bestiario','Preferiti']);
+ assert.deepEqual(links.map(a=>a.textContent),['Home','Incantesimi','Bestiario','Compendio','Preferiti']);
  assert.equal(document.querySelector('a[aria-current="page"]').textContent,'Incantesimi','a spell sheet highlights Incantesimi');
- assert.deepEqual(calls,['prefetch:/','prefetch:/grimorio','prefetch:/bestiario','prefetch:/preferiti']);
+ assert.deepEqual(calls,['prefetch:/','prefetch:/grimorio','prefetch:/bestiario','prefetch:/compendio','prefetch:/preferiti']);
  pathname='/admin';calls.length=0;
  await render(React.createElement(BottomNav,{key:'admin'}));
  assert.equal(document.querySelector('nav'),null,'the admin area has no public navigation');

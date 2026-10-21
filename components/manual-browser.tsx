@@ -53,6 +53,16 @@ export function ManualBrowser({
           </span>
           <ArrowRight size={18} className="text-primary" />
         </Link>
+        <Link
+          href="/equipaggiamento"
+          className="flex items-center justify-between rounded-xl border border-border bg-card p-4"
+        >
+          <span>
+            <span className="block font-serif text-lg font-semibold">Equipaggiamento</span>
+            <span className="text-xs text-muted">Armi delle edizioni 2014 e 2024 a confronto</span>
+          </span>
+          <ArrowRight size={18} className="text-primary" />
+        </Link>
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-3">
           <Search size={18} className="text-muted" />
           <input

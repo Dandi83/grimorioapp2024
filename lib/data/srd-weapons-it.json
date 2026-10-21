@@ -1,0 +1,1136 @@
+{
+  "_nota": "Armi dell'SRD 5.1 (2014) e dell'SRD 5.2.1 (2024) in italiano, trascritte da scripts/transcribe-srd-equipment.py. Stesso id per la stessa arma; ogni riga conserva il testo stampato e la sua impronta. I testi delle proprietà 2014 sono copiati parola per parola; quelli 2024 (proprietà e padronanze) si leggono dal manuale 2024 (srd-manual-5.2.1-it.json, voce equipaggiamento-armi).",
+  "fonti": {
+    "2014": {
+      "document": "SRD 5.1",
+      "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf",
+      "sourceSha256": "2ef143b8abeae9558d30b405ea48e2ee9b5d700dd11cd955e6117e61cbddd3f7",
+      "pages": [
+        71,
+        72,
+        73
+      ]
+    },
+    "2024": {
+      "document": "SRD 5.2.1",
+      "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf",
+      "sourceSha256": "a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718",
+      "pages": [
+        101,
+        102,
+        103,
+        104
+      ],
+      "manuale": "equipaggiamento-armi"
+    }
+  },
+  "gruppi": [
+    "Armi da mischia semplici",
+    "Armi a distanza semplici",
+    "Armi da mischia da guerra",
+    "Armi a distanza da guerra"
+  ],
+  "righeDoppieNelPdf2024": [
+    "Stocco",
+    "Tridente"
+  ],
+  "armi": [
+    {
+      "id": "ascia",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Ascia",
+        "costo": "5 mo",
+        "danni": "1d6",
+        "tipoDanno": "taglienti",
+        "peso": "1 kg",
+        "proprieta": "Lancio (gittata 6/18), Leggera",
+        "page": 73,
+        "sourceText": "Ascia | 5 mo | 1d6 taglienti | 1 kg | Lancio (gittata 6/18), Leggera",
+        "sourceSha256": "886541c03a85e45440bdab4dea55240afe5a0bd6bec10952f7ba92486923cfe9"
+      },
+      "2024": {
+        "nome": "Ascia",
+        "costo": "5 mo",
+        "danni": "1d6",
+        "tipoDanno": "taglienti",
+        "peso": "1 kg",
+        "proprieta": "Lancio (gittata 6/18), leggera",
+        "page": 103,
+        "padronanza": "Vessazione",
+        "sourceText": "Ascia | 1d6 taglienti | Lancio (gittata 6/18), leggera | Vessazione | 1 kg | 5 mo",
+        "sourceSha256": "bf6b400cdef3cd78c3feda91c2361cb1c5e4eaf8b4f1295b4ec1afa782065940"
+      }
+    },
+    {
+      "id": "bastone-ferrato",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Bastone ferrato",
+        "costo": "2 ma",
+        "danni": "1d6",
+        "tipoDanno": "contundenti",
+        "peso": "2 kg",
+        "proprieta": "Versatile (1d8)",
+        "page": 73,
+        "sourceText": "Bastone ferrato | 2 ma | 1d6 contundenti | 2 kg | Versatile (1d8)",
+        "sourceSha256": "ef94230c0ce8ce60b89d48aa7fe5f52e80c75c9e3fba2fa678f4dedac2f62524"
+      },
+      "2024": {
+        "nome": "Bastone ferrato",
+        "costo": "2 ma",
+        "danni": "1d6",
+        "tipoDanno": "contundenti",
+        "peso": "2 kg",
+        "proprieta": "Versatile (1d8)",
+        "page": 103,
+        "padronanza": "Rovesciamento",
+        "sourceText": "Bastone ferrato | 1d6 contundenti | Versatile (1d8) | Rovesciamento | 2 kg | 2 ma",
+        "sourceSha256": "d70be018296f5d7437bba99da315777cd72a1a2579f78fb87ffe01703ad93bed"
+      }
+    },
+    {
+      "id": "falcetto",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Falcetto",
+        "costo": "1 mo",
+        "danni": "1d4",
+        "tipoDanno": "taglienti",
+        "peso": "1 kg",
+        "proprieta": "Leggera",
+        "page": 73,
+        "sourceText": "Falcetto | 1 mo | 1d4 taglienti | 1 kg | Leggera",
+        "sourceSha256": "9e1804b0cc6bfec4e8d3c473ee6b3374aee2d745772ae024c76aac9f2cd8ea73"
+      },
+      "2024": {
+        "nome": "Falcetto",
+        "costo": "1 mo",
+        "danni": "1d4",
+        "tipoDanno": "taglienti",
+        "peso": "1 kg",
+        "proprieta": "Leggera",
+        "page": 103,
+        "padronanza": "Graffio",
+        "sourceText": "Falcetto | 1d4 taglienti | Leggera | Graffio | 1 kg | 1 mo",
+        "sourceSha256": "683de454dc071d61edb307b8db3a9adaa6067754bf7807a99c92b3379bfbcb50"
+      }
+    },
+    {
+      "id": "giavellotto",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Giavellotto",
+        "costo": "5 ma",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Lancio (gittata 9/36)",
+        "page": 73,
+        "sourceText": "Giavellotto | 5 ma | 1d6 perforanti | 1 kg | Lancio (gittata 9/36)",
+        "sourceSha256": "5872902a707823ec15d6a2d467657422791510fbfc97c31fc9610ebcbb1222c7"
+      },
+      "2024": {
+        "nome": "Giavellotto",
+        "costo": "5 ma",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Lancio (gittata 9/36)",
+        "page": 103,
+        "padronanza": "Lentezza",
+        "sourceText": "Giavellotto | 1d6 perforanti | Lancio (gittata 9/36) | Lentezza | 1 kg | 5 ma",
+        "sourceSha256": "fdc8ef1cc32c8d03e0c7587f0e7931432c777fd16601f6abdb6984f9b6dbd148"
+      }
+    },
+    {
+      "id": "lancia",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Lancia",
+        "costo": "1 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1,5 kg",
+        "proprieta": "Lancio (gittata 6/18), Versatile (1d8)",
+        "page": 73,
+        "sourceText": "Lancia | 1 mo | 1d6 perforanti | 1,5 kg | Lancio (gittata 6/18), Versatile (1d8)",
+        "sourceSha256": "e63bc93e41b2e0c23cb0aa0f6b83016f66951037e2f44cdca35c859262ed542f"
+      },
+      "2024": {
+        "nome": "Lancia",
+        "costo": "1 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1,5 kg",
+        "proprieta": "Lancio (gittata 6/18), versatile (1d8)",
+        "page": 103,
+        "padronanza": "Fiaccare",
+        "sourceText": "Lancia | 1d6 perforanti | Lancio (gittata 6/18), versatile (1d8) | Fiaccare | 1,5 kg | 1 mo",
+        "sourceSha256": "8524f2db3d2ab5db351eb189ba4f6cfa5aa02af8a1c9a46fa27f7f6e38d83ed5"
+      }
+    },
+    {
+      "id": "martello-leggero",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Martello leggero",
+        "costo": "2 mo",
+        "danni": "1d4",
+        "tipoDanno": "contundenti",
+        "peso": "1 kg",
+        "proprieta": "Lancio (gittata 6/18), Leggera",
+        "page": 73,
+        "sourceText": "Martello leggero | 2 mo | 1d4 contundenti | 1 kg | Lancio (gittata 6/18), Leggera",
+        "sourceSha256": "27b639bc36026d95273f4201e19ef6dfb5622ae620ed98dd2c656bad0962cc4a"
+      },
+      "2024": {
+        "nome": "Martello leggero",
+        "costo": "2 mo",
+        "danni": "1d4",
+        "tipoDanno": "contundenti",
+        "peso": "1 kg",
+        "proprieta": "Lancio (gittata 6/18), leggera",
+        "page": 103,
+        "padronanza": "Graffio",
+        "sourceText": "Martello leggero | 1d4 contundenti | Lancio (gittata 6/18), leggera | Graffio | 1 kg | 2 mo",
+        "sourceSha256": "324bbebb1a027e8db74d847f99e0bc094f30282ac028bc57d0049f4d9b40e02e"
+      }
+    },
+    {
+      "id": "mazza",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Mazza",
+        "costo": "5 mo",
+        "danni": "1d6",
+        "tipoDanno": "contundenti",
+        "peso": "2 kg",
+        "proprieta": "—",
+        "page": 73,
+        "sourceText": "Mazza | 5 mo | 1d6 contundenti | 2 kg | —",
+        "sourceSha256": "65cb727fd8ed56246f69e916921809cdf5d1223341e43ceadb17890827511828"
+      },
+      "2024": {
+        "nome": "Mazza",
+        "costo": "5 mo",
+        "danni": "1d6",
+        "tipoDanno": "contundenti",
+        "peso": "2 kg",
+        "proprieta": "—",
+        "page": 103,
+        "padronanza": "Fiaccare",
+        "sourceText": "Mazza | 1d6 contundenti | — | Fiaccare | 2 kg | 5 mo",
+        "sourceSha256": "572dbf64faf3833a41e4ab618ce2ac00e052c0177d63061fca98b98abdcb02cf"
+      }
+    },
+    {
+      "id": "pugnale",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Pugnale",
+        "costo": "2 mo",
+        "danni": "1d4",
+        "tipoDanno": "perforanti",
+        "peso": "0,5 kg",
+        "proprieta": "Accurata, Lancio (gittata 6/18), Leggera",
+        "page": 73,
+        "sourceText": "Pugnale | 2 mo | 1d4 perforanti | 0,5 kg | Accurata, Lancio (gittata 6/18), Leggera",
+        "sourceSha256": "99ca2490ddc7ddfb19839fc011fd0ea2bfef82c350a55250c983360aa828effe"
+      },
+      "2024": {
+        "nome": "Pugnale",
+        "costo": "2 mo",
+        "danni": "1d4",
+        "tipoDanno": "perforanti",
+        "peso": "0,5 kg",
+        "proprieta": "Accurata, lancio (gittata 6/18), leggera",
+        "page": 103,
+        "padronanza": "Graffio",
+        "sourceText": "Pugnale | 1d4 perforanti | Accurata, lancio (gittata 6/18), leggera | Graffio | 0,5 kg | 2 mo",
+        "sourceSha256": "40b6cf6c62019d1ff38811bc75085241044a100892b79ca20a1c19e303ffe2be"
+      }
+    },
+    {
+      "id": "randello",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Randello",
+        "costo": "1 ma",
+        "danni": "1d4",
+        "tipoDanno": "contundenti",
+        "peso": "1 kg",
+        "proprieta": "Leggera",
+        "page": 73,
+        "sourceText": "Randello | 1 ma | 1d4 contundenti | 1 kg | Leggera",
+        "sourceSha256": "c82f3b6dbeb799a1a95e2ce50a7492abf0418ad519bd59e566d198f3cf3d9d29"
+      },
+      "2024": {
+        "nome": "Randello",
+        "costo": "1 ma",
+        "danni": "1d4",
+        "tipoDanno": "contundenti",
+        "peso": "1 kg",
+        "proprieta": "Leggera",
+        "page": 103,
+        "padronanza": "Lentezza",
+        "sourceText": "Randello | 1d4 contundenti | Leggera | Lentezza | 1 kg | 1 ma",
+        "sourceSha256": "929c6fddc8a302b9fdf17eee2dd94a3e1533ef7e491755620ba27f1b038b68fb"
+      }
+    },
+    {
+      "id": "randello-pesante",
+      "gruppo": 0,
+      "2014": {
+        "nome": "Randello pesante",
+        "costo": "2 ma",
+        "danni": "1d8",
+        "tipoDanno": "contundenti",
+        "peso": "5 kg",
+        "proprieta": "Due mani",
+        "page": 73,
+        "sourceText": "Randello pesante | 2 ma | 1d8 contundenti | 5 kg | Due mani",
+        "sourceSha256": "258c9aab99c7cb77918f5ac574ad426c33f7fdf9e720db69bcfe4e22c5dcc216"
+      },
+      "2024": {
+        "nome": "Randello pesante",
+        "costo": "2 ma",
+        "danni": "1d8",
+        "tipoDanno": "contundenti",
+        "peso": "5 kg",
+        "proprieta": "Due mani",
+        "page": 103,
+        "padronanza": "Spinta",
+        "sourceText": "Randello pesante | 1d8 contundenti | Due mani | Spinta | 5 kg | 2 ma",
+        "sourceSha256": "62d5312365b251a59a8433702f90b39c867d423735dbf2d9fbcb62d116d3d92f"
+      }
+    },
+    {
+      "id": "arco-corto",
+      "gruppo": 1,
+      "2014": {
+        "nome": "Arco corto",
+        "costo": "25 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Due mani, Munizioni (gittata 24/96)",
+        "page": 73,
+        "sourceText": "Arco corto | 25 mo | 1d6 perforanti | 1 kg | Due mani, Munizioni (gittata 24/96)",
+        "sourceSha256": "204fc312c9854a39f78e60293c6c278fb9e9bae5a765373bf8b621157242c7d7"
+      },
+      "2024": {
+        "nome": "Arco corto",
+        "costo": "25 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Due mani, munizioni (gittata 24/96; freccia)",
+        "page": 103,
+        "padronanza": "Vessazione",
+        "sourceText": "Arco corto | 1d6 perforanti | Due mani, munizioni (gittata 24/96; freccia) | Vessazione | 1 kg | 25 mo",
+        "sourceSha256": "7e4c33480db1216eec7f1f355d34c2fa6c170bee0d1ae356dab132778f4fd375"
+      }
+    },
+    {
+      "id": "balestra-leggera",
+      "gruppo": 1,
+      "2014": {
+        "nome": "Balestra leggera",
+        "costo": "25 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "2,5 kg",
+        "proprieta": "Due mani, Munizioni (gittata 24/96), Ricarica",
+        "page": 73,
+        "sourceText": "Balestra leggera | 25 mo | 1d8 perforanti | 2,5 kg | Due mani, Munizioni (gittata 24/96), Ricarica",
+        "sourceSha256": "b67408516477864c8759368ed2f7f8f3722bb0481baedd93dcdd1aa4664deff5"
+      },
+      "2024": {
+        "nome": "Balestra leggera",
+        "costo": "25 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "2,5 kg",
+        "proprieta": "Due mani, munizioni (gittata 24/96; quadrello), ricarica",
+        "page": 103,
+        "padronanza": "Lentezza",
+        "sourceText": "Balestra leggera | 1d8 perforanti | Due mani, munizioni (gittata 24/96; quadrello), ricarica | Lentezza | 2,5 kg | 25 mo",
+        "sourceSha256": "72fc93c4b86f781515fa1bf79e525d00257cc3616e5ede02e35bab85e22f4748"
+      }
+    },
+    {
+      "id": "dardo",
+      "gruppo": 1,
+      "2014": {
+        "nome": "Dardo",
+        "costo": "5 mr",
+        "danni": "1d4",
+        "tipoDanno": "perforanti",
+        "peso": "0,125 kg",
+        "proprieta": "Accurata, Lancio (gittata 6/18)",
+        "page": 73,
+        "sourceText": "Dardo | 5 mr | 1d4 perforanti | 0,125 kg | Accurata, Lancio (gittata 6/18)",
+        "sourceSha256": "b12f36f05967438fb5af5b9bd43624591e2cefe93d21d53e9f66611f4877e265"
+      },
+      "2024": {
+        "nome": "Dardo",
+        "costo": "5 mr",
+        "danni": "1d4",
+        "tipoDanno": "perforanti",
+        "peso": "0,125 kg",
+        "proprieta": "Accurata, lancio (gittata 6/18)",
+        "page": 103,
+        "padronanza": "Vessazione",
+        "sourceText": "Dardo | 1d4 perforanti | Accurata, lancio (gittata 6/18) | Vessazione | 0,125 kg | 5 mr",
+        "sourceSha256": "7860b9bfd74b534f5ab08c51a0a324fc18ef1a68309e5689de831159ae78f2ac"
+      }
+    },
+    {
+      "id": "fionda",
+      "gruppo": 1,
+      "2014": {
+        "nome": "Fionda",
+        "costo": "1 ma",
+        "danni": "1d4",
+        "tipoDanno": "contundenti",
+        "peso": "—",
+        "proprieta": "Munizioni (gittata 9/36)",
+        "page": 73,
+        "sourceText": "Fionda | 1 ma | 1d4 contundenti | — | Munizioni (gittata 9/36)",
+        "sourceSha256": "258eef3de4a3fd8f9a5361a33940a2dbf913958d6231bda3e9fbaf050a340457"
+      },
+      "2024": {
+        "nome": "Fionda",
+        "costo": "1 ma",
+        "danni": "1d4",
+        "tipoDanno": "contundenti",
+        "peso": "—",
+        "proprieta": "Munizioni (gittata 9/36; proiettile)",
+        "page": 103,
+        "padronanza": "Lentezza",
+        "sourceText": "Fionda | 1d4 contundenti | Munizioni (gittata 9/36; proiettile) | Lentezza | — | 1 ma",
+        "sourceSha256": "c71ede3be5a3dc371d1d1bdf4271d2d33a6d24d0060a2702617f2316bc33a701"
+      }
+    },
+    {
+      "id": "alabarda",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Alabarda",
+        "costo": "20 mo",
+        "danni": "1d10",
+        "tipoDanno": "taglienti",
+        "peso": "3 kg",
+        "proprieta": "Due mani, Pesante, Portata",
+        "page": 73,
+        "sourceText": "Alabarda | 20 mo | 1d10 taglienti | 3 kg | Due mani, Pesante, Portata",
+        "sourceSha256": "931ad9b969286b8eb90bfc41de775631a46763398ec8b06816397281ff51e994"
+      },
+      "2024": {
+        "nome": "Alabarda",
+        "costo": "20 mo",
+        "danni": "1d10",
+        "tipoDanno": "taglienti",
+        "peso": "3 kg",
+        "proprieta": "Due mani, pesante, portata",
+        "page": 103,
+        "padronanza": "Doppio fendente",
+        "sourceText": "Alabarda | 1d10 taglienti | Due mani, pesante, portata | Doppio fendente | 3 kg | 20 mo",
+        "sourceSha256": "416c295d15e2c986c25bf50b6e66d054f2a8134cfdfa9e8ae50cb916d239b770"
+      }
+    },
+    {
+      "id": "ascia-bipenne",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Ascia bipenne",
+        "costo": "30 mo",
+        "danni": "1d12",
+        "tipoDanno": "taglienti",
+        "peso": "3,5 kg",
+        "proprieta": "Due mani, Pesante",
+        "page": 73,
+        "sourceText": "Ascia bipenne | 30 mo | 1d12 taglienti | 3,5 kg | Due mani, Pesante",
+        "sourceSha256": "48077c213dd6dd5b6ed470d4e2102dab0196a9bec81f167715e302c0c29c292a"
+      },
+      "2024": {
+        "nome": "Ascia bipenne",
+        "costo": "30 mo",
+        "danni": "1d12",
+        "tipoDanno": "taglienti",
+        "peso": "3,5 kg",
+        "proprieta": "Due mani, pesante",
+        "page": 103,
+        "padronanza": "Doppio fendente",
+        "sourceText": "Ascia bipenne | 1d12 taglienti | Due mani, pesante | Doppio fendente | 3,5 kg | 30 mo",
+        "sourceSha256": "bf3779d373f4f2f290617a1cf3c6b3b8c654f752b3d10e716d48cd398be114cf"
+      }
+    },
+    {
+      "id": "ascia-da-battaglia",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Ascia da battaglia",
+        "costo": "10 mo",
+        "danni": "1d8",
+        "tipoDanno": "taglienti",
+        "peso": "2 kg",
+        "proprieta": "Versatile (1d10)",
+        "page": 73,
+        "sourceText": "Ascia da battaglia | 10 mo | 1d8 taglienti | 2 kg | Versatile (1d10)",
+        "sourceSha256": "9e7f6af9560a24427425b6ce0b973ed26009c419843beb895c4086e3b1fed566"
+      },
+      "2024": {
+        "nome": "Ascia da battaglia",
+        "costo": "10 mo",
+        "danni": "1d8",
+        "tipoDanno": "taglienti",
+        "peso": "2 kg",
+        "proprieta": "Versatile (1d10)",
+        "page": 103,
+        "padronanza": "Rovesciamento",
+        "sourceText": "Ascia da battaglia | 1d8 taglienti | Versatile (1d10) | Rovesciamento | 2 kg | 10 mo",
+        "sourceSha256": "08208d9393c5b802f88931f5d74c307c41e51ad09799387fea8e912d46eee3e8"
+      }
+    },
+    {
+      "id": "falcione",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Falcione",
+        "costo": "20 mo",
+        "danni": "1d10",
+        "tipoDanno": "taglienti",
+        "peso": "3 kg",
+        "proprieta": "Due mani, Pesante, Portata",
+        "page": 73,
+        "sourceText": "Falcione | 20 mo | 1d10 taglienti | 3 kg | Due mani, Pesante, Portata",
+        "sourceSha256": "28f47c4cd68f76a7734fad5c3bdd6c7f2c7decb84d40c2cb8418d5567f5e1fc2"
+      },
+      "2024": {
+        "nome": "Falcione",
+        "costo": "20 mo",
+        "danni": "1d10",
+        "tipoDanno": "taglienti",
+        "peso": "3 kg",
+        "proprieta": "Due mani, pesante, portata",
+        "page": 103,
+        "padronanza": "Colpo di Striscio",
+        "sourceText": "Falcione | 1d10 taglienti | Due mani, pesante, portata | Colpo di Striscio | 3 kg | 20 mo",
+        "sourceSha256": "c166f11b4861dcfc2ac168e0f0184a96f562c4031e45ebe41b83ce5c9a1e1942"
+      }
+    },
+    {
+      "id": "frusta",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Frusta",
+        "costo": "2 mo",
+        "danni": "1d4",
+        "tipoDanno": "taglienti",
+        "peso": "1,5 kg",
+        "proprieta": "Accurata, Portata",
+        "page": 73,
+        "sourceText": "Frusta | 2 mo | 1d4 taglienti | 1,5 kg | Accurata, Portata",
+        "sourceSha256": "91b820ed8ae1e346f0b9d0a40a467da2e2c79664851b6ed6ce387283448c55d7"
+      },
+      "2024": {
+        "nome": "Frusta",
+        "costo": "2 mo",
+        "danni": "1d4",
+        "tipoDanno": "taglienti",
+        "peso": "1,5 kg",
+        "proprieta": "Accurata, portata",
+        "page": 103,
+        "padronanza": "Lentezza",
+        "sourceText": "Frusta | 1d4 taglienti | Accurata, portata | Lentezza | 1,5 kg | 2 mo",
+        "sourceSha256": "65ac76fead2a0dba961b33fb60f82104bcf4141d5f89adc7b937d5e7a0ec6ee8"
+      }
+    },
+    {
+      "id": "lancia-da-cavaliere",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Lancia da cavaliere",
+        "costo": "10 mo",
+        "danni": "1d12",
+        "tipoDanno": "perforanti",
+        "peso": "3 kg",
+        "proprieta": "Portata, Speciale",
+        "page": 73,
+        "sourceText": "Lancia da cavaliere | 10 mo | 1d12 perforanti | 3 kg | Portata, Speciale",
+        "sourceSha256": "9010f1a42e1c9ccbe63258fb23956906f4774fece62d5958c8c6cbc9605aa786"
+      },
+      "2024": {
+        "nome": "Lancia da cavaliere",
+        "costo": "10 mo",
+        "danni": "1d10",
+        "tipoDanno": "perforanti",
+        "peso": "3 kg",
+        "proprieta": "Due mani (eccetto in sella), pesante, portata",
+        "page": 103,
+        "padronanza": "Rovesciamento",
+        "sourceText": "Lancia da cavaliere | 1d10 perforanti | Due mani (eccetto in sella), pesante, portata | Rovesciamento | 3 kg | 10 mo",
+        "sourceSha256": "9be726a4d069244b78f2a67a7dab44fa91bfa344a7b846ad80e0da5f1d178635"
+      }
+    },
+    {
+      "id": "maglio",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Maglio",
+        "costo": "10 mo",
+        "danni": "2d6",
+        "tipoDanno": "contundenti",
+        "peso": "5 kg",
+        "proprieta": "Due mani, Pesante",
+        "page": 73,
+        "sourceText": "Maglio | 10 mo | 2d6 contundenti | 5 kg | Due mani, Pesante",
+        "sourceSha256": "7af1258d5063828e7016b23782912c14f171ba5bbf8897176238d40e0524c51c"
+      },
+      "2024": {
+        "nome": "Maglio",
+        "costo": "10 mo",
+        "danni": "2d6",
+        "tipoDanno": "contundenti",
+        "peso": "5 kg",
+        "proprieta": "Due mani, pesante",
+        "page": 103,
+        "padronanza": "Rovesciamento",
+        "sourceText": "Maglio | 2d6 contundenti | Due mani, pesante | Rovesciamento | 5 kg | 10 mo",
+        "sourceSha256": "d3158866144b4a775ed27ce4254afa5f3eda843c3c67b5202d86086599a2b016"
+      }
+    },
+    {
+      "id": "martello-da-guerra",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Martello da guerra",
+        "costo": "15 mo",
+        "danni": "1d8",
+        "tipoDanno": "contundenti",
+        "peso": "1 kg",
+        "proprieta": "Versatile (1d10)",
+        "page": 73,
+        "sourceText": "Martello da guerra | 15 mo | 1d8 contundenti | 1 kg | Versatile (1d10)",
+        "sourceSha256": "63f018efce7e75ee8c77cb1d8c9a914530585d912c7406332601f86f6956f18b"
+      },
+      "2024": {
+        "nome": "Martello da guerra",
+        "costo": "15 mo",
+        "danni": "1d8",
+        "tipoDanno": "contundenti",
+        "peso": "2,5 kg",
+        "proprieta": "Versatile (1d10)",
+        "page": 103,
+        "padronanza": "Spinta",
+        "sourceText": "Martello da guerra | 1d8 contundenti | Versatile (1d10) | Spinta | 2,5 kg | 15 mo",
+        "sourceSha256": "5a54ed04e0ce7ddc434f21e0d74fcec7637f147d42c55c57fedd87203358f9d6"
+      }
+    },
+    {
+      "id": "mazza-chiodata",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Mazza chiodata",
+        "costo": "15 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "2 kg",
+        "proprieta": "—",
+        "page": 73,
+        "sourceText": "Mazza chiodata | 15 mo | 1d8 perforanti | 2 kg | —",
+        "sourceSha256": "70260bbb9d319ce2740e7915f8c4bed7bc1a3445ba1e093148ec1f5b9158c828"
+      },
+      "2024": {
+        "nome": "Mazza chiodata",
+        "costo": "15 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "2 kg",
+        "proprieta": "—",
+        "page": 103,
+        "padronanza": "Fiaccare",
+        "sourceText": "Mazza chiodata | 1d8 perforanti | — | Fiaccare | 2 kg | 15 mo",
+        "sourceSha256": "5c0da286aaa8bc072441fdc5479954e490e64bcd5f01a6f863161fdf2427ee19"
+      }
+    },
+    {
+      "id": "mazzafrusto",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Mazzafrusto",
+        "costo": "10 mo",
+        "danni": "1d8",
+        "tipoDanno": "contundenti",
+        "peso": "1 kg",
+        "proprieta": "—",
+        "page": 73,
+        "sourceText": "Mazzafrusto | 10 mo | 1d8 contundenti | 1 kg | —",
+        "sourceSha256": "b0f47d5782f6db6d82fff44c07e872f66e8618fb21c624c56b6cc7fc95584522"
+      },
+      "2024": {
+        "nome": "Mazzafrusto",
+        "costo": "10 mo",
+        "danni": "1d8",
+        "tipoDanno": "contundenti",
+        "peso": "1 kg",
+        "proprieta": "—",
+        "page": 103,
+        "padronanza": "Fiaccare",
+        "sourceText": "Mazzafrusto | 1d8 contundenti | — | Fiaccare | 1 kg | 10 mo",
+        "sourceSha256": "4b81fe86a3489266089451983978ae479a22cfd53d75456c1e1ed3304c59671b"
+      }
+    },
+    {
+      "id": "picca",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Picca",
+        "costo": "5 mo",
+        "danni": "1d10",
+        "tipoDanno": "perforanti",
+        "peso": "9 kg",
+        "proprieta": "Due mani, Pesante, Portata",
+        "page": 73,
+        "sourceText": "Picca | 5 mo | 1d10 perforanti | 9 kg | Due mani, Pesante, Portata",
+        "sourceSha256": "14638e1c08dda2321aab5c1ace192f10bc6c49649e9d6e790a403efd03111887"
+      },
+      "2024": {
+        "nome": "Picca",
+        "costo": "5 mo",
+        "danni": "1d10",
+        "tipoDanno": "perforanti",
+        "peso": "9 kg",
+        "proprieta": "Due mani, pesante, portata",
+        "page": 103,
+        "padronanza": "Spinta",
+        "sourceText": "Picca | 1d10 perforanti | Due mani, pesante, portata | Spinta | 9 kg | 5 mo",
+        "sourceSha256": "02356f5ea65772d55baf854f0b1687a16eed8b1c45dc6faeaac553617979e27d"
+      }
+    },
+    {
+      "id": "piccone-da-guerra",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Piccone da guerra",
+        "costo": "5 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "—",
+        "page": 73,
+        "sourceText": "Piccone da guerra | 5 mo | 1d8 perforanti | 1 kg | —",
+        "sourceSha256": "ee23f818260d4b6dcdd0caa51e09e4e47fc445aa312a752e4c49324e2a79341f"
+      },
+      "2024": {
+        "nome": "Piccone da guerra",
+        "costo": "5 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Versatile (1d10)",
+        "page": 103,
+        "padronanza": "Fiaccare",
+        "sourceText": "Piccone da guerra | 1d8 perforanti | Versatile (1d10) | Fiaccare | 1 kg | 5 mo",
+        "sourceSha256": "4698ac02ea33eb1a6bdc5c8b2735a7cbb0c5152eff181657ef4039baf2113c8f"
+      }
+    },
+    {
+      "id": "scimitarra",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Scimitarra",
+        "costo": "25 mo",
+        "danni": "1d6",
+        "tipoDanno": "taglienti",
+        "peso": "1,5 kg",
+        "proprieta": "Accurata, Leggera",
+        "page": 73,
+        "sourceText": "Scimitarra | 25 mo | 1d6 taglienti | 1,5 kg | Accurata, Leggera",
+        "sourceSha256": "ccb507075644cbcc115d8d4eaffc35d602ade5f7141320d88091d5154c079862"
+      },
+      "2024": {
+        "nome": "Scimitarra",
+        "costo": "25 mo",
+        "danni": "1d6",
+        "tipoDanno": "taglienti",
+        "peso": "1,5 kg",
+        "proprieta": "Accurata, leggera",
+        "page": 103,
+        "padronanza": "Graffio",
+        "sourceText": "Scimitarra | 1d6 taglienti | Accurata, leggera | Graffio | 1,5 kg | 25 mo",
+        "sourceSha256": "6139b8b0c6438f0d2dddcdd87f9f17ad476716371f1c98fa4a4d62f9216c8c33"
+      }
+    },
+    {
+      "id": "spada-corta",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Spada corta",
+        "costo": "10 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Accurata, Leggera",
+        "page": 73,
+        "sourceText": "Spada corta | 10 mo | 1d6 perforanti | 1 kg | Accurata, Leggera",
+        "sourceSha256": "2139dc3ab02be000c932c0e87077a187400feaf8939b012686507b13fcf9266e"
+      },
+      "2024": {
+        "nome": "Spada corta",
+        "costo": "10 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Accurata, leggera",
+        "page": 103,
+        "padronanza": "Vessazione",
+        "sourceText": "Spada corta | 1d6 perforanti | Accurata, leggera | Vessazione | 1 kg | 10 mo",
+        "sourceSha256": "65e43631bae8819727877ba927977bf7206fb497a981d20231cfd953cb0cb145"
+      }
+    },
+    {
+      "id": "spada-lunga",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Spada lunga",
+        "costo": "15 mo",
+        "danni": "1d8",
+        "tipoDanno": "taglienti",
+        "peso": "1,5 kg",
+        "proprieta": "Versatile (1d10)",
+        "page": 73,
+        "sourceText": "Spada lunga | 15 mo | 1d8 taglienti | 1,5 kg | Versatile (1d10)",
+        "sourceSha256": "c2c79e7e2bd0721e21a203ff35865d47bb2408101da23a7b9c8111f72366fe11"
+      },
+      "2024": {
+        "nome": "Spada lunga",
+        "costo": "15 mo",
+        "danni": "1d8",
+        "tipoDanno": "taglienti",
+        "peso": "1,5 kg",
+        "proprieta": "Versatile (1d10)",
+        "page": 103,
+        "padronanza": "Fiaccare",
+        "sourceText": "Spada lunga | 1d8 taglienti | Versatile (1d10) | Fiaccare | 1,5 kg | 15 mo",
+        "sourceSha256": "bbe096848d99aa0fc300a07bbbf4b5630887a0bf0ec6821c04faea7586012c35"
+      }
+    },
+    {
+      "id": "spadone",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Spadone",
+        "costo": "50 mo",
+        "danni": "2d6",
+        "tipoDanno": "taglienti",
+        "peso": "3 kg",
+        "proprieta": "Due mani, Pesante",
+        "page": 73,
+        "sourceText": "Spadone | 50 mo | 2d6 taglienti | 3 kg | Due mani, Pesante",
+        "sourceSha256": "6fbb6f55073bbae7b114bfab224a4936ef5c835d1f0d7991b05752392d237dbe"
+      },
+      "2024": {
+        "nome": "Spadone",
+        "costo": "50 mo",
+        "danni": "2d6",
+        "tipoDanno": "taglienti",
+        "peso": "3 kg",
+        "proprieta": "Due mani, pesante",
+        "page": 104,
+        "padronanza": "Colpo di striscio",
+        "sourceText": "Spadone | 2d6 taglienti | Due mani, pesante | Colpo di striscio | 3 kg | 50 mo",
+        "sourceSha256": "8282717d42b0d4f050be18d2322ceb6a2ccec5e239467df4834138704a7a9edb"
+      }
+    },
+    {
+      "id": "stocco",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Stocco",
+        "costo": "25 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Accurata",
+        "page": 73,
+        "sourceText": "Stocco | 25 mo | 1d8 perforanti | 1 kg | Accurata",
+        "sourceSha256": "166ae32d94b3254ac338f3ba7a26884b8e710bc5fa30e882e07bfd1b23a24409"
+      },
+      "2024": {
+        "nome": "Stocco",
+        "costo": "25 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Accurata",
+        "page": 104,
+        "padronanza": "Vessazione",
+        "sourceText": "Stocco | 1d8 perforanti | Accurata | Vessazione | 1 kg | 25 mo",
+        "sourceSha256": "6729b559c0c85ce357ce56bb1b992b2c78db198e67d6b4a16fb13168acc4ee62"
+      }
+    },
+    {
+      "id": "tridente",
+      "gruppo": 2,
+      "2014": {
+        "nome": "Tridente",
+        "costo": "5 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "2 kg",
+        "proprieta": "Lancio (gittata 6/18), Versatile (1d8)",
+        "page": 73,
+        "sourceText": "Tridente | 5 mo | 1d6 perforanti | 2 kg | Lancio (gittata 6/18), Versatile (1d8)",
+        "sourceSha256": "1403d49836d82d13ef8443acb6b631b9362f1ad092d82822b8ba57fc10a605a3"
+      },
+      "2024": {
+        "nome": "Tridente",
+        "costo": "5 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "2 kg",
+        "proprieta": "Lancio (gittata 6/18), versatile (1d10)",
+        "page": 104,
+        "padronanza": "Rovesciamento",
+        "sourceText": "Tridente | 1d8 perforanti | Lancio (gittata 6/18), versatile (1d10) | Rovesciamento | 2 kg | 5 mo",
+        "sourceSha256": "5e1d82dfae321b3cdb15d1b820eb9c07393987980a70ca057b61e299aa7ce30e"
+      }
+    },
+    {
+      "id": "arco-lungo",
+      "gruppo": 3,
+      "2014": {
+        "nome": "Arco lungo",
+        "costo": "50 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Due mani, Munizioni (gittata 45/180), Pesante",
+        "page": 73,
+        "sourceText": "Arco lungo | 50 mo | 1d8 perforanti | 1 kg | Due mani, Munizioni (gittata 45/180), Pesante",
+        "sourceSha256": "755666db8ea4140121340b21029d85e9aea3ac74da0d266ff9e86a42da1b4d42"
+      },
+      "2024": {
+        "nome": "Arco lungo",
+        "costo": "50 mo",
+        "danni": "1d8",
+        "tipoDanno": "perforanti",
+        "peso": "1 kg",
+        "proprieta": "Due mani, munizioni (gittata 45/180; freccia), pesante",
+        "page": 104,
+        "padronanza": "Lentezza",
+        "sourceText": "Arco lungo | 1d8 perforanti | Due mani, munizioni (gittata 45/180; freccia), pesante | Lentezza | 1 kg | 50 mo",
+        "sourceSha256": "06b496e44cd53f526e7f021640159779c0b9893bc12e67083c9a57af69ac9e73"
+      }
+    },
+    {
+      "id": "balestra-a-mano",
+      "gruppo": 3,
+      "2014": {
+        "nome": "Balestra a mano",
+        "costo": "75 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1,5 kg",
+        "proprieta": "Leggera, Munizioni (gittata 9/36), Ricarica",
+        "page": 73,
+        "sourceText": "Balestra a mano | 75 mo | 1d6 perforanti | 1,5 kg | Leggera, Munizioni (gittata 9/36), Ricarica",
+        "sourceSha256": "704358f133b867875f2a424835e58de3c508c78a60e15242cb1647c4f4bad4d6"
+      },
+      "2024": {
+        "nome": "Balestra a mano",
+        "costo": "75 mo",
+        "danni": "1d6",
+        "tipoDanno": "perforanti",
+        "peso": "1,5 kg",
+        "proprieta": "Leggera, munizioni (gittata 9/36; quadrello), ricarica",
+        "page": 104,
+        "padronanza": "Vessazione",
+        "sourceText": "Balestra a mano | 1d6 perforanti | Leggera, munizioni (gittata 9/36; quadrello), ricarica | Vessazione | 1,5 kg | 75 mo",
+        "sourceSha256": "4fd6757a084f765e2707d0eb5317afa5d32664660687f705ed447175eef026e5"
+      }
+    },
+    {
+      "id": "balestra-pesante",
+      "gruppo": 3,
+      "2014": {
+        "nome": "Balestra pesante",
+        "costo": "50 mo",
+        "danni": "1d10",
+        "tipoDanno": "perforanti",
+        "peso": "9 kg",
+        "proprieta": "Due mani, Munizioni (gittata 30/120), Pesante, Ricarica",
+        "page": 73,
+        "sourceText": "Balestra pesante | 50 mo | 1d10 perforanti | 9 kg | Due mani, Munizioni (gittata 30/120), Pesante, Ricarica",
+        "sourceSha256": "fb12c22c084954e85a99fe248525551ef7e03392f9186a7e516bdc63390c810b"
+      },
+      "2024": {
+        "nome": "Balestra pesante",
+        "costo": "50 mo",
+        "danni": "1d10",
+        "tipoDanno": "perforanti",
+        "peso": "9 kg",
+        "proprieta": "Due mani, munizioni (gittata 30/120; quadrello), pesante, ricarica",
+        "page": 104,
+        "padronanza": "Spinta",
+        "sourceText": "Balestra pesante | 1d10 perforanti | Due mani, munizioni (gittata 30/120; quadrello), pesante, ricarica | Spinta | 9 kg | 50 mo",
+        "sourceSha256": "0eb922225853ffdb50b2462dec177b5312fd734c746ae22cee7dbe6a9db5b920"
+      }
+    },
+    {
+      "id": "cerbottana",
+      "gruppo": 3,
+      "2014": {
+        "nome": "Cerbottana",
+        "costo": "10 mo",
+        "danni": "1",
+        "tipoDanno": "perforante",
+        "peso": "0,5 kg",
+        "proprieta": "Munizioni (gittata 7,5/30), Ricarica",
+        "page": 73,
+        "sourceText": "Cerbottana | 10 mo | 1 perforante | 0,5 kg | Munizioni (gittata 7,5/30), Ricarica",
+        "sourceSha256": "69742130a99b2aae63a5b840f3508cf38fb1bdfa5fd6b7a7eed9d8f8bf2a9688"
+      },
+      "2024": {
+        "nome": "Cerbottana",
+        "costo": "10 mo",
+        "danni": "1",
+        "tipoDanno": "perforante",
+        "peso": "0,5 kg",
+        "proprieta": "Munizioni (gittata 7/30; ago), ricarica",
+        "page": 104,
+        "padronanza": "Vessazione",
+        "sourceText": "Cerbottana | 1 perforante | Munizioni (gittata 7/30; ago), ricarica | Vessazione | 0,5 kg | 10 mo",
+        "sourceSha256": "08ce4f58820fb0bda0f637bad5ad9794f67493e8d521bc0866359b5c7a596e78"
+      }
+    },
+    {
+      "id": "moschetto",
+      "gruppo": 3,
+      "2014": null,
+      "2024": {
+        "nome": "Moschetto",
+        "costo": "500 mo",
+        "danni": "1d12",
+        "tipoDanno": "perforanti",
+        "peso": "5 kg",
+        "proprieta": "Due mani, munizioni (gittata 12/36; proiettile), ricarica",
+        "page": 104,
+        "padronanza": "Lentezza",
+        "sourceText": "Moschetto | 1d12 perforanti | Due mani, munizioni (gittata 12/36; proiettile), ricarica | Lentezza | 5 kg | 500 mo",
+        "sourceSha256": "dfeb3dd13a5566e0d58e432dd6520b23e952db7dba93e92a9ed885176ab7f6ec"
+      }
+    },
+    {
+      "id": "pistola",
+      "gruppo": 3,
+      "2014": null,
+      "2024": {
+        "nome": "Pistola",
+        "costo": "250 mo",
+        "danni": "1d10",
+        "tipoDanno": "perforanti",
+        "peso": "1,5 kg",
+        "proprieta": "Munizioni (gittata 9/27; proiettile), ricarica",
+        "page": 104,
+        "padronanza": "Vessazione",
+        "sourceText": "Pistola | 1d10 perforanti | Munizioni (gittata 9/27; proiettile), ricarica | Vessazione | 1,5 kg | 250 mo",
+        "sourceSha256": "acae2c9937a4d7b6a298260598f6b1666f8af66ee155e5569ba6ed5eb2d2f2c8"
+      }
+    },
+    {
+      "id": "rete",
+      "gruppo": 3,
+      "2014": {
+        "nome": "Rete",
+        "costo": "1 mo",
+        "danni": "",
+        "tipoDanno": "",
+        "peso": "1,5 kg",
+        "proprieta": "Lancio (gittata 1,5/4,5), Speciale",
+        "page": 73,
+        "sourceText": "Rete | 1 mo | — | 1,5 kg | Lancio (gittata 1,5/4,5), Speciale",
+        "sourceSha256": "76f60d8bd947f0a4df9d9462412b161052c8b0d326d27f316b127b6f88dbe317"
+      },
+      "2024": null
+    }
+  ],
+  "regole2014": {
+    "proprieta": {
+      "Accurata": {
+        "testo": "Quando un personaggio effettua un attacco con un'arma accurata, può scegliere se usare il modificatore di Forza o di Destrezza per il tiro per colpire e il tiro per i danni. Deve usare lo stesso modificatore per entrambi i tiri.",
+        "page": 71,
+        "sourceSha256": "47ec6ce8555352a0f082deecb522c02698bf98b4f1c37d079e7e2e94d952a59f"
+      },
+      "Due mani": {
+        "testo": "Quest'arma richiede di essere impugnata a due mani quando il personaggio la usa per attaccare.",
+        "page": 71,
+        "sourceSha256": "5c636edc76e787bbe60864e866fc7eb0b957f5ff70cf2d4fbe2265db9626b3d7"
+      },
+      "Gittata": {
+        "testo": "Un'arma che può essere usata per effettuare un attacco a distanza indica la propria gittata tra parentesi dopo i dati relativi a munizioni o proprietà da lancio. La gittata riporta due numeri: il primo è la gittata normale dell'arma in metri, il secondo è la gittata lunga dell'arma. Quando un personaggio attacca un bersaglio oltre la gittata normale, subisce svantaggio al tiro per colpire. Non è possibile attaccare un bersaglio oltre la gittata lunga dell'arma.",
+        "page": 71,
+        "sourceSha256": "e1cb7801a7bffe2c723ad6f57326bb79a93554eec32367db34357008a2aca105"
+      },
+      "Lancio": {
+        "testo": "Se un'arma possiede la proprietà da lancio, il personaggio può lanciarla per effettuare un attacco a distanza. Se l'arma è un'arma da mischia, il personaggio applica al tiro per colpire e al tiro per i danni lo stesso modificatore di caratteristica che userebbe per un attacco in mischia effettuato con quell'arma. Per esempio, se lancia un'ascia, usa la sua Forza, ma se lancia un pugnale può usare la sua Forza o la sua Destrezza, dal momento che il pugnale possiede la proprietà accurata.",
+        "page": 71,
+        "sourceSha256": "30472254440eb8a5e9b4c103fd394d386437b48f34f8530ad546382deffabea5"
+      },
+      "Leggera": {
+        "testo": "Un'arma leggera è piccola e facile da maneggiare, cosa che la rende ideale per combattere con due armi.",
+        "page": 71,
+        "sourceSha256": "cfb8e7eea65fe802124e2cb641a76ef3cb139bad8fa17fed5ff3c96b5bcf1d42"
+      },
+      "Munizioni": {
+        "testo": "Un personaggio può effettuare un attacco a distanza usando un'arma dotata della proprietà munizioni solo se possiede delle munizioni da lanciare. Ogni volta che attacca con l'arma, consuma una delle sue munizioni. Estrarre la munizione da una faretra, una custodia o un altro contenitore è considerato parte dell'attacco (il personaggio avrà bisogno di una mano libera per caricare un'arma a una mano). Alla fine della battaglia, il personaggio può recuperare metà delle munizioni consumate impiegando un minuto a setacciare il campo di battaglia.\n\nSe il personaggio usa un'arma dotata della proprietà munizioni per effettuare un attacco in mischia, considera quell'arma come un'arma improvvisata (vedi \"Armi Improvvisate\" più avanti). Una fionda deve essere caricata per infliggere danni quando viene usata in questo modo.",
+        "page": 71,
+        "pages": [
+          71,
+          72
+        ],
+        "sourceSha256": "17918880e3b19faff6637b25ed48a82073b1f3325685d994b3bfaa70b081f02c"
+      },
+      "Pesante": {
+        "testo": "Le creature di taglia Piccola subiscono svantaggio ai tiri per colpire con le armi pesanti. La taglia e la stazza di un'arma pesante sono eccessive affinché una creatura Piccola possa usarla con efficacia.",
+        "page": 72,
+        "sourceSha256": "6fe5b5ce2795019715b817513b4e277843cfb32dffd59a05f5d9287f83307dea"
+      },
+      "Portata": {
+        "testo": "Quest'arma aggiunge 1,5 metri alla portata del personaggio che la usa per attaccare o per determinare la portata dei suoi attacchi di opportunità.",
+        "page": 72,
+        "sourceSha256": "93acd0923e254d55c33d97ffe450c86bbd4bc63f17ac1114c419d5e0979212a4"
+      },
+      "Ricarica": {
+        "testo": "Dato che ricaricare quest'arma richiede del tempo, un personaggio può scagliare una sola munizione con essa quando usa un'azione, un'azione bonus o una reazione per fare fuoco, a prescindere dal numero di attacchi che può effettuare normalmente.",
+        "page": 72,
+        "sourceSha256": "0cdf22a5659873187c0da801c84ea891fceb123fd7cd13e9f430a92c1b454c16"
+      },
+      "Speciale": {
+        "testo": "Un'arma con la proprietà speciale prevede alcune regole insolite che ne governano l'utilizzo, spiegate nella descrizione dell'arma stessa (vedi \"Armi speciali\", più avanti in questa sezione).",
+        "page": 72,
+        "sourceSha256": "6f321088fa692a790ca6c460e966dfefefb855f76a902965ba48e9fee9852eee"
+      },
+      "Versatile": {
+        "testo": "Quest'arma può essere usata a una o due mani. La proprietà è accompagnata da un valore in danni indicato tra parentesi (i danni che l'arma infligge quando viene impugnata a due mani per effettuare un attacco in mischia).",
+        "page": 72,
+        "sourceSha256": "9f87ce404a7ac84959a34a62786741d543296bb3f1bc74690c5580b0d463a416"
+      }
+    },
+    "armiSpeciali": {
+      "Lancia da cavaliere": {
+        "testo": "Il personaggio subisce svantaggio quando usa una lancia da cavaliere per attaccare un bersaglio entro 1,5 metri da lui. Inoltre, una lancia da cavaliere deve essere impugnata a due mani quando il personaggio non è in sella.",
+        "page": 72,
+        "sourceSha256": "b61bd0613f7548c08ffaa1397f5022044f336a7916442e44509c03f4ddf608bd"
+      },
+      "Rete": {
+        "testo": "Una creatura di taglia Grande o inferiore che viene colpita da una rete è trattenuta finché non viene liberata. Una rete non ha effetto sulle creature prive di forma o di taglia Enorme o superiore. Una creatura può usare la sua azione per effettuare una prova di Forza con CD 10 e liberare se stessa o qualcun altro nel suo raggio in caso di successo. La creatura può essere liberata senza essere ferita anche infliggendo 5 danni taglienti alla rete (CA 10), ponendo fine all'effetto e distruggendo la rete.\n\nQuando il personaggio usa un'azione, un'azione bonus o una reazione per attaccare con una rete, può effettuare un solo attacco, a prescindere dal numero che potrebbe effettuare normalmente.",
+        "page": 72,
+        "sourceSha256": "dc7df4fa33c878c034920004c3682538145268db7e37d3179d2bf10f7f09661c"
+      }
+    }
+  }
+}

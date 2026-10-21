@@ -1,4 +1,4 @@
-// Fails the build when full creature sheets or 2014 spell texts reach the code sent to the browser.
+// Fails the build when full creature sheets, 2014 spell texts or equipment rule texts reach the code sent to the browser.
 // Lists use the light index (id, name, type, size, CR); full sheets are read on the server only.
 // Usage: node scripts/check-client-bundle.mjs [client dir, default .next/static]
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
@@ -8,6 +8,10 @@ const MONSTER_FIELDS = ['azioni', 'tratti', 'reazioni', 'azioni_leggendarie'];
 const SHEET_FILES = [
   ...['srd-monsters-5.1-it.json', 'srd-monsters-5.2.1-it.json', 'srd-animals-5.2.1-it.json'].map(file => ({ file, key: 'monster', fields: MONSTER_FIELDS })),
   { file: 'srd-spells-5.1-it.json', key: 'spell', fields: ['descrizione'] },
+];
+/** Rule texts of the Equipaggiamento section: lists send names and numbers only. */
+const RULE_FILES = [
+  { file: 'srd-weapons-it.json', texts: data => Object.entries({ ...data.regole2014.proprieta, ...data.regole2014.armiSpeciali }).map(([id, rule]) => ({ id, text: rule.testo })) },
 ];
 
 /** One plain-ASCII sentence fragment per sheet: it survives minification and string escaping. */
@@ -19,6 +23,12 @@ export function sheetFingerprints(dataDir = new URL('../lib/data/', import.meta.
       const text = fields.map(field => sheet[field] || '').join(' ').replace(/<[^>]*>/g, ' ');
       const fragment = text.match(/[A-Za-z][A-Za-z ,]{38,}[A-Za-z]/)?.[0];
       if (fragment) prints.push({ file, id: sheet.id, fragment });
+    }
+  }
+  for (const { file, texts } of RULE_FILES) {
+    for (const { id, text } of texts(JSON.parse(readFileSync(new URL(file, dataDir), 'utf8')))) {
+      const fragment = text.match(/[A-Za-z][A-Za-z ,]{38,}[A-Za-z]/)?.[0];
+      if (fragment) prints.push({ file, id, fragment });
     }
   }
   return prints;
