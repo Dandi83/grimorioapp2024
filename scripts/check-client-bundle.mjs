@@ -15,6 +15,8 @@ const RULE_FILES = [
   { file: 'srd-armor-it.json', texts: data => Object.values(data.regole2014).flatMap(group => Object.entries(group)).map(([id, rule]) => ({ id, text: rule.testo })) },
   { file: 'srd-manual-5.2.1-it.json', texts: data => data.entries.find(e => e.id === 'equipaggiamento-equipaggiamento-d-avventura').blocks.filter(b => b.kind === 'prose').map((b, i) => ({ id: `avventura-${i}`, text: b.text })) },
   { file: 'srd-adventuring-gear-5.1-it.json', texts: data => [...Object.entries(data.descrizioni).map(([id, rule]) => ({ id, text: rule.testo })), ...data.dotazioni.voci.map(pack => ({ id: pack.nome, text: pack.testo }))] },
+  { file: 'srd-tools-5.1-it.json', texts: data => [{ id: 'intro', text: data.intro.testo }, ...Object.entries(data.descrizioni).map(([id, rule]) => ({ id, text: rule.testo }))] },
+  { file: 'srd-manual-5.2.1-it.json', texts: data => data.entries.find(e => e.id === 'equipaggiamento-strumenti').blocks.filter(b => b.kind === 'prose').map((b, i) => ({ id: `strumenti-${i}`, text: b.text })) },
 ];
 
 /** One plain-ASCII sentence fragment per sheet: it survives minification and string escaping. */
