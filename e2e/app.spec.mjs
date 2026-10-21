@@ -507,6 +507,8 @@ test("tools: tile, lists of both editions, search, sheets, instrument 2014 → 2
   await expect(page.getByText(/Nel 2024: Gioco, variante «Carte da gioco»/)).toBeVisible();
   await selector.getByRole("button", { name: "2024" }).click();
   await expect(page).toHaveURL(/\/equipaggiamento\/strumenti\/gioco$/);
+  expect(errors).toEqual([]);
+});
 
 test("magic items 2024: Compendio tile, search, combined filters in the address, sheets with tables, narrow phones", async ({ page, request }) => {
   test.setTimeout(180_000);
