@@ -1,0 +1,29 @@
+{
+  "_nota": "Correzioni di sola visualizzazione degli oggetti magici: refusi certi del PDF, con pagina, testo stampato e testo mostrato. I dati trascritti restano come stampati; ogni sostituzione deve trovare il testo stampato una sola volta nell'oggetto.",
+  "sostituzioni": [
+    {
+      "edizione": "2024",
+      "id": "barca-pieghevole",
+      "pagina": 247,
+      "prima": "in una barcone",
+      "dopo": "in un barcone",
+      "motivo": "Articolo sbagliato: «barcone» è maschile (poco sotto il PDF scrive «del barcone»)."
+    },
+    {
+      "edizione": "2014",
+      "id": "armastura-demoniaca",
+      "pagina": 243,
+      "prima": "Armastura demoniaca",
+      "dopo": "Armatura demoniaca",
+      "motivo": "Lettera in più nel nome: il testo dell'oggetto parla di «armatura»."
+    },
+    {
+      "edizione": "2014",
+      "id": "tappeto-volante",
+      "pagina": 284,
+      "prima": "120 cm × 80 cm",
+      "dopo": "120 cm × 180 cm",
+      "motivo": "Cifra mancante: le misure crescono riga per riga (90 × 150, 120 × 180, 150 × 210, 180 × 270) e la stessa tabella 2024 stampa «120 cm × 180 cm»."
+    }
+  ]
+}

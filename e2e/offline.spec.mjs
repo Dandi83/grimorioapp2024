@@ -48,6 +48,10 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Canestro");
   await page.goto(base + "/avanzamento");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
+  await page.goto(base + "/oggetti-magici");
+  await expect(page.locator('main a[href^="/oggetti-magici/"]')).toHaveCount(258);
+  await page.goto(base + "/oggetti-magici/bacchetta-delle-meraviglie");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bacchetta delle meraviglie");
 
   await stopServer();
   await expect.poll(async () => { try { await fetch(base + "/"); return "up"; } catch { return "down"; } }).toBe("down");
@@ -81,6 +85,13 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
   await page.getByRole("button", { name: "Aggiungi riga" }).click();
   await expect(page.getByLabel("Riga 2: grado sfida")).toBeVisible();
+  // Magic items: the list and a sheet with its table, after a reload.
+  await page.goto(base + "/oggetti-magici");
+  await page.reload();
+  await expect(page.locator('main a[href^="/oggetti-magici/"]')).toHaveCount(258);
+  await page.goto(base + "/oggetti-magici/bacchetta-delle-meraviglie");
+  await page.reload();
+  await expect(page.locator("[data-table-rows]")).toHaveAttribute("data-table-rows", "18");
   await page.goto(base + "/compendio");
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");

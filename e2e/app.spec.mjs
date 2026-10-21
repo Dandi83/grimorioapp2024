@@ -229,8 +229,8 @@ test("compendium: five-item navigation on narrow phones, Compendio active inside
   await expect(page).toHaveURL(/\/compendio$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
   await expect(page.getByText("Regole, equipaggiamento e strumenti per il tavolo")).toBeVisible();
-  await expect(page.locator("main ul > li")).toHaveText([/Equipaggiamento/, /Avanzamento di livello/]);
-  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale", "/avanzamento"]) {
+  await expect(page.locator("main ul > li")).toHaveText([/Equipaggiamento/, /Avanzamento di livello/, /Oggetti magici/]);
+  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale", "/avanzamento", "/oggetti-magici", "/oggetti-magici/ali-del-volo"]) {
     await page.goto(path);
     await expect(nav.locator('a[aria-current="page"]'), path).toHaveText("Compendio");
     expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
@@ -448,5 +448,81 @@ test("adventuring gear 2014: list with groups and packs, search, sheets, renamed
   await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2024" }).click();
   await expect(page).toHaveURL(/\/equipaggiamento\/avventura$/);
   await expect(page.getByText("Questo oggetto non c’è nel 2024.")).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("magic items 2024: Compendio tile, search, combined filters in the address, sheets with tables, narrow phones", async ({ page, request }) => {
+  test.setTimeout(180_000);
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/compendio");
+  const tiles = page.locator("main ul > li a");
+  await expect(tiles.nth(2)).toContainText("Oggetti magici");
+  await expect(tiles.nth(2)).toContainText("Elenco A–Z con rarità e sintonia");
+  await tiles.nth(2).click();
+  await expect(page).toHaveURL(/\/oggetti-magici$/);
+  await expect(page.getByRole("navigation", { name: "Navigazione principale" }).locator('a[aria-current="page"]')).toHaveText("Compendio");
+  const rows = page.locator('main a[href^="/oggetti-magici/"]');
+  await expect(rows).toHaveCount(258);
+  await expect(page.getByRole("status").filter({ hasText: /oggetti/ })).toHaveText("258 oggetti");
+  // No edition labels in the list: names, type, rarity and the attunement chip only.
+  await expect(page.locator("main").getByText("D&D5e")).toHaveCount(0);
+  const search = page.getByRole("searchbox", { name: "Cerca un oggetto magico" });
+  await search.fill("spada");
+  await expect(rows.first()).toBeVisible();
+  for (const text of await rows.allInnerTexts()) expect(text.toLowerCase()).toContain("spada");
+  await search.fill("pozione");
+  expect(await rows.count()).toBeGreaterThan(10);
+  await expect(page).toHaveURL(/q=pozione/);
+  await search.fill("");
+  // Rarità Raro + Tipo Anello + Sintonia richiesta, then reopened from the address.
+  await page.getByRole("button", { name: "Filtri" }).click();
+  const sheet = page.getByRole("dialog", { name: "Filtri" });
+  await sheet.getByRole("button", { name: "Raro", exact: true }).click();
+  await sheet.getByRole("button", { name: "Anello", exact: true }).click();
+  await sheet.getByRole("button", { name: "Richiesta", exact: true }).click();
+  await sheet.getByRole("button", { name: /^Mostra \d+ risultat/ }).click();
+  await expect(page).toHaveURL(/rarita=raro&tipo=anello&sintonia=richiesta/);
+  const filtered = await rows.allInnerTexts();
+  expect(filtered.length).toBeGreaterThan(2);
+  for (const text of filtered) { expect(text).toContain("Anello"); expect(text).toContain("Sintonia"); }
+  await page.reload();
+  await expect(rows).toHaveCount(filtered.length);
+  await expect(page.getByRole("list", { name: "Filtri attivi" }).getByRole("button")).toHaveCount(3);
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `list ${width}`).toBeLessThanOrEqual(width);
+  }
+  // Touch targets of the list: rows, filters button and active filters at least 44 px high.
+  for (const box of [await rows.first().boundingBox(), await page.getByRole("button", { name: /^Filtri/ }).boundingBox()]) expect(box.height).toBeGreaterThanOrEqual(44);
+  await page.goto("/oggetti-magici");
+  // Sheets with tables, read at 360 px without horizontal scroll.
+  await page.setViewportSize({ width: 360, height: 800 });
+  for (const [id, name, tableRows] of [["amuleto-dei-piani", "Amuleto dei piani", [5]], ["bacchetta-delle-meraviglie", "Bacchetta delle meraviglie", [18]],
+    ["apparatus-del-granchio", "Apparatus del granchio", [10]], ["ampolla-di-ferro", "Ampolla di ferro", []], ["zainetto-pratico", "Zainetto pratico", []]]) {
+    await page.goto(`/oggetti-magici/${id}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
+    const counts = await page.locator("[data-table-rows]").evaluateAll(tables => tables.map(t => Number(t.getAttribute("data-table-rows"))));
+    expect(counts, id).toEqual(tableRows);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), id).toBeLessThanOrEqual(360);
+  }
+  // Chips from the type line, the attunement requirement as printed, a back link, the source page.
+  await page.goto("/oggetti-magici/bacchetta-del-mago-da-guerra-1-2-o-3");
+  const chips = page.getByRole("list", { name: "Tipo, rarità e sintonia" });
+  await expect(chips).toContainText("Bacchetta");
+  await expect(chips).toContainText("Non comune (+1), rara (+2) o molto rara (+3)");
+  await expect(chips).toContainText("Richiede sintonia con un incantatore");
+  await expect(page.getByRole("button", { name: "Torna indietro" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Fonte ufficiale, pagina 247/ })).toHaveAttribute("href", /IT_SRD_CC_v5\.2\.1\.pdf#page=247$/);
+  // The rules stay in the manual, which production does not publish: no link there.
+  await expect(page.getByRole("link", { name: "Regole sugli oggetti magici" })).toHaveCount(0);
+  // A stat block inside an item.
+  await page.goto("/oggetti-magici/mazzo-delle-meraviglie");
+  await expect(page.getByRole("region", { name: "Scheda delle statistiche" })).toContainText("Avatar della morte");
+  const hrefs = await page.evaluate(async () => [...new DOMParser().parseFromString(await (await fetch("/oggetti-magici")).text(), "text/html").querySelectorAll('main a[href^="/oggetti-magici/"]')].map(a => a.getAttribute("href")));
+  expect(hrefs).toHaveLength(258);
+  for (const href of hrefs) expect((await request.get(href)).status(), href).toBe(200);
+  expect((await request.get("/oggetti-magici/inesistente")).status()).toBe(404);
   expect(errors).toEqual([]);
 });
