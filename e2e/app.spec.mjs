@@ -3,6 +3,14 @@ import { readFileSync } from "node:fs";
 
 const catalogRows = page => page.locator("li.catalog-row");
 
+// The tests run as an iPhone, where Safari shows the "Aggiungi alla schermata Home" prompt after
+// 1.2 s over the bottom bar: on a slow machine it covered the navigation the tests tap.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
+  });
+});
+
 test("home: header, bottom navigation and security headers", async ({ page }) => {
   const response = await page.goto("/");
   expect(response.status()).toBe(200);
