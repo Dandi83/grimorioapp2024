@@ -1,8 +1,8 @@
 import { GearBrowser } from "@/components/equipment/gear-browser";
-import { gearListItems } from "@/lib/adventuring-gear";
+import { gearListRows } from "@/lib/adventuring-gear-editions";
 
 export const metadata = { title: "Equipaggiamento d’avventura — Il Grimorio.App" };
 
 export default function GearPage() {
-  return <GearBrowser items={gearListItems()} />;
+  return <GearBrowser rows={gearListRows()} />;
 }

@@ -5,7 +5,11 @@ only spaces are normalized and cells broken over two lines are joined. Every row
 printed text and a SHA-256 fingerprint; 2014 rule texts are copied word for word with their own
 fingerprint. The 2024 rule texts are not copied: the app reads them from the 2024 manual data.
 
-Usage: python scripts/transcribe-srd-equipment.py SRD_CC_v5.1_IT.pdf IT_SRD_CC_v5.2.1.pdf weapons|armor out.json
+Usage: python scripts/transcribe-srd-equipment.py SRD_CC_v5.1_IT.pdf IT_SRD_CC_v5.2.1.pdf weapons|armor|gear2014 out.json
+
+gear2014: adventuring gear of the SRD 5.1 (pp. 74-78), read column by column in reading order:
+descriptions (pp. 74-76), table "Equipaggiamento d'avventura" (pp. 76-77), "Capienza dei contenitori"
+(pp. 77-78) and "Dotazioni" (p. 78).
 """
 import hashlib
 import json
@@ -111,7 +115,7 @@ def paragraphs(pdf, page, column, start, stop):
     return [clean(p) for p in out]
 
 
-def labelled(paragraph_list, page):
+def labelled(paragraph_list, page, max_words=4):
     """{"Accurata": "...", ...}: a paragraph whose first sentence is a short label; others continue the previous one.
     page: one page for all, or a list with the page of each paragraph."""
     out = {}
@@ -119,7 +123,7 @@ def labelled(paragraph_list, page):
     for index, text in enumerate(paragraph_list):
         where = page[index] if isinstance(page, list) else page
         match = re.match(r'^([A-ZÀ-Ý][^.]{0,40})\. (.*)$', text)
-        if match and len(match.group(1).split()) <= 4:
+        if match and len(match.group(1).split()) <= max_words:
             last = match.group(1)
             out[last] = {'testo': match.group(2), 'page': where}
         elif last:
@@ -200,8 +204,136 @@ def main():
     for path, expected in ((pdf51, SHA_51), (pdf521, SHA_521)):
         if sha_file(path) != expected:
             raise SystemExit(f'unexpected PDF: {path}')
-    data = weapons(pymupdf.open(pdf51), pymupdf.open(pdf521)) if what == 'weapons' else armor(pymupdf.open(pdf51), pymupdf.open(pdf521))
+    builders = {'weapons': weapons, 'armor': armor, 'gear2014': gear2014}
+    data = builders[what](pymupdf.open(pdf51), pymupdf.open(pdf521))
     Path(out).write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
+
+
+def column_lines(pdf, page, column, start, stop, fonts):
+    """Lines of one column in reading order: (y, x, text, first span font, spans)."""
+    middle = pdf[page - 1].rect.width / 2
+    out = []
+    for block in pdf[page - 1].get_text('dict')['blocks']:
+        for line in block.get('lines', []):
+            spans = [span for span in line['spans'] if span['text'].strip()]
+            if not spans or not any(spans[0]['font'].startswith(f) for f in fonts):
+                continue
+            x, y = line['bbox'][0], line['bbox'][1]
+            if (x >= middle) == (column == 1) and start <= y < stop:
+                out.append((round(y, 1), round(x), ''.join(span['text'] for span in line['spans']), spans[0]['font'], spans))
+    return sorted(out, key=lambda line: (line[0], line[1]))
+
+
+def gear_table(pdf, parts):
+    """Rows of the 2014 table: name, cost, weight; italic lines open a group ("Focus arcano"),
+    indented names belong to it; a name broken over two lines is joined."""
+    rows, group = [], None
+    for page, column, start, stop in parts:
+        cells = {}
+        for y, x, text, font, spans in column_lines(pdf, page, column, start, stop, ['Calibri']):
+            for span in spans:
+                sx = round(span['bbox'][0]) - (58 if column == 0 else 329)
+                kind = 'nome' if sx < 120 else 'costo' if sx < 155 else 'peso'
+                cells.setdefault(round(span['bbox'][1]), []).append((kind, span['text'], span['font']))
+        for y in sorted(cells):
+            row = {}
+            italic = all('Italic' in font for _, _, font in cells[y])
+            bold = all('Bold' in font for _, _, font in cells[y])
+            for kind, text, font in cells[y]:
+                row[kind] = row.get(kind, '') + text
+            if bold:
+                continue
+            if italic:
+                group = clean(row['nome'])
+                continue
+            name = row.get('nome', '')
+            if 'costo' not in row:
+                rows[-1]['nome'] += ' ' + clean(name)
+                rows[-1]['righe'] += 1
+                continue
+            if not name.startswith(' '):
+                group = None
+            rows.append({'nome': clean(name), 'costo': clean(row['costo']), 'peso': clean(row.get('peso', '')), 'gruppo': group, 'page': page, 'righe': 1})
+    for row in rows:
+        row['nome'] = re.sub(r'\(\s+', '(', row['nome']).replace(' )', ')')
+        row['sourceText'] = ' | '.join(filter(None, [row['gruppo'], row['nome'], row['costo'], row['peso']]))
+        row['sourceSha256'] = sha(row['sourceText'])
+        del row['righe']
+    return rows
+
+
+def sidebar_entries(pdf, page, column, start, stop):
+    """Calibri sidebar paragraphs that open with a bold italic label: {"Dotazione da …": text}."""
+    out, current = [], None
+    for y, x, text, font, spans in column_lines(pdf, page, column, start, stop, ['Calibri']):
+        if 'BoldItalic' in spans[0]['font']:
+            label = clean(spans[0]['text'])
+            rest = clean(''.join(span['text'] for span in spans[1:]))
+            current = {'titolo': label, 'testo': rest}
+            out.append(current)
+        elif current:
+            current['testo'] = clean(current['testo'] + ' ' + text)
+    return out
+
+
+def gear2014(pdf51, pdf521):
+    # Descriptions: six columns from p. 74 to p. 76; a column that opens without a label continues
+    # the last paragraph of the column before.
+    columns = [(74, 0, 75, 740), (74, 1, 40, 740), (75, 0, 40, 740), (75, 1, 40, 740), (76, 0, 40, 740), (76, 1, 40, 515)]
+    texts, pages = [], []
+    for page, column, start, stop in columns:
+        found = paragraphs(pdf51, page, column, start, stop)
+        if texts and found and not re.match(r'^[A-ZÀ-Ý][^.]{0,40}\. ', found[0]):
+            texts[-1] += ' ' + found.pop(0)
+            pages[-1] = sorted({*([pages[-1]] if isinstance(pages[-1], int) else pages[-1]), page})
+        texts += found
+        pages += [page] * len(found)
+    intro = texts.pop(0)
+    pages.pop(0)
+    # Labels up to six words: "Custodia per quadrelli da balestra".
+    descriptions = labelled(texts, [p if isinstance(p, int) else p[0] for p in pages], max_words=6)
+    rows = gear_table(pdf51, [(76, 1, 535, 740), (77, 0, 60, 740), (77, 1, 60, 575)])
+    # "Capienza dei contenitori": a line without a container continues the capacity above,
+    # a line without a capacity continues the container ("o boccale").
+    capacity, note = [], ''
+    for page, column, start, stop in [(77, 1, 600, 740), (78, 0, 60, 240)]:
+        cells = {}
+        for y, x, text, font, spans in column_lines(pdf51, page, column, start, stop, ['Calibri']):
+            for span in spans:
+                if 'Bold' in span['font']:
+                    continue
+                kind = 'contenitore' if span['bbox'][0] - (58 if column == 0 else 329) < 60 else 'capienza'
+                cells.setdefault(round(span['bbox'][1]), []).append((kind, span['text']))
+        for y in sorted(cells):
+            row = {}
+            for kind, text in cells[y]:
+                row[kind] = row.get(kind, '') + text
+            name, value = clean(row.get('contenitore', '')), clean(row.get('capienza', ''))
+            if name.startswith('*') or note:
+                note = clean(note + ' ' + name + ' ' + value)
+            elif name and value:
+                capacity.append({'contenitore': name, 'capienza': value, 'page': page})
+            elif name:
+                capacity[-1]['contenitore'] += ' ' + name
+            elif value:
+                capacity[-1]['capienza'] += ' ' + value
+    packs = sidebar_entries(pdf51, 78, 0, 345, 700)
+    intro_packs = clean(' '.join(text for y, x, text, font, spans in column_lines(pdf51, 78, 0, 270, 345, ['Calibri'])))
+    for entry in packs:
+        match = re.fullmatch(r'(.*) \((.*)\)\.?', entry['titolo'])
+        entry['nome'], entry['prezzo'] = match.group(1), match.group(2)
+        entry['page'] = 78
+        entry['sourceSha256'] = sha(entry['testo'])
+        del entry['titolo']
+    return {
+        '_nota': "Equipaggiamento d'avventura dell'SRD 5.1 (2014) in italiano, trascritto da scripts/transcribe-srd-equipment.py (gear2014). Righe della tabella, descrizioni, capienza dei contenitori e dotazioni come stampate, con impronta sha256.",
+        'fonte': {'document': 'SRD 5.1', 'sourceUrl': URL_51, 'sourceSha256': SHA_51, 'pages': [74, 75, 76, 77, 78]},
+        'intro': {'testo': intro, 'page': 74, 'sourceSha256': sha(intro)},
+        'tabella': rows,
+        'descrizioni': descriptions,
+        'capienza': {'righe': capacity, 'nota': note, 'sourceSha256': sha(json.dumps(capacity, ensure_ascii=False) + note)},
+        'dotazioni': {'intro': intro_packs, 'voci': packs},
+    }
 
 
 def sha_file(path):

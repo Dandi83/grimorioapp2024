@@ -320,7 +320,7 @@ test("adventuring gear 2024: tile, packs, search, a sheet with its table, narrow
   await page.goto("/equipaggiamento");
   await page.locator("main").getByRole("link", { name: /Equipaggiamento d’avventura/ }).click();
   await expect(page).toHaveURL(/\/equipaggiamento\/avventura$/);
-  await expect(page.getByText("Edizione 2024. La 2014 arriva presto.")).toBeVisible();
+  await expect(page.getByText("La 2014 arriva presto")).toHaveCount(0);
   await expect(page.locator('section[aria-labelledby="dotazioni"] li')).toHaveCount(7);
   await expect(page.locator('section[aria-labelledby="tutti"] li')).toHaveCount(81);
   const search = page.getByRole("searchbox", { name: "Cerca un oggetto" });
@@ -388,5 +388,65 @@ test("advancement: Compendio tile, table, hit points, bonus feats and XP calcula
     const small = await page.locator("main button, main select, main input").evaluateAll(items => items.filter(item => { const box = item.getBoundingClientRect(); return box.height < 44 || box.width < 44; }).map(item => item.outerHTML.slice(0, 80)));
     expect(small, `targets at ${width}`).toEqual([]);
   }
+  expect(errors).toEqual([]);
+});
+
+test("adventuring gear 2014: list with groups and packs, search, sheets, renamed object and missing edition", async ({ page }) => {
+  const errors = [];
+  // The browser's own request for /favicon.ico (the site has icon.png) is not a page error.
+  page.on("console", message => { if (message.type() === "error" && !message.location().url.endsWith("/favicon.ico")) errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/equipaggiamento/avventura");
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(page.getByText(/^106 voci · SRD 5\.1$/)).toBeVisible();
+  const all = page.locator('section[aria-labelledby="tutti"] > ul > li');
+  await expect(all).toHaveCount(94);
+  await expect(page.locator('section[aria-labelledby="dotazioni"] li')).toHaveCount(7);
+  await expect(all.filter({ hasText: "Focus arcano" })).toContainText("Globo");
+  const search = page.getByRole("searchbox", { name: "Cerca un oggetto" });
+  await search.fill("corda");
+  await expect(all).toHaveText([/Corda di Canapa/, /Corda di Seta/]);
+  await search.fill("piede di porco");
+  await expect(all).toHaveText([/Piede di porco/]);
+  await search.fill("");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `list ${width}`).toBeLessThanOrEqual(width);
+  }
+  // A sheet with its 2014 text.
+  await all.filter({ hasText: "Acido (fiala)" }).getByRole("link").click();
+  await expect(page.locator('[data-edition="2014"]')).toContainText("2d6 danni da acido");
+  await page.getByRole("button", { name: "Torna indietro" }).click();
+  // A group sheet: Munizioni with its rows.
+  await all.filter({ hasText: /^Munizioni/ }).getByRole("link").click();
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Munizioni");
+  await expect(page.locator('[data-edition="2014"]')).toContainText("Proiettili da fionda (20)");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `group ${width}`).toBeLessThanOrEqual(width);
+  }
+  // A different name: Canestro (2014) has its own address; 2024 goes to Cesto.
+  await page.goto("/equipaggiamento/avventura/canestro");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Canestro");
+  await expect(page.locator('[data-edition="2014"]')).toContainText("2 cubi con spigolo di 30 cm/20 kg");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `canestro ${width}`).toBeLessThanOrEqual(width);
+  }
+  await expect(page.getByRole("heading", { name: "2014 → 2024" })).toBeVisible();
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2024" }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/avventura\/cesto$/);
+  await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Cesto");
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/avventura\/canestro$/);
+  // Same name, no change: no comparison table.
+  await page.goto("/equipaggiamento/avventura/acido");
+  await expect(page.getByRole("heading", { name: "2014 → 2024" })).toHaveCount(0);
+  // Only in 2014: the note, then 2024 goes back to the list with a short notice.
+  await page.goto("/equipaggiamento/avventura/abaco");
+  await expect(page.getByText("Solo edizione 2014")).toBeVisible();
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2024" }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/avventura$/);
+  await expect(page.getByText("Questo oggetto non c’è nel 2024.")).toBeVisible();
   expect(errors).toEqual([]);
 });

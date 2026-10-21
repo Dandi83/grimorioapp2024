@@ -2,18 +2,24 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
-import { gearItems, getGearItem, type GearTable } from "@/lib/adventuring-gear";
+import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
+import type { GearItem, GearTable } from "@/lib/adventuring-gear";
+import { gear2014Source, type Gear2014Item } from "@/lib/adventuring-gear-2014";
+import { compareGear, findGearEntry, gearEntries, gearHref } from "@/lib/adventuring-gear-editions";
+import type { EquipmentEdition } from "@/lib/equipment-types";
 
 export const dynamicParams = false;
 
 const SRD_521 = "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf";
+const LIST = "/equipaggiamento/avventura";
 
 export function generateStaticParams() {
-  return gearItems.map(({ id }) => ({ id }));
+  return gearEntries.flatMap(entry => [entry.id, ...(entry.id2014 ? [entry.id2014] : [])]).map(id => ({ id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const item = getGearItem((await params).id);
+  const found = findGearEntry((await params).id);
+  const item = found && (found.entry.editions[found.edition ?? "2024"] ?? found.entry.editions["2014"]);
   return { title: item ? `${item.nome} — Equipaggiamento d’avventura — Il Grimorio.App` : "Oggetto non trovato" };
 }
 
@@ -47,16 +53,19 @@ function TableCards({ table }: { table: GearTable }) {
   );
 }
 
-export default async function GearItemPage({ params }: { params: Promise<{ id: string }> }) {
-  const item = getGearItem((await params).id);
-  if (!item) notFound();
+function Heading({ nome, kind, edition }: { nome: string; kind: string; edition: EquipmentEdition }) {
   return (
-    <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
-      <BackButton fallback="/equipaggiamento/avventura" label="Tutti gli oggetti" />
-      <div className="text-center">
-        <h1 className="font-serif text-4xl font-bold leading-tight">{item.nome}</h1>
-        <p className="mt-1 text-[15px] text-muted">{item.dotazione ? "Dotazione" : "Equipaggiamento d’avventura"} · edizione 2024</p>
-      </div>
+    <div className="text-center">
+      <h1 className="font-serif text-4xl font-bold leading-tight">{nome}</h1>
+      <p className="mt-1 text-[15px] text-muted">{kind} · edizione {edition}</p>
+    </div>
+  );
+}
+
+function Sheet2024({ item }: { item: GearItem }) {
+  return (
+    <div className="space-y-5 pt-4">
+      <Heading nome={item.nome} kind={item.dotazione ? "Dotazione" : "Equipaggiamento d’avventura"} edition="2024" />
       <div className="grid grid-cols-2 rounded-[14px] border border-border bg-card">
         <Cell label="COSTO" value={item.prezzo || "non verificato"} />
         <Cell label="PESO" value={item.peso ?? "non verificato"} />
@@ -66,10 +75,81 @@ export default async function GearItemPage({ params }: { params: Promise<{ id: s
       </div>
       {item.tables.map(table => <TableCards key={table.title} table={table} />)}
       <aside aria-label="Fonte" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
-        <p>Testo integrale: SRD 5.2.1 italiano — «Equipaggiamento d’avventura». Edizione 2024; la 2014 arriva presto.</p>
+        <p>Testo integrale: SRD 5.2.1 italiano — «Equipaggiamento d’avventura».</p>
         <a className="underline underline-offset-4" href={`${SRD_521}#page=${item.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {item.page}</a>
         {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
       </aside>
+    </div>
+  );
+}
+
+function Sheet2014({ item }: { item: Gear2014Item }) {
+  const cells = [
+    ...(item.costo ? [["COSTO", item.costo]] : []),
+    ...(item.peso ? [["PESO", item.peso]] : []),
+  ];
+  return (
+    <div className="space-y-5 pt-4">
+      <Heading nome={item.nome} kind={item.dotazione ? "Dotazione" : item.gruppo ? "Gruppo di oggetti" : "Equipaggiamento d’avventura"} edition="2014" />
+      {cells.length > 0 && (
+        <div className={`grid rounded-[14px] border border-border bg-card ${cells.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+          {cells.map(([label, value]) => <Cell key={label} label={label} value={value} />)}
+        </div>
+      )}
+      {item.capienza && (
+        <div className="rounded-[14px] border border-border bg-card px-4 py-3">
+          <p className="text-[12px] font-bold tracking-[0.06em] text-muted">CAPIENZA</p>
+          <p className="text-[16px] font-semibold">{item.capienza}</p>
+          {item.capienzaNota && <p className="mt-1 text-sm text-muted">{item.capienzaNota}</p>}
+        </div>
+      )}
+      <div className="space-y-3">
+        {item.paragraphs.map((paragraph, i) => <p key={i} className="font-serif text-[1.05rem] leading-7">{paragraph}</p>)}
+      </div>
+      {item.righe && <TableCards table={{ title: "", columns: ["Oggetto", "Costo", "Peso"], rows: item.righe.map(row => [row.nome, row.costo, row.peso]) }} />}
+      <aside aria-label="Fonte" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+        <p>Testo integrale: SRD 5.1 italiano — «Equipaggiamento d’avventura»{item.dotazione ? ", «Dotazioni»" : ""}.</p>
+        <a className="underline underline-offset-4" href={`${gear2014Source.sourceUrl}#page=${item.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {item.page}</a>
+        {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
+      </aside>
+    </div>
+  );
+}
+
+export default async function GearItemPage({ params }: { params: Promise<{ id: string }> }) {
+  const found = findGearEntry((await params).id);
+  if (!found) notFound();
+  const { entry, edition } = found;
+  const rows = compareGear(entry);
+  const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
+  if (entry.editions["2024"]) panels["2024"] = <Sheet2024 item={entry.editions["2024"]} />;
+  if (entry.editions["2014"]) panels["2014"] = <Sheet2014 item={entry.editions["2014"]} />;
+  return (
+    <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
+      <BackButton fallback={LIST} label="Tutti gli oggetti" />
+      <div>
+        <GearEditionPanels panels={panels} fixed={edition} listHref={LIST}
+          hrefs={{ ...(entry.editions["2014"] ? { "2014": gearHref(entry, "2014") } : {}), ...(entry.editions["2024"] ? { "2024": gearHref(entry, "2024") } : {}) }} />
+      </div>
+      {rows.length > 0 && (
+        <section className="space-y-2.5" aria-label="Differenze tra le edizioni">
+          <h2 className="font-serif text-[22px] font-bold text-primary">2014 → 2024</h2>
+          <table className="w-full table-fixed overflow-hidden rounded-[14px] border border-border bg-card text-[14px]">
+            <thead className="bg-elevated text-left text-[12px] font-bold tracking-[0.06em] text-muted">
+              <tr><th className="w-[24%] px-2.5 py-2"><span className="sr-only">Voce</span></th><th className="px-2 py-2">2014</th><th className="px-2 py-2">2024</th></tr>
+            </thead>
+            <tbody>
+              {rows.map(row => (
+                <tr key={row.label} className="border-t border-divider align-top">
+                  <th scope="row" className="px-2.5 py-2.5 text-left font-normal text-muted">{row.label}</th>
+                  <td className="break-words px-2 py-2.5">{row.before}</td>
+                  <td className="break-words px-2 py-2.5 font-bold text-primary">{row.after}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
     </article>
   );
 }
