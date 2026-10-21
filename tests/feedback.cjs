@@ -133,7 +133,10 @@ assert.equal(input.formatWhen(new Date('2026-10-19T10:00:00Z'),now),'19 ott');
  await fb.sendFeedbackEmail(report,{origin:'https://ilgrimorio.app',name:null},fakeFetch);
  assert.equal(JSON.parse(calls[0].init.body).from,'Grimorio <avvisi@ilgrimorio.app>');
  // Resend refusing or unreachable: "failed", never an exception.
- assert.equal(await fb.sendFeedbackEmail(report,{origin:'x',name:null},async()=>({ok:false,status:403})),'failed');
+ assert.equal(await fb.sendFeedbackEmail(report,{origin:'x',name:null},async()=>({ok:false,status:403,json:async()=>({name:'validation_error',message:'You can only send testing emails to your own email address (admin@example.com)'})})),'failed');
+ assert.match(warnings.at(-1),/Resend ha risposto 403 \(validation_error\)/);
+ assert.ok(!warnings.at(-1).includes('admin@example.com'),'the Resend message with the address is not logged');
+ assert.equal(await fb.sendFeedbackEmail(report,{origin:'x',name:null},async()=>({ok:false,status:500,json:async()=>{throw new Error('not json');}})),'failed');
  assert.equal(await fb.sendFeedbackEmail(report,{origin:'x',name:null},async()=>{throw new Error('rete');}),'failed');
  console.warn=warn;
 

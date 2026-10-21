@@ -223,7 +223,9 @@ export async function sendFeedbackEmail(report: FeedbackReport, context: { origi
       signal: AbortSignal.timeout(10000),
     });
     if (!response.ok) {
-      console.warn(`[segnalazioni] Email non inviata: Resend ha risposto ${response.status}. La segnalazione è salvata.`);
+      // Only the error code of Resend: its message may contain the recipient address.
+      const code = await response.json().then((body: { name?: unknown }) => (typeof body?.name === "string" ? ` (${body.name.slice(0, 60)})` : ""), () => "");
+      console.warn(`[segnalazioni] Email non inviata: Resend ha risposto ${response.status}${code}. La segnalazione è salvata.`);
       return "failed";
     }
     return "sent";
