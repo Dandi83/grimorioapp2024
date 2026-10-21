@@ -229,8 +229,8 @@ test("compendium: five-item navigation on narrow phones, Compendio active inside
   await expect(page).toHaveURL(/\/compendio$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
   await expect(page.getByText("Regole, equipaggiamento e strumenti per il tavolo")).toBeVisible();
-  await expect(page.locator("main ul > li")).toHaveText([/Equipaggiamento/, /Avanzamento di livello/, /Oggetti magici/]);
-  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale", "/avanzamento", "/oggetti-magici", "/oggetti-magici/ali-del-volo"]) {
+  await expect(page.locator("main ul > li")).toHaveText([/Equipaggiamento/, /Avanzamento di livello/, /Oggetti magici/, /Condizioni/]);
+  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale", "/avanzamento", "/oggetti-magici", "/oggetti-magici/ali-del-volo", "/compendio/condizioni"]) {
     await page.goto(path);
     await expect(nav.locator('a[aria-current="page"]'), path).toHaveText("Compendio");
     expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
@@ -645,5 +645,52 @@ test("magic items 2014: selector remembered, search, renamed and single-edition 
   await expect(page.locator('[data-edition="2014"] [data-table-rows]')).toHaveAttribute("data-table-rows", "20");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
   for (const id of ["piuma-magica", "sfera-della-stirpe-dei-draghi", "armatura-demoniaca", "freccia-assassina"]) expect((await request.get(`/oggetti-magici/${id}`)).status(), id).toBe(200);
+  expect(errors).toEqual([]);
+});
+
+test("conditions: Compendio tile like the others, list per edition, note of the 2014 list, every link opens its page, narrow phones", async ({ page, request }) => {
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/compendio");
+  const tile = page.locator("main ul > li a").nth(3);
+  await expect(tile).toContainText("Condizioni");
+  await expect(tile).toContainText("Accecato, Avvelenato, Spaventato…");
+  await expect(page.locator("main").getByText("NUOVO")).toHaveCount(0);
+  // Same border and height as the other tiles.
+  const styles = await page.locator("main ul > li a").evaluateAll(links => links.map(a => [getComputedStyle(a).borderTopWidth, getComputedStyle(a).borderTopColor, a.className]));
+  for (const style of styles) expect(style).toEqual(styles[0]);
+  await tile.click();
+  await expect(page).toHaveURL(/\/compendio\/condizioni$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Condizioni");
+  await expect(page.getByRole("navigation", { name: "Navigazione principale" }).locator('a[aria-current="page"]')).toHaveText("Compendio");
+  const rows = page.locator('main ul a[href^="/manuale/condizioni-"]');
+  await expect(rows).toHaveCount(15);
+  await expect(rows.first()).toHaveText("Accecato");
+  await expect(rows.filter({ hasText: "Indebolimento" })).toHaveCount(1);
+  for (const box of await rows.evaluateAll(links => links.map(a => a.getBoundingClientRect().height))) expect(box).toBeGreaterThanOrEqual(44);
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `list ${width}`).toBeLessThanOrEqual(width);
+  }
+  const selector = page.getByRole("group", { name: "Edizione delle regole" });
+  await selector.getByRole("button", { name: "2014" }).click();
+  await expect(rows).toHaveCount(11);
+  await expect(rows.first()).toHaveAttribute("href", "/manuale/condizioni-accecato-2014");
+  const note = page.getByText(/Nell’SRD 5\.1 italiano non sono stampate/);
+  await expect(note).toHaveText("Nell’SRD 5.1 italiano non sono stampate: Prono, Spaventato, Stordito, Trattenuto. Le trovi nell’edizione 2024.");
+  expect(await note.getByRole("link").evaluateAll(links => links.map(a => a.getAttribute("href")))).toEqual(["/manuale/condizioni-prono", "/manuale/condizioni-spaventato", "/manuale/condizioni-stordito", "/manuale/condizioni-trattenuto"]);
+  // The choice is remembered, as in the other Compendio sections.
+  await page.reload();
+  await expect(rows).toHaveCount(11);
+  for (const href of await rows.evaluateAll(links => links.map(a => a.getAttribute("href")))) expect((await request.get(href)).status(), href).toBe(200);
+  await selector.getByRole("button", { name: "2024" }).click();
+  await expect(rows).toHaveCount(15);
+  await expect(page.getByText(/non sono stampate/)).toHaveCount(0);
+  expect(await selector.getByRole("button").allInnerTexts()).toEqual(["2024", "2014"]);
+  for (const href of await rows.evaluateAll(links => links.map(a => a.getAttribute("href")))) expect((await request.get(href)).status(), href).toBe(200);
+  await rows.filter({ hasText: "Avvelenato" }).click();
+  await expect(page).toHaveURL(/\/manuale\/condizioni-avvelenato$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avvelenato");
   expect(errors).toEqual([]);
 });
