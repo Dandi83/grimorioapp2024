@@ -2,9 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
-import { ArmorBadge, ArmorChips } from "@/components/equipment/armor-badge";
+import { ArmorBadge } from "@/components/equipment/armor-badge";
 import { EditionPanels } from "@/components/equipment/edition-panels";
-import { armorBadge, armorDescription, armorRuleCards, armorSources, armors, getArmor, type ArmorEditionView } from "@/lib/armor";
+import { armorBadge, armorClassRest, armorDescription, armorRuleCards, armorSources, armors, getArmor, type ArmorEditionView } from "@/lib/armor";
 import { ARMOR_CATEGORY_NAMES, type ArmorCategory } from "@/lib/equipment-types";
 
 export const dynamicParams = false;
@@ -29,22 +29,20 @@ function Cell({ label, value }: { label: string; value: string }) {
 
 function Sheet({ armor, category }: { armor: ArmorEditionView; category: ArmorCategory }) {
   const source = armorSources[armor.edition];
-  const badge = armorBadge(armor, category);
+  const badge = armorBadge(armor);
   const description = armorDescription(armor);
   return (
     <div className="space-y-5">
       <div className="flex flex-col items-center gap-1.5 pt-4 text-center">
-        <ArmorBadge ca={badge.ca} note={badge.caNote} size="sheet" />
+        <ArmorBadge ca={badge.ca} note={["CA"]} size="sheet" />
         <h1 className="mt-2 font-serif text-4xl font-bold leading-tight">{armor.nome}</h1>
         <p className="text-[15px] text-muted">{ARMOR_CATEGORY_NAMES[category]}</p>
-        <div className="mt-1"><ArmorChips chips={badge.chips} /></div>
+        {armorClassRest(armor) && <p className="mt-1 font-serif text-xl font-bold text-primary">{armorClassRest(armor)}</p>}
       </div>
-      <div className="grid grid-cols-3 rounded-[14px] border border-border bg-card">
-        <Cell label="CA" value={badge.ca} />
+      <div className="grid grid-cols-2 rounded-[14px] border border-border bg-card">
         <Cell label="PESO" value={armor.peso} />
         <Cell label="COSTO" value={armor.costo} />
       </div>
-      <p className="rounded-[14px] border border-border bg-card px-4 py-3 text-[15px]"><span className="text-muted">Classe Armatura: </span>{armor.caTesto}</p>
       {description && (
         <p className="font-serif text-[1.05rem] leading-7">{description.testo}</p>
       )}

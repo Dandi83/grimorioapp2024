@@ -50,18 +50,26 @@ export function getArmor(id: string) {
   return armors.find(armor => armor.id === id);
 }
 
-/** Badge and chips from the printed AC: "11" + "+ Des", "14" + "fissa", "+2" + "alla CA". */
-export function armorBadge(armor: ArmorEditionView, category: ArmorCategory): Pick<ArmorListEdition, "ca" | "caNote" | "chips"> {
+/**
+ * Badge from the printed AC: "11" over "+ Des", "12" over "+ Des / max 2", "16" alone, "+2" alone.
+ * The chips carry only what the badge does not say: "For 13", "Furtività: svantaggio".
+ */
+export function armorBadge(armor: ArmorEditionView): Pick<ArmorListEdition, "ca" | "caNote" | "chips"> {
   const chips: ArmorChip[] = [];
-  const max = /\(max (\d+)\)/.exec(armor.caTesto)?.[1];
-  if (category === 3) {
-    if (armor.edition === "2024") chips.push({ kind: "proficiency", label: "Serve competenza" });
-  } else if (/modificatore di Des/.test(armor.caTesto)) chips.push({ kind: "dex", label: max ? `+ Des (max ${max})` : "+ Des" });
-  else chips.push({ kind: "fixed", label: "CA fissa" });
-  if (armor.forza) chips.push({ kind: "strength", label: `Forza ${armor.forza}` });
+  if (armor.forza) chips.push({ kind: "strength", label: `For ${armor.forza}` });
   if (armor.furtivitaSvantaggio) chips.push({ kind: "stealth", label: "Furtività: svantaggio" });
-  const number = /^[+\d]+/.exec(armor.caTesto)?.[0] ?? armor.caTesto;
-  return { ca: number, caNote: category === 3 ? "alla CA" : /Des/.test(armor.caTesto) ? "+ Des" : "fissa", chips };
+  const max = /\(max (\d+)\)/.exec(armor.caTesto)?.[1];
+  const caNote = /modificatore di Des/.test(armor.caTesto) ? ["+ Des", ...(max ? [`max ${max}`] : [])] : [];
+  return { ca: /^[+\d]+/.exec(armor.caTesto)?.[0] ?? armor.caTesto, caNote, chips };
+}
+
+/**
+ * The sheet writes the AC once: the badge holds the number and "CA", this line the rest of the
+ * printed value, if any ("+ modificatore di Destrezza (max 2)"); fixed AC and the shield have none.
+ */
+export function armorClassRest(armor: ArmorEditionView): string | undefined {
+  const rest = armor.caTesto.replace(/^[+\d]+\s*/, "");
+  return rest ? rest.replace(/modificatore di Des\b/, "modificatore di Destrezza") : undefined;
 }
 
 /** Times of each category as printed: 2014 table "Indossare e togliere armature", 2024 table headers. */
@@ -75,10 +83,10 @@ export const sameNumbers = armors.every(({ editions: { "2014": a, "2024": b } })
   a.caTesto === b.caTesto && a.costo === b.costo && a.peso === b.peso && a.forza === b.forza && a.furtivitaSvantaggio === b.furtivitaSvantaggio);
 
 export function armorListItems(): ArmorListItem[] {
-  const listEdition = (armor: ArmorEditionView, category: ArmorCategory): ArmorListEdition => ({ nome: armor.nome, costo: armor.costo, peso: armor.peso, ...armorBadge(armor, category) });
+  const listEdition = (armor: ArmorEditionView): ArmorListEdition => ({ nome: armor.nome, costo: armor.costo, peso: armor.peso, ...armorBadge(armor) });
   return armors.map(armor => ({
     id: armor.id, categoria: armor.categoria,
-    editions: { "2014": listEdition(armor.editions["2014"], armor.categoria), "2024": listEdition(armor.editions["2024"], armor.categoria) },
+    editions: { "2014": listEdition(armor.editions["2014"]), "2024": listEdition(armor.editions["2024"]) },
   }));
 }
 
@@ -120,7 +128,7 @@ export function armorRuleCards(armor: ArmorEditionView, category: ArmorCategory)
     const general = rules2014.generali;
     if (category === 3) add("Scudi", general["Scudi"]);
     else add(CATEGORY_2014[category], rules2014.categorie[CATEGORY_2014[category]]);
-    add("Classe Armatura (CA)", general["Classe Armatura (CA)"], armor.caTesto);
+    add("Classe Armatura (CA)", general["Classe Armatura (CA)"]);
     if (armor.forza) add("Forza", general["Armature pesanti"], `For ${armor.forza}`);
     if (armor.furtivitaSvantaggio) add("Furtività", general["Furtività"], "Svantaggio");
     add("Competenza", general["Competenza nelle armature"]);
@@ -129,7 +137,7 @@ export function armorRuleCards(armor: ArmorEditionView, category: ArmorCategory)
   } else {
     if (category === 3) cards.push({ title: "Indossare e togliere", detail: times, text: `Scudo (${armorData.tempi["2024"][3].testo}).`, page: 104 });
     else add("Categoria", rules2024.get("Categoria"), times);
-    add("Classe Armatura (CA)", rules2024.get("Classe Armatura (CA)"), armor.caTesto);
+    add("Classe Armatura (CA)", rules2024.get("Classe Armatura (CA)"));
     if (armor.forza) add("Forza", rules2024.get("Forza"), `For ${armor.forza}`);
     if (armor.furtivitaSvantaggio) add("Furtività", rules2024.get("Furtività"), "Svantaggio");
     add("Competenza", rules2024.get(category === 3 ? "Scudo" : "Leggera, media o pesante"));

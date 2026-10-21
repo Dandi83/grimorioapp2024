@@ -93,9 +93,24 @@ armorLines.forEach((line,i)=>{
 assert.deepEqual(ar.armorTimes['2014'],['Indossare 1 minuto · togliere 1 minuto','Indossare 5 minuti · togliere 1 minuto','Indossare 10 minuti · togliere 5 minuti','Indossare 1 azione · togliere 1 azione']);
 // PDF 2024: the shield takes the Utilize action, not "1 azione" as in 2014.
 assert.equal(ar.armorTimes['2024'][3],'Indossare o togliere: azione di Utilizzo');
-assert.deepEqual(ar.armorBadge(ar.getArmor('cotta-di-maglia').editions['2024'],2),{ca:'16',caNote:'fissa',chips:[{kind:'fixed',label:'CA fissa'},{kind:'strength',label:'Forza 13'},{kind:'stealth',label:'Furtività: svantaggio'}]});
-assert.deepEqual(ar.armorBadge(ar.getArmor('pelle').editions['2014'],1).chips,[{kind:'dex',label:'+ Des (max 2)'}]);
-assert.deepEqual(ar.armorBadge(ar.getArmor('scudo').editions['2024'],3),{ca:'+2',caNote:'alla CA',chips:[{kind:'proficiency',label:'Serve competenza'}]});
+assert.deepEqual(ar.armorBadge(ar.getArmor('cotta-di-maglia').editions['2024']),{ca:'16',caNote:[],chips:[{kind:'strength',label:'For 13'},{kind:'stealth',label:'Furtività: svantaggio'}]});
+assert.deepEqual(ar.armorBadge(ar.getArmor('cuoio').editions['2014']),{ca:'11',caNote:['+ Des'],chips:[]});
+assert.deepEqual(ar.armorBadge(ar.getArmor('pelle').editions['2014']),{ca:'12',caNote:['+ Des','max 2'],chips:[]});
+assert.deepEqual(ar.armorBadge(ar.getArmor('scudo').editions['2024']),{ca:'+2',caNote:[],chips:[]});
+assert.equal(ar.armorClassRest(ar.getArmor('pelle').editions['2024']),'+ modificatore di Destrezza (max 2)');
+assert.equal(ar.armorClassRest(ar.getArmor('cotta-di-maglia').editions['2014']),undefined);
+assert.equal(ar.armorClassRest(ar.getArmor('scudo').editions['2014']),undefined);
+// No repetition: chips never restate the badge, and on the sheet each fact has one place.
+for(const item of ar.armorListItems())for(const e of ['2014','2024']){const v=item.editions[e];
+ const said=[...v.caNote,...v.chips.map(c=>c.label)];
+ assert.equal(new Set(said).size,said.length,`${e} ${item.id} repeated label`);
+ assert.ok(v.chips.every(c=>!/Des|max|CA|competenza/i.test(c.label)),`${e} ${item.id} chip repeats the badge`);}
+for(const a of ar.armors)for(const e of ['2014','2024']){const v=a.editions[e];const cards=ar.armorRuleCards(v,a.categoria);
+ const titles=cards.map(c=>c.title),details=cards.map(c=>c.detail).filter(Boolean);
+ assert.equal(new Set(titles).size,titles.length,`${e} ${a.id} card twice`);
+ assert.equal(new Set(details).size,details.length,`${e} ${a.id} detail twice`);
+ assert.ok(!details.some(d=>d.includes(v.caTesto)),`${e} ${a.id} the AC is written only under the badge`);
+ assert.equal(details.filter(d=>/^Indossare/.test(d)).length,1,`${e} ${a.id} times once`);}
 for(const a of ar.armors)for(const e of ['2014','2024']){const v=a.editions[e];const cards=ar.armorRuleCards(v,a.categoria);
  assert.ok(cards.length>=4&&cards.every(c=>c.text.length>30),`${e} ${a.id}`);
  assert.equal(cards.some(c=>c.title==='Forza'),!!v.forza);assert.equal(cards.some(c=>c.title==='Furtività'),v.furtivitaSvantaggio);

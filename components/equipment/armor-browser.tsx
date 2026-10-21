@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
 import { CatalogTitle } from "@/components/catalog-ui";
+import { ParentLink } from "@/components/section-tiles";
 import { ArmorBadge, ArmorChips } from "@/components/equipment/armor-badge";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
 import { ARMOR_CATEGORY_TITLES, type ArmorListItem, type ArmorTimes } from "@/lib/equipment-types";
@@ -12,7 +13,8 @@ import { ARMOR_CATEGORY_TITLES, type ArmorListItem, type ArmorTimes } from "@/li
 export function ArmorBrowser({ items, times, sameNumbers }: { items: ArmorListItem[]; times: ArmorTimes; sameNumbers: boolean }) {
   const [edition, setEdition] = useEquipmentEdition();
   return (
-    <div className="px-4 pb-8 pt-8 sm:px-6">
+    <div className="px-4 pb-8 pt-4 sm:px-6">
+      <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
       <CatalogTitle title="Armature" edition={edition} onEdition={setEdition} />
       <p className="mt-2 text-[15px] text-muted">
         {items.length} voci · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}

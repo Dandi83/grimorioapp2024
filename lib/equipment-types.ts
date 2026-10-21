@@ -40,15 +40,16 @@ export const ARMOR_CATEGORY_TITLES = ["Armature leggere", "Armature medie", "Arm
 export const ARMOR_CATEGORY_NAMES = ["Armatura leggera", "Armatura media", "Armatura pesante", "Scudo"] as const;
 export type ArmorCategory = 0 | 1 | 2 | 3;
 
-export type ArmorChipKind = "dex" | "fixed" | "strength" | "stealth" | "proficiency";
+/** Only what the badge does not already say: minimum Strength and Stealth disadvantage. */
+export type ArmorChipKind = "strength" | "stealth";
 export interface ArmorChip { kind: ArmorChipKind; label: string }
 
 export interface ArmorListEdition {
   nome: string;
   /** Badge: "11", "14", "+2". */
   ca: string;
-  /** Under the number: "+ Des", "fissa", "alla CA". */
-  caNote: string;
+  /** Under the number, only what is needed to read it: ["+ Des"], ["+ Des", "max 2"], none for fixed AC and the shield. */
+  caNote: string[];
   chips: ArmorChip[];
   costo: string;
   peso: string;

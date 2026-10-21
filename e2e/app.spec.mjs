@@ -266,8 +266,8 @@ test("equipment: Compendio tile, weapons list and cards per edition, combined fi
   expect((await request.get("/equipaggiamento/armi/inesistente")).status()).toBe(404);
 });
 
-test("equipment: armor list per edition with times, sheets in both editions, no horizontal scroll", async ({ page, request }) => {
-  await page.setViewportSize({ width: 375, height: 800 });
+test("equipment: armor list per edition with times, sheets in both editions, no repeated labels, no horizontal scroll", async ({ page, request }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/equipaggiamento");
   await page.getByRole("link", { name: /Armature/ }).click();
   await expect(page).toHaveURL(/\/equipaggiamento\/armature$/);
@@ -276,12 +276,27 @@ test("equipment: armor list per edition with times, sheets in both editions, no 
   await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
   await expect(page.getByRole("link", { name: /^\s*11\s*\+ Des\s*Imbottita/ })).toBeVisible();
   await expect(page.getByText("Indossare 1 azione · togliere 1 azione")).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  // Each row says a thing once: no "+ Des" chip next to the badge, no label twice.
+  for (const edition of ["2014", "2024"]) {
+    await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: edition }).click();
+    const rows = await page.locator('main a[href^="/equipaggiamento/armature/"]').evaluateAll(links => links.map(a => a.innerText.split("\n").map(t => t.trim()).filter(Boolean)));
+    expect(rows).toHaveLength(13);
+    for (const row of rows) {
+      expect(new Set(row).size, row.join(" | ")).toBe(row.length);
+      expect(row.filter(t => t.includes("Des")).length, row.join(" | ")).toBeLessThanOrEqual(1);
+    }
+    const badges = await page.locator('main a[href^="/equipaggiamento/armature/"] > span:first-child').evaluateAll(spans => spans.map(s => s.scrollWidth <= s.clientWidth + 1));
+    expect(badges.every(Boolean)).toBe(true);
+  }
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
   await page.getByRole("link", { name: /Cotta di maglia/ }).click();
   await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Cotta di maglia");
-  await expect(page.locator('[data-edition="2014"]')).toContainText("Forza 13");
+  await expect(page.locator('[data-edition="2014"]')).toContainText("For 13");
+  await expect(page.locator('[data-edition="2014"]').getByText("16", { exact: true })).toHaveCount(1);
+  await expect(page.locator('[data-edition="2014"]').getByText("For 13", { exact: true })).toHaveCount(1);
   await expect(page.locator('[data-edition="2014"]')).toContainText("Una cotta di maglia, composta da anelli di metallo");
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
   const ids = JSON.parse(readFileSync("lib/data/srd-armor-it.json", "utf8")).armature.map(a => a.id);
   expect(ids).toHaveLength(13);
   for (const id of ids) expect((await request.get(`/equipaggiamento/armature/${id}`)).status(), id).toBe(200);
