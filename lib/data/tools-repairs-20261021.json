@@ -1,0 +1,15 @@
+{
+  "_nota": "Correzioni di sola visualizzazione per gli Strumenti (lib/tools.ts, lib/tools-2014.ts). I dati di origine (srd-manual-5.2.1-it.json voce equipaggiamento-strumenti, srd-tools-5.1-it.json) non cambiano.",
+  "testi2024": [
+    {
+      "da": ", -torcia",
+      "a": ", torcia",
+      "nota": "Strumenti da falegname: trattino isolato a inizio riga nel PDF SRD 5.2.1, p. 106."
+    }
+  ],
+  "testi2014": [],
+  "abbinamenti2014": {
+    "Mazzo di carte": "carte da gioco"
+  },
+  "_notaAbbinamenti": "abbinamenti2014: strumenti 2014 abbinati a una variante 2024 con nome diverso (approvato da Daniele: Mazzo di carte → carte da gioco, stesso costo 5 ma)."
+}

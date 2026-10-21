@@ -1,0 +1,381 @@
+{
+  "_nota": "Strumenti dell'SRD 5.1 (2014) in italiano, trascritti da scripts/transcribe-srd-equipment.py (tools2014). Righe della tabella e descrizioni come stampate, con impronta sha256. La riga «Veicoli (terrestri o acquatici)» rimanda a «Cavalcature e veicoli» e non è inclusa.",
+  "fonte": {
+    "document": "SRD 5.1",
+    "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf",
+    "sourceSha256": "2ef143b8abeae9558d30b405ea48e2ee9b5d700dd11cd955e6117e61cbddd3f7",
+    "pages": [
+      78,
+      79
+    ]
+  },
+  "intro": {
+    "testo": "Uno strumento consente a un personaggio di fare qualcosa che altrimenti non sarebbe in grado di fare, come fabbricare o riparare un oggetto, falsificare un documento o scassinare una serratura. La razza, la classe, il background o i talenti possono fornire a un personaggio competenza in certi strumenti. Essa gli consente di aggiungere il proprio bonus di competenza a qualsiasi prova di caratteristica effettuata usando tale strumento. L'utilizzo di uno strumento non è collegato a una singola caratteristica, dal momento che la relativa competenza rappresenta una conoscenza più vasta del suo utilizzo basilare. Per esempio, il GM potrebbe chiedere a un personaggio di effettuare una prova di Destrezza per incidere qualche minuscolo dettaglio con i suoi strumenti da intagliatore, o una prova di Forza per ricavare un oggetto da un pezzo di legno particolarmente duro.",
+    "page": 78,
+    "sourceSha256": "9e846832cba276293e86675b3f431ef1ea36fb13f8dec961d61e1cab827f9644"
+  },
+  "tabella": [
+    {
+      "nome": "Arnesi da scasso",
+      "costo": "25 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 78,
+      "sourceText": "Arnesi da scasso | 25 mo | 0,5 kg",
+      "sourceSha256": "243b5a6043e8b63cb93970bdbd5541a7b33492aa565fc2875c2acf6e44f56669"
+    },
+    {
+      "nome": "Borsa da erborista",
+      "costo": "5 mo",
+      "peso": "1,5 kg",
+      "gruppo": null,
+      "page": 78,
+      "sourceText": "Borsa da erborista | 5 mo | 1,5 kg",
+      "sourceSha256": "583d8e7a2c372f1d283376a2068def1b0a8a66a58d2ef158164f30ee1a424a54"
+    },
+    {
+      "nome": "Dadi",
+      "costo": "1 ma",
+      "peso": "—",
+      "gruppo": "Giochi",
+      "page": 78,
+      "sourceText": "Giochi | Dadi | 1 ma | —",
+      "sourceSha256": "54735fae8f21abab07e43ee645c5a5201a275e7de99067df652d5a57dc80e4a0"
+    },
+    {
+      "nome": "Mazzo di carte",
+      "costo": "5 ma",
+      "peso": "—",
+      "gruppo": "Giochi",
+      "page": 78,
+      "sourceText": "Giochi | Mazzo di carte | 5 ma | —",
+      "sourceSha256": "1ee30d9d1a645dd62b5a5afde130a61c8dd763bcb8eeff6ff09110aa58d87d4d"
+    },
+    {
+      "nome": "Sostanze da avvelenatore",
+      "costo": "50 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 78,
+      "sourceText": "Sostanze da avvelenatore | 50 mo | 1 kg",
+      "sourceSha256": "012c5bf01cd9ca75f0c45f8dec8491f4bdf2178530a4db288c543f26e7c69385"
+    },
+    {
+      "nome": "Arnesi da falsario",
+      "costo": "15 mo",
+      "peso": "2,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Arnesi da falsario | 15 mo | 2,5 kg",
+      "sourceSha256": "360a1a449a3ba347655054526b433e50069cc1a708a50f0c7a3ec873b01ea4e4"
+    },
+    {
+      "nome": "Scorte da alchimista",
+      "costo": "50 mo",
+      "peso": "4 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Scorte da alchimista | 50 mo | 4 kg",
+      "sourceSha256": "e90c585623fb906bd949b688524566e39e23ed636b9d6291c134ef30a6deeedc"
+    },
+    {
+      "nome": "Scorte da birraio",
+      "costo": "20 mo",
+      "peso": "4,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Scorte da birraio | 20 mo | 4,5 kg",
+      "sourceSha256": "0a6f43d1be862004678abeda2f6cc109852c4fe044d6f3b8de4369118b532a57"
+    },
+    {
+      "nome": "Scorte da calligrafo",
+      "costo": "10 mo",
+      "peso": "2,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Scorte da calligrafo | 10 mo | 2,5 kg",
+      "sourceSha256": "f672706eeecbd28cbcc6d59376fdf2f420aaa4c913b35e44ba312fd4b3a75b46"
+    },
+    {
+      "nome": "Strumenti da calzolaio",
+      "costo": "5 mo",
+      "peso": "2,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da calzolaio | 5 mo | 2,5 kg",
+      "sourceSha256": "2bccb27a66dd1681eb8b28db8b5c40c55d4c6cd8eb73df3396695a404b4a1f15"
+    },
+    {
+      "nome": "Strumenti da cartografo",
+      "costo": "15 mo",
+      "peso": "3 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da cartografo | 15 mo | 3 kg",
+      "sourceSha256": "976e87f2b9e67071793fe72d0fcea5a17e925e145f36cde58a9b442f3026e90d"
+    },
+    {
+      "nome": "Strumenti da conciatore",
+      "costo": "5 mo",
+      "peso": "2,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da conciatore | 5 mo | 2,5 kg",
+      "sourceSha256": "616e33460b095931555bf572cd4d931b6e5d1808a101a5baeaeff23767d6e458"
+    },
+    {
+      "nome": "Strumenti da fabbro",
+      "costo": "20 mo",
+      "peso": "4 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da fabbro | 20 mo | 4 kg",
+      "sourceSha256": "2beae73e72fb8c16ce8d6afc9f09106eae7905cb963773ee77de1b3444e43cd7"
+    },
+    {
+      "nome": "Strumenti da falegname",
+      "costo": "8 mo",
+      "peso": "3 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da falegname | 8 mo | 3 kg",
+      "sourceSha256": "72d4712925e880ba0231e63e5cd84de275d5696673aae77b7decb8793dcba3b2"
+    },
+    {
+      "nome": "Strumenti da gioielliere",
+      "costo": "25 mo",
+      "peso": "1 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da gioielliere | 25 mo | 1 kg",
+      "sourceSha256": "71f2521da37dd657d84960ed8287670fb6fed174f6010ccd9ee9fe6b83984d00"
+    },
+    {
+      "nome": "Strumenti da intagliatore",
+      "costo": "1 mo",
+      "peso": "2,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da intagliatore | 1 mo | 2,5 kg",
+      "sourceSha256": "1c94556102feee9d466910fa650e4de8134bd25cdf592a6ae11dfb0d8c79333e"
+    },
+    {
+      "nome": "Strumenti da inventore",
+      "costo": "50 mo",
+      "peso": "5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da inventore | 50 mo | 5 kg",
+      "sourceSha256": "bd7dddd162c465b5d2ae0a2fec76fcfb4e511a4201caca6c5ccf29a69659bd45"
+    },
+    {
+      "nome": "Strumenti da muratore",
+      "costo": "10 mo",
+      "peso": "4 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da muratore | 10 mo | 4 kg",
+      "sourceSha256": "928c5535099f306a72a1f96ec6666ebc091854ad7b90e9d37c636f4a608e8aa4"
+    },
+    {
+      "nome": "Strumenti da pittore",
+      "costo": "10 mo",
+      "peso": "2,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da pittore | 10 mo | 2,5 kg",
+      "sourceSha256": "a5b139b57556db024be600c07024e1ff83a86a513b04bc807e2be2b718ce93fe"
+    },
+    {
+      "nome": "Strumenti da soffiatore",
+      "costo": "30 mo",
+      "peso": "2,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da soffiatore | 30 mo | 2,5 kg",
+      "sourceSha256": "a019355c64cee2d4a7cd44249cd756a93c6dcdbcdae8f9e5d03398f5590decee"
+    },
+    {
+      "nome": "Strumenti da tessitore",
+      "costo": "1 mo",
+      "peso": "2,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da tessitore | 1 mo | 2,5 kg",
+      "sourceSha256": "366c610235a1e481d6b96cabf5bec1b20b8c65b97e9e53a2c4160a8e1eb0b796"
+    },
+    {
+      "nome": "Strumenti da vasaio",
+      "costo": "10 mo",
+      "peso": "1,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Strumenti da vasaio | 10 mo | 1,5 kg",
+      "sourceSha256": "b8cce7cfb2e45880afa6ac66bb5ab0a9772e3ee3f41f7d88c02d29b9e0584ca9"
+    },
+    {
+      "nome": "Trucchi per il camuffamento",
+      "costo": "25 mo",
+      "peso": "1,5 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Trucchi per il camuffamento | 25 mo | 1,5 kg",
+      "sourceSha256": "e250f0113e7d57df743ff54eb6d6447dcea0c9f4bd9a5a4c6efc23ad35454419"
+    },
+    {
+      "nome": "Utensili da cuoco",
+      "costo": "1 mo",
+      "peso": "4 kg",
+      "gruppo": "Strumenti da artigiano",
+      "page": 78,
+      "sourceText": "Strumenti da artigiano | Utensili da cuoco | 1 mo | 4 kg",
+      "sourceSha256": "969c74385cde53e5e9c1a548f0a385a91e6b5194facbc69264db58c8e031b727"
+    },
+    {
+      "nome": "Strumenti da navigatore",
+      "costo": "25 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 78,
+      "sourceText": "Strumenti da navigatore | 25 mo | 1 kg",
+      "sourceSha256": "3f31934365f0237d00ad8f6b23ae100603d1f1c70f6f69dff9d9cc9180786207"
+    },
+    {
+      "nome": "Ciaramella",
+      "costo": "2 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 78,
+      "sourceText": "Strumenti musicali | Ciaramella | 2 mo | 0,5 kg",
+      "sourceSha256": "fb62ff94b1c126b1a47379c295b00a76afd7448d774d944d0ee099bccbf1692d"
+    },
+    {
+      "nome": "Cornamusa",
+      "costo": "30 mo",
+      "peso": "3 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 78,
+      "sourceText": "Strumenti musicali | Cornamusa | 30 mo | 3 kg",
+      "sourceSha256": "f0407a86fd2b8440dde0e34d2595ac73b7dc5f67cfc97887db7b9d97fd428af0"
+    },
+    {
+      "nome": "Corno",
+      "costo": "3 mo",
+      "peso": "1 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 78,
+      "sourceText": "Strumenti musicali | Corno | 3 mo | 1 kg",
+      "sourceSha256": "29dee734ba5a32117b07ec1123b61c3b9b534c71563027b9797be1fbbd7933f8"
+    },
+    {
+      "nome": "Dulcimer",
+      "costo": "25 mo",
+      "peso": "5 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 78,
+      "sourceText": "Strumenti musicali | Dulcimer | 25 mo | 5 kg",
+      "sourceSha256": "d7ae9aef634f9064274752649ce2fe6c5a53babc3228aa438d2924dcc50178ea"
+    },
+    {
+      "nome": "Flauto",
+      "costo": "2 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 79,
+      "sourceText": "Strumenti musicali | Flauto | 2 mo | 0,5 kg",
+      "sourceSha256": "361e995b978d71ab226e1ea43b0acc5a0206e1a97785fd4d93a2aaa4d452fd0e"
+    },
+    {
+      "nome": "Flauto di pan",
+      "costo": "12 mo",
+      "peso": "1 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 79,
+      "sourceText": "Strumenti musicali | Flauto di pan | 12 mo | 1 kg",
+      "sourceSha256": "4619e938d516ac67b2f2493ce86a9834e23d05bdc913fc11a51683a9c3ce5ec4"
+    },
+    {
+      "nome": "Lira",
+      "costo": "30 mo",
+      "peso": "1 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 79,
+      "sourceText": "Strumenti musicali | Lira | 30 mo | 1 kg",
+      "sourceSha256": "3b5535cdcf4662640b9db70ff0731d9ace1d6e0066884a6ab1fb561a3de06fe7"
+    },
+    {
+      "nome": "Liuto",
+      "costo": "35 mo",
+      "peso": "1 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 79,
+      "sourceText": "Strumenti musicali | Liuto | 35 mo | 1 kg",
+      "sourceSha256": "145e7726028bb049c218bffa01d208b919548b454639a80b0b3bf0958ff426b4"
+    },
+    {
+      "nome": "Tamburo",
+      "costo": "6 mo",
+      "peso": "1,5 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 79,
+      "sourceText": "Strumenti musicali | Tamburo | 6 mo | 1,5 kg",
+      "sourceSha256": "ea5db7971d9a5151df54cb69c0e87e420ba5f0c49b3498f8b97f86d466aff47b"
+    },
+    {
+      "nome": "Viola",
+      "costo": "30 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Strumenti musicali",
+      "page": 79,
+      "sourceText": "Strumenti musicali | Viola | 30 mo | 0,5 kg",
+      "sourceSha256": "62e1ff32f5e0c3f5892926e82b431c24a055e2b27a1b1925f9f490d472b68407"
+    }
+  ],
+  "descrizioni": {
+    "Arnesi da falsario": {
+      "testo": "Questa piccola scatola contiene vari tipi di fogli di carta e di pergamena, pennini, inchiostri, sigilli e cera per sigilli, filigrana d'oro e d'argento e altri materiali necessari per creare dei documenti falsi che risultino convincenti. La competenza in questi arnesi consente a un personaggio di aggiungere il proprio bonus di competenza a ogni prova di caratteristica effettuata per creare una falsificazione fisica di un documento.",
+      "page": 79,
+      "sourceSha256": "36287af8ebaf0cd65e776169d58c26b2969a20356c958938511c8a85a1bb5345"
+    },
+    "Arnesi da scasso": {
+      "testo": "Questo set di arnesi include una piccola lima, una serie di grimaldelli, uno specchietto montato su una maniglia di metallo, un paio di forbicine e un paio di pinze. La competenza in questi oggetti consente a un personaggio di aggiungere il proprio bonus di competenza a ogni prova di caratteristica effettuata per disattivare trappole o scassinare serrature.",
+      "page": 79,
+      "sourceSha256": "3b1140ef173a5ef44cbf45c08de4cdb2dec56a99e4bff30be409d4f0a81e3458"
+    },
+    "Borsa da erborista": {
+      "testo": "Questa borsa contiene vari strumenti come forbici, mortaio, pestello, sacchetti e fiale usate dagli erboristi per creare rimedi e pozioni. La competenza in questo oggetto consente a un personaggio di aggiungere il proprio bonus di competenza a ogni prova di caratteristica effettuata per identificare o applicare erbe. È inoltre richiesta competenza in questo oggetto per creare antitossine e pozioni di guarigione.",
+      "page": 79,
+      "sourceSha256": "81df3778850655442a8f0d84429f513bac24735d8bd190bb254b6cc63ed82642"
+    },
+    "Giochi": {
+      "testo": "Questo strumento comprende un assortimento di elementi di gioco, tra cui dadi e mazzi di carte (per giochi come Tre Draghi al Buio). Alcuni esempi comuni compaiono nella tabella \"Strumenti\", ma esistono anche giochi di altro tipo. Se un personaggio è competente in un gioco, può aggiungere il suo bonus di competenza alle prove di caratteristica che effettua quando gioca una partita a quel gioco. Ogni tipo di gioco richiede una competenza separata.",
+      "page": 79,
+      "sourceSha256": "99bbbad58c19a592d9c29dea601bb944ef16e60cb5f7a6c1ad3e43ef6185651f"
+    },
+    "Sostanze da avvelenatore": {
+      "testo": "Le sostanze da avvelenatore includono le fiale, le sostanze chimiche e le altre attrezzature necessarie per fabbricare veleni. La competenza in questo strumento consente a un personaggio di aggiungere il proprio bonus di competenza a ogni prova di caratteristica effettuata per fabbricare o utilizzare veleni.",
+      "page": 79,
+      "sourceSha256": "191f53667af4760b36bb125eec1ace517f48fdaf0b4c7c062f44ff4f197c2b52"
+    },
+    "Strumenti da artigiano": {
+      "testo": "Questi strumenti speciali includono gli oggetti necessari per praticare un'arte o un mestiere. La tabella contiene alcuni esempi dei tipi di strumento più comuni, ognuno dei quali fornisce gli oggetti relativi a un singolo tipo di mestiere. La competenza in un set di strumenti da artigiano consente a un personaggio di aggiungere il proprio bonus di competenza a ogni prova di caratteristica effettuata usando gli strumenti del suo mestiere. Ogni tipo di strumenti da artigiano richiede una competenza separata.",
+      "page": 79,
+      "sourceSha256": "3d15b09776b74a4e7ebf4b47bab3cab089938653d4a5944fecb9139005116de0"
+    },
+    "Strumenti da navigatore": {
+      "testo": "Questa serie di strumenti viene usata per navigare in mare. La competenza negli strumenti da navigatore consente a un personaggio di tracciare la rotta di una nave e di seguire le carte nautiche. Questi strumenti consentono inoltre a un personaggio di aggiungere il proprio bonus di competenza a ogni prova di caratteristica effettuata per evitare di smarrirsi in mare.",
+      "page": 79,
+      "sourceSha256": "cc0504d1825c97cffff3b5435ef637b7dd471e061f6631ad00b5f878b867fa5c"
+    },
+    "Strumenti musicali": {
+      "testo": "Alcuni dei tipi più comuni di strumento musicale sono indicati nella tabella come esempi. Se un personaggio è competente in un determinato strumento musicale, può aggiungere il suo bonus di competenza alle prove di caratteristica che effettua per suonare con quello strumento. Un bardo può usare uno strumento musicale come focus da incantatore. Ogni tipo di strumento musicale richiede una competenza separata.",
+      "page": 79,
+      "sourceSha256": "344dbade23a5cf62f48a23ad93ae602991cff6a1d879f2211d63bde45768b91b"
+    },
+    "Trucchi per il camuffamento": {
+      "testo": "Questa borsa di cosmetici, tinture per capelli e piccoli accessori consente a chi la usa di alterare il proprio aspetto fisico. La competenza in questi trucchi permette a un personaggio di aggiungere il proprio bonus di competenza a ogni prova di caratteristica che effettua per creare un travestimento visivo.",
+      "page": 79,
+      "sourceSha256": "48ac2dec024dd91ba15e22c74841530150182e32b92f6cde6df7b568a2dbbc78"
+    }
+  }
+}
