@@ -56,9 +56,15 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
   await expect(page.locator('[data-edition="2014"]')).toBeVisible();
   await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
-  // The main sections were saved when the service worker was installed.
+  await page.reload();
+  await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
+  // The main sections were saved when the service worker was installed, the Compendio too.
   await page.goto(base + "/bestiario");
   await expect(page.locator("li.catalog-row")).toHaveCount(40);
+  await page.goto(base + "/compendio");
+  await page.reload();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
+  await expect(page.getByRole("link", { name: /Equipaggiamento/ })).toBeVisible();
   // The notice never covers the controls at the top: on a phone the edition selector stays tappable.
   for (const width of [390, 375]) {
     await page.setViewportSize({ width, height: 844 });

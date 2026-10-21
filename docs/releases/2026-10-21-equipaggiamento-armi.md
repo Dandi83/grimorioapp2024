@@ -1,6 +1,14 @@
 # Equipaggiamento: armi 2014 e 2024 (21 ottobre 2026)
 
-Nuova sezione pubblica `/equipaggiamento` con la prima voce, **Armi**. La barra di navigazione in basso non cambia: si entra dal riquadro «Equipaggiamento» della Home e dal Manuale.
+Nuova sezione pubblica `/equipaggiamento` con la prima voce, **Armi**.
+
+## Compendio (revisione del 21 ottobre)
+
+- La barra in basso ha una quinta voce, **Compendio** (Home · Incantesimi · Bestiario · Compendio · Preferiti), attiva anche in tutte le pagine `/equipaggiamento/...`.
+- Nuova pagina `/compendio` con un solo riquadro, «Equipaggiamento» (`components/section-tiles.tsx`, pronto per altri riquadri).
+- La Home non ha più il riquadro Equipaggiamento; il link nel Manuale resta.
+- In alto: `/equipaggiamento` → «‹ Compendio», elenco armi → «‹ Equipaggiamento», scheda arma → «Tutte le armi».
+- Service worker: `/compendio` è tra le pagine salvabili e tra le sezioni principali salvate all'installazione.
 
 ## Indirizzi
 

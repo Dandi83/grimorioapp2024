@@ -191,9 +191,47 @@ test("a shared card link: back goes to its list instead of leaving the site", as
   await expect(page).toHaveURL(/\/bestiario$/);
 });
 
-test("equipment: home tile, weapons list and cards per edition, combined filters, every sheet", async ({ page, request }) => {
-  await page.goto("/");
-  await page.getByRole("link", { name: /Equipaggiamento/ }).click();
+test("compendium: five-item navigation on narrow phones, Compendio active inside Equipaggiamento", async ({ page }) => {
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 780 });
+    await page.goto("/");
+    await expect(page.locator('a[href="/equipaggiamento"]')).toHaveCount(0);
+    const nav = page.getByRole("navigation", { name: "Navigazione principale" });
+    const links = nav.getByRole("link");
+    await expect(links).toHaveText(["Home", "Incantesimi", "Bestiario", "Compendio", "Preferiti"]);
+    const boxes = await links.evaluateAll(items => items.map(a => {
+      const box = a.getBoundingClientRect(), label = a.querySelector("span");
+      return { left: box.left, right: box.right, width: box.width, height: box.height, labelLines: Math.round(label.getBoundingClientRect().height / parseFloat(getComputedStyle(label).lineHeight)), labelOverflow: label.scrollWidth > label.clientWidth + 1 };
+    }));
+    for (const [i, box] of boxes.entries()) {
+      expect(box.width, `width ${width} item ${i}`).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.labelLines, `label lines ${width} item ${i}`).toBe(1);
+      expect(box.labelOverflow).toBe(false);
+      if (i) expect(box.left).toBeGreaterThanOrEqual(boxes[i - 1].right - 0.5);
+    }
+    expect(boxes.at(-1).right).toBeLessThanOrEqual(width + 0.5);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+  const nav = page.getByRole("navigation", { name: "Navigazione principale" });
+  await nav.getByRole("link", { name: "Compendio" }).click();
+  await expect(page).toHaveURL(/\/compendio$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
+  await expect(page.getByText("Regole, equipaggiamento e strumenti per il tavolo")).toBeVisible();
+  await expect(page.locator("main ul > li")).toHaveCount(1);
+  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale"]) {
+    await page.goto(path);
+    await expect(nav.locator('a[aria-current="page"]'), path).toHaveText("Compendio");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
+  }
+  await page.goto("/equipaggiamento");
+  await page.locator("main").getByRole("link", { name: "Compendio", exact: true }).click();
+  await expect(page).toHaveURL(/\/compendio$/);
+});
+
+test("equipment: Compendio tile, weapons list and cards per edition, combined filters, every sheet", async ({ page, request }) => {
+  await page.goto("/compendio");
+  await page.locator("main").getByRole("link", { name: /Equipaggiamento/ }).click();
   await expect(page).toHaveURL(/\/equipaggiamento$/);
   await page.getByRole("link", { name: /Armi/ }).click();
   await expect(page.getByText(/^38 armi ·/)).toBeVisible();

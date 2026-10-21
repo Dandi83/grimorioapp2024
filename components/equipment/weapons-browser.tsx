@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight, Coins, Weight, ArrowRight } from "lucide-react";
 
 import { CatalogTitle } from "@/components/catalog-ui";
+import { ParentLink } from "@/components/section-tiles";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
 import { isMartial, isRanged, WEAPON_GROUP_TITLES, type EquipmentEdition, type WeaponListEdition, type WeaponListItem } from "@/lib/equipment-types";
 
@@ -41,7 +42,8 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
     (reach === "tutte" || (reach === "distanza") === isRanged(item.gruppo))), [inEdition, kind, reach]);
 
   return (
-    <div className="px-4 pb-8 pt-8 sm:px-6">
+    <div className="px-4 pb-8 pt-4 sm:px-6">
+      <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
       <CatalogTitle title="Armi" edition={edition} onEdition={setEdition} />
       <p className="mt-2 text-[15px] text-muted">
         {plural(inEdition.length)} · {edition === "2024" ? "SRD 5.2.1, con Padronanza" : "SRD 5.1"}

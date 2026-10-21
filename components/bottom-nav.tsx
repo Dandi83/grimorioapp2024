@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { BookOpen, Home, Skull, Star } from "lucide-react";
+import { BookOpen, Home, ScrollText, Skull, Star } from "lucide-react";
 import type { ComponentType } from "react";
 
 import { notePathChange } from "@/components/navigation-memory";
@@ -28,6 +28,12 @@ const ITEMS: NavItem[] = [
     label: "Bestiario",
     Icon: Skull,
     match: (p) => p.startsWith("/bestiario") || p.startsWith("/mostro"),
+  },
+  {
+    href: "/compendio",
+    label: "Compendio",
+    Icon: ScrollText,
+    match: (p) => p.startsWith("/compendio") || p.startsWith("/equipaggiamento"),
   },
   {
     href: "/preferiti",
