@@ -47,10 +47,10 @@ const text=r=>r.text();
 
 (async()=>{
  const sw=worker();
- // Install saves the four main sections; activate keeps only this version's pages.
+ // Install saves the five main sections; activate keeps only this version's pages.
  sw.store.set('grimorio-pages-v1',new Map());sw.store.set('grimorio-static',new Map([['https://ilgrimorio.app/_next/static/old.js',new Response('old')]]));
  await sw.lifecycle('install');
- assert.deepEqual([...sw.store.get('grimorio-pages-v2').keys()].sort(),['/','/bestiario','/grimorio','/preferiti'].map(p=>ORIGIN+p).sort());
+ assert.deepEqual([...sw.store.get('grimorio-pages-v2').keys()].sort(),['/','/bestiario','/compendio','/grimorio','/preferiti'].map(p=>ORIGIN+p).sort());
  await sw.lifecycle('activate');
  assert.equal(sw.store.has('grimorio-pages-v1'),false,'pages of the previous version are deleted');
  assert.equal(sw.store.has('grimorio-static'),true,'program files survive a new version (older pages may still need them)');

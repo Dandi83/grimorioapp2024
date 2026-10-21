@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Swords } from "lucide-react";
 
 import styles from "./home.module.css";
 
@@ -35,17 +34,6 @@ export default function HomePage() {
           </h1>
         </div>
       </section>
-
-      <nav aria-label="Sezioni" className={styles.sections}>
-        <Link href="/equipaggiamento" className={styles.tile}>
-          <span className={styles.tileIcon}><Swords size={26} aria-hidden="true" /></span>
-          <span className={styles.tileText}>
-            <span className={styles.tileTitle}>Equipaggiamento</span>
-            <span className={styles.tileNote}>Armi e armature delle edizioni 2014 e 2024</span>
-          </span>
-          <ArrowRight size={20} aria-hidden="true" className={styles.tileArrow} />
-        </Link>
-      </nav>
     </div>
   );
 }

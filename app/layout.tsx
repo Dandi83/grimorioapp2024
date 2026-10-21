@@ -70,6 +70,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-dvh bg-background text-foreground antialiased">
         <FavoritesProvider>
           <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x">
+            {/* The offline notice sits in the page flow above the content: it never covers the controls at the top. */}
+            <ServiceWorker enabled={serviceWorkerEnabled()} />
             <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))]">
               <CharacterSessionProvider>{children}</CharacterSessionProvider>
             </main>
@@ -77,7 +79,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
           <InstallPrompt />
           <AnalyticsProvider />
-          <ServiceWorker enabled={serviceWorkerEnabled()} />
         </FavoritesProvider>
       </body>
     </html>

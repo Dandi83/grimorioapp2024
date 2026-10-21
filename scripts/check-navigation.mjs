@@ -17,14 +17,20 @@ const cases = [
   ['/spell/amicizia', '/grimorio', 'Incantesimi'],
   ['/bestiario', '/bestiario', 'Bestiario'],
   ['/mostro/test', '/bestiario', 'Bestiario'],
+  ['/compendio', '/compendio', 'Compendio'],
+  ['/equipaggiamento', '/compendio', 'Compendio'],
+  ['/equipaggiamento/armi', '/compendio', 'Compendio'],
+  ['/equipaggiamento/armi/pugnale', '/compendio', 'Compendio'],
+  ['/equipaggiamento/armature', '/compendio', 'Compendio'],
+  ['/equipaggiamento/armature/scudo', '/compendio', 'Compendio'],
   ['/preferiti', '/preferiti', 'Preferiti'],
 ];
 for (const [path,activeHref,activeLabel] of cases) {
   pathname=path;
   const html=renderToStaticMarkup(createElement(BottomNav));
   const links=[...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
-  assert.equal(links.length,4,'The bottom navigation must have four items, with no dice section');
-  assert.deepEqual(links.map(m=>m[2].replace(/<[^>]*>/g,'')),['Home','Incantesimi','Bestiario','Preferiti']);
+  assert.equal(links.length,5,'The bottom navigation must have five items, with no dice section');
+  assert.deepEqual(links.map(m=>m[2].replace(/<[^>]*>/g,'')),['Home','Incantesimi','Bestiario','Compendio','Preferiti']);
   const active=links.filter(m=>m[1].includes('aria-current="page"'));
   assert.equal(active.length,1);
   assert.ok(active[0][1].includes(`href="${activeHref}"`));
@@ -46,10 +52,11 @@ assert.ok(!home.includes('Progetto fan-made'));
 assert.ok(!home.includes('Fonti e licenze'));
 assert.ok(!home.includes('href="/preferiti"'));
 assert.ok(home.includes('href="/admin"'));
+assert.ok(!home.includes('/equipaggiamento'),'Equipaggiamento is reached from the Compendio, not from Home');
 assert.ok(home.includes('href="/fonti"'));
 assert.ok(home.includes('Termini e condizioni'));
 const dicePage=readFileSync(new URL('../app/dadi/page.tsx',import.meta.url),'utf8');
 assert.ok(!dicePage.includes('DiceRoller'),'The removed dice section must not render');
 assert.match(dicePage,/redirect\("\/"\)/,'Existing dice URLs must return to Home');
 assert.ok(!readFileSync(new URL('../app/layout.tsx',import.meta.url),'utf8').includes('lancia i dadi'));
-console.log('[navigation] Home, Incantesimi, Bestiario and Preferiti verified; admin and legal links stay in the home header, with disclaimer and licenses on the sources page.');
+console.log('[navigation] Home, Incantesimi, Bestiario, Compendio (also active in Equipaggiamento) and Preferiti verified; admin and legal links stay in the home header, with disclaimer and licenses on the sources page.');

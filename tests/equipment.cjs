@@ -71,7 +71,7 @@ assert.ok(!items.includes(eq.propertyText('2014','pesante').slice(0,30)));
 // Offline: the service worker saves the section pages.
 const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
 const pattern=new RegExp(sw.match(/const PUBLIC_PAGE = (\/.*\/);/)[1].slice(1,-1));
-for(const p of ['/equipaggiamento','/equipaggiamento/armi','/equipaggiamento/armi/pugnale','/equipaggiamento/armature','/equipaggiamento/armature/cotta-di-maglia'])assert.ok(pattern.test(p),p);
+for(const p of ['/compendio','/equipaggiamento','/equipaggiamento/armi','/equipaggiamento/armi/pugnale','/equipaggiamento/armature','/equipaggiamento/armature/cotta-di-maglia'])assert.ok(pattern.test(p),p);
 assert.ok(!pattern.test('/equipaggiamento/altro'));
 // Armor: 13 entries per edition, same numbers, names per edition, cross-checked with the request.
 const ar=load('lib/armor.ts');

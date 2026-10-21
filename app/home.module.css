@@ -100,63 +100,6 @@
   color: var(--color-primary);
 }
 
-.sections {
-  padding: 4px 24px 24px;
-}
-
-.tile {
-  display: flex;
-  min-height: 88px;
-  align-items: center;
-  gap: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  background: var(--color-card);
-  padding: 14px 16px;
-  box-shadow: 0 1px 0 var(--color-divider);
-}
-
-.tileIcon {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  flex: none;
-  place-items: center;
-  border: 2px solid var(--color-primary);
-  border-radius: 50%;
-  background: var(--color-primary-faint);
-  color: var(--color-primary);
-}
-
-.tileText {
-  min-width: 0;
-  flex: 1;
-}
-
-.tileTitle {
-  display: block;
-  font-family: var(--font-serif);
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.tileNote {
-  display: block;
-  color: var(--color-muted);
-  font-size: 15px;
-}
-
-.tileArrow {
-  flex: none;
-  color: var(--color-primary);
-}
-
-.tile:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
-
 .headerLinks a:hover {
   color: var(--color-primary);
 }
@@ -178,10 +121,6 @@
 
   .library {
     padding: 35px 20px 42px;
-  }
-
-  .sections {
-    padding: 4px 16px 20px;
   }
 
   .image {
