@@ -1,4 +1,4 @@
-import { Backpack } from "lucide-react";
+import { Backpack, TrendingUp } from "lucide-react";
 import { SectionTiles, type SectionTile } from "@/components/section-tiles";
 
 export const metadata = { title: "Compendio — Il Grimorio.App" };
@@ -6,6 +6,7 @@ export const metadata = { title: "Compendio — Il Grimorio.App" };
 // New sections (Avanzamento di livello, Oggetti magici…) are added here when they exist.
 const TILES: SectionTile[] = [
   { href: "/equipaggiamento", title: "Equipaggiamento", text: "Armi, armature e altro", Icon: Backpack },
+  { href: "/avanzamento", title: "Avanzamento di livello", text: "PE, bonus di competenza e punti ferita", Icon: TrendingUp },
 ];
 
 export default function CompendiumPage() {
