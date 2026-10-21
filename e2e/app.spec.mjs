@@ -171,11 +171,14 @@ test("back from a card restores search, pages and scroll; the navigation bar sta
   await page.getByRole("button", { name: /Mostra altri/ }).click();
   await page.getByRole("button", { name: /Mostra altri/ }).click();
   await expect(catalogRows(page)).toHaveCount(120);
-  const target = catalogRows(page).nth(100).getByRole("link");
+  // A row that can be centred: one near the end of the list may sit under the fixed bottom bar,
+  // and Playwright then scrolls again before tapping (CI failures of 21 October 2026).
+  const target = catalogRows(page).nth(60).getByRole("link");
   await target.scrollIntoViewIfNeeded();
-  const scrollBefore = await page.evaluate(() => window.scrollY);
-  expect(scrollBefore).toBeGreaterThan(1000);
+  await page.evaluate(() => document.addEventListener("click", () => { sessionStorage.setItem("e2e-scroll-at-click", String(window.scrollY)); }, { capture: true, once: true }));
   await target.click();
+  const scrollBefore = Number(await page.evaluate(() => sessionStorage.getItem("e2e-scroll-at-click")));
+  expect(scrollBefore).toBeGreaterThan(1000);
   await expect(page).toHaveURL(/\/spell\//);
   await page.getByRole("button", { name: "Torna indietro" }).click();
   await expect(page).toHaveURL(/\/grimorio$/);
