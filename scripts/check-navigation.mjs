@@ -23,6 +23,7 @@ const cases = [
   ['/equipaggiamento/armi/pugnale', '/compendio', 'Compendio'],
   ['/equipaggiamento/armature', '/compendio', 'Compendio'],
   ['/equipaggiamento/armature/scudo', '/compendio', 'Compendio'],
+  ['/avanzamento', '/compendio', 'Compendio'],
   ['/preferiti', '/preferiti', 'Preferiti'],
 ];
 for (const [path,activeHref,activeLabel] of cases) {

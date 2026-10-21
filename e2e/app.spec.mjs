@@ -226,8 +226,8 @@ test("compendium: five-item navigation on narrow phones, Compendio active inside
   await expect(page).toHaveURL(/\/compendio$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
   await expect(page.getByText("Regole, equipaggiamento e strumenti per il tavolo")).toBeVisible();
-  await expect(page.locator("main ul > li")).toHaveCount(1);
-  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale"]) {
+  await expect(page.locator("main ul > li")).toHaveText([/Equipaggiamento/, /Avanzamento di livello/]);
+  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale", "/avanzamento"]) {
     await page.goto(path);
     await expect(nav.locator('a[aria-current="page"]'), path).toHaveText("Compendio");
     expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
@@ -308,4 +308,47 @@ test("equipment: armor list per edition with times, sheets in both editions, no 
   const ids = JSON.parse(readFileSync("lib/data/srd-armor-it.json", "utf8")).armature.map(a => a.id);
   expect(ids).toHaveLength(13);
   for (const id of ids) expect((await request.get(`/equipaggiamento/armature/${id}`)).status(), id).toBe(200);
+});
+
+test("advancement: Compendio tile, table, hit points, bonus feats and XP calculator on narrow phones", async ({ page }) => {
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/compendio");
+  await page.locator("main").getByRole("link", { name: /Avanzamento di livello/ }).click();
+  await expect(page).toHaveURL(/\/avanzamento$/);
+  const nav = page.getByRole("navigation", { name: "Navigazione principale" });
+  await expect(nav.locator('a[aria-current="page"]')).toHaveText("Compendio");
+  await expect(page.locator("main").getByRole("link", { name: "Compendio", exact: true })).toHaveAttribute("href", "/compendio");
+  await expect(page.locator("main ol > li")).toHaveCount(20);
+  await expect(page.locator("main ol > li").nth(3)).toContainText("2.700");
+  await expect(page.locator("main ol > li").nth(19)).toContainText("355.000");
+  await expect(page.getByText("Regola 2024")).toBeVisible();
+  await expect(page.getByText(/un talento a scelta per ogni 30\.000 PE guadagnati oltre i 355\.000 PE/)).toBeVisible();
+  // Calculator: 4 characters, 3 monsters of GS 1 (200 PE each) → 600 total, 150 each.
+  const counter = page.getByRole("group", { name: "Riga 1, mostri" });
+  await counter.getByRole("button", { name: /più uno/ }).click();
+  await counter.getByRole("button", { name: /più uno/ }).click();
+  await expect(page.getByTestId("pe-totali")).toHaveText("600");
+  await expect(page.getByTestId("pe-testa")).toHaveText("150");
+  // A second row with GS 2 (450 PE): 1.050 total, 262 each with 2 PE left over.
+  await page.getByRole("button", { name: "Aggiungi riga" }).click();
+  await page.getByLabel("Riga 2: grado sfida").selectOption({ label: "GS 2 · 450 PE" });
+  await expect(page.getByTestId("pe-totali")).toHaveText("1.050");
+  await expect(page.getByTestId("pe-testa")).toHaveText("262");
+  await expect(page.getByText(/restano 2 PE non divisibili/)).toBeVisible();
+  await page.getByLabel(/PE già posseduti/).fill("2.500");
+  await expect(page.getByTestId("pe-nuovo")).toHaveText("2.762");
+  await expect(page.getByTestId("livello")).toHaveText("4º");
+  await expect(page.getByTestId("mancanti")).toContainText("3.738 PE");
+  await page.getByRole("button", { name: "Azzera" }).click();
+  await expect(page.getByTestId("pe-totali")).toHaveText("200");
+  await expect(page.getByLabel(/PE già posseduti/)).toHaveValue("");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `width ${width}`).toBeLessThanOrEqual(width);
+    const small = await page.locator("main button, main select, main input").evaluateAll(items => items.filter(item => { const box = item.getBoundingClientRect(); return box.height < 44 || box.width < 44; }).map(item => item.outerHTML.slice(0, 80)));
+    expect(small, `targets at ${width}`).toEqual([]);
+  }
+  expect(errors).toEqual([]);
 });
