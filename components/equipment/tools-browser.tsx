@@ -1,0 +1,98 @@
+"use client";
+
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import Link from "next/link";
+import { ChevronRight, Search } from "lucide-react";
+
+import { ParentLink } from "@/components/section-tiles";
+import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
+import type { ToolListRow } from "@/lib/tools-editions";
+import type { EquipmentEdition } from "@/lib/equipment-types";
+
+const fold = (text: string) => text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, " ");
+const GROUPS: Record<EquipmentEdition, [string, string][]> = {
+  "2024": [["artigiano", "Strumenti da artigiano"], ["altri", "Altri strumenti"]],
+  "2014": [["artigiano", "Strumenti da artigiano"], ["giochi", "Giochi"], ["musicali", "Strumenti musicali"], ["altri", "Altri strumenti"]],
+};
+
+function ToolRow({ row }: { row: ToolListRow }) {
+  return (
+    <li className="border-b border-divider last:border-b-0">
+      <Link href={row.href} prefetch={false} className="flex min-h-14 items-center gap-3 px-3.5 py-2">
+        <span className="min-w-0 flex-1">
+          <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <span className="block text-[14px] text-muted">{row.peso === "—" ? "peso trascurabile" : row.peso}</span>
+        </span>
+        <span className="max-w-[40%] shrink-0 text-right text-[15px] font-semibold">{row.costo}</span>
+        <ChevronRight size={18} className="shrink-0 text-muted" aria-hidden="true" />
+      </Link>
+    </li>
+  );
+}
+
+/**
+ * Tools of both editions, grouped, searchable by name. The rule texts (competence, group texts)
+ * arrive already rendered from the server, so they are not part of the browser code.
+ */
+export function ToolsBrowser({ rows, intro, groupTexts }: {
+  rows: Record<EquipmentEdition, ToolListRow[]>;
+  intro: Record<EquipmentEdition, ReactNode>;
+  groupTexts: Record<EquipmentEdition, Partial<Record<string, ReactNode>>>;
+}) {
+  const [edition, setEdition] = useEquipmentEdition();
+  const [query, setQuery] = useState("");
+  const [missing, setMissing] = useState<EquipmentEdition>();
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const value = url.searchParams.get("manca");
+    if (value !== "2014" && value !== "2024") return;
+    setMissing(value);
+    url.searchParams.delete("manca");
+    window.history.replaceState(window.history.state, "", url);
+  }, []);
+  const needle = fold(query.trim());
+  const items = rows[edition];
+  const found = useMemo(() => (needle ? items.filter(row => fold(row.nome).includes(needle)) : items), [items, needle]);
+  return (
+    <div className="px-4 pb-8 pt-4 sm:px-6">
+      <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
+      <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">Strumenti</h1>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <div role="group" aria-label="Edizione delle regole" className="flex shrink-0 rounded-[8px] border border-border bg-elevated p-1">
+          {(["2024", "2014"] as const).map(value => (
+            <button key={value} type="button" aria-pressed={edition === value} onClick={() => { setEdition(value); setMissing(undefined); }}
+              className={`min-h-11 min-w-[56px] rounded-[6px] px-3 text-[15px] font-bold tabular-nums ${edition === value ? "bg-primary text-primary-foreground" : "text-muted"}`}>
+              {value}
+            </button>
+          ))}
+        </div>
+        <p className="text-[15px] text-muted">{items.length} strumenti · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}</p>
+      </div>
+      {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo strumento non c’è nel {missing}.</p>}
+      <div className="mt-3">{intro[edition]}</div>
+      <label className="relative mt-4 block">
+        <span className="sr-only">Cerca uno strumento</span>
+        <Search size={20} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
+        <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Cerca: liuto, scasso…"
+          className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
+      </label>
+      <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "strumento trovato" : "strumenti trovati"}`}</p>
+      {found.length === 0 && <p className="mt-3 text-[15px]">Nessuno strumento con questo nome.</p>}
+      <div className="mt-2 space-y-5">
+        {GROUPS[edition].map(([key, title]) => {
+          const group = found.filter(row => row.gruppo === key);
+          if (!group.length) return null;
+          return (
+            <section key={key} aria-labelledby={`gruppo-${key}`}>
+              <h2 id={`gruppo-${key}`} className="border-b-2 border-primary px-0.5 pb-1.5 font-serif text-[22px] font-bold text-primary">{title}</h2>
+              {!needle && groupTexts[edition][key]}
+              <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
+                {group.map(row => <ToolRow key={row.href} row={row} />)}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
