@@ -34,3 +34,32 @@ export interface WeaponListItem {
   /** Generated from the data: "Dado: 1d12 → 1d10 · …". */
   changeNote?: string;
 }
+
+export const ARMOR_CATEGORY_TITLES = ["Armature leggere", "Armature medie", "Armature pesanti", "Scudo"] as const;
+/** "Armatura leggera"… for the armor sheet. */
+export const ARMOR_CATEGORY_NAMES = ["Armatura leggera", "Armatura media", "Armatura pesante", "Scudo"] as const;
+export type ArmorCategory = 0 | 1 | 2 | 3;
+
+/** Only what the badge does not already say: minimum Strength and Stealth disadvantage. */
+export type ArmorChipKind = "strength" | "stealth";
+export interface ArmorChip { kind: ArmorChipKind; label: string }
+
+export interface ArmorListEdition {
+  nome: string;
+  /** Badge: "11", "14", "+2". */
+  ca: string;
+  /** Under the number, only what is needed to read it: ["+ Des"], ["+ Des", "max 2"], none for fixed AC and the shield. */
+  caNote: string[];
+  chips: ArmorChip[];
+  costo: string;
+  peso: string;
+}
+
+export interface ArmorListItem {
+  id: string;
+  categoria: ArmorCategory;
+  editions: Record<EquipmentEdition, ArmorListEdition>;
+}
+
+/** Donning and doffing time of each category, per edition: "Indossare 1 minuto · togliere 1 minuto". */
+export type ArmorTimes = Record<EquipmentEdition, string[]>;

@@ -91,7 +91,8 @@ def table(pdf, pages, fonts, header, columns, x_of, stop=None):
 
 
 def paragraphs(pdf, page, column, start, stop):
-    """Body paragraphs of one column between two y positions; a paragraph starts with a leading space."""
+    """Body paragraphs of one column between two y positions; a paragraph starts with a leading space
+    or with a bold italic label ("Imbottita.")."""
     lines = []
     middle = pdf[page - 1].rect.width / 2
     for block in pdf[page - 1].get_text('dict')['blocks']:
@@ -99,10 +100,10 @@ def paragraphs(pdf, page, column, start, stop):
             text = ''.join(s['text'] for s in line['spans'])
             x, y = line['bbox'][0], line['bbox'][1]
             if text.strip() and (x >= middle) == (column == 1) and start <= y < stop and line['spans'][0]['font'].startswith('Cambria'):
-                lines.append((round(y), text))
+                lines.append((round(y), text, line['spans'][0]['font'].endswith('BoldItalic')))
     out = []
-    for _, text in sorted(lines):
-        if text.startswith(' ') or not out:
+    for _, text, label in sorted(lines):
+        if text.startswith(' ') or label or not out:
             # the first line of a column may continue the column before: kept apart, joined by the caller
             out.append(text)
         else:
@@ -207,8 +208,86 @@ def sha_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+ARMOR_GROUPS = ['Armature leggere', 'Armature medie', 'Armature pesanti', 'Scudo']
+
+
+def armor_record(row, edition):
+    c = row['cells']
+    record = {'nome': c['nome'], 'costo': c['costo'], 'ca': c['ca'], 'forza': c['forza'], 'furtivita': c['furtivita'], 'peso': c['peso'], 'page': row['page']}
+    record['sourceText'] = ' | '.join(c[k] for k in (['nome', 'costo', 'ca', 'forza', 'furtivita', 'peso'] if edition == '2014' else ['nome', 'ca', 'forza', 'furtivita', 'peso', 'costo']))
+    record['sourceSha256'] = sha(record['sourceText'])
+    return record
+
+
+def donning_2024(header):
+    """"Armatura media (5 minuti per indossare e 1 minuto per togliere)" -> times as printed."""
+    inside = re.search(r'\((.*)\)', header).group(1)
+    both = re.fullmatch(r'(.+) per indossare o togliere', inside)
+    if both:
+        return {'indossare': both.group(1), 'togliere': both.group(1), 'testo': inside}
+    each = re.fullmatch(r'(.+) per indossare e (.+) per togliere', inside)
+    return {'indossare': each.group(1), 'togliere': each.group(2), 'testo': inside}
+
+
 def armor(pdf51, pdf521):
-    raise SystemExit('armor: not yet')
+    def x51(x):
+        return 'nome' if x < 145 else 'costo' if x < 200 else 'ca' if x < 330 else 'forza' if x < 362 else 'furtivita' if x < 410 else 'peso'
+
+    def x521(x):
+        return 'nome' if x < 185 else 'ca' if x < 360 else 'forza' if x < 400 else 'furtivita' if x < 455 else 'peso' if x < 490 else 'costo'
+    rows51 = table(pdf51, [70], ['Calibri'], 'Armatura', ['nome'], x51)
+    rows521 = table(pdf521, [104], ['GillSans'], 'Armature', ['nome'], x521, stop={104: 735})
+    rows521 = [row for row in rows521 if row['y'] > 445]
+    assert len(rows51) == len(rows521) == 13, (len(rows51), len(rows521))
+    groups51 = {'Armature leggere': 0, 'Armature medie': 1, 'Armature pesanti': 2, 'Scudi': 3}
+    headers521 = []
+    items = []
+    for row51, row521 in zip(rows51, rows521):
+        group = groups51[row51['group']]
+        assert row521['group'].startswith(['Armatura leggera', 'Armatura media', 'Armatura pesante', 'Scudo'][group]), row521['group']
+        if row521['group'] not in headers521:
+            headers521.append(row521['group'])
+        items.append({'id': slug(row51['cells']['nome']), 'categoria': group, '2014': armor_record(row51, '2014'), '2024': armor_record(row521, '2024')})
+    # SRD 5.1 p. 71: table "Indossare e togliere armature".
+    times51 = {}
+    for y, x, text, font in spans(pdf51[70], ['Calibri']):
+        if 240 < y < 290 and font == 'Calibri':
+            times51.setdefault(y, []).append(clean(text))
+    times51 = [{'indossare': cells[1], 'togliere': cells[2]} for _, cells in sorted(times51.items())]
+    assert len(times51) == 4
+    # 2014 rule texts, word for word (pp. 69-71). Category introductions follow their heading without a label.
+    def is_label(text):
+        return bool(re.match(r'^[A-ZÀ-Ý][^.]{0,40}\. ', text))
+
+    def intro(paragraph_list):
+        out = []
+        for text in paragraph_list:
+            if is_label(text):
+                break
+            out.append(text)
+        return out
+    general = labelled(paragraphs(pdf51, 69, 0, 265, 740), 69)
+    light, medium = paragraphs(pdf51, 69, 1, 72, 287), paragraphs(pdf51, 69, 1, 288, 740)
+    heavy_intro, heavy = paragraphs(pdf51, 70, 0, 136, 365), paragraphs(pdf51, 70, 1, 40, 365)
+    mezza = paragraphs(pdf51, 70, 0, 40, 135)
+    parts = [(light, 69), (medium, 69), (mezza, 70), (heavy, 70)]
+    descriptions = labelled([t for list_, _ in parts for t in list_[len(intro(list_)):]], [page for list_, page in parts for _ in list_[len(intro(list_)):]])
+    categories = {}
+    for name, text, page in (('Armature leggere', intro(light), 69), ('Armature medie', intro(medium), 69), ('Armature pesanti', heavy_intro, 70)):
+        joined = '\n\n'.join(text)
+        categories[name] = {'testo': joined, 'page': page, 'sourceSha256': sha(joined)}
+    donning = labelled(paragraphs(pdf51, 71, 0, 100, 210), 71)
+    return {
+        '_nota': "Armature dell'SRD 5.1 (2014) e dell'SRD 5.2.1 (2024) in italiano, trascritte da scripts/transcribe-srd-equipment.py. Stesso id per la stessa armatura (nome 2014); ogni riga conserva il testo stampato e la sua impronta. I testi 2014 sono copiati parola per parola; le regole 2024 si leggono dal manuale 2024 (srd-manual-5.2.1-it.json, voce equipaggiamento-armature).",
+        'fonti': {
+            '2014': {'document': 'SRD 5.1', 'sourceUrl': URL_51, 'sourceSha256': SHA_51, 'pages': [69, 70, 71]},
+            '2024': {'document': 'SRD 5.2.1', 'sourceUrl': URL_521, 'sourceSha256': SHA_521, 'pages': [104, 105], 'manuale': 'equipaggiamento-armature'},
+        },
+        'categorie': ARMOR_GROUPS,
+        'tempi': {'2014': times51, '2024': [dict(donning_2024(h), page=104) for h in headers521]},
+        'armature': items,
+        'regole2014': {'generali': general, 'categorie': categories, 'descrizioni': descriptions, 'indossareTogliere': donning},
+    }
 
 
 if __name__ == '__main__':

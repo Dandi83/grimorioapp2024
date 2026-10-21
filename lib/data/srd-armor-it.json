@@ -1,0 +1,537 @@
+{
+  "_nota": "Armature dell'SRD 5.1 (2014) e dell'SRD 5.2.1 (2024) in italiano, trascritte da scripts/transcribe-srd-equipment.py. Stesso id per la stessa armatura (nome 2014); ogni riga conserva il testo stampato e la sua impronta. I testi 2014 sono copiati parola per parola; le regole 2024 si leggono dal manuale 2024 (srd-manual-5.2.1-it.json, voce equipaggiamento-armature).",
+  "fonti": {
+    "2014": {
+      "document": "SRD 5.1",
+      "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf",
+      "sourceSha256": "2ef143b8abeae9558d30b405ea48e2ee9b5d700dd11cd955e6117e61cbddd3f7",
+      "pages": [
+        69,
+        70,
+        71
+      ]
+    },
+    "2024": {
+      "document": "SRD 5.2.1",
+      "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf",
+      "sourceSha256": "a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718",
+      "pages": [
+        104,
+        105
+      ],
+      "manuale": "equipaggiamento-armature"
+    }
+  },
+  "categorie": [
+    "Armature leggere",
+    "Armature medie",
+    "Armature pesanti",
+    "Scudo"
+  ],
+  "tempi": {
+    "2014": [
+      {
+        "indossare": "1 minuto",
+        "togliere": "1 minuto"
+      },
+      {
+        "indossare": "5 minuti",
+        "togliere": "1 minuto"
+      },
+      {
+        "indossare": "10 minuti",
+        "togliere": "5 minuti"
+      },
+      {
+        "indossare": "1 azione",
+        "togliere": "1 azione"
+      }
+    ],
+    "2024": [
+      {
+        "indossare": "1 minuto",
+        "togliere": "1 minuto",
+        "testo": "1 minuto per indossare o togliere",
+        "page": 104
+      },
+      {
+        "indossare": "5 minuti",
+        "togliere": "1 minuto",
+        "testo": "5 minuti per indossare e 1 minuto per togliere",
+        "page": 104
+      },
+      {
+        "indossare": "10 minuti",
+        "togliere": "5 minuti",
+        "testo": "10 minuti per indossare e 5 minuti per togliere",
+        "page": 104
+      },
+      {
+        "indossare": "azione di Utilizzo",
+        "togliere": "azione di Utilizzo",
+        "testo": "azione di Utilizzo per indossare o togliere",
+        "page": 104
+      }
+    ]
+  },
+  "armature": [
+    {
+      "id": "imbottita",
+      "categoria": 0,
+      "2014": {
+        "nome": "Imbottita",
+        "costo": "5 mo",
+        "ca": "11 + modificatore di Des",
+        "forza": "—",
+        "furtivita": "Svantaggio",
+        "peso": "4 kg",
+        "page": 70,
+        "sourceText": "Imbottita | 5 mo | 11 + modificatore di Des | — | Svantaggio | 4 kg",
+        "sourceSha256": "6b9744baa6ec1c62a52ce07292934e1b1ff265791abbce8c84f63f8e5a267108"
+      },
+      "2024": {
+        "nome": "Armatura imbottita",
+        "costo": "5 mo",
+        "ca": "11 + modificatore di Des",
+        "forza": "—",
+        "furtivita": "Svantaggio",
+        "peso": "4 kg",
+        "page": 104,
+        "sourceText": "Armatura imbottita | 11 + modificatore di Des | — | Svantaggio | 4 kg | 5 mo",
+        "sourceSha256": "11006d0aa81abafbeb56f6e5befae5486473626a1740588806205a6acae562ee"
+      }
+    },
+    {
+      "id": "cuoio",
+      "categoria": 0,
+      "2014": {
+        "nome": "Cuoio",
+        "costo": "10 mo",
+        "ca": "11 + modificatore di Des",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "5 kg",
+        "page": 70,
+        "sourceText": "Cuoio | 10 mo | 11 + modificatore di Des | — | — | 5 kg",
+        "sourceSha256": "359300db1afda55647f8d79abe4b52a9d783ace1e987ba59771273813f80d312"
+      },
+      "2024": {
+        "nome": "Armatura di cuoio",
+        "costo": "10 mo",
+        "ca": "11 + modificatore di Des",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "5 kg",
+        "page": 104,
+        "sourceText": "Armatura di cuoio | 11 + modificatore di Des | — | — | 5 kg | 10 mo",
+        "sourceSha256": "dbde47e7527cf7cd067828b58ec2c8021761c04c36443b2f12258643b0368ac1"
+      }
+    },
+    {
+      "id": "cuoio-borchiato",
+      "categoria": 0,
+      "2014": {
+        "nome": "Cuoio borchiato",
+        "costo": "45 mo",
+        "ca": "12 + modificatore di Des",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "6,5 kg",
+        "page": 70,
+        "sourceText": "Cuoio borchiato | 45 mo | 12 + modificatore di Des | — | — | 6,5 kg",
+        "sourceSha256": "c8dfebbea20966f85ab9ab899d681c1ea69342438e13d852f5ee254b424c80ab"
+      },
+      "2024": {
+        "nome": "Armatura di cuoio borchiato",
+        "costo": "45 mo",
+        "ca": "12 + modificatore di Des",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "6,5 kg",
+        "page": 104,
+        "sourceText": "Armatura di cuoio borchiato | 12 + modificatore di Des | — | — | 6,5 kg | 45 mo",
+        "sourceSha256": "d50b927c3d6ca44441a8257c2128c4f480fdbcdbb7abf15a90477d3823546aa4"
+      }
+    },
+    {
+      "id": "pelle",
+      "categoria": 1,
+      "2014": {
+        "nome": "Pelle",
+        "costo": "10 mo",
+        "ca": "12 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "6 kg",
+        "page": 70,
+        "sourceText": "Pelle | 10 mo | 12 + modificatore di Des (max 2) | — | — | 6 kg",
+        "sourceSha256": "88fb442f19ff0bb7a0613d42b31af3d5dc24f1f0b7adbcfb78570810c3673043"
+      },
+      "2024": {
+        "nome": "Armatura di pelle",
+        "costo": "10 mo",
+        "ca": "12 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "6 kg",
+        "page": 104,
+        "sourceText": "Armatura di pelle | 12 + modificatore di Des (max 2) | — | — | 6 kg | 10 mo",
+        "sourceSha256": "86d305714cf0f461cec2cf3c759110a8f7316866f2fe1a0d4d805ab9fd566c2b"
+      }
+    },
+    {
+      "id": "giaco-di-maglia",
+      "categoria": 1,
+      "2014": {
+        "nome": "Giaco di maglia",
+        "costo": "50 mo",
+        "ca": "13 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "10 kg",
+        "page": 70,
+        "sourceText": "Giaco di maglia | 50 mo | 13 + modificatore di Des (max 2) | — | — | 10 kg",
+        "sourceSha256": "0b7779622d3d7d825935c231c023310b574fece80ede8c6b250e147c9aa8b15b"
+      },
+      "2024": {
+        "nome": "Giaco di maglia",
+        "costo": "50 mo",
+        "ca": "13 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "10 kg",
+        "page": 104,
+        "sourceText": "Giaco di maglia | 13 + modificatore di Des (max 2) | — | — | 10 kg | 50 mo",
+        "sourceSha256": "fecf04cea278eb11cfaaa94fe385c5cb52676e6b3c9f65d7a0b2722a2810ae08"
+      }
+    },
+    {
+      "id": "corazza-a-scaglie",
+      "categoria": 1,
+      "2014": {
+        "nome": "Corazza a scaglie",
+        "costo": "50 mo",
+        "ca": "14 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "Svantaggio",
+        "peso": "22,5 kg",
+        "page": 70,
+        "sourceText": "Corazza a scaglie | 50 mo | 14 + modificatore di Des (max 2) | — | Svantaggio | 22,5 kg",
+        "sourceSha256": "3b7d28df4e31889d35c2ef080b5a99ed3288d573102173521b30a2f93be4bf28"
+      },
+      "2024": {
+        "nome": "Corazza a scaglie",
+        "costo": "50 mo",
+        "ca": "14 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "Svantaggio",
+        "peso": "22,5 kg",
+        "page": 104,
+        "sourceText": "Corazza a scaglie | 14 + modificatore di Des (max 2) | — | Svantaggio | 22,5 kg | 50 mo",
+        "sourceSha256": "7a679e8a83dac1e998619d786959c527ef89406dea5df653edc19ba1cb064361"
+      }
+    },
+    {
+      "id": "corazza-di-piastre",
+      "categoria": 1,
+      "2014": {
+        "nome": "Corazza di piastre",
+        "costo": "400 mo",
+        "ca": "14 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "10 kg",
+        "page": 70,
+        "sourceText": "Corazza di piastre | 400 mo | 14 + modificatore di Des (max 2) | — | — | 10 kg",
+        "sourceSha256": "7bb7a5590705cb0e98518cf6ed4cde7fa9926598a771a4a2709a08521567b7e4"
+      },
+      "2024": {
+        "nome": "Corazza di piastre",
+        "costo": "400 mo",
+        "ca": "14 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "10 kg",
+        "page": 104,
+        "sourceText": "Corazza di piastre | 14 + modificatore di Des (max 2) | — | — | 10 kg | 400 mo",
+        "sourceSha256": "42ce1b2a2deac0a1b3936fd2e60e4ca95ab29a11e4858279e784899d02332117"
+      }
+    },
+    {
+      "id": "mezza-armatura",
+      "categoria": 1,
+      "2014": {
+        "nome": "Mezza armatura",
+        "costo": "750 mo",
+        "ca": "15 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "Svantaggio",
+        "peso": "20 kg",
+        "page": 70,
+        "sourceText": "Mezza armatura | 750 mo | 15 + modificatore di Des (max 2) | — | Svantaggio | 20 kg",
+        "sourceSha256": "66b045e1f260cb8865968957c57674c39b679584709b19d906f191b0292d1de4"
+      },
+      "2024": {
+        "nome": "Mezza armatura",
+        "costo": "750 mo",
+        "ca": "15 + modificatore di Des (max 2)",
+        "forza": "—",
+        "furtivita": "Svantaggio",
+        "peso": "20 kg",
+        "page": 104,
+        "sourceText": "Mezza armatura | 15 + modificatore di Des (max 2) | — | Svantaggio | 20 kg | 750 mo",
+        "sourceSha256": "494b661c7a1e8152e75ca1c6f0634dd0c981bd8f7fc45e91fe8840aab620e330"
+      }
+    },
+    {
+      "id": "corazza-ad-anelli",
+      "categoria": 2,
+      "2014": {
+        "nome": "Corazza ad anelli",
+        "costo": "30 mo",
+        "ca": "14",
+        "forza": "—",
+        "furtivita": "Svantaggio",
+        "peso": "20 kg",
+        "page": 70,
+        "sourceText": "Corazza ad anelli | 30 mo | 14 | — | Svantaggio | 20 kg",
+        "sourceSha256": "09dea0a6fd8551bb26163c6cb42c905ded38b2375dec0e1737c352e9b27820ed"
+      },
+      "2024": {
+        "nome": "Corazza ad anelli",
+        "costo": "30 mo",
+        "ca": "14",
+        "forza": "—",
+        "furtivita": "Svantaggio",
+        "peso": "20 kg",
+        "page": 104,
+        "sourceText": "Corazza ad anelli | 14 | — | Svantaggio | 20 kg | 30 mo",
+        "sourceSha256": "020b3d156c94c560b012790008f0a175a49f4af42b2c28892cc2ba47e60eb512"
+      }
+    },
+    {
+      "id": "cotta-di-maglia",
+      "categoria": 2,
+      "2014": {
+        "nome": "Cotta di maglia",
+        "costo": "75 mo",
+        "ca": "16",
+        "forza": "For 13",
+        "furtivita": "Svantaggio",
+        "peso": "27,5 kg",
+        "page": 70,
+        "sourceText": "Cotta di maglia | 75 mo | 16 | For 13 | Svantaggio | 27,5 kg",
+        "sourceSha256": "4f432396a9396e8d8cca09cce8a622b2595d7ca244d4dd4505d38cbb57c55c0e"
+      },
+      "2024": {
+        "nome": "Cotta di maglia",
+        "costo": "75 mo",
+        "ca": "16",
+        "forza": "For 13",
+        "furtivita": "Svantaggio",
+        "peso": "27,5 kg",
+        "page": 104,
+        "sourceText": "Cotta di maglia | 16 | For 13 | Svantaggio | 27,5 kg | 75 mo",
+        "sourceSha256": "02c67a7a304cabe83c4bdbaecaaa8e8981d1eb455fdf11a935b8e6c82b838165"
+      }
+    },
+    {
+      "id": "corazza-a-strisce",
+      "categoria": 2,
+      "2014": {
+        "nome": "Corazza a strisce",
+        "costo": "200 mo",
+        "ca": "17",
+        "forza": "For 15",
+        "furtivita": "Svantaggio",
+        "peso": "30 kg",
+        "page": 70,
+        "sourceText": "Corazza a strisce | 200 mo | 17 | For 15 | Svantaggio | 30 kg",
+        "sourceSha256": "dbe59555128ba1682db84f68e0cf7a46b882256019f08c7551922ca454ebe97e"
+      },
+      "2024": {
+        "nome": "Corazza a strisce",
+        "costo": "200 mo",
+        "ca": "17",
+        "forza": "For 15",
+        "furtivita": "Svantaggio",
+        "peso": "30 kg",
+        "page": 104,
+        "sourceText": "Corazza a strisce | 17 | For 15 | Svantaggio | 30 kg | 200 mo",
+        "sourceSha256": "8e558ca6b57cbe7125bb2df5478b1f6283b31343b0fed74d0b09d751a7dd0804"
+      }
+    },
+    {
+      "id": "armatura-a-piastre",
+      "categoria": 2,
+      "2014": {
+        "nome": "Armatura a piastre",
+        "costo": "1.500 mo",
+        "ca": "18",
+        "forza": "For 15",
+        "furtivita": "Svantaggio",
+        "peso": "32,5 kg",
+        "page": 70,
+        "sourceText": "Armatura a piastre | 1.500 mo | 18 | For 15 | Svantaggio | 32,5 kg",
+        "sourceSha256": "3cdd58727e2798d09791caeebd32b7478a27485411208c87dcca3f512b011e71"
+      },
+      "2024": {
+        "nome": "Armatura a piastre",
+        "costo": "1.500 mo",
+        "ca": "18",
+        "forza": "For 15",
+        "furtivita": "Svantaggio",
+        "peso": "32,5 kg",
+        "page": 104,
+        "sourceText": "Armatura a piastre | 18 | For 15 | Svantaggio | 32,5 kg | 1.500 mo",
+        "sourceSha256": "bb3e62a95b5691452110524a4a483376023b0fd2708ffc33d7ba1c22249d4693"
+      }
+    },
+    {
+      "id": "scudo",
+      "categoria": 3,
+      "2014": {
+        "nome": "Scudo",
+        "costo": "10 mo",
+        "ca": "+2",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "3 kg",
+        "page": 70,
+        "sourceText": "Scudo | 10 mo | +2 | — | — | 3 kg",
+        "sourceSha256": "4ece4d8ca22e661cc9d0825ab67f09e190e0a4db083952b3e69b66005b48c016"
+      },
+      "2024": {
+        "nome": "Scudo",
+        "costo": "10 mo",
+        "ca": "+2",
+        "forza": "—",
+        "furtivita": "—",
+        "peso": "3 kg",
+        "page": 104,
+        "sourceText": "Scudo | +2 | — | — | 3 kg | 10 mo",
+        "sourceSha256": "74f1e1c992fbf251d9e40180d12356466b20646f29afbbecdccd6dd1f550d1b1"
+      }
+    }
+  ],
+  "regole2014": {
+    "generali": {
+      "Competenza nelle armature": {
+        "testo": "Tutti possono indossare un'armatura o legarsi uno scudo al braccio, ma soltanto chi è competente nell'utilizzo delle armature sa come indossarli con efficacia. Ogni classe fornisce al personaggio competenze in certi tipi di armature. Se un personaggio indossa un'armatura in cui non è competente, subisce svantaggio a ogni prova di caratteristica, tiro salvezza o tiro per colpire correlato a Forza o Destrezza, e non può lanciare incantesimi.",
+        "page": 69,
+        "sourceSha256": "182f50b6ed2b28e92c5405040d9022f5cf37c17ab648bf115d4f39b60110aaf1"
+      },
+      "Classe Armatura (CA)": {
+        "testo": "L'armatura protegge dagli attacchi. L'armatura e l'eventuale scudo di un personaggio determinano la sua Classe Armatura base.",
+        "page": 69,
+        "sourceSha256": "40bb8f59a2cef1ac02d5ff794b33c3e089b5fe54941b1ad99eeb9d9418caea15"
+      },
+      "Armature pesanti": {
+        "testo": "Le armature più pesanti interferiscono con l'abilità del portatore di muoversi rapidamente, furtivamente o liberamente. Se la tabella \"Armature\" indica \"For 13\" o \"For 15\" nella colonna \"Forza\" relativa a un certo tipo di armatura, quell'armatura riduce la velocità del portatore di 3 metri a meno che questi non possieda un punteggio di Forza pari o superiore a quello elencato.",
+        "page": 69,
+        "sourceSha256": "751a332f1a266c9f81e3195c3e699eccc31ee32d94ea2d6ce02d642ec5e72588"
+      },
+      "Furtività": {
+        "testo": "Se nella tabella \"Armature\" compare la voce \"Svantaggio\" nella colonna \"Furtività\", il portatore subisce svantaggio alle prove di Destrezza (Furtività).",
+        "page": 69,
+        "sourceSha256": "9bc0ba55659a1dd2588aae9766075de932a18a94423c1bbcb87437f0ef89c58f"
+      },
+      "Scudi": {
+        "testo": "Uno scudo può essere fatto di legno o di metallo ed è impugnato con una mano. Impugnare uno scudo aumenta di 2 la Classe Armatura del personaggio. È possibile beneficiare di un solo scudo alla volta.",
+        "page": 69,
+        "sourceSha256": "4ecc132048c2160fe7c0f6dae60f071f064e62fd4c81a1efef383cbee51b4417"
+      }
+    },
+    "categorie": {
+      "Armature leggere": {
+        "testo": "Le armature leggere, ricavate da materiali flessibili e sottili, sono le più adatte agli avventurieri agili, dal momento che forniscono protezione senza sacrificare la mobilità. Quando un personaggio indossa un'armatura leggera, aggiunge il proprio modificatore di Destrezza al numero base del tipo di armatura per determinare la sua Classe Armatura.",
+        "page": 69,
+        "sourceSha256": "6211a2ceec64d05ad86484cae776aa09bd6464296fab60a47ce3d99771ba7a01"
+      },
+      "Armature medie": {
+        "testo": "Le armature medie forniscono una maggiore protezione rispetto a quelle leggere, ma ostacolano maggiormente i movimenti. Quando un personaggio indossa un'armatura media, aggiunge il proprio modificatore di Destrezza, fino a un massimo di +2, al numero base del tipo di armatura per determinare la sua Classe Armatura.",
+        "page": 69,
+        "sourceSha256": "0c3ce59ad5e583343163b17eddeb26be1f93973ab21195bf0fb6536c8f0d7d35"
+      },
+      "Armature pesanti": {
+        "testo": "Tra tutte le categorie di armature, le armature pesanti sono quelle che offrono la protezione migliore. Coprono tutto il corpo e sono concepite per fermare una vasta gamma di attacchi. Soltanto i combattenti competenti sono in grado di gestire il peso e la stazza di questo tipo di armatura.\n\nL'armatura pesante non consente a un personaggio di aggiungere il proprio modificatore di Destrezza alla Classe Armatura, ma non lo penalizza neanche, qualora il suo modificatore di Destrezza sia negativo.",
+        "page": 70,
+        "sourceSha256": "53b44c0f0573135a55e1c1844546f3c4cec516adff6eb8cd3f4ef382a4ce3647"
+      }
+    },
+    "descrizioni": {
+      "Imbottita": {
+        "testo": "Un'armatura imbottita è costituita da vari strati trapuntati di stoffa e imbottitura.",
+        "page": 69,
+        "sourceSha256": "01b56af98fb5ef945b6d4095189c083d89653338d244feb7ed6039c764812890"
+      },
+      "Cuoio": {
+        "testo": "Il pettorale e le spalline che compongono quest'armatura sono fatti di cuoio indurito e bollito nell'olio. Il resto dell'armatura è fatto di materiali più morbidi e flessibili.",
+        "page": 69,
+        "sourceSha256": "6d2180861467a4901e87703d4339a565c16102d566996ecb4084b5156944611d"
+      },
+      "Cuoio borchiato": {
+        "testo": "Un'armatura di cuoio borchiato è fatta di cuoio resistente ma flessibile, rinforzato con borchie o spuntoni di metallo.",
+        "page": 69,
+        "sourceSha256": "2fc28996188774896d86e6d7ca318be07a07700376c5f03a7e0b9fc566ede1af"
+      },
+      "Pelle": {
+        "testo": "Questa rozza armatura è composta da un fitto strato di pelle e pelliccia. Solitamente questo tipo di armatura è indossato dai membri delle tribù barbariche, umanoidi malvagi e altri individui che non possono accedere agli strumenti e ai materiali necessari per fabbricarne di migliori.",
+        "page": 69,
+        "sourceSha256": "6f6648b863e39437499a30fa057b076a10a58b03f1bdba029225b76b91320f24"
+      },
+      "Giaco di maglia": {
+        "testo": "Un giaco di maglia, composto da anelli di metallo interconnessi, si indossa tra due strati di stoffa o di cuoio. Quest'armatura offre una certa protezione alla parte superiore del corpo e smorza il rumore degli anelli di metallo attutendolo tra i due strati esterni.",
+        "page": 69,
+        "sourceSha256": "8e6a6d806655ce814da7b9700d1b600a02b3b1cccd2e819ce3c9f1f3867473e6"
+      },
+      "Corazza a scaglie": {
+        "testo": "Quest'armatura è composta da un corpetto e da gambali (e talvolta da una gonna separata) di cuoio ed è ricoperta di pezzi di metallo leggermente sovrapposti, come le squame di un pesce. Include anche due guanti d'arme.",
+        "page": 69,
+        "sourceSha256": "5a6ea6df079600f1d6cd49aa3154659d1930988c91dfe4c218dd17cd3dea323f"
+      },
+      "Corazza di piastre": {
+        "testo": "Quest'armatura è composta da un pettorale di metallo montato su uno strato di cuoio flessibile. Anche se lascia le gambe e le braccia relativamente scoperte, fornisce una buona protezione degli organi vitali del portatore, con un ingombro modesto.",
+        "page": 69,
+        "sourceSha256": "ea3ab110e5cd0276d9e7b3433f28f4b805b6cd8cca26ad08068501650ab60f5a"
+      },
+      "Mezza armatura": {
+        "testo": "Una mezza armatura è composta da una serie di piastre di metallo modellate che coprono la maggior parte del corpo. Non include una protezione per le gambe, al di là di due semplici gambiere fissate da cinghie di cuoio.",
+        "page": 70,
+        "sourceSha256": "03a56b8c3d7315f154338c3510ff3b7429519ca67e2e6084441a6f166c2bb21b"
+      },
+      "Corazza ad anelli": {
+        "testo": "È un'armatura di cuoio su cui sono stati cuciti dei pesanti anelli di metallo che rinforzano l'armatura contro i colpi di spada e ascia. Una corazza ad anelli è inferiore a una cotta di maglia e solitamente è indossata soltanto da coloro che non possono permettersi un'armatura migliore.",
+        "page": 70,
+        "sourceSha256": "007849dd3fc7a3c6610c342da49da8b4509d9c4c2589a342000fea1ede71a056"
+      },
+      "Cotta di maglia": {
+        "testo": "Una cotta di maglia, composta da anelli di metallo interconnessi, include uno strato di tessuto trapuntato da indossare sotto la cotta per evitare l'attrito e per attutire l'impatto dei colpi. Include anche due guanti d'arme.",
+        "page": 70,
+        "sourceSha256": "5c21d250306f9fdf1f97e111d4cc0570ef4ccbf5bc7589a74cebf0680ef9bc2b"
+      },
+      "Corazza a strisce": {
+        "testo": "Quest'armatura è fatta di strette strisce verticali di metallo agganciate a uno strato di cuoio da indossare su un'imbottitura di stoffa. Le giunture sono protette da cotta di maglia flessibile.",
+        "page": 70,
+        "sourceSha256": "3aca05c8338cfa893965dfd385855d6b6f6f9ec85e17917f837afeef2f6148f7"
+      },
+      "Armatura a piastre": {
+        "testo": "Un'armatura a piastre è composta da piastre di metallo modellate e interconnesse che coprono tutto il corpo. Include guanti d'arme, pesanti stivali di cuoio, un elmo con visiera e uno spesso strato di imbottitura sotto l'armatura. Una serie di fibbie e di cinghie consente di distribuire il peso su tutto il corpo.",
+        "page": 70,
+        "sourceSha256": "cf2e539ffa29ba2e0964da6478876c17dc8f59c6e364f16558fd35592dc1b778"
+      }
+    },
+    "indossareTogliere": {
+      "Indossare": {
+        "testo": "Questo è il tempo richiesto per indossare l'oggetto. Il personaggio beneficia della sua CA solo se impiega tutto il tempo richiesto per indossarlo.",
+        "page": 71,
+        "sourceSha256": "5c3e972ecd7615147e42baaf99229009ca086df4a2a1d82a63507bdf3a3f0360"
+      },
+      "Togliere": {
+        "testo": "Questo è il tempo richiesto per togliere l'oggetto indossato. Se qualcuno aiuta il personaggio, il tempo è ridotto della metà.",
+        "page": 71,
+        "sourceSha256": "b6abc58b05eec6fb9ad5d5f411b963b341bc6c471c4c03659c1f214751360055"
+      }
+    }
+  }
+}

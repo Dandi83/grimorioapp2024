@@ -8,6 +8,7 @@ import { ConditionContent, LegacyConditionContent } from "@/components/condition
  */
 const EQUIPMENT_TABLES: Record<string, { href: string; title: string; text: string; starts: string[] }> = {
   "equipaggiamento-armi": { href: "/equipaggiamento/armi", title: "Tabella delle armi", text: "Danni, proprietà, padronanza, peso e costo di ogni arma, 2014 e 2024 a confronto.", starts: ["Armi\nNome", "Nome "] },
+  "equipaggiamento-armature": { href: "/equipaggiamento/armature", title: "Tabella delle armature", text: "Classe Armatura, Forza, Furtività, peso, costo e tempi per indossarle, 2014 e 2024.", starts: ["Armature\nArmature"] },
 };
 export const replacedTable = (entry: ManualEntry, text: string) => EQUIPMENT_TABLES[entry.id]?.starts.some(start => text.startsWith(start));
 

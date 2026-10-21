@@ -1,5 +1,6 @@
-import { Swords } from "lucide-react";
+import { Shield, Swords } from "lucide-react";
 import { ParentLink, SectionTiles, type SectionTile } from "@/components/section-tiles";
+import { armors } from "@/lib/armor";
 import { weapons } from "@/lib/equipment";
 
 export const metadata = { title: "Equipaggiamento — Il Grimorio.App" };
@@ -8,6 +9,7 @@ export const metadata = { title: "Equipaggiamento — Il Grimorio.App" };
 export default function EquipmentPage() {
   const tiles: SectionTile[] = [
     { href: "/equipaggiamento/armi", title: "Armi", text: `${weapons.filter(w => w.editions["2024"]).length} armi nel 2024, ${weapons.filter(w => w.editions["2014"]).length} nel 2014`, Icon: Swords },
+    { href: "/equipaggiamento/armature", title: "Armature", text: `${armors.length - 1} armature e lo scudo, 2014 e 2024`, Icon: Shield },
   ];
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">

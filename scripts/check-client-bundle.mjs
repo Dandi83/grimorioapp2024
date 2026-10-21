@@ -12,6 +12,7 @@ const SHEET_FILES = [
 /** Rule texts of the Equipaggiamento section: lists send names and numbers only. */
 const RULE_FILES = [
   { file: 'srd-weapons-it.json', texts: data => Object.entries({ ...data.regole2014.proprieta, ...data.regole2014.armiSpeciali }).map(([id, rule]) => ({ id, text: rule.testo })) },
+  { file: 'srd-armor-it.json', texts: data => Object.values(data.regole2014).flatMap(group => Object.entries(group)).map(([id, rule]) => ({ id, text: rule.testo })) },
 ];
 
 /** One plain-ASCII sentence fragment per sheet: it survives minification and string escaping. */
