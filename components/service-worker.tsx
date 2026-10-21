@@ -40,7 +40,7 @@ export function ServiceWorker({ enabled }: { enabled: boolean }) {
 
   if (!savedAt) return null;
   return (
-    <div role="status" className="fixed inset-x-3 top-3 z-[60] mx-auto flex max-w-lg items-center justify-between gap-3 rounded-xl border border-primary/40 bg-card px-4 py-3 text-sm text-foreground shadow-2xl">
+    <div role="status" className="mx-3 mt-3 flex items-center justify-between gap-3 rounded-xl border border-primary/40 bg-card px-4 py-3 text-sm text-foreground">
       <span>Sei offline: questa pagina è la copia salvata il {dateFormat.format(savedAt)}.</span>
       <button type="button" onClick={() => window.location.reload()} className="min-h-11 shrink-0 rounded-lg border border-primary/40 px-3 text-primary">
         Riprova
