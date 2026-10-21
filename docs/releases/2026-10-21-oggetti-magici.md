@@ -20,10 +20,10 @@ Nuovo terzo riquadro del Compendio: **Oggetti magici** («Elenco A–Z con rarit
   - le tabelle che continuano nella colonna dopo, con l'intestazione ripetuta, si uniscono;
   - una tabella stampata dentro un paragrafo segue quel paragrafo;
   - la tabella «Leve dell'apparatus del granchio» del 2024 è stampata tra Arco del giuramento e Arco energetico: resta nell'Apparatus per le coordinate.
-- Correzioni di sola visualizzazione (`lib/data/magic-items-repairs-20261021.json`). Sono tre refusi certi:
-  - 2024 p. 247, Barca pieghevole: «in una barcone» → «in un barcone»;
-  - 2014 p. 243: «Armastura demoniaca» → «Armatura demoniaca»;
-  - 2014 p. 284, Tappeto volante: «120 cm × 80 cm» → «120 cm × 180 cm».
+- Correzioni di sola visualizzazione (`lib/data/magic-items-repairs-20261021.json`), approvate da Daniele il 21 ottobre 2026. Sono tre refusi certi:
+  - 2024 p. 247, colonna destra, riga 40, Barca pieghevole: «in una barcone» → «in un barcone»;
+  - 2014 p. 243, colonna sinistra, riga 21 (titolo): «Armastura demoniaca» → «Armatura demoniaca»;
+  - 2014 p. 284, colonna sinistra, riga 32 (riga «21–55» della tabella), Tappeto volante: «120 cm × 80 cm» → «120 cm × 180 cm».
 
 ## Controllo di fedeltà
 
