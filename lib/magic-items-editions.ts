@@ -42,10 +42,10 @@ function build(): MagicItemEntry[] {
 
 export const magicItemEntries: MagicItemEntry[] = build();
 
-export function findMagicItemEntry(id: string): { entry: MagicItemEntry; edition?: MagicItemEdition } | undefined {
-  const byAlias = magicItemEntries.find(entry => entry.id2014 === id);
+export function findMagicItemEntry(id: string, list: MagicItemEntry[] = magicItemEntries): { entry: MagicItemEntry; edition?: MagicItemEdition } | undefined {
+  const byAlias = list.find(entry => entry.id2014 === id);
   if (byAlias) return { entry: byAlias, edition: "2014" };
-  const entry = magicItemEntries.find(item => item.id === id);
+  const entry = list.find(item => item.id === id);
   return entry && { entry, ...(entry.id2014 ? { edition: "2024" as const } : {}) };
 }
 
@@ -75,14 +75,16 @@ export function compareMagicItem(entry: MagicItemEntry): MagicItemChange[] {
 }
 
 /** 2024 items named by Daniele as the counterparts of a 2014 item besides its pair ("Sfera di cristallo"). */
-export function seeAlso(entry: MagicItemEntry): MagicItemEntry[] {
-  const item = entry.editions["2014"];
+export function seeAlso(entry: MagicItemEntry, list: MagicItemEntry[] = magicItemEntries): MagicItemEntry[] {
+  // The name of the project data, also when the shown name is corrected.
+  const item = magicItemEntries.find(other => other.id === entry.id)?.editions["2014"];
   const names = item ? (repairs.vediAnche["2014"] as Record<string, string[]>)[item.nome] ?? [] : [];
-  return names.map(name => magicItemEntries.find(other => other.editions["2024"]?.nome === name)!);
+  // Matched on the project data, then shown as in list (with its corrections).
+  return names.map(name => magicItemEntries.find(other => other.editions["2024"]?.nome === name)!).map(found => list.find(other => other.id === found.id) ?? found);
 }
 
-export function magicItemEditionRows(): Record<MagicItemEdition, MagicItemListRow[]> {
-  const rows = (edition: MagicItemEdition) => magicItemEntries.filter(entry => entry.editions[edition]).map(entry => {
+export function magicItemEditionRows(list: MagicItemEntry[] = magicItemEntries): Record<MagicItemEdition, MagicItemListRow[]> {
+  const rows = (edition: MagicItemEdition) => list.filter(entry => entry.editions[edition]).map(entry => {
     const item = entry.editions[edition]!;
     return {
       id: item.id, href: magicItemEntryHref(entry, edition), nome: item.nome, tipo: item.tipo,

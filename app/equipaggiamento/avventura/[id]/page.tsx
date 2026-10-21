@@ -6,10 +6,14 @@ import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
 import type { GearItem, GearTable } from "@/lib/adventuring-gear";
 import { gear2014Source, type Gear2014Item } from "@/lib/adventuring-gear-2014";
 import { compareGear, findGearEntry, gearEntries, gearHref } from "@/lib/adventuring-gear-editions";
+import { SectionCorrectionNote } from "@/components/correction-note";
+import { getCorrectedGear } from "@/lib/corrected-content";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
+// Manual corrections from the admin area appear within five minutes (at once after saving).
+export const revalidate = 300;
 
 const SRD_521 = "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf";
 const LIST = "/equipaggiamento/avventura";
@@ -19,7 +23,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const found = findGearEntry((await params).id);
+  const found = findGearEntry((await params).id, (await getCorrectedGear()).list);
   const item = found && (found.entry.editions[found.edition ?? "2024"] ?? found.entry.editions["2014"]);
   return { title: item ? `${item.nome} — Equipaggiamento d’avventura — Il Grimorio.App` : "Oggetto non trovato" };
 }
@@ -118,13 +122,16 @@ function Sheet2014({ item }: { item: Gear2014Item }) {
 }
 
 export default async function GearItemPage({ params }: { params: Promise<{ id: string }> }) {
-  const found = findGearEntry((await params).id);
+  const corrected = await getCorrectedGear();
+  const found = findGearEntry((await params).id, corrected.list);
   if (!found) notFound();
   const { entry, edition } = found;
+  const corrections = corrected.corrections.get(entry.id);
+  const note = (value: EquipmentEdition) => <div className="mt-5"><SectionCorrectionNote section="avventura" id={entry.id} edition={value} corrections={corrections?.[value]} /></div>;
   const rows = compareGear(entry);
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
-  if (entry.editions["2024"]) panels["2024"] = <Sheet2024 item={entry.editions["2024"]} />;
-  if (entry.editions["2014"]) panels["2014"] = <Sheet2014 item={entry.editions["2014"]} />;
+  if (entry.editions["2024"]) panels["2024"] = <><Sheet2024 item={entry.editions["2024"]} />{note("2024")}</>;
+  if (entry.editions["2014"]) panels["2014"] = <><Sheet2014 item={entry.editions["2014"]} />{note("2014")}</>;
   return (
     <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
       <BackButton fallback={LIST} label="Tutti gli oggetti" />

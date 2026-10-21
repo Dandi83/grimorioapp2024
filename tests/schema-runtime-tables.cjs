@@ -48,7 +48,8 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
  await load('lib/admin-auth.ts').startAdminSession();
  deps['next/cache']={unstable_cache:fn=>fn};
  await load('lib/content-overrides.ts').ensureOverridesTable();
- for(const table of [schema.contentEditions,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.adminSessions,schema.contentOverrides]){
+ await load('lib/editor-log.ts').ensureEditorLogTable();
+ for(const table of [schema.contentEditions,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.adminSessions,schema.contentOverrides,schema.editorLog]){
   const config=getTableConfig(table);
   const {rows}=await pg.query('SELECT column_name,data_type,is_nullable,column_default FROM information_schema.columns WHERE table_name=$1 ORDER BY ordinal_position',[config.name]);
   assert.ok(rows.length,`${config.name} is created by the runtime code`);
@@ -62,5 +63,5 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
   }
  }
  await pg.close();
- console.log('Schema: runtime-created tables (editions, creature details, habitats, analytics, login failures, reports, admin sessions, manual corrections) match their schema.ts descriptions.');
+ console.log('Schema: runtime-created tables (editions, creature details, habitats, analytics, login failures, reports, admin sessions, manual corrections, editor log) match their schema.ts descriptions.');
 })().catch(error=>{console.error(error);process.exit(1);});

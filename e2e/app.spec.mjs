@@ -930,8 +930,8 @@ test("admin corrections: tiles, weapons list per edition, edit with reason, publ
   // Home of the admin area: tiles and counters.
   await page.goto("/admin");
   const tiles = page.getByRole("navigation", { name: "Sezioni da modificare" });
-  for (const name of ["Incantesimi", "Mostri", "Armi"]) await expect(tiles.getByRole("link", { name: new RegExp(`^${name}`) })).toBeVisible();
-  await expect(tiles.getByText("In arrivo")).toHaveCount(5);
+  for (const name of ["Incantesimi", "Mostri", "Armi", "Armature", "Equipaggiamento", "Strumenti", "Oggetti magici", "Condizioni", "Manuale"]) await expect(tiles.getByRole("link", { name: new RegExp(`^${name}`) })).toBeVisible();
+  await expect(tiles.getByText("In arrivo")).toHaveCount(0);
   await expect(page.getByRole("link", { name: /0\s*modifiche manuali/ })).toBeVisible();
   for (const width of [360, 390]) {
     await page.setViewportSize({ width, height: 800 });
@@ -1007,6 +1007,81 @@ test("admin corrections: tiles, weapons list per edition, edit with reason, publ
   await page.goto("/admin/registro");
   page.once("dialog", dialog => dialog.accept());
   await log.getByRole("button", { name: "Annulla modifica" }).click();
+  await expect(page.getByText("Nessuna modifica.")).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("admin corrections in every section: armor, magic item text, condition title on list and page, spell editor change undone from the log", async ({ page }) => {
+  test.setTimeout(120_000);
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(String(error)));
+  await page.goto("/admin");
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  const save = async (url, fill, reason) => {
+    await page.goto(url);
+    await fill();
+    await page.getByLabel("Motivo della modifica (obbligatorio)").fill(reason);
+    page.once("dialog", dialog => dialog.accept());
+    await page.getByRole("button", { name: "Salva modifica" }).click();
+    await expect(page.getByText(/^Salvato:/)).toBeVisible();
+  };
+  // Armor 2014: the weight; the 2014 description (found by the printed name) is still there.
+  await save("/admin/contenuti/armature/cuoio?edizione=2014", () => page.getByLabel("Peso", { exact: true }).fill("4,5 kg"), "Prova: peso dell’armatura");
+  await page.goto("/equipaggiamento/armature/cuoio?edizione=2014");
+  const leather = page.locator('[data-edition="2014"]');
+  await expect(leather.getByText("4,5 kg")).toBeVisible();
+  await expect(leather.getByText("Peso: nel manuale «5 kg»")).toBeVisible();
+  // Magic item: one paragraph, the tables untouched.
+  await page.goto("/admin/contenuti/oggetti-magici/bacchetta-delle-meraviglie?edizione=2024");
+  const first = page.getByLabel("Paragrafo 1", { exact: true });
+  const printed = await first.inputValue();
+  await save("/admin/contenuti/oggetti-magici/bacchetta-delle-meraviglie?edizione=2024", () => first.fill(`${printed} Prova di correzione.`), "Prova: testo dell’oggetto");
+  await page.goto("/oggetti-magici/bacchetta-delle-meraviglie");
+  const wand = page.locator('[data-edition="2024"]');
+  await expect(wand.getByText("Prova di correzione.")).toBeVisible();
+  await expect(wand.locator("[data-table-rows]")).toHaveAttribute("data-table-rows", "18");
+  await expect(wand.getByText("Corretto rispetto al manuale originale")).toBeVisible();
+  // Condition 2024: the title on the Compendio list and on its page.
+  await save("/admin/contenuti/condizioni/condizioni-accecato?edizione=2024", () => page.getByLabel("Nome", { exact: true }).fill("Accecato (prova)"), "Prova: nome della condizione");
+  await page.goto("/compendio/condizioni?edizione=2024");
+  await expect(page.getByRole("link", { name: "Accecato (prova)" })).toBeVisible();
+  await page.goto("/manuale/condizioni-accecato");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Accecato (prova)");
+  await expect(page.getByText("Nome: nel manuale «Accecato»")).toBeVisible();
+  // Spell editor (database record): the change appears in the log and can be undone.
+  await page.goto("/admin/incantesimi");
+  await page.getByPlaceholder("Cerca per nome o scuola…").fill("dardo incantato");
+  await page.getByRole("button", { name: "Modifica", exact: true }).first().click();
+  const editor = page.getByRole("dialog");
+  const range = editor.getByLabel("Gittata", { exact: true });
+  const before = await range.inputValue();
+  await range.selectOption(before === "90 metri" ? "45 metri" : "90 metri");
+  await editor.getByRole("button", { name: "Salva modifiche" }).click();
+  await expect(editor).toHaveCount(0);
+  await page.goto("/admin/registro?sezione=incantesimi");
+  const log = page.getByRole("list", { name: "Modifiche" });
+  await expect(log.getByText(/· gittata$/)).toBeVisible();
+  await expect(log.getByText("Modifica dall’editor").first()).toBeVisible();
+  // Every field the save changed is in the log: undo them all.
+  const count = await log.getByRole("listitem").count();
+  for (let i = count; i > 0; i--) {
+    page.once("dialog", dialog => dialog.accept());
+    await log.getByRole("button", { name: "Annulla modifica" }).first().click();
+    if (i > 1) await expect(log.getByRole("listitem")).toHaveCount(i - 1);
+  }
+  await expect(page.getByText("Nessuna modifica.")).toBeVisible();
+  await page.goto("/spell/dardo-incantato");
+  await expect(page.getByText(before).first()).toBeVisible();
+  // Clean up the corrections for the next tests.
+  await page.goto("/admin/registro");
+  for (let i = 0; i < 3; i++) {
+    page.once("dialog", dialog => dialog.accept());
+    await page.getByRole("list", { name: "Modifiche" }).getByRole("button", { name: "Annulla modifica" }).first().click();
+    await expect(page.getByRole("list", { name: "Modifiche" }).getByRole("listitem")).toHaveCount(2 - i, { timeout: 10000 }).catch(() => undefined);
+  }
   await expect(page.getByText("Nessuna modifica.")).toBeVisible();
   expect(errors).toEqual([]);
 });

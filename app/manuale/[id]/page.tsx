@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getManualEntry, manualAvailable, manualEntries } from "@/lib/manual";
+import { manualAvailable, manualEntries } from "@/lib/manual";
 import { legacyConditions } from "@/lib/conditions";
 import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { MANUAL_CATEGORIES } from "@/lib/manual-types";
 import { ManualContent } from "@/components/manual-content";
 import { BackButton } from "@/components/back-button";
 import { ReportLink } from "@/components/feedback/report-link";
+import { SectionCorrectionNote } from "@/components/correction-note";
+import { getCorrectedManualEntry } from "@/lib/corrected-content";
 
-// The text never changes at runtime: pages are generated at build time.
-// Production builds only public conditions; other entries stay preview-only.
+// Pages are generated at build time; manual corrections from the admin area appear within five
+// minutes (at once after saving). Production builds only public conditions; other entries stay preview-only.
 export const dynamicParams = true;
+export const revalidate = 300;
 
 export function generateStaticParams() {
   const preview = manualAvailable(process.env.VERCEL_ENV);
@@ -19,14 +22,15 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const entry = getManualEntry(id);
+  const entry = (await getCorrectedManualEntry(id))?.entry;
   return { title: `${entry?.title || "Voce non trovata"} — ${entry?.category === "condizioni" ? "Condizioni" : "Manuale"} · Il Grimorio.App` };
 }
 
 export default async function ManualEntryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const entry = getManualEntry(id);
-  if (!entry) notFound();
+  const corrected = await getCorrectedManualEntry(id);
+  if (!corrected) notFound();
+  const { entry } = corrected;
   const isCondition = entry.category === "condizioni";
   // Conditions are public reference details; the Manual and its other entries stay preview-only.
   if (!isCondition && !manualAvailable(process.env.VERCEL_ENV)) notFound();
@@ -47,6 +51,7 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
         <Link href={`/grimorio?classe=${entry.title.toLowerCase()}`} className="mb-6 inline-block rounded-full border border-primary/40 px-4 py-2 text-sm font-semibold text-primary">Consulta gli incantesimi della classe →</Link>
       )}
       <ManualContent entry={entry} />
+      <div className="mt-6"><SectionCorrectionNote section={corrected.section} id={id} edition={corrected.edition} corrections={corrected.corrections} /></div>
       <ReportLink edition={entry.edizione === "2014" ? "2014" : "2024"} />
     </article>
   );

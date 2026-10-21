@@ -17,6 +17,7 @@ import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { getSrdSource } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
+import { editorLogReady, logEditorSave } from "@/lib/editor-log";
 
 export interface SpellInput {
   nome_italiano: string;
@@ -99,7 +100,10 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
   const sourceEdition = getSrdSource(id, input.descrizione) || getOriginalSource(id, input.descrizione) ? "2024" : undefined;
+  const logged = await editorLogReady();
   const result = await saveAdminContent("spell", id, formData, sourceEdition, async database => {
+    // Every changed field goes to the Registro modifiche, where it can be undone.
+    if (logged) await logEditorSave(database, "incantesimi", id, input);
     const updated = await database.update(spells)
     .set({
       ...input,

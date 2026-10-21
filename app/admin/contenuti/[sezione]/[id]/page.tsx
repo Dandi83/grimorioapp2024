@@ -24,7 +24,7 @@ export default async function ContentEditPage({ params, searchParams }: {
   const original = section.original(id, edition);
   if (!original) notFound();
   const active = activeOverrideMap((await allOverrides()).filter(row => row.sezione === section.key && row.scheda_id === id));
-  const fields = cardFields(section, original).map(field => {
+  const fields = cardFields(section, original, id, edition).map(field => {
     const row = active.get(overrideKey(section.key, id, edition, field.name));
     return { ...field, original: original[field.name], current: row ? row.valore_nuovo : original[field.name], motivo: row?.motivo };
   });
@@ -32,7 +32,7 @@ export default async function ContentEditPage({ params, searchParams }: {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
       <Link href={back} className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ {section.title}</Link>
-      <h1 className="font-serif text-[28px] font-bold leading-tight text-primary">{fields.find(field => field.name === "nome")?.current ?? id} ({edition})</h1>
+      <h1 className="font-serif text-[28px] font-bold leading-tight text-primary">{fields.find(field => field.name === "nome" || field.name === "title")?.current ?? id} ({edition})</h1>
       <a href={section.href(id, edition)} className="self-start text-sm text-primary underline underline-offset-4">Apri la scheda pubblica</a>
       <AdminContentForm section={section.key} id={id} edition={edition} fields={fields} back={back} />
       <section aria-labelledby="bloccati" className="mt-2 rounded-[14px] border border-border bg-card p-3.5 text-[13px] text-muted">
