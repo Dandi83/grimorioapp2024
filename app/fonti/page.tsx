@@ -35,6 +35,11 @@ export default function SourcesPage() {
           Unica correzione che si discosta dal testo del PDF: in Nube mortale «superiore al 4º» è diventato «superiore al 5º», perché l’incantesimo è di 5º livello.
         </p>
         <p>
+          Gli oggetti magici 2024 sono trascritti dalla sezione «Oggetti magici A–Z» dell’SRD 5.2.1 italiano, con tabelle e schede delle statistiche;
+          il testo è confrontato oggetto per oggetto con una seconda estrazione del PDF. Un refuso è corretto solo nella visualizzazione:
+          «in una barcone» (Barca pieghevole) è mostrato come «in un barcone».
+        </p>
+        <p>
           <a className="text-primary underline underline-offset-4" href={srdSourceUrl} target="_blank" rel="noreferrer">Consulta il documento originale in italiano</a>
         </p>
         <p>
