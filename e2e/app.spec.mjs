@@ -92,7 +92,7 @@ test("spells: 2014 selector, 2014 card with its source and 2024 link, 2014 creat
   await page.getByRole("link", { name: /^Aiuto/ }).click();
   await expect(page).toHaveURL(/\/spell\/aiuto-2014$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aiuto");
-  await expect(page.getByRole("link", { name: "Versione 2024 →" })).toHaveAttribute("href", "/spell/aiuto");
+  await expect(page.getByRole("link", { name: "Passa alla versione 2024" })).toHaveAttribute("href", "/spell/aiuto");
   await expect(page.getByText("Testo integrale: SRD 5.1 italiano — Aiuto.")).toBeVisible();
   await page.goto("/mostro/accolito-2014");
   const bollino = page.getByRole("link", { name: /^benedizione$/i });
@@ -621,7 +621,7 @@ test("magic items 2014: selector remembered, search, renamed and single-edition 
   const box = panel2014.getByRole("region", { name: "Differenze tra le edizioni" });
   await expect(box).toContainText("Molto rara");
   await expect(box).toContainText("Rara");
-  await box.getByRole("link", { name: "Vedi anche la scheda 2024" }).click();
+  await box.getByRole("link", { name: "Passa alla versione 2024" }).click();
   await expect(page).toHaveURL(/\/oggetti-magici\/pozione-di-invisibilita\?edizione=2024$/);
   await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Pozione di invisibilità");
   // Same name: both editions on one page, attunement change computed from the data.
@@ -701,7 +701,7 @@ test("conditions: Compendio tile like the others, list per edition, note of the 
   expect(errors).toEqual([]);
 });
 
-test("search in Home: field and suggestions, panel with filters, results by section, back and Annulla, every address", async ({ page, request }) => {
+test("search in Home: field only, panel with filters, results by section, back and Annulla, every address", async ({ page, request }) => {
   test.setTimeout(240_000);
   const errors = [], indexRequests = [];
   page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
@@ -710,13 +710,18 @@ test("search in Home: field and suggestions, panel with filters, results by sect
   await page.goto("/");
   const field = page.getByRole("button", { name: "Cerca in tutto il Grimorio…" });
   await expect(field).toBeVisible();
-  await expect(page.getByRole("list", { name: "Ricerche rapide" }).getByRole("button")).toHaveText(["palla di fuoco", "avvelenato", "spada lunga"]);
+  // Only the sentence and the field: the quick suggestions were removed (21 October 2026).
+  await expect(page.getByRole("list", { name: "Ricerche rapide" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "spada lunga" })).toHaveCount(0);
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 780 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `home ${width}`).toBeLessThanOrEqual(width);
     const box = await field.boundingBox(), quote = await page.locator("#home-quote").boundingBox();
     expect(box.height).toBeGreaterThanOrEqual(54);
     expect(box.y).toBeGreaterThan(quote.y + quote.height);
+    // The field keeps its place over the shade of the picture, not at its bottom edge.
+    const picture = await page.locator("#home-quote").locator("xpath=ancestor::section[1]").boundingBox();
+    expect(picture.y + picture.height - (box.y + box.height)).toBeGreaterThanOrEqual(90);
   }
   // The Home stays light: the index is loaded only when the panel opens.
   await page.waitForTimeout(500);
@@ -768,9 +773,9 @@ test("search in Home: field and suggestions, panel with filters, results by sect
   await dialog.getByRole("button", { name: "Annulla" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page).toHaveURL(/\/$/);
-  // A quick suggestion opens the panel already filled.
-  await page.getByRole("button", { name: "spada lunga" }).click();
-  await expect(page.getByRole("dialog").getByRole("searchbox")).toHaveValue("spada lunga");
+  // Tapping the field opens the panel again.
+  await field.click();
+  await page.getByRole("dialog").getByRole("searchbox").fill("spada lunga");
   await expect(group("Equipaggiamento").getByRole("link", { name: /Spada lunga/ })).toBeVisible();
   // Every address of the index exists.
   const index = await (await request.get("/ricerca-indice.json")).json();
