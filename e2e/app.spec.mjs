@@ -450,3 +450,62 @@ test("adventuring gear 2014: list with groups and packs, search, sheets, renamed
   await expect(page.getByText("Questo oggetto non c’è nel 2024.")).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("tools: tile, lists of both editions, search, sheets, instrument 2014 → 2024 and missing edition", async ({ page }) => {
+  const errors = [];
+  // The browser's own request for /favicon.ico (the site has icon.png) is not a page error.
+  page.on("console", message => { if (message.type() === "error" && !message.location().url.endsWith("/favicon.ico")) errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  const widths = async label => {
+    for (const width of [360, 375, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth), `${label} ${width}`).toBeLessThanOrEqual(width);
+    }
+  };
+  await page.goto("/equipaggiamento");
+  await page.locator("main").getByRole("link", { name: /Strumenti/ }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/strumenti$/);
+  await expect(page.getByText(/^25 strumenti · SRD 5\.2\.1$/)).toBeVisible();
+  await expect(page.locator("main section h2")).toHaveText(["Strumenti da artigiano", "Altri strumenti"]);
+  const search = page.getByRole("searchbox", { name: "Cerca uno strumento" });
+  await search.fill("scasso");
+  await expect(page.locator("main section li")).toHaveText([/Arnesi da scasso/]);
+  await search.fill("");
+  await widths("list 2024");
+  const selector = page.getByRole("group", { name: "Edizione delle regole" });
+  await selector.getByRole("button", { name: "2014" }).click();
+  await expect(page.getByText(/^35 strumenti · SRD 5\.1$/)).toBeVisible();
+  await expect(page.locator("main section h2")).toHaveText(["Strumenti da artigiano", "Giochi", "Strumenti musicali", "Altri strumenti"]);
+  await search.fill("liuto");
+  await expect(page.locator("main section li")).toHaveText([/Liuto/]);
+  await search.fill("scasso");
+  await expect(page.locator("main section li")).toHaveText([/Arnesi da scasso/]);
+  await search.fill("");
+  await widths("list 2014");
+  // 2024 sheet with Creazione.
+  await page.goto("/equipaggiamento/strumenti/scorte-da-alchimista");
+  await selector.getByRole("button", { name: "2024" }).click();
+  await expect(page.locator('[data-edition="2024"]').getByRole("heading", { name: "Creazione" })).toBeVisible();
+  await expect(page.locator('[data-edition="2024"]')).toContainText("Intelligenza");
+  await widths("sheet 2024");
+  // 2014 sheet with its description.
+  await page.goto("/equipaggiamento/strumenti/arnesi-da-scasso");
+  await selector.getByRole("button", { name: "2014" }).click();
+  await expect(page.locator('[data-edition="2014"]')).toContainText("Questo set di arnesi");
+  // Liuto 2014 → Strumento musicale 2024, then back to the list for 2014.
+  await page.goto("/equipaggiamento/strumenti/liuto");
+  await expect(page.getByText(/Nel 2024: Strumento musicale, variante «Liuto»/)).toBeVisible();
+  await widths("liuto");
+  await selector.getByRole("button", { name: "2024" }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/strumenti\/strumento-musicale$/);
+  await expect(page.locator('[data-edition="2024"]').getByRole("heading", { name: "Varianti" })).toBeVisible();
+  await selector.getByRole("button", { name: "2014" }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/strumenti$/);
+  await expect(page.getByText("Questo strumento non c’è nel 2014.")).toBeVisible();
+  // Mazzo di carte 2014 → Gioco 2024, variant «carte da gioco» (approved pairing, same cost 5 ma).
+  await page.goto("/equipaggiamento/strumenti/mazzo-di-carte");
+  await expect(page.getByText(/Nel 2024: Gioco, variante «Carte da gioco»/)).toBeVisible();
+  await selector.getByRole("button", { name: "2024" }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/strumenti\/gioco$/);
+  expect(errors).toEqual([]);
+});

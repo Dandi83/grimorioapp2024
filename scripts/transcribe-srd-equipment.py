@@ -5,11 +5,13 @@ only spaces are normalized and cells broken over two lines are joined. Every row
 printed text and a SHA-256 fingerprint; 2014 rule texts are copied word for word with their own
 fingerprint. The 2024 rule texts are not copied: the app reads them from the 2024 manual data.
 
-Usage: python scripts/transcribe-srd-equipment.py SRD_CC_v5.1_IT.pdf IT_SRD_CC_v5.2.1.pdf weapons|armor|gear2014 out.json
+Usage: python scripts/transcribe-srd-equipment.py SRD_CC_v5.1_IT.pdf IT_SRD_CC_v5.2.1.pdf weapons|armor|gear2014|tools2014 out.json
 
 gear2014: adventuring gear of the SRD 5.1 (pp. 74-78), read column by column in reading order:
 descriptions (pp. 74-76), table "Equipaggiamento d'avventura" (pp. 76-77), "Capienza dei contenitori"
 (pp. 77-78) and "Dotazioni" (p. 78).
+tools2014: tools of the SRD 5.1 (pp. 78-79): table "Strumenti" without the row "Veicoli", which
+refers to "Cavalcature e veicoli", the introduction and the descriptions.
 """
 import hashlib
 import json
@@ -204,7 +206,7 @@ def main():
     for path, expected in ((pdf51, SHA_51), (pdf521, SHA_521)):
         if sha_file(path) != expected:
             raise SystemExit(f'unexpected PDF: {path}')
-    builders = {'weapons': weapons, 'armor': armor, 'gear2014': gear2014}
+    builders = {'weapons': weapons, 'armor': armor, 'gear2014': gear2014, 'tools2014': tools2014}
     data = builders[what](pymupdf.open(pdf51), pymupdf.open(pdf521))
     Path(out).write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
 
@@ -333,6 +335,22 @@ def gear2014(pdf51, pdf521):
         'descrizioni': descriptions,
         'capienza': {'righe': capacity, 'nota': note, 'sourceSha256': sha(json.dumps(capacity, ensure_ascii=False) + note)},
         'dotazioni': {'intro': intro_packs, 'voci': packs},
+    }
+
+
+def tools2014(pdf51, pdf521):
+    # Table: p. 78 right column, p. 79 left column up to the row "Veicoli (terrestri o acquatici)"
+    # (y 148), which has no price ("*": see "Cavalcature e veicoli") and is left out.
+    rows = gear_table(pdf51, [(78, 1, 325, 740), (79, 0, 60, 148)])
+    intro = ' '.join(paragraphs(pdf51, 78, 1, 60, 300))
+    found = paragraphs(pdf51, 79, 0, 155, 740) + paragraphs(pdf51, 79, 1, 40, 740)
+    descriptions = labelled(found, 79, max_words=6)
+    return {
+        '_nota': "Strumenti dell'SRD 5.1 (2014) in italiano, trascritti da scripts/transcribe-srd-equipment.py (tools2014). Righe della tabella e descrizioni come stampate, con impronta sha256. La riga «Veicoli (terrestri o acquatici)» rimanda a «Cavalcature e veicoli» e non è inclusa.",
+        'fonte': {'document': 'SRD 5.1', 'sourceUrl': URL_51, 'sourceSha256': SHA_51, 'pages': [78, 79]},
+        'intro': {'testo': intro, 'page': 78, 'sourceSha256': sha(intro)},
+        'tabella': rows,
+        'descrizioni': descriptions,
     }
 
 

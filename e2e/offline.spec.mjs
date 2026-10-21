@@ -46,6 +46,8 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.getByRole("heading", { level: 1 }).first()).toHaveText("Munizioni");
   await page.goto(base + "/equipaggiamento/avventura/canestro");
   await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Canestro");
+  await page.goto(base + "/equipaggiamento/strumenti/liuto");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Liuto");
   await page.goto(base + "/avanzamento");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
 
@@ -64,6 +66,10 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
   await page.reload();
   await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
+  // A 2014 tool sheet, after a reload.
+  await page.goto(base + "/equipaggiamento/strumenti/liuto");
+  await page.reload();
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Liuto");
   // A 2014 adventuring gear sheet with its own address, after a reload.
   await page.goto(base + "/equipaggiamento/avventura/canestro");
   await page.reload();
