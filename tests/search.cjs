@@ -133,12 +133,11 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  assert.deepEqual(s.search(production,rows,'   '),[]);
  assert.deepEqual(s.search(production,rows,'xyzxyz'),[]);
  const poison=s.search(production,rows,'avvelenato');assert.ok(poison.some(g=>g.section==='condizioni'));
- // The examples of the panel and the quick suggestions of the Home find something in the data.
+ // The examples of the panel find something in the data; the Home shows only the field (no quick suggestions).
  const panel=fs.readFileSync('components/search/search-panel.tsx','utf8'),home=fs.readFileSync('components/search/home-search.tsx','utf8');
  const examples=JSON.parse(panel.match(/const EXAMPLES = (\[.*\]);/)[1].replace(/'/g,'"'));
- const suggestions=JSON.parse(home.match(/const SUGGESTIONS = (\[.*\]);/)[1].replace(/'/g,'"'));
- assert.equal(examples.length,5);assert.equal(suggestions.length,3);
- for(const q of [...examples,...suggestions])assert.ok(s.search(production,rows,q).length,q);
+ assert.equal(examples.length,5);assert.ok(!home.includes('SUGGESTIONS'));
+ for(const q of examples)assert.ok(s.search(production,rows,q).length,q);
  // Offline: the index is saved by the service worker; the panel never reaches the admin area.
  const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
  assert.ok(sw.includes('const SEARCH_INDEX = "/ricerca-indice.json";')&&sw.includes('"/preferiti", SEARCH_INDEX]'));
