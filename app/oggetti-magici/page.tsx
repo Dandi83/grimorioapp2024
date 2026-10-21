@@ -1,8 +1,9 @@
 import { MagicItemsBrowser } from "@/components/magic-items/magic-items-browser";
-import { magicItemListRows, magicItemsRulesHref } from "@/lib/magic-items";
+import { magicItemsRulesHref } from "@/lib/magic-items";
+import { magicItemEditionRows } from "@/lib/magic-items-editions";
 
 export const metadata = { title: "Oggetti magici — Il Grimorio.App" };
 
 export default function MagicItemsPage() {
-  return <MagicItemsBrowser rows={magicItemListRows("2024")} source="SRD 5.2.1" rulesHref={magicItemsRulesHref()} />;
+  return <MagicItemsBrowser rows={magicItemEditionRows()} rulesHref={magicItemsRulesHref()} />;
 }

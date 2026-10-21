@@ -71,8 +71,9 @@ for(const repair of repairs.sostituzioni){
  const printed=raw[repair.edizione].oggetti.find(item=>item.id===repair.id);
  assert.equal(JSON.stringify(printed).split(repair.prima).length,2,repair.id);
  assert.equal(printed.pagina<=repair.pagina&&repair.pagina<=printed.pagine.at(-1),true,repair.id);
- const shown=lib.magicItems[repair.edizione].find(item=>item.id===repair.id);
+ const {nomeStampato,...shown}=lib.magicItems[repair.edizione].find(item=>item.id===repair.id);
  assert.ok(JSON.stringify(shown).includes(repair.dopo)&&!JSON.stringify(shown).includes(repair.prima),repair.id);
+ if(nomeStampato)assert.equal(nomeStampato,repair.prima);
 }
 assert.equal(byName('2014','Armatura demoniaca').id,'armastura-demoniaca');
 
@@ -167,6 +168,53 @@ assert.equal(lib.magicItemsRulesHref('preview'),'/manuale/equipaggiamento-oggett
 assert.equal(lib.magicItemsRulesHref('production'),undefined);
 const manual=JSON.parse(fs.readFileSync('lib/data/srd-manual-5.2.1-it.json','utf8'));
 assert.ok(manual.entries.some(e=>e.id==='equipaggiamento-oggetti-magici'));
+
+// Editions: 239 pairs, 19 items only in 2024, 1 only in 2014; the 14 renamed items by Daniele's list.
+const editions=load('lib/magic-items-editions.ts');
+const entries=editions.magicItemEntries;
+const both=entries.filter(e=>e.editions['2014']&&e.editions['2024']);
+assert.equal(both.length,239);
+assert.deepEqual(entries.filter(e=>!e.editions['2014']).map(e=>e.editions['2024'].nome).sort((a,b)=>a.localeCompare(b,'it')),
+ ['Arco energetico',"Arma dell'avvertimento","Bastone ferrato dell'acrobata",'Cappello dei molti incantesimi','Elisir della salute','Guanti ladreschi',"Mantello dell'invisibilità",'Perla nutriente','Pietre parlanti','Pozione di invulnerabilità','Pozione di longevità','Pozione di vitalità','Randello pesante del tuono','Scudo del cavaliere','Scudo sentinella','Sfera di cristallo della lettura del pensiero','Sfera di cristallo della telepatia','Sfera di cristallo della visione del vero','Verga della resurrezione']);
+assert.deepEqual(entries.filter(e=>!e.editions['2024']).map(e=>e.editions['2014'].nome),['Unguento rigenerativo']);
+const renamed=Object.entries(repairs.abbinamenti2014);
+assert.equal(renamed.length,14);
+for(const [old,now] of renamed){
+ const entry=both.find(e=>(e.editions['2014'].nomeStampato??e.editions['2014'].nome)===old);
+ assert.ok(entry,old);assert.equal(entry.editions['2024'].nome,now,old);
+}
+// Own 2014 addresses only for different names, never colliding with a 2024 address.
+const ids2014=entries.filter(e=>e.id2014).map(e=>e.id2014);
+assert.equal(ids2014.length,13,'13 of the 14 (Armastura is shown as Armatura, same name)');
+for(const id of ids2014)assert.ok(!entries.some(e=>e.id===id),id);
+assert.equal(editions.findMagicItemEntry('piuma-magica').edition,'2014');
+assert.equal(editions.findMagicItemEntry('piuma-di-quaal').edition,'2024');
+assert.equal(editions.findMagicItemEntry('ali-del-volo').edition,undefined);
+assert.equal(editions.magicItemEntryHref(editions.findMagicItemEntry('piuma-di-quaal').entry,'2014'),'/oggetti-magici/piuma-magica');
+assert.equal(editions.magicItemEntryHref(editions.findMagicItemEntry('unguento-rigenerativo').entry,'2014'),'/oggetti-magici/unguento-rigenerativo');
+// "2014 → 2024" from the data.
+const changes=nome=>editions.compareMagicItem(both.find(e=>e.editions['2024'].nome===nome));
+assert.deepEqual(changes('Pozione di invisibilità'),[{label:'Nome',before:"Pozione dell'invisibilità",after:'Pozione di invisibilità'},{label:'Rarità',before:'Molto rara',after:'Rara'}]);
+assert.deepEqual(changes('Piuma di Quaal').find(r=>r.label==='Rarità'),{label:'Rarità',before:'Raro',after:'Rarità variabile'});
+assert.ok(changes('Sfera di cristallo').some(r=>r.label==='Rarità'));
+// Corno del Valhalla: only the order of the printed metals changes, so no row.
+assert.notEqual(byName('2014','Corno del Valhalla').rarita,byName('2024','Corno del Valhalla').rarita);
+assert.deepEqual(changes('Corno del Valhalla'),[]);
+const attunement=both.filter(e=>editions.compareMagicItem(e).some(r=>r.label==='Sintonia')).map(e=>e.editions['2024'].nome);
+assert.equal(attunement.length,16);
+for(const nome of ['Scopa volante','Talismano della salute','Fortezza istantanea','Martello dei fulmini'])
+ assert.deepEqual(changes(nome).find(r=>r.label==='Sintonia'),{label:'Sintonia',before:'Non richiesta',after:'Richiesta'},nome);
+for(const nome of ['Anello di resistenza',"Lenti dell'aquila"])assert.equal(changes(nome).find(r=>r.label==='Sintonia').after,'Non richiesta',nome);
+assert.deepEqual(changes('Martello nanico da lancio').find(r=>r.label==='Sintonia'),{label:'Sintonia',before:'Richiesta con un nano',after:'Richiesta con un nano o con una creatura in sintonia con una cintura nanica'});
+assert.deepEqual(changes('Ali del volo'),[]);
+// 2014 Sfera di cristallo also points to the three 2024 crystal balls.
+assert.deepEqual(editions.seeAlso(both.find(e=>e.editions['2014'].nome==='Sfera di cristallo')).map(e=>e.id),['sfera-di-cristallo-della-lettura-del-pensiero','sfera-di-cristallo-della-telepatia','sfera-di-cristallo-della-visione-del-vero']);
+// List rows per edition with the right addresses.
+const editionRows=editions.magicItemEditionRows();
+assert.equal(editionRows['2014'].length,240);assert.equal(editionRows['2024'].length,258);
+assert.equal(editionRows['2014'].find(r=>r.nome==='Piuma magica').href,'/oggetti-magici/piuma-magica');
+assert.equal(editionRows['2014'].find(r=>r.nome==='Ali del volo').href,'/oggetti-magici/ali-del-volo');
+for(const word of ['spada','pozione'])assert.ok(types.searchMagicItems(editionRows['2014'],word,none).length>=3);
 
 require('./magic-items-fidelity.cjs');
 console.log('magic items: ok');
