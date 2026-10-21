@@ -11,7 +11,6 @@ import repairs from "./data/adventuring-gear-repairs-20261021.json";
 
 export const GEAR_ENTRY_ID = "equipaggiamento-equipaggiamento-d-avventura";
 const entry = manualData.entries.find(item => item.id === GEAR_ENTRY_ID)!;
-export const gearSource = { page: entry.page, pages: [...new Set(entry.blocks.map(block => block.page))] };
 
 export interface GearTable { title: string; columns: string[]; rows: string[][] }
 export interface GearItem {
@@ -110,7 +109,6 @@ function build(): GearItem[] {
 }
 
 export const gearItems: GearItem[] = build();
-export const gearIntro: string = fixText(entry.blocks[0].kind === "prose" ? entry.blocks[0].text : "");
 
 export function getGearItem(id: string) {
   return gearItems.find(item => item.id === id);

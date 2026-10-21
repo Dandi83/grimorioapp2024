@@ -21,7 +21,6 @@ export async function uniqueId(kind: "spell" | "monster", base: string): Promise
   const start = base || (kind === "spell" ? "incantesimo" : "mostro");
   let id = start;
   let suffix = 2;
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const existing = await db.select({ id: table.id }).from(table).where(eq(table.id, id)).limit(1);
     if (existing.length === 0) return id;

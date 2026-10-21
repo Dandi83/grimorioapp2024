@@ -113,7 +113,6 @@ export function specialRule(weapon: WeaponEditionView): string | undefined {
 }
 
 export const weaponSources = weaponsData.fonti;
-export const weaponPrintedTwice2024 = weaponsData.righeDoppieNelPdf2024;
 
 export interface Weapon {
   id: string;
