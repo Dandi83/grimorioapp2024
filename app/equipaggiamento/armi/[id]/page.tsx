@@ -3,21 +3,28 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { EditionPanels } from "@/components/equipment/edition-panels";
+import { CorrectionNote } from "@/components/correction-note";
+import { getCorrectedWeapons } from "@/lib/corrected-content";
+import type { ContentOverride } from "@/lib/content-overrides-apply";
 import { compareWeapon, getWeapon, masteryText, propertyCards, specialRule, weaponSources, weapons, type WeaponEditionView } from "@/lib/equipment";
 import { WEAPON_GROUP_NAMES, type EquipmentEdition } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
+// Manual corrections from the admin area appear within five minutes (at once after saving).
+export const revalidate = 300;
 
 export function generateStaticParams() {
   return weapons.map(({ id }) => ({ id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const weapon = getWeapon((await params).id);
+  const weapon = getWeapon((await params).id, (await getCorrectedWeapons()).weapons);
   const name = (weapon?.editions["2024"] ?? weapon?.editions["2014"])?.nome;
   return { title: name ? `${name} — Armi — Il Grimorio.App` : "Arma non trovata" };
 }
+
+const FIELD_LABELS: Record<string, string> = { nome: "Nome", danni: "Danni", tipoDanno: "Tipo di danno", costo: "Costo", peso: "Peso", proprieta: "Proprietà", padronanza: "Padronanza" };
 
 function Cell({ label, value }: { label: string; value: string }) {
   return (
@@ -28,7 +35,7 @@ function Cell({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Sheet({ weapon, group }: { weapon: WeaponEditionView; group: number }) {
+function Sheet({ weapon, group, corrections }: { weapon: WeaponEditionView; group: number; corrections?: ContentOverride[] }) {
   const source = weaponSources[weapon.edition];
   const cards = propertyCards(weapon);
   const special = specialRule(weapon);
@@ -84,18 +91,22 @@ function Sheet({ weapon, group }: { weapon: WeaponEditionView; group: number }) 
         <a className="underline underline-offset-4" href={`${source.sourceUrl}#page=${weapon.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {weapon.page}</a>
         {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
       </aside>
+      {corrections && <CorrectionNote corrections={corrections} labels={FIELD_LABELS} />}
     </div>
   );
 }
 
 export default async function WeaponPage({ params }: { params: Promise<{ id: string }> }) {
-  const weapon = getWeapon((await params).id);
+  const { id } = await params;
+  const corrected = await getCorrectedWeapons();
+  const weapon = getWeapon(id, corrected.weapons);
   if (!weapon) notFound();
   const compare = compareWeapon(weapon);
+  const corrections = corrected.corrections.get(id);
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
   for (const edition of ["2014", "2024"] as const) {
     const view = weapon.editions[edition];
-    if (view) panels[edition] = <Sheet weapon={view} group={weapon.gruppo} />;
+    if (view) panels[edition] = <Sheet weapon={view} group={weapon.gruppo} corrections={corrections?.[edition]} />;
   }
   return (
     <article className="px-4 pb-8 pt-4 sm:px-6">

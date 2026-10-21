@@ -14,7 +14,6 @@ import { AdminMonsters } from "@/components/admin-monsters";
 import { SpellProvenanceMarker } from "./spell-provenance-marker";
 import { AdminEditionPicker } from "./admin-edition-picker";
 import { SpellEditor } from "./admin-spell-editor";
-import { AdminPublicLink } from "./admin-public-link";
 import { AdminDeleteButton } from "./admin-delete-button";
 import {
   BookOpen,
@@ -31,17 +30,17 @@ type Editing =
   | { mode: "create" }
   | { mode: "edit"; spell: Spell };
 
+/** Editors of spells and creatures (database records), opened from the tiles of /admin. */
 export function AdminDashboard({
   spells,
   monsters,
-  newReports,
+  initialTab = "spells",
 }: {
   spells: Spell[];
   monsters: Monster[];
-  /** New anonymous reports; null when the count could not be read. */
-  newReports: number | null;
+  initialTab?: "spells" | "monsters";
 }) {
-  const [tab, setTab] = useState<"spells" | "monsters">("spells");
+  const [tab, setTab] = useState<"spells" | "monsters">(initialTab);
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Editing>({ mode: "closed" });
 
@@ -57,10 +56,10 @@ export function AdminDashboard({
 
   return (
     <main className="mx-auto max-w-3xl px-5 pb-24 pt-8">
-      <div className="flex flex-wrap items-start justify-between gap-3"><AdminPublicLink /><div className="flex flex-wrap gap-2"><Link href="/admin/segnalazioni" className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-lg border border-primary/30 px-3 py-2 text-sm text-primary">Segnalazioni{newReports ? <span className="rounded-[10px] bg-amber px-2 py-0.5 text-[11px] font-bold text-foreground">{newReports} {newReports === 1 ? "NUOVA" : "NUOVE"}</span> : null}</Link><Link href="/admin/statistiche" className="mb-4 inline-flex min-h-11 items-center rounded-lg border border-primary/30 px-3 py-2 text-sm text-primary">Statistiche</Link></div></div>
+      <Link href="/admin" className="mb-4 inline-flex min-h-11 items-center text-[15px] font-bold text-primary">‹ Amministrazione</Link>
       <header className="mb-6 flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-serif text-2xl text-foreground">Amministrazione</h1>
+          <h1 className="font-serif text-2xl text-foreground">Incantesimi e mostri</h1>
           <p className="text-sm text-muted-foreground">
             {spells.length} incantesimi · {monsters.length} mostri
           </p>

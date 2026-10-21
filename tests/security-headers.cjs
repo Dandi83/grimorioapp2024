@@ -41,7 +41,7 @@ const {pathToFileURL}=require('node:url');
  assert.equal(headers['Permissions-Policy'],'camera=(), microphone=(), geolocation=()');
  // Images stay WebP: AVIF was withdrawn after the iPhone regression of 18 October 2026.
  assert.deepEqual(config.images.formats,['image/webp']);
- for(const page of ['app/admin/page.tsx','app/admin/statistiche/page.tsx','app/admin/segnalazioni/page.tsx','app/admin/segnalazioni/[id]/page.tsx','app/personaggi/page.tsx','app/account/page.tsx']){
+ for(const page of ['app/admin/page.tsx','app/admin/statistiche/page.tsx','app/admin/segnalazioni/page.tsx','app/admin/segnalazioni/[id]/page.tsx','app/admin/incantesimi/page.tsx','app/admin/mostri/page.tsx','app/admin/registro/page.tsx','app/admin/contenuti/[sezione]/page.tsx','app/admin/contenuti/[sezione]/[id]/page.tsx','app/personaggi/page.tsx','app/account/page.tsx']){
   assert.match(fs.readFileSync(page,'utf8'),/robots\s*:\s*\{\s*index\s*:\s*false\s*,\s*follow\s*:\s*false\s*\}/,`${page} is not indexed by search engines`);
  }
  console.log('Security headers: full Content-Security-Policy (own origin only, extra origins only for Turnstile/preview/development, report-only switch), framing denied, existing headers kept, private pages marked noindex.');

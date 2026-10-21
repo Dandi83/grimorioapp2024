@@ -5,6 +5,8 @@ const {createRequire}=require('node:module');
 const ts=require('typescript');
 // Spells and monsters come from the database in the site: here two small stand-ins.
 const STUBS={
+ // Manual corrections come from the database: none here (tests/content-overrides.cjs covers them).
+ 'corrected-content':{getCorrectedWeapons:async()=>({weapons:load('lib/equipment.ts').weapons,corrections:new Map()})},
  'spell-index':{getSpellIndex:async()=>[
   {id:'palla-di-fuoco',nome_italiano:'palla di fuoco',livello_num:3,scuola:'Invocazione',classi:[]},
   {id:'forma-di-drago',nome_italiano:'forma di drago',livello_num:7,scuola:'Trasmutazione',classi:[]},
