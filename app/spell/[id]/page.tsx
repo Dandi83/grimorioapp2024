@@ -110,7 +110,7 @@ export default async function SpellDetailPage({
           {otherEdition && (
             <p className="mt-2">
               <Link href={otherEdition.href} className="text-sm font-semibold text-primary underline underline-offset-4">
-                {otherEdition.label} →
+                {otherEdition.label}
               </Link>
             </p>
           )}

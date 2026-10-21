@@ -46,11 +46,11 @@ export function getLegacySpellSource(spell: Partial<Record<keyof LegacySpellRow,
   };
 }
 
-/** "Versione 2024 →" on a 2014 card, "Versione 2014 →" on its 2024 card; nothing without an approved link. */
+/** "Passa alla versione 2024" on a 2014 card, "Passa alla versione 2014" on its 2024 card; nothing without an approved link. */
 export function spellEditionLink(id: string, environment?: string): { href: string; label: string } | undefined {
   if (!released(environment)) return undefined;
   const id2024 = recordsById.has(id) ? links[id]?.id2024 : undefined;
-  if (id2024) return { href: `/spell/${id2024}`, label: "Versione 2024" };
+  if (id2024) return { href: `/spell/${id2024}`, label: "Passa alla versione 2024" };
   const id2014 = legacyBy2024.get(id);
-  return id2014 ? { href: `/spell/${id2014}`, label: "Versione 2014" } : undefined;
+  return id2014 ? { href: `/spell/${id2014}`, label: "Passa alla versione 2014" } : undefined;
 }

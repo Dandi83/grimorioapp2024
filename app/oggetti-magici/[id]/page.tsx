@@ -42,7 +42,7 @@ function Changes({ changes, other, href }: { changes: MagicItemChange[]; other: 
       </table>
       {/* A full load: the edition is read from the address when the page opens. */}
       <a className="inline-flex min-h-11 items-center text-[15px] font-semibold text-primary underline underline-offset-4" href={`${href}?edizione=${other}`}>
-        Vedi anche la scheda {other}
+        Passa alla versione {other}
       </a>
     </section>
   );
