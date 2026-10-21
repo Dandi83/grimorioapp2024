@@ -42,6 +42,8 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(banner(page)).toHaveCount(0);
   await page.goto(base + "/equipaggiamento/armi/tridente");
   await expect(page.locator('[data-edition="2024"]')).toContainText("1d8");
+  await page.goto(base + "/equipaggiamento/avventura/munizioni");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Munizioni");
 
   await stopServer();
   await expect.poll(async () => { try { await fetch(base + "/"); return "up"; } catch { return "down"; } }).toBe("down");
@@ -58,6 +60,10 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
   await page.reload();
   await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
+  // An adventuring gear sheet, with its table, after a reload.
+  await page.goto(base + "/equipaggiamento/avventura/munizioni");
+  await page.reload();
+  await expect(page.getByText("Proiettili, arma da fuoco")).toBeVisible();
   // The main sections were saved when the service worker was installed, the Compendio too.
   await page.goto(base + "/bestiario");
   await expect(page.locator("li.catalog-row")).toHaveCount(40);
