@@ -6,6 +6,7 @@ import { ArmorBadge } from "@/components/equipment/armor-badge";
 import { EditionPanels } from "@/components/equipment/edition-panels";
 import { armorBadge, armorClassRest, armorDescription, armorRuleCards, armorSources, armors, getArmor, type ArmorEditionView } from "@/lib/armor";
 import { ARMOR_CATEGORY_NAMES, type ArmorCategory } from "@/lib/equipment-types";
+import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
 
@@ -77,6 +78,7 @@ export default async function ArmorSheetPage({ params }: { params: Promise<{ id:
         panels={{ "2024": <Sheet armor={armor.editions["2024"]} category={armor.categoria} />, "2014": <Sheet armor={armor.editions["2014"]} category={armor.categoria} /> }}
         missing={{}}
       />
+      <ReportLink />
     </article>
   );
 }

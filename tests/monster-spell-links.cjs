@@ -12,7 +12,7 @@ const deps={
  'next/link':{__esModule:true,default:({children,...props})=>React.createElement('a',props,children)},
  'next/navigation':{notFound:()=>{throw Error('Not found')}},
  '@/components/back-button':{BackButton:()=>null},
- '@/components/share-button':{ShareButton:()=>null},
+ '@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},
  '@/components/favorite-button':{FavoriteButton:()=>null},
  '@/lib/monsters':{getMonsterById:async()=>selected},
 };

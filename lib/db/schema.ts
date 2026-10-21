@@ -113,3 +113,26 @@ export const adminLoginFailures = pgTable("grimorio_admin_login_failures", {
   address_hash: text("address_hash").notNull(),
   failed_at: timestamp("failed_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * Anonymous reports sent from /segnala (lib/feedback.ts). No IP address, user agent or
+ * cookie is stored; the reply address is optional and visible only to administrators.
+ */
+export const feedbackReports = pgTable("grimorio_feedback_reports", {
+  id: uuid("id").primaryKey(),
+  creato_il: timestamp("creato_il", { withTimezone: true }).notNull().defaultNow(),
+  tipo: text("tipo").notNull(),
+  messaggio: text("messaggio").notNull(),
+  percorso: text("percorso"),
+  edizione: text("edizione"),
+  email_risposta: text("email_risposta"),
+  stato: text("stato").notNull().default("nuova"),
+  email_inviata: boolean("email_inviata").notNull().default(false),
+  nota_admin: text("nota_admin"),
+});
+
+/** Send limit of the reports: salted device hashes, deleted after one day (lib/feedback.ts). */
+export const feedbackLimits = pgTable("grimorio_feedback_limits", {
+  device_hash: text("device_hash").notNull(),
+  sent_at: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+});

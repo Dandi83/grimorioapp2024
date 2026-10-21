@@ -7,6 +7,7 @@ import { tools2014Source, type Tool2014 } from "@/lib/tools-2014";
 import { toolsSection, type Tool2024 } from "@/lib/tools";
 import { compareTool, getToolEntry, toolEntries, toolHref, toolKey } from "@/lib/tools-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
+import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
 
@@ -161,6 +162,7 @@ export default async function ToolPage({ params }: { params: Promise<{ id: strin
           </table>
         </section>
       )}
+      <ReportLink />
     </article>
   );
 }

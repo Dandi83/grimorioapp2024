@@ -8,6 +8,7 @@ import { getMonsterById } from "@/lib/monsters";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
+import { ReportLink } from "@/components/feedback/report-link";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -77,6 +78,7 @@ export default async function MonsterDetailPage({
         </aside>
       )}
 
+      <ReportLink edition={monster.edizione ?? (legacy ? "2014" : "2024")} />
     </article>
   );
 }

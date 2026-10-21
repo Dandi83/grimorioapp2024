@@ -29,8 +29,14 @@ const path = require('node:path');
     assert.deepEqual(findIndexLeaks(indexFile, prints), []);
     fs.writeFileSync(indexFile, JSON.stringify({ v: 1, sections: [], rows: [[0, 'Lich', leaked.fragment, '/mostro/lich'], [0, 'x', 'y'.repeat(200), '/z']] }));
     assert.deepEqual(findIndexLeaks(indexFile, prints).map(leak => leak.id), [leaked.id, 'x']);
+    // Server secrets: names, the Resend address and real values are rejected in the browser code.
+    const { findSecretLeaks } = await import('../scripts/check-client-bundle.mjs');
+    fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), 'fetch("/api/segnalazioni")');
+    assert.deepEqual(findSecretLeaks(dir, { FEEDBACK_TO_EMAIL: 'destinatario@esempio.it' }), []);
+    fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), 'x="destinatario@esempio.it";fetch("https://api.resend.com/emails")');
+    assert.deepEqual(findSecretLeaks(dir, { FEEDBACK_TO_EMAIL: 'destinatario@esempio.it' }).map(leak => leak.what), ['api.resend.com', 'value of a server variable (23 characters)']);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
-  console.log('Client bundle guard: light index allowed, full 2014 and 2024 sheets and 2014 spell texts in browser code or in the search index rejected.');
+  console.log('Client bundle guard: light index allowed, full 2014 and 2024 sheets and 2014 spell texts in browser code or in the search index rejected; server keys and recipients kept out of the browser code.');
 })().catch(error => { console.error(error); process.exit(1); });

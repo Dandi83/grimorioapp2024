@@ -34,6 +34,7 @@ export default function HomePage() {
             potente delle <em>magie.</em>
           </h1>
           <HomeSearch />
+          <Link href="/segnala" prefetch={false} className={styles.report}>Segnala un errore o un consiglio</Link>
         </div>
       </section>
     </div>
