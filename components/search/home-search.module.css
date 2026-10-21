@@ -4,8 +4,8 @@
   max-width: 560px;
   flex-direction: column;
   align-items: center;
-  /* Below the field, the room of the quick suggestions once shown here: the field stays where it was, over the shade of the picture. */
-  margin: 20px auto 58px;
+  /* Below the field, the link «Segnala…» of the Home (14 + 44 px) takes the room of the quick suggestions once shown here: the field stays where it was, over the shade of the picture. */
+  margin: 20px auto 0;
 }
 
 .field {
