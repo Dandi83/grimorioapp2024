@@ -173,7 +173,7 @@ export function PaperSheet({
               {/* The original user-supplied page is the visual template; inputs preserve its exact field coordinates. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`/character-sheet/page-${i + 1}.jpg`}
+                src={`/character-sheet/page-${i + 1}.webp`}
                 width={1191}
                 height={1684}
                 alt=""

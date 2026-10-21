@@ -57,7 +57,7 @@ function load(relative){
    for(const text of ['+4','(14)','bonus di competenza +3','Corazza','Passo.'])assert.ok(output.replace(/<[^>]+>/g,'').includes(text),text);
    assert.ok(output.includes('Equipaggiamento'),'new and existing creatures use the requested label');
    assert.ok(!output.includes('Attrezzatura'),'old label is no longer displayed');
-   assert.ok(!output.includes('hero-bestiario.png')&&!output.includes('Illustrazione ufficiale')&&!output.includes('/_next/image'),'no illustration or fallback photo');
+   assert.ok(!output.includes('hero-bestiario.webp')&&!output.includes('Illustrazione ufficiale')&&!output.includes('/_next/image'),'no illustration or fallback photo');
    assert.ok(output.includes('solo su se stesso'),'casting qualification preserved');
   }
  }

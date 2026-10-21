@@ -75,7 +75,7 @@ export default async function SpellDetailPage({
       {/* Hero */}
       <header className="relative h-[360px] overflow-hidden">
         <Image
-          src="/hero-libro.png"
+          src="/hero-libro.webp"
           alt=""
           fill
           priority

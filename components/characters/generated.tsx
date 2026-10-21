@@ -68,7 +68,7 @@ export function GeneratedCharacterSheet({
           {/* The exact same atmospheric backdrop and visual hierarchy used by monster details. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/hero-bestiario.png"
+            src="/hero-bestiario.webp"
             alt=""
             className="absolute inset-0 h-full w-full object-cover"
           />

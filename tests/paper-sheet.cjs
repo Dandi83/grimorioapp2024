@@ -17,5 +17,5 @@ c=setPaperValue(c,'MP.1','120');assert.equal(c.coins.mo,120);
 const f=JSON.parse(fs.readFileSync('lib/data/character-paper-fields.json'));
 assert.equal(f.fields.length,902);assert.equal(new Set(f.fields.map(x=>x.name)).size,902);
 for(const field of f.fields){assert.ok(field.page>=1&&field.page<=4);assert.ok(field.rect[0]>=0&&field.rect[1]>=0&&field.rect[2]<=596&&field.rect[3]<=842)}
-for(let page=1;page<=4;page++)assert.ok(fs.statSync(`public/character-sheet/page-${page}.jpg`).size>10000);
+for(let page=1;page<=4;page++)assert.ok(fs.statSync(`public/character-sheet/page-${page}.webp`).size>10000);
 console.log('Paper sheet: 902 fields, four page assets, geometry, mapped stats, free notes, checkbox states and shared HP passed');
