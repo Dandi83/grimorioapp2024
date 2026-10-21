@@ -25,7 +25,7 @@ assert.equal(types.typeCategory('Folletto (goblinoide)'),'Fata');assert.equal(ty
 let selected;
 const page=load('app/mostro/[id]/page.tsx',{
  '@/components/monster-provenance-badge':load('components/monster-provenance-badge.tsx'),
- '@/components/condition-references':{ConditionReferences:()=>null}, '@/components/spell-references':{SpellReferences:()=>null},
+ '@/components/condition-references':{ConditionReferences:()=>null},
  'next/image':{__esModule:true,default:()=>null},'next/link':{__esModule:true,default:({children,...props})=>createElement('a',props,children)},'next/navigation':{notFound:()=>{throw Error('Not found')}},
  '@/components/meta-cell':load('components/meta-cell.tsx'),'@/components/back-button':{BackButton:()=>null},'@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button':{FavoriteButton:()=>null},'@/components/html-text':load('components/html-text.tsx'),'@/lib/monsters':{getMonsterById:async()=>selected},'@/lib/spell-references':load('lib/spell-references.ts'),'@/lib/conditions':load('lib/conditions.ts'),'@/lib/monsters-types':types,'@/lib/srd-monsters':provider,
  '@/components/monster-sheet':load('components/monster-sheet.tsx',{'@/components/html-text':load('components/html-text.tsx'),'@/lib/spell-references':load('lib/spell-references.ts'),'@/lib/conditions':load('lib/conditions.ts'),'@/lib/monsters-types':types})
