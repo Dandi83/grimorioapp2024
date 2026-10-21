@@ -51,7 +51,7 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await page.goto(base + "/oggetti-magici");
   await expect(page.locator('main a[href^="/oggetti-magici/"]')).toHaveCount(258);
   await page.goto(base + "/oggetti-magici/bacchetta-delle-meraviglie");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Bacchetta delle meraviglie");
+  await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Bacchetta delle meraviglie");
 
   await stopServer();
   await expect.poll(async () => { try { await fetch(base + "/"); return "up"; } catch { return "down"; } }).toBe("down");
@@ -88,10 +88,11 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   // Magic items: the list and a sheet with its table, after a reload.
   await page.goto(base + "/oggetti-magici");
   await page.reload();
-  await expect(page.locator('main a[href^="/oggetti-magici/"]')).toHaveCount(258);
+  // The edition chosen on the weapon sheet (2014) is the one shown: 240 items.
+  await expect(page.locator('main a[href^="/oggetti-magici/"]')).toHaveCount(240);
   await page.goto(base + "/oggetti-magici/bacchetta-delle-meraviglie");
   await page.reload();
-  await expect(page.locator("[data-table-rows]")).toHaveAttribute("data-table-rows", "18");
+  await expect(page.locator('[data-edition="2024"] [data-table-rows]')).toHaveAttribute("data-table-rows", "18");
   await page.goto(base + "/compendio");
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");

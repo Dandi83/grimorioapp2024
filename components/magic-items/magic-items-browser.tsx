@@ -7,11 +7,14 @@ import { ChevronRight } from "lucide-react";
 import { ActiveFilters, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { RarityChip } from "@/components/magic-items/rarity-chip";
 import { ParentLink } from "@/components/section-tiles";
+import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
 import {
   ATTUNEMENT_FILTERS, MAGIC_ITEM_RARITIES, MAGIC_ITEM_TYPES, NO_MAGIC_ITEM_FILTERS,
   magicItemFiltersFromParams, magicItemSearch, searchMagicItems,
-  type MagicItemFilters, type MagicItemListRow,
+  type MagicItemEdition, type MagicItemFilters, type MagicItemListRow,
 } from "@/lib/magic-items-types";
+
+const SOURCE: Record<MagicItemEdition, string> = { "2024": "SRD 5.2.1", "2014": "SRD 5.1" };
 
 const toggle = <T,>(list: readonly T[], value: T, order: readonly T[]) =>
   list.includes(value) ? list.filter(item => item !== value) : order.filter(item => item === value || list.includes(item));
@@ -35,16 +38,19 @@ function ItemRow({ row }: { row: MagicItemListRow }) {
 }
 
 /**
- * Magic items A–Z of one edition: search by name, filters by rarity, type and attunement combined
- * ("o" inside a filter, "e" between filters). Search and filters live in the address.
+ * Magic items A–Z of the chosen edition (the choice of the Equipaggiamento section, remembered on the
+ * phone): search by name, filters by rarity, type and attunement combined ("o" inside a filter, "e"
+ * between filters). Search and filters live in the address.
  */
-export function MagicItemsBrowser({ rows, title = "Oggetti magici", source, rulesHref }: {
-  rows: MagicItemListRow[];
+export function MagicItemsBrowser({ rows: byEdition, title = "Oggetti magici", rulesHref }: {
+  rows: Record<MagicItemEdition, MagicItemListRow[]>;
   title?: string;
-  source: string;
   /** The manual entry with the rules on magic items, when the manual is published. */
   rulesHref?: string;
 }) {
+  const [edition, setEdition] = useEquipmentEdition();
+  const rows = byEdition[edition];
+  const [missing, setMissing] = useState<MagicItemEdition>();
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState<MagicItemFilters>(NO_MAGIC_ITEM_FILTERS);
   const [draft, setDraft] = useState<MagicItemFilters | null>(null);
@@ -54,6 +60,14 @@ export function MagicItemsBrowser({ rows, title = "Oggetti magici", source, rule
     const fromAddress = magicItemFiltersFromParams(params);
     if (fromAddress.rarita.length || fromAddress.tipo.length || fromAddress.sintonia.length) setFilters(fromAddress);
     if (params.get("q")) setQuery(params.get("q")!);
+    // "?manca=2014": a sheet sent us back because the item is not in that edition.
+    const absent = params.get("manca");
+    if (absent === "2014" || absent === "2024") {
+      setMissing(absent);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("manca");
+      window.history.replaceState(window.history.state, "", url);
+    }
   }, []);
   // Every change is written back to the address, so a shared or reopened link shows the same list.
   const show = (nextFilters: MagicItemFilters, nextQuery: string) => {
@@ -76,6 +90,15 @@ export function MagicItemsBrowser({ rows, title = "Oggetti magici", source, rule
     <div className="px-6 pb-8 pt-4">
       <ParentLink href="/compendio" label="Compendio" />
       <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">{title}</h1>
+      <div role="group" aria-label="Edizione delle regole" className="mt-3 flex w-fit rounded-[8px] border border-border bg-elevated p-1">
+        {(["2024", "2014"] as const).map(value => (
+          <button key={value} type="button" aria-pressed={edition === value} onClick={() => { setEdition(value); setMissing(undefined); }}
+            className={`min-h-11 min-w-[56px] rounded-[6px] px-3 text-[15px] font-bold tabular-nums ${edition === value ? "bg-primary text-primary-foreground" : "text-muted"}`}>
+            {value}
+          </button>
+        ))}
+      </div>
+      {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo oggetto non c’è nel {missing}.</p>}
       {rulesHref && (
         <Link href={rulesHref} className="mt-2 inline-flex min-h-11 items-center gap-1 text-[15px] font-bold text-primary underline underline-offset-4">
           Regole sugli oggetti magici
@@ -98,7 +121,7 @@ export function MagicItemsBrowser({ rows, title = "Oggetti magici", source, rule
         <p role="status" aria-live="polite" className="text-[15px] font-semibold">
           {found.length} {found.length === 1 ? "oggetto" : "oggetti"}{found.length === rows.length ? "" : ` su ${rows.length}`}
         </p>
-        <p className="text-[14px] text-muted">{source}</p>
+        <p className="text-[14px] text-muted">{SOURCE[edition]}</p>
       </div>
       {found.length ? (
         <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">

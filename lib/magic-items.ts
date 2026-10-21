@@ -20,6 +20,8 @@ export interface MagicItem {
   id: string;
   /** Name as shown: as printed, or with a display repair of a misprint. */
   nome: string;
+  /** Printed name, kept when a display repair changed it ("Armastura demoniaca"). */
+  nomeStampato?: string;
   /** Italic type line as printed: "Arma (qualsiasi spada), rara (richiede sintonia)". */
   rigaTipo: string;
   tipo: MagicItemType;
@@ -52,7 +54,8 @@ function repaired(item: MagicItem, edition: MagicItemEdition): MagicItem {
     if (json.split(printed).length !== 2) throw new Error(`repair ${repair.id}: "${repair.prima}" not found once`);
     json = json.replace(printed, JSON.stringify(repair.dopo).slice(1, -1));
   }
-  return JSON.parse(json);
+  const shown: MagicItem = JSON.parse(json);
+  return shown.nome === item.nome ? shown : { ...shown, nomeStampato: item.nome };
 }
 
 const load = (edition: MagicItemEdition, records: unknown[]) =>

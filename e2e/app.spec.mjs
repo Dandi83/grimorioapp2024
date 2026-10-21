@@ -502,27 +502,89 @@ test("magic items 2024: Compendio tile, search, combined filters in the address,
   for (const [id, name, tableRows] of [["amuleto-dei-piani", "Amuleto dei piani", [5]], ["bacchetta-delle-meraviglie", "Bacchetta delle meraviglie", [18]],
     ["apparatus-del-granchio", "Apparatus del granchio", [10]], ["ampolla-di-ferro", "Ampolla di ferro", []], ["zainetto-pratico", "Zainetto pratico", []]]) {
     await page.goto(`/oggetti-magici/${id}`);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(name);
-    const counts = await page.locator("[data-table-rows]").evaluateAll(tables => tables.map(t => Number(t.getAttribute("data-table-rows"))));
+    await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText(name);
+    const counts = await page.locator('[data-edition="2024"] [data-table-rows]').evaluateAll(tables => tables.map(t => Number(t.getAttribute("data-table-rows"))));
     expect(counts, id).toEqual(tableRows);
     expect(await page.evaluate(() => document.documentElement.scrollWidth), id).toBeLessThanOrEqual(360);
   }
   // Chips from the type line, the attunement requirement as printed, a back link, the source page.
   await page.goto("/oggetti-magici/bacchetta-del-mago-da-guerra-1-2-o-3");
-  const chips = page.getByRole("list", { name: "Tipo, rarità e sintonia" });
+  const chips = page.locator('[data-edition="2024"]').getByRole("list", { name: "Tipo, rarità e sintonia" });
   await expect(chips).toContainText("Bacchetta");
   await expect(chips).toContainText("Non comune (+1), rara (+2) o molto rara (+3)");
   await expect(chips).toContainText("Richiede sintonia con un incantatore");
   await expect(page.getByRole("button", { name: "Torna indietro" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Fonte ufficiale, pagina 247/ })).toHaveAttribute("href", /IT_SRD_CC_v5\.2\.1\.pdf#page=247$/);
+  await expect(page.locator('[data-edition="2024"]').getByRole("link", { name: /Fonte ufficiale, pagina 247/ })).toHaveAttribute("href", /IT_SRD_CC_v5\.2\.1\.pdf#page=247$/);
   // The rules stay in the manual, which production does not publish: no link there.
   await expect(page.getByRole("link", { name: "Regole sugli oggetti magici" })).toHaveCount(0);
   // A stat block inside an item.
   await page.goto("/oggetti-magici/mazzo-delle-meraviglie");
-  await expect(page.getByRole("region", { name: "Scheda delle statistiche" })).toContainText("Avatar della morte");
+  await expect(page.locator('[data-edition="2024"]').getByRole("region", { name: "Scheda delle statistiche" })).toContainText("Avatar della morte");
   const hrefs = await page.evaluate(async () => [...new DOMParser().parseFromString(await (await fetch("/oggetti-magici")).text(), "text/html").querySelectorAll('main a[href^="/oggetti-magici/"]')].map(a => a.getAttribute("href")));
   expect(hrefs).toHaveLength(258);
   for (const href of hrefs) expect((await request.get(href)).status(), href).toBe(200);
   expect((await request.get("/oggetti-magici/inesistente")).status()).toBe(404);
+  expect(errors).toEqual([]);
+});
+
+test("magic items 2014: selector remembered, search, renamed and single-edition items, 2014 → 2024 box", async ({ page, request }) => {
+  test.setTimeout(180_000);
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/oggetti-magici");
+  const rows = page.locator('main a[href^="/oggetti-magici/"]');
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(rows).toHaveCount(240);
+  await expect(page.getByText("SRD 5.1", { exact: true })).toBeVisible();
+  const search = page.getByRole("searchbox", { name: "Cerca un oggetto magico" });
+  await search.fill("spada");
+  for (const text of await rows.allInnerTexts()) expect(text.toLowerCase()).toContain("spada");
+  await search.fill("pozione");
+  await expect(rows.filter({ hasText: "Pozione dell'invisibilità" })).toHaveCount(1);
+  await search.fill("");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  // The choice is remembered (shared with the Equipaggiamento section).
+  await page.reload();
+  await expect(rows).toHaveCount(240);
+  // A renamed item has its own 2014 address; the box shows name and rarity, and leads to the 2024 sheet.
+  await rows.filter({ hasText: "Pozione dell'invisibilità" }).click();
+  await expect(page).toHaveURL(/\/oggetti-magici\/pozione-dell-invisibilita$/);
+  const panel2014 = page.locator('[data-edition="2014"]');
+  await expect(panel2014.getByRole("heading", { level: 1 })).toHaveText("Pozione dell'invisibilità");
+  const box = panel2014.getByRole("region", { name: "Differenze tra le edizioni" });
+  await expect(box).toContainText("Molto rara");
+  await expect(box).toContainText("Rara");
+  await box.getByRole("link", { name: "Vedi anche la scheda 2024" }).click();
+  await expect(page).toHaveURL(/\/oggetti-magici\/pozione-di-invisibilita\?edizione=2024$/);
+  await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Pozione di invisibilità");
+  // Same name: both editions on one page, attunement change computed from the data.
+  await page.goto("/oggetti-magici/scopa-volante?edizione=2014");
+  const scopa = page.locator('[data-edition="2014"]');
+  await expect(scopa).toBeVisible();
+  await expect(scopa.getByRole("region", { name: "Differenze tra le edizioni" })).toContainText("Non richiesta");
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2024" }).click();
+  await expect(page.locator('[data-edition="2024"]')).toBeVisible();
+  await expect(page.locator('[data-edition="2024"]').getByRole("region", { name: "Differenze tra le edizioni" })).toContainText("Richiesta");
+  // No box when nothing printed changes.
+  await page.goto("/oggetti-magici/ali-del-volo");
+  await expect(page.getByRole("region", { name: "Differenze tra le edizioni" })).toHaveCount(0);
+  // Only in 2014, and only in 2024: the note, and back to the list with a notice.
+  await page.goto("/oggetti-magici/unguento-rigenerativo");
+  await expect(page.getByRole("note")).toHaveText("Solo edizione 2014");
+  await page.goto("/oggetti-magici/arco-energetico");
+  await expect(page.getByRole("note")).toHaveText("Solo edizione 2024");
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(page).toHaveURL(/\/oggetti-magici$/);
+  await expect(page.getByRole("status").filter({ hasText: "non c’è" })).toHaveText("Questo oggetto non c’è nel 2014.");
+  // 2014 Sfera di cristallo points to the three 2024 crystal balls.
+  await page.goto("/oggetti-magici/sfera-di-cristallo?edizione=2014");
+  await expect(page.getByRole("region", { name: "Vedi anche" }).getByRole("link")).toHaveCount(3);
+  // A 2014 table at 360 px.
+  await page.goto("/oggetti-magici/ampolla-di-ferro?edizione=2014");
+  await expect(page.locator('[data-edition="2014"] [data-table-rows]')).toHaveAttribute("data-table-rows", "20");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  for (const id of ["piuma-magica", "sfera-della-stirpe-dei-draghi", "armatura-demoniaca", "freccia-assassina"]) expect((await request.get(`/oggetti-magici/${id}`)).status(), id).toBe(200);
   expect(errors).toEqual([]);
 });

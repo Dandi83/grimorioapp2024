@@ -25,5 +25,31 @@
       "dopo": "120 cm × 180 cm",
       "motivo": "Cifra mancante: le misure crescono riga per riga (90 × 150, 120 × 180, 150 × 210, 180 × 270) e la stessa tabella 2024 stampa «120 cm × 180 cm»."
     }
-  ]
+  ],
+  "abbinamenti2014": {
+    "Anello delle stelle cadenti": "Anello di stelle cadenti",
+    "Anello di evocazione del djinni": "Anello di richiamo del djinni",
+    "Armastura demoniaca": "Armatura demoniaca",
+    "Armatura completa nanica": "Armatura nanica",
+    "Bacchetta di missili magici": "Bacchetta di dardi incantati",
+    "Collana di grani di preghiera": "Collana del rosario",
+    "Fasce metalliche del legame": "Fasce metalliche",
+    "Freccia assassina": "Munizione assassina",
+    "Piuma magica": "Piuma di Quaal",
+    "Pozione dell'invisibilità": "Pozione di invisibilità",
+    "Pozione di guarigione": "Pozioni di guarigione",
+    "Spada Ruba nove vite": "Ruba nove vite",
+    "Talismano di prova contro il veleno": "Talismano anti-veleno",
+    "Sfera della stirpe dei draghi": "Sfera del drago"
+  },
+  "_notaAbbinamenti": "abbinamenti2014: i 14 oggetti 2014 con nome diverso dal 2024 (elenco di Daniele, nomi stampati). Gli altri si abbinano per nome, maiuscole e parentesi ignorate.",
+  "vediAnche": {
+    "2014": {
+      "Sfera di cristallo": [
+        "Sfera di cristallo della lettura del pensiero",
+        "Sfera di cristallo della telepatia",
+        "Sfera di cristallo della visione del vero"
+      ]
+    }
+  }
 }

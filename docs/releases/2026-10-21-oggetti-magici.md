@@ -59,3 +59,20 @@ Il risultato è il 100,0% di similarità media in entrambe le edizioni, nessun o
 - **Guard del bundle**: i paragrafi di entrambe le edizioni sono tra i testi esclusi dal codice del browser.
 - **`/fonti`**: aggiunta l'attribuzione degli oggetti magici 2024.
 - **Preferiti**: non estesi. Servirebbero un tipo «oggetto magico» nel provider dei preferiti (oggi incantesimi e mostri), il pulsante nella scheda, la riga nella pagina Preferiti e il test di migrazione dei preferiti salvati.
+
+## Edizione 2014 e abbinamenti (seconda PR)
+
+- **Elenco**: selettore 2024/2014 sotto il titolo. È la stessa scelta ricordata dell'Equipaggiamento (`grimorio.equipaggiamento.edizione`). Filtri e ricerca sono gli stessi nelle due edizioni.
+- **Abbinamenti** (`lib/magic-items-editions.ts`): per nome, ignorando maiuscole e parentesi, più i 14 nomi diversi dell'elenco di Daniele (`abbinamenti2014` in `lib/data/magic-items-repairs-20261021.json`). Il risultato è **239 coppie**, **19 oggetti solo 2024** e **1 solo 2014** (Unguento rigenerativo).
+- **Indirizzi**:
+  - un oggetto 2024 tiene il suo indirizzo, e nella stessa pagina c'è anche il 2014 con lo stesso nome;
+  - 13 dei 14 nomi diversi hanno un indirizzo 2014 proprio, preso dal nome 2014 (es. `/oggetti-magici/piuma-magica`), che apre il 2014;
+  - «Armastura demoniaca» è mostrata come «Armatura demoniaca», quindi ha lo stesso nome e la stessa pagina della 2024;
+  - un oggetto di una sola edizione mostra «Solo edizione 2014/2024»;
+  - scegliendo l'altra edizione si torna all'elenco con l'avviso «Questo oggetto non c'è nel …».
+- **Riquadro «2014 → 2024»**, calcolato dai dati. Mostra nome, rarità e sintonia solo quando cambiano, con il link «Vedi anche la scheda 2014/2024»:
+  - **rarità**: Pozione di invisibilità, Piuma di Quaal e Sfera di cristallo;
+  - Corno del Valhalla non ha il riquadro, perché cambia solo l'ordine dei metalli;
+  - **sintonia**: 16 oggetti. In 8 diventa richiesta o non richiesta, in 8 cambia il requisito.
+- **Sfera di cristallo 2014**: rimanda anche alle tre sfere 2024 («Vedi anche nel 2024»).
+- **`/fonti`**: aggiunta l'attribuzione degli oggetti magici 2014.
