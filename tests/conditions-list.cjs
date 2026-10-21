@@ -13,7 +13,7 @@ function load(relative){
   return createRequire(filename)(id);
  },mod,mod.exports);return mod.exports;
 }
-const {conditionRows}=load('lib/conditions-list.ts');
+const {conditionRows,conditionsOnly2024}=load('lib/conditions-list.ts');
 const rows=conditionRows();
 const data2024=JSON.parse(fs.readFileSync('lib/data/srd-conditions-5.2.1-it.json','utf8'));
 const data2014=JSON.parse(fs.readFileSync('lib/data/srd-conditions-5.1-it.json','utf8'));
@@ -23,6 +23,8 @@ assert.deepEqual(rows['2024'].map(r=>r.nome).sort(),data2024.map(e=>e.title).sor
 assert.deepEqual(rows['2014'].map(r=>r.nome).sort(),data2014.map(e=>e.title).sort());
 assert.equal(rows['2014'].length,11);
 for(const missing of ['Prono','Spaventato','Stordito','Trattenuto'])assert.ok(!rows['2014'].some(r=>r.nome===missing),missing);
+// The note under the 2014 list: the four 2024 conditions not printed in the SRD 5.1, linked to their 2024 pages.
+assert.deepEqual(conditionsOnly2024(),[{nome:'Prono',href:'/manuale/condizioni-prono'},{nome:'Spaventato',href:'/manuale/condizioni-spaventato'},{nome:'Stordito',href:'/manuale/condizioni-stordito'},{nome:'Trattenuto',href:'/manuale/condizioni-trattenuto'}]);
 // Every row opens an existing condition page of its own edition (generated at build time).
 const ids2024=new Set(data2024.map(e=>e.id)),ids2014=new Set(data2014.map(e=>e.id));
 for(const r of rows['2024'])assert.ok(ids2024.has(r.href.replace('/manuale/','')),r.href);
@@ -30,11 +32,11 @@ for(const r of rows['2014'])assert.ok(ids2014.has(r.href.replace('/manuale/','')
 assert.ok(rows['2014'].every(r=>r.href.endsWith('-2014')));
 // The light rows carry names and addresses only.
 for(const r of [...rows['2024'],...rows['2014']])assert.deepEqual(Object.keys(r).sort(),['href','nome']);
-// Compendio: fourth tile after Oggetti magici, the only one marked new.
+// Compendio: fourth tile after Oggetti magici, the same style as the others (no label).
 const compendio=fs.readFileSync('app/compendio/page.tsx','utf8');
 assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]),['/equipaggiamento','/avanzamento','/oggetti-magici','/compendio/condizioni']);
 assert.ok(compendio.includes('text: "Accecato, Avvelenato, Spaventato…"'));
-assert.equal((compendio.match(/nuovo: true/g)||[]).length,1);
+assert.ok(!/nuovo|NUOVO/.test(compendio+fs.readFileSync('components/section-tiles.tsx','utf8')));
 // Offline: the list and the condition pages are public pages of the service worker.
 const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
 const publicPage=new RegExp(sw.match(/const PUBLIC_PAGE = \/(.*)\/;/)[1]);

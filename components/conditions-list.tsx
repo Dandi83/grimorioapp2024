@@ -9,7 +9,7 @@ import type { ConditionRow } from "@/lib/conditions-list";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 
 /** Conditions of the chosen edition (the choice of the other Compendio sections, remembered on the phone). */
-export function ConditionsList({ rows }: { rows: Record<EquipmentEdition, ConditionRow[]> }) {
+export function ConditionsList({ rows, only2024 }: { rows: Record<EquipmentEdition, ConditionRow[]>; only2024: ConditionRow[] }) {
   const [edition, setEdition] = useEquipmentEdition();
   const list = rows[edition];
   return (
@@ -17,7 +17,7 @@ export function ConditionsList({ rows }: { rows: Record<EquipmentEdition, Condit
       <ParentLink href="/compendio" label="Compendio" />
       <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">Condizioni</h1>
       <div role="group" aria-label="Edizione delle regole" className="mt-4 flex rounded-[12px] bg-elevated p-1">
-        {(["2014", "2024"] as const).map(value => (
+        {(["2024", "2014"] as const).map(value => (
           <button key={value} type="button" aria-pressed={edition === value} onClick={() => setEdition(value)}
             className={`min-h-11 flex-1 rounded-[9px] text-base font-bold tabular-nums ${edition === value ? "bg-primary text-primary-foreground" : "text-foreground"}`}>
             {value}
@@ -35,7 +35,20 @@ export function ConditionsList({ rows }: { rows: Record<EquipmentEdition, Condit
             </li>
           ))}
         </ul>
-      ) : (
+      ) : null}
+      {edition === "2014" && only2024.length > 0 && (
+        <p className="mt-3 px-1 text-[14px] leading-6 text-muted">
+          Nell’SRD 5.1 italiano non sono stampate:{" "}
+          {only2024.map((row, i) => (
+            <span key={row.href}>
+              <Link href={row.href} prefetch={false} className="font-semibold text-primary underline underline-offset-4">{row.nome}</Link>
+              {i < only2024.length - 1 ? ", " : ". "}
+            </span>
+          ))}
+          Le trovi nell’edizione 2024.
+        </p>
+      )}
+      {list.length ? null : (
         <p role="status" className="mt-4 rounded-xl border border-border bg-card px-4 py-3 text-[15px]">Questa edizione non è ancora disponibile</p>
       )}
     </div>

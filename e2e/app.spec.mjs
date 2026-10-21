@@ -648,7 +648,7 @@ test("magic items 2014: selector remembered, search, renamed and single-edition 
   expect(errors).toEqual([]);
 });
 
-test("conditions: Compendio tile marked new, list per edition, every link opens its page, narrow phones", async ({ page, request }) => {
+test("conditions: Compendio tile like the others, list per edition, note of the 2014 list, every link opens its page, narrow phones", async ({ page, request }) => {
   const errors = [];
   page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
   page.on("pageerror", error => errors.push(error.message));
@@ -656,8 +656,10 @@ test("conditions: Compendio tile marked new, list per edition, every link opens 
   const tile = page.locator("main ul > li a").nth(3);
   await expect(tile).toContainText("Condizioni");
   await expect(tile).toContainText("Accecato, Avvelenato, Spaventato…");
-  await expect(tile).toContainText("NUOVO");
-  await expect(page.locator("main").getByText("NUOVO")).toHaveCount(1);
+  await expect(page.locator("main").getByText("NUOVO")).toHaveCount(0);
+  // Same border and height as the other tiles.
+  const styles = await page.locator("main ul > li a").evaluateAll(links => links.map(a => [getComputedStyle(a).borderTopWidth, getComputedStyle(a).borderTopColor, a.className]));
+  for (const style of styles) expect(style).toEqual(styles[0]);
   await tile.click();
   await expect(page).toHaveURL(/\/compendio\/condizioni$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Condizioni");
@@ -675,12 +677,17 @@ test("conditions: Compendio tile marked new, list per edition, every link opens 
   await selector.getByRole("button", { name: "2014" }).click();
   await expect(rows).toHaveCount(11);
   await expect(rows.first()).toHaveAttribute("href", "/manuale/condizioni-accecato-2014");
+  const note = page.getByText(/Nell’SRD 5\.1 italiano non sono stampate/);
+  await expect(note).toHaveText("Nell’SRD 5.1 italiano non sono stampate: Prono, Spaventato, Stordito, Trattenuto. Le trovi nell’edizione 2024.");
+  expect(await note.getByRole("link").evaluateAll(links => links.map(a => a.getAttribute("href")))).toEqual(["/manuale/condizioni-prono", "/manuale/condizioni-spaventato", "/manuale/condizioni-stordito", "/manuale/condizioni-trattenuto"]);
   // The choice is remembered, as in the other Compendio sections.
   await page.reload();
   await expect(rows).toHaveCount(11);
   for (const href of await rows.evaluateAll(links => links.map(a => a.getAttribute("href")))) expect((await request.get(href)).status(), href).toBe(200);
   await selector.getByRole("button", { name: "2024" }).click();
   await expect(rows).toHaveCount(15);
+  await expect(page.getByText(/non sono stampate/)).toHaveCount(0);
+  expect(await selector.getByRole("button").allInnerTexts()).toEqual(["2024", "2014"]);
   for (const href of await rows.evaluateAll(links => links.map(a => a.getAttribute("href")))) expect((await request.get(href)).status(), href).toBe(200);
   await rows.filter({ hasText: "Avvelenato" }).click();
   await expect(page).toHaveURL(/\/manuale\/condizioni-avvelenato$/);

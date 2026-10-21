@@ -14,3 +14,9 @@ const rows = (entries: { id: string; title: string }[]) =>
 export function conditionRows(): Record<EquipmentEdition, ConditionRow[]> {
   return { "2024": rows(conditions), "2014": rows(legacyConditions) };
 }
+
+/** 2024 conditions not printed in the SRD 5.1: named under the 2014 list, linked to their 2024 pages. */
+export function conditionsOnly2024(): ConditionRow[] {
+  const printed2014 = new Set(legacyConditions.map(entry => entry.title));
+  return rows(conditions).filter(row => !printed2014.has(row.nome));
+}
