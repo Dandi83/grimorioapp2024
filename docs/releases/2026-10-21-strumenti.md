@@ -6,7 +6,7 @@ Quarto riquadro di `/equipaggiamento`: **Strumenti**, con il selettore 2014/2024
 
 - `/equipaggiamento/strumenti`: ricerca per nome; 2024 a gruppi «Strumenti da artigiano» e «Altri strumenti», 2014 a gruppi «Strumenti da artigiano», «Giochi», «Strumenti musicali», «Altri strumenti». Il testo «Competenza negli strumenti» (2024) e l'introduzione 2014 sono in un riquadro ripiegabile; i testi dei gruppi 2014 compaiono una volta, in testa al gruppo.
 - `/equipaggiamento/strumenti/<nome>`: scheda 2024 (costo, peso, Caratteristica, Utilizzo con CD, Creazione, Varianti) e scheda 2014 (costo, peso, descrizione se esiste). Stesso nome nelle due edizioni = stessa pagina con il selettore.
-- 2014: ogni gioco e strumento musicale ha la sua pagina (es. `/liuto`) con la nota «Nel 2024: Strumento musicale, variante «Liuto»», se la variante 2024 ha lo stesso nome; il selettore porta a `/strumento-musicale`, dove ogni variante rimanda alla sua voce 2014.
+- 2014: ogni gioco e strumento musicale ha la sua pagina (es. `/liuto`) con la nota «Nel 2024: Strumento musicale, variante «Liuto»», se la variante 2024 ha lo stesso nome; il selettore porta a `/strumento-musicale`, dove ogni variante rimanda alla sua voce 2014. Abbinamento esplicito approvato: «Mazzo di carte» (2014) → variante «carte da gioco» di Gioco (2024), stesso costo 5 ma; il riquadro «2014 → 2024» mostra solo il nome.
 
 ## Dati
 

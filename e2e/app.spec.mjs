@@ -502,5 +502,10 @@ test("tools: tile, lists of both editions, search, sheets, instrument 2014 → 2
   await selector.getByRole("button", { name: "2014" }).click();
   await expect(page).toHaveURL(/\/equipaggiamento\/strumenti$/);
   await expect(page.getByText("Questo strumento non c’è nel 2014.")).toBeVisible();
+  // Mazzo di carte 2014 → Gioco 2024, variant «carte da gioco» (approved pairing, same cost 5 ma).
+  await page.goto("/equipaggiamento/strumenti/mazzo-di-carte");
+  await expect(page.getByText(/Nel 2024: Gioco, variante «Carte da gioco»/)).toBeVisible();
+  await selector.getByRole("button", { name: "2024" }).click();
+  await expect(page).toHaveURL(/\/equipaggiamento\/strumenti\/gioco$/);
   expect(errors).toEqual([]);
 });

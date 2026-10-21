@@ -58,14 +58,17 @@ assert.equal(t24.toolsSection('Competenza negli strumenti').length,2);
 const E=ed.toolEntries;
 const both=E.filter(e=>e.editions['2014']&&e.editions['2024']),only14=E.filter(e=>!e.editions['2024']),only24=E.filter(e=>!e.editions['2014']);
 assert.deepEqual([both.length,only14.length,only24.length],[23,12,2]);
-assert.equal(only14.filter(e=>e.variante).length,11);
+assert.equal(only14.filter(e=>e.variante).length,12);
 assert.equal(ed.getToolEntry('liuto').variante.tool.nome,'Strumento musicale');
 assert.equal(ed.getToolEntry('dadi').variante.tool.nome,'Gioco');
-assert.equal(ed.getToolEntry('mazzo-di-carte').variante,undefined,'"carte da gioco" in 2024: different name, not linked');
+// Mazzo di carte (2014) → carte da gioco (2024), approved pairing like Canestro → Cesto: same cost 5 ma, name row only.
+assert.equal(ed.getToolEntry('mazzo-di-carte').variante.tool.nome,'Gioco');
+assert.equal(ed.getToolEntry('mazzo-di-carte').variante.variant.nome,'carte da gioco');
+assert.deepEqual(ed.compareTool(ed.getToolEntry('mazzo-di-carte')),[{label:'Nome',before:'Mazzo di carte',after:'carte da gioco'}]);
 assert.ok(ed.getToolEntry('scorte-da-alchimista').editions['2014']&&ed.getToolEntry('scorte-da-alchimista').editions['2024']);
 assert.equal(new Set(E.map(e=>e.id)).size,E.length);
 // No cost or weight changes between the editions: no "2014 → 2024" table.
-assert.deepEqual(E.filter(e=>ed.compareTool(e).length).map(e=>e.id),[]);
+assert.deepEqual(E.filter(e=>ed.compareTool(e).length).map(e=>e.id),['mazzo-di-carte']);
 // Search by name, list rows without texts.
 const rows=ed.toolListRows();
 const fold=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
@@ -75,4 +78,4 @@ assert.ok(!JSON.stringify(rows).includes(data.descrizioni['Arnesi da scasso'].te
 const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
 const pattern=new RegExp(sw.match(/const PUBLIC_PAGE = (\/.*\/);/)[1].slice(1,-1));
 for(const p of ['/equipaggiamento/strumenti','/equipaggiamento/strumenti/liuto'])assert.ok(pattern.test(p),p);
-console.log(`Tools: 2014 35 rows (19 artisan, 2 games, 10 instruments, 4 others), 9 texts; 2024 17 artisan + 8 others with complete cards; ${both.length} shared, ${only14.length} only 2014 (11 linked to a 2024 variant), ${only24.length} only 2024, no cost or weight change.`);
+console.log(`Tools: 2014 35 rows (19 artisan, 2 games, 10 instruments, 4 others), 9 texts; 2024 17 artisan + 8 others with complete cards; ${both.length} shared, ${only14.length} only 2014 (12 linked to a 2024 variant), ${only24.length} only 2024, no cost or weight change.`);
