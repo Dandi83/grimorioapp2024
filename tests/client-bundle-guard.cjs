@@ -22,8 +22,15 @@ const path = require('node:path');
     const spell = prints.find(print => print.file === 'srd-spells-5.1-it.json');
     fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), `JSON.parse('{"descrizione":"${spell.fragment}"}')`);
     assert.deepEqual(findLeaks(dir, prints).map(leak => leak.id), [spell.id]);
+    // The search index: names, labels and addresses pass; a full text or a long cell is rejected.
+    const { findIndexLeaks } = await import('../scripts/check-client-bundle.mjs');
+    const indexFile = path.join(dir, 'ricerca-indice.json.body');
+    fs.writeFileSync(indexFile, JSON.stringify({ v: 1, sections: [{ k: 'mostri', t: 'Mostri', e: 'x' }], rows: [[0, 'Lich', 'Non morto · GS 21', '/mostro/lich']] }));
+    assert.deepEqual(findIndexLeaks(indexFile, prints), []);
+    fs.writeFileSync(indexFile, JSON.stringify({ v: 1, sections: [], rows: [[0, 'Lich', leaked.fragment, '/mostro/lich'], [0, 'x', 'y'.repeat(200), '/z']] }));
+    assert.deepEqual(findIndexLeaks(indexFile, prints).map(leak => leak.id), [leaked.id, 'x']);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
-  console.log('Client bundle guard: light index allowed, full 2014 and 2024 sheets and 2014 spell texts in browser code rejected.');
+  console.log('Client bundle guard: light index allowed, full 2014 and 2024 sheets and 2014 spell texts in browser code or in the search index rejected.');
 })().catch(error => { console.error(error); process.exit(1); });

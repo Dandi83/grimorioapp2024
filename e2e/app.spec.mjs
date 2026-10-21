@@ -694,3 +694,82 @@ test("conditions: Compendio tile like the others, list per edition, note of the 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avvelenato");
   expect(errors).toEqual([]);
 });
+
+test("search in Home: field and suggestions, panel with filters, results by section, back and Annulla, every address", async ({ page, request }) => {
+  test.setTimeout(240_000);
+  const errors = [], indexRequests = [];
+  page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  page.on("request", req => { if (req.url().includes("/ricerca-indice.json")) indexRequests.push(req.url()); });
+  await page.goto("/");
+  const field = page.getByRole("button", { name: "Cerca in tutto il Grimorio…" });
+  await expect(field).toBeVisible();
+  await expect(page.getByRole("list", { name: "Ricerche rapide" }).getByRole("button")).toHaveText(["palla di fuoco", "avvelenato", "spada lunga"]);
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 780 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `home ${width}`).toBeLessThanOrEqual(width);
+    const box = await field.boundingBox(), quote = await page.locator("#home-quote").boundingBox();
+    expect(box.height).toBeGreaterThanOrEqual(54);
+    expect(box.y).toBeGreaterThan(quote.y + quote.height);
+  }
+  // The Home stays light: the index is loaded only when the panel opens.
+  await page.waitForTimeout(500);
+  expect(indexRequests).toEqual([]);
+  await field.click();
+  const dialog = page.getByRole("dialog", { name: "Cerca in tutto il Grimorio" });
+  const input = dialog.getByRole("searchbox");
+  await expect(input).toBeFocused();
+  expect(await input.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
+  await expect(dialog.getByText("Prova a scrivere…")).toBeVisible();
+  const filters = dialog.getByRole("group", { name: "Sezioni" }).getByRole("button");
+  await expect(filters).toHaveText(["Tutto", "Incantesimi", "Mostri", "Equipaggiamento", "Oggetti magici", "Condizioni"]);
+  expect(indexRequests.length).toBe(1);
+  // "dra": spells and monsters while typing, the typed part highlighted.
+  await input.fill("dra");
+  const group = name => dialog.getByRole("region", { name });
+  await expect(group("Incantesimi")).toBeVisible();
+  await expect(group("Mostri")).toBeVisible();
+  await expect(group("Mostri").locator("mark").first()).toHaveText(/^dra$/i);
+  for (const height of await dialog.locator("#search-results a").evaluateAll(links => links.map(a => a.getBoundingClientRect().height))) expect(height).toBeGreaterThanOrEqual(52);
+  await filters.filter({ hasText: "Mostri" }).click();
+  await expect(group("Incantesimi")).toHaveCount(0);
+  await expect(group("Mostri")).toBeVisible();
+  await filters.filter({ hasText: "Tutto" }).click();
+  await input.fill("avvelenato");
+  await expect(group("Condizioni")).toBeVisible();
+  await expect(group("Condizioni").getByRole("link").first()).toContainText("Condizione");
+  await input.fill("xyzqw");
+  await expect(dialog.locator("p:not(.sr-only)", { hasText: "Nessun risultato per «xyzqw»" })).toBeVisible();
+  await expect(dialog.getByRole("status")).toHaveText("Nessun risultato per «xyzqw»");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 780 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `panel ${width}`).toBeLessThanOrEqual(width);
+  }
+  // A magic item: its sheet; back comes to the search with the text still written.
+  await input.fill("anello di res");
+  await group("Oggetti magici").getByRole("link", { name: /Anello di resistenza/ }).click();
+  await expect(page).toHaveURL(/\/oggetti-magici\/anello-di-resistenza$/);
+  await expect(page.locator('[data-edition="2024"] h1')).toHaveText("Anello di resistenza");
+  await page.goBack();
+  await expect(page.getByRole("dialog", { name: "Cerca in tutto il Grimorio" }).getByRole("searchbox")).toHaveValue("anello di res");
+  // "Mostra tutti" opens the whole group.
+  await input.fill("anello");
+  const rings = group("Oggetti magici");
+  await expect(rings.getByRole("link")).toHaveCount(8);
+  await rings.getByRole("button", { name: /^Mostra tutti \(\d+\)$/ }).click();
+  expect(await rings.getByRole("link").count()).toBeGreaterThan(8);
+  // Annulla: back to the Home.
+  await dialog.getByRole("button", { name: "Annulla" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/$/);
+  // A quick suggestion opens the panel already filled.
+  await page.getByRole("button", { name: "spada lunga" }).click();
+  await expect(page.getByRole("dialog").getByRole("searchbox")).toHaveValue("spada lunga");
+  await expect(group("Equipaggiamento").getByRole("link", { name: /Spada lunga/ })).toBeVisible();
+  // Every address of the index exists.
+  const index = await (await request.get("/ricerca-indice.json")).json();
+  expect(index.sections.map(s => s.k)).not.toContain("manuale");
+  const hrefs = [...new Set(index.rows.flatMap(row => row.slice(3)))];
+  for (const href of hrefs) expect((await request.get(href)).status(), href).toBe(200);
+  expect(errors).toEqual([]);
+});

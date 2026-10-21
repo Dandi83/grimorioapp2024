@@ -57,6 +57,12 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await page.goto(base + "/oggetti-magici/bacchetta-delle-meraviglie");
   await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Bacchetta delle meraviglie");
 
+  // The search panel, opened once with the connection: its index is saved too.
+  await page.goto(base + "/");
+  await page.getByRole("button", { name: "Cerca in tutto il Grimorio…" }).click();
+  await page.getByRole("dialog").getByRole("searchbox").fill("spada");
+  await expect(page.getByRole("dialog").getByRole("region", { name: "Equipaggiamento" })).toBeVisible();
+
   await stopServer();
   await expect.poll(async () => { try { await fetch(base + "/"); return "up"; } catch { return "down"; } }).toBe("down");
   await page.goto(base + "/spell/dardo-incantato");
@@ -85,6 +91,12 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await page.reload();
   // The edition chosen on the weapon sheet (2014) is the one shown.
   await expect(page.locator("p:visible", { hasText: /^Proiettili/ }).first()).toBeVisible();
+  // Search in airplane mode, after a reload of the Home.
+  await page.goto(base + "/");
+  await page.reload();
+  await page.getByRole("button", { name: "Cerca in tutto il Grimorio…" }).click();
+  await page.getByRole("dialog").getByRole("searchbox").fill("avvelenato");
+  await expect(page.getByRole("dialog").getByRole("region", { name: "Condizioni" })).toBeVisible();
   // The main sections were saved when the service worker was installed, the Compendio too.
   await page.goto(base + "/bestiario");
   await expect(page.locator("li.catalog-row")).toHaveCount(40);

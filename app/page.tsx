@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { HomeSearch } from "@/components/search/home-search";
 import styles from "./home.module.css";
 
 export default function HomePage() {
@@ -32,6 +33,7 @@ export default function HomePage() {
             <br />
             potente delle <em>magie.</em>
           </h1>
+          <HomeSearch />
         </div>
       </section>
     </div>
