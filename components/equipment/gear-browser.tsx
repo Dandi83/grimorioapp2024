@@ -1,41 +1,90 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronRight, Search } from "lucide-react";
 
 import { ParentLink } from "@/components/section-tiles";
-import type { GearListItem } from "@/lib/adventuring-gear";
+import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
+import type { GearListRow } from "@/lib/adventuring-gear-editions";
+import type { EquipmentEdition } from "@/lib/equipment-types";
 
 const fold = (text: string) => text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, " ");
+const weight = (peso?: string) => (peso === "—" ? "peso trascurabile" : peso);
 
-function GearRow({ item }: { item: GearListItem }) {
+function GearRow({ row }: { row: GearListRow }) {
   return (
     <li className="border-b border-divider last:border-b-0">
-      <Link href={`/equipaggiamento/avventura/${item.id}`} prefetch={false} className="flex min-h-14 items-center gap-3 px-3.5 py-2">
+      <Link href={row.href} prefetch={false} className="flex min-h-14 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
-          <span className="block font-serif text-xl font-bold leading-tight">{item.nome}</span>
-          {item.peso && <span className="block text-[14px] text-muted">{item.peso === "—" ? "peso trascurabile" : item.peso}</span>}
+          <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          {row.peso && <span className="block text-[14px] text-muted">{weight(row.peso)}</span>}
         </span>
-        <span className="max-w-[45%] shrink-0 text-right text-[15px] font-semibold">{item.prezzo}</span>
+        {row.prezzo && <span className="max-w-[45%] shrink-0 text-right text-[15px] font-semibold">{row.prezzo}</span>}
         <ChevronRight size={18} className="shrink-0 text-muted" aria-hidden="true" />
       </Link>
     </li>
   );
 }
 
-/** Adventuring gear (2024): packs first, then every item A–Z, searchable by name. */
-export function GearBrowser({ items }: { items: GearListItem[] }) {
+/** A 2014 group (Focus arcano, Munizioni…): its rows inside one card that opens the group sheet. */
+function GroupRow({ row }: { row: GearListRow }) {
+  return (
+    <li className="border-b border-divider last:border-b-0">
+      <Link href={row.href} prefetch={false} className="block px-3.5 py-2">
+        <span className="flex min-h-10 items-center gap-3">
+          <span className="min-w-0 flex-1 font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <ChevronRight size={18} className="shrink-0 text-muted" aria-hidden="true" />
+        </span>
+        <span className="mb-1 block overflow-hidden rounded-lg border border-divider">
+          {row.righe!.map(item => (
+            <span key={item.nome} className="flex items-baseline gap-3 border-b border-divider px-3 py-1.5 text-[15px] last:border-b-0">
+              <span className="min-w-0 flex-1">{item.nome}<span className="block text-[13px] text-muted">{weight(item.peso)}</span></span>
+              <span className="shrink-0 font-semibold">{item.costo}</span>
+            </span>
+          ))}
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+/** Adventuring gear of both editions: packs first, then every item A–Z, searchable by name. */
+export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListRow[]> }) {
+  const [edition, setEdition] = useEquipmentEdition();
   const [query, setQuery] = useState("");
+  const [missing, setMissing] = useState<EquipmentEdition>();
+  // "?manca=2014": a sheet sent us back because the object is not in that edition.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const value = url.searchParams.get("manca");
+    if (value !== "2014" && value !== "2024") return;
+    setMissing(value);
+    url.searchParams.delete("manca");
+    window.history.replaceState(window.history.state, "", url);
+  }, []);
   const needle = fold(query.trim());
-  const found = useMemo(() => (needle ? items.filter(item => fold(item.nome).includes(needle)) : items), [items, needle]);
-  const packs = found.filter(item => item.dotazione);
+  const items = rows[edition];
+  const found = useMemo(() => (needle ? items.filter(row => fold(row.nome).includes(needle) || row.righe?.some(item => fold(item.nome).includes(needle))) : items), [items, needle]);
+  const packs = found.filter(row => row.dotazione);
+  const count = items.reduce((sum, row) => sum + (row.righe?.length ?? 1), 0);
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
+      {/* The long title takes the whole width; the edition selector sits under it. */}
       <h1 className="border-b-4 border-primary pb-3 font-serif text-[34px] font-bold leading-tight">Equipaggiamento d’avventura</h1>
-      <p className="mt-2 text-[15px] text-muted">{items.length} oggetti · SRD 5.2.1</p>
-      <p className="mt-1 text-sm text-muted">Edizione 2024. La 2014 arriva presto.</p>
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <div role="group" aria-label="Edizione delle regole" className="flex shrink-0 rounded-[8px] border border-border bg-elevated p-1">
+          {(["2024", "2014"] as const).map(value => (
+            <button key={value} type="button" aria-pressed={edition === value} onClick={() => { setEdition(value); setMissing(undefined); }}
+              className={`min-h-11 min-w-[56px] rounded-[6px] px-3 text-[15px] font-bold tabular-nums ${edition === value ? "bg-primary text-primary-foreground" : "text-muted"}`}>
+              {value}
+            </button>
+          ))}
+        </div>
+        <p className="text-[15px] text-muted">{count} voci · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}</p>
+      </div>
+      {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo oggetto non c’è nel {missing}.</p>}
       <label className="relative mt-4 block">
         <span className="sr-only">Cerca un oggetto</span>
         <Search size={20} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
@@ -50,7 +99,7 @@ export function GearBrowser({ items }: { items: GearListItem[] }) {
             <p className="text-sm text-muted">Pacchetti di oggetti pronti per l’avventura</p>
           </div>
           <ul className="overflow-hidden rounded-b-[14px] border-2 border-t-0 border-amber bg-card">
-            {packs.map(item => <GearRow key={item.id} item={item} />)}
+            {packs.map(row => <GearRow key={row.href} row={row} />)}
           </ul>
         </section>
       )}
@@ -58,7 +107,7 @@ export function GearBrowser({ items }: { items: GearListItem[] }) {
         <h2 id="tutti" className="border-b-2 border-primary px-0.5 pb-1.5 font-serif text-[22px] font-bold text-primary">Tutti gli oggetti</h2>
         {found.length ? (
           <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-            {found.map(item => <GearRow key={item.id} item={item} />)}
+            {found.map(row => (row.righe ? <GroupRow key={row.href} row={row} /> : <GearRow key={row.href} row={row} />))}
           </ul>
         ) : (
           <p className="mt-3 text-[15px]">Nessun oggetto con questo nome.</p>

@@ -1,0 +1,1250 @@
+{
+  "_nota": "Equipaggiamento d'avventura dell'SRD 5.1 (2014) in italiano, trascritto da scripts/transcribe-srd-equipment.py (gear2014). Righe della tabella, descrizioni, capienza dei contenitori e dotazioni come stampate, con impronta sha256.",
+  "fonte": {
+    "document": "SRD 5.1",
+    "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf",
+    "sourceSha256": "2ef143b8abeae9558d30b405ea48e2ee9b5d700dd11cd955e6117e61cbddd3f7",
+    "pages": [
+      74,
+      75,
+      76,
+      77,
+      78
+    ]
+  },
+  "intro": {
+    "testo": "Questa sezione descrive oggetti che hanno regole speciali o richiedono ulteriori spiegazioni.",
+    "page": 74,
+    "sourceSha256": "fa2a549bc84dd5c7a15b02e711fa91a641684f604ab8255257e9960efa0a43d9"
+  },
+  "tabella": [
+    {
+      "nome": "Abaco",
+      "costo": "2 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Abaco | 2 mo | 1 kg",
+      "sourceSha256": "76f99d975bc4d2ae35a5e88a424b32ad2854b6e8c61944929daccc0be78cba40"
+    },
+    {
+      "nome": "Abito, Comune",
+      "costo": "5 ma",
+      "peso": "1,5 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Abito, Comune | 5 ma | 1,5 kg",
+      "sourceSha256": "6365a884170c00c84ed6d34b7e49859eb2d4779d48028b43b0173c1a75d5c95f"
+    },
+    {
+      "nome": "Abito, Costume",
+      "costo": "5 mo",
+      "peso": "2 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Abito, Costume | 5 mo | 2 kg",
+      "sourceSha256": "19f8be2025ba95e088854b7e64c550ab84ba00f1f04b4490214e47b967f2eccd"
+    },
+    {
+      "nome": "Abito, da Viaggiatore",
+      "costo": "2 mo",
+      "peso": "2 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Abito, da Viaggiatore | 2 mo | 2 kg",
+      "sourceSha256": "7e240516bd53bccf785919b778bd068791a3d743b027e6c5a14a162efe8ef0e3"
+    },
+    {
+      "nome": "Abito, Pregiato",
+      "costo": "15 mo",
+      "peso": "3 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Abito, Pregiato | 15 mo | 3 kg",
+      "sourceSha256": "36dcbfa13f0d4c603fb474c132d2a1a16e20ed914cac4278f176d4a454207e23"
+    },
+    {
+      "nome": "Acciarino e pietra focaia",
+      "costo": "5 ma",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Acciarino e pietra focaia | 5 ma | 0,5 kg",
+      "sourceSha256": "210b0383d27a92602defc7fd09d55494160821db8d695f2213129b43c2427e96"
+    },
+    {
+      "nome": "Acido (fiala)",
+      "costo": "25 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Acido (fiala) | 25 mo | 0,5 kg",
+      "sourceSha256": "246c847687cb7444c2064a95b8f48cd1de954bc9ef9639f0318034af5c4d3182"
+    },
+    {
+      "nome": "Acqua Santa (ampolla)",
+      "costo": "25 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Acqua Santa (ampolla) | 25 mo | 0,5 kg",
+      "sourceSha256": "8cfbd1c116b0de87677e3d8cb4c14bdb6179bbf57433a1fb51a71b94ffd1eb25"
+    },
+    {
+      "nome": "Ampolla o boccale",
+      "costo": "2 mr",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Ampolla o boccale | 2 mr | 0,5 kg",
+      "sourceSha256": "1fc5f156a603d45aae712e0736585fc87f9966ff408359a73320ebfce47760df"
+    },
+    {
+      "nome": "Anello con Sigillo",
+      "costo": "5 mo",
+      "peso": "—",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Anello con Sigillo | 5 mo | —",
+      "sourceSha256": "e223dd2efaf6dc46b546eabde53bea55dd994869db5ba3cb9d7af70a980d7e59"
+    },
+    {
+      "nome": "Antitossina (fiala)",
+      "costo": "50 mo",
+      "peso": "—",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Antitossina (fiala) | 50 mo | —",
+      "sourceSha256": "c9681a1175d6f8ffcbeefd89e1bc669392dade3e9de3b9f5b6f64da6f010aa41"
+    },
+    {
+      "nome": "Ariete portatile",
+      "costo": "4 mo",
+      "peso": "17,5 kg",
+      "gruppo": null,
+      "page": 76,
+      "sourceText": "Ariete portatile | 4 mo | 17,5 kg",
+      "sourceSha256": "e69eec7b31eccc4ede64225a77bdc550ae9f42a7ea2dc7699b783f701d90ca12"
+    },
+    {
+      "nome": "Asta (3 metri)",
+      "costo": "5 mr",
+      "peso": "3,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Asta (3 metri) | 5 mr | 3,5 kg",
+      "sourceSha256": "f7adf27339005a12671f1b9c306a2f4a9024ca999a8621814b7cf7c56e43ecc1"
+    },
+    {
+      "nome": "Attrezzi da scalatore",
+      "costo": "25 mo",
+      "peso": "6 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Attrezzi da scalatore | 25 mo | 6 kg",
+      "sourceSha256": "ba2c359a52a62621de9b0a82dbabc843c8ef1bc8729cf4516750bc44e8dffc42"
+    },
+    {
+      "nome": "Barile",
+      "costo": "2 mo",
+      "peso": "35 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Barile | 2 mo | 35 kg",
+      "sourceSha256": "9aaf01658b840915b207f4ab03e68c0e331d10c292680f0bccea3fd3d03446c7"
+    },
+    {
+      "nome": "Bilancia da mercante",
+      "costo": "5 mo",
+      "peso": "1,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Bilancia da mercante | 5 mo | 1,5 kg",
+      "sourceSha256": "1707233538d2425547c0f9513d0b5f881532dc1336f280d816d931379a713c5a"
+    },
+    {
+      "nome": "Borsa",
+      "costo": "5 ma",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Borsa | 5 ma | 0,5 kg",
+      "sourceSha256": "f449f0bbbb470c68d99919e6cc8a8685256661a1102fa8168753a62e07498a34"
+    },
+    {
+      "nome": "Borsa del guaritore",
+      "costo": "5 mo",
+      "peso": "1,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Borsa del guaritore | 5 mo | 1,5 kg",
+      "sourceSha256": "eb437becfe9b51fa852d1c74462c1c1dcc9497723034da2a2ca34c438d9487dc"
+    },
+    {
+      "nome": "Borsa per Componenti",
+      "costo": "25 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Borsa per Componenti | 25 mo | 1 kg",
+      "sourceSha256": "125176959ff5b88dd8f126f1c57f49abef2e1b66d2fdf2eae98efef32a7de3e8"
+    },
+    {
+      "nome": "Bottiglia di Vetro",
+      "costo": "2 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Bottiglia di Vetro | 2 mo | 1 kg",
+      "sourceSha256": "49f0d90085e2d60b001bd3a2cdd5f16fdce52aa09f464d6ae7a6f1745c9abd6c"
+    },
+    {
+      "nome": "Brocca o caraffa",
+      "costo": "2 mr",
+      "peso": "2 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Brocca o caraffa | 2 mr | 2 kg",
+      "sourceSha256": "6d549d26a9bc7bc49eff56f25c64cb9cc746e4f54d9000093e22773faebdc0ad"
+    },
+    {
+      "nome": "Campanella",
+      "costo": "1 mo",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Campanella | 1 mo | —",
+      "sourceSha256": "c51716ae0d42b4a5e4e22ba924e38d239ead7796f1edde06c2b1477074d4c979"
+    },
+    {
+      "nome": "Candela",
+      "costo": "1 mr",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Candela | 1 mr | —",
+      "sourceSha256": "8db5e1626a8d5db63b060e3c88536c9d01316cc10d435975ae4f9118b71768c4"
+    },
+    {
+      "nome": "Canestro",
+      "costo": "4 ma",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Canestro | 4 ma | 1 kg",
+      "sourceSha256": "5dfe589f9750caf11319fdb16f3cf00431f9f3b33f9a8f057ff475b1bf08905e"
+    },
+    {
+      "nome": "Canna da pesca",
+      "costo": "1 mo",
+      "peso": "2 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Canna da pesca | 1 mo | 2 kg",
+      "sourceSha256": "766f51ab54eeab4f804ef49b087c095228b783cf3e5aca41bbd2342804d985da"
+    },
+    {
+      "nome": "Cannocchiale",
+      "costo": "1.000 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Cannocchiale | 1.000 mo | 0,5 kg",
+      "sourceSha256": "a962fabef8734440b82208501a4ee1901cee47c2587a12583c605cb8e57bdac2"
+    },
+    {
+      "nome": "Carrucola e paranco",
+      "costo": "1 mo",
+      "peso": "2,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Carrucola e paranco | 1 mo | 2,5 kg",
+      "sourceSha256": "19d8e1a2745f3897367ffb7b1a34aa009f9de13ed158ef7c832f5adea2435aac"
+    },
+    {
+      "nome": "Carta (un foglio)",
+      "costo": "2 ma",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Carta (un foglio) | 2 ma | —",
+      "sourceSha256": "21200e3ecadf5be55f5ce4b0bb1086c7cd467df3f490878efb4eb3e9c8820949"
+    },
+    {
+      "nome": "Catena (3 metri)",
+      "costo": "5 mo",
+      "peso": "5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Catena (3 metri) | 5 mo | 5 kg",
+      "sourceSha256": "f2474b87c9bdd569c20e480fe9dba88e6e59943001be2492b4ea158a95494de0"
+    },
+    {
+      "nome": "Cera per sigillo",
+      "costo": "5 ma",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Cera per sigillo | 5 ma | —",
+      "sourceSha256": "da2f81b9d220f13e1d8b6edf865866a94bba4085a7998dd07dbbdf226932428d"
+    },
+    {
+      "nome": "Chiodo da Rocciatore",
+      "costo": "5 mr",
+      "peso": "0,125 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Chiodo da Rocciatore | 5 mr | 0,125 kg",
+      "sourceSha256": "418e9c378c2fc65fa393a5971048f3909c17b74df7de762c9eb2acdc91eb825d"
+    },
+    {
+      "nome": "Clessidra",
+      "costo": "25 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Clessidra | 25 mo | 0,5 kg",
+      "sourceSha256": "e3fc0373d283a31c453ff42a0dc3fb5251c7042fb3acc3921d2df3b507bbefb1"
+    },
+    {
+      "nome": "Coperta",
+      "costo": "5 ma",
+      "peso": "1,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Coperta | 5 ma | 1,5 kg",
+      "sourceSha256": "a634da9d3b0f452dabafd69d0f553363b0cbe384c9c9a35e49b3bbaed89d6dad"
+    },
+    {
+      "nome": "Corda di Canapa (15 metri)",
+      "costo": "1 mo",
+      "peso": "5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Corda di Canapa (15 metri) | 1 mo | 5 kg",
+      "sourceSha256": "d6efbe807e0ac6c92746a9260b0c32a821a52d5429bd06f0a60c045ea41bba55"
+    },
+    {
+      "nome": "Corda di Seta (15 metri)",
+      "costo": "10 mo",
+      "peso": "2,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Corda di Seta (15 metri) | 10 mo | 2,5 kg",
+      "sourceSha256": "fd23c01f5ff61d7a894faee1a62c31fa432f4e145863a77d767e6090a791c50e"
+    },
+    {
+      "nome": "Cote per Affilare",
+      "costo": "1 mr",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Cote per Affilare | 1 mr | 0,5 kg",
+      "sourceSha256": "bc318b2c764d1245449091eebc5816b2e13b853f933ae3b94ad06bd5ea851eaf"
+    },
+    {
+      "nome": "Custodia per Mappe o Pergamene",
+      "costo": "1 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Custodia per Mappe o Pergamene | 1 mo | 0,5 kg",
+      "sourceSha256": "04fbe3496e54416fcd10fd532c37f31b504c4389eb468d6deaaa3075f181f376"
+    },
+    {
+      "nome": "Custodia per quadrelli da balestra",
+      "costo": "1 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Custodia per quadrelli da balestra | 1 mo | 0,5 kg",
+      "sourceSha256": "171057822573b8e6909c344e4a9086047477c88a9f0636f07a89bc3b6edda56e"
+    },
+    {
+      "nome": "Faretra",
+      "costo": "1 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Faretra | 1 mo | 0,5 kg",
+      "sourceSha256": "2f4a53d8052afc671d3a35f6d8aaffef6ae4c7b883b0ef76314e344ea9627033"
+    },
+    {
+      "nome": "Fiala",
+      "costo": "1 mo",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Fiala | 1 mo | —",
+      "sourceSha256": "a61e6efd3a418c8049dd9672e26f027686b392c43d3c72457b142ba390a17896"
+    },
+    {
+      "nome": "Fischietto da Richiamo",
+      "costo": "5 mr",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Fischietto da Richiamo | 5 mr | —",
+      "sourceSha256": "114d38aef2a84f03cd5f90a99b76452eddd2f5b19289131350a056e24ae904b3"
+    },
+    {
+      "nome": "Bacchetta",
+      "costo": "10 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Focus arcano",
+      "page": 77,
+      "sourceText": "Focus arcano | Bacchetta | 10 mo | 0,5 kg",
+      "sourceSha256": "c543880a676c4f6855ba38dd9f42cf79ddd4e4e4e630f6d89643175d0eb83ddd"
+    },
+    {
+      "nome": "Bastone",
+      "costo": "5 mo",
+      "peso": "2 kg",
+      "gruppo": "Focus arcano",
+      "page": 77,
+      "sourceText": "Focus arcano | Bastone | 5 mo | 2 kg",
+      "sourceSha256": "b5c7b59906c566832d5d737c1b9bd477e4c8b5e0c8b25f2c9a1ac58721b7458f"
+    },
+    {
+      "nome": "Cristallo",
+      "costo": "10 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Focus arcano",
+      "page": 77,
+      "sourceText": "Focus arcano | Cristallo | 10 mo | 0,5 kg",
+      "sourceSha256": "94193e38aa613287b2cba83d5028e34cf33b6b0efbdc340ba72e8566cf8541dd"
+    },
+    {
+      "nome": "Globo",
+      "costo": "20 mo",
+      "peso": "1,5 kg",
+      "gruppo": "Focus arcano",
+      "page": 77,
+      "sourceText": "Focus arcano | Globo | 20 mo | 1,5 kg",
+      "sourceSha256": "0bf04d014dd163c38a8223584e376e4eed0a8a48a29b5e8d57183f9fb9cc0f7c"
+    },
+    {
+      "nome": "Verga",
+      "costo": "10 mo",
+      "peso": "1 kg",
+      "gruppo": "Focus arcano",
+      "page": 77,
+      "sourceText": "Focus arcano | Verga | 10 mo | 1 kg",
+      "sourceSha256": "2557d8a5d72a02225aed58409236008e4f9b0de86d1f709bfeff5dce4ceecb1a"
+    },
+    {
+      "nome": "Bacchetta in legno di tasso",
+      "costo": "10 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Focus druidico",
+      "page": 77,
+      "sourceText": "Focus druidico | Bacchetta in legno di tasso | 10 mo | 0,5 kg",
+      "sourceSha256": "b9771869f17c138152aa03af113daeedf191982a80baa6fca0f5374a80d36455"
+    },
+    {
+      "nome": "Bastone di legno",
+      "costo": "5 mo",
+      "peso": "2 kg",
+      "gruppo": "Focus druidico",
+      "page": 77,
+      "sourceText": "Focus druidico | Bastone di legno | 5 mo | 2 kg",
+      "sourceSha256": "b29213e519f529dcd865e0fe6b7e2846235140809acf10eaa004f3935619d0ee"
+    },
+    {
+      "nome": "Rametto di vischio",
+      "costo": "1 mo",
+      "peso": "—",
+      "gruppo": "Focus druidico",
+      "page": 77,
+      "sourceText": "Focus druidico | Rametto di vischio | 1 mo | —",
+      "sourceSha256": "5509c2f7f66483324700f944b4f8fcdbd5fb8549fdd8393377275971a9e40d4f"
+    },
+    {
+      "nome": "Totem",
+      "costo": "1 mo",
+      "peso": "—",
+      "gruppo": "Focus druidico",
+      "page": 77,
+      "sourceText": "Focus druidico | Totem | 1 mo | —",
+      "sourceSha256": "37b76b39e1079d582d2c44914c4be6d753a08133f6fb6638be2ee3d5d8712f91"
+    },
+    {
+      "nome": "Forziere",
+      "costo": "5 mo",
+      "peso": "12,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Forziere | 5 mo | 12,5 kg",
+      "sourceSha256": "bf5ceb507aa9953665bfc44da930076ad0a94d548805218dc7e81fcab306fbb0"
+    },
+    {
+      "nome": "Fuoco dell'alchimista (ampolla)",
+      "costo": "50 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Fuoco dell'alchimista (ampolla) | 50 mo | 0,5 kg",
+      "sourceSha256": "7f1a4c2d84f248033cae8dda8c1c78c8a46a073a7821c5410ed2f776b6f025ea"
+    },
+    {
+      "nome": "Gavetta",
+      "costo": "2 ma",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Gavetta | 2 ma | 0,5 kg",
+      "sourceSha256": "f2af3756b1e019a9542e7c5c453b68e3a2dffe289b9a3616e29ae01b55d1b45c"
+    },
+    {
+      "nome": "Gessetto (1 pezzo)",
+      "costo": "1 mr",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Gessetto (1 pezzo) | 1 mr | —",
+      "sourceSha256": "1bec220faa96724379318c24614f002ff3c7feced9b8c41ad9e21c5acee80065"
+    },
+    {
+      "nome": "Giaciglio",
+      "costo": "1 mo",
+      "peso": "3,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Giaciglio | 1 mo | 3,5 kg",
+      "sourceSha256": "eb38d8796775278df2bb356f3cd06983eab86f6a04bb4b95936509d383ba68d1"
+    },
+    {
+      "nome": "Inchiostro (boccetta da 30 grammi)",
+      "costo": "10 mo",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Inchiostro (boccetta da 30 grammi) | 10 mo | —",
+      "sourceSha256": "f20776207d70520b5d8b75ad1b53006ab5e45c852713174545c3c627abec1cae"
+    },
+    {
+      "nome": "Lampada",
+      "costo": "5 ma",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Lampada | 5 ma | 0,5 kg",
+      "sourceSha256": "77886642203fa57f76714409409fb1aa5eafaae893b59ecad7b96a6dcb8635af"
+    },
+    {
+      "nome": "Lanterna a Lente Sporgente",
+      "costo": "10 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Lanterna a Lente Sporgente | 10 mo | 1 kg",
+      "sourceSha256": "6dc45714797e73b913534865baaa5e06ee573eae2d273ccb4080c9855a7fb407"
+    },
+    {
+      "nome": "Lanterna Schermabile",
+      "costo": "5 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Lanterna Schermabile | 5 mo | 1 kg",
+      "sourceSha256": "dca0657cfc0ccbb0b9a41de0aa3b2774fcfe0e93f84b999fb2b8b80e9e01026e"
+    },
+    {
+      "nome": "Lente d'ingrandimento",
+      "costo": "100 mo",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Lente d'ingrandimento | 100 mo | —",
+      "sourceSha256": "fe3c990fd3eaa4b69e726678bf67ee1370eb57a369803fa64974525955843b05"
+    },
+    {
+      "nome": "Libro",
+      "costo": "25 mo",
+      "peso": "2,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Libro | 25 mo | 2,5 kg",
+      "sourceSha256": "e850c6c6bf04e46448ad5b6a991adce2be8d2358125ae60834302e798ac884eb"
+    },
+    {
+      "nome": "Libro degli Incantesimi",
+      "costo": "50 mo",
+      "peso": "1,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Libro degli Incantesimi | 50 mo | 1,5 kg",
+      "sourceSha256": "d9350d4bf6f6e33facdd818004b40e33a68631c596877aa580c24d4b99c4e867"
+    },
+    {
+      "nome": "Manette",
+      "costo": "2 mo",
+      "peso": "3 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Manette | 2 mo | 3 kg",
+      "sourceSha256": "352ff3510b86244cf610df0745a217055065be723e98d20786dbb4adf47d42ce"
+    },
+    {
+      "nome": "Martello",
+      "costo": "1 mo",
+      "peso": "1,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Martello | 1 mo | 1,5 kg",
+      "sourceSha256": "d746f93fbd5ba9fcfbec0db2eae3c4bdce05bb2a53946702ef9933bab603aae2"
+    },
+    {
+      "nome": "Martello da demolitore",
+      "costo": "2 mo",
+      "peso": "5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Martello da demolitore | 2 mo | 5 kg",
+      "sourceSha256": "ad008faf051bcbe3e738ba17624495f47275ef1015f4889a903d49e87abaef0a"
+    },
+    {
+      "nome": "Aghi da cerbottana (50)",
+      "costo": "1 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Munizioni",
+      "page": 77,
+      "sourceText": "Munizioni | Aghi da cerbottana (50) | 1 mo | 0,5 kg",
+      "sourceSha256": "41f77aa1f7c1cb7a763ab0c068565244551e5eac014fb0936881efc878cd5012"
+    },
+    {
+      "nome": "Frecce (20)",
+      "costo": "1 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Munizioni",
+      "page": 77,
+      "sourceText": "Munizioni | Frecce (20) | 1 mo | 0,5 kg",
+      "sourceSha256": "50b36bd284f069e9dedbc382f8669155abc981c0758ed2726e545bf862eb164b"
+    },
+    {
+      "nome": "Proiettili da fionda (20)",
+      "costo": "4 mr",
+      "peso": "0,75 kg",
+      "gruppo": "Munizioni",
+      "page": 77,
+      "sourceText": "Munizioni | Proiettili da fionda (20) | 4 mr | 0,75 kg",
+      "sourceSha256": "404777d6c7afccc1df92a7f17e32c861c31ab2ad53beb21c3c7b9ffaeed2472a"
+    },
+    {
+      "nome": "Quadrelli da balestra (20)",
+      "costo": "1 mo",
+      "peso": "0,75 kg",
+      "gruppo": "Munizioni",
+      "page": 77,
+      "sourceText": "Munizioni | Quadrelli da balestra (20) | 1 mo | 0,75 kg",
+      "sourceSha256": "c9b472a07f2f56c25971273373cd723aba6db2774b53e26a0aafa0c92abe9e1f"
+    },
+    {
+      "nome": "Olio (ampolla)",
+      "costo": "1 ma",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Olio (ampolla) | 1 ma | 0,5 kg",
+      "sourceSha256": "249e56ff77da277f6d6397f9177f180ff714681afe9e6eb0ec1ae89a75b46575"
+    },
+    {
+      "nome": "Otre",
+      "costo": "2 ma",
+      "peso": "2,5 kg (pieno)",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Otre | 2 ma | 2,5 kg (pieno)",
+      "sourceSha256": "93b11942722a239dc21f270bdbdea8632c1f87c79b0c360db238107a71bb57a8"
+    },
+    {
+      "nome": "Pennino",
+      "costo": "2 mr",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Pennino | 2 mr | —",
+      "sourceSha256": "77ae8ac47de440e0c8057226088c9ff5567e61c78d097e4a1350119ac13c021c"
+    },
+    {
+      "nome": "Pentola di ferro",
+      "costo": "2 mo",
+      "peso": "5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Pentola di ferro | 2 mo | 5 kg",
+      "sourceSha256": "cdcaa28aa8166e757012367612740d9d69dd030bdbdaa0a9019584a6e1d518ab"
+    },
+    {
+      "nome": "Pergamena (un foglio)",
+      "costo": "1 ma",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Pergamena (un foglio) | 1 ma | —",
+      "sourceSha256": "50deaaa4de8f1fafa678350c3ae3de7d0a4a3262341d5a765b9d2837633596a2"
+    },
+    {
+      "nome": "Piccone da Minatore",
+      "costo": "2 mo",
+      "peso": "5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Piccone da Minatore | 2 mo | 5 kg",
+      "sourceSha256": "1ad6364171b11e858023e2b3f62bfb0f63b0558b8597cb63e5c9d4d676284bd9"
+    },
+    {
+      "nome": "Piede di porco",
+      "costo": "2 mo",
+      "peso": "2,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Piede di porco | 2 mo | 2,5 kg",
+      "sourceSha256": "81644028b0f309767d0e14f15cf5d4dce0a481b9bbb28e33d3c0cd3d336d9767"
+    },
+    {
+      "nome": "Pozione di guarigione",
+      "costo": "50 mo",
+      "peso": "0,25 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Pozione di guarigione | 50 mo | 0,25 kg",
+      "sourceSha256": "287a7491ee1d94e8b8451dd2bd1bba6749c5b1857c5a5d68783421ede99cdabe"
+    },
+    {
+      "nome": "Profumo (fiala)",
+      "costo": "5 mo",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Profumo (fiala) | 5 mo | —",
+      "sourceSha256": "3e334c85f311270fbac3e36ac900f146dd680bd7aef24b37c7d097bb49daa3bb"
+    },
+    {
+      "nome": "Rampino",
+      "costo": "2 mo",
+      "peso": "2 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Rampino | 2 mo | 2 kg",
+      "sourceSha256": "918176c3a36f32d031869874b84e3187172ed45d8fd88a0869161f4dc376b93e"
+    },
+    {
+      "nome": "Razioni (1 giornata)",
+      "costo": "5 ma",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Razioni (1 giornata) | 5 ma | 1 kg",
+      "sourceSha256": "ad6e3a7e2d689d4045a300289a005b5c5252019231813baff4e5c84e5c575b2b"
+    },
+    {
+      "nome": "Sacco",
+      "costo": "1 mr",
+      "peso": "0,25 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Sacco | 1 mr | 0,25 kg",
+      "sourceSha256": "51dccb6cd36eb2ac965bb77ca2da751fd7036898003ba78126b59216cbc11277"
+    },
+    {
+      "nome": "Sapone",
+      "costo": "2 mr",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Sapone | 2 mr | —",
+      "sourceSha256": "e07b7dbd3ede74ac62b5d4ebe735747ae713c34b1f6fc425a373942a5bf8042f"
+    },
+    {
+      "nome": "Scala a pioli (3 metri)",
+      "costo": "1 ma",
+      "peso": "12,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Scala a pioli (3 metri) | 1 ma | 12,5 kg",
+      "sourceSha256": "53ac94b33e809a57fdcde25c420e51b2963d8b5308600b3b93883146e6f45bb3"
+    },
+    {
+      "nome": "Secchio",
+      "costo": "5 mr",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Secchio | 5 mr | 1 kg",
+      "sourceSha256": "c6ce49165d6cc0c2c67ef22e7e30bf2463ba2eaed7add634f57b8ee372e38126"
+    },
+    {
+      "nome": "Serratura",
+      "costo": "10 mo",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Serratura | 10 mo | 0,5 kg",
+      "sourceSha256": "09a81a39cf358e33b31219f3c2117a6fad1ccab93a976712acac15a02c132ccd"
+    },
+    {
+      "nome": "Sfere Metalliche (sacchetto da 1.000)",
+      "costo": "1 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Sfere Metalliche (sacchetto da 1.000) | 1 mo | 1 kg",
+      "sourceSha256": "1c0145dc39cb5de31af57e75ddd8d3fc061f73a9f13672c96c8d362bc3559908"
+    },
+    {
+      "nome": "Amuleto",
+      "costo": "5 mo",
+      "peso": "0,5 kg",
+      "gruppo": "Simbolo sacro",
+      "page": 77,
+      "sourceText": "Simbolo sacro | Amuleto | 5 mo | 0,5 kg",
+      "sourceSha256": "88151a067706e4f8001c3d26cf6436cb7b1a4823849b0b9332b83128a89bf015"
+    },
+    {
+      "nome": "Emblema",
+      "costo": "5 mo",
+      "peso": "—",
+      "gruppo": "Simbolo sacro",
+      "page": 77,
+      "sourceText": "Simbolo sacro | Emblema | 5 mo | —",
+      "sourceSha256": "4d1049fa17838b442b5661eebad41efdb89530c4f860013345bc60d42f2fcd88"
+    },
+    {
+      "nome": "Reliquiario",
+      "costo": "5 mo",
+      "peso": "1 kg",
+      "gruppo": "Simbolo sacro",
+      "page": 77,
+      "sourceText": "Simbolo sacro | Reliquiario | 5 mo | 1 kg",
+      "sourceSha256": "6d62fd9e2e5b0ec076f8c53d90b1dae0049dc6d6331d8c02ef566f742d711805"
+    },
+    {
+      "nome": "Specchio di Metallo",
+      "costo": "5 mo",
+      "peso": "0,25 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Specchio di Metallo | 5 mo | 0,25 kg",
+      "sourceSha256": "17e4c9a600ad998b75220f665a805d72a9a21a92d8fde1dbced2488f534cddb6"
+    },
+    {
+      "nome": "Spuntoni di Ferro (10)",
+      "costo": "1 mo",
+      "peso": "2,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Spuntoni di Ferro (10) | 1 mo | 2,5 kg",
+      "sourceSha256": "b5fb02f2fd1ae89657a4cfec46f451aee3909971432c27115e1b5b4f0a8cf5e1"
+    },
+    {
+      "nome": "Tagliola",
+      "costo": "5 mo",
+      "peso": "12,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Tagliola | 5 mo | 12,5 kg",
+      "sourceSha256": "dfff17db5b2d6f0d3fe92fe01fc106ddb02b3397280c41253730656068e5da44"
+    },
+    {
+      "nome": "Tenda per due persone",
+      "costo": "2 mo",
+      "peso": "10 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Tenda per due persone | 2 mo | 10 kg",
+      "sourceSha256": "a35b0339d2807ba06d8ceabc74d9e92e8e8eac5d75b2761c97ecdd262ee4ebb1"
+    },
+    {
+      "nome": "Torcia",
+      "costo": "1 mr",
+      "peso": "0,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Torcia | 1 mr | 0,5 kg",
+      "sourceSha256": "af56591197957aea788fb441aa468a89fbb520338ec6866750816bfdaeb70fd1"
+    },
+    {
+      "nome": "Triboli (sacchetto da 20)",
+      "costo": "1 mo",
+      "peso": "1 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Triboli (sacchetto da 20) | 1 mo | 1 kg",
+      "sourceSha256": "2bc0d39245d895f3317039e5d6a63230c1fe4d2ef451198691c7cf68722e630f"
+    },
+    {
+      "nome": "Vanga o Badile",
+      "costo": "2 mo",
+      "peso": "2,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Vanga o Badile | 2 mo | 2,5 kg",
+      "sourceSha256": "443f820bd7a2294c17ca7999d178f7e141bb65d5efe7fb86f49f8ada9e82c5e6"
+    },
+    {
+      "nome": "Veleno base (fiala)",
+      "costo": "100 mo",
+      "peso": "—",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Veleno base (fiala) | 100 mo | —",
+      "sourceSha256": "b2a188c33cff313d9caa08aaba9b23c9b9f347e81ce397dec307e35f9e4c20bb"
+    },
+    {
+      "nome": "Veste",
+      "costo": "1 mo",
+      "peso": "2 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Veste | 1 mo | 2 kg",
+      "sourceSha256": "8d7e14a258e10dc04664e85a7cd8a2c93cb3f579ca08ddea7d58a9fb7f0b0197"
+    },
+    {
+      "nome": "Zaino",
+      "costo": "2 mo",
+      "peso": "2,5 kg",
+      "gruppo": null,
+      "page": 77,
+      "sourceText": "Zaino | 2 mo | 2,5 kg",
+      "sourceSha256": "d5073fc083785adfa381868d6bbc2ac816ab753bbfd4dc4b51683deb762935e6"
+    }
+  ],
+  "descrizioni": {
+    "Acciarino e pietra focaia": {
+      "testo": "Un piccolo contenitore usato per accendere il fuoco, che contiene acciarino, pietra focaia e materiale combustibile (solitamente stracci essiccati e bagnati d'olio). Per accendere una torcia (o qualsiasi altra cosa che faccia uso di abbondante combustibile scoperto) usando acciarino e pietra focaia è richiesta un'azione. Per accendere un fuoco di qualsiasi altro tipo è richiesto 1 minuto.",
+      "page": 74,
+      "sourceSha256": "628f03a6f8436cdb7789d7a95e53c1567d2c3143be1098aa6731d28991b5b452"
+    },
+    "Acido": {
+      "testo": "Con un'azione, il personaggio può spruzzare il contenuto di questa fiala su una creatura situata entro 1,5 metri da lui o lanciarla fino a 6 metri di distanza (la fiala si frantumerà all'impatto). In ogni caso, il personaggio effettua un attacco a distanza contro una creatura o un oggetto, considerando l'acido come un'arma improvvisata. Se il colpo va a segno, il bersaglio subisce 2d6 danni da acido.",
+      "page": 74,
+      "sourceSha256": "43c715331c37a182aca09f86270fd5e34dacb6f000104381b6813d6e3d968fee"
+    },
+    "Acqua santa": {
+      "testo": "Con un'azione, il personaggio può spruzzare il contenuto di quest'ampolla su una creatura situata entro 1,5 metri da lui o lanciarla fino a 6 metri di distanza (l'ampolla si frantumerà all'impatto). In entrambi i casi, il personaggio effettua un attacco a distanza contro la creatura bersaglio, considerando l'acqua santa come un'arma improvvisata. Se il bersaglio è un immondo o un non morto, subisce 2d6 danni radiosi.\n\nUn chierico o un paladino può creare acqua santa celebrando un rituale speciale. Il rituale richiede 1 ora di tempo e polvere d'argento per un valore di 25 mo; l'incantatore deve inoltre spendere uno slot incantesimo di 1° livello.",
+      "page": 74,
+      "sourceSha256": "be41d09f10d25eddd426e85c72474a32ea2b0296c5210ccdebd0133f6bac250d"
+    },
+    "Antitossina": {
+      "testo": "Una creatura che beve questa fiala di liquido dispone di vantaggio ai tiri salvezza contro il veleno per 1 ora. Non conferisce alcun beneficio ai costrutti o ai non morti.",
+      "page": 74,
+      "sourceSha256": "cf29a7698fe23feee6c9fbfa7e70f473fd3c8feadb1e6c7edd96b025c8785bc8"
+    },
+    "Ariete portatile": {
+      "testo": "Un ariete portatile può essere usato per sfondare le porte e conferisce un bonus di +4 alla prova di Forza del personaggio. Un altro personaggio può aiutare il primo a usare l'ariete, nel qual caso quest'ultimo dispone di vantaggio alla prova.",
+      "page": 74,
+      "sourceSha256": "3dc6279ac5566667a16abdbf855127ca92144820eacaaa90c94c390af3f771ea"
+    },
+    "Attrezzi da scalatore": {
+      "testo": "Gli attrezzi da scalatore includono chiodi da rocciatore speciali, punte per stivali, guanti e un'imbragatura. Con un'azione, un personaggio può usare questi strumenti per ancorarsi; quando lo fa, non può cadere per più di 7,5 metri dal punto in cui si è ancorato e non può arrampicarsi per più di 7,5 metri dal quel punto senza disfare l'ancoraggio.",
+      "page": 74,
+      "sourceSha256": "853d31bd3bc47cc534b7256baa6cbf6783358fbd3d88557cad676baea145695c"
+    },
+    "Bilancia da mercante": {
+      "testo": "Una bilancia è composta da un piccolo braccio, due piatti e un assortimento di pesi di varie misure fino a un massimo di 1 kg. Grazie a essa, un personaggio può misurare il peso esatto degli oggetti più piccoli, come i metalli preziosi allo stato grezzo o le merci, per determinarne il valore esatto.",
+      "page": 74,
+      "sourceSha256": "e85536c3805d0f4ff2588212f11b737b20dab027d46ffac87ab06882adae8339"
+    },
+    "Borsa": {
+      "testo": "Una borsa di stoffa o di cuoio può contenere fino a 20 proiettili da fionda o 50 aghi da cerbottana, tra le altre cose. Una borsa suddivisa in scomparti per contenere le componenti per incantesimi è chiamata \"borsa per componenti\" (descritta altrove in questa sezione).",
+      "page": 74,
+      "sourceSha256": "babe8a4ebad047e2313371b3388145f5eda18edb74e2135c046bd908893f039b"
+    },
+    "Borsa del guaritore": {
+      "testo": "Questa borsa in pelle contiene bende, unguenti e stecche di legno. Si può utilizzare dieci volte. Con un'azione, un personaggio può spendere un utilizzo per stabilizzare una creatura scesa a 0 punti ferita senza dover effettuare una prova di Saggezza (Medicina).",
+      "page": 74,
+      "sourceSha256": "93795165ffbfdd3e8de13f5e7c790a52889352d83f6add4249ce3eb22e007e04"
+    },
+    "Borsa per componenti": {
+      "testo": "Una borsa per componenti è un piccolo marsupio di cuoio impermeabile, dotato di scomparti dove custodire tutte le componenti materiali e gli altri oggetti speciali di cui il personaggio ha bisogno per lanciare incantesimi, fatta eccezione per le componenti con un costo specifico (come indicato nella descrizione dell'incantesimo).",
+      "page": 74,
+      "sourceSha256": "d18a33f7ca5dfd8b33c071343ee5dde33ad91363817fc06db275b0e300f2a8ec"
+    },
+    "Candela": {
+      "testo": "Per 1 ora, una candela proietta luce intensa entro un raggio di 1,5 metri e luce fioca per altri 1,5 metri.",
+      "page": 74,
+      "sourceSha256": "778781b72e6049a603176b0e77bbd1c725761787e94b0d23d1b7a4523ca5a602"
+    },
+    "Canna da pesca": {
+      "testo": "Quest'oggetto include un'asta di legno, un filo di seta, galleggianti di sughero, ami in acciaio, piombini, esche e una reticella.",
+      "page": 74,
+      "sourceSha256": "62e6c588a670a7266ccf65848c796116fd4c50ff92c1f1622c830c52abce0e2a"
+    },
+    "Cannocchiale": {
+      "testo": "Gli oggetti osservati attraverso un cannocchiale appaiono grandi il doppio della loro taglia.",
+      "page": 74,
+      "sourceSha256": "d372cb82006020c4bef035964a21ffbe9c7bcfd6e9c6f3c15c0a333b86411b42"
+    },
+    "Carrucola e paranco": {
+      "testo": "Questa serie di carrucole è dotata di un cavo che le attraversa e che si collega a un uncino da agganciare a un oggetto. Consente a un personaggio di sollevare fino al quadruplo del peso che normalmente potrebbe sollevare.",
+      "page": 74,
+      "sourceSha256": "926ed4529dacfaf598ba6b5035f0e4b7b022a70e0db84e5d29e89733eeb727ac"
+    },
+    "Catena": {
+      "testo": "Una catena ha 10 punti ferita. Può essere spezzata superando una prova di Forza con CD 20.",
+      "page": 74,
+      "sourceSha256": "404eea85cf92e2c8c3c037abba590abbf73aee098b896b18bab7b80de2737f91"
+    },
+    "Corda": {
+      "testo": "Una corda, che sia di canapa o di seta, possiede 2 punti ferita e può essere spezzata superando una prova di Forza con CD 17.",
+      "page": 75,
+      "sourceSha256": "612c08618da3b2e863f6bf0ee3c16ad5f4c531442587bf4b882525adcbd9b3f1"
+    },
+    "Custodia per mappe o pergamene": {
+      "testo": "Questa custodia cilindrica in cuoio può contenere fino a dieci fogli di carta arrotolati o fino a cinque fogli di pergamena arrotolati.",
+      "page": 75,
+      "sourceSha256": "f1840381c8812961c0a1624a65d88e35dc0af58124436604d6a681b53d70ae73"
+    },
+    "Custodia per quadrelli da balestra": {
+      "testo": "Questa custodia in legno può contenere fino a 20 quadrelli da balestra.",
+      "page": 75,
+      "sourceSha256": "f1475fc0ea234ca554fd2d81bbb7c281b10c5735ea0c324ec8daaa7c249a6604"
+    },
+    "Faretra": {
+      "testo": "Una faretra può contenere fino a 20 frecce.",
+      "page": 75,
+      "sourceSha256": "0f07b01c2d8b0bb3ddead2d0ddb5cb4e7fc9a1d06d509cf7f9bc1b159c3d77e2"
+    },
+    "Focus arcano": {
+      "testo": "Un focus arcano è un oggetto speciale (una bacchetta in legno, un bastone di fattura speciale, un cristallo, un globo, una verga), creato per incanalare il potere degli incantesimi arcani. Un mago, uno stregone o un warlock può usare questo oggetto come focus da incantatore.",
+      "page": 75,
+      "sourceSha256": "9092dcb337badab0841ad2079d05bd826d336faec20f0c8b1cfdc12cfd05485f"
+    },
+    "Focus druidico": {
+      "testo": "Un focus druidico potrebbe essere un rametto di vischio o di agrifoglio, una bacchetta o uno scettro di tasso o di qualche altro legno speciale, un bastone preso per intero da un albero vivo, oppure un totem che incorpora piume, pelliccia, ossa e denti di animali sacri. Un druido può usare un oggetto del genere come focus da incantatore.",
+      "page": 75,
+      "sourceSha256": "9b6c4665a0d39a941a39450ec9a3ba8559b0c673ccaeabe6664dbb34a6525c84"
+    },
+    "Fuoco dell'alchimista": {
+      "testo": "Questo fluido adesivo e gommoso si infiamma quando è esposto all'aria. Con un'azione, il personaggio può lanciare quest'ampolla fino 6 metri di distanza (l'ampolla si frantumerà all'impatto). Il personaggio effettua un attacco a distanza contro una creatura o un oggetto, considerando il fuoco dell'alchimista come arma improvvisata. Se il colpo va a segno, il bersaglio subisce 1d4 danni da fuoco all'inizio di ogni suo turno. Una creatura può terminare questi danni usando un'azione per effettuare una prova di Destrezza con CD 10 al fine di estinguere le fiamme.",
+      "page": 75,
+      "sourceSha256": "3b58548fed561500055c1d3f3f091dfb40cd6eef5a4d24823732c32b6219baf3"
+    },
+    "Gavetta": {
+      "testo": "Questa scatola di stagno contiene un bicchiere e delle semplici posate. Le due metà della scatola, una volta aperte, possono essere usate rispettivamente come padella e come piatto o scodella.",
+      "page": 75,
+      "sourceSha256": "9a533c0f557e68a7e5ff74e3390cf2a5c9110f643a8b60f3b945c9397872e297"
+    },
+    "Lampada": {
+      "testo": "Una lampada proietta luce intensa in un raggio di 4,5 metri e luce fioca per ulteriori 9 metri. Una volta accesa, arde per 6 ore consumando 1 ampolla (0,5 litri) di olio.",
+      "page": 75,
+      "sourceSha256": "678597d39370e7ce72d1f0fd704b2a1b64b98a1e8178026a7d07a216896493ee"
+    },
+    "Lanterna a lente sporgente": {
+      "testo": "Una lanterna a lente sporgente proietta luce intensa in un cono di 18 metri e luce fioca per ulteriori 18 metri. Una volta accesa, arde per 6 ore consumando 1 ampolla (0,5 litri) di olio.",
+      "page": 75,
+      "sourceSha256": "16e3df30e5d45ad1f9ff1ab450ace7186969c59efdc18f0c8cf2900cdaa9a31c"
+    },
+    "Lanterna schermabile": {
+      "testo": "Una lanterna schermabile proietta luce intensa in un raggio di 9 metri e luce fioca per ulteriori 9 metri. Una volta accesa, arde per 6 ore consumando 1 ampolla (0,5 litri) di olio. Con un'azione, un personaggio può schermare la lanterna, riducendo la luce proiettata a luce fioca in un raggio di 1,5 metri.",
+      "page": 75,
+      "sourceSha256": "7c8fc1ffdcf31b526f6a55ac53ba78b77beee9adac0b50fd446f50cd78a33fb5"
+    },
+    "Lente d'ingrandimento": {
+      "testo": "Questa lente consente di esaminare da vicino gli oggetti più piccoli. Può anche tornare utile come alternativa alla pietra focaia e all'acciarino per accendere un fuoco. Per farlo è necessaria una luce da concentrare intensa quanto la luce del sole, dei rametti da accendere e circa 5 minuti affinché il fuoco attecchisca. Una lente d'ingrandimento conferisce vantaggio a ogni prova di caratteristica effettuata per valutare o ispezionare un oggetto di piccola taglia o estremamente dettagliato.",
+      "page": 75,
+      "sourceSha256": "eb013e0d87492e750c84dc453563d43c5dac1101e334ad61c5a4e3ee9c1d512d"
+    },
+    "Libro": {
+      "testo": "Un libro può contenere poesie, resoconti storici, informazioni in un campo specifico di conoscenze, diagrammi e appunti su un marchingegno gnomesco o pressoché ogni informazione che sia possibile trasmettere tramite testi e immagini. Se contiene incantesimi, si tratta di un libro degli incantesimi (descritto di seguito).",
+      "page": 75,
+      "sourceSha256": "88e9dddf01da0ae924af7f3fec9c72236dec3d92115064376d7abc304b0d22a3"
+    },
+    "Libro degli incantesimi": {
+      "testo": "Un libro degli incantesimi, essenziale per i maghi, è un tomo rilegato in cuoio e composto da 100 pagine pergamenate vuote su cui annotare gli incantesimi.",
+      "page": 75,
+      "sourceSha256": "8b0e302292eb9d8154ee7a94ff33f24be5f93895228957d6a722132c68f5452b"
+    },
+    "Manette": {
+      "testo": "Queste costrizioni di metallo possono bloccare una creatura di taglia Media o Piccola. Per sfuggire alle manette è necessario superare una prova di Destrezza con CD 20 e per romperle occorre superare una prova di Forza con CD 20. A ogni coppia di manette è abbinata una chiave. Senza la chiave, una creatura competente negli arnesi da scasso può scassinare la serratura superando una prova di Destrezza con CD 15. Le manette hanno 15 punti ferita.",
+      "page": 75,
+      "sourceSha256": "8524a19f7f3982ad540f2e647bcd72ba72041838ba48fb472070db66de9417e2"
+    },
+    "Olio": {
+      "testo": "L'olio solitamente viene venduto in ampolle di argilla da 0,5 litri. Con un'azione, il personaggio può spruzzare l'olio dell'ampolla su una creatura situata entro 1,5 metri da lui o lanciarla fino a 6 metri di distanza (l'ampolla si frantumerà all'impatto). In entrambi i casi, il personaggio effettua un attacco a distanza contro la creatura o l'oggetto bersaglio, considerando l'olio come un'arma improvvisata. Se colpisce il bersaglio, lo ricopre d'olio. Se il bersaglio subisce danni da fuoco prima che l'olio si asciughi (dopo 1 minuto), subisce 5 danni da fuoco aggiuntivi a causa dell'olio incendiato. Un personaggio può anche versare un'ampolla d'olio sul terreno per coprire un'area quadrata con lato di 1,5 metri, purché la superficie sia piana. Una volta incendiato, l'olio brucia per 2 round e infligge 5 danni da fuoco a qualsiasi creatura che entri nell'area o vi termini il proprio turno. Una creatura può subire questi danni solo una volta per turno.",
+      "page": 75,
+      "sourceSha256": "173757202be8c1e6b9095967a5ce04d8581ed51574e0c2083fac9041c8bb92f2"
+    },
+    "Piede di porco": {
+      "testo": "L'utilizzo di un piede di porco conferisce vantaggio alle prove di Forza in cui è possibile usare il piede di porco per fare leva.",
+      "page": 76,
+      "sourceSha256": "f848af143f3011c476bd23bae21fa0348437dd6f02b74c70341c18ffb8fc3cd0"
+    },
+    "Pozione di guarigione": {
+      "testo": "Quando un personaggio beve il fluido magico rosso contenuto in questa fiala recupera 2d4 + 2 punti ferita. Per bere o somministrare una pozione è richiesta un'azione.",
+      "page": 76,
+      "sourceSha256": "b999f70a0b13723ec1c668c57291cf6adc8c7bdcf40dd4d8ea9e5dc030bbf25e"
+    },
+    "Razioni": {
+      "testo": "Le razioni consistono in cibo essiccato adatto a essere trasportato nei lunghi viaggi: carne secca, frutta secca, gallette e noci.",
+      "page": 76,
+      "sourceSha256": "1d50eea0cb4fc2f2c949312cda81c4f654db44ee462c09114b91d2ee5d6489e2"
+    },
+    "Serratura": {
+      "testo": "Insieme alla serratura viene fornita una chiave. Senza di essa, una creatura competente negli arnesi da scasso può scassinare la serratura superando una prova di Destrezza con CD 15. Il GM può permettere che siano disponibili serrature migliori a prezzi più alti.",
+      "page": 76,
+      "sourceSha256": "f15ce4dca1064152e642b8e6fba66b126e97de5f83d40163691464c73f118aab"
+    },
+    "Sfere metalliche": {
+      "testo": "Con un'azione, un personaggio può versare queste minuscole sfere di metallo fuori dal sacchetto per coprire un'area quadrata regolare e piana con lato di 3 metri. Una creatura che si muove attraverso l'area coperta dalle sfere deve superare un tiro salvezza su Destrezza con CD 10, o cade a terra prona. Se la creatura si muove attraverso l'area a velocità dimezzata, non deve effettuare il tiro salvezza.",
+      "page": 76,
+      "sourceSha256": "a1c7a8c35ecbf206c1b468b1ca30beceb369d79d7995ecde624ec62c1c7f2d1e"
+    },
+    "Simbolo sacro": {
+      "testo": "Un simbolo sacro è la rappresentazione di un dio o di un pantheon. Potrebbe essere un amuleto che raffigura il simbolo di una divinità, o uno scudo che porta quel simbolo inciso come emblema, o un minuscolo scrigno contenente il frammento di una reliquia sacra. L'appendice B del Manuale del Giocatore \"Pantheon fantasy-storici\" elenca i simboli comunemente associati alla maggior parte delle divinità del multiverso. Un chierico o un paladino può usare un simbolo sacro come focus da incantatore. Per usare il simbolo in questo modo, l'incantatore deve impugnarlo in modo ben visibile o portarlo su uno scudo.",
+      "page": 76,
+      "sourceSha256": "9e739d8058626df1b405dd4608a4df6f70b145449c37e9f85f3f0329c26bf579"
+    },
+    "Tagliola": {
+      "testo": "Quando il personaggio usa la sua azione per predisporre questa trappola, colloca a terra un cerchio di metallo dentato che si chiude con uno scatto quando una creatura preme una piastra a pressione situata al centro. La trappola viene fissata a una pesante catena o a un oggetto immobile come un albero o un palo piantato a terra. Quando una creatura mette un piede sulla piastra, deve superare un tiro salvezza su Destrezza con CD 13, altrimenti subisce 1d4 danni perforanti e smette di muoversi. A quel punto, finché la creatura non si libera dalla trappola, il suo movimento è limitato dalla lunghezza della catena (solitamente 90 centimetri). Una creatura può usare la sua azione per effettuare una prova di Forza con CD 13 e liberare se stessa o qualcun altro nel suo raggio in caso di successo. Ogni prova fallita infligge 1 danno perforante alla creatura intrappolata.",
+      "page": 76,
+      "sourceSha256": "a44a4411a4b530b5233dbca0251e5f79025b53bbf1be1ddf07e727e7a97f4e5f"
+    },
+    "Tenda": {
+      "testo": "Un semplice riparo portatile in tela, che può ospitare due persone.",
+      "page": 76,
+      "sourceSha256": "60c6a1d2b47596136d8b66f092919084fd5115c987241d0a22d4886db47af619"
+    },
+    "Torcia": {
+      "testo": "Una torcia arde per 1 ora e proietta luce intensa in un raggio di 6 metri e luce fioca per ulteriori 6 metri. Se un personaggio effettua un attacco in mischia con una torcia accesa e colpisce, infligge 1 danno da fuoco.",
+      "page": 76,
+      "sourceSha256": "676e117b10463fe1eb83b3a529fd4eb4f43257e6388729a92d4728b69d908a34"
+    },
+    "Triboli": {
+      "testo": "Con un'azione, un personaggio può spargere il contenuto di un sacchetto di triboli per coprire un'area quadrata con lato di 1,5 metri. Ogni creatura che entra in quell'area deve superare un tiro salvezza su Destrezza con CD 15, altrimenti dovrà smettere di muoversi per questo turno e subire 1 danno perforante. Se subisce questo danno, la sua velocità base sul terreno è ridotta di 3 metri finché non recupera almeno 1 punto ferita. Se la creatura si muove attraverso l'area a velocità dimezzata, non deve effettuare il tiro salvezza.",
+      "page": 76,
+      "sourceSha256": "4bd3a6d944cdb48493593a11935f49ecaacb7543da9420ec92e063c1122fac34"
+    },
+    "Veleno base": {
+      "testo": "Un personaggio può usare il veleno contenuto in questa fiala per rivestire un'arma tagliente o perforante, o un massimo di tre munizioni. Per applicare il veleno è richiesta un'azione. Una creatura colpita dall'arma o dalle munizioni avvelenate deve superare un tiro salvezza su Costituzione con CD 10, altrimenti subirà 1d4 danni da veleno. Una volta applicato, il veleno mantiene la sua potenza per 1 minuto prima di essiccarsi.",
+      "page": 76,
+      "sourceSha256": "739b408afd9fc2bb82454ad32cf0039f3fb1aa0d1069ff7c4b32c7dc045941ad"
+    }
+  },
+  "capienza": {
+    "righe": [
+      {
+        "contenitore": "Ampolla o boccale",
+        "capienza": "0,5 litri liquidi",
+        "page": 77
+      },
+      {
+        "contenitore": "Barile",
+        "capienza": "160 litri liquidi, 4 cubi con spigolo di 30 cm",
+        "page": 77
+      },
+      {
+        "contenitore": "Borsa",
+        "capienza": "1 cubo con spigolo di 3 cm/3 kg di equipaggiamento",
+        "page": 77
+      },
+      {
+        "contenitore": "Bottiglia",
+        "capienza": "0,75 litri liquidi",
+        "page": 77
+      },
+      {
+        "contenitore": "Brocca o caraffa",
+        "capienza": "4 litri liquidi",
+        "page": 77
+      },
+      {
+        "contenitore": "Canestro",
+        "capienza": "2 cubi con spigolo di 30 cm/20 kg di equipaggiamento",
+        "page": 78
+      },
+      {
+        "contenitore": "Fiala",
+        "capienza": "120 grammi liquidi",
+        "page": 78
+      },
+      {
+        "contenitore": "Forziere",
+        "capienza": "12 cubi con spigolo di 30 cm/150 kg di equipaggiamento",
+        "page": 78
+      },
+      {
+        "contenitore": "Otre",
+        "capienza": "2 litri liquidi",
+        "page": 78
+      },
+      {
+        "contenitore": "Pentola di ferro",
+        "capienza": "4 litri liquidi",
+        "page": 78
+      },
+      {
+        "contenitore": "Sacco",
+        "capienza": "1 cubo con spigolo di 30 cm/15 kg di equipaggiamento",
+        "page": 78
+      },
+      {
+        "contenitore": "Secchio",
+        "capienza": "12 litri liquidi, 1 cubo con spigolo di 15 cm",
+        "page": 78
+      },
+      {
+        "contenitore": "Zaino*",
+        "capienza": "1 cubo con spigolo di 30 cm/15 kg di equipaggiamento",
+        "page": 78
+      }
+    ],
+    "nota": "* Un personaggio può anche legare alcuni oggetti come un giaciglio o un rotolo di corda all'esterno dello zaino.",
+    "sourceSha256": "a1d10a94e41674387da392f5f8e3cb1b357aad24d0a30386d3e0ff000526b883"
+  },
+  "dotazioni": {
+    "intro": "L'equipaggiamento di partenza che un personaggio riceve dalla sua classe include anche un insieme di oggetti da avventuriero riuniti in una dotazione. Il contenuto di ogni dotazione è elencato di seguito. Se il personaggio sceglie di acquistare il suo equipaggiamento di partenza, può comprare una dotazione al prezzo indicato, che generalmente è più conveniente rispetto all'acquisto dei singoli oggetti separati.",
+    "voci": [
+      {
+        "testo": "Include uno zaino, un piede di porco, un martello, 10 chiodi da rocciatore, 10 torce, un acciarino con pietra focaia, 10 razioni giornaliere e un otre. La dotazione include anche 15 metri di corda di canapa legata allo zaino.",
+        "nome": "Dotazione da avventuriero",
+        "prezzo": "12 mo",
+        "page": 78,
+        "sourceSha256": "ca305ffb39860f6319bbe09cacf671556f57562b7c57cc697189a0d48a8d5580"
+      },
+      {
+        "testo": "Include un forziere, 2 custodie per mappe e pergamene, un abito pregiato, una boccetta d'inchiostro, un pennino, una lampada, 2 ampolle di olio, 5 fogli di carta, una fiala di profumo, cera per sigillo e sapone.",
+        "nome": "Dotazione da diplomatico",
+        "prezzo": "39 mo",
+        "page": 78,
+        "sourceSha256": "faa7a59888693c55ac498d40f79fb042f7dc71c571be998c08b56e933df9576d"
+      },
+      {
+        "testo": "Include uno zaino, un giaciglio, una gavetta, un acciarino con pietra focaia, 10 torce, 10 razioni giornaliere e un otre. La dotazione include anche 15 metri di corda di canapa legata allo zaino.",
+        "nome": "Dotazione da esploratore",
+        "prezzo": "10 mo",
+        "page": 78,
+        "sourceSha256": "89af2242fe2c9c3b23d2fc7473b3403cf61f9844cf02a7addba4eb7f64ae272a"
+      },
+      {
+        "testo": "Include uno zaino, un giaciglio, 2 costumi, 5 candele, 5 razioni giornaliere, un otre e trucchi per il camuffamento.",
+        "nome": "Dotazione da intrattenitore",
+        "prezzo": "40 mo",
+        "page": 78,
+        "sourceSha256": "954245a6fb73e423978e9eb8466be4aef549ea92c49fdb7d8ac7ac14f26834ae"
+      },
+      {
+        "testo": "Include uno zaino, una coperta, 10 candele, un acciarino con pietra focaia, una cassetta per le offerte, 2 cubetti di incenso, un incensiere, una veste, 2 razioni giornaliere e un otre.",
+        "nome": "Dotazione da sacerdote",
+        "prezzo": "19 mo",
+        "page": 78,
+        "sourceSha256": "5c2038d1a4e9541de52ac43aa62a4f3a9bf9a7e8c3bb20621f198520a32207df"
+      },
+      {
+        "testo": "Include uno zaino, un sacchetto con 1.000 sfere metalliche, 3 metri di spago, una campanella, 5 candele, un piede di porco, un martello, 10 chiodi da rocciatore, una lanterna schermabile, 2 ampolle di olio, 5 razioni giornaliere, un acciarino con pietra focaia e un otre. La dotazione include anche 15 metri di corda di canapa legata allo zaino.",
+        "nome": "Dotazione da scassinatore",
+        "prezzo": "16 mo",
+        "page": 78,
+        "sourceSha256": "b6e107c542c76c8e2f2dbf91da5390a33a832445e308564a4269094119d10e73"
+      },
+      {
+        "testo": "Include uno zaino, un libro di studio, una boccetta d'inchiostro, un pennino, 10 fogli di pergamena, un sacchetto di sabbia e un coltellino.",
+        "nome": "Dotazione da studioso",
+        "prezzo": "40 mo",
+        "page": 78,
+        "sourceSha256": "46550d92f512bf9ab3ab6fc1f8a3cc996a32fb194faa9b55a8b0662f591b5edc"
+      }
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "_nota": "Correzioni di sola visualizzazione per l'Equipaggiamento d'avventura 2024 (lib/adventuring-gear.ts). Il dato di origine (srd-manual-5.2.1-it.json, voce equipaggiamento-equipaggiamento-d-avventura) non cambia.",
+  "_nota": "Correzioni di sola visualizzazione per l'Equipaggiamento d'avventura (lib/adventuring-gear.ts e lib/adventuring-gear-2014.ts). I dati di origine (srd-manual-5.2.1-it.json e srd-adventuring-gear-5.1-it.json) non cambiano.",
   "nomiTabella": {
     "Acciarino e pietra focaia": "Acciarino con pietra focaia",
     "Campanella": "Campana",
@@ -8,6 +8,37 @@
     "Pergamena magica (trucchetto)": "Pergamena magica"
   },
   "testi": [
-    { "da": "contiene i seguenti i oggetti", "a": "contiene i seguenti oggetti", "nota": "Dotazione da intrattenitore: «i» ripetuto nel PDF." }
-  ]
+    {
+      "da": "contiene i seguenti i oggetti",
+      "a": "contiene i seguenti oggetti",
+      "nota": "Dotazione da intrattenitore: «i» ripetuto nel PDF."
+    }
+  ],
+  "testi2014": [
+    {
+      "da": "dal quel punto",
+      "a": "da quel punto",
+      "nota": "Attrezzi da scalatore: «dal quel» nel PDF SRD 5.1, p. 74."
+    },
+    {
+      "da": "quest'ampolla fino 6 metri",
+      "a": "quest'ampolla fino a 6 metri",
+      "nota": "Fuoco dell'alchimista: manca «a» nel PDF SRD 5.1, p. 75."
+    }
+  ],
+  "abbinamenti2014": {
+    "_nota": "Nome 2014 (come nella tabella SRD 5.1) → nome 2024 (titolo SRD 5.2.1), dove i nomi non coincidono ignorando maiuscole e parentesi. Elenco fornito da Daniele il 21 ottobre 2026.",
+    "Abito, Costume": "Costume",
+    "Abito, da Viaggiatore": "Abiti da viaggiatore",
+    "Abito, Pregiato": "Abiti eleganti",
+    "Ampolla o boccale": "Ampolla",
+    "Brocca o caraffa": "Brocca",
+    "Campanella": "Campana",
+    "Canestro": "Cesto",
+    "Corda di Canapa (15 metri)": "Corda",
+    "Specchio di Metallo": "Specchio",
+    "Tenda per due persone": "Tenda",
+    "Vanga o Badile": "Pala",
+    "Veste": "Tunica"
+  }
 }

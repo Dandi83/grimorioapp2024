@@ -1,6 +1,5 @@
 import { Backpack, Shield, Swords } from "lucide-react";
 import { ParentLink, SectionTiles, type SectionTile } from "@/components/section-tiles";
-import { gearItems } from "@/lib/adventuring-gear";
 import { armors } from "@/lib/armor";
 import { weapons } from "@/lib/equipment";
 
@@ -11,7 +10,7 @@ export default function EquipmentPage() {
   const tiles: SectionTile[] = [
     { href: "/equipaggiamento/armi", title: "Armi", text: `${weapons.filter(w => w.editions["2024"]).length} armi nel 2024, ${weapons.filter(w => w.editions["2014"]).length} nel 2014`, Icon: Swords },
     { href: "/equipaggiamento/armature", title: "Armature", text: `${armors.length - 1} armature e lo scudo, 2014 e 2024`, Icon: Shield },
-    { href: "/equipaggiamento/avventura", title: "Equipaggiamento d’avventura", text: `${gearItems.length} oggetti e dotazioni, edizione 2024`, Icon: Backpack },
+    { href: "/equipaggiamento/avventura", title: "Equipaggiamento d’avventura", text: "Oggetti e dotazioni, 2014 e 2024", Icon: Backpack },
   ];
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">

@@ -43,7 +43,9 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await page.goto(base + "/equipaggiamento/armi/tridente");
   await expect(page.locator('[data-edition="2024"]')).toContainText("1d8");
   await page.goto(base + "/equipaggiamento/avventura/munizioni");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Munizioni");
+  await expect(page.getByRole("heading", { level: 1 }).first()).toHaveText("Munizioni");
+  await page.goto(base + "/equipaggiamento/avventura/canestro");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Canestro");
   await page.goto(base + "/avanzamento");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
 
@@ -62,10 +64,15 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
   await page.reload();
   await expect(page.locator('[data-edition="2014"]')).toContainText("1d6");
+  // A 2014 adventuring gear sheet with its own address, after a reload.
+  await page.goto(base + "/equipaggiamento/avventura/canestro");
+  await page.reload();
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Canestro");
   // An adventuring gear sheet, with its table, after a reload.
   await page.goto(base + "/equipaggiamento/avventura/munizioni");
   await page.reload();
-  await expect(page.getByText("Proiettili, arma da fuoco")).toBeVisible();
+  // The edition chosen on the weapon sheet (2014) is the one shown.
+  await expect(page.locator("p:visible", { hasText: /^Proiettili/ }).first()).toBeVisible();
   // The main sections were saved when the service worker was installed, the Compendio too.
   await page.goto(base + "/bestiario");
   await expect(page.locator("li.catalog-row")).toHaveCount(40);
