@@ -41,6 +41,10 @@ export function sheetFingerprints(dataDir = new URL('../lib/data/', import.meta.
   return prints;
 }
 
+function allFiles(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? allFiles(join(dir, entry.name)) : [join(dir, entry.name)]);
+}
+
 function jsFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap(entry =>
     entry.isDirectory() ? jsFiles(join(dir, entry.name)) : entry.name.endsWith('.js') ? [join(dir, entry.name)] : []);
@@ -73,12 +77,14 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const clientDir = process.argv[2] || '.next/static';
   if (!existsSync(clientDir)) throw new Error(`${clientDir} not found: run next build first`);
   const prints = sheetFingerprints();
-  if (!process.argv[2] && !existsSync(SEARCH_INDEX_FILE)) throw new Error(`${SEARCH_INDEX_FILE} not found: the search index is built with the site`);
-  const leaks = [...findLeaks(clientDir, prints), ...(existsSync(SEARCH_INDEX_FILE) ? findIndexLeaks(SEARCH_INDEX_FILE, prints) : [])];
+  // The prerendered index sits in .next/server, where the build output puts it (the layout differs on Vercel).
+  const indexFiles = existsSync('.next/server') ? allFiles('.next/server').filter(file => /ricerca-indice\.json(\.body)?$/.test(file) && !file.endsWith('.js')) : [];
+  if (!indexFiles.length) console.warn('Search index not found among the build files: checked by the browser tests and in CI.');
+  const leaks = [...findLeaks(clientDir, prints), ...indexFiles.flatMap(file => findIndexLeaks(file, prints))];
   if (leaks.length) {
     for (const leak of leaks.slice(0, 10)) console.error(`Full sheet ${leak.id} (${leak.file}) found in ${leak.path}`);
     console.error(`${leaks.length} full sheets in the browser code: lists must use the light index.`);
     process.exit(1);
   }
-  console.log(`Client bundle and search index: no full creature sheets or 2014 spell texts (${prints.length} sheets checked).`);
+  console.log(`Client bundle and search index (${indexFiles.length} file): no full creature sheets or 2014 spell texts (${prints.length} sheets checked).`);
 }
