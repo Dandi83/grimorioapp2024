@@ -44,6 +44,8 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.locator('[data-edition="2024"]')).toContainText("1d8");
   await page.goto(base + "/equipaggiamento/avventura/munizioni");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Munizioni");
+  await page.goto(base + "/avanzamento");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
 
   await stopServer();
   await expect.poll(async () => { try { await fetch(base + "/"); return "up"; } catch { return "down"; } }).toBe("down");
@@ -67,6 +69,11 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   // The main sections were saved when the service worker was installed, the Compendio too.
   await page.goto(base + "/bestiario");
   await expect(page.locator("li.catalog-row")).toHaveCount(40);
+  await page.goto(base + "/avanzamento");
+  await page.reload();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
+  await page.getByRole("button", { name: "Aggiungi riga" }).click();
+  await expect(page.getByLabel("Riga 2: grado sfida")).toBeVisible();
   await page.goto(base + "/compendio");
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
