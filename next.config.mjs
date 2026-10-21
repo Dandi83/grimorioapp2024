@@ -1,5 +1,7 @@
 import { readFileSync } from "node:fs";
 
+import { securityHeaders } from "./lib/security-headers.mjs";
+
 // 2014 sheets moved to "<id>-2014" addresses: old shared links keep working.
 // A plain 308 at routing level (lib/monster-id-aliases.ts renames saved favorites).
 const renamedMonsterIds = JSON.parse(readFileSync(new URL("./lib/data/renamed-monster-ids.json", import.meta.url), "utf8"));
@@ -26,18 +28,7 @@ const nextConfig = {
     return [
       {
         source: "/:path*",
-        headers: [
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Strict-Transport-Security", value: "max-age=63072000" },
-          // No other site may show these pages inside a frame (clickjacking).
-          { key: "X-Frame-Options", value: "DENY" },
-          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
-          {
-            key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
-          },
-        ],
+        headers: securityHeaders(),
       },
     ];
   },

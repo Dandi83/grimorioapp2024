@@ -11,7 +11,7 @@ import {
   verifyPasscode,
 } from "@/lib/admin-auth";
 import { clean, requireAdmin, uniqueId, type DeleteResult } from "@/lib/admin-action-helpers";
-import { addressKey, clearLoginFailures, loginBlocked, recordLoginFailure } from "@/lib/admin-login-limit";
+import { addressKey, clientAddress, clearLoginFailures, loginBlocked, recordLoginFailure } from "@/lib/admin-login-limit";
 import { slugify } from "@/lib/spells-types";
 import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
@@ -32,7 +32,7 @@ const TOO_MANY_ATTEMPTS = "Troppi tentativi. Riprova tra 15 minuti.";
 
 export async function loginAction(_prev: unknown, formData: FormData) {
   const passcode = clean(formData.get("passcode"));
-  const key = addressKey((await headers()).get("x-forwarded-for"));
+  const key = addressKey(clientAddress(await headers()));
   try {
     if (await loginBlocked(key)) return { ok: false as const, error: TOO_MANY_ATTEMPTS };
     if (!verifyPasscode(passcode)) {
@@ -42,11 +42,11 @@ export async function loginAction(_prev: unknown, formData: FormData) {
       return { ok: false as const, error: "Passcode errata." };
     }
     await clearLoginFailures(key);
+    await startAdminSession();
   } catch {
-    // Without the attempt counter the login stays closed.
+    // Without the attempt counter or the session list the login stays closed.
     return { ok: false as const, error: "Accesso temporaneamente non disponibile. Riprova tra poco." };
   }
-  await startAdminSession();
   revalidatePath("/admin");
   return { ok: true as const, error: null };
 }

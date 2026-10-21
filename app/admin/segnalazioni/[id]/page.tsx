@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
 import { isAdmin } from "@/lib/admin-auth";
+import { AdminLogin } from "@/components/admin-login";
 import { getFeedback, markFeedbackRead } from "@/lib/feedback";
 import { pageName } from "@/lib/feedback-names";
 import { STATE_LABELS, aboutLabel, formatWhen } from "@/lib/feedback-input";
@@ -13,7 +14,8 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Segnalazione — Il Grimorio.App", robots: { index: false, follow: false } };
 
 export default async function FeedbackDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAdmin())) redirect("/admin");
+  // Login in place: a link opened from an email (no strict cookie on arrival) still reaches this page.
+  if (!(await isAdmin())) return <AdminLogin />;
   const { id } = await params;
   const found = await getFeedback(id);
   if (!found) notFound();

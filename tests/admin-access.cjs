@@ -31,54 +31,70 @@ function load(relative) {
     cookies: async()=>({get:name=>jar.has(name)?{value:jar.get(name).value}:undefined,set:(name,value,options)=>jar.set(name,{value,options}),delete:name=>jar.delete(name)}),
     headers: async()=>({get:name=>requestHeaders.get(name) ?? null}),
   };
-  const auth = load('lib/admin-auth.ts');
-  const DAY = 24*60*60*1000, now = Date.now();
-
-  // S3: signed session with a server-side expiry.
-  const token = auth.createSessionToken(now);
-  assert.match(token,/^v2\.\d+\.[0-9a-f]{64}$/);
-  assert.equal(auth.verifySessionToken(token,now),true);
-  assert.equal(auth.verifySessionToken(token,now+29*DAY),true,'valid during the 30 days');
-  assert.equal(auth.verifySessionToken(token,now+30*DAY+1),false,'expired after 30 days even if the browser keeps the cookie');
-  const [, expiry, signed] = token.split('.');
-  assert.equal(auth.verifySessionToken(`v2.${Number(expiry)+DAY}.${signed}`,now),false,'the expiry cannot be extended');
-  assert.equal(auth.verifySessionToken(`v2.${expiry}.${'0'.repeat(64)}`,now),false,'forged signature');
-  assert.equal(auth.verifySessionToken(auth.createSessionToken(now+400*DAY),now),false,'expiries beyond 30 days are refused');
-  for (const bad of ['', 'v2', 'v2..', `v1.${expiry}.${signed}`, `${token}.extra`]) assert.equal(auth.verifySessionToken(bad,now),false,bad);
-  const oldCookie = createHmac('sha256','passcode-di-prova').update('grimorio-admin-session').digest('hex');
-  assert.equal(auth.verifySessionToken(oldCookie,now),false,'sessions of the previous format require a new login');
-  process.env.ADMIN_PASSCODE = 'passcode-cambiata';
-  assert.equal(auth.verifySessionToken(token,now),false,'changing the passcode ends every session');
-  process.env.ADMIN_PASSCODE = 'passcode-di-prova';
-
-  // isAdmin reads the cookie; logout removes it.
-  assert.equal(await auth.isAdmin(),false);
-  await auth.startAdminSession();
-  const saved = jar.get('grimorio_admin');
-  assert.equal(saved.options.httpOnly,true);assert.equal(saved.options.secure,true);assert.equal(saved.options.maxAge,30*24*60*60);
-  assert.equal(await auth.isAdmin(),true);
-  jar.set('grimorio_admin',{value:oldCookie});
-  assert.equal(await auth.isAdmin(),false);
-  await auth.startAdminSession();await auth.endAdminSession();
-  assert.equal(await auth.isAdmin(),false);
-  delete process.env.ADMIN_PASSCODE;
-  await auth.startAdminSession();
-  assert.equal(await auth.isAdmin(),false,'no passcode configured: no admin');
-  process.env.ADMIN_PASSCODE = 'passcode-di-prova';
-
-  // S2: login attempts limited per address and overall, stored as hashes only.
+  // Sessions live in the database (logout revokes them): an in-memory PostgreSQL here.
   const pg = new PGlite();
   let failQueries = false;
   const pool = {query:(sql,params)=>failQueries?Promise.reject(new Error('database down')):pg.query(sql,params)};
   deps['server-only'] = {};
   deps['./db'] = deps['@/lib/db'] = {db:{},pool};
+  const auth = load('lib/admin-auth.ts');
+  const DAY = 24*60*60*1000, now = Date.now();
+  const COOKIE = '__Host-grimorio_admin';
+  assert.equal(auth.COOKIE_NAME,COOKIE,'cookie bound to this exact site, HTTPS only');
+
+  // S3: signed session with a server-side expiry of 7 days and a random id.
+  const token = auth.createSessionToken(now);
+  assert.match(token,/^v3\.\d+\.[0-9a-f]{36}\.[0-9a-f]{64}$/);
+  const [, expiry, sid, signed] = token.split('.');
+  assert.equal(auth.verifySessionToken(token,now),sid);
+  assert.equal(auth.verifySessionToken(token,now+6*DAY),sid,'valid during the 7 days');
+  assert.equal(auth.verifySessionToken(token,now+7*DAY+1),null,'expired after 7 days even if the browser keeps the cookie');
+  assert.equal(auth.verifySessionToken(`v3.${Number(expiry)+DAY}.${sid}.${signed}`,now),null,'the expiry cannot be extended');
+  assert.equal(auth.verifySessionToken(`v3.${expiry}.${'a'.repeat(36)}.${signed}`,now),null,'the id cannot be swapped');
+  assert.equal(auth.verifySessionToken(`v3.${expiry}.${sid}.${'0'.repeat(64)}`,now),null,'forged signature');
+  assert.equal(auth.verifySessionToken(auth.createSessionToken(now+400*DAY),now),null,'expiries beyond 7 days are refused');
+  for (const bad of ['', 'v3', 'v3...', `v2.${expiry}.${signed}`, `${token}.extra`]) assert.equal(auth.verifySessionToken(bad,now),null,bad);
+  const oldCookie = createHmac('sha256','passcode-di-prova').update('grimorio-admin-session').digest('hex');
+  assert.equal(auth.verifySessionToken(oldCookie,now),null,'sessions of previous formats require a new login');
+  process.env.ADMIN_PASSCODE = 'passcode-cambiata';
+  assert.equal(auth.verifySessionToken(token,now),null,'changing the passcode ends every session');
+  process.env.ADMIN_PASSCODE = 'passcode-di-prova';
+
+  // isAdmin reads the cookie and the session list; logout deletes the session on the server.
+  assert.equal(await auth.isAdmin(),false);
+  await auth.startAdminSession();
+  const saved = jar.get(COOKIE);
+  assert.equal(saved.options.httpOnly,true);assert.equal(saved.options.secure,true);assert.equal(saved.options.path,'/');
+  assert.equal(saved.options.maxAge,7*24*60*60);
+  assert.equal(await auth.isAdmin(),true);
+  const copied = saved.value;
+  jar.set(COOKIE,{value:oldCookie});
+  assert.equal(await auth.isAdmin(),false);
+  jar.set(COOKIE,{value:copied});
+  await auth.endAdminSession();
+  assert.equal(await auth.isAdmin(),false);
+  jar.set(COOKIE,{value:copied});
+  assert.equal(await auth.isAdmin(),false,'after logout a copied cookie no longer works');
+  assert.equal(auth.verifySessionToken(copied)!==null,true,'(the signature alone would still be valid: the server list decides)');
+  await auth.startAdminSession();
+  failQueries = true;
+  assert.equal(await auth.isAdmin(),false,'without the session list the admin area stays closed');
+  failQueries = false;
+  assert.equal(await auth.isAdmin(),true);
+  delete process.env.ADMIN_PASSCODE;
+  jar.clear();
+  await auth.startAdminSession();
+  assert.equal(await auth.isAdmin(),false,'no passcode configured: no admin');
+  process.env.ADMIN_PASSCODE = 'passcode-di-prova';
+
+  // S2: login attempts limited per address and overall, stored as hashes only.
   deps['next/cache'] = {revalidatePath(){},updateTag(){}};
   const originalTimeout = global.setTimeout;
   global.setTimeout = (fn)=>originalTimeout(fn,0);
   const {loginAction} = load('app/actions/admin.ts');
   const limit = load('lib/admin-login-limit.ts');
   const form = passcode => {const f = new FormData(); f.set('passcode',passcode); return f;};
-  const attempt = async (passcode,ip) => {requestHeaders.set('x-forwarded-for',ip);jar.clear();return loginAction(null,form(passcode));};
+  const attempt = async (passcode,ip) => {requestHeaders.clear();if(ip)requestHeaders.set('x-forwarded-for',ip);jar.clear();return loginAction(null,form(passcode));};
 
   assert.deepEqual(await attempt('passcode-di-prova','203.0.113.1, 10.0.0.1'),{ok:true,error:null});
   assert.equal(await auth.isAdmin(),true);
@@ -108,7 +124,12 @@ function load(relative) {
   assert.equal(await auth.isAdmin(),false);
   failQueries = false;
   assert.equal((await attempt('passcode-di-prova',null)).ok,true,'requests without an address header still work');
+  // On Vercel x-real-ip is the client address: a made-up x-forwarded-for does not escape the block.
+  await pg.query("DELETE FROM grimorio_admin_login_failures");
+  const viaVercel = async (passcode,forwarded) => {requestHeaders.clear();requestHeaders.set('x-real-ip','203.0.113.50');requestHeaders.set('x-forwarded-for',forwarded);jar.clear();return loginAction(null,form(passcode));};
+  for (let i = 0; i < 5; i++) await viaVercel('sbagliata',`10.0.0.${i}`);
+  assert.match((await viaVercel('passcode-di-prova','10.9.9.9')).error,/Troppi tentativi/,'changing x-forwarded-for does not reset the counter');
   global.setTimeout = originalTimeout;
 
-  console.log('Admin access: signed 30-day sessions with server expiry, old/forged/changed-passcode cookies refused, login limited per address and overall, hashed addresses, fail-closed counter.');
+  console.log('Admin access: signed 7-day __Host- sessions revoked at logout, server expiry, old/forged/changed-passcode cookies refused, login limited per address and overall, hashed addresses, fail-closed counter.');
 })().catch(error=>{console.error(error);process.exit(1);});

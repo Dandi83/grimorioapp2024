@@ -136,3 +136,9 @@ export const feedbackLimits = pgTable("grimorio_feedback_limits", {
   device_hash: text("device_hash").notNull(),
   sent_at: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/** Open admin sessions (lib/admin-auth.ts): logout deletes the row, so the cookie stops working. */
+export const adminSessions = pgTable("grimorio_admin_sessions", {
+  id: text("id").primaryKey(),
+  expires_at: timestamp("expires_at", { withTimezone: true }).notNull(),
+});

@@ -15,7 +15,7 @@ test("home: header, bottom navigation and security headers", async ({ page }) =>
   const response = await page.goto("/");
   expect(response.status()).toBe(200);
   expect(response.headers()["x-frame-options"]).toBe("DENY");
-  expect(response.headers()["content-security-policy"]).toBe("frame-ancestors 'none'");
+  expect(response.headers()["content-security-policy"]).toMatch(/^default-src 'self'; script-src 'self' 'unsafe-inline'; .*frame-ancestors 'none'/);
   await expect(page.getByText("Il Grimorio", { exact: false }).first()).toBeVisible();
   const nav = page.getByRole("navigation", { name: "Navigazione principale" });
   for (const label of ["Home", "Incantesimi", "Bestiario", "Preferiti"]) {
@@ -157,10 +157,16 @@ test("admin: wrong passcode, login, logout", async ({ page }) => {
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
   await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
-  const cookie = (await page.context().cookies()).find(c => c.name === "grimorio_admin");
-  expect(cookie?.value).toMatch(/^v2\.\d+\.[0-9a-f]{64}$/);
+  const cookie = (await page.context().cookies()).find(c => c.name === "__Host-grimorio_admin");
+  expect(cookie?.value).toMatch(/^v3\.\d+\.[0-9a-f]{36}\.[0-9a-f]{64}$/);
   expect(cookie?.httpOnly).toBe(true);
+  expect(cookie?.sameSite).toBe("Strict");
+  expect(cookie?.expires - Date.now() / 1000).toBeLessThanOrEqual(7 * 24 * 3600 + 60);
   await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Area riservata" })).toBeVisible();
+  // Logout revokes the session on the server: the same cookie, put back, no longer opens the admin area.
+  await page.context().addCookies([cookie]);
+  await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Area riservata" })).toBeVisible();
 });
 
@@ -834,8 +840,12 @@ test("reports: Segnala from a card with its edition, without email, invalid emai
   await expect(page.getByRole("heading", { name: "Area riservata" })).toBeVisible();
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await page.getByRole("link", { name: /^Segnalazioni/ }).click();
+  // Login in place: the same page opens with the list.
+  await expect(page).toHaveURL(/\/admin\/segnalazioni$/);
   await expect(page.getByRole("heading", { name: "Segnalazioni" })).toBeVisible();
+  await page.goto("/admin");
+  await expect(page.getByRole("link", { name: "Segnalazioni 2 NUOVE" })).toBeVisible();
+  await page.getByRole("link", { name: "Segnalazioni 2 NUOVE" }).click();
   await expect(page.getByText("2 nuove")).toBeVisible();
   const rows = page.locator("main ul li");
   await expect(rows).toHaveCount(2);
@@ -871,4 +881,36 @@ test("reports: Segnala from a card with its edition, without email, invalid emai
   // Never indexed.
   expect(await page.locator('meta[name="robots"]').getAttribute("content")).toMatch(/noindex/);
   expect(errors).toEqual([]);
+});
+
+test("security: headers on every kind of page, admin pages and API closed without login or secret", async ({ page, request }) => {
+  const pages = ["/", "/grimorio", "/spell/dardo-incantato", "/mostro/lich", "/equipaggiamento/armi/spada-lunga", "/oggetti-magici", "/segnala", "/admin", "/admin/segnalazioni", "/admin/statistiche", "/ricerca-indice.json", "/sw.js", "/api/segnalazioni"];
+  for (const path of pages) {
+    const response = await request.get(path);
+    const headers = response.headers();
+    expect(headers["content-security-policy"], path).toMatch(/default-src 'self'.*object-src 'none'.*frame-ancestors 'none'/);
+    expect(headers["x-frame-options"], path).toBe("DENY");
+    expect(headers["x-content-type-options"], path).toBe("nosniff");
+    expect(headers["strict-transport-security"], path).toMatch(/max-age=\d+/);
+    expect(headers["referrer-policy"], path).toBe("strict-origin-when-cross-origin");
+  }
+  // Admin pages without login: the login form, never the data.
+  for (const path of ["/admin", "/admin/segnalazioni", "/admin/statistiche", "/admin/segnalazioni/11111111-1111-4111-8111-111111111111"]) {
+    const html = await (await request.get(path)).text();
+    expect(html, path).toContain("Area riservata");
+    expect(html, path).not.toMatch(/Rispondi via email|Visitatori unici|incantesimi · \d+ mostri/);
+  }
+  // Maintenance API: 401 without the secret or with a wrong one.
+  expect((await request.get("/api/analytics/maintenance")).status()).toBe(401);
+  expect((await request.get("/api/analytics/maintenance", { headers: { authorization: "Bearer sbagliato" } })).status()).toBe(401);
+  // A report from another site is refused.
+  expect((await request.post("/api/segnalazioni", { data: { tipo: "errore", messaggio: "Prova da un altro sito." }, headers: { origin: "https://evil.example" } })).status()).toBe(403);
+  // Pages work under the policy: no blocked script, style, image or font.
+  const violations = [];
+  page.on("console", message => { if (/Content Security Policy/i.test(message.text())) violations.push(message.text()); });
+  for (const path of ["/", "/spell/dardo-incantato", "/mostro/lich", "/oggetti-magici/bacchetta-delle-meraviglie", "/segnala", "/admin"]) {
+    await page.goto(path);
+    await page.waitForLoadState("networkidle");
+  }
+  expect(violations).toEqual([]);
 });

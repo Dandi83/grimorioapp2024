@@ -1,5 +1,6 @@
 import "server-only";
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import { clientAddress } from "./admin-login-limit";
 import { pool } from "./db";
 import {
   MIN_FILL_MS, TOKEN_MAX_AGE_MS, aboutLabel, feedbackEmailText, feedbackSubject,
@@ -88,7 +89,7 @@ export function checkFormToken(token: string, now = Date.now()): TokenCheck {
  */
 export function deviceKey(headers: Headers): string | null {
   if (!feedbackSecret()) return null;
-  const address = headers.get("x-real-ip")?.trim() || headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const address = clientAddress(headers) || "unknown";
   return hmac(`grimorio-feedback-device:${address}`);
 }
 
