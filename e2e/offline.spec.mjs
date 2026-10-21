@@ -52,6 +52,8 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
   await page.goto(base + "/oggetti-magici");
   await expect(page.locator('main a[href^="/oggetti-magici/"]')).toHaveCount(258);
+  await page.goto(base + "/compendio/condizioni");
+  await expect(page.locator('main ul a[href^="/manuale/condizioni-"]')).toHaveCount(15);
   await page.goto(base + "/oggetti-magici/bacchetta-delle-meraviglie");
   await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Bacchetta delle meraviglie");
 
@@ -91,6 +93,10 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
   await page.getByRole("button", { name: "Aggiungi riga" }).click();
   await expect(page.getByLabel("Riga 2: grado sfida")).toBeVisible();
+  // Conditions list, after a reload (2014 chosen on the weapon sheet: 11 conditions).
+  await page.goto(base + "/compendio/condizioni");
+  await page.reload();
+  await expect(page.locator('main ul a[href^="/manuale/condizioni-"]')).toHaveCount(11);
   // Magic items: the list and a sheet with its table, after a reload.
   await page.goto(base + "/oggetti-magici");
   await page.reload();
