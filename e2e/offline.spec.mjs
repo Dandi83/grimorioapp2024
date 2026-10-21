@@ -59,6 +59,19 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   // The main sections were saved when the service worker was installed.
   await page.goto(base + "/bestiario");
   await expect(page.locator("li.catalog-row")).toHaveCount(40);
+  // The notice never covers the controls at the top: on a phone the edition selector stays tappable.
+  for (const width of [390, 375]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto(base + "/grimorio");
+    await expect(banner(page)).toBeVisible();
+    for (const edition of ["2014", "2024"]) {
+      const button = page.getByRole("button", { name: edition, exact: true });
+      await button.click({ timeout: 5000 });
+      await expect(button).toHaveAttribute("aria-pressed", "true");
+    }
+    const notice = await banner(page).boundingBox(), selector = await page.getByRole("button", { name: "2014", exact: true }).boundingBox();
+    expect(notice.y + notice.height).toBeLessThanOrEqual(selector.y);
+  }
   // Never opened: a clear offline page instead of the browser error.
   await page.goto(base + "/spell/aiuto");
   await expect(page.getByText("Questa pagina non è ancora salvata sul telefono.")).toBeVisible();
