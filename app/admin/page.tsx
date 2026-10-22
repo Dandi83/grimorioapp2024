@@ -1,6 +1,7 @@
 import { isAdmin } from "@/lib/admin-auth";
 import { getAllSpells } from "@/lib/spells";
 import { getAllMonsters } from "@/lib/monsters";
+import { countNewFeedback } from "@/lib/feedback";
 import { AdminLogin } from "@/components/admin-login";
 import { AdminDashboard } from "@/components/admin-dashboard";
 
@@ -18,6 +19,10 @@ export default async function AdminPage() {
     return <AdminLogin />;
   }
 
-  const [spells, monsters] = await Promise.all([getAllSpells({ includePreview: false }), getAllMonsters()]);
-  return <AdminDashboard spells={spells} monsters={monsters} />;
+  const [spells, monsters, newReports] = await Promise.all([
+    getAllSpells({ includePreview: false }),
+    getAllMonsters(),
+    countNewFeedback().catch(() => null),
+  ]);
+  return <AdminDashboard spells={spells} monsters={monsters} newReports={newReports} />;
 }

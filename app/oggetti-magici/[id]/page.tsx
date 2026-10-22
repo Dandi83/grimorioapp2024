@@ -6,6 +6,7 @@ import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
 import { MagicItemSheet } from "@/components/magic-items/magic-item-sheet";
 import { compareMagicItem, findMagicItemEntry, magicItemEntries, magicItemEntryHref, seeAlso, type MagicItemChange } from "@/lib/magic-items-editions";
 import type { MagicItemEdition } from "@/lib/magic-items-types";
+import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
 
@@ -82,6 +83,7 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
           </ul>
         </section>
       )}
+      <ReportLink />
     </article>
   );
 }

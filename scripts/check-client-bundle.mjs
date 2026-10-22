@@ -73,6 +73,24 @@ export function findIndexLeaks(file = SEARCH_INDEX_FILE, prints = sheetFingerpri
   return leaks;
 }
 
+/** Server-only names and, when set during the build, their values: never in the browser code. */
+export const SECRET_ENV = ['RESEND_API_KEY', 'FEEDBACK_TO_EMAIL', 'FEEDBACK_FROM_EMAIL', 'TURNSTILE_SECRET_KEY', 'ADMIN_PASSCODE', 'ANALYTICS_SECRET', 'FEEDBACK_SECRET', 'DATABASE_URL'];
+
+export function findSecretLeaks(clientDir, env = process.env) {
+  const needles = [
+    'api.resend.com',
+    ...SECRET_ENV,
+    // Short values (a test passcode) would match by chance: only real-length values are checked.
+    ...SECRET_ENV.map(name => env[name]).filter(value => value && value.length >= 8),
+  ];
+  const leaks = [];
+  for (const path of jsFiles(clientDir)) {
+    const code = readFileSync(path, 'utf8');
+    needles.forEach((needle, i) => { if (code.includes(needle)) leaks.push({ path, what: i <= SECRET_ENV.length ? needle : `value of a server variable (${needle.length} characters)` }); });
+  }
+  return leaks;
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const clientDir = process.argv[2] || '.next/static';
   if (!existsSync(clientDir)) throw new Error(`${clientDir} not found: run next build first`);
@@ -86,5 +104,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error(`${leaks.length} full sheets in the browser code: lists must use the light index.`);
     process.exit(1);
   }
+  const secrets = findSecretLeaks(clientDir);
+  if (secrets.length) {
+    for (const leak of secrets.slice(0, 10)) console.error(`Server secret ${leak.what} found in ${leak.path}`);
+    console.error('Keys, recipients and passcodes must stay on the server.');
+    process.exit(1);
+  }
+  console.log(`No server keys or recipients in the browser code (${SECRET_ENV.length} variables checked).`);
   console.log(`Client bundle and search index (${indexFiles.length} file): no full creature sheets or 2014 spell texts (${prints.length} sheets checked).`);
 }

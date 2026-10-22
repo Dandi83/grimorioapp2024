@@ -6,6 +6,7 @@ import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { MANUAL_CATEGORIES } from "@/lib/manual-types";
 import { ManualContent } from "@/components/manual-content";
 import { BackButton } from "@/components/back-button";
+import { ReportLink } from "@/components/feedback/report-link";
 
 // The text never changes at runtime: pages are generated at build time.
 // Production builds only public conditions; other entries stay preview-only.
@@ -46,6 +47,7 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
         <Link href={`/grimorio?classe=${entry.title.toLowerCase()}`} className="mb-6 inline-block rounded-full border border-primary/40 px-4 py-2 text-sm font-semibold text-primary">Consulta gli incantesimi della classe →</Link>
       )}
       <ManualContent entry={entry} />
+      <ReportLink edition={entry.edizione === "2014" ? "2014" : "2024"} />
     </article>
   );
 }

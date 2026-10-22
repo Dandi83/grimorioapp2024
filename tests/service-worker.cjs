@@ -91,9 +91,18 @@ const text=r=>r.text();
  assert.equal(await text(response),'contenuto /grimorio','a slow network shows the saved copy after the timeout');
  sw.network.slow=false;
 
+ // The report form opens offline (sending needs the network); its address ignores the page it is about.
+ sw.network.pages['/segnala']='Modulo segnala';
+ await sw.fetchEvent(sw.request('/segnala?pagina=/spell/scudo'));
+ sw.network.online=false;
+ ({response}=await sw.fetchEvent(sw.request('/segnala?pagina=/mostro/lich&edizione=2014')));
+ assert.equal(await text(response),'Modulo segnala','the saved form opens offline from any card');
+ sw.network.online=true;
+
  // Never handled: admin, characters, account, API, Server Actions, RSC data, other sites, unsaved 404s.
  sw.network.online=true;
- for(const req of [sw.request('/admin'),sw.request('/admin/statistiche'),sw.request('/personaggi'),sw.request('/account'),sw.request('/manuale'),
+ for(const req of [sw.request('/admin'),sw.request('/admin/statistiche'),sw.request('/admin/segnalazioni'),sw.request('/admin/segnalazioni/11111111-1111-4111-8111-111111111111'),
+  sw.request('/api/segnalazioni',{mode:'cors'}),sw.request('/api/segnalazioni',{method:'POST',mode:'cors'}),sw.request('/personaggi'),sw.request('/account'),sw.request('/manuale'),
   sw.request('/api/analytics',{mode:'cors'}),sw.request('/spell/scudo',{method:'POST'}),sw.request('/spell/scudo',{mode:'cors',headers:{RSC:'1'}}),
   sw.request('/grimorio?_rsc=abc',{mode:'cors'}),{url:'https://example.com/',method:'GET',mode:'navigate',headers:new Headers()}]){
   assert.equal((await sw.fetchEvent(req)).response,undefined,`${req.method} ${req.url} goes straight to the network`);

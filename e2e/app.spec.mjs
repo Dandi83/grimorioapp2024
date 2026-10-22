@@ -778,3 +778,102 @@ test("search in Home: field only, panel with filters, results by section, back a
   for (const href of hrefs) expect((await request.get(href)).status(), href).toBe(200);
   expect(errors).toEqual([]);
 });
+
+test("reports: Segnala from a card with its edition, without email, invalid email, thanks, spam refused, admin list and detail", async ({ page, request }) => {
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(String(error)));
+  // From a weapon card shown in 2014: the page and the edition on screen are filled in.
+  await page.goto("/equipaggiamento/armi/spada-lunga");
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await page.getByRole("link", { name: "Segnala", exact: true }).click();
+  await expect(page).toHaveURL(/\/segnala\?pagina=%2Fequipaggiamento%2Farmi%2Fspada-lunga&titolo=Spada\+lunga&edizione=2014$/);
+  await expect(page.getByRole("heading", { name: "Segnala", level: 1 })).toBeVisible();
+  await expect(page.getByText("Riguarda: Spada lunga (2014)")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Errore" })).toHaveAttribute("aria-pressed", "true");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `form ${width}`).toBeLessThanOrEqual(width);
+  }
+  const message = page.getByLabel("Messaggio");
+  const email = page.getByLabel("Email per ricevere risposta (facoltativa)");
+  expect(await message.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
+  expect(await email.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
+  // Too short, then an invalid email: clear messages, nothing sent, the text stays.
+  await message.fill("corto");
+  await page.getByRole("button", { name: "Invia segnalazione" }).click();
+  await expect(page.getByText("Scrivi almeno 10 caratteri.")).toBeVisible();
+  await message.fill("Il costo nella tabella 2014 non corrisponde.");
+  await expect(page.getByText("44 / 2000")).toBeVisible();
+  await email.fill("nome@");
+  await page.getByRole("button", { name: "Invia segnalazione" }).click();
+  await expect(page.getByText("Email non valida: controllala o lasciala vuota.")).toBeVisible();
+  await expect(message).toHaveValue("Il costo nella tabella 2014 non corrisponde.");
+  await email.fill("lettore@esempio.it");
+  await page.getByRole("button", { name: "Invia segnalazione" }).click();
+  await expect(page.getByRole("heading", { name: "Grazie!" })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByText("Ho ricevuto la tua segnalazione. La leggerò appena possibile.")).toBeVisible();
+  // Without email, from the Home link, as a suggestion.
+  await page.getByRole("link", { name: "Torna alla Home" }).click();
+  await page.getByRole("link", { name: "Segnala un errore o un consiglio" }).click();
+  await expect(page.getByText(/^Riguarda:/)).toHaveCount(0);
+  await page.getByRole("button", { name: "Consiglio" }).click();
+  await page.getByLabel("Messaggio").fill("Una modalità per giocare la sera sarebbe comoda.");
+  await page.getByRole("button", { name: "Invia segnalazione" }).click();
+  await expect(page.getByRole("heading", { name: "Grazie!" })).toBeVisible({ timeout: 15000 });
+  // Spam: the hidden field filled by a program; the answer looks the same, nothing is saved.
+  await page.goto("/segnala");
+  await page.getByLabel("Messaggio").fill("Compra ora, offerta imperdibile per tutti.");
+  await page.locator('input[name="sito"]').evaluate(el => { el.value = "https://spam.example"; });
+  await page.getByRole("button", { name: "Invia segnalazione" }).click();
+  await expect(page.getByRole("heading", { name: "Grazie!" })).toBeVisible({ timeout: 15000 });
+  // Direct calls: another site, a forged token, a token used at once.
+  const body = { tipo: "errore", messaggio: "Messaggio inviato da uno script.", token: "f1.1.abc" };
+  expect((await request.post("/api/segnalazioni", { data: body, headers: { origin: "https://evil.example" } })).status()).toBe(403);
+  expect((await request.post("/api/segnalazioni", { data: body, headers: { origin: "http://127.0.0.1:3100" } })).status()).toBe(400);
+  const { token } = await (await request.get("/api/segnalazioni")).json();
+  expect((await request.post("/api/segnalazioni", { data: { ...body, token }, headers: { origin: "http://127.0.0.1:3100" } })).status()).toBe(429);
+
+  // Admin: without login the list asks for the passcode.
+  await page.goto("/admin/segnalazioni");
+  await expect(page.getByRole("heading", { name: "Area riservata" })).toBeVisible();
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await page.getByRole("link", { name: /^Segnalazioni/ }).click();
+  await expect(page.getByRole("heading", { name: "Segnalazioni" })).toBeVisible();
+  await expect(page.getByText("2 nuove")).toBeVisible();
+  const rows = page.locator("main ul li");
+  await expect(rows).toHaveCount(2);
+  await expect(rows.first()).toContainText("Una modalità per giocare la sera");
+  await expect(rows.first()).toContainText("Consiglio");
+  await expect(rows.nth(1)).toContainText("Spada lunga (2014)");
+  await expect(page.getByText("Compra ora")).toHaveCount(0);
+  await expect(rows.first().getByText("Email di avviso non inviata")).toBeVisible();
+  // Filters.
+  await page.getByRole("link", { name: "Errori", exact: true }).click();
+  await expect(rows).toHaveCount(1);
+  await page.getByRole("link", { name: "Tutte", exact: true }).click();
+  await expect(rows).toHaveCount(2);
+  // Detail: opening marks it as read; reply link; state; private note; deletion.
+  await rows.nth(1).getByRole("link").click();
+  await expect(page.getByText("stato: letta")).toBeVisible();
+  await expect(page.getByText("Il costo nella tabella 2014 non corrisponde.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Spada lunga" })).toHaveAttribute("href", "/equipaggiamento/armi/spada-lunga?edizione=2014");
+  await expect(page.getByRole("link", { name: "Rispondi via email" })).toHaveAttribute("href", /^mailto:lettore@esempio\.it\?subject=/);
+  await page.getByRole("button", { name: "Risolta" }).click();
+  await expect(page.getByRole("button", { name: "Risolta" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByLabel("Nota privata").fill("Verificare sul PDF, p. 149");
+  await page.getByRole("button", { name: "Salva nota" }).click();
+  await expect(page.getByText("Nota salvata.")).toBeVisible();
+  await page.reload();
+  await expect(page.getByLabel("Nota privata")).toHaveValue("Verificare sul PDF, p. 149");
+  await expect(page.getByRole("button", { name: "Risolta" })).toHaveAttribute("aria-pressed", "true");
+  page.once("dialog", dialog => dialog.accept());
+  await page.getByRole("button", { name: "Elimina segnalazione" }).click();
+  await expect(page).toHaveURL(/\/admin\/segnalazioni$/);
+  await expect(rows).toHaveCount(1);
+  await expect(page.getByText("1 nuova")).toBeVisible();
+  // Never indexed.
+  expect(await page.locator('meta[name="robots"]').getAttribute("content")).toMatch(/noindex/);
+  expect(errors).toEqual([]);
+});

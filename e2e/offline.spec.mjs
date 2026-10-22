@@ -56,6 +56,8 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.locator('main ul a[href^="/manuale/condizioni-"]')).toHaveCount(15);
   await page.goto(base + "/oggetti-magici/bacchetta-delle-meraviglie");
   await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Bacchetta delle meraviglie");
+  await page.goto(base + "/segnala");
+  await expect(page.getByRole("heading", { name: "Segnala", level: 1 })).toBeVisible();
 
   // The search panel, opened once with the connection: its index is saved too.
   await page.goto(base + "/");
@@ -134,6 +136,14 @@ test("offline: visited pages open from the saved copy with a notice, others say 
     const notice = await banner(page).boundingBox(), selector = await page.getByRole("button", { name: "2014", exact: true }).boundingBox();
     expect(notice.y + notice.height).toBeLessThanOrEqual(selector.y);
   }
+  // The report form opens offline from a card; sending fails clearly and keeps the text (nothing is queued).
+  await page.goto(base + "/spell/dardo-incantato");
+  await page.getByRole("link", { name: "Segnala", exact: true }).click();
+  await expect(page.getByText("Riguarda:")).toBeVisible();
+  await page.getByLabel("Messaggio").fill("Messaggio scritto senza connessione.");
+  await page.getByRole("button", { name: "Invia segnalazione" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "sei offline" })).toBeVisible();
+  await expect(page.getByLabel("Messaggio")).toHaveValue("Messaggio scritto senza connessione.");
   // Never opened: a clear offline page instead of the browser error.
   await page.goto(base + "/spell/aiuto");
   await expect(page.getByText("Questa pagina non è ancora salvata sul telefono.")).toBeVisible();

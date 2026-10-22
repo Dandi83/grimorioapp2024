@@ -16,6 +16,7 @@ import { schoolColor } from "@/lib/school-colors";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
 import { getLegacySpellSource, spellEditionLink } from "@/lib/srd-spells-2014";
+import { ReportLink } from "@/components/feedback/report-link";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -198,6 +199,7 @@ export default async function SpellDetailPage({
         </aside>
       )}
 
+      <ReportLink edition={spell.edizione === "2014" ? "2014" : "2024"} />
     </article>
   );
 }

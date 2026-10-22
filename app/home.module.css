@@ -101,6 +101,23 @@
   color: var(--color-primary);
 }
 
+.report {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 0 8px;
+  color: var(--color-muted);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.report:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .headerLinks a:hover {
   color: var(--color-primary);
 }

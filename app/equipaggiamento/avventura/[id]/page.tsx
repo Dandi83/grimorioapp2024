@@ -7,6 +7,7 @@ import type { GearItem, GearTable } from "@/lib/adventuring-gear";
 import { gear2014Source, type Gear2014Item } from "@/lib/adventuring-gear-2014";
 import { compareGear, findGearEntry, gearEntries, gearHref } from "@/lib/adventuring-gear-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
+import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
 
@@ -150,6 +151,7 @@ export default async function GearItemPage({ params }: { params: Promise<{ id: s
           </table>
         </section>
       )}
+      <ReportLink />
     </article>
   );
 }

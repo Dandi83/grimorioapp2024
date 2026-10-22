@@ -5,6 +5,7 @@ import { BackButton } from "@/components/back-button";
 import { EditionPanels } from "@/components/equipment/edition-panels";
 import { compareWeapon, getWeapon, masteryText, propertyCards, specialRule, weaponSources, weapons, type WeaponEditionView } from "@/lib/equipment";
 import { WEAPON_GROUP_NAMES, type EquipmentEdition } from "@/lib/equipment-types";
+import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
 
@@ -123,6 +124,7 @@ export default async function WeaponPage({ params }: { params: Promise<{ id: str
           )}
         </section>
       )}
+      <ReportLink />
     </article>
   );
 }
