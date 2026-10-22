@@ -149,6 +149,12 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  const examples=JSON.parse(panel.match(/const EXAMPLES = (\[.*\]);/)[1].replace(/'/g,'"'));
  assert.equal(examples.length,5);assert.ok(!home.includes('SUGGESTIONS'));
  for(const q of examples)assert.ok(s.search(production,rows,q).length,q);
+ // Hidden sections (/admin/sezioni) leave the index: their pages, and the section when it is empty.
+ const hidden=await idx.buildSearchIndex('production',undefined,['classi','armi','condizioni']);
+ assert.deepEqual(hidden.sections.map(x=>x.k),['incantesimi','mostri','equipaggiamento','oggetti-magici']);
+ assert.ok(!hidden.rows.some(r=>/^\/(classi|equipaggiamento\/armi|compendio\/condizioni|manuale\/condizioni-)/.test(r[3])||(r[4]&&/^\/classi/.test(r[4]))),'no address of a hidden section');
+ assert.ok(hidden.rows.some(r=>r[3].startsWith('/equipaggiamento/armature/')),'the other equipment stays');
+ assert.equal(production.rows.length-hidden.rows.length,production.rows.filter(r=>/^\/(classi|equipaggiamento\/armi\/|manuale\/condizioni-)/.test(r[3])).length);
  // Offline: the index is saved by the service worker; the panel never reaches the admin area.
  const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
  assert.ok(sw.includes('const SEARCH_INDEX = "/ricerca-indice.json";')&&sw.includes('"/preferiti", SEARCH_INDEX]'));

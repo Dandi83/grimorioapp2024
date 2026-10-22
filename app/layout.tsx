@@ -8,6 +8,8 @@ import { AnalyticsProvider } from "@/components/analytics-provider";
 import { InstallPrompt } from "@/components/install-prompt";
 import { ServiceWorker } from "@/components/service-worker";
 import { serviceWorkerEnabled } from "@/lib/service-worker-config";
+import { PUBLIC_SECTIONS } from "@/lib/public-sections";
+import { sectionView } from "@/lib/section-view";
 import "./globals.css";
 import {CharacterSessionProvider} from "@/components/characters/session";
 
@@ -61,7 +63,10 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // Hidden sections (/admin/sezioni): out of the bottom bar for the public, labelled for the administrator.
+  const { hidden, admin } = await sectionView();
+  const hiddenPaths = PUBLIC_SECTIONS.filter(section => hidden.includes(section.key)).flatMap(section => section.paths);
   return (
     <html
       lang="it"
@@ -71,11 +76,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <FavoritesProvider>
           <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x">
             {/* The offline notice sits in the page flow above the content: it never covers the controls at the top. */}
-            <ServiceWorker enabled={serviceWorkerEnabled()} />
+            <ServiceWorker enabled={serviceWorkerEnabled()} hiddenPaths={hiddenPaths} />
             <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))]">
               <CharacterSessionProvider>{children}</CharacterSessionProvider>
             </main>
-            <BottomNav />
+            <BottomNav hidden={hidden} admin={admin} />
           </div>
           <InstallPrompt />
           <AnalyticsProvider />

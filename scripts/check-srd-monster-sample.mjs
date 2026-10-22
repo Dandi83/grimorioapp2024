@@ -70,8 +70,10 @@ const page=loadTs('../app/mostro/[id]/page.tsx',{
   '@/lib/spell-references':loadTs('../lib/spell-references.ts'),
   '@/lib/conditions':loadTs('../lib/conditions.ts'),
   '@/lib/monsters-types':loadTs('../lib/monsters-types.ts'),
+  '@/lib/public-sections':loadTs('../lib/public-sections.ts'),
+  '@/lib/section-view':{sectionsOut:async()=>[]},
   '@/lib/srd-monsters':mod.exports,
-  '@/components/monster-sheet':loadTs('../components/monster-sheet.tsx',{'@/components/html-text':loadTs('../components/html-text.tsx'),'@/lib/spell-references':loadTs('../lib/spell-references.ts'),'@/lib/conditions':loadTs('../lib/conditions.ts'),'@/lib/monsters-types':loadTs('../lib/monsters-types.ts')}),
+  '@/components/monster-sheet':loadTs('../components/monster-sheet.tsx',{'@/components/html-text':loadTs('../components/html-text.tsx'),'@/lib/spell-references':loadTs('../lib/spell-references.ts'),'@/lib/conditions':loadTs('../lib/conditions.ts'),'@/lib/monsters-types':loadTs('../lib/monsters-types.ts'),'@/lib/public-sections':loadTs('../lib/public-sections.ts')}),
 }).default;
 const html=renderToStaticMarkup(await page({params:Promise.resolve({id:'aboleth'})}));
 // Challenge line below the languages: GS, experience (PE) and proficiency bonus.

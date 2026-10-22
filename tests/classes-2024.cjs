@@ -157,7 +157,7 @@ for (const page of ['/classi', ...IDS.map(id => `/classi/${id}`)]) assert.ok(pub
 assert.ok(!publicPage.test('/classi/a/b'));
 // Compendio: «Personaggi» with the Classi tile above «Regole e oggetti»; no empty tiles for what comes later.
 const compendio = fs.readFileSync('app/compendio/page.tsx', 'utf8');
-assert.ok(compendio.indexOf('<GroupLabel>Personaggi</GroupLabel>') < compendio.indexOf('<GroupLabel>Regole e oggetti</GroupLabel>'));
-assert.ok(compendio.includes('{ href: "/classi", title: "Classi", text: "Barbaro, Bardo, Chierico…", Icon: Shield, square: true }'));
+assert.ok(compendio.indexOf('{ label: "Personaggi"') < compendio.indexOf('{ label: "Regole e oggetti"'));
+assert.ok(compendio.includes('{ href: "/classi", title: "Classi", text: "Barbaro, Bardo, Chierico…", Icon: Shield, square: true, sections: ["classi"] }'));
 assert.ok(!/Specie|Background|Talenti/.test(compendio.replace(/\/\/.*$/gm, '')));
 console.log('Classi pages: offline list and sheets, Compendio group «Personaggi».');

@@ -4,9 +4,20 @@ import { useEffect, useState } from "react";
 
 const dateFormat = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
-/** Registers the offline service worker, or removes it when the emergency switch is off. */
-export function ServiceWorker({ enabled }: { enabled: boolean }) {
+/**
+ * Registers the offline service worker, or removes it when the emergency switch is off.
+ * hiddenPaths: addresses of the hidden sections, whose saved copies the worker deletes.
+ */
+export function ServiceWorker({ enabled, hiddenPaths = [] }: { enabled: boolean; hiddenPaths?: readonly string[] }) {
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const hiddenKey = hiddenPaths.join("|");
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" || !enabled || !("serviceWorker" in navigator)) return;
+    void navigator.serviceWorker.ready.then(registration => {
+      registration.active?.postMessage({ type: "hidden-sections", paths: hiddenKey ? hiddenKey.split("|") : [] });
+    }).catch(() => {});
+  }, [enabled, hiddenKey]);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;

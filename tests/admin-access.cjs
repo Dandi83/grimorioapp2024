@@ -26,15 +26,16 @@ function load(relative) {
 
 (async()=>{
   process.env.ADMIN_PASSCODE = 'passcode-di-prova';
-  const jar = new Map(), requestHeaders = new Map();
+  const jar = new Map(), requestHeaders = new Map(), draft = {on:false};
   deps['next/headers'] = {
     cookies: async()=>({get:name=>jar.has(name)?{value:jar.get(name).value}:undefined,set:(name,value,options)=>jar.set(name,{value,options}),delete:name=>jar.delete(name)}),
     headers: async()=>({get:name=>requestHeaders.get(name) ?? null}),
+    draftMode: async()=>({get isEnabled(){return draft.on;},enable(){draft.on=true;},disable(){draft.on=false;}}),
   };
   // Sessions live in the database (logout revokes them): an in-memory PostgreSQL here.
   const pg = new PGlite();
   let failQueries = false;
-  const pool = {query:(sql,params)=>failQueries?Promise.reject(new Error('database down')):pg.query(sql,params)};
+  const pool = {query:(sql,params)=>failQueries?Promise.reject(new Error('database down')):pg.query(sql,params),connect:async()=>({query:(sql,params)=>pg.query(sql,params),release(){}})};
   deps['server-only'] = {};
   deps['./db'] = deps['@/lib/db'] = {db:{},pool};
   const auth = load('lib/admin-auth.ts');
@@ -98,6 +99,7 @@ function load(relative) {
 
   assert.deepEqual(await attempt('passcode-di-prova','203.0.113.1, 10.0.0.1'),{ok:true,error:null});
   assert.equal(await auth.isAdmin(),true);
+  assert.equal(draft.on,true,'login turns on the preview of the public pages (hidden sections)');
   for (let i = 0; i < 5; i++) assert.equal((await attempt('sbagliata','203.0.113.2')).error,'Passcode errata.');
   const blocked = await attempt('passcode-di-prova','203.0.113.2');
   assert.equal(blocked.ok,false);assert.match(blocked.error,/Troppi tentativi/);
@@ -129,7 +131,33 @@ function load(relative) {
   const viaVercel = async (passcode,forwarded) => {requestHeaders.clear();requestHeaders.set('x-real-ip','203.0.113.50');requestHeaders.set('x-forwarded-for',forwarded);jar.clear();return loginAction(null,form(passcode));};
   for (let i = 0; i < 5; i++) await viaVercel('sbagliata',`10.0.0.${i}`);
   assert.match((await viaVercel('passcode-di-prova','10.9.9.9')).error,/Troppi tentativi/,'changing x-forwarded-for does not reset the counter');
+
+  // Sections (/admin/sezioni): only an administrator can show or hide them; every switch is logged.
+  deps['next/cache'] = {revalidatePath(){},updateTag(){},unstable_cache:fn=>fn};
+  const sections = load('app/actions/admin-sections.ts');
+  const visibility = load('lib/section-visibility.ts');
+  jar.clear(); draft.on = false;
+  await assert.rejects(sections.setSectionVisibilityAction('classi',true),/Non autorizzato/,'no public request can change a section');
+  await assert.rejects(sections.showSectionAction((()=>{const f=new FormData();f.set('sezione','classi');return f;})()),/Non autorizzato/);
+  assert.deepEqual(await visibility.hiddenSections(),[],'every section is visible by default');
+  assert.equal((await attempt('passcode-di-prova','203.0.113.60')).ok,true);
+  draft.on = false;
+  assert.deepEqual(await sections.setSectionVisibilityAction('classi',true),{ok:true,hidden:true});
+  assert.equal(draft.on,true,'a switch turns on the preview for the administrator');
+  assert.deepEqual(await sections.setSectionVisibilityAction('classi',true),{ok:true,hidden:true},'switching to the same state logs nothing');
+  assert.deepEqual(await sections.setSectionVisibilityAction('admin',true),{ok:false,error:'Sezione sconosciuta.'});
+  assert.deepEqual(await visibility.hiddenSections(),['classi']);
+  assert.equal((await visibility.sectionStates()).classi,true);
+  const show = new FormData(); show.set('sezione','classi');
+  await sections.showSectionAction(show);
+  assert.deepEqual(await visibility.hiddenSections(),[]);
+  const log = await visibility.allSectionLog();
+  assert.deepEqual(log.map(row=>[row.sezione,row.nascosta]).sort(),[['classi',false],['classi',true]],'one log row per change, with the new state');
+  assert.ok(log.every(row=>row.creata_il),'with date and time');
+  assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_section_visibility')).rows[0].n,1,'one record per section');
+  await load('app/actions/admin.ts').logoutAction();
+  assert.equal(draft.on,false,'logout turns the preview off');
   global.setTimeout = originalTimeout;
 
-  console.log('Admin access: signed 7-day __Host- sessions revoked at logout, server expiry, old/forged/changed-passcode cookies refused, login limited per address and overall, hashed addresses, fail-closed counter.');
+  console.log('Admin access: signed 7-day __Host- sessions revoked at logout, server expiry, old/forged/changed-passcode cookies refused, login limited per address and overall, hashed addresses, fail-closed counter; sections shown/hidden only by the administrator, logged, preview on at login and off at logout.');
 })().catch(error=>{console.error(error);process.exit(1);});

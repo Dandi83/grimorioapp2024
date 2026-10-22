@@ -1,15 +1,16 @@
 import { isAdmin } from "@/lib/admin-auth";
 import { allOverrides } from "@/lib/content-overrides";
 import { allEditorLog } from "@/lib/editor-log";
+import { allSectionLog } from "@/lib/section-visibility";
 
 export const dynamic = "force-dynamic";
 
 /** «Esporta correzioni»: the whole log as a JSON file, as a backup. Admin only. */
 export async function GET() {
   if (!(await isAdmin())) return new Response("Non autorizzato", { status: 401, headers: { "Cache-Control": "no-store" } });
-  const [rows, editor] = await Promise.all([allOverrides(), allEditorLog()]);
+  const [rows, editor, sezioni] = await Promise.all([allOverrides(), allEditorLog(), allSectionLog()]);
   const day = new Date().toISOString().slice(0, 10);
-  return new Response(JSON.stringify({ esportato_il: new Date().toISOString(), versione: 1, correzioni: rows, modifiche_editor: editor }, null, 2), {
+  return new Response(JSON.stringify({ esportato_il: new Date().toISOString(), versione: 1, correzioni: rows, modifiche_editor: editor, sezioni_visibili: sezioni }, null, 2), {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Content-Disposition": `attachment; filename="grimorio-correzioni-${day}.json"`,

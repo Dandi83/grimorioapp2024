@@ -15,6 +15,7 @@ const deps={
  '@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},
  '@/components/favorite-button':{FavoriteButton:()=>null},
  '@/lib/monsters':{getMonsterById:async()=>selected},
+ '@/lib/section-view':{sectionsOut:async()=>[]},
 };
 function load(relative){
  const filename=path.resolve(relative);

@@ -7,6 +7,7 @@ import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { getMonsterById } from "@/lib/monsters";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
+import { sectionsOut } from "@/lib/section-view";
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
 import { ReportLink } from "@/components/feedback/report-link";
 
@@ -66,7 +67,7 @@ export default async function MonsterDetailPage({
         }
         label={<MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
       />
-      <MonsterSheetBody monster={monster} legacy={legacy} />
+      <MonsterSheetBody monster={monster} legacy={legacy} hidden={await sectionsOut()} />
       {source && (
         <aside aria-label="Fonte della scheda" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: {source.document} italiano — {source.sourceName}.</p>

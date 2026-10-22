@@ -73,7 +73,7 @@ export default async function AdminPage() {
         {COMING.filter(item => !CONTENT_SECTIONS.some(section => section.title === item.title)).map(item => <Tile key={item.title} title={item.title} hint={item.hint} />)}
       </nav>
       <nav aria-label="Altro" className="flex flex-wrap gap-2">
-        {[["/admin/segnalazioni", "Segnalazioni"], ["/admin/registro", "Registro modifiche"], ["/admin/statistiche", "Statistiche"]].map(([href, label]) => (
+        {[["/admin/sezioni", "Sezioni dell’app"], ["/admin/segnalazioni", "Segnalazioni"], ["/admin/registro", "Registro modifiche"], ["/admin/statistiche", "Statistiche"]].map(([href, label]) => (
           <Link key={href} href={href} className="inline-flex min-h-11 items-center rounded-[22px] border-[1.5px] border-chip-border bg-card px-3.5 text-sm font-semibold text-primary">{label}</Link>
         ))}
       </nav>

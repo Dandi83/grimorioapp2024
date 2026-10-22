@@ -49,7 +49,8 @@ function load(relative, deps = {}) {
     '@/lib/conditions': load('lib/conditions.ts'),
     '@/lib/monsters-types': types,
     '@/lib/srd-monsters': provider,
-    '@/components/monster-sheet': load('components/monster-sheet.tsx', {'@/components/html-text': load('components/html-text.tsx'), '@/lib/spell-references': load('lib/spell-references.ts'), '@/lib/conditions': load('lib/conditions.ts'), '@/lib/monsters-types': types}),
+    '@/components/monster-sheet': load('components/monster-sheet.tsx', {'@/components/html-text': load('components/html-text.tsx'), '@/lib/spell-references': load('lib/spell-references.ts'), '@/lib/conditions': load('lib/conditions.ts'), '@/lib/monsters-types': types, '@/lib/public-sections': load('lib/public-sections.ts')}),
+    '@/lib/section-view': {sectionsOut: async () => []},
   }).default;
   for (const r of legacy.records) {
     const monster = provider.previewMonsterById(r.monster.id, 'preview');
