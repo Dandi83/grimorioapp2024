@@ -849,8 +849,8 @@ test("reports: Segnala from a card with its edition, without email, invalid emai
   await expect(page).toHaveURL(/\/admin\/segnalazioni$/);
   await expect(page.getByRole("heading", { name: "Segnalazioni" })).toBeVisible();
   await page.goto("/admin");
-  await expect(page.getByRole("link", { name: "Segnalazioni 2 NUOVE" })).toBeVisible();
-  await page.getByRole("link", { name: "Segnalazioni 2 NUOVE" }).click();
+  await expect(page.getByRole("link", { name: "2 segnalazioni nuove" })).toBeVisible();
+  await page.getByRole("link", { name: "2 segnalazioni nuove" }).click();
   await expect(page.getByText("2 nuove")).toBeVisible();
   const rows = page.locator("main ul li");
   await expect(rows).toHaveCount(2);
@@ -918,4 +918,100 @@ test("security: headers on every kind of page, admin pages and API closed withou
     await page.waitForLoadState("networkidle");
   }
   expect(violations).toEqual([]);
+});
+
+test("admin corrections: tiles, weapons list per edition, edit with reason, public card with note, search, log, undo, export", async ({ page, request }) => {
+  test.setTimeout(120_000);
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(String(error)));
+  // Without login: no editor, no export.
+  await page.goto("/admin/contenuti/armi");
+  await expect(page.getByRole("heading", { name: "Area riservata" })).toBeVisible();
+  expect((await request.get("/admin/registro/esporta")).status()).toBe(401);
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByRole("heading", { name: "Armi", level: 1 })).toBeVisible();
+  // Home of the admin area: tiles and counters.
+  await page.goto("/admin");
+  const tiles = page.getByRole("navigation", { name: "Sezioni da modificare" });
+  for (const name of ["Incantesimi", "Mostri", "Armi"]) await expect(tiles.getByRole("link", { name: new RegExp(`^${name}`) })).toBeVisible();
+  await expect(tiles.getByText("In arrivo")).toHaveCount(5);
+  await expect(page.getByRole("link", { name: /0\s*modifiche manuali/ })).toBeVisible();
+  for (const width of [360, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin ${width}`).toBeLessThanOrEqual(width);
+  }
+  // The spell and creature editors are still there.
+  await tiles.getByRole("link", { name: /^Mostri/ }).click();
+  await expect(page.getByRole("tab", { name: "Mostri" })).toHaveAttribute("aria-selected", "true");
+  await page.goto("/admin");
+  await tiles.getByRole("link", { name: /^Armi/ }).click();
+  // Weapons list: 2014 selector and search.
+  await page.getByRole("navigation", { name: "Edizione" }).getByRole("link", { name: "2014" }).click();
+  await expect(page).toHaveURL(/edizione=2014/);
+  await page.getByRole("searchbox", { name: "Cerca una scheda" }).fill("trid");
+  await expect(page.locator("main ul li")).toHaveCount(1);
+  await page.getByRole("searchbox", { name: "Cerca una scheda" }).fill("");
+  await page.getByRole("navigation", { name: "Edizione" }).getByRole("link", { name: "2024" }).click();
+  await page.getByRole("link", { name: /^Tridente/ }).click();
+  await expect(page.getByRole("heading", { name: "Tridente (2024)" })).toBeVisible();
+  // Edit: invalid values and missing reason are refused before saving.
+  const peso = page.getByLabel("Peso", { exact: true });
+  await expect(page.getByText("Testo originale del manuale: 2 kg")).toBeVisible();
+  await peso.fill("2 hg");
+  await page.getByRole("button", { name: "Salva modifica" }).click();
+  await expect(page.getByText(/Peso: Usa un peso come/)).toBeVisible();
+  await expect(page.getByText(/Il motivo è obbligatorio/)).toBeVisible();
+  await peso.fill("4 kg");
+  await page.getByLabel("Nome", { exact: true }).fill("Tridente da pesca");
+  await page.locator("#campo-peso-originale").getByRole("button", { name: "Ripristina originale" }).click();
+  await expect(page.getByLabel("Peso", { exact: true })).toHaveValue("2 kg");
+  await peso.fill("4 kg");
+  await page.getByLabel("Motivo della modifica (obbligatorio)").fill("Prova automatica: peso e nome corretti");
+  page.once("dialog", dialog => { expect(dialog.message()).toContain("Peso: «2 kg» → «4 kg»"); dialog.accept(); });
+  await page.getByRole("button", { name: "Salva modifica" }).click();
+  await expect(page.getByText("Salvato: 2 modifiche.")).toBeVisible();
+  // Public card: new values and the note with the printed ones; the 2014 card is unchanged.
+  await page.goto("/equipaggiamento/armi/tridente?edizione=2024");
+  const card = page.locator('[data-edition="2024"]');
+  await expect(card.getByRole("heading", { level: 1 })).toHaveText("Tridente da pesca");
+  await expect(card.getByText("4 kg")).toBeVisible();
+  await expect(card.getByText("Corretto rispetto al manuale originale")).toBeVisible();
+  await expect(card.getByText("Peso: nel manuale «2 kg»")).toBeVisible();
+  await expect(card.getByText("Nome: nel manuale «Tridente»")).toBeVisible();
+  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Tridente");
+  await expect(page.locator('[data-edition="2014"]').getByText("Corretto rispetto al manuale originale")).toHaveCount(0);
+  // Weapons list and search use the corrected name.
+  await page.goto("/equipaggiamento/armi?edizione=2024");
+  await expect(page.getByText("Tridente da pesca").first()).toBeVisible();
+  const index = await (await request.get("/ricerca-indice.json")).json();
+  expect(index.rows.some(row => row[1] === "Tridente da pesca")).toBe(true);
+  // Log: before → after, reason, export, undo.
+  await page.goto("/admin/registro");
+  const log = page.getByRole("list", { name: "Modifiche" });
+  await expect(log.getByRole("listitem")).toHaveCount(2);
+  await expect(log.getByText("Prova automatica: peso e nome corretti").first()).toBeVisible();
+  await expect(page.getByText(/Correzioni documentate \(\d+, sola lettura\)/)).toBeVisible();
+  const exported = await page.request.get("/admin/registro/esporta");
+  expect(exported.status()).toBe(200);
+  expect(exported.headers()["content-disposition"]).toMatch(/attachment; filename="grimorio-correzioni-\d{4}-\d{2}-\d{2}\.json"/);
+  expect((await exported.json()).correzioni).toHaveLength(2);
+  const pesoRow = log.getByRole("listitem").filter({ hasText: "Tridente · peso" });
+  page.once("dialog", dialog => dialog.accept());
+  await pesoRow.getByRole("button", { name: "Annulla modifica" }).click();
+  await expect(log.getByRole("listitem")).toHaveCount(1);
+  await page.getByRole("link", { name: "Tutto lo storico" }).click();
+  await expect(log.getByRole("listitem")).toHaveCount(2);
+  await expect(log.getByText(/annullata oggi/)).toBeVisible();
+  await page.goto("/equipaggiamento/armi/tridente?edizione=2024");
+  await expect(page.locator('[data-edition="2024"]').getByText("Peso: nel manuale «2 kg»")).toHaveCount(0);
+  await expect(page.locator('[data-edition="2024"]').getByText("Nome: nel manuale «Tridente»")).toBeVisible();
+  // Clean up: back to the manual for the next tests.
+  await page.goto("/admin/registro");
+  page.once("dialog", dialog => dialog.accept());
+  await log.getByRole("button", { name: "Annulla modifica" }).click();
+  await expect(page.getByText("Nessuna modifica.")).toBeVisible();
+  expect(errors).toEqual([]);
 });

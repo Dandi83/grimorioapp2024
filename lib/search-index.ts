@@ -14,6 +14,7 @@
 import { conditionRows } from "./conditions-list";
 import { gearListRows } from "./adventuring-gear-editions";
 import { armorListItems } from "./armor";
+import { getCorrectedWeapons } from "./corrected-content";
 import { weaponListItems } from "./equipment";
 import { ARMOR_CATEGORY_NAMES, EQUIPMENT_EDITION_KEY, WEAPON_GROUP_NAMES, type EquipmentEdition } from "./equipment-types";
 import { magicItemEditionRows } from "./magic-items-editions";
@@ -61,7 +62,8 @@ export const SEARCH_SOURCES: SearchSource[] = [
   },
   {
     section: "equipaggiamento", title: "Equipaggiamento", editionKey: EQUIPMENT_EDITION_KEY,
-    rows: () => weaponListItems().flatMap(weapon => (["2024", "2014"] as const).flatMap(edition => {
+    // Corrected names and costs (lib/corrected-content.ts): the search finds what the cards show.
+    rows: async () => weaponListItems((await getCorrectedWeapons()).weapons).flatMap(weapon => (["2024", "2014"] as const).flatMap(edition => {
       const item = weapon.editions[edition];
       return item ? [{ nome: item.nome, label: `${WEAPON_GROUP_NAMES[weapon.gruppo]} · ${item.costo}`, href: `/equipaggiamento/armi/${weapon.id}`, edizione: edition }] : [];
     })),

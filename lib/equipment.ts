@@ -7,7 +7,7 @@ import type { EquipmentEdition, WeaponGroup, WeaponListEdition, WeaponListItem }
  * Rule texts are quoted word for word: 2014 from srd-weapons-it.json, 2024 from the 2024 manual.
  */
 
-type RawWeapon = NonNullable<(typeof weaponsData.armi)[number]["2014" | "2024"]>;
+export type RawWeapon = NonNullable<(typeof weaponsData.armi)[number]["2014" | "2024"]>;
 
 export interface WeaponProperty {
   key: string;
@@ -120,17 +120,37 @@ export interface Weapon {
   editions: Partial<Record<EquipmentEdition, WeaponEditionView>>;
 }
 
-export const weapons: Weapon[] = weaponsData.armi.map(item => ({
-  id: item.id,
-  gruppo: item.gruppo as WeaponGroup,
-  editions: {
-    ...(item["2014"] ? { "2014": view(item["2014"] as RawWeapon, "2014") } : {}),
-    ...(item["2024"] ? { "2024": view(item["2024"] as RawWeapon, "2024") } : {}),
-  },
-}));
+/** Fields of a weapon row that a manual correction may change (lib/content-sections.ts). */
+export const WEAPON_EDITABLE_FIELDS = ["nome", "costo", "danni", "tipoDanno", "peso", "proprieta", "padronanza"] as const;
+export type WeaponField = (typeof WEAPON_EDITABLE_FIELDS)[number];
 
-export function getWeapon(id: string) {
-  return weapons.find(weapon => weapon.id === id);
+/** The printed values of one weapon in one edition, as in srd-weapons-it.json (never changed). */
+export function weaponOriginal(id: string, edition: EquipmentEdition): Partial<Record<WeaponField, string>> | undefined {
+  const raw = weaponsData.armi.find(item => item.id === id)?.[edition] as RawWeapon | undefined;
+  if (!raw) return undefined;
+  return Object.fromEntries(WEAPON_EDITABLE_FIELDS.filter(field => field in raw).map(field => [field, String((raw as Record<string, unknown>)[field] ?? "")]));
+}
+
+/**
+ * The weapons, optionally with corrections applied to the printed values before the sheet is
+ * derived from them (lib/corrected-content.ts). Without a patch: exactly the project files.
+ */
+export function buildWeapons(patch?: (id: string, edition: EquipmentEdition, raw: RawWeapon) => RawWeapon): Weapon[] {
+  const edit = (id: string, edition: EquipmentEdition, raw: RawWeapon) => view(patch ? patch(id, edition, raw) : raw, edition);
+  return weaponsData.armi.map(item => ({
+    id: item.id,
+    gruppo: item.gruppo as WeaponGroup,
+    editions: {
+      ...(item["2014"] ? { "2014": edit(item.id, "2014", item["2014"] as RawWeapon) } : {}),
+      ...(item["2024"] ? { "2024": edit(item.id, "2024", item["2024"] as RawWeapon) } : {}),
+    },
+  }));
+}
+
+export const weapons: Weapon[] = buildWeapons();
+
+export function getWeapon(id: string, list: Weapon[] = weapons) {
+  return list.find(weapon => weapon.id === id);
 }
 
 // Comparison 2014 → 2024, computed from the data: the ammunition kind printed only in 2024
@@ -179,8 +199,8 @@ function listEdition(weapon?: WeaponEditionView): WeaponListEdition | undefined 
 }
 
 /** Light rows for the lists: no rule texts. */
-export function weaponListItems(): WeaponListItem[] {
-  return weapons.map(weapon => {
+export function weaponListItems(list: Weapon[] = weapons): WeaponListItem[] {
+  return list.map(weapon => {
     const { changed, note } = compareWeapon(weapon);
     return {
       id: weapon.id, gruppo: weapon.gruppo,

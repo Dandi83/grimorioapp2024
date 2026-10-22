@@ -142,3 +142,21 @@ export const adminSessions = pgTable("grimorio_admin_sessions", {
   id: text("id").primaryKey(),
   expires_at: timestamp("expires_at", { withTimezone: true }).notNull(),
 });
+
+/**
+ * Manual corrections made in the admin area (lib/content-overrides.ts), laid over the
+ * original values only when a page is shown: the project files in lib/data never change.
+ */
+export const contentOverrides = pgTable("grimorio_content_overrides", {
+  id: uuid("id").primaryKey(),
+  sezione: text("sezione").notNull(),
+  scheda_id: text("scheda_id").notNull(),
+  edizione: text("edizione").notNull(),
+  campo: text("campo").notNull(),
+  valore_originale: text("valore_originale").notNull(),
+  valore_nuovo: text("valore_nuovo").notNull(),
+  motivo: text("motivo").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+  creata_da: text("creata_da").notNull(),
+  annullata_il: timestamp("annullata_il", { withTimezone: true }),
+});
