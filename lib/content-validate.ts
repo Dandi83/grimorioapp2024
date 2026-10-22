@@ -22,7 +22,7 @@ export interface FieldSpec {
 export function normalizeValue(kind: FieldKind, value: string): string {
   const clean = value
     .replace(/\r\n?/g, "\n")
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F​-‏‪-‮⁦-⁩]/g, "");
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g, "");
   if (kind === "longtext") return clean.split("\n").map(line => line.replace(/[ \t]+/g, " ").trimEnd()).join("\n").replace(/\n{3,}/g, "\n\n").trim();
   return clean.replace(/\s+/g, " ").trim();
 }
@@ -30,8 +30,8 @@ export function normalizeValue(kind: FieldKind, value: string): string {
 const PATTERNS: Partial<Record<FieldKind, { test: RegExp; message: string }>> = {
   // "1d8", "2d6", "1d4 + 1", "1" (a fixed damage) or "—".
   dice: { test: /^(?:—|\d{1,3}|\d{1,2}d\d{1,3}(?: ?[+−-] ?\d{1,3})?)$/, message: "Usa un dado come 1d8, 2d6 o 1d4 + 1, un numero o «—»." },
-  // "5 mo", "1 ma", "2 mr", "0,5 mo" or "—".
-  currency: { test: /^(?:—|\d{1,6}(?:,\d{1,2})? (?:mr|ma|me|mo|mp))$/, message: "Usa una cifra con la moneta: 5 mo, 2 ma, 1 mr (oppure «—»)." },
+  // "5 mo", "1.500 mo", "1 ma", "2 mr", "0,5 mo" or "—".
+  currency: { test: /^(?:—|(?:\d{1,3}(?:\.\d{3})+|\d{1,6})(?:,\d{1,2})? (?:mr|ma|me|mo|mp))$/, message: "Usa una cifra con la moneta: 5 mo, 1.500 mo, 2 ma, 1 mr (oppure «—»)." },
   // "3 kg", "0,5 kg", "250 g" or "—".
   weight: { test: /^(?:—|\d{1,4}(?:,\d{1,3})? (?:kg|g))$/, message: "Usa un peso come 3 kg, 0,5 kg o 250 g (oppure «—»)." },
   number: { test: /^-?\d{1,6}$/, message: "Scrivi un numero intero." },

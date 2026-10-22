@@ -1,6 +1,7 @@
 // Browser tests against a production build backed by the in-memory test database.
 // Usage: npm run test:e2e   (set PW_CHROMIUM_PATH to reuse a preinstalled Chromium)
 import { spawn } from "node:child_process";
+import { rmSync } from "node:fs";
 import { startTestDatabase, TEST_DATABASE_URL } from "./test-db.mjs";
 
 export const E2E_ENV = {
@@ -18,6 +19,8 @@ function run(command, args, env) {
   });
 }
 
+// Data cached by an earlier run comes from another test database: start empty.
+rmSync(".next/cache/fetch-cache", { recursive: true, force: true });
 const database = await startTestDatabase();
 console.log(`[e2e] Test database ready with ${database.spells} spells.`);
 let code = 1;

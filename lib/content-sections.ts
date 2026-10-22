@@ -16,9 +16,19 @@
  * Then apply the corrections where the section's pages read their data (lib/corrected-content.ts).
  * Pure module (no database): the admin pages, the Server Actions and the tests share it.
  */
+import { armors } from "./armor";
+import { gearEntries, gearHref } from "./adventuring-gear-editions";
+import { conditions, legacyConditions } from "./conditions";
+import {
+  armorAdapter, gear2014Adapter, gear2024Adapter, magicItemAdapter, manualAdapter, tool2014Adapter, tool2024Adapter, type CardAdapter,
+} from "./content-adapters";
 import { WEAPON_EDITABLE_FIELDS, weaponOriginal, weapons } from "./equipment";
-import type { EquipmentEdition } from "./equipment-types";
+import { ARMOR_CATEGORY_NAMES, type EquipmentEdition } from "./equipment-types";
 import type { FieldSpec } from "./content-validate";
+import { magicItemEntries, magicItemEntryHref } from "./magic-items-editions";
+import { manualEntries } from "./manual";
+import type { ManualEntry } from "./manual-types";
+import { toolEntries, toolHref } from "./tools-editions";
 
 export type ContentEdition = EquipmentEdition;
 
@@ -34,6 +44,8 @@ export interface SectionSpec {
   locked: { label: string; why: string }[];
   items(edition: ContentEdition): SectionItem[];
   original(id: string, edition: ContentEdition): Record<string, string> | undefined;
+  /** The editable fields of one card when they depend on the card (paragraphs, blocks). */
+  fieldsOf?(id: string, edition: ContentEdition): FieldSpec[];
   href(id: string, edition: ContentEdition): string;
   paths(id: string): string[];
 }
@@ -49,6 +61,46 @@ const WEAPON_FIELDS: Record<(typeof WEAPON_EDITABLE_FIELDS)[number], FieldSpec> 
   proprieta: { name: "proprieta", label: "Proprietà", kind: "list", max: 300, optional: true, hint: "Separate da virgole, come nella tabella: «Lancio (gittata 6/18), Leggera». La gittata si ricava da qui." },
   padronanza: { name: "padronanza", label: "Padronanza", kind: "text", max: 40, hint: "Solo 2024: il nome della padronanza (il suo testo viene dal Manuale)." },
 };
+
+const TEXT = (name: string, label: string, max: number, extra: Partial<FieldSpec> = {}): FieldSpec => ({ name, label, kind: "text", max, ...extra });
+const LONG = (name: string, label: string, max: number, extra: Partial<FieldSpec> = {}): FieldSpec => ({ name, label, kind: "longtext", max, ...extra });
+
+/**
+ * A section whose cards are objects of the project data: the adapter turns each card into fields
+ * (lib/content-adapters.ts); fixed fields have a spec here, paragraphs and blocks get one per card.
+ */
+function cardSection<T>(spec: Omit<SectionSpec, "original" | "fields" | "fieldsOf"> & {
+  card(id: string, edition: ContentEdition): T | undefined;
+  adapter(edition: ContentEdition): CardAdapter<T>;
+  fixed: FieldSpec[];
+  /** Spec of a dynamic field (paragrafo-N, blocco-N), given its label. */
+  dynamic?: (name: string, label: string) => FieldSpec;
+}): SectionSpec {
+  const original = (id: string, edition: ContentEdition) => { const card = spec.card(id, edition); return card && spec.adapter(edition).read(card); };
+  return {
+    ...spec,
+    fields: spec.fixed,
+    original,
+    fieldsOf: (id, edition) => {
+      const card = spec.card(id, edition), values = original(id, edition);
+      if (!card || !values) return [];
+      return Object.keys(values).flatMap(name => {
+        const fixed = spec.fixed.find(field => field.name === name);
+        if (fixed) return [fixed];
+        const label = spec.adapter(edition).label?.(card, name);
+        return label && spec.dynamic ? [spec.dynamic(name, label)] : [];
+      });
+    },
+  };
+}
+
+const withEdition = (href: string, edition: ContentEdition) => (edition === "2014" && !href.includes("?") ? `${href}?edizione=2014` : href);
+const findGear = (id: string) => gearEntries.find(entry => entry.id === id);
+const findTool = (id: string) => toolEntries.find(entry => entry.id === id);
+const findMagic = (id: string) => magicItemEntries.find(entry => entry.id === id);
+const byName = (a: SectionItem, b: SectionItem) => a.nome.localeCompare(b.nome, "it");
+const conditionCards: Record<ContentEdition, ManualEntry[]> = { "2024": conditions, "2014": legacyConditions };
+const manualCards = manualEntries.filter(entry => entry.category !== "condizioni");
 
 export const CONTENT_SECTIONS: SectionSpec[] = [
   {
@@ -69,6 +121,99 @@ export const CONTENT_SECTIONS: SectionSpec[] = [
     href: (id, edition) => `/equipaggiamento/armi/${id}${edition === "2014" ? "?edizione=2014" : ""}`,
     paths: id => ["/equipaggiamento/armi", `/equipaggiamento/armi/${id}`],
   },
+  cardSection({
+    key: "armature", title: "Armature", hint: "CA, requisiti", editions: ["2024", "2014"],
+    fixed: [
+      TEXT("nome", "Nome", 80),
+      TEXT("caTesto", "Classe Armatura", 60, { hint: "Come nella tabella: «11 + modificatore di Des», «16», «+2»." }),
+      { name: "costo", label: "Costo", kind: "currency", max: 20 },
+      { name: "peso", label: "Peso", kind: "weight", max: 20 },
+      { name: "forza", label: "Forza richiesta", kind: "number", max: 3, optional: true, hint: "Solo il numero (13, 15); vuoto se non serve." },
+    ],
+    locked: [
+      { label: "Svantaggio a Furtività", why: "è un sì/no della tabella, non un testo" },
+      { label: "Regole e descrizioni (indossare, categorie, scudi)", why: "sono testi comuni del Manuale" },
+      { label: "Pagina della fonte", why: "è il riferimento al PDF originale" },
+    ],
+    card: (id, edition) => armors.find(armor => armor.id === id)?.editions[edition],
+    adapter: () => armorAdapter,
+    items: edition => armors.map(armor => ({ id: armor.id, nome: armor.editions[edition].nome, etichetta: ARMOR_CATEGORY_NAMES[armor.categoria] })).sort(byName),
+    href: (id, edition) => withEdition(`/equipaggiamento/armature/${id}`, edition),
+    paths: id => ["/equipaggiamento/armature", `/equipaggiamento/armature/${id}`],
+  }),
+  cardSection({
+    key: "avventura", title: "Equipaggiamento", hint: "Oggetti d’avventura e dotazioni", editions: ["2024", "2014"],
+    fixed: [TEXT("nome", "Nome", 100), TEXT("prezzo", "Costo", 80), TEXT("costo", "Costo", 40, { optional: true }), TEXT("peso", "Peso", 40, { optional: true })],
+    dynamic: (name, label) => LONG(name, label, 4000),
+    locked: [
+      { label: "Tabelle (dotazioni, capienza, gruppi)", why: "sono tabelle stampate: si correggono con una correzione documentata" },
+      { label: "Abbinamenti 2014 → 2024", why: "li ha decisi Daniele il 21 ottobre 2026 (file di correzioni)" },
+      { label: "Pagina della fonte", why: "è il riferimento al PDF originale" },
+    ],
+    card: (id, edition) => findGear(id)?.editions[edition] as never,
+    adapter: edition => (edition === "2024" ? gear2024Adapter : gear2014Adapter) as CardAdapter<never>,
+    items: edition => gearEntries.filter(entry => entry.editions[edition]).map(entry => ({ id: entry.id, nome: entry.editions[edition]!.nome, etichetta: entry.editions[edition]!.dotazione ? "Dotazione" : "Oggetto" })).sort(byName),
+    href: (id, edition) => { const entry = findGear(id); return entry ? withEdition(gearHref(entry, edition), entry.id2014 && edition === "2014" ? "2024" : edition) : "/equipaggiamento/avventura"; },
+    paths: id => { const entry = findGear(id); return ["/equipaggiamento/avventura", `/equipaggiamento/avventura/${id}`, ...(entry?.id2014 ? [`/equipaggiamento/avventura/${entry.id2014}`] : [])]; },
+  }),
+  cardSection({
+    key: "strumenti", title: "Strumenti", hint: "Strumenti, giochi, strumenti musicali", editions: ["2024", "2014"],
+    fixed: [
+      TEXT("nome", "Nome", 100), TEXT("prezzo", "Costo", 80), TEXT("costo", "Costo", 40), TEXT("caratteristica", "Caratteristica", 40), TEXT("peso", "Peso", 40),
+      LONG("utilizzo", "Utilizzo", 2000), LONG("creazione", "Creazione", 1000, { optional: true, hint: "Un oggetto per riga." }),
+    ],
+    dynamic: (name, label) => LONG(name, label, 4000),
+    locked: [
+      { label: "Varianti (giochi, strumenti musicali) e loro costi", why: "sono righe di tabella condivise da più schede" },
+      { label: "Testi introduttivi della sezione", why: "sono testi comuni del Manuale" },
+      { label: "Pagina della fonte", why: "è il riferimento al PDF originale" },
+    ],
+    card: (id, edition) => findTool(id)?.editions[edition] as never,
+    adapter: edition => (edition === "2024" ? tool2024Adapter : tool2014Adapter) as CardAdapter<never>,
+    items: edition => toolEntries.filter(entry => entry.editions[edition]).map(entry => ({ id: entry.id, nome: entry.editions[edition]!.nome, etichetta: entry.editions[edition]!.gruppo })).sort(byName),
+    href: (id, edition) => withEdition(toolHref(id), edition),
+    paths: id => ["/equipaggiamento/strumenti", toolHref(id)],
+  }),
+  cardSection({
+    key: "oggetti-magici", title: "Oggetti magici", hint: "Testi e tipo", editions: ["2024", "2014"],
+    fixed: [TEXT("nome", "Nome", 100), TEXT("rigaTipo", "Riga del tipo", 200, { hint: "La riga in corsivo sotto il nome. Tipo, rarità e sintonia dei filtri non cambiano." })],
+    dynamic: (name, label) => LONG(name, label, 6000),
+    locked: [
+      { label: "Tipo, rarità e sintonia usati dai filtri", why: "sono ricavati dalla riga stampata nei dati originali" },
+      { label: "Tabelle e blocchi statistiche", why: "hanno righe e colonne: si correggono con una correzione documentata" },
+      { label: "Pagine della fonte", why: "sono il riferimento al PDF originale" },
+    ],
+    card: (id, edition) => findMagic(id)?.editions[edition],
+    adapter: () => magicItemAdapter,
+    items: edition => magicItemEntries.filter(entry => entry.editions[edition]).map(entry => ({ id: entry.id, nome: entry.editions[edition]!.nome, etichetta: entry.editions[edition]!.rigaTipo })).sort(byName),
+    href: (id, edition) => { const entry = findMagic(id); return entry ? withEdition(magicItemEntryHref(entry, edition), entry.id2014 && edition === "2014" ? "2024" : edition) : "/oggetti-magici"; },
+    paths: id => { const entry = findMagic(id); return ["/oggetti-magici", `/oggetti-magici/${id}`, ...(entry?.id2014 ? [`/oggetti-magici/${entry.id2014}`] : [])]; },
+  }),
+  cardSection({
+    key: "condizioni", title: "Condizioni", hint: "Testi 2014/2024", editions: ["2024", "2014"],
+    fixed: [TEXT("title", "Nome", 60)],
+    dynamic: (name, label) => LONG(name, label, 4000),
+    locked: [{ label: "Pagina della fonte", why: "è il riferimento al PDF originale" }],
+    card: (id, edition) => conditionCards[edition].find(entry => entry.id === id),
+    adapter: () => manualAdapter,
+    items: edition => conditionCards[edition].map(entry => ({ id: entry.id, nome: entry.title, etichetta: `Condizione ${edition}` })).sort(byName),
+    href: id => `/manuale/${id}`,
+    paths: id => ["/compendio/condizioni", `/manuale/${id}`],
+  }),
+  cardSection({
+    key: "manuale", title: "Manuale", hint: "Voci e regole", editions: ["2024"],
+    fixed: [TEXT("title", "Titolo", 120)],
+    dynamic: (name, label) => LONG(name, label, 8000),
+    locked: [
+      { label: "Tabelle", why: "hanno righe e colonne: si correggono con una correzione documentata" },
+      { label: "Testi delle voci di Equipaggiamento (Armi, Armature, Avventura, Strumenti)", why: "si correggono nelle loro sezioni" },
+    ],
+    card: id => manualCards.find(entry => entry.id === id),
+    adapter: () => manualAdapter,
+    items: () => manualCards.map(entry => ({ id: entry.id, nome: entry.title, etichetta: entry.subgroup })).sort(byName),
+    href: id => `/manuale/${id}`,
+    paths: id => ["/manuale", `/manuale/${id}`],
+  }),
 ];
 
 export function sectionSpec(key: string): SectionSpec | undefined {
@@ -76,10 +221,19 @@ export function sectionSpec(key: string): SectionSpec | undefined {
 }
 
 /** The fields of one card in one edition: only those the card prints (2014 weapons have no mastery). */
-export function cardFields(section: SectionSpec, original: Record<string, string>): FieldSpec[] {
+export function cardFields(section: SectionSpec, original: Record<string, string>, id?: string, edition?: ContentEdition): FieldSpec[] {
+  if (section.fieldsOf && id && edition) return section.fieldsOf(id, edition);
   return section.fields.filter(field => field.name in original);
 }
 
 export function isContentEdition(value: unknown): value is ContentEdition {
   return value === "2014" || value === "2024";
+}
+
+/** Labels of the fields of one card, for the note under a corrected public card. */
+export function fieldLabels(sectionKey: string, id: string, edition: ContentEdition): Record<string, string> {
+  const section = sectionSpec(sectionKey);
+  const original = section?.original(id, edition);
+  if (!section || !original) return {};
+  return Object.fromEntries(cardFields(section, original, id, edition).map(field => [field.name, field.label]));
 }

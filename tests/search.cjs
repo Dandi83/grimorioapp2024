@@ -6,7 +6,15 @@ const ts=require('typescript');
 // Spells and monsters come from the database in the site: here two small stand-ins.
 const STUBS={
  // Manual corrections come from the database: none here (tests/content-overrides.cjs covers them).
- 'corrected-content':{getCorrectedWeapons:async()=>({weapons:load('lib/equipment.ts').weapons,corrections:new Map()})},
+ 'corrected-content':{
+  getCorrectedWeapons:async()=>({weapons:load('lib/equipment.ts').weapons,corrections:new Map()}),
+  getCorrectedArmors:async()=>({list:load('lib/armor.ts').armors,corrections:new Map()}),
+  getCorrectedGear:async()=>({list:load('lib/adventuring-gear-editions.ts').gearEntries,corrections:new Map()}),
+  getCorrectedTools:async()=>({list:load('lib/tools-editions.ts').toolEntries,corrections:new Map()}),
+  getCorrectedMagicItems:async()=>({list:load('lib/magic-items-editions.ts').magicItemEntries,corrections:new Map()}),
+  getCorrectedConditions:async()=>{const c=load('lib/conditions.ts');return {list:{'2024':c.conditions,'2014':c.legacyConditions},corrections:new Map()};},
+  getCorrectedManualEntries:async()=>load('lib/manual.ts').manualEntries.filter(e=>e.category!=='condizioni'),
+ },
  'spell-index':{getSpellIndex:async()=>[
   {id:'palla-di-fuoco',nome_italiano:'palla di fuoco',livello_num:3,scuola:'Invocazione',classi:[]},
   {id:'forma-di-drago',nome_italiano:'forma di drago',livello_num:7,scuola:'Trasmutazione',classi:[]},

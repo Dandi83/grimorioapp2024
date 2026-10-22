@@ -17,6 +17,9 @@ import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { getSrdSource } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
+import { editorLogReady, logEditorSave } from "@/lib/editor-log";
+import { changedSpellFields, SPELL_EDITOR_FIELDS } from "@/lib/spell-update";
+import { db } from "@/lib/db";
 
 export interface SpellInput {
   nome_italiano: string;
@@ -94,16 +97,26 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   await requireAdmin();
   const id = clean(formData.get("id"));
   if (!id) return { ok: false as const, error: "ID mancante." };
-  const input = fromForm(formData);
-  if (!input.nome_italiano) {
+  // Fields missing from the form stay as they are: only what was sent can change.
+  const sent: Partial<SpellInput> = {};
+  for (const field of SPELL_EDITOR_FIELDS) if (formData.has(field)) sent[field] = clean(formData.get(field));
+  if (sent.nome_italiano !== undefined && !sent.nome_italiano) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
-  const sourceEdition = getSrdSource(id, input.descrizione) || getOriginalSource(id, input.descrizione) ? "2024" : undefined;
+  const [stored] = await db.select().from(spells).where(eq(spells.id, id)).limit(1);
+  if (!stored) return { ok: false as const, error: "Scheda non trovata." };
+  // A save rewrites only the fields that really changed: the others keep their exact bytes.
+  const changes = changedSpellFields(stored, sent);
+  const description = changes.descrizione ?? stored.descrizione ?? "";
+  const sourceEdition = getSrdSource(id, description) || getOriginalSource(id, description) ? "2024" : undefined;
+  const logged = await editorLogReady();
   const result = await saveAdminContent("spell", id, formData, sourceEdition, async database => {
+    // Every changed field goes to the Registro modifiche, where it can be undone.
+    if (logged) await logEditorSave(database, "incantesimi", id, changes);
     const updated = await database.update(spells)
     .set({
-      ...input,
-      sort_key: input.nome_italiano.toLowerCase(),
+      ...changes,
+      ...(changes.nome_italiano ? { sort_key: changes.nome_italiano.toLowerCase() } : {}),
       updated_at: new Date(),
     })
     .where(eq(spells.id, id)).returning({ id: spells.id });

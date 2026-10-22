@@ -11,8 +11,8 @@ const rows = (entries: { id: string; title: string }[]) =>
  * Conditions per edition, read from the data: 2024 from the SRD 5.2.1 manual, 2014 from the SRD 5.1
  * (11 conditions: Prono, Spaventato, Stordito and Trattenuto are not printed there).
  */
-export function conditionRows(): Record<EquipmentEdition, ConditionRow[]> {
-  return { "2024": rows(conditions), "2014": rows(legacyConditions) };
+export function conditionRows(shown: { "2024": { id: string; title: string }[]; "2014": { id: string; title: string }[] } = { "2024": conditions, "2014": legacyConditions }): Record<EquipmentEdition, ConditionRow[]> {
+  return { "2024": rows(shown["2024"]), "2014": rows(shown["2014"]) };
 }
 
 /** 2024 conditions not printed in the SRD 5.1: named under the 2014 list, linked to their 2024 pages. */

@@ -47,10 +47,10 @@ function build(): GearEntry[] {
 
 export const gearEntries: GearEntry[] = build();
 
-export function findGearEntry(id: string): { entry: GearEntry; edition?: EquipmentEdition } | undefined {
-  const byAlias = gearEntries.find(entry => entry.id2014 === id);
+export function findGearEntry(id: string, list: GearEntry[] = gearEntries): { entry: GearEntry; edition?: EquipmentEdition } | undefined {
+  const byAlias = list.find(entry => entry.id2014 === id);
   if (byAlias) return { entry: byAlias, edition: "2014" };
-  const entry = gearEntries.find(item => item.id === id);
+  const entry = list.find(item => item.id === id);
   return entry && { entry, ...(entry.id2014 ? { edition: "2024" as const } : {}) };
 }
 
@@ -82,8 +82,8 @@ export interface GearListRow {
   righe?: { nome: string; costo: string; peso: string }[];
 }
 
-export function gearListRows(): Record<EquipmentEdition, GearListRow[]> {
-  const rows = (edition: EquipmentEdition) => gearEntries.filter(entry => entry.editions[edition]).map(entry => {
+export function gearListRows(list: GearEntry[] = gearEntries): Record<EquipmentEdition, GearListRow[]> {
+  const rows = (edition: EquipmentEdition) => list.filter(entry => entry.editions[edition]).map(entry => {
     const item = entry.editions[edition]!;
     const base = { href: gearHref(entry, edition), nome: item.nome, dotazione: item.dotazione };
     if (edition === "2024") { const it = item as GearItem; return { ...base, prezzo: it.prezzo, ...(it.peso ? { peso: it.peso } : {}) }; }

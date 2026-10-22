@@ -7,6 +7,8 @@ import { activeOverrideMap, overrideKey } from "@/lib/content-overrides-apply";
 import { OVERRIDES_TAG, allOverrides, saveOverrides, undoOverride, type OverrideChange } from "@/lib/content-overrides";
 import { cardFields, isContentEdition, sectionSpec } from "@/lib/content-sections";
 import { fieldError, normalizeValue, reasonError } from "@/lib/content-validate";
+import { db } from "@/lib/db";
+import { ensureEditorLogTable, undoEditorChange, type UndoResult } from "@/lib/editor-log";
 
 export type ContentActionResult = { ok: true; message: string } | { ok: false; error: string; fields?: Record<string, string> };
 
@@ -33,7 +35,7 @@ export async function saveContentAction(_prev: unknown, formData: FormData): Pro
   const active = activeOverrideMap((await allOverrides()).filter(row => row.sezione === section.key && row.scheda_id === id));
   const changes: OverrideChange[] = [];
   const fields: Record<string, string> = {};
-  for (const field of cardFields(section, original)) {
+  for (const field of cardFields(section, original, id, edizione)) {
     const raw = formData.get(`campo:${field.name}`);
     if (typeof raw !== "string") continue;
     const value = normalizeValue(field.kind, raw);
@@ -69,4 +71,23 @@ export async function undoContentAction(formData: FormData): Promise<ContentActi
   if (!row) return { ok: false, error: "Modifica non trovata o già annullata." };
   refresh(row.sezione, row.scheda_id);
   return { ok: true, message: "Modifica annullata: la scheda mostra di nuovo il valore del manuale." };
+}
+
+/** «Annulla modifica» of a spell or creature editor change: the previous value goes back in the database. */
+export async function undoEditorAction(formData: FormData): Promise<ContentActionResult> {
+  await requireAdmin();
+  const id = clean(formData.get("id"));
+  let result: UndoResult;
+  try {
+    await ensureEditorLogTable();
+    result = await db.transaction(database => undoEditorChange(database, id));
+  } catch {
+    return { ok: false, error: "Annullamento non riuscito. Riprova tra poco." };
+  }
+  if (!result.ok) return result;
+  const { sezione, scheda_id } = result.row;
+  updateTag(sezione === "incantesimi" ? "spells" : "monsters");
+  const pages = sezione === "incantesimi" ? ["/", "/grimorio", "/preferiti", `/spell/${scheda_id}`, "/admin/incantesimi"] : ["/bestiario", "/preferiti", `/mostro/${scheda_id}`, "/admin/mostri"];
+  for (const path of [...pages, "/ricerca-indice.json", "/admin", "/admin/registro"]) revalidatePath(path);
+  return { ok: true, message: "Modifica annullata: la scheda ha di nuovo il valore precedente." };
 }

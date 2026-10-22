@@ -1,4 +1,7 @@
 import type { ContentOverride } from "@/lib/content-overrides-apply";
+import { fieldLabels, type ContentEdition } from "@/lib/content-sections";
+
+const short = (text: string) => (text.length > 280 ? `${text.slice(0, 280).trimEnd()}…` : text);
 
 /**
  * At the bottom of a corrected card: what differs from the printed manual, with the printed
@@ -11,10 +14,16 @@ export function CorrectionNote({ corrections, labels }: { corrections: ContentOv
       <ul className="mt-1 space-y-0.5">
         {corrections.map(row => (
           <li key={row.id} className="break-words">
-            {labels[row.campo] ?? row.campo}: nel manuale «{row.valore_originale || "—"}»
+            {labels[row.campo] ?? row.campo}: nel manuale «{short(row.valore_originale) || "—"}»
           </li>
         ))}
       </ul>
     </aside>
   );
+}
+
+/** The note for one card of a registered section (labels from lib/content-sections.ts). */
+export function SectionCorrectionNote({ section, id, edition, corrections }: { section: string; id: string; edition: ContentEdition; corrections?: ContentOverride[] }) {
+  if (!corrections?.length) return null;
+  return <CorrectionNote corrections={corrections} labels={fieldLabels(section, id, edition)} />;
 }

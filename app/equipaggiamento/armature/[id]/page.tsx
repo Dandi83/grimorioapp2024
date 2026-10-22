@@ -7,15 +7,19 @@ import { EditionPanels } from "@/components/equipment/edition-panels";
 import { armorBadge, armorClassRest, armorDescription, armorRuleCards, armorSources, armors, getArmor, type ArmorEditionView } from "@/lib/armor";
 import { ARMOR_CATEGORY_NAMES, type ArmorCategory } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
+import { SectionCorrectionNote } from "@/components/correction-note";
+import { getCorrectedArmors } from "@/lib/corrected-content";
 
 export const dynamicParams = false;
+// Manual corrections from the admin area appear within five minutes (at once after saving).
+export const revalidate = 300;
 
 export function generateStaticParams() {
   return armors.map(({ id }) => ({ id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const armor = getArmor((await params).id);
+  const armor = getArmor((await params).id, (await getCorrectedArmors()).list);
   return { title: armor ? `${armor.editions["2024"].nome} — Armature — Il Grimorio.App` : "Armatura non trovata" };
 }
 
@@ -69,13 +73,22 @@ function Sheet({ armor, category }: { armor: ArmorEditionView; category: ArmorCa
 }
 
 export default async function ArmorSheetPage({ params }: { params: Promise<{ id: string }> }) {
-  const armor = getArmor((await params).id);
+  const { id } = await params;
+  const corrected = await getCorrectedArmors();
+  const armor = getArmor(id, corrected.list);
   if (!armor) notFound();
+  const corrections = corrected.corrections.get(id);
+  const panel = (edition: "2014" | "2024") => (
+    <>
+      <Sheet armor={armor.editions[edition]} category={armor.categoria} />
+      <div className="mt-5"><SectionCorrectionNote section="armature" id={id} edition={edition} corrections={corrections?.[edition]} /></div>
+    </>
+  );
   return (
     <article className="px-4 pb-8 pt-4 sm:px-6">
       <BackButton fallback="/equipaggiamento/armature" label="Tutte le armature" />
       <EditionPanels
-        panels={{ "2024": <Sheet armor={armor.editions["2024"]} category={armor.categoria} />, "2014": <Sheet armor={armor.editions["2014"]} category={armor.categoria} /> }}
+        panels={{ "2024": panel("2024"), "2014": panel("2014") }}
         missing={{}}
       />
       <ReportLink />

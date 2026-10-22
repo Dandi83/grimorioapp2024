@@ -33,7 +33,7 @@ function build(): ToolEntry[] {
 }
 
 export const toolEntries: ToolEntry[] = build();
-export const getToolEntry = (id: string) => toolEntries.find(entry => entry.id === id);
+export const getToolEntry = (id: string, list: ToolEntry[] = toolEntries) => list.find(entry => entry.id === id);
 export const toolHref = (id: string) => `/equipaggiamento/strumenti/${id}`;
 
 export interface ToolCompareRow { label: string; before: string; after: string }
@@ -56,9 +56,11 @@ export function compareTool(entry: ToolEntry): ToolCompareRow[] {
 export interface ToolListRow { href: string; nome: string; costo: string; peso: string; gruppo: string }
 
 /** Light rows of the list, per edition, in the printed order (alphabetical in both PDFs). */
-export function toolListRows(): Record<EquipmentEdition, ToolListRow[]> {
+export function toolListRows(list: ToolEntry[] = toolEntries): Record<EquipmentEdition, ToolListRow[]> {
+  // The tools as shown (corrected when list carries corrections), in the printed order.
+  const shown = <E extends EquipmentEdition>(edition: E, id: string) => list.find(entry => entry.editions[edition]?.id === id)?.editions[edition] as ToolEntry["editions"][E];
   return {
-    "2014": tools2014.map(tool => ({ href: toolHref(tool.id), nome: tool.nome, costo: tool.costo, peso: tool.peso, gruppo: tool.gruppo })),
-    "2024": tools2024.map(tool => ({ href: toolHref(tool.id), nome: tool.nome, costo: tool.prezzo, peso: tool.peso, gruppo: tool.gruppo })),
+    "2014": tools2014.map(printed => shown("2014", printed.id) ?? printed).map(tool => ({ href: toolHref(tool.id), nome: tool.nome, costo: tool.costo, peso: tool.peso, gruppo: tool.gruppo })),
+    "2024": tools2024.map(printed => shown("2024", printed.id) ?? printed).map(tool => ({ href: toolHref(tool.id), nome: tool.nome, costo: tool.prezzo, peso: tool.peso, gruppo: tool.gruppo })),
   };
 }

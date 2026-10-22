@@ -160,3 +160,18 @@ export const contentOverrides = pgTable("grimorio_content_overrides", {
   creata_da: text("creata_da").notNull(),
   annullata_il: timestamp("annullata_il", { withTimezone: true }),
 });
+
+/**
+ * Changes made with the spell and creature editors (lib/editor-log.ts): those records live in
+ * the database and are changed in place, so the log keeps each field before and after, for undo.
+ */
+export const editorLog = pgTable("grimorio_editor_log", {
+  id: uuid("id").primaryKey(),
+  sezione: text("sezione").notNull(),
+  scheda_id: text("scheda_id").notNull(),
+  campo: text("campo").notNull(),
+  valore_prima: text("valore_prima").notNull(),
+  valore_dopo: text("valore_dopo").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+  annullata_il: timestamp("annullata_il", { withTimezone: true }),
+});

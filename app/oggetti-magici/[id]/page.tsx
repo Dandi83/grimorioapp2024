@@ -4,11 +4,15 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
 import { MagicItemSheet } from "@/components/magic-items/magic-item-sheet";
+import { SectionCorrectionNote } from "@/components/correction-note";
+import { getCorrectedMagicItems } from "@/lib/corrected-content";
 import { compareMagicItem, findMagicItemEntry, magicItemEntries, magicItemEntryHref, seeAlso, type MagicItemChange } from "@/lib/magic-items-editions";
 import type { MagicItemEdition } from "@/lib/magic-items-types";
 import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
+// Manual corrections from the admin area appear within five minutes (at once after saving).
+export const revalidate = 300;
 
 const LIST = "/oggetti-magici";
 
@@ -17,7 +21,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const found = findMagicItemEntry((await params).id);
+  const found = findMagicItemEntry((await params).id, (await getCorrectedMagicItems()).list);
   const item = found && (found.entry.editions[found.edition ?? "2024"] ?? found.entry.editions["2014"]);
   return { title: item ? `${item.nome} — Oggetti magici — Il Grimorio.App` : "Oggetto non trovato" };
 }
@@ -50,11 +54,13 @@ function Changes({ changes, other, href }: { changes: MagicItemChange[]; other: 
 }
 
 export default async function MagicItemPage({ params }: { params: Promise<{ id: string }> }) {
-  const found = findMagicItemEntry((await params).id);
+  const corrected = await getCorrectedMagicItems();
+  const found = findMagicItemEntry((await params).id, corrected.list);
   if (!found) notFound();
   const { entry, edition } = found;
   const changes = compareMagicItem(entry);
-  const also = seeAlso(entry);
+  const also = seeAlso(entry, corrected.list);
+  const corrections = corrected.corrections.get(entry.id);
   const hrefs: Partial<Record<MagicItemEdition, string>> = {};
   const panels: Partial<Record<MagicItemEdition, React.ReactNode>> = {};
   for (const value of ["2024", "2014"] as const) {
@@ -65,6 +71,7 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
     panels[value] = (
       <div className="space-y-5">
         <MagicItemSheet item={item} edition={value} />
+        <SectionCorrectionNote section="oggetti-magici" id={entry.id} edition={value} corrections={corrections?.[value]} />
         {changes.length > 0 && <Changes changes={changes} other={other} href={magicItemEntryHref(entry, other)} />}
       </div>
     );

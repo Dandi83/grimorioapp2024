@@ -14,11 +14,11 @@
 import { conditionRows } from "./conditions-list";
 import { gearListRows } from "./adventuring-gear-editions";
 import { armorListItems } from "./armor";
-import { getCorrectedWeapons } from "./corrected-content";
+import { getCorrectedArmors, getCorrectedConditions, getCorrectedGear, getCorrectedMagicItems, getCorrectedManualEntries, getCorrectedTools, getCorrectedWeapons } from "./corrected-content";
 import { weaponListItems } from "./equipment";
 import { ARMOR_CATEGORY_NAMES, EQUIPMENT_EDITION_KEY, WEAPON_GROUP_NAMES, type EquipmentEdition } from "./equipment-types";
 import { magicItemEditionRows } from "./magic-items-editions";
-import { manualAvailable, manualEntries } from "./manual";
+import { manualAvailable } from "./manual";
 import { MANUAL_CATEGORIES } from "./manual-types";
 import { getMonsterListIndex } from "./monster-index";
 import { typeCategory } from "./monsters-types";
@@ -70,34 +70,34 @@ export const SEARCH_SOURCES: SearchSource[] = [
   },
   {
     section: "equipaggiamento", title: "Equipaggiamento", editionKey: EQUIPMENT_EDITION_KEY,
-    rows: () => armorListItems().flatMap(armor => (["2024", "2014"] as const).map(edition => ({
+    rows: async () => armorListItems((await getCorrectedArmors()).list).flatMap(armor => (["2024", "2014"] as const).map(edition => ({
       nome: armor.editions[edition].nome, label: `${ARMOR_CATEGORY_NAMES[armor.categoria]} · ${armor.editions[edition].costo}`,
       href: `/equipaggiamento/armature/${armor.id}`, edizione: edition,
     }))),
   },
   {
     section: "equipaggiamento", title: "Equipaggiamento", editionKey: EQUIPMENT_EDITION_KEY,
-    rows: () => bothEditions(gearListRows(), (row, edition) => ({
+    rows: async () => bothEditions(gearListRows((await getCorrectedGear()).list), (row, edition) => ({
       nome: row.nome, label: [row.dotazione ? "Dotazione" : "Equipaggiamento d’avventura", row.prezzo].filter(Boolean).join(" · "), href: row.href, edizione: edition,
     })),
   },
   {
     section: "equipaggiamento", title: "Equipaggiamento", editionKey: EQUIPMENT_EDITION_KEY,
-    rows: () => bothEditions(toolListRows(), (row, edition) => ({ nome: row.nome, label: [row.gruppo, row.costo].filter(Boolean).join(" · "), href: row.href, edizione: edition })),
+    rows: async () => bothEditions(toolListRows((await getCorrectedTools()).list), (row, edition) => ({ nome: row.nome, label: [row.gruppo, row.costo].filter(Boolean).join(" · "), href: row.href, edizione: edition })),
   },
   {
     section: "oggetti-magici", title: "Oggetti magici", editionKey: EQUIPMENT_EDITION_KEY,
-    rows: () => bothEditions(magicItemEditionRows(), (row, edition) => ({ nome: row.nome, label: `${row.tipo} · ${row.rarita}`, href: row.href, edizione: edition })),
+    rows: async () => bothEditions(magicItemEditionRows((await getCorrectedMagicItems()).list), (row, edition) => ({ nome: row.nome, label: `${row.tipo} · ${row.rarita}`, href: row.href, edizione: edition })),
   },
   {
     section: "condizioni", title: "Condizioni", editionKey: EQUIPMENT_EDITION_KEY,
-    rows: () => bothEditions(conditionRows(), (row, edition) => ({ nome: row.nome, label: "Condizione", href: row.href, edizione: edition })),
+    rows: async () => bothEditions(conditionRows((await getCorrectedConditions()).list), (row, edition) => ({ nome: row.nome, label: "Condizione", href: row.href, edizione: edition })),
   },
   {
     // Only where the Manual is published (preview); its condition pages are already under Condizioni.
     section: "manuale", title: "Manuale", editionKey: EQUIPMENT_EDITION_KEY,
-    rows: environment => manualAvailable(environment)
-      ? manualEntries.filter(entry => entry.category !== "condizioni").map(entry => ({
+    rows: async environment => manualAvailable(environment)
+      ? (await getCorrectedManualEntries()).map(entry => ({
         nome: entry.title, label: [MANUAL_CATEGORIES[entry.category], entry.subgroup !== MANUAL_CATEGORIES[entry.category] ? entry.subgroup : ""].filter(Boolean).join(" · "),
         href: `/manuale/${entry.id}`,
       }))

@@ -38,6 +38,48 @@ assert.deepEqual(sections.cardFields(armi,armi.original('spada-lunga','2014')).m
 assert.ok(sections.cardFields(armi,armi.original('spada-lunga','2024')).some(f=>f.name==='padronanza'));
 assert.equal(armi.href('tridente','2014'),'/equipaggiamento/armi/tridente?edizione=2014');
 
+// Every registered section: each card's printed values pass their checks, and reading then
+// writing the fields gives back the same card (the overlay never changes what it does not correct).
+const adapters=load('lib/content-adapters.ts');
+assert.deepEqual(sections.CONTENT_SECTIONS.map(x=>x.key),['armi','armature','avventura','strumenti','oggetti-magici','condizioni','manuale']);
+let checked=0;
+for(const section of sections.CONTENT_SECTIONS)for(const edition of section.editions)for(const item of section.items(edition)){
+ const original=section.original(item.id,edition);
+ assert.ok(original,`${section.key} ${item.id} ${edition}: original values`);
+ const fields=sections.cardFields(section,original,item.id,edition);
+ assert.deepEqual(fields.map(f=>f.name).sort(),Object.keys(original).sort(),`${section.key} ${item.id}: every field has a spec`);
+ for(const field of fields){assert.equal(v.fieldError(field,original[field.name]),null,`${section.key} ${item.id} ${edition} ${field.name}: «${String(original[field.name]).slice(0,60)}»`);checked++;}
+ assert.ok(section.href(item.id,edition).startsWith('/'));
+}
+assert.ok(checked>5000,`${checked} printed values checked`);
+const armor=load('lib/armor.ts').armors[0].editions['2014'];
+assert.deepEqual(adapters.armorAdapter.write(armor,adapters.armorAdapter.read(armor)),armor);
+const shield=load('lib/armor.ts').armors.find(a=>a.id==='scudo').editions['2024'];
+assert.deepEqual(adapters.armorAdapter.write(shield,adapters.armorAdapter.read(shield)),shield,'no strength requirement stays absent');
+for(const entry of load('lib/adventuring-gear-editions.ts').gearEntries.slice(0,40)){
+ if(entry.editions['2024'])assert.deepEqual(adapters.gear2024Adapter.write(entry.editions['2024'],adapters.gear2024Adapter.read(entry.editions['2024'])),entry.editions['2024']);
+ if(entry.editions['2014'])assert.deepEqual(adapters.gear2014Adapter.write(entry.editions['2014'],adapters.gear2014Adapter.read(entry.editions['2014'])),entry.editions['2014']);
+}
+for(const entry of load('lib/tools-editions.ts').toolEntries){
+ if(entry.editions['2024'])assert.deepEqual(adapters.tool2024Adapter.write(entry.editions['2024'],adapters.tool2024Adapter.read(entry.editions['2024'])),entry.editions['2024']);
+ if(entry.editions['2014'])assert.deepEqual(adapters.tool2014Adapter.write(entry.editions['2014'],adapters.tool2014Adapter.read(entry.editions['2014'])),entry.editions['2014']);
+}
+const wand=load('lib/magic-items-editions.ts').magicItemEntries.find(e=>e.id==='bacchetta-delle-meraviglie').editions['2024'];
+assert.deepEqual(adapters.magicItemAdapter.write(wand,adapters.magicItemAdapter.read(wand)),wand);
+const fixedWand=adapters.magicItemAdapter.write(wand,{...adapters.magicItemAdapter.read(wand),'blocco-1':'Testo corretto.'});
+assert.equal(fixedWand.blocchi[0].text,'Testo corretto.');assert.deepEqual(fixedWand.blocchi.slice(1),wand.blocchi.slice(1),'tables and other blocks untouched');
+assert.notEqual(wand.blocchi[0].text,'Testo corretto.','the original card is not modified');
+const tableIndex=wand.blocchi.findIndex(b=>b.kind==='table');
+assert.equal(`blocco-${tableIndex+1}` in adapters.magicItemAdapter.read(wand),false,'tables are not editable fields');
+const blinded=load('lib/conditions.ts').conditions.find(e=>e.id==='condizioni-accecato');
+assert.equal(adapters.manualAdapter.label(blinded,'blocco-1'),blinded.blocks[0].kind==='heading'?'Titoletto 1':'Paragrafo 1');
+assert.deepEqual(adapters.manualAdapter.write(blinded,adapters.manualAdapter.read(blinded)),blinded);
+// Armor: a corrected name keeps the 2014 description, found by the printed name.
+const armorLib=load('lib/armor.ts');
+const leather=armorLib.armors.find(a=>a.id==='cuoio').editions['2014'];
+assert.ok(armorLib.armorDescription(leather));
+assert.deepEqual(armorLib.armorDescription(adapters.armorAdapter.write(leather,{...adapters.armorAdapter.read(leather),nome:'Cuoio bollito'})),armorLib.armorDescription(leather));
+
 // Validation by kind: every printed value of the manual passes its own check.
 for(const edition of armi.editions)for(const item of armi.items(edition)){
  const original=armi.original(item.id,edition);
@@ -147,6 +189,36 @@ assert.equal(fs.readFileSync('lib/data/srd-weapons-it.json','utf8'),originalJson
  assert.equal(eq.getWeapon('tridente',shown.weapons).editions['2024'].peso,original.peso,'after undo the card shows the printed value');
  assert.equal(await store.countActiveOverrides(),0);
  assert.equal((await store.allOverrides()).length,3,'the whole history is kept (restoring adds no row, it closes one)');
+
+ // Every other section: corrections reach the cards, the lists and the condition pages.
+ const save=async(sezione,id,edizione,fields)=>{const r=await saveContentAction(null,form({sezione,id,edizione,...Object.fromEntries(Object.entries(fields).map(([k,val])=>[`campo:${k}`,val])),motivo:'Prova sulle altre sezioni'}));assert.equal(r.ok,true,`${sezione}: ${r.error} ${JSON.stringify(r.fields)}`);};
+ await save('armature','cuoio','2014',{peso:'4,5 kg',nome:'Cuoio bollito'});
+ let armorsShown=await corr.getCorrectedArmors();
+ assert.equal(armorsShown.list.find(a=>a.id==='cuoio').editions['2014'].peso,'4,5 kg');
+ assert.equal(armorLib.armorListItems(armorsShown.list).find(a=>a.id==='cuoio').editions['2014'].nome,'Cuoio bollito');
+ assert.equal(armorLib.armors.find(a=>a.id==='cuoio').editions['2014'].peso,armorLib.armors.find(a=>a.id==='cuoio').editions['2014'].peso);
+ assert.deepEqual(armorsShown.corrections.get('cuoio')['2014'].map(r=>r.campo).sort(),['nome','peso']);
+ const wandFields=sections.sectionSpec('oggetti-magici').original('bacchetta-delle-meraviglie','2024');
+ await save('oggetti-magici','bacchetta-delle-meraviglie','2024',{'blocco-1':wandFields['blocco-1']+' (corretto)'});
+ const magicShown=await corr.getCorrectedMagicItems();
+ assert.match(magicShown.list.find(e=>e.id==='bacchetta-delle-meraviglie').editions['2024'].blocchi[0].text,/\(corretto\)$/);
+ await save('condizioni','condizioni-accecato','2024',{title:'Accecato (corretto)'});
+ const condShown=await corr.getCorrectedConditions();
+ assert.equal(condShown.list['2024'].find(e=>e.id==='condizioni-accecato').title,'Accecato (corretto)');
+ assert.equal((await corr.getCorrectedManualEntry('condizioni-accecato')).entry.title,'Accecato (corretto)','the condition page uses the same correction');
+ assert.equal((await corr.getCorrectedManualEntry('condizioni-accecato-2014')).entry.title,'Accecato','the 2014 condition is a separate card');
+ const gearEntry=load('lib/adventuring-gear-editions.ts').gearEntries.find(e=>e.editions['2024']&&e.editions['2024'].paragraphs.length);
+ await save('avventura',gearEntry.id,'2024',{prezzo:'99 mo'});
+ assert.equal((await corr.getCorrectedGear()).list.find(e=>e.id===gearEntry.id).editions['2024'].prezzo,'99 mo');
+ const toolEntry=load('lib/tools-editions.ts').toolEntries.find(e=>e.editions['2024']);
+ await save('strumenti',toolEntry.id,'2024',{creazione:'Primo oggetto\nSecondo oggetto'});
+ assert.deepEqual((await corr.getCorrectedTools()).list.find(e=>e.id===toolEntry.id).editions['2024'].creazione,['Primo oggetto','Secondo oggetto']);
+ assert.equal(load('lib/tools-editions.ts').toolListRows((await corr.getCorrectedTools()).list)['2024'].length,load('lib/tools-editions.ts').toolListRows()['2024'].length);
+ const manualEntry=load('lib/manual.ts').manualEntries.find(e=>e.category!=='condizioni');
+ await save('manuale',manualEntry.id,'2024',{title:manualEntry.title+' (corretto)'});
+ assert.equal((await corr.getCorrectedManualEntry(manualEntry.id)).entry.title,manualEntry.title+' (corretto)');
+ assert.ok((await corr.getCorrectedManualEntries()).some(e=>e.title===manualEntry.title+' (corretto)'));
+ assert.match((await saveContentAction(null,form({sezione:'manuale',id:manualEntry.id,edizione:'2014','campo:title':'x',motivo:'Prova di motivo'}))).error,/sconosciuta/,'the Manual has only 2024');
 
  // A database that cannot be read never breaks a page: original values.
  deps['./db'].pool.query=()=>Promise.reject(Object.assign(new Error('down'),{code:'57P01'}));

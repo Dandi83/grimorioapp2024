@@ -11,6 +11,8 @@ type RawArmor = (typeof armorData.armature)[number]["2014"];
 interface RuleText { testo: string; page: number }
 
 export interface ArmorEditionView {
+  /** The name printed in the table (rule texts are found by it, also when the shown name is corrected). */
+  nomeStampato: string;
   edition: EquipmentEdition;
   nome: string;
   /** As printed: "12 + modificatore di Des (max 2)", "16", "+2". */
@@ -34,7 +36,7 @@ export interface Armor {
 function view(raw: RawArmor, edition: EquipmentEdition): ArmorEditionView {
   const strength = /\d+/.exec(raw.forza)?.[0];
   return {
-    edition, nome: raw.nome, caTesto: raw.ca, costo: raw.costo, peso: raw.peso,
+    edition, nome: raw.nome, nomeStampato: raw.nome, caTesto: raw.ca, costo: raw.costo, peso: raw.peso,
     ...(strength ? { forza: strength } : {}), furtivitaSvantaggio: raw.furtivita === "Svantaggio", page: raw.page,
   };
 }
@@ -46,8 +48,8 @@ export const armors: Armor[] = armorData.armature.map(item => ({
   editions: { "2014": view(item["2014"], "2014"), "2024": view(item["2024"], "2024") },
 }));
 
-export function getArmor(id: string) {
-  return armors.find(armor => armor.id === id);
+export function getArmor(id: string, list: Armor[] = armors) {
+  return list.find(armor => armor.id === id);
 }
 
 /**
@@ -82,9 +84,9 @@ export const armorTimes: ArmorTimes = {
 export const sameNumbers = armors.every(({ editions: { "2014": a, "2024": b } }) =>
   a.caTesto === b.caTesto && a.costo === b.costo && a.peso === b.peso && a.forza === b.forza && a.furtivitaSvantaggio === b.furtivitaSvantaggio);
 
-export function armorListItems(): ArmorListItem[] {
+export function armorListItems(list: Armor[] = armors): ArmorListItem[] {
   const listEdition = (armor: ArmorEditionView): ArmorListEdition => ({ nome: armor.nome, costo: armor.costo, peso: armor.peso, ...armorBadge(armor) });
-  return armors.map(armor => ({
+  return list.map(armor => ({
     id: armor.id, categoria: armor.categoria,
     editions: { "2014": listEdition(armor.editions["2014"]), "2024": listEdition(armor.editions["2024"]) },
   }));
@@ -116,7 +118,7 @@ const CATEGORY_2014 = ["Armature leggere", "Armature medie", "Armature pesanti"]
 
 /** 2014 description of the single armor ("Imbottita. Un'armatura imbottita…"). */
 export function armorDescription(armor: ArmorEditionView): RuleText | undefined {
-  return armor.edition === "2014" ? rules2014.descrizioni[armor.nome] : undefined;
+  return armor.edition === "2014" ? rules2014.descrizioni[armor.nomeStampato] : undefined;
 }
 
 /** Rules that explain the sheet, in the text of the chosen edition. */

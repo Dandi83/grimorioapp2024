@@ -14,6 +14,7 @@ import { monsterExtraFieldsFromForm } from "@/lib/monster-extra-fields";
 import { saveMonsterExtraFields } from "@/lib/monster-extra-storage";
 import { habitatsFromForm } from "@/lib/habitats";
 import { saveMonsterHabitats } from "@/lib/monster-habitats";
+import { editorLogReady, logEditorSave } from "@/lib/editor-log";
 
 function num(v: FormDataEntryValue | null, fallback = 10): number {
   const n = parseInt(clean(v), 10);
@@ -99,7 +100,10 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     return { ok: true as const, error: null, id };
   }
   const sourceEdition = getSrdMonsterSource({ ...input, ...extraFields, id, gs_num: parseGs(input.grado_sfida) })?.edition;
+  const logged = await editorLogReady();
   const result = await saveAdminContent("monster", id, formData, sourceEdition, async database => {
+    // Every changed field of the sheet goes to the Registro modifiche, where it can be undone.
+    if (logged) await logEditorSave(database, "mostri", id, input);
     const updated = await database.update(monsters)
     .set({
       ...input,

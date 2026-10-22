@@ -38,7 +38,7 @@ export type FeedbackParse =
 export function cleanText(value: string): string {
   return value
     .replace(/\r\n?/g, "\n")
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F​-‏‪-‮⁦-⁩]/g, "")
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g, "")
     .replace(/\n{4,}/g, "\n\n\n")
     .trim();
 }

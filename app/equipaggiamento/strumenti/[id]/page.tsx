@@ -6,10 +6,14 @@ import { ToolEditionPanels } from "@/components/equipment/tool-edition-panels";
 import { tools2014Source, type Tool2014 } from "@/lib/tools-2014";
 import { toolsSection, type Tool2024 } from "@/lib/tools";
 import { compareTool, getToolEntry, toolEntries, toolHref, toolKey } from "@/lib/tools-editions";
+import { SectionCorrectionNote } from "@/components/correction-note";
+import { getCorrectedTools } from "@/lib/corrected-content";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
+// Manual corrections from the admin area appear within five minutes (at once after saving).
+export const revalidate = 300;
 
 const SRD_521 = "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf";
 const LIST = "/equipaggiamento/strumenti";
@@ -22,7 +26,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-  const entry = getToolEntry((await params).id);
+  const entry = getToolEntry((await params).id, (await getCorrectedTools()).list);
   const tool = entry && (entry.editions["2024"] ?? entry.editions["2014"]);
   return { title: tool ? `${tool.nome} — Strumenti — Il Grimorio.App` : "Strumento non trovato" };
 }
@@ -127,12 +131,15 @@ function Sheet2014({ tool }: { tool: Tool2014 }) {
 }
 
 export default async function ToolPage({ params }: { params: Promise<{ id: string }> }) {
-  const entry = getToolEntry((await params).id);
+  const corrected = await getCorrectedTools();
+  const entry = getToolEntry((await params).id, corrected.list);
   if (!entry) notFound();
+  const corrections = corrected.corrections.get(entry.id);
+  const note = (value: EquipmentEdition) => <div className="mt-5"><SectionCorrectionNote section="strumenti" id={entry.id} edition={value} corrections={corrections?.[value]} /></div>;
   const rows = compareTool(entry);
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
-  if (entry.editions["2024"]) panels["2024"] = <Sheet2024 tool={entry.editions["2024"]} />;
-  if (entry.editions["2014"]) panels["2014"] = <Sheet2014 tool={entry.editions["2014"]} />;
+  if (entry.editions["2024"]) panels["2024"] = <><Sheet2024 tool={entry.editions["2024"]} />{note("2024")}</>;
+  if (entry.editions["2014"]) panels["2014"] = <><Sheet2014 tool={entry.editions["2014"]} />{note("2014")}</>;
   const current = toolHref(entry.id);
   const variant = entry.variante;
   return (
