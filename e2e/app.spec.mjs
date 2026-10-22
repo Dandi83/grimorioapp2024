@@ -235,8 +235,8 @@ test("compendium: five-item navigation on narrow phones, Compendio active inside
   await expect(page).toHaveURL(/\/compendio$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
   await expect(page.getByText("Regole, equipaggiamento e strumenti per il tavolo")).toBeVisible();
-  await expect(page.locator("main ul > li")).toHaveText([/Equipaggiamento/, /Avanzamento di livello/, /Oggetti magici/, /Condizioni/]);
-  for (const path of ["/compendio", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale", "/avanzamento", "/oggetti-magici", "/oggetti-magici/ali-del-volo", "/compendio/condizioni"]) {
+  await expect(page.locator("main ul > li")).toHaveText([/Classi/, /Equipaggiamento/, /Avanzamento di livello/, /Oggetti magici/, /Condizioni/]);
+  for (const path of ["/compendio", "/classi", "/classi/guerriero", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale", "/avanzamento", "/oggetti-magici", "/oggetti-magici/ali-del-volo", "/compendio/condizioni"]) {
     await page.goto(path);
     await expect(nav.locator('a[aria-current="page"]'), path).toHaveText("Compendio");
     expect(await page.evaluate(() => document.documentElement.scrollWidth), path).toBeLessThanOrEqual(390);
@@ -522,7 +522,7 @@ test("magic items 2024: Compendio tile, search, combined filters in the address,
   page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/compendio");
-  const tiles = page.locator("main ul > li a");
+  const tiles = page.getByRole("list", { name: "Regole e oggetti" }).locator("li a");
   await expect(tiles.nth(2)).toContainText("Oggetti magici");
   await expect(tiles.nth(2)).toContainText("Elenco A–Z con rarità e sintonia");
   await tiles.nth(2).click();
@@ -659,12 +659,12 @@ test("conditions: Compendio tile like the others, list per edition, note of the 
   page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/compendio");
-  const tile = page.locator("main ul > li a").nth(3);
+  const tile = page.getByRole("list", { name: "Regole e oggetti" }).locator("li a").nth(3);
   await expect(tile).toContainText("Condizioni");
   await expect(tile).toContainText("Accecato, Avvelenato, Spaventato…");
   await expect(page.locator("main").getByText("NUOVO")).toHaveCount(0);
   // Same border and height as the other tiles.
-  const styles = await page.locator("main ul > li a").evaluateAll(links => links.map(a => [getComputedStyle(a).borderTopWidth, getComputedStyle(a).borderTopColor, a.className]));
+  const styles = await page.locator("main ul[aria-label] > li a").evaluateAll(links => links.map(a => [getComputedStyle(a).borderTopWidth, getComputedStyle(a).borderTopColor, a.className]));
   for (const style of styles) expect(style).toEqual(styles[0]);
   await tile.click();
   await expect(page).toHaveURL(/\/compendio\/condizioni$/);
@@ -733,7 +733,7 @@ test("search in Home: field only, panel with filters, results by section, back a
   expect(await input.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
   await expect(dialog.getByText("Prova a scrivere…")).toBeVisible();
   const filters = dialog.getByRole("group", { name: "Sezioni" }).getByRole("button");
-  await expect(filters).toHaveText(["Tutto", "Incantesimi", "Mostri", "Equipaggiamento", "Oggetti magici", "Condizioni"]);
+  await expect(filters).toHaveText(["Tutto", "Incantesimi", "Mostri", "Classi", "Equipaggiamento", "Oggetti magici", "Condizioni"]);
   expect(indexRequests.length).toBe(1);
   // "dra": spells and monsters while typing, the typed part highlighted.
   await input.fill("dra");
@@ -1088,5 +1088,106 @@ test("admin corrections in every section: armor, magic item text, condition titl
     await expect(page.getByRole("list", { name: "Modifiche" }).getByRole("listitem")).toHaveCount(2 - i, { timeout: 10000 }).catch(() => undefined);
   }
   await expect(page.getByText("Nessuna modifica.")).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("classes 2024: Compendio group, list with selector, sheets with tabs, levels, table, subclass, search, narrow phones", async ({ page }) => {
+  test.setTimeout(240_000);
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/compendio");
+  await expect(page.getByRole("heading", { level: 2, name: "Personaggi" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Regole e oggetti" })).toBeVisible();
+  const tile = page.getByRole("list", { name: "Personaggi" }).getByRole("link");
+  await expect(tile).toHaveCount(1);
+  await expect(tile).toContainText("Barbaro, Bardo, Chierico…");
+  await tile.click();
+  await expect(page).toHaveURL(/\/classi$/);
+  await expect(page.getByRole("navigation", { name: "Navigazione principale" }).locator('a[aria-current="page"]')).toHaveText("Compendio");
+  // Title and selector on one row; 12 cards with hit die and primary abilities from the data.
+  const title = await page.getByRole("heading", { level: 1, name: "Classi" }).boundingBox();
+  const selector = await page.getByRole("group", { name: "Edizione delle regole" }).boundingBox();
+  expect(Math.abs(title.y + title.height / 2 - (selector.y + selector.height / 2))).toBeLessThan(12);
+  const cards = page.locator('[data-edition="2024"] a[href^="/classi/"]');
+  await expect(cards).toHaveCount(12);
+  await expect(page.locator('[data-edition="2024"]')).toContainText("12 classi, ognuna con la sua sottoclasse del manuale.");
+  await expect(cards.filter({ hasText: "Guerriero" })).toContainText("D10 · Forza o Destrezza");
+  await expect(cards.filter({ hasText: "Mago" })).toContainText("D6 · Intelligenza");
+  await page.getByRole("button", { name: "2014", exact: true }).click();
+  await expect(page.locator('[data-edition="2014"]')).toContainText("in arrivo");
+  await page.getByRole("button", { name: "2024", exact: true }).click();
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `list ${width}`).toBeLessThanOrEqual(width);
+    for (const box of [await cards.first().boundingBox(), await page.getByRole("button", { name: "2014", exact: true }).boundingBox()]) expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+
+  // Sheet: coloured header, key data, skills and equipment, the three tabs.
+  await page.goto("/classi/guerriero");
+  const sheet = page.locator('[data-edition="2024"]');
+  await expect(sheet.getByRole("heading", { level: 1 })).toHaveText("Guerriero");
+  await expect(sheet).toContainText("Classe · SRD 5.2.1, p. 53");
+  const body = page.locator("main");
+  await expect(body).toContainText("Forza e Costituzione");
+  await body.getByText("Abilità ed equipaggiamento iniziale").click();
+  await expect(body).toContainText("Percezione, Persuasione, Sopravvivenza o Storia");
+  const levels = body.getByRole("list", { name: "Livelli 1–5" }).locator(":scope > li");
+  await expect(levels).toHaveCount(5);
+  await levels.first().locator("summary").click();
+  await expect(levels.first().getByRole("heading", { name: "Stile di combattimento" })).toBeVisible();
+  // Level 3: subclass level in amber, with the feature of the Campione.
+  await expect(levels.nth(2).locator(".bg-amber")).toHaveCount(1);
+  await levels.nth(2).locator("summary").click();
+  await expect(levels.nth(2)).toContainText("Privilegio della sottoclasse · Campione");
+  await expect(levels.nth(2).getByRole("heading", { name: "Critico migliorato" })).toBeVisible();
+  await body.getByText("Mostra i livelli 6–20").click();
+  await expect(body.getByRole("list", { name: "Livelli 6–20" }).locator(":scope > li")).toHaveCount(15);
+  await body.getByRole("tab", { name: "Tabella" }).click();
+  const table = body.getByRole("tabpanel").getByRole("table");
+  await expect(table.locator("tbody tr")).toHaveCount(20);
+  await expect(table.locator("tbody tr").nth(2)).toHaveClass(/FBEFCF/);
+  expect(await table.locator("tbody th").first().evaluate(cell => getComputedStyle(cell).position)).toBe("sticky");
+  await body.getByRole("tab", { name: "Sottoclasse" }).click();
+  await expect(body.getByRole("tabpanel")).toContainText("Sottoclasse · dal 3º livello");
+  await expect(body.getByRole("tabpanel").getByRole("heading", { level: 2 })).toHaveText("Campione");
+  await expect(body.getByRole("tabpanel")).toContainText("Raggiungi l'eccellenza fisica nel combattimento");
+  await expect(body.getByRole("tabpanel").getByRole("listitem").filter({ hasText: "18 · Sopravvissuto" })).toHaveCount(1);
+  // «Segnala» carries the page, the class name and the edition shown.
+  await body.getByRole("link", { name: "Segnala" }).click();
+  await expect(page).toHaveURL(/\/segnala\?pagina=%2Fclassi%2Fguerriero&titolo=Guerriero&edizione=2024/);
+
+  // A caster: spell list, the button to the spells of the class, every sheet without horizontal scroll.
+  await page.goto("/classi/mago");
+  await expect(page.locator("main")).toContainText("Lista degli incantesimi da mago");
+  const spells = page.getByRole("link", { name: "Incantesimi del mago →" });
+  await expect(spells).toHaveAttribute("href", "/grimorio?classe=mago&edizione=2024");
+  await page.goto("/classi/warlock");
+  await expect(page.locator("main")).toContainText("Opzioni di suppliche occulte");
+  await expect(page.getByRole("link", { name: "Incantesimi del warlock →" })).toBeVisible();
+  await page.goto("/classi/stregone");
+  await expect(page.getByRole("link", { name: "Incantesimi dello stregone →" })).toBeVisible();
+  await page.goto("/classi/barbaro");
+  await expect(page.getByRole("link", { name: /^Incantesimi del/ })).toHaveCount(0);
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    for (const id of ["barbaro", "bardo", "chierico", "druido", "guerriero", "ladro", "mago", "monaco", "paladino", "ranger", "stregone", "warlock"]) {
+      await page.goto(`/classi/${id}`);
+      for (const tab of ["Tabella", "Sottoclasse", "Privilegi"]) {
+        await page.getByRole("tab", { name: tab }).click();
+        expect(await page.evaluate(() => document.documentElement.scrollWidth), `${id} ${tab} ${width}`).toBeLessThanOrEqual(width);
+      }
+    }
+  }
+  for (const box of [await page.getByRole("tab", { name: "Tabella" }).boundingBox(), await page.locator("main summary").first().boundingBox()]) expect(box.height).toBeGreaterThanOrEqual(44);
+
+  // Home search: a subclass opens the sheet on its tab.
+  await page.goto("/");
+  await page.locator("button[aria-haspopup=dialog]").first().click();
+  await page.getByRole("dialog").getByRole("searchbox").fill("campione");
+  const result = page.getByRole("dialog").getByRole("link", { name: /Campione/ });
+  await expect(result).toHaveAttribute("href", "/classi/guerriero#sottoclasse");
+  await result.click();
+  await expect(page.getByRole("tab", { name: "Sottoclasse" })).toHaveAttribute("aria-selected", "true");
   expect(errors).toEqual([]);
 });

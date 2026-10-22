@@ -156,9 +156,9 @@ const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
 const publicPage=new RegExp(sw.match(/const PUBLIC_PAGE = \/(.*)\/;/)[1]);
 for(const page of ['/oggetti-magici',...lib.magicItems['2024'].map(i=>lib.magicItemHref(i.id))])assert.ok(publicPage.test(page),page);
 assert.ok(!publicPage.test('/oggetti-magici/a/b'));
-// The section is the third tile of the Compendio, the bottom bar keeps its five entries.
+// The section is the third tile of «Regole e oggetti» (after Classi, in «Personaggi»), the bottom bar keeps its five entries.
 const compendio=fs.readFileSync('app/compendio/page.tsx','utf8');
-assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]).slice(0,3),['/equipaggiamento','/avanzamento','/oggetti-magici']);
+assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]).slice(0,4),['/classi','/equipaggiamento','/avanzamento','/oggetti-magici']);
 assert.ok(compendio.includes('text: "Elenco A–Z con rarità e sintonia"'));
 const nav=fs.readFileSync('components/bottom-nav.tsx','utf8');
 assert.equal([...nav.matchAll(/href: "/g)].length,5);

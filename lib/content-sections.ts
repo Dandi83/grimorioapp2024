@@ -20,8 +20,9 @@ import { armors } from "./armor";
 import { gearEntries, gearHref } from "./adventuring-gear-editions";
 import { conditions, legacyConditions } from "./conditions";
 import {
-  armorAdapter, gear2014Adapter, gear2024Adapter, magicItemAdapter, manualAdapter, tool2014Adapter, tool2024Adapter, type CardAdapter,
+  armorAdapter, classAdapter, gear2014Adapter, gear2024Adapter, magicItemAdapter, manualAdapter, tool2014Adapter, tool2024Adapter, type CardAdapter,
 } from "./content-adapters";
+import { classEntries, classHref } from "./classes";
 import { WEAPON_EDITABLE_FIELDS, weaponOriginal, weapons } from "./equipment";
 import { ARMOR_CATEGORY_NAMES, type EquipmentEdition } from "./equipment-types";
 import type { FieldSpec } from "./content-validate";
@@ -188,6 +189,21 @@ export const CONTENT_SECTIONS: SectionSpec[] = [
     items: edition => magicItemEntries.filter(entry => entry.editions[edition]).map(entry => ({ id: entry.id, nome: entry.editions[edition]!.nome, etichetta: entry.editions[edition]!.rigaTipo })).sort(byName),
     href: (id, edition) => { const entry = findMagic(id); return entry ? withEdition(magicItemEntryHref(entry, edition), entry.id2014 && edition === "2014" ? "2024" : edition) : "/oggetti-magici"; },
     paths: id => { const entry = findMagic(id); return ["/oggetti-magici", `/oggetti-magici/${id}`, ...(entry?.id2014 ? [`/oggetti-magici/${entry.id2014}`] : [])]; },
+  }),
+  cardSection({
+    key: "classi", title: "Classi", hint: "Privilegi e sottoclassi", editions: ["2024"],
+    fixed: [TEXT("nome", "Nome", 40), TEXT("sottoclasse-nome", "Sottoclasse · nome", 80), TEXT("sottoclasse-motto", "Sottoclasse · motto", 200)],
+    dynamic: (name, label) => (name.endsWith("-titolo") ? TEXT(name, label, 120) : name.startsWith("tratto-") ? TEXT(name, label, 600) : LONG(name, label, 8000)),
+    locked: [
+      { label: "Tabella dei privilegi, tabelle e riquadri", why: "hanno righe e colonne: si correggono con una correzione documentata" },
+      { label: "Lista degli incantesimi", why: "è una tabella del Manuale; i singoli incantesimi si correggono nell’editor degli incantesimi" },
+      { label: "Pagine della fonte", why: "sono il riferimento al PDF originale" },
+    ],
+    card: (id, edition) => classEntries.find(entry => entry.id === id)?.editions[edition],
+    adapter: () => classAdapter,
+    items: edition => classEntries.filter(entry => entry.editions[edition]).map(entry => ({ id: entry.id, nome: entry.editions[edition]!.nome, etichetta: entry.editions[edition]!.sottoclasse.nome })),
+    href: (id, edition) => withEdition(classHref(id), edition),
+    paths: id => ["/classi", classHref(id), "/compendio"],
   }),
   cardSection({
     key: "condizioni", title: "Condizioni", hint: "Testi 2014/2024", editions: ["2024", "2014"],

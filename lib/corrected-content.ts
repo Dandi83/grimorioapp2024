@@ -5,8 +5,9 @@ import { armors } from "./armor";
 import { gearEntries } from "./adventuring-gear-editions";
 import { conditions, legacyConditions } from "./conditions";
 import {
-  armorAdapter, gear2014Adapter, gear2024Adapter, magicItemAdapter, manualAdapter, tool2014Adapter, tool2024Adapter, type CardAdapter,
+  armorAdapter, classAdapter, gear2014Adapter, gear2024Adapter, magicItemAdapter, manualAdapter, tool2014Adapter, tool2024Adapter, type CardAdapter,
 } from "./content-adapters";
+import { classEntries } from "./classes";
 import { WEAPON_EDITABLE_FIELDS, buildWeapons, weapons, type Weapon } from "./equipment";
 import { magicItemEntries } from "./magic-items-editions";
 import { getManualEntry, manualEntries } from "./manual";
@@ -77,6 +78,7 @@ export const getCorrectedArmors = () => correctEntries("armature", armors, () =>
 export const getCorrectedGear = () => correctEntries("avventura", gearEntries, edition => (edition === "2024" ? gear2024Adapter : gear2014Adapter) as CardAdapter<never>);
 export const getCorrectedTools = () => correctEntries("strumenti", toolEntries, edition => (edition === "2024" ? tool2024Adapter : tool2014Adapter) as CardAdapter<never>);
 export const getCorrectedMagicItems = () => correctEntries("oggetti-magici", magicItemEntries, () => magicItemAdapter as CardAdapter<never>);
+export const getCorrectedClasses = () => correctEntries("classi", classEntries, () => classAdapter as CardAdapter<never>);
 
 /** Conditions of both editions, as the Compendio list and the condition pages show them. */
 export async function getCorrectedConditions(): Promise<Corrected<Record<EquipmentEdition, ManualEntry[]>>> {

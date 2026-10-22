@@ -7,18 +7,26 @@ export interface SectionTile {
   title: string;
   text: string;
   Icon: ComponentType<{ size?: number; "aria-hidden"?: boolean }>;
+  /** White icon on a 36 px bordeaux square (Personaggi), instead of the round badge. */
+  square?: boolean;
 }
 
 /** Large tiles of a hub page (Compendio, Equipaggiamento): one per available section, none "coming soon". */
-export function SectionTiles({ tiles }: { tiles: SectionTile[] }) {
+export function SectionTiles({ tiles, label, className = "mt-5" }: { tiles: SectionTile[]; label?: string; className?: string }) {
   return (
-    <ul className="mt-5 grid gap-3">
-      {tiles.map(({ href, title, text, Icon }) => (
+    <ul className={`${className} grid gap-3`} aria-label={label}>
+      {tiles.map(({ href, title, text, Icon, square }) => (
         <li key={href}>
           <Link href={href} className="flex min-h-24 items-center gap-4 rounded-[14px] border border-border bg-card p-4 shadow-[0_1px_0_var(--color-divider)]">
-            <span className="grid size-14 shrink-0 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
-              <Icon size={28} aria-hidden={true} />
-            </span>
+            {square ? (
+              <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-primary text-white">
+                <Icon size={20} aria-hidden={true} />
+              </span>
+            ) : (
+              <span className="grid size-14 shrink-0 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
+                <Icon size={28} aria-hidden={true} />
+              </span>
+            )}
             <span className="min-w-0 flex-1">
               <span className="block font-serif text-[26px] font-bold leading-tight">{title}</span>
               <span className="block text-[15px] text-muted">{text}</span>

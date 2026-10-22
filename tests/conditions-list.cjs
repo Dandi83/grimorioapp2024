@@ -32,9 +32,9 @@ for(const r of rows['2014'])assert.ok(ids2014.has(r.href.replace('/manuale/','')
 assert.ok(rows['2014'].every(r=>r.href.endsWith('-2014')));
 // The light rows carry names and addresses only.
 for(const r of [...rows['2024'],...rows['2014']])assert.deepEqual(Object.keys(r).sort(),['href','nome']);
-// Compendio: fourth tile after Oggetti magici, the same style as the others (no label).
+// Compendio: fourth tile of «Regole e oggetti» after Oggetti magici, the same style as the others (no «nuovo» label).
 const compendio=fs.readFileSync('app/compendio/page.tsx','utf8');
-assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]),['/equipaggiamento','/avanzamento','/oggetti-magici','/compendio/condizioni']);
+assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]),['/classi','/equipaggiamento','/avanzamento','/oggetti-magici','/compendio/condizioni']);
 assert.ok(compendio.includes('text: "Accecato, Avvelenato, Spaventato…"'));
 assert.ok(!/nuovo|NUOVO/.test(compendio+fs.readFileSync('components/section-tiles.tsx','utf8')));
 // Offline: the list and the condition pages are public pages of the service worker.

@@ -40,6 +40,11 @@ export default function SourcesPage() {
           «in una barcone» (Barca pieghevole) è mostrato come «in un barcone».
         </p>
         <p>
+          Le classi 2024 (sezione Classi del Compendio) sono le 12 voci «Classi» dell’SRD 5.2.1 italiano, ciascuna con la sua unica sottoclasse,
+          divise in tratti, tabella dei privilegi, privilegi per livello, lista degli incantesimi e sottoclasse; ogni testo è confrontato con l’impronta
+          del blocco del PDF da cui viene. Sono state ricomposte solo le parole sillabate a fine riga o a fine colonna.
+        </p>
+        <p>
           <a className="text-primary underline underline-offset-4" href={srdSourceUrl} target="_blank" rel="noreferrer">Consulta il documento originale in italiano</a>
         </p>
         <p>

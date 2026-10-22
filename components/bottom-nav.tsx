@@ -33,7 +33,7 @@ const ITEMS: NavItem[] = [
     href: "/compendio",
     label: "Compendio",
     Icon: ScrollText,
-    match: (p) => p.startsWith("/compendio") || p.startsWith("/equipaggiamento") || p.startsWith("/avanzamento") || p.startsWith("/oggetti-magici"),
+    match: (p) => p.startsWith("/compendio") || p.startsWith("/equipaggiamento") || p.startsWith("/avanzamento") || p.startsWith("/oggetti-magici") || p.startsWith("/classi"),
   },
   {
     href: "/preferiti",

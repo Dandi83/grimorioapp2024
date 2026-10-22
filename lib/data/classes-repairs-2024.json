@@ -1,0 +1,253 @@
+{
+ "_nota": "Riparazioni di sola visualizzazione delle Classi 2024 (lib/data/srd-classes-5.2.1-it.json), trovate da scripts/transcribe-classes-2024.py con il PDF SRD 5.2.1 IT. Il manuale trascritto (srd-manual-5.2.1-it.json) non cambia.",
+ "sillabazioni": [
+  {
+   "classe": "barbaro",
+   "pagina": 32,
+   "dove": "tabella",
+   "da": "Intimi- dire,",
+   "a": "Intimidire,",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "barbaro",
+   "pagina": 32,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "barbaro",
+   "pagina": 32,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "bardo",
+   "pagina": 35,
+   "dove": "tabella",
+   "da": "Un'arma- tura",
+   "a": "Un'armatura",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "bardo",
+   "pagina": 35,
+   "dove": "tabella",
+   "da": "intratteni- tore",
+   "a": "intrattenitore",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "chierico",
+   "pagina": 41,
+   "dove": "tabella",
+   "da": "Reli- gione",
+   "a": "Religione",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "chierico",
+   "pagina": 41,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "guerriero",
+   "pagina": 53,
+   "dove": "tabella",
+   "da": "Perce- zione,",
+   "a": "Percezione,",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "guerriero",
+   "pagina": 53,
+   "dove": "tabella",
+   "da": "Sopravvi- venza",
+   "a": "Sopravvivenza",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "guerriero",
+   "pagina": 53,
+   "dove": "tabella",
+   "da": "scimi- tarra,",
+   "a": "scimitarra,",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "guerriero",
+   "pagina": 53,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "guerriero",
+   "pagina": 53,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "ladro",
+   "pagina": 55,
+   "dove": "tabella",
+   "da": "dota- zione",
+   "a": "dotazione",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "mago",
+   "pagina": 61,
+   "dove": "tabella",
+   "da": "esem- pio,",
+   "a": "esempio,",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "mago",
+   "pagina": 61,
+   "dove": "tabella",
+   "da": "con- sente",
+   "a": "consente",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "mago",
+   "pagina": 61,
+   "dove": "tabella",
+   "da": "trascri- zione",
+   "a": "trascrizione",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "mago",
+   "pagina": 61,
+   "dove": "tabella",
+   "da": "incan- tesimo",
+   "a": "incantesimo",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "mago",
+   "pagina": 61,
+   "dove": "tabella",
+   "da": "proce- dimento",
+   "a": "procedimento",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "mago",
+   "pagina": 61,
+   "dove": "tabella",
+   "da": "tro- varne",
+   "a": "trovarne",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "monaco",
+   "pagina": 66,
+   "dove": "tabella",
+   "da": "musi- cale",
+   "a": "musicale",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "monaco",
+   "pagina": 66,
+   "dove": "tabella",
+   "da": "straordi- nario,",
+   "a": "straordinario,",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "paladino",
+   "pagina": 70,
+   "dove": "tabella",
+   "da": "Inti- midire,",
+   "a": "Intimidire,",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "paladino",
+   "pagina": 70,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "paladino",
+   "pagina": 70,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "paladino",
+   "pagina": 71,
+   "dove": "tabella",
+   "da": "sce- gliere",
+   "a": "scegliere",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "paladino",
+   "pagina": 71,
+   "dove": "tabella",
+   "da": "abbando- nare",
+   "a": "abbandonare",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "ranger",
+   "pagina": 75,
+   "dove": "tabella",
+   "da": "Padro- nanza",
+   "a": "Padronanza",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "stregone",
+   "pagina": 79,
+   "dove": "tabella",
+   "da": "avven- turiero",
+   "a": "avventuriero",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, senza il trattino della riga."
+  },
+  {
+   "classe": "stregone",
+   "pagina": 79,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "warlock",
+   "pagina": 85,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  },
+  {
+   "classe": "warlock",
+   "pagina": 85,
+   "dove": "testo",
+   "da": "elen cati",
+   "a": "elencati",
+   "motivo": "Parola sillabata a fine riga nel PDF (trattino morbido): ricomposta, i due pezzi erano in blocchi trascritti separati."
+  }
+ ]
+}
