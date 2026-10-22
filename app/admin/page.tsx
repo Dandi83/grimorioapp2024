@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Backpack, BarChart3, BookOpen, Eye, Gem, Hammer, HeartPulse, History, LogOut, MessageSquareWarning, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
+import { Backpack, BarChart3, Bell, BookOpen, Eye, Gem, Hammer, HeartPulse, History, LogOut, MessageSquareWarning, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/admin";
 import { AdminLogin } from "@/components/admin-login";
@@ -10,6 +10,7 @@ import { allOverrides } from "@/lib/content-overrides";
 import { countNewFeedback } from "@/lib/feedback";
 import { PUBLIC_SECTIONS, effectiveHidden, type PublicSectionKey } from "@/lib/public-sections";
 import { hiddenPartIds, sectionStates } from "@/lib/section-visibility";
+import { listDevices } from "@/lib/push";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +81,7 @@ export default async function AdminPage() {
   const [newReports, overrides, states, parts] = await Promise.all([
     countNewFeedback().catch(() => null), allOverrides().catch(() => null), sectionStates().catch(() => null), hiddenPartIds().catch(() => [] as string[]),
   ]);
+  const devices = await listDevices().then(list => list.length).catch(() => null);
   // On the tiles: «Nascosta» for the sections hidden from the public (also through all their editions or
   // blocks), «Parti nascoste» when only some parts are (/admin/sezioni).
   const hiddenSections = effectiveHidden(states ? PUBLIC_SECTIONS.filter(section => states[section.key]).map(section => section.key) : [], parts);
@@ -110,6 +112,13 @@ export default async function AdminPage() {
           <b className="block text-[22px] text-primary">{overrides ? active.length : "—"}</b>{active.length === 1 ? "modifica manuale" : "modifiche manuali"}
         </Link>
       </div>
+      <Link href="/admin/notifiche" className="flex min-h-[64px] items-center gap-3 rounded-[14px] border-[1.5px] border-border bg-card px-3.5 py-2.5">
+        <Bell size={24} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />
+        <span className="min-w-0 flex-1">
+          <span className="block font-serif text-xl font-bold text-primary">Notifiche</span>
+          <span className="block text-[13px] text-muted">{devices === null ? "Avvisi sul telefono" : devices === 0 ? "Nessun dispositivo attivo" : devices === 1 ? "1 dispositivo attivo" : `${devices} dispositivi attivi`}</span>
+        </span>
+      </Link>
       <nav aria-label="Sezioni da modificare" className="grid grid-cols-2 gap-2.5">
         <Tile href="/admin/incantesimi" title="Incantesimi" hint="Modifica testi e dati" icon="incantesimi" hidden={tileState("incantesimi")} />
         <Tile href="/admin/mostri" title="Mostri" hint="Modifica schede" icon="mostri" hidden={tileState("mostri")} />

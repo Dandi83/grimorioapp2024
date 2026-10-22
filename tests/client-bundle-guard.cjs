@@ -35,8 +35,14 @@ const path = require('node:path');
     assert.deepEqual(findSecretLeaks(dir, { FEEDBACK_TO_EMAIL: 'destinatario@esempio.it' }), []);
     fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), 'x="destinatario@esempio.it";fetch("https://api.resend.com/emails")');
     assert.deepEqual(findSecretLeaks(dir, { FEEDBACK_TO_EMAIL: 'destinatario@esempio.it' }).map(leak => leak.what), ['api.resend.com', 'value of a server variable (23 characters)']);
+    // Push notifications: the public key may reach the page, the private key and the signing library never.
+    const vapid = { VAPID_PUBLIC_KEY: 'BPubblicaDiProva0123456789', VAPID_PRIVATE_KEY: 'chiave-privata-di-prova-0123456789' };
+    fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), `k="${vapid.VAPID_PUBLIC_KEY}";`);
+    assert.deepEqual(findSecretLeaks(dir, vapid), []);
+    fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), `k="${vapid.VAPID_PRIVATE_KEY}";w.generateVAPIDKeys()`);
+    assert.deepEqual(findSecretLeaks(dir, vapid).map(leak => leak.what), ['generateVAPIDKeys', 'value of a server variable (34 characters)']);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
-  console.log('Client bundle guard: light index allowed, full 2014 and 2024 sheets and 2014 spell texts in browser code or in the search index rejected; server keys and recipients kept out of the browser code.');
+  console.log('Client bundle guard: light index allowed, full 2014 and 2024 sheets and 2014 spell texts in browser code or in the search index rejected; server keys, recipients and the push private key kept out of the browser code.');
 })().catch(error => { console.error(error); process.exit(1); });

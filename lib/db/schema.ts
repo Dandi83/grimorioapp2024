@@ -210,3 +210,31 @@ export const sectionPartsLog = pgTable("grimorio_section_parts_log", {
   nascosta: boolean("nascosta").notNull(),
   creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/**
+ * VAPID key pair of the admin push notifications (lib/push.ts), only when the server variables
+ * VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY are not set: generated once, never sent to the browser.
+ */
+export const pushKeys = pgTable("grimorio_push_keys", {
+  id: text("id").primaryKey(),
+  public_key: text("public_key").notNull(),
+  private_key: text("private_key").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Admin devices that receive the notifications (/admin/notifiche). */
+export const pushSubscriptions = pgTable("grimorio_push_subscriptions", {
+  id: uuid("id").primaryKey(),
+  endpoint: text("endpoint").notNull().unique(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  dispositivo: text("dispositivo").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Switch of each kind of notification; a kind without a row uses its default (lib/push.ts). */
+export const pushTypes = pgTable("grimorio_push_types", {
+  tipo: text("tipo").primaryKey(),
+  attivo: boolean("attivo").notNull(),
+  aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+});

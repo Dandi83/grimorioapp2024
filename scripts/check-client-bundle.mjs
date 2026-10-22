@@ -77,11 +77,13 @@ export function findIndexLeaks(file = SEARCH_INDEX_FILE, prints = sheetFingerpri
 }
 
 /** Server-only names and, when set during the build, their values: never in the browser code. */
-export const SECRET_ENV = ['RESEND_API_KEY', 'FEEDBACK_TO_EMAIL', 'FEEDBACK_FROM_EMAIL', 'TURNSTILE_SECRET_KEY', 'ADMIN_PASSCODE', 'ANALYTICS_SECRET', 'FEEDBACK_SECRET', 'DATABASE_URL'];
+export const SECRET_ENV = ['RESEND_API_KEY', 'FEEDBACK_TO_EMAIL', 'FEEDBACK_FROM_EMAIL', 'TURNSTILE_SECRET_KEY', 'ADMIN_PASSCODE', 'ANALYTICS_SECRET', 'FEEDBACK_SECRET', 'DATABASE_URL', 'VAPID_PRIVATE_KEY'];
+/** Server code that must never reach the browser: the email service and the push library that signs with the private key. */
+const SERVER_ONLY_MARKERS = ['api.resend.com', 'generateVAPIDKeys'];
 
 export function findSecretLeaks(clientDir, env = process.env) {
   const needles = [
-    'api.resend.com',
+    ...SERVER_ONLY_MARKERS,
     ...SECRET_ENV,
     // Short values (a test passcode) would match by chance: only real-length values are checked.
     ...SECRET_ENV.map(name => env[name]).filter(value => value && value.length >= 8),
@@ -89,7 +91,7 @@ export function findSecretLeaks(clientDir, env = process.env) {
   const leaks = [];
   for (const path of jsFiles(clientDir)) {
     const code = readFileSync(path, 'utf8');
-    needles.forEach((needle, i) => { if (code.includes(needle)) leaks.push({ path, what: i <= SECRET_ENV.length ? needle : `value of a server variable (${needle.length} characters)` }); });
+    needles.forEach((needle, i) => { if (code.includes(needle)) leaks.push({ path, what: i < SERVER_ONLY_MARKERS.length + SECRET_ENV.length ? needle : `value of a server variable (${needle.length} characters)` }); });
   }
   return leaks;
 }
