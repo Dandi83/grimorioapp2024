@@ -1237,11 +1237,11 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
   const kind = page.getByRole("switch", { name: "Notifiche: Segnalazioni" });
   await expect(kind).toHaveAttribute("aria-checked", "true");
   await kind.click();
-  await expect(page.getByRole("alert")).toHaveText("Segnalazioni: notifiche spente.");
+  await expect(page.getByRole("status").filter({ hasText: "Segnalazioni: notifiche spente." })).toBeVisible();
   await page.reload();
   await expect(page.getByRole("switch", { name: "Notifiche: Segnalazioni" })).toHaveAttribute("aria-checked", "false");
   await page.getByRole("switch", { name: "Notifiche: Segnalazioni" }).click();
-  await expect(page.getByRole("alert")).toHaveText("Segnalazioni: notifiche attive.");
+  await expect(page.getByRole("status").filter({ hasText: "Segnalazioni: notifiche attive." })).toBeVisible();
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `notifiche ${width}`).toBeLessThanOrEqual(width);
