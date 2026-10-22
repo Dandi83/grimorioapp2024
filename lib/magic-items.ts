@@ -68,10 +68,6 @@ export const magicItems: Record<MagicItemEdition, MagicItem[]> = {
 
 export const magicItemHref = (id: string) => `/oggetti-magici/${id}`;
 
-export function findMagicItem(id: string, edition: MagicItemEdition = "2024"): MagicItem | undefined {
-  return magicItems[edition].find(item => item.id === id);
-}
-
 export function magicItemListRows(edition: MagicItemEdition): MagicItemListRow[] {
   return magicItems[edition].map(item => ({
     id: item.id,

@@ -62,7 +62,6 @@ const page=loadTs('../app/mostro/[id]/page.tsx',{
   'next/navigation':{notFound:()=>{throw new Error('Not found');}},
   '@/components/monster-provenance-badge':loadTs('../components/monster-provenance-badge.tsx'),
   '@/components/condition-references':{ConditionReferences:()=>null},
-  '@/components/spell-references':{SpellReferences:()=>null},
   '@/components/back-button':{BackButton:()=>null},
   '@/components/meta-cell':loadTs('../components/meta-cell.tsx'),
   '@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button':{FavoriteButton:()=>null},

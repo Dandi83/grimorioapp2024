@@ -90,5 +90,3 @@ export function toolsSection(heading: string): string[] {
   }
   return out;
 }
-
-export const toolsSource2024 = { pages: [...new Set(entry.blocks.map(block => block.page))] };

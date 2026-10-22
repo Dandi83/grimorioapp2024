@@ -26,8 +26,6 @@ export interface Gear2014Item {
 }
 
 export const gear2014Source = data.fonte;
-export const gear2014Intro = data.intro.testo;
-export const packs2014Intro = data.dotazioni.intro;
 
 /** Name for matching: lower case, no brackets, no asterisk. */
 export const gearKey = (name: string) => name.toLowerCase().replace(/\([^)]*\)/g, " ").replace(/\*/g, "").replace(/\s+/g, " ").trim();

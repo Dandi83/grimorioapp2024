@@ -2,7 +2,6 @@
 // Lists carry only names, numbers and short labels; rule texts stay on the server.
 
 export type EquipmentEdition = "2014" | "2024";
-export const EQUIPMENT_EDITIONS: readonly EquipmentEdition[] = ["2024", "2014"];
 /** The last edition chosen in the Equipaggiamento section on this phone or browser. */
 export const EQUIPMENT_EDITION_KEY = "grimorio.equipaggiamento.edizione";
 

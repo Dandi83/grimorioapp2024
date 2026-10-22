@@ -107,7 +107,7 @@ export function CharacterDashboard({
         <div className="pg-portrait">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={safePortrait || "/hero-bestiario.png"}
+            src={safePortrait || "/hero-bestiario.webp"}
             alt={safePortrait ? `Ritratto di ${c.name}` : ""}
             className={safePortrait ? "pg-image" : "pg-image pg-placeholder"}
           />
