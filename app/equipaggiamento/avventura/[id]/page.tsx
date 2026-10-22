@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
+import { PartBlock } from "@/components/sections/part-block";
+import { pageEditions } from "@/lib/section-view";
 import type { GearItem, GearTable } from "@/lib/adventuring-gear";
 import { gear2014Source, type Gear2014Item } from "@/lib/adventuring-gear-2014";
 import { compareGear, findGearEntry, gearEntries, gearHref } from "@/lib/adventuring-gear-editions";
@@ -126,20 +128,25 @@ export default async function GearItemPage({ params }: { params: Promise<{ id: s
   const found = findGearEntry((await params).id, corrected.list);
   if (!found) notFound();
   const { entry, edition } = found;
+  // An edition hidden from /admin/sezioni is not in the page; an address of that edition is not found.
+  const shown = await pageEditions("avventura");
+  const has = (value: EquipmentEdition) => Boolean(entry.editions[value]) && shown.includes(value);
+  if ((edition && !shown.includes(edition)) || !(has("2024") || has("2014"))) notFound();
   const corrections = corrected.corrections.get(entry.id);
   const note = (value: EquipmentEdition) => <div className="mt-5"><SectionCorrectionNote section="avventura" id={entry.id} edition={value} corrections={corrections?.[value]} /></div>;
-  const rows = compareGear(entry);
+  const rows = shown.length === 2 ? compareGear(entry) : [];
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
-  if (entry.editions["2024"]) panels["2024"] = <><Sheet2024 item={entry.editions["2024"]} />{note("2024")}</>;
-  if (entry.editions["2014"]) panels["2014"] = <><Sheet2014 item={entry.editions["2014"]} />{note("2014")}</>;
+  if (has("2024")) panels["2024"] = <><Sheet2024 item={entry.editions["2024"]!} />{note("2024")}</>;
+  if (has("2014")) panels["2014"] = <><Sheet2014 item={entry.editions["2014"]!} />{note("2014")}</>;
   return (
     <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
       <BackButton fallback={LIST} label="Tutti gli oggetti" />
       <div>
-        <GearEditionPanels panels={panels} fixed={edition} listHref={LIST}
-          hrefs={{ ...(entry.editions["2014"] ? { "2014": gearHref(entry, "2014") } : {}), ...(entry.editions["2024"] ? { "2024": gearHref(entry, "2024") } : {}) }} />
+        <GearEditionPanels section="avventura" panels={panels} fixed={edition} listHref={LIST}
+          hrefs={{ ...(has("2014") ? { "2014": gearHref(entry, "2014") } : {}), ...(has("2024") ? { "2024": gearHref(entry, "2024") } : {}) }} />
       </div>
       {rows.length > 0 && (
+        <PartBlock section="avventura" part="confronto">
         <section className="space-y-2.5" aria-label="Differenze tra le edizioni">
           <h2 className="font-serif text-[22px] font-bold text-primary">2014 → 2024</h2>
           <table className="w-full table-fixed overflow-hidden rounded-[14px] border border-border bg-card text-[14px]">
@@ -157,6 +164,7 @@ export default async function GearItemPage({ params }: { params: Promise<{ id: s
             </tbody>
           </table>
         </section>
+        </PartBlock>
       )}
       <ReportLink />
     </article>

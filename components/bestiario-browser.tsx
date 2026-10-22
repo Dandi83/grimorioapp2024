@@ -7,6 +7,7 @@ import { Skull, Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
+import { useEditions, usePart } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { computeMonstersMeta, isSrdAnimal, typeCategory, type MonsterListItem } from "@/lib/monsters-types";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
@@ -65,12 +66,19 @@ export function BestiarioBrowser({
   const [q, setQ] = useState(initialQuery);
   const [filters, setFilters] = useState<MonsterFilters>(initialFilters);
   const [draft, setDraft] = useState<MonsterFilters | null>(null);
-  const [edizione, setEdizione] = useState<Edition>(initialEdizione);
+  const [chosenEdizione, setEdizione] = useState<Edition>(initialEdizione);
+  // Editions and collections hidden from /admin/sezioni: never shown to the public, labelled for the administrator.
+  const { allowed } = useEditions("bestiario");
+  const edizione: Edition = allowed.includes(chosenEdizione) ? chosenEdizione : allowed[0];
+  const monstersPart = usePart("bestiario", "mostri"), animalsPart = usePart("bestiario", "animali");
+  const categories = CATEGORIES.filter(c => c === "tutti" || (c === "mostri" ? monstersPart : animalsPart).shown);
+  const categoryLabel = (c: Category) => `${CATEGORY_LABEL[c]}${(c === "mostri" && monstersPart.hidden) || (c === "animali" && animalsPart.hidden) ? " · Nascosta" : ""}`;
   const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
 
-  const editionMonsters = useMemo(() => monsters.filter(monster => monster.edizione === edizione), [monsters, edizione]);
+  const editionMonsters = useMemo(() => monsters.filter(monster => monster.edizione === edizione
+    && (isSrdAnimal(monster) ? animalsPart.shown : monstersPart.shown)), [monsters, edizione, animalsPart.shown, monstersPart.shown]);
   const meta = useMemo(() => computeMonstersMeta(editionMonsters), [editionMonsters]);
   const searched = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
@@ -124,7 +132,7 @@ export function BestiarioBrowser({
   return (
     <div>
       <div className="px-6 pb-2 pt-8">
-        <CatalogTitle title="Bestiario" edition={edizione} onEdition={chooseEdition} />
+        <CatalogTitle section="bestiario" title="Bestiario" edition={edizione} onEdition={chooseEdition} />
         <SearchAndFilters query={q} onQuery={setQ} label="Cerca una creatura" active={active.length} onOpen={() => setDraft(filters)} />
         <ActiveFilters filters={active} />
       </div>
@@ -137,8 +145,8 @@ export function BestiarioBrowser({
         count={draftCount}
       >
         {draft && <>
-          <FilterGroup title="Categoria" segmented options={CATEGORIES} selected={[draft.categoria]} label={c => CATEGORY_LABEL[c]}
-            onToggle={categoria => setDraft({ ...draft, categoria })} />
+          {categories.length > 2 && <div data-part="bestiario:mostri"><div data-part="bestiario:animali"><FilterGroup title="Categoria" segmented options={categories} selected={[draft.categoria]} label={categoryLabel}
+            onToggle={categoria => setDraft({ ...draft, categoria })} /></div></div>}
           <FilterGroup title="Grado sfida" options={GS_BANDS} selected={draft.gs} label={band => BAND_LABEL[band]}
             onToggle={band => setDraft({ ...draft, gs: toggle(draft.gs, band, GS_BANDS) })} />
           <FilterGroup title="Tipo" options={meta.tipi} selected={draft.tipo}

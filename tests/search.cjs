@@ -155,6 +155,16 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  assert.ok(!hidden.rows.some(r=>/^\/(classi|equipaggiamento\/armi|compendio\/condizioni|manuale\/condizioni-)/.test(r[3])||(r[4]&&/^\/classi/.test(r[4]))),'no address of a hidden section');
  assert.ok(hidden.rows.some(r=>r[3].startsWith('/equipaggiamento/armature/')),'the other equipment stays');
  assert.equal(production.rows.length-hidden.rows.length,production.rows.filter(r=>/^\/(classi|equipaggiamento\/armi\/|manuale\/condizioni-)/.test(r[3])).length);
+ // Hidden parts: an edition, a collection, the Sottoclasse tab leave the index too.
+ const parts=await idx.buildSearchIndex('production',undefined,['incantesimi:2014','bestiario:animali','classi:tab-sottoclasse','armi:2024']);
+ const partRows=s.rowsOf(parts);
+ assert.ok(!partRows.some(r=>/^\/spell\/.*-2014$/.test(r.href)||(r.href2014&&r.href2014.startsWith('/spell/'))),'no 2014 spell');
+ assert.equal(partRows.find(r=>r.nome==='Palla Di Fuoco').href2014,undefined);
+ assert.ok(!partRows.some(r=>r.href.includes('#sottoclasse')),'no subclass row');
+ assert.ok(partRows.some(r=>r.href==='/classi/mago'));
+ const animals=require('../lib/data/srd-animal-ids.json');
+ assert.ok(!partRows.some(r=>animals.includes(r.href.replace('/mostro/',''))),'no animal');
+ assert.ok(!partRows.some(r=>r.href.startsWith('/equipaggiamento/armi/')&&!r.label.endsWith('· 2014')),'weapons only as 2014 rows');
  // Offline: the index is saved by the service worker; the panel never reaches the admin area.
  const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
  assert.ok(sw.includes('const SEARCH_INDEX = "/ricerca-indice.json";')&&sw.includes('"/preferiti", SEARCH_INDEX]'));

@@ -155,9 +155,29 @@ function load(relative) {
   assert.deepEqual(log.map(row=>[row.sezione,row.nascosta]).sort(),[['classi',false],['classi',true]],'one log row per change, with the new state');
   assert.ok(log.every(row=>row.creata_il),'with date and time');
   assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_section_visibility')).rows[0].n,1,'one record per section');
+  // Parts (an edition, a tab, a block): same rules, their own record and log row.
+  jar.clear();
+  await assert.rejects(sections.setPartVisibilityAction('classi:tab-tabella',true),/Non autorizzato/,'no public request can change a part');
+  assert.equal((await attempt('passcode-di-prova','203.0.113.61')).ok,true);
+  assert.deepEqual(await sections.setPartVisibilityAction('classi:tab-tabella',true),{ok:true,hidden:true});
+  assert.deepEqual(await sections.setPartVisibilityAction('classi:inventata',true),{ok:false,error:'Parte sconosciuta.'});
+  assert.deepEqual((await visibility.visibilityState()).parts,['classi:tab-tabella']);
+  await sections.setPartVisibilityAction('avanzamento:tabella',true);
+  for (const part of ['punti-ferita','talenti','calcolatore']) await sections.setPartVisibilityAction(`avanzamento:${part}`,true);
+  // «Mostra» on a page hidden through all its blocks shows those blocks again.
+  const showAll = new FormData(); showAll.set('sezione','avanzamento');
+  await sections.showSectionAction(showAll);
+  assert.deepEqual((await visibility.visibilityState()).parts,['classi:tab-tabella']);
+  const partShow = new FormData(); partShow.set('parte','classi:tab-tabella');
+  await sections.showPartAction(partShow);
+  assert.deepEqual((await visibility.visibilityState()).parts,[]);
+  const partLog = (await visibility.allSectionLog()).filter(row=>row.parte);
+  assert.equal(partLog.length,10,'one log row per part switch');
+  assert.ok(partLog.every(row=>row.sezione&&row.parte&&typeof row.nascosta==='boolean'&&row.creata_il));
+  assert.equal((await pg.query("SELECT count(*)::int AS n FROM grimorio_section_parts")).rows[0].n,5,'one record per part');
   await load('app/actions/admin.ts').logoutAction();
   assert.equal(draft.on,false,'logout turns the preview off');
   global.setTimeout = originalTimeout;
 
-  console.log('Admin access: signed 7-day __Host- sessions revoked at logout, server expiry, old/forged/changed-passcode cookies refused, login limited per address and overall, hashed addresses, fail-closed counter; sections shown/hidden only by the administrator, logged, preview on at login and off at logout.');
+  console.log('Admin access: signed 7-day __Host- sessions revoked at logout, server expiry, old/forged/changed-passcode cookies refused, login limited per address and overall, hashed addresses, fail-closed counter; sections shown/hidden only by the administrator, logged, parts too, preview on at login and off at logout.');
 })().catch(error=>{console.error(error);process.exit(1);});

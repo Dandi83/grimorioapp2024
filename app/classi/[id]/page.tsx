@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ClassBody, ClassHeader, CLASS_SOURCES } from "@/components/classes/class-sheet";
+import { ClassBody, ClassHeader, CLASS_PARTS, CLASS_SOURCES, type ClassParts } from "@/components/classes/class-sheet";
 import { ClassSheetEditions } from "@/components/classes/class-editions";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { ReportLink } from "@/components/feedback/report-link";
 import { getCorrectedClasses } from "@/lib/corrected-content";
 import { CLASS_IDS, isClassId } from "@/lib/classes";
 import type { ClassEdition } from "@/lib/classes-types";
-import { sectionsOut } from "@/lib/section-view";
+import { pageEditions, partState, sectionsOut } from "@/lib/section-view";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
@@ -32,15 +32,19 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
   if (!entry) notFound();
   const corrections = corrected.corrections.get(id);
   const spellsLink = !(await sectionsOut()).includes("incantesimi");
-  const headers = {} as Record<ClassEdition, React.ReactNode>;
-  const bodies = {} as Record<ClassEdition, React.ReactNode>;
-  for (const edition of ["2024", "2014"] as const) {
+  // Editions and parts of the sheet hidden from /admin/sezioni: left out for the public, labelled for the administrator.
+  const shown = await pageEditions("classi");
+  if (!shown.some(edition => entry.editions[edition])) notFound();
+  const parts = Object.fromEntries(await Promise.all(CLASS_PARTS.map(async key => [key, await partState("classi", key)]))) as ClassParts;
+  const headers: Partial<Record<ClassEdition, React.ReactNode>> = {};
+  const bodies: Partial<Record<ClassEdition, React.ReactNode>> = {};
+  for (const edition of shown) {
     const card = entry.editions[edition];
     const name = (card ?? entry.editions["2024"]!).nome;
     headers[edition] = <ClassHeader id={id} name={name} line={card ? `Classe · ${CLASS_SOURCES[edition]}, p. ${card.pagina}` : `Classe · ${CLASS_SOURCES[edition]}`} />;
     bodies[edition] = card ? (
       <div className="space-y-5 px-4 pt-4 sm:px-6">
-        <ClassBody card={card} id={id} edition={edition} spellsLink={spellsLink} other={entry.editions[edition === "2024" ? "2014" : "2024"] ? { edition: edition === "2024" ? "2014" : "2024", href: `/classi/${id}?edizione=${edition === "2024" ? "2014" : "2024"}` } : undefined} />
+        <ClassBody card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} other={entry.editions[edition === "2024" ? "2014" : "2024"] && shown.length === 2 ? { edition: edition === "2024" ? "2014" : "2024", href: `/classi/${id}?edizione=${edition === "2024" ? "2014" : "2024"}` } : undefined} />
         <SectionCorrectionNote section="classi" id={id} edition={edition} corrections={corrections?.[edition]} />
         <p className="text-center text-[13px] text-muted">Fonte: <Link href="/fonti" className="underline underline-offset-4">{CLASS_SOURCES[edition]} (CC-BY-4.0)</Link></p>
       </div>

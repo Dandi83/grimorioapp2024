@@ -20,7 +20,7 @@ const damageType = (weapon: WeaponListEdition) => weapon.tipoDanno || "nessun da
 
 /** Weapons of both editions: simple list grouped by category, or cards with filters. */
 export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
-  const [edition, setEdition] = useEquipmentEdition();
+  const [edition, setEdition] = useEquipmentEdition("armi");
   const [view, setView] = useState<View>("elenco");
   const [kind, setKind] = useState<Kind>("tutte");
   const [reach, setReach] = useState<Reach>("tutte");
@@ -44,7 +44,7 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
-      <CatalogTitle title="Armi" edition={edition} onEdition={setEdition} />
+      <CatalogTitle section="armi" title="Armi" edition={edition} onEdition={setEdition} />
       <p className="mt-2 text-[15px] text-muted">
         {plural(inEdition.length)} · {edition === "2024" ? "SRD 5.2.1, con Padronanza" : "SRD 5.1"}
       </p>

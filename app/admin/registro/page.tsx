@@ -11,7 +11,7 @@ import { EDITOR_FIELDS, allEditorLog, type EditorSection } from "@/lib/editor-lo
 import { formatWhen } from "@/lib/feedback-input";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { getSpellIndex } from "@/lib/spell-index";
-import { isPublicSectionKey, publicSection } from "@/lib/public-sections";
+import { isPublicSectionKey, publicSection, sectionParts } from "@/lib/public-sections";
 import { allSectionLog } from "@/lib/section-visibility";
 
 export const dynamic = "force-dynamic";
@@ -70,7 +70,8 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
     // Sections shown or hidden from /admin/sezioni: what the public sees, no content changed.
     ...sectionRows.map(row => ({
       id: row.id, editor: false, sezione: "sezioni", when: new Date(row.creata_il), undoneAt: null, inForce: true,
-      title: "Sezioni dell’app", card: isPublicSectionKey(row.sezione) ? publicSection(row.sezione).title : row.sezione, href: "/admin/sezioni",
+      title: "Sezioni dell’app", href: "/admin/sezioni",
+      card: [isPublicSectionKey(row.sezione) ? publicSection(row.sezione).title : row.sezione, ...(row.parte ? [sectionParts(row.sezione).find(part => part.key === row.parte)?.title ?? row.parte] : [])].join(" · "),
       field: "visibilità", before: row.nascosta ? "Visibile" : "Nascosta", after: row.nascosta ? "Nascosta" : "Visibile",
       motivo: row.nascosta ? "Nascosta al pubblico: dati e correzioni restano com’erano." : "Di nuovo visibile al pubblico.", fixed: "cambio di stato",
     })),

@@ -4,6 +4,7 @@ import { ClassIcon } from "@/components/classes/class-icon";
 import { ClassListEditions } from "@/components/classes/class-editions";
 import { ParentLink } from "@/components/section-tiles";
 import { getCorrectedClasses } from "@/lib/corrected-content";
+import { pageEditions } from "@/lib/section-view";
 import { CLASS_COLORS, classHref, hitDie, primaryAbilities, type ClassEntry } from "@/lib/classes";
 import type { ClassEdition } from "@/lib/classes-types";
 
@@ -41,16 +42,18 @@ function ClassGrid({ entries, edition }: { entries: ClassEntry[]; edition: Class
 
 export default async function ClassesPage() {
   const { list } = await getCorrectedClasses();
+  // An edition hidden from /admin/sezioni is not in the page.
+  const shown = await pageEditions("classi");
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/compendio" label="Compendio" />
       <ClassListEditions
         title={<h1 className="font-serif text-[34px] font-bold leading-tight">Classi</h1>}
         panels={{
-          "2024": <ClassGrid entries={list} edition="2024" />,
-          "2014": list.some(entry => entry.editions["2014"])
+          ...(shown.includes("2024") ? { "2024": <ClassGrid entries={list} edition="2024" /> } : {}),
+          ...(shown.includes("2014") ? { "2014": list.some(entry => entry.editions["2014"])
             ? <ClassGrid entries={list} edition="2014" />
-            : <p role="note" className="mt-4 rounded-[14px] border border-border bg-card px-4 py-3 text-[15px] font-semibold text-muted">Le classi 2014 (SRD 5.1) sono in arrivo. Per ora scegli 2024.</p>,
+            : <p role="note" className="mt-4 rounded-[14px] border border-border bg-card px-4 py-3 text-[15px] font-semibold text-muted">Le classi 2014 (SRD 5.1) sono in arrivo. Per ora scegli 2024.</p> } : {}),
         }}
       />
     </div>

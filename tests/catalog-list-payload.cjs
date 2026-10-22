@@ -50,7 +50,7 @@ function load(relative, deps={}) {
  assert.equal(se.props.spells[0].id,spell.id);assert.equal(se.props.spells[0].nome_italiano,spell.nome_italiano);
  assert.deepEqual(se.props.spells[0].classi,['mago']);assert.deepEqual(se.props.meta,st.computeMeta([spell]));
  assert.equal(JSON.stringify(spell),spellBefore);
- const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/section-view':{sectionsOut:async()=>[]}}).default;
+ const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/section-view':{sectionsOut:async()=>[],partsOut:async()=>[],linksOut:async()=>[],partState:async()=>({shown:true,hidden:false}),editionCard:async()=>false,pageEditions:async()=>['2024','2014']},'@/lib/monsters-types':{isSrdAnimal:()=>false}}).default;
  const fe=await favorites();
  assert.strictEqual(fe.props.spells,index);
  assert.ok(!fe.props.monsters.some(m=>'azioni' in m||'descrizione' in m));

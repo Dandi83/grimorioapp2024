@@ -7,9 +7,20 @@ import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { getMonsterById } from "@/lib/monsters";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
-import { sectionsOut } from "@/lib/section-view";
+import { HiddenPartBar } from "@/components/sections/part-block";
+import { partId } from "@/lib/public-sections";
+import { editionCard, linksOut, partState } from "@/lib/section-view";
+import { isSrdAnimal } from "@/lib/monsters-types";
+
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
 import { ReportLink } from "@/components/feedback/report-link";
+
+/** A creature of a hidden collection (Mostri, Animali) is not found; true when the administrator sees it hidden. */
+async function collectionCard(collection: "mostri" | "animali"): Promise<boolean> {
+  const state = await partState("bestiario", collection);
+  if (!state.shown) notFound();
+  return state.hidden;
+}
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -51,9 +62,14 @@ export default async function MonsterDetailPage({
   if (!monster) notFound();
   const source = getSrdMonsterSource(monster);
   const legacy = usesLegacyMonsterRules(monster);
+  // A creature of an edition or a collection hidden from /admin/sezioni is not found (the administrator sees it, labelled).
+  const edition = monster.edizione === "2014" || (!monster.edizione && legacy) ? "2014" : "2024";
+  const collection = isSrdAnimal(monster) ? "animali" : "mostri";
+  const hiddenParts = [...(await editionCard("bestiario", edition) ? [partId("bestiario", edition)] : []), ...(await collectionCard(collection) ? [partId("bestiario", collection)] : [])];
 
   return (
     <article className="monster-sheet relative pb-2 pt-4">
+      {hiddenParts.map(id => <div key={id} className="px-6"><HiddenPartBar id={id} /></div>)}
       <MonsterSheetTitle
         monster={monster}
         before={
@@ -67,7 +83,7 @@ export default async function MonsterDetailPage({
         }
         label={<MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
       />
-      <MonsterSheetBody monster={monster} legacy={legacy} hidden={await sectionsOut()} />
+      <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} />
       {source && (
         <aside aria-label="Fonte della scheda" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: {source.document} italiano — {source.sourceName}.</p>

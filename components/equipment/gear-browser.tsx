@@ -6,6 +6,8 @@ import { ChevronRight, Search } from "lucide-react";
 
 import { ParentLink } from "@/components/section-tiles";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
+import { HiddenTag } from "@/components/sections/hidden-tag";
+import { EditionButtons, usePart } from "@/components/sections/parts-context";
 import type { GearListRow } from "@/lib/adventuring-gear-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 
@@ -51,7 +53,9 @@ function GroupRow({ row }: { row: GearListRow }) {
 
 /** Adventuring gear of both editions: packs first, then every item A–Z, searchable by name. */
 export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListRow[]> }) {
-  const [edition, setEdition] = useEquipmentEdition();
+  const [edition, setEdition] = useEquipmentEdition("avventura");
+  // «Dotazioni» hidden from /admin/sezioni: not drawn for the public, labelled for the administrator.
+  const packsPart = usePart("avventura", "dotazioni");
   const [query, setQuery] = useState("");
   const [missing, setMissing] = useState<EquipmentEdition>();
   // "?manca=2014": a sheet sent us back because the object is not in that edition.
@@ -74,14 +78,8 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
       {/* The long title takes the whole width; the edition selector sits under it. */}
       <h1 className="border-b-4 border-primary pb-3 font-serif text-[34px] font-bold leading-tight">Equipaggiamento d’avventura</h1>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-        <div role="group" aria-label="Edizione delle regole" className="flex shrink-0 rounded-[8px] border border-border bg-elevated p-1">
-          {(["2024", "2014"] as const).map(value => (
-            <button key={value} type="button" aria-pressed={edition === value} onClick={() => { setEdition(value); setMissing(undefined); }}
-              className={`min-h-11 min-w-[56px] rounded-[6px] px-3 text-[15px] font-bold tabular-nums ${edition === value ? "bg-primary text-primary-foreground" : "text-muted"}`}>
-              {value}
-            </button>
-          ))}
-        </div>
+        <EditionButtons section="avventura" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} className="flex shrink-0 rounded-[8px] border border-border bg-elevated p-1"
+        button={active => `min-h-11 min-w-[56px] rounded-[6px] px-3 text-[15px] font-bold tabular-nums ${active ? "bg-primary text-primary-foreground" : "text-muted"}`} />
         <p className="text-[15px] text-muted">{count} voci · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}</p>
       </div>
       {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo oggetto non c’è nel {missing}.</p>}
@@ -92,10 +90,10 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
           className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
       </label>
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "oggetto trovato" : "oggetti trovati"}`}</p>
-      {packs.length > 0 && (
-        <section aria-labelledby="dotazioni" className="mt-3">
+      {packs.length > 0 && packsPart.shown && (
+        <section aria-labelledby="dotazioni" data-part="avventura:dotazioni" className="mt-3">
           <div className="rounded-t-[14px] border-2 border-b-0 border-amber bg-[#FBEBC2] px-3.5 pb-1.5 pt-2">
-            <h2 id="dotazioni" className="font-serif text-[22px] font-bold">Dotazioni</h2>
+            <h2 id="dotazioni" className="font-serif text-[22px] font-bold">Dotazioni{packsPart.hidden && <HiddenTag className="ml-2" />}</h2>
             <p className="text-sm text-muted">Pacchetti di oggetti pronti per l’avventura</p>
           </div>
           <ul className="overflow-hidden rounded-b-[14px] border-2 border-t-0 border-amber bg-card">

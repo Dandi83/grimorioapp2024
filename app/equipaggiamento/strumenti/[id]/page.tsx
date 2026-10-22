@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { ToolEditionPanels } from "@/components/equipment/tool-edition-panels";
+import { PartBlock } from "@/components/sections/part-block";
+import { pageEditions } from "@/lib/section-view";
 import { tools2014Source, type Tool2014 } from "@/lib/tools-2014";
 import { toolsSection, type Tool2024 } from "@/lib/tools";
 import { compareTool, getToolEntry, toolEntries, toolHref, toolKey } from "@/lib/tools-editions";
@@ -134,23 +136,28 @@ export default async function ToolPage({ params }: { params: Promise<{ id: strin
   const corrected = await getCorrectedTools();
   const entry = getToolEntry((await params).id, corrected.list);
   if (!entry) notFound();
+  // An edition hidden from /admin/sezioni is not in the page; a tool printed only there is not found.
+  const shown = await pageEditions("strumenti");
+  const has = (value: EquipmentEdition) => Boolean(entry.editions[value]) && shown.includes(value);
+  if (!has("2024") && !has("2014")) notFound();
   const corrections = corrected.corrections.get(entry.id);
   const note = (value: EquipmentEdition) => <div className="mt-5"><SectionCorrectionNote section="strumenti" id={entry.id} edition={value} corrections={corrections?.[value]} /></div>;
-  const rows = compareTool(entry);
+  const rows = shown.length === 2 ? compareTool(entry) : [];
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
-  if (entry.editions["2024"]) panels["2024"] = <><Sheet2024 tool={entry.editions["2024"]} />{note("2024")}</>;
-  if (entry.editions["2014"]) panels["2014"] = <><Sheet2014 tool={entry.editions["2014"]} />{note("2014")}</>;
+  if (has("2024")) panels["2024"] = <><Sheet2024 tool={entry.editions["2024"]!} />{note("2024")}</>;
+  if (has("2014")) panels["2014"] = <><Sheet2014 tool={entry.editions["2014"]!} />{note("2014")}</>;
   const current = toolHref(entry.id);
   const variant = entry.variante;
   return (
     <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
       <BackButton fallback={LIST} label="Tutti gli strumenti" />
       <div>
-        <ToolEditionPanels panels={panels} current={current} listHref={LIST}
+        <ToolEditionPanels section="strumenti" panels={panels} current={current} listHref={LIST}
           hrefs={{ "2014": current, "2024": variant ? toolHref(variant.tool.id) : current }}
           note={variant ? <>Nel 2024: <Link className="text-primary underline underline-offset-4" href={toolHref(variant.tool.id)}>{variant.tool.nome}</Link>, variante «{capitalize(variant.variant.nome)}»</> : undefined} />
       </div>
       {rows.length > 0 && (
+        <PartBlock section="strumenti" part="confronto">
         <section className="space-y-2.5" aria-label="Differenze tra le edizioni">
           <h2 className="font-serif text-[22px] font-bold text-primary">2014 → 2024</h2>
           <table className="w-full table-fixed overflow-hidden rounded-[14px] border border-border bg-card text-[14px]">
@@ -168,6 +175,7 @@ export default async function ToolPage({ params }: { params: Promise<{ id: strin
             </tbody>
           </table>
         </section>
+        </PartBlock>
       )}
       <ReportLink />
     </article>

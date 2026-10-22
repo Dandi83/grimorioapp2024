@@ -152,6 +152,18 @@ const text=r=>r.text();
  await restarted.fetchEvent(restarted.request('/classi'));
  assert.ok(restarted.store.get('grimorio-pages-v2').has(ORIGIN+'/classi'),'shown again: saved again');
 
+ // Hidden parts (an edition, a block): the copies saved before a change of the parts are deleted, once.
+ restarted.network.online=true;
+ for(const p of ['/avanzamento','/oggetti-magici/ali-del-volo','/spell/scudo'])await restarted.fetchEvent(restarted.request(p));
+ const saved=()=>[...restarted.store.get('grimorio-pages-v2').keys()].map(u=>new URL(u).pathname);
+ await restarted.message({type:'hidden-sections',paths:[],parts:[{path:'/avanzamento',signature:'avanzamento:calcolatore'}]});
+ assert.ok(!saved().includes('/avanzamento')&&saved().includes('/spell/scudo'),'a section whose parts change loses its saved copies');
+ await restarted.fetchEvent(restarted.request('/avanzamento'));
+ await restarted.message({type:'hidden-sections',paths:[],parts:[{path:'/avanzamento',signature:'avanzamento:calcolatore'}]});
+ assert.ok(saved().includes('/avanzamento'),'same parts: the copy saved after the change stays');
+ await restarted.message({type:'hidden-sections',paths:[],parts:[]});
+ assert.ok(!saved().includes('/avanzamento'),'parts shown again: the copy without them is deleted too');
+
  // The route serves this worker with its version, or the self-removing one when switched off.
  const routeFile=path.resolve('app/sw.js/route.ts');
  const loadRoute=()=>{const mod={exports:{}};new Function('require','module','exports',ts.transpileModule(fs.readFileSync(routeFile,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText)(id=>id==='@/lib/service-worker-config'?{serviceWorkerEnabled:()=>process.env.GRIMORIO_SERVICE_WORKER!=='off'}:createRequire(routeFile)(id),mod,mod.exports);return mod.exports;};
@@ -172,5 +184,5 @@ const text=r=>r.text();
  let done;listeners.activate({waitUntil:p=>{done=p;}});await done;
  assert.deepEqual([...store.keys()],['altro']);assert.ok(unregistered);assert.deepEqual(reloaded,['/grimorio']);
 
- console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch, hidden sections never served from a saved copy.');
+ console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch, hidden sections never served from a saved copy, copies dropped when hidden parts change.');
 })().catch(error=>{console.error(error);process.exit(1);});

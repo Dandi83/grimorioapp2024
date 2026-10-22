@@ -2,17 +2,21 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { unstable_cache } from "next/cache";
 import { pool } from "./db";
-import { PUBLIC_SECTIONS, type PublicSectionKey } from "./public-sections";
+import { PUBLIC_SECTIONS, isPartId, type PublicSectionKey } from "./public-sections";
 
 /**
  * Which public sections are hidden (/admin/sezioni). One row per section that was ever switched;
  * a section without a row is visible. Hiding changes only what the public sees: data, corrections,
  * favorites and logs are never touched. Every switch is also a row of the log, shown in /admin/registro.
+ * Parts of a section (an edition, a tab, a block: lib/public-sections.ts) have their own two tables.
  */
 
 export const SECTIONS_TAG = "section-visibility";
 
-export interface SectionLogRow { id: string; sezione: string; nascosta: boolean; creata_il: Date | string }
+export interface SectionLogRow { id: string; sezione: string; parte?: string | null; nascosta: boolean; creata_il: Date | string }
+
+/** Hidden sections and parts ("<section>:<part>"). */
+export interface VisibilityState { sections: PublicSectionKey[]; parts: string[] }
 
 let tablesReady: Promise<void> | undefined;
 /** Additive migration: the tables are created by the first switch (never by a public page). */
@@ -26,6 +30,18 @@ export function ensureSectionTables() {
     sezione text NOT NULL,
     nascosta boolean NOT NULL,
     creata_il timestamptz NOT NULL DEFAULT now()
+  )`)).then(() => pool.query(`CREATE TABLE IF NOT EXISTS grimorio_section_parts (
+    sezione text NOT NULL,
+    parte text NOT NULL,
+    nascosta boolean NOT NULL DEFAULT false,
+    aggiornata_il timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (sezione, parte)
+  )`)).then(() => pool.query(`CREATE TABLE IF NOT EXISTS grimorio_section_parts_log (
+    id uuid PRIMARY KEY,
+    sezione text NOT NULL,
+    parte text NOT NULL,
+    nascosta boolean NOT NULL,
+    creata_il timestamptz NOT NULL DEFAULT now()
   )`)).then(() => undefined).catch(error => { tablesReady = undefined; throw error; });
   return tablesReady;
 }
@@ -33,29 +49,46 @@ export function ensureSectionTables() {
 const MISSING_TABLE = "42P01";
 const known = new Set<string>(PUBLIC_SECTIONS.map(section => section.key));
 
-async function readHidden(): Promise<PublicSectionKey[]> {
+async function hiddenRows<T>(sql: string): Promise<T[]> {
   try {
-    const { rows } = await pool.query<{ sezione: string }>("SELECT sezione FROM grimorio_section_visibility WHERE nascosta");
-    return rows.map(row => row.sezione).filter((key): key is PublicSectionKey => known.has(key)).sort();
+    return (await pool.query<T & object>(sql)).rows;
   } catch (error) {
     if ((error as { code?: string }).code === MISSING_TABLE) return [];
     throw error;
   }
 }
 
-const cachedHidden = unstable_cache(readHidden, ["section-visibility-hidden"], { tags: [SECTIONS_TAG], revalidate: 300 });
+async function readHidden(): Promise<PublicSectionKey[]> {
+  const rows = await hiddenRows<{ sezione: string }>("SELECT sezione FROM grimorio_section_visibility WHERE nascosta");
+  return rows.map(row => row.sezione).filter((key): key is PublicSectionKey => known.has(key)).sort();
+}
+
+async function readState(): Promise<VisibilityState> {
+  const [sections, parts] = await Promise.all([
+    readHidden(),
+    hiddenRows<{ sezione: string; parte: string }>("SELECT sezione, parte FROM grimorio_section_parts WHERE nascosta"),
+  ]);
+  return { sections, parts: parts.map(row => `${row.sezione}:${row.parte}`).filter(isPartId).sort() };
+}
+
+const cachedState = unstable_cache(readState, ["section-visibility-state"], { tags: [SECTIONS_TAG], revalidate: 300 });
 
 /**
- * The hidden sections, for the public pages. If the database cannot be read every section stays
+ * Hidden sections and parts, for the public pages. If the database cannot be read everything stays
  * visible (and a warning is logged): a switch never makes the site fail.
  */
-export async function hiddenSections(): Promise<PublicSectionKey[]> {
+export async function visibilityState(): Promise<VisibilityState> {
   try {
-    return await cachedHidden();
+    return await cachedState();
   } catch {
     console.warn("[sezioni] Database non leggibile: tutte le sezioni restano visibili.");
-    return [];
+    return { sections: [], parts: [] };
   }
+}
+
+/** The hidden sections only (the 404 page and the search index use the effective list, see section-view). */
+export async function hiddenSections(): Promise<PublicSectionKey[]> {
+  return (await visibilityState()).sections;
 }
 
 /** Current state of every section for the admin page (not cached). */
@@ -63,6 +96,12 @@ export async function sectionStates(): Promise<Record<PublicSectionKey, boolean>
   await ensureSectionTables();
   const hidden = new Set(await readHidden());
   return Object.fromEntries(PUBLIC_SECTIONS.map(section => [section.key, hidden.has(section.key)])) as Record<PublicSectionKey, boolean>;
+}
+
+/** Hidden parts for the admin page (not cached). */
+export async function hiddenPartIds(): Promise<string[]> {
+  await ensureSectionTables();
+  return (await readState()).parts;
 }
 
 /** Saves the new state and its log row in one transaction; false when the state was already that. */
@@ -89,9 +128,34 @@ export async function setSectionHidden(key: PublicSectionKey, nascosta: boolean)
   }
 }
 
-/** Every switch, newest first, for /admin/registro and its export. */
+/** Saves the new state of one part and its log row; false when the state was already that. */
+export async function setPartHidden(sezione: PublicSectionKey, parte: string, nascosta: boolean): Promise<boolean> {
+  await ensureSectionTables();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const { rows } = await client.query<{ nascosta: boolean }>("SELECT nascosta FROM grimorio_section_parts WHERE sezione = $1 AND parte = $2 FOR UPDATE", [sezione, parte]);
+    if ((rows[0]?.nascosta ?? false) === nascosta) {
+      await client.query("ROLLBACK");
+      return false;
+    }
+    await client.query(`INSERT INTO grimorio_section_parts (sezione, parte, nascosta, aggiornata_il) VALUES ($1, $2, $3, now())
+      ON CONFLICT (sezione, parte) DO UPDATE SET nascosta = EXCLUDED.nascosta, aggiornata_il = now()`, [sezione, parte, nascosta]);
+    await client.query("INSERT INTO grimorio_section_parts_log (id, sezione, parte, nascosta) VALUES ($1, $2, $3, $4)", [randomUUID(), sezione, parte, nascosta]);
+    await client.query("COMMIT");
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+/** Every switch of sections and parts, newest first, for /admin/registro and its export. */
 export async function allSectionLog(): Promise<SectionLogRow[]> {
   await ensureSectionTables();
-  const { rows } = await pool.query<SectionLogRow>("SELECT * FROM grimorio_section_visibility_log ORDER BY creata_il DESC, id");
+  const { rows } = await pool.query<SectionLogRow>(`SELECT id, sezione, NULL AS parte, nascosta, creata_il FROM grimorio_section_visibility_log
+    UNION ALL SELECT id, sezione, parte, nascosta, creata_il FROM grimorio_section_parts_log ORDER BY creata_il DESC, id`);
   return rows;
 }
