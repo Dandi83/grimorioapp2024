@@ -1252,10 +1252,16 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
   const cookies = await page.context().cookies();
   const desktop = await browser.newContext({ viewport: { width: 390, height: 844 }, baseURL: test.info().project.use.baseURL, userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" });
   await desktop.addCookies(cookies);
+  // A browser with Web Push (the headless Chromium of CI has no PushManager or Notification): the page is tested, not the browser.
+  await desktop.addInitScript(() => {
+    if (!("PushManager" in window)) window.PushManager = function PushManager() {};
+    if (!("Notification" in window)) window.Notification = { permission: "default", requestPermission: async () => "default" };
+  });
   const computer = await desktop.newPage();
   await computer.goto("/admin/notifiche");
   const here = computer.getByRole("region", { name: "Questo dispositivo" });
   await expect(here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toBeVisible();
+  await expect(here).not.toContainText("Questo browser non supporta le notifiche push.");
   expect((await here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" }).boundingBox()).height).toBeGreaterThanOrEqual(44);
   for (const width of [360, 375, 390]) {
     await computer.setViewportSize({ width, height: 800 });
@@ -1268,4 +1274,13 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
   await expect(here).toContainText("Impostazioni → Notifiche → Grimorio");
   await expect(here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toHaveCount(0);
   await desktop.close();
+  // A browser without Web Push: it says so, no button.
+  const plain = await browser.newContext({ viewport: { width: 390, height: 844 }, baseURL: test.info().project.use.baseURL, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" });
+  await plain.addCookies(cookies);
+  await plain.addInitScript(() => { delete window.PushManager; });
+  const old = await plain.newPage();
+  await old.goto("/admin/notifiche");
+  await expect(old.getByRole("region", { name: "Questo dispositivo" })).toContainText("Questo browser non supporta le notifiche push.");
+  await expect(old.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toHaveCount(0);
+  await plain.close();
 });
