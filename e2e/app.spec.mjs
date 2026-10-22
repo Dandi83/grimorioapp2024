@@ -1091,8 +1091,8 @@ test("admin corrections in every section: armor, magic item text, condition titl
   expect(errors).toEqual([]);
 });
 
-test("classes 2024: Compendio group, list with selector, sheets with tabs, levels, table, subclass, search, narrow phones", async ({ page }) => {
-  test.setTimeout(240_000);
+test("classes 2024 and 2014: Compendio group, list with selector, sheets with tabs, levels, table, subclass, search, narrow phones", async ({ page }) => {
+  test.setTimeout(360_000);
   const errors = [];
   page.on("console", message => { if (message.type() === "error" && !/favicon\.ico/.test(message.location().url)) errors.push(message.text()); });
   page.on("pageerror", error => errors.push(error.message));
@@ -1114,8 +1114,12 @@ test("classes 2024: Compendio group, list with selector, sheets with tabs, level
   await expect(page.locator('[data-edition="2024"]')).toContainText("12 classi, ognuna con la sua sottoclasse del manuale.");
   await expect(cards.filter({ hasText: "Guerriero" })).toContainText("D10 · Forza o Destrezza");
   await expect(cards.filter({ hasText: "Mago" })).toContainText("D6 · Intelligenza");
+  // 2014: the same twelve classes from the SRD 5.1, hit dice as printed («1d10»), no primary ability line.
   await page.getByRole("button", { name: "2014", exact: true }).click();
-  await expect(page.locator('[data-edition="2014"]')).toContainText("in arrivo");
+  const cards2014 = page.locator('[data-edition="2014"] a[href^="/classi/"]');
+  await expect(cards2014).toHaveCount(12);
+  await expect(cards2014.filter({ hasText: "Guerriero" })).toContainText("1d10");
+  await expect(cards2014.filter({ hasText: "Guerriero" })).not.toContainText("Forza");
   await page.getByRole("button", { name: "2024", exact: true }).click();
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
@@ -1130,7 +1134,7 @@ test("classes 2024: Compendio group, list with selector, sheets with tabs, level
   await expect(sheet).toContainText("Classe · SRD 5.2.1, p. 53");
   const body = page.locator("main");
   await expect(body).toContainText("Forza e Costituzione");
-  await body.getByText("Abilità ed equipaggiamento iniziale").click();
+  await body.getByText("Abilità ed equipaggiamento iniziale").filter({ visible: true }).click();
   await expect(body).toContainText("Percezione, Persuasione, Sopravvivenza o Storia");
   const levels = body.getByRole("list", { name: "Livelli 1–5" }).locator(":scope > li");
   await expect(levels).toHaveCount(5);
@@ -1141,7 +1145,7 @@ test("classes 2024: Compendio group, list with selector, sheets with tabs, level
   await levels.nth(2).locator("summary").click();
   await expect(levels.nth(2)).toContainText("Privilegio della sottoclasse · Campione");
   await expect(levels.nth(2).getByRole("heading", { name: "Critico migliorato" })).toBeVisible();
-  await body.getByText("Mostra i livelli 6–20").click();
+  await body.getByText("Mostra i livelli 6–20").filter({ visible: true }).click();
   await expect(body.getByRole("list", { name: "Livelli 6–20" }).locator(":scope > li")).toHaveCount(15);
   await body.getByRole("tab", { name: "Tabella" }).click();
   const table = body.getByRole("tabpanel").getByRole("table");
@@ -1153,9 +1157,26 @@ test("classes 2024: Compendio group, list with selector, sheets with tabs, level
   await expect(body.getByRole("tabpanel").getByRole("heading", { level: 2 })).toHaveText("Campione");
   await expect(body.getByRole("tabpanel")).toContainText("Raggiungi l'eccellenza fisica nel combattimento");
   await expect(body.getByRole("tabpanel").getByRole("listitem").filter({ hasText: "18 · Sopravvissuto" })).toHaveCount(1);
+  // 2014 on the same page: header with its source page, the Campione with the levels printed in its text.
+  await page.getByRole("button", { name: "2014", exact: true }).click();
+  const sheet2014 = page.locator('[data-edition="2014"]');
+  await expect(sheet2014).toContainText("Classe · SRD 5.1, p. 24");
+  await expect(body).toContainText("Tutte le armature, scudi");
+  await body.getByRole("tab", { name: "Sottoclasse" }).filter({ visible: true }).click();
+  await expect(body.getByRole("tabpanel").filter({ visible: true }).getByRole("listitem").filter({ hasText: "18 · Sopravvissuto" })).toHaveCount(1);
+  await body.getByRole("tab", { name: "Tabella" }).filter({ visible: true }).click();
+  await expect(body.getByRole("tabpanel").filter({ visible: true }).locator("tbody tr")).toHaveCount(20);
+  await expect(body.getByRole("link", { name: "Passa alla versione 2024" })).toHaveAttribute("href", "/classi/guerriero?edizione=2024");
+  await page.getByRole("button", { name: "2024", exact: true }).click();
+  await expect(body.getByRole("link", { name: "Passa alla versione 2014" })).toHaveAttribute("href", "/classi/guerriero?edizione=2014");
+  await body.getByRole("link", { name: "Passa alla versione 2014" }).click();
+  await expect(page.locator('[data-edition="2014"]')).toBeVisible();
+  await page.goto("/classi/guerriero?edizione=2024");
   // «Segnala» carries the page, the class name and the edition shown.
   await body.getByRole("link", { name: "Segnala" }).click();
   await expect(page).toHaveURL(/\/segnala\?pagina=%2Fclassi%2Fguerriero&titolo=Guerriero&edizione=2024/);
+  await page.goto("/classi/mago?edizione=2014");
+  await expect(page.getByRole("link", { name: "Incantesimi del mago →" }).filter({ visible: true })).toHaveAttribute("href", "/grimorio?classe=mago&edizione=2014");
 
   // A caster: spell list, the button to the spells of the class, every sheet without horizontal scroll.
   await page.goto("/classi/mago");
@@ -1172,14 +1193,18 @@ test("classes 2024: Compendio group, list with selector, sheets with tabs, level
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     for (const id of ["barbaro", "bardo", "chierico", "druido", "guerriero", "ladro", "mago", "monaco", "paladino", "ranger", "stregone", "warlock"]) {
-      await page.goto(`/classi/${id}`);
-      for (const tab of ["Tabella", "Sottoclasse", "Privilegi"]) {
-        await page.getByRole("tab", { name: tab }).click();
-        expect(await page.evaluate(() => document.documentElement.scrollWidth), `${id} ${tab} ${width}`).toBeLessThanOrEqual(width);
+      // Both editions at 360 px, the 2024 sheets also at 375 and 390.
+      for (const edition of width === 360 ? ["2024", "2014"] : ["2024"]) {
+        await page.goto(`/classi/${id}?edizione=${edition}`);
+        await expect(page.locator(`[data-edition="${edition}"]`)).toBeVisible();
+        for (const tab of ["Tabella", "Sottoclasse", "Privilegi"]) {
+          await page.getByRole("tab", { name: tab }).filter({ visible: true }).click();
+          expect(await page.evaluate(() => document.documentElement.scrollWidth), `${id} ${edition} ${tab} ${width}`).toBeLessThanOrEqual(width);
+        }
       }
     }
   }
-  for (const box of [await page.getByRole("tab", { name: "Tabella" }).boundingBox(), await page.locator("main summary").first().boundingBox()]) expect(box.height).toBeGreaterThanOrEqual(44);
+  for (const box of [await page.getByRole("tab", { name: "Tabella" }).filter({ visible: true }).boundingBox(), await page.locator("main summary").filter({ visible: true }).first().boundingBox()]) expect(box.height).toBeGreaterThanOrEqual(44);
 
   // Home search: a subclass opens the sheet on its tab.
   await page.goto("/");

@@ -1,0 +1,13 @@
+{
+ "_nota": "Riparazioni di sola visualizzazione delle Classi 2014 (lib/data/srd-classes-5.1-it.json), trovate da scripts/transcribe-srd51-classes.py. Il PDF non cambia.",
+ "sillabazioni": [
+  {
+   "classe": "barbaro",
+   "pagina": 8,
+   "dove": "tabella",
+   "da": "Illimi- tata",
+   "a": "Illimitata",
+   "motivo": "Parola sillabata a fine riga nel PDF: ricomposta senza il trattino della riga."
+  }
+ ]
+}

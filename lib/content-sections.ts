@@ -191,7 +191,7 @@ export const CONTENT_SECTIONS: SectionSpec[] = [
     paths: id => { const entry = findMagic(id); return ["/oggetti-magici", `/oggetti-magici/${id}`, ...(entry?.id2014 ? [`/oggetti-magici/${entry.id2014}`] : [])]; },
   }),
   cardSection({
-    key: "classi", title: "Classi", hint: "Privilegi e sottoclassi", editions: ["2024"],
+    key: "classi", title: "Classi", hint: "Privilegi e sottoclassi", editions: ["2024", "2014"],
     fixed: [TEXT("nome", "Nome", 40), TEXT("sottoclasse-nome", "Sottoclasse · nome", 80), TEXT("sottoclasse-motto", "Sottoclasse · motto", 200)],
     dynamic: (name, label) => (name.endsWith("-titolo") ? TEXT(name, label, 120) : name.startsWith("tratto-") ? TEXT(name, label, 600) : LONG(name, label, 8000)),
     locked: [

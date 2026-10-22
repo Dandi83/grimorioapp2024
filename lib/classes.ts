@@ -1,3 +1,4 @@
+import data2014 from "./data/srd-classes-5.1-it.json";
 import data2024 from "./data/srd-classes-5.2.1-it.json";
 import type { ClassData, ClassEdition, ClassFeature } from "./classes-types";
 
@@ -5,7 +6,9 @@ import type { ClassData, ClassEdition, ClassFeature } from "./classes-types";
  * The twelve classes of the Compendio (/classi), one entry per class with its editions. The 2024
  * texts come from lib/data/srd-classes-5.2.1-it.json, built by scripts/transcribe-classes-2024.py
  * from the «Classi» entries of the 2024 manual (tests/classes-2024.cjs checks every text against the
- * manual fingerprints). Server only: the pages render the texts, the browser never loads this module.
+ * manual fingerprints); the 2014 texts from lib/data/srd-classes-5.1-it.json, transcribed from the
+ * SRD 5.1 PDF by scripts/transcribe-srd51-classes.py (tests/classes-2014.cjs). Server only: the pages
+ * render the texts, the browser never loads this module.
  */
 
 export const CLASS_IDS = ["barbaro", "bardo", "chierico", "druido", "guerriero", "ladro", "mago", "monaco", "paladino", "ranger", "stregone", "warlock"] as const;
@@ -21,20 +24,40 @@ export interface ClassEntry { id: ClassId; editions: Partial<Record<ClassEdition
 
 export const classEntries: ClassEntry[] = CLASS_IDS.map(id => ({
   id,
-  editions: { "2024": (data2024.classi as ClassData[]).find(card => card.id === id)! },
+  editions: {
+    "2024": (data2024.classi as unknown as ClassData[]).find(card => card.id === id)!,
+    "2014": (data2014.classi as unknown as ClassData[]).find(card => card.id === id)!,
+  },
 }));
 
 export const isClassId = (value: string): value is ClassId => (CLASS_IDS as readonly string[]).includes(value);
 export const classHref = (id: string) => `/classi/${id}`;
 
-/** The printed value of a row of «Tratti del …», by the start of its label. */
-export function trait(card: ClassData, label: string): string | undefined {
-  return card.tratti.voci.find(voce => voce.etichetta.startsWith(label))?.valore;
+/** The labels of the same trait in the two editions (2024 «Tratti del …», 2014 «Competenze»). */
+export const TRAITS = {
+  dado: ["Dado Vita", "Dadi Vita", "Dadi vita"],
+  primarie: ["Caratteristiche primarie"],
+  tiri: ["Competenze nei tiri salvezza", "Tiri Salvezza"],
+  armi: ["Competenza nelle armi", "Armi"],
+  armature: ["Competenza nelle armature", "Armature"],
+  abilita: ["Competenze nelle abilità", "Competenza nelle abilità", "Abilità"],
+  strumenti: ["Competenze negli strumenti", "Competenza negli strumenti", "Strumenti"],
+  equipaggiamento: ["Equipaggiamento iniziale", "Equipaggiamento"],
+  pf1: ["Punti ferita al 1° livello", "Punti Ferita al 1° Livello"],
+  pfDopo: ["Punti ferita ai livelli successivi", "Punti Ferita ai Livelli Successivi"],
+} as const;
+
+/** The printed value of a trait, whatever the edition calls it. */
+export function trait(card: ClassData, key: keyof typeof TRAITS): string | undefined {
+  const labels: readonly string[] = TRAITS[key];
+  return card.tratti.voci.find(voce => labels.includes(voce.etichetta))?.valore;
 }
 
-/** «D10» from «D10 per ogni livello da guerriero». */
-export const hitDie = (card: ClassData) => /^D\d+/i.exec(trait(card, "Dado Vita") ?? "")?.[0].toUpperCase();
-export const primaryAbilities = (card: ClassData) => trait(card, "Caratteristiche primarie");
+/** «D10» from «D10 per ogni livello da guerriero» (2024), «1d10» from «1d10 per ogni livello…» (2014). */
+export const hitDie = (card: ClassData) => /^(?:D\d+|\d+d\d+)/i.exec(trait(card, "dado") ?? "")?.[0];
+export const primaryAbilities = (card: ClassData) => trait(card, "primarie");
+/** Classes that cast spells: the spell list (2024) or a feature «Incantesimi» / «Magia del Patto» (2014). */
+export const castsSpells = (card: ClassData) => !!card.incantesimi || card.privilegi.some(feature => ["Incantesimi", "Magia del Patto"].includes(feature.titolo));
 
 export interface LevelRow {
   livello: number;

@@ -33,7 +33,7 @@ function ClassGrid({ entries, edition }: { entries: ClassEntry[]; edition: Class
         ))}
       </ul>
       <p className="mt-4 text-[13px] leading-5 text-muted">
-        Dado Vita · caratteristica primaria. Fonte: <Link href="/fonti" className="underline underline-offset-4">{edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"} (CC-BY-4.0)</Link>.
+        {edition === "2024" ? "Dado Vita · caratteristica primaria" : "Dadi Vita"}. Fonte: <Link href="/fonti" className="underline underline-offset-4">{edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"} (CC-BY-4.0)</Link>.
       </p>
     </>
   );

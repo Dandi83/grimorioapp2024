@@ -49,6 +49,8 @@ export function ClassBlocks({ blocks }: { blocks: ClassBlock[] }) {
     <div className="space-y-3 text-[15px] leading-6 text-foreground">
       {blocks.map((block, i) => block.tipo === "p" ? (
         <Paragraph key={i} text={block.testo} label={block.etichetta} />
+      ) : block.tipo === "h" ? (
+        <h4 key={i} className="pt-1 font-serif text-[18px] font-bold leading-tight text-primary">{block.testo}</h4>
       ) : block.tipo === "tabella" ? (
         <ClassInnerTable key={i} title={block.titolo} columns={block.colonne} rows={block.righe} />
       ) : (

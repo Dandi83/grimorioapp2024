@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { ClassBlocks } from "@/components/classes/class-blocks";
 import { ClassIcon } from "@/components/classes/class-icon";
 import { ClassTabs } from "@/components/classes/class-editions";
-import { CLASS_COLORS, hitDie, levelRows, ofClass, trait, type ClassId, type LevelRow } from "@/lib/classes";
+import { castsSpells, CLASS_COLORS, hitDie, levelRows, ofClass, trait, type ClassId, type LevelRow } from "@/lib/classes";
 import type { ClassData, ClassEdition, ClassFeature } from "@/lib/classes-types";
 
 export const CLASS_SOURCES: Record<ClassEdition, string> = { "2024": "SRD 5.2.1", "2014": "SRD 5.1" };
@@ -137,7 +137,7 @@ function FeaturesTab({ card, id, edition }: { card: ClassData; id: ClassId; edit
           </div>
         </Opening>
       )}
-      {card.incantesimi && (
+      {castsSpells(card) && (
         <Link href={`/grimorio?classe=${id}&edizione=${edition}`} className="flex min-h-12 items-center justify-center rounded-[14px] bg-primary px-4 text-[16px] font-bold text-primary-foreground">
           Incantesimi {ofClass(card.nome)} →
         </Link>
@@ -201,7 +201,7 @@ function SubclassTab({ card }: { card: ClassData }) {
       <div>
         <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">Sottoclasse · dal {card.livelloSottoclasse}º livello</p>
         <h2 className="mt-1 font-serif text-[26px] font-bold leading-tight text-primary">{sub.nome}</h2>
-        <p className="mt-1 text-[16px] italic">{sub.motto.testo}</p>
+        {sub.motto && <p className="mt-1 text-[16px] italic">{sub.motto.testo}</p>}
       </div>
       <ClassBlocks blocks={sub.descrizione} />
       <ul className="flex flex-wrap gap-2" aria-label="Privilegi della sottoclasse">
@@ -222,31 +222,40 @@ function SubclassTab({ card }: { card: ClassData }) {
   );
 }
 
+/** The rows of «Abilità ed equipaggiamento iniziale»: the printed traits not shown in the cards above. */
+const OPENING_ROWS = [
+  ["Abilità", "abilita"], ["Strumenti", "strumenti"], ["Equipaggiamento iniziale", "equipaggiamento"],
+  ["Punti ferita al 1° livello", "pf1"], ["Punti ferita ai livelli successivi", "pfDopo"],
+] as const;
+
 /** The body of a class sheet for one edition: key data, skills and equipment, the three tabs. */
-export function ClassBody({ card, id, edition }: { card: ClassData; id: ClassId; edition: ClassEdition }) {
+export function ClassBody({ card, id, edition, other }: { card: ClassData; id: ClassId; edition: ClassEdition; other?: { edition: ClassEdition; href: string } }) {
   const die = hitDie(card);
-  const dieRest = trait(card, "Dado Vita")?.replace(/^D\d+\s*/i, "");
-  const primary = trait(card, "Caratteristiche primarie");
-  const skills = trait(card, "Competenze nelle abilità") ?? trait(card, "Competenza nelle abilità");
-  const tools = trait(card, "Competenze negli strumenti") ?? trait(card, "Competenza negli strumenti");
-  const equipment = trait(card, "Equipaggiamento");
+  const dieRest = trait(card, "dado")?.slice(die?.length ?? 0).trim();
+  const primary = trait(card, "primarie");
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-2.5">
-        <KeyCard label="Dado Vita">
+        <KeyCard label={edition === "2014" ? "Dadi Vita" : "Dado Vita"}>
           <span className="block font-serif text-[28px] leading-none text-primary">{die}</span>
           {dieRest && <span className="mt-1 block text-[13px] font-semibold text-muted">{dieRest}</span>}
         </KeyCard>
         {primary !== undefined && <KeyCard label="Caratteristiche primarie">{primary}</KeyCard>}
-        <KeyCard label="Tiri salvezza">{trait(card, "Competenze nei tiri salvezza")}</KeyCard>
-        <KeyCard label="Armi">{trait(card, "Competenza nelle armi")}</KeyCard>
-        <KeyCard label="Armature" wide>{trait(card, "Competenza nelle armature")}</KeyCard>
+        <KeyCard label="Tiri salvezza">{trait(card, "tiri")}</KeyCard>
+        <KeyCard label="Armi">{trait(card, "armi")}</KeyCard>
+        <KeyCard label="Armature" wide>{trait(card, "armature")}</KeyCard>
       </div>
       <Opening summary={<span className="text-[16px] font-bold">Abilità ed equipaggiamento iniziale</span>}>
         <dl className="space-y-3 text-[15px] leading-6">
-          {skills && <div><dt className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">Abilità</dt><dd>{skills}</dd></div>}
-          {tools && <div><dt className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">Strumenti</dt><dd>{tools}</dd></div>}
-          {equipment && <div><dt className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">Equipaggiamento iniziale</dt><dd>{equipment}</dd></div>}
+          {OPENING_ROWS.map(([label, key]) => {
+            const value = trait(card, key);
+            return value ? (
+              <div key={key}>
+                <dt className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">{label}</dt>
+                <dd><ClassBlocks blocks={[{ tipo: "p", testo: value }]} /></dd>
+              </div>
+            ) : null;
+          })}
         </dl>
       </Opening>
       {card.diventare && (
@@ -266,6 +275,12 @@ export function ClassBody({ card, id, edition }: { card: ClassData; id: ClassId;
         { key: "tabella", label: "Tabella", content: <TableTab card={card} /> },
         { key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} /> },
       ]} />
+      {other && (
+        // A full load: the edition is read from the address when the page opens.
+        <a href={other.href} className="inline-flex min-h-11 items-center text-[15px] font-semibold text-primary underline underline-offset-4">
+          Passa alla versione {other.edition}
+        </a>
+      )}
     </div>
   );
 }

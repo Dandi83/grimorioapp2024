@@ -38,7 +38,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
     headers[edition] = <ClassHeader id={id} name={name} line={card ? `Classe · ${CLASS_SOURCES[edition]}, p. ${card.pagina}` : `Classe · ${CLASS_SOURCES[edition]}`} />;
     bodies[edition] = card ? (
       <div className="space-y-5 px-4 pt-4 sm:px-6">
-        <ClassBody card={card} id={id} edition={edition} />
+        <ClassBody card={card} id={id} edition={edition} other={entry.editions[edition === "2024" ? "2014" : "2024"] ? { edition: edition === "2024" ? "2014" : "2024", href: `/classi/${id}?edizione=${edition === "2024" ? "2014" : "2024"}` } : undefined} />
         <SectionCorrectionNote section="classi" id={id} edition={edition} corrections={corrections?.[edition]} />
         <p className="text-center text-[13px] text-muted">Fonte: <Link href="/fonti" className="underline underline-offset-4">{CLASS_SOURCES[edition]} (CC-BY-4.0)</Link></p>
       </div>
