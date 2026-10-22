@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { loginAction } from "@/app/actions/admin";
 import { KeyRound } from "lucide-react";
 import { AdminPublicLink } from "./admin-public-link";
@@ -9,6 +10,9 @@ const initialState = { ok: false as const, error: "" };
 
 export function AdminLogin() {
   const [state, formAction, pending] = useActionState(loginAction, initialState);
+  const router = useRouter();
+  // Logged in from any admin page: show that page again, now with the session.
+  useEffect(() => { if (state?.ok) router.refresh(); }, [state, router]);
 
   return (
     <main className="mx-auto flex min-h-[80vh] max-w-md flex-col items-center justify-center px-5">
@@ -20,7 +24,7 @@ export function AdminLogin() {
           </div>
           <h1 className="font-serif text-2xl text-foreground">Area riservata</h1>
           <p className="text-pretty text-sm text-muted-foreground">
-            Inserisci la passcode per modificare gli incantesimi del grimorio.
+            Inserisci la passcode per entrare nell’amministrazione.
           </p>
         </div>
 

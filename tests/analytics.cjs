@@ -81,7 +81,8 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  const maintenance=load('app/api/analytics/maintenance/route.ts',{'@/lib/analytics':{purgeAnalytics:async()=>{},exportAnalytics:async()=>{}}});process.env.CRON_SECRET='maintenance-test';
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance'))).status,401);
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance',{headers:{authorization:'Bearer maintenance-test'}}))).status,200);
- const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/admin-auth':{isAdmin:async()=>false},'next/navigation':{redirect:()=>{throw new Error('redirect:/admin')}},'@/lib/analytics':{readAnalytics:async()=>{throw new Error('private data leaked')}}});
- await assert.rejects(()=>statistics.default({searchParams:Promise.resolve({})}),/redirect:\/admin/);
+ const LoginForm=()=>null;
+ const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readAnalytics:async()=>{throw new Error('private data leaked')}}});
+ assert.equal((await statistics.default({searchParams:Promise.resolve({})})).type,LoginForm,'without login only the login form is shown');
  await pg.close();console.log('Analytics: consent enforcement, signed IDs, admin exclusion, validation, unique counts, duplicate events, PostgreSQL aggregates, outbox retry, privacy payload and retention passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

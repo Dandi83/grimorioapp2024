@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
 import { isAdmin } from "@/lib/admin-auth";
+import { AdminLogin } from "@/components/admin-login";
 import { listFeedback, type FeedbackFilter } from "@/lib/feedback";
 import { pageName } from "@/lib/feedback-names";
 import { FEEDBACK_STATES, FEEDBACK_TYPES, aboutLabel, formatWhen, type FeedbackState, type FeedbackType } from "@/lib/feedback-input";
@@ -26,7 +26,8 @@ function href(filter: FeedbackFilter) {
 }
 
 export default async function FeedbackListPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  if (!(await isAdmin())) redirect("/admin");
+  // Login in place: a link opened from an email (no strict cookie on arrival) still reaches this page.
+  if (!(await isAdmin())) return <AdminLogin />;
   const query = await searchParams;
   const filter: FeedbackFilter = {
     tipo: (FEEDBACK_TYPES as readonly unknown[]).includes(query.tipo) ? (query.tipo as FeedbackType) : undefined,

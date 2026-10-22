@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/admin-auth";
+import { AdminLogin } from "@/components/admin-login";
 import { analyticsConfigured, POSTHOG_DASHBOARD, readAnalytics } from "@/lib/analytics";
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -20,7 +20,8 @@ export default async function StatisticsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  if (!(await isAdmin())) redirect("/admin");
+  // Login in place: a link opened from an email (no strict cookie on arrival) still reaches this page.
+  if (!(await isAdmin())) return <AdminLogin />;
   const query = await searchParams;
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
   const shift = (days: number) => {

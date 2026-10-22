@@ -14,9 +14,17 @@ function ensureTable() {
   return tableReady;
 }
 
+/**
+ * The visitor's address as Vercel reports it. Vercel sets x-real-ip and overwrites x-forwarded-for
+ * with the real client address, so a visitor cannot pick another one by sending these headers.
+ */
+export function clientAddress(headers: { get(name: string): string | null }): string | null {
+  return headers.get("x-real-ip")?.trim() || headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null;
+}
+
 /** Addresses are stored only as a hash. */
-export function addressKey(forwardedFor: string | null): string {
-  const address = forwardedFor?.split(",")[0]?.trim() || "unknown";
+export function addressKey(address: string | null): string {
+  address = address?.split(",")[0]?.trim() || "unknown";
   return createHash("sha256").update(`grimorio-admin-login:${address}`).digest("hex");
 }
 

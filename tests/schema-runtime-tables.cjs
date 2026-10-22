@@ -44,7 +44,9 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
  const limit=load('lib/admin-login-limit.ts');
  await limit.loginBlocked(limit.addressKey('203.0.113.1'));
  await load('lib/feedback.ts').ensureFeedbackTables();
- for(const table of [schema.contentEditions,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits]){
+ deps['next/headers']={cookies:async()=>({get:()=>undefined,set(){},delete(){}})};
+ await load('lib/admin-auth.ts').startAdminSession();
+ for(const table of [schema.contentEditions,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.adminSessions]){
   const config=getTableConfig(table);
   const {rows}=await pg.query('SELECT column_name,data_type,is_nullable,column_default FROM information_schema.columns WHERE table_name=$1 ORDER BY ordinal_position',[config.name]);
   assert.ok(rows.length,`${config.name} is created by the runtime code`);
@@ -58,5 +60,5 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
   }
  }
  await pg.close();
- console.log('Schema: runtime-created tables (editions, creature details, habitats, analytics, login failures, reports) match their schema.ts descriptions.');
+ console.log('Schema: runtime-created tables (editions, creature details, habitats, analytics, login failures, reports, admin sessions) match their schema.ts descriptions.');
 })().catch(error=>{console.error(error);process.exit(1);});
