@@ -5,9 +5,11 @@ export type ClassEdition = "2024" | "2014";
 /** A paragraph as printed; `etichetta` is its bold-italic run-in label (part of `testo`). */
 export interface ClassParagraph { tipo: "p"; testo: string; etichetta?: string; pagina?: number }
 export interface ClassInnerTable { tipo: "tabella"; titolo: string; colonne: string[]; righe: string[][]; pagina?: number }
+/** A sub-heading inside a feature (2014: options of a feature, «Trucchetti», «Slot incantesimo»). */
+export interface ClassHeading { tipo: "h"; testo: string; pagina?: number }
 /** A boxed sidebar of the manual («Giuramenti infranti»). */
 export interface ClassSidebar { tipo: "riquadro"; titolo: string; paragrafi: { testo: string; etichetta?: string }[]; pagina?: number }
-export type ClassBlock = ClassParagraph | ClassInnerTable | ClassSidebar;
+export type ClassBlock = ClassParagraph | ClassHeading | ClassInnerTable | ClassSidebar;
 
 export interface ClassFeature { livello: number; titolo: string; contenuto: ClassBlock[]; pagina: number }
 
@@ -34,7 +36,8 @@ export interface ClassData {
   nome: string;
   pagina: number;
   pagine: number[];
-  tratti: { titolo: string; voci: { etichetta: string; valore: string }[]; pagina: number };
+  /** 2024: the table «Tratti del …»; 2014: «Punti ferita», «Competenze», «Equipaggiamento» (gruppi). */
+  tratti: { titolo: string; voci: { etichetta: string; valore: string }[]; pagina: number; gruppi?: string[] };
   tabella: ClassLevelTable;
   diventare?: { titolo: string; parti: { titolo: string; contenuto: ClassBlock[] }[] };
   introPrivilegi?: { titolo: string; contenuto: ClassBlock[] };
@@ -46,7 +49,8 @@ export interface ClassData {
     nome: string;
     titolo: string;
     pagina: number;
-    motto: { testo: string };
+    /** 2024 only: the italic line under the name. */
+    motto?: { testo: string };
     descrizione: ClassBlock[];
     privilegi: ClassFeature[];
   };

@@ -66,9 +66,10 @@ export const SEARCH_SOURCES: SearchSource[] = [
     section: "classi", title: "Classi", editionKey: EQUIPMENT_EDITION_KEY,
     rows: async () => (await getCorrectedClasses()).list.flatMap(entry => (["2024", "2014"] as const).flatMap(edition => {
       const card = entry.editions[edition];
+      const page = `${classHref(entry.id)}${edition === "2014" ? "?edizione=2014" : ""}`;
       return card ? [
-        { nome: card.nome, label: `Classe · ${hitDie(card)}`, href: classHref(entry.id), edizione: edition },
-        { nome: card.sottoclasse.nome, label: `Sottoclasse ${ofClass(card.nome)}`, href: `${classHref(entry.id)}#sottoclasse`, edizione: edition },
+        { nome: card.nome, label: `Classe · ${hitDie(card)}`, href: page, edizione: edition },
+        { nome: card.sottoclasse.nome, label: `Sottoclasse ${ofClass(card.nome)}`, href: `${page}#sottoclasse`, edizione: edition },
       ] : [];
     })),
   },

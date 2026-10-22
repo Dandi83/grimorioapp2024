@@ -20,8 +20,8 @@ const RULE_FILES = [
   { file: 'srd-tools-5.1-it.json', texts: data => [{ id: 'intro', text: data.intro.testo }, ...Object.entries(data.descrizioni).map(([id, rule]) => ({ id, text: rule.testo }))] },
   { file: 'srd-manual-5.2.1-it.json', texts: data => data.entries.find(e => e.id === 'equipaggiamento-strumenti').blocks.filter(b => b.kind === 'prose').map((b, i) => ({ id: `strumenti-${i}`, text: b.text })) },
   // Classes: the feature texts of class and subclass (the sheets render them on the server).
-  { file: 'srd-classes-5.2.1-it.json', texts: data => data.classi.flatMap(card => [...card.privilegi, ...card.sottoclasse.privilegi].flatMap((feature, i) =>
-    feature.contenuto.filter(block => block.tipo === 'p').map((block, j) => ({ id: `${card.id}-${i}-${j}`, text: block.testo })))) },
+  ...['srd-classes-5.2.1-it.json', 'srd-classes-5.1-it.json'].map(file => ({ file, texts: data => data.classi.flatMap(card => [...card.privilegi, ...card.sottoclasse.privilegi].flatMap((feature, i) =>
+    feature.contenuto.filter(block => block.tipo === 'p').map((block, j) => ({ id: `${card.id}-${i}-${j}`, text: block.testo })))) })),
 ];
 
 /** One plain-ASCII sentence fragment per sheet: it survives minification and string escaping. */

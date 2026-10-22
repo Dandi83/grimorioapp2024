@@ -96,8 +96,12 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  const magicNames=new Set(bySection('oggetti-magici').map(r=>s.fold(r.nome)));
  for(const e of magicItemEntries)for(const it of Object.values(e.editions))assert.ok(magicNames.has(s.fold(it.nome)),it.nome);
  assert.equal(bySection('oggetti-magici').length,magicItemEntries.reduce((n,e)=>n+(e.editions['2014']&&e.editions['2024']&&s.fold(e.editions['2014'].nome)!==s.fold(e.editions['2024'].nome)?2:1),0));
- // Classes: the twelve classes and their subclass, the subclass opening the tab of the sheet.
- assert.equal(bySection('classi').length,24);
+ // Classes: the twelve classes and their subclass (4 renamed in 2024: their 2014 name is a row of its own),
+ // the subclass opening the tab of the sheet, in the edition of the row.
+ assert.equal(bySection('classi').length,28);
+ const evocation=rows.find(r=>r.nome==='Scuola di invocazione');
+ assert.deepEqual([evocation.label,evocation.href],['Sottoclasse del mago · 2014','/classi/mago?edizione=2014#sottoclasse']);
+ assert.equal(rows.find(r=>r.nome==='Guerriero').href2014,'/classi/guerriero?edizione=2014');
  assert.deepEqual(['Guerriero','Campione'].map(n=>rows.find(r=>r.nome===n)).map(r=>[r.label,r.href]),[['Classe · D10','/classi/guerriero'],['Sottoclasse del guerriero','/classi/guerriero#sottoclasse']]);
  assert.equal(rows.find(r=>r.nome==='Stregoneria draconica').label,'Sottoclasse dello stregone');
  assert.equal(bySection('condizioni').length,15,JSON.stringify(bySection('condizioni').map(r=>r.nome+'|'+r.label)));

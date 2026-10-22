@@ -142,7 +142,7 @@ function classFields(card: ClassData): ClassField[] {
   });
   paragraphsOf("incantesimi-intro", card.incantesimi?.titolo ?? "Lista degli incantesimi", c => c.incantesimi?.intro);
   fields.push({ key: "sottoclasse-nome", label: "Sottoclasse · nome", get: c => c.sottoclasse.nome, set: (c, v) => { c.sottoclasse.nome = v; } });
-  fields.push({ key: "sottoclasse-motto", label: "Sottoclasse · motto", get: c => c.sottoclasse.motto.testo, set: (c, v) => { c.sottoclasse.motto.testo = v; } });
+  if (card.sottoclasse.motto) fields.push({ key: "sottoclasse-motto", label: "Sottoclasse · motto", get: c => c.sottoclasse.motto!.testo, set: (c, v) => { c.sottoclasse.motto!.testo = v; } });
   paragraphsOf("sottoclasse-descrizione", "Sottoclasse · descrizione", c => c.sottoclasse.descrizione);
   features("sottoclasse", "Sottoclasse · ", c => c.sottoclasse.privilegi);
   return fields;

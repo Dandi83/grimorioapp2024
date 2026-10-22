@@ -59,9 +59,10 @@ export function ClassTabs({ tabs, label, idPrefix }: { tabs: { key: string; labe
   useEffect(() => {
     const open = () => {
       const key = window.location.hash.slice(1);
-      if (!keys.split(" ").includes(key) || root.current?.closest("[hidden]")) return;
+      if (!keys.split(" ").includes(key)) return;
+      // Both editions open the tab; the one shown (chosen just after mount) scrolls into view.
       setActive(key);
-      root.current?.scrollIntoView({ block: "start" });
+      window.setTimeout(() => { if (!root.current?.closest("[hidden]")) root.current?.scrollIntoView({ block: "start" }); }, 80);
     };
     open();
     window.addEventListener("hashchange", open);

@@ -72,10 +72,10 @@ assert.notEqual(wand.blocchi[0].text,'Testo corretto.','the original card is not
 const tableIndex=wand.blocchi.findIndex(b=>b.kind==='table');
 assert.equal(`blocco-${tableIndex+1}` in adapters.magicItemAdapter.read(wand),false,'tables are not editable fields');
 // Classes: reading then writing gives back the same card; a corrected paragraph changes only itself.
-for(const entry of load('lib/classes.ts').classEntries){
- const card=entry.editions['2024'];
+for(const entry of load('lib/classes.ts').classEntries)for(const card of [entry.editions['2024'],entry.editions['2014']]){
  assert.deepEqual(adapters.classAdapter.write(card,adapters.classAdapter.read(card)),card,entry.id);
 }
+assert.equal('sottoclasse-motto' in adapters.classAdapter.read(load('lib/classes.ts').classEntries[0].editions['2014']),false,'2014 subclasses print no motto');
 const fighter=load('lib/classes.ts').classEntries.find(e=>e.id==='guerriero').editions['2024'];
 const fighterFields=adapters.classAdapter.read(fighter);
 assert.equal(fighterFields['privilegio-1-titolo'],'Stile di combattimento');

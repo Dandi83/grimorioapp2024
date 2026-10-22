@@ -43,6 +43,9 @@ export default function SourcesPage() {
           Le classi 2024 (sezione Classi del Compendio) sono le 12 voci «Classi» dell’SRD 5.2.1 italiano, ciascuna con la sua unica sottoclasse,
           divise in tratti, tabella dei privilegi, privilegi per livello, lista degli incantesimi e sottoclasse; ogni testo è confrontato con l’impronta
           del blocco del PDF da cui viene. Sono state ricomposte solo le parole sillabate a fine riga o a fine colonna.
+          Le classi «D&amp;D5e 2014» sono trascritte dalle pagine 8–59 dell’SRD 5.1 italiano (privilegi, tabella di classe, la sottoclasse
+          dell’SRD e i riquadri); il livello dei privilegi viene dalla tabella della classe e, per la sottoclasse, dalla frase stampata
+          («Al 3° livello…»). Una sola parola sillabata è ricomposta («Illimitata», tabella del barbaro).
         </p>
         <p>
           <a className="text-primary underline underline-offset-4" href={srdSourceUrl} target="_blank" rel="noreferrer">Consulta il documento originale in italiano</a>
