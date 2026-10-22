@@ -1253,22 +1253,24 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
   const desktop = await browser.newContext({ viewport: { width: 390, height: 844 }, baseURL: test.info().project.use.baseURL, userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" });
   await desktop.addCookies(cookies);
   // A browser with Web Push (the headless Chromium of CI has no PushManager or Notification): the page is tested, not the browser.
+  // The permission starts as «not asked yet» (CI's Chromium blocks notifications by default).
   await desktop.addInitScript(() => {
     if (!("PushManager" in window)) window.PushManager = function PushManager() {};
-    if (!("Notification" in window)) window.Notification = { permission: "default", requestPermission: async () => "default" };
+    if (!("Notification" in window)) window.Notification = { requestPermission: async () => "default" };
+    Object.defineProperty(window.Notification, "permission", { configurable: true, get: () => "default" });
   });
   const computer = await desktop.newPage();
   await computer.goto("/admin/notifiche");
   const here = computer.getByRole("region", { name: "Questo dispositivo" });
+  await expect(here, "the page shows the activation button").toContainText("Attiva notifiche su questo dispositivo");
   await expect(here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toBeVisible();
-  await expect(here).not.toContainText("Questo browser non supporta le notifiche push.");
   expect((await here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" }).boundingBox()).height).toBeGreaterThanOrEqual(44);
   for (const width of [360, 375, 390]) {
     await computer.setViewportSize({ width, height: 800 });
     expect(await computer.evaluate(() => document.documentElement.scrollWidth), `computer ${width}`).toBeLessThanOrEqual(width);
   }
   // Permission denied on this device: how to allow it again, no button.
-  await computer.addInitScript(() => Object.defineProperty(Notification, "permission", { get: () => "denied" }));
+  await computer.addInitScript(() => Object.defineProperty(window.Notification, "permission", { configurable: true, get: () => "denied" }));
   await computer.reload();
   await expect(here).toContainText("Le notifiche per il Grimorio sono bloccate su questo dispositivo.");
   await expect(here).toContainText("Impostazioni → Notifiche → Grimorio");
