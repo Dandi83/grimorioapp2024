@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { Backpack, BarChart3, BookOpen, Eye, Gem, Hammer, HeartPulse, History, LogOut, MessageSquareWarning, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/admin";
 import { AdminLogin } from "@/components/admin-login";
@@ -8,6 +8,8 @@ import { isAdmin } from "@/lib/admin-auth";
 import { CONTENT_SECTIONS } from "@/lib/content-sections";
 import { allOverrides } from "@/lib/content-overrides";
 import { countNewFeedback } from "@/lib/feedback";
+import { PUBLIC_SECTIONS, effectiveHidden, type PublicSectionKey } from "@/lib/public-sections";
+import { hiddenPartIds, sectionStates } from "@/lib/section-visibility";
 
 export const dynamic = "force-dynamic";
 
@@ -25,12 +27,43 @@ const COMING = [
   { title: "Manuale", hint: "Voci e regole" },
 ];
 
-function Tile({ href, title, hint, count }: { href?: string; title: string; hint: string; count?: number }) {
+/** Icon of each tile (Classi: the Shield of the public Compendio tile) and the public section it shows or hides. */
+const TILE_ICONS: Record<string, { Icon: LucideIcon; section?: PublicSectionKey }> = {
+  incantesimi: { Icon: Sparkles, section: "incantesimi" },
+  mostri: { Icon: Skull, section: "bestiario" },
+  armi: { Icon: Sword, section: "armi" },
+  armature: { Icon: Shield, section: "armature" },
+  avventura: { Icon: Backpack, section: "avventura" },
+  strumenti: { Icon: Hammer, section: "strumenti" },
+  "oggetti-magici": { Icon: Gem, section: "oggetti-magici" },
+  classi: { Icon: Shield, section: "classi" },
+  condizioni: { Icon: HeartPulse, section: "condizioni" },
+  manuale: { Icon: BookOpen },
+};
+
+const LINKS: [string, string, LucideIcon][] = [
+  ["/admin/sezioni", "Sezioni dell’app", Eye],
+  ["/admin/segnalazioni", "Segnalazioni", MessageSquareWarning],
+  ["/admin/registro", "Registro modifiche", History],
+  ["/admin/statistiche", "Statistiche", BarChart3],
+];
+
+type TileState = "nascosta" | "parti" | undefined;
+
+function Tile({ href, title, hint, count, icon, hidden }: { href?: string; title: string; hint: string; count?: number; icon?: string; hidden?: TileState }) {
+  const Icon = icon ? TILE_ICONS[icon]?.Icon : undefined;
   const body = (
     <>
       <span className="flex items-start justify-between gap-2">
-        <span className="font-serif text-xl font-bold text-primary">{title}</span>
-        {count ? <span className="rounded-[10px] bg-amber px-2 py-0.5 text-[11px] font-bold text-foreground">{count}</span> : null}
+        <span className="flex min-w-0 items-center gap-2">
+          {Icon && <Icon size={24} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />}
+          <span className="font-serif text-xl font-bold text-primary">{title}</span>
+        </span>
+        <span className="flex shrink-0 items-center gap-1">
+          {hidden === "nascosta" && <span className="rounded-[6px] bg-[#2B2118] px-1.5 text-[11px] font-bold leading-4 text-[#E0A21A]">Nascosta</span>}
+          {hidden === "parti" && <span className="rounded-[6px] border border-[#2B2118] px-1.5 text-[11px] font-bold leading-[14px] text-[#2B2118]">Parti nascoste</span>}
+          {count ? <span className="rounded-[10px] bg-amber px-2 py-0.5 text-[11px] font-bold text-foreground">{count}</span> : null}
+        </span>
       </span>
       <span className="mt-0.5 block text-[13px] text-muted">{href ? hint : "In arrivo"}</span>
     </>
@@ -44,7 +77,18 @@ function Tile({ href, title, hint, count }: { href?: string; title: string; hint
 
 export default async function AdminPage() {
   if (!(await isAdmin())) return <AdminLogin />;
-  const [newReports, overrides] = await Promise.all([countNewFeedback().catch(() => null), allOverrides().catch(() => null)]);
+  const [newReports, overrides, states, parts] = await Promise.all([
+    countNewFeedback().catch(() => null), allOverrides().catch(() => null), sectionStates().catch(() => null), hiddenPartIds().catch(() => [] as string[]),
+  ]);
+  // On the tiles: «Nascosta» for the sections hidden from the public (also through all their editions or
+  // blocks), «Parti nascoste» when only some parts are (/admin/sezioni).
+  const hiddenSections = effectiveHidden(states ? PUBLIC_SECTIONS.filter(section => states[section.key]).map(section => section.key) : [], parts);
+  const tileState = (key: string): TileState => {
+    const section = TILE_ICONS[key]?.section;
+    if (!section) return undefined;
+    if (hiddenSections.includes(section)) return "nascosta";
+    return parts.some(id => id.startsWith(`${section}:`)) ? "parti" : undefined;
+  };
   const active = overrides?.filter(row => !row.annullata_il) ?? [];
   const perSection = (key: string) => active.filter(row => row.sezione === key).length;
   return (
@@ -67,14 +111,16 @@ export default async function AdminPage() {
         </Link>
       </div>
       <nav aria-label="Sezioni da modificare" className="grid grid-cols-2 gap-2.5">
-        <Tile href="/admin/incantesimi" title="Incantesimi" hint="Modifica testi e dati" />
-        <Tile href="/admin/mostri" title="Mostri" hint="Modifica schede" />
-        {CONTENT_SECTIONS.map(section => <Tile key={section.key} href={`/admin/contenuti/${section.key}`} title={section.title} hint={section.hint} count={perSection(section.key)} />)}
+        <Tile href="/admin/incantesimi" title="Incantesimi" hint="Modifica testi e dati" icon="incantesimi" hidden={tileState("incantesimi")} />
+        <Tile href="/admin/mostri" title="Mostri" hint="Modifica schede" icon="mostri" hidden={tileState("mostri")} />
+        {CONTENT_SECTIONS.map(section => <Tile key={section.key} href={`/admin/contenuti/${section.key}`} title={section.title} hint={section.hint} count={perSection(section.key)} icon={section.key} hidden={tileState(section.key)} />)}
         {COMING.filter(item => !CONTENT_SECTIONS.some(section => section.title === item.title)).map(item => <Tile key={item.title} title={item.title} hint={item.hint} />)}
       </nav>
       <nav aria-label="Altro" className="flex flex-wrap gap-2">
-        {[["/admin/sezioni", "Sezioni dell’app"], ["/admin/segnalazioni", "Segnalazioni"], ["/admin/registro", "Registro modifiche"], ["/admin/statistiche", "Statistiche"]].map(([href, label]) => (
-          <Link key={href} href={href} className="inline-flex min-h-11 items-center rounded-[22px] border-[1.5px] border-chip-border bg-card px-3.5 text-sm font-semibold text-primary">{label}</Link>
+        {LINKS.map(([href, label, Icon]) => (
+          <Link key={href} href={href} className="inline-flex min-h-11 items-center gap-1.5 rounded-[22px] border-[1.5px] border-chip-border bg-card px-3.5 text-sm font-semibold text-primary">
+            <Icon size={18} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />{label}
+          </Link>
         ))}
       </nav>
     </div>

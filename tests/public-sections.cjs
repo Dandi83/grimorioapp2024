@@ -58,9 +58,50 @@ for (const href of [...Object.keys(cases), '/', '/compendio', '/spell', '/manual
 // Hiding is reversible and never touches content: the switch only writes its two tables.
 const store = fs.readFileSync('lib/section-visibility.ts', 'utf8');
 const written = [...store.matchAll(/(?:INSERT INTO|DELETE FROM|(?<!DO )UPDATE)\s+(\w+)/g)].map(m => m[1]);
-assert.deepEqual([...new Set(written)].sort(), ['grimorio_section_visibility', 'grimorio_section_visibility_log']);
+assert.deepEqual([...new Set(written)].sort(), ['grimorio_section_parts', 'grimorio_section_parts_log', 'grimorio_section_visibility', 'grimorio_section_visibility_log']);
 const action = fs.readFileSync('app/actions/admin-sections.ts', 'utf8');
 assert.ok(/export async function setSectionVisibilityAction[^{]*\{\s*await requireAdmin\(\);/.test(action), 'the action starts with requireAdmin');
+assert.ok(/export async function setPartVisibilityAction[^{]*\{\s*await requireAdmin\(\);/.test(action), 'the part action starts with requireAdmin');
+
+// Parts: editions of nine sections, collections, class sheet parts, comparisons, the four blocks of Avanzamento.
+const parts = Object.fromEntries(ps.PUBLIC_SECTIONS.map(section => [section.key, section.parts.map(part => part.key)]));
+for (const key of ['incantesimi','bestiario','armi','armature','avventura','strumenti','oggetti-magici','condizioni','classi']) {
+  assert.deepEqual(parts[key].slice(0, 2), ['2014', '2024'], `${key}: Edizione 2014 and 2024`);
+}
+assert.deepEqual(parts.bestiario.slice(2), ['mostri', 'animali']);
+assert.deepEqual(parts.classi.slice(2), ['tab-tabella', 'tab-sottoclasse', 'abilita', 'diventare', 'lista-incantesimi', 'incantesimi-del']);
+for (const key of ['armi', 'avventura', 'strumenti', 'oggetti-magici']) assert.ok(parts[key].includes('confronto'), `${key}: 2014 → 2024`);
+assert.deepEqual(parts.avanzamento, ['tabella', 'punti-ferita', 'talenti', 'calcolatore']);
+for (const section of ps.PUBLIC_SECTIONS) {
+  assert.equal(new Set(section.parts.map(p => p.key)).size, section.parts.length, `${section.key}: unique parts`);
+  for (const part of section.parts) {
+    assert.ok(part.title && ps.PART_GROUPS[part.group] && part.page.startsWith('/'), `${section.key}:${part.key}`);
+    assert.equal(ps.sectionOfPath(part.page), section.key, `${section.key}:${part.key}: its page is in the section`);
+  }
+}
+const avanzamento = fs.readFileSync('app/avanzamento/page.tsx', 'utf8');
+for (const key of parts.avanzamento) assert.ok(avanzamento.includes(`id="${key}"`) && avanzamento.includes(`part="${key}"`), `Avanzamento block ${key}`);
+assert.equal(ps.isPartId('classi:tab-tabella'), true);
+assert.equal(ps.isPartId('classi:nulla'), false);
+assert.equal(ps.isPartId('armature:confronto'), false);
+// Every part of a set hidden: the section behaves as hidden; the section always wins over its parts.
+assert.deepEqual(ps.effectiveHidden([], ['incantesimi:2014']), []);
+assert.deepEqual(ps.effectiveHidden([], ['incantesimi:2014', 'incantesimi:2024']), ['incantesimi']);
+assert.deepEqual(ps.effectiveHidden([], ['bestiario:mostri', 'bestiario:animali']), ['bestiario']);
+assert.deepEqual(ps.effectiveHidden([], ['avanzamento:tabella', 'avanzamento:punti-ferita', 'avanzamento:talenti']), []);
+assert.deepEqual(ps.effectiveHidden([], ['avanzamento:tabella', 'avanzamento:punti-ferita', 'avanzamento:talenti', 'avanzamento:calcolatore']), ['avanzamento']);
+assert.deepEqual(ps.effectiveHidden([], ['classi:tab-tabella', 'classi:tab-sottoclasse']), [], 'the tabs do not make up the page');
+assert.deepEqual(ps.effectiveHidden(['classi'], []), ['classi']);
+assert.deepEqual(ps.shownEditions('armi', ['armi:2014']), ['2024']);
+assert.deepEqual(ps.shownEditions('armi', ['armature:2014']), ['2024', '2014']);
+// Card addresses of an edition.
+for (const [href, edition] of [['/spell/palla-di-fuoco', '2024'], ['/spell/palla-di-fuoco-2014', '2014'], ['/mostro/orco-2014', '2014'], ['/manuale/condizioni-accecato-2014', '2014'],
+  ['/classi/mago?edizione=2014', '2014'], ['/classi/mago', undefined], ['/equipaggiamento/armi/tridente', undefined], ['/grimorio', undefined]]) {
+  assert.equal(ps.editionOfPath(href), edition, href);
+}
+assert.equal(ps.isHiddenPath('/spell/palla-di-fuoco-2014', ['incantesimi:2014']), true);
+assert.equal(ps.isHiddenPath('/spell/palla-di-fuoco', ['incantesimi:2014']), false);
+assert.equal(ps.isHiddenPath('/manuale/condizioni-prono', ['condizioni:2024']), true);
 assert.ok(!/api\/.*sezion/i.test(fs.readdirSync('app/api').join(' ')), 'no public route for the sections');
 
-console.log(`Public sections: ${keys.length} sections in one registry, every page folder gated, same address rule for pages, search links and service worker, switch writes only its own tables.`);
+console.log(`Public sections: ${keys.length} sections in one registry, every page folder gated, same address rule for pages, search links and service worker, switch writes only its own tables; ${ps.PUBLIC_SECTIONS.reduce((n, s) => n + s.parts.length, 0)} parts with their rules.`);

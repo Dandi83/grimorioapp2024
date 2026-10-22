@@ -15,7 +15,7 @@ const deps={
  '@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},
  '@/components/favorite-button':{FavoriteButton:()=>null},
  '@/lib/monsters':{getMonsterById:async()=>selected},
- '@/lib/section-view':{sectionsOut:async()=>[]},
+ '@/lib/section-view':{sectionsOut:async()=>[],partsOut:async()=>[],linksOut:async()=>[],partState:async()=>({shown:true,hidden:false}),editionCard:async()=>false,pageEditions:async()=>['2024','2014']},'@/components/sections/part-block':{HiddenPartBar:()=>null,PartBlock:({children})=>children},
 };
 function load(relative){
  const filename=path.resolve(relative);

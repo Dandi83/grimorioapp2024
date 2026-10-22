@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { ArmorBadge } from "@/components/equipment/armor-badge";
 import { EditionPanels } from "@/components/equipment/edition-panels";
+import { pageEditions } from "@/lib/section-view";
 import { armorBadge, armorClassRest, armorDescription, armorRuleCards, armorSources, armors, getArmor, type ArmorEditionView } from "@/lib/armor";
 import { ARMOR_CATEGORY_NAMES, type ArmorCategory } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
@@ -78,6 +79,8 @@ export default async function ArmorSheetPage({ params }: { params: Promise<{ id:
   const armor = getArmor(id, corrected.list);
   if (!armor) notFound();
   const corrections = corrected.corrections.get(id);
+  // An edition hidden from /admin/sezioni is not in the page.
+  const shown = await pageEditions("armature");
   const panel = (edition: "2014" | "2024") => (
     <>
       <Sheet armor={armor.editions[edition]} category={armor.categoria} />
@@ -88,7 +91,8 @@ export default async function ArmorSheetPage({ params }: { params: Promise<{ id:
     <article className="px-4 pb-8 pt-4 sm:px-6">
       <BackButton fallback="/equipaggiamento/armature" label="Tutte le armature" />
       <EditionPanels
-        panels={{ "2024": panel("2024"), "2014": panel("2014") }}
+        section="armature"
+        panels={Object.fromEntries(shown.map(edition => [edition, panel(edition)]))}
         missing={{}}
       />
       <ReportLink />

@@ -11,11 +11,11 @@ import { ARMOR_CATEGORY_TITLES, type ArmorListItem, type ArmorTimes } from "@/li
 
 /** Armor of both editions, grouped by category with the time to don and doff. */
 export function ArmorBrowser({ items, times, sameNumbers }: { items: ArmorListItem[]; times: ArmorTimes; sameNumbers: boolean }) {
-  const [edition, setEdition] = useEquipmentEdition();
+  const [edition, setEdition] = useEquipmentEdition("armature");
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
-      <CatalogTitle title="Armature" edition={edition} onEdition={setEdition} />
+      <CatalogTitle section="armature" title="Armature" edition={edition} onEdition={setEdition} />
       <p className="mt-2 text-[15px] text-muted">
         {items.length} voci · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}
         {sameNumbers && <><br />Stesse CA, pesi e costi in entrambe le edizioni</>}

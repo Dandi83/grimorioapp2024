@@ -7,15 +7,18 @@ const dateFormat = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "lo
 /**
  * Registers the offline service worker, or removes it when the emergency switch is off.
  * hiddenPaths: addresses of the hidden sections, whose saved copies the worker deletes.
+ * partPaths: addresses of the sections with hidden parts and which parts: when that changes, the copies
+ * saved before are deleted (they could still hold a part now hidden).
  */
-export function ServiceWorker({ enabled, hiddenPaths = [] }: { enabled: boolean; hiddenPaths?: readonly string[] }) {
+export function ServiceWorker({ enabled, hiddenPaths = [], partPaths = [] }: { enabled: boolean; hiddenPaths?: readonly string[]; partPaths?: readonly { path: string; signature: string }[] }) {
   const [savedAt, setSavedAt] = useState<number | null>(null);
-  const hiddenKey = hiddenPaths.join("|");
+  const hiddenKey = JSON.stringify([hiddenPaths, partPaths]);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" || !enabled || !("serviceWorker" in navigator)) return;
+    const [paths, parts] = JSON.parse(hiddenKey) as [string[], { path: string; signature: string }[]];
     void navigator.serviceWorker.ready.then(registration => {
-      registration.active?.postMessage({ type: "hidden-sections", paths: hiddenKey ? hiddenKey.split("|") : [] });
+      registration.active?.postMessage({ type: "hidden-sections", paths, parts });
     }).catch(() => {});
   }, [enabled, hiddenKey]);
 

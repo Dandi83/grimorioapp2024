@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { HiddenPartBar } from "@/components/sections/part-block";
+import { partId } from "@/lib/public-sections";
+import { editionCard } from "@/lib/section-view";
 import { notFound } from "next/navigation";
 import { manualAvailable, manualEntries } from "@/lib/manual";
 import { legacyConditions } from "@/lib/conditions";
@@ -34,9 +37,13 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
   const isCondition = entry.category === "condizioni";
   // Conditions are public reference details; the Manual and its other entries stay preview-only.
   if (!isCondition && !manualAvailable(process.env.VERCEL_ENV)) notFound();
+  // A condition of an edition hidden from /admin/sezioni is not found (the administrator sees it, labelled).
+  const edition = entry.edizione === "2014" ? "2014" : "2024";
+  const hiddenEdition = isCondition && await editionCard("condizioni", edition);
 
   return (
     <article className="min-w-0 px-6 py-7">
+      {hiddenEdition && <HiddenPartBar id={partId("condizioni", edition)} />}
       {isCondition ? (
         <div className="relative -ml-4 h-12"><BackButton /></div>
       ) : (

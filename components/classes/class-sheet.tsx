@@ -5,10 +5,16 @@ import type { ReactNode } from "react";
 import { ClassBlocks } from "@/components/classes/class-blocks";
 import { ClassIcon } from "@/components/classes/class-icon";
 import { ClassTabs } from "@/components/classes/class-editions";
+import { HiddenTag } from "@/components/sections/hidden-tag";
 import { castsSpells, CLASS_COLORS, hitDie, levelRows, ofClass, trait, type ClassId, type LevelRow } from "@/lib/classes";
 import type { ClassData, ClassEdition, ClassFeature } from "@/lib/classes-types";
 
 export const CLASS_SOURCES: Record<ClassEdition, string> = { "2024": "SRD 5.2.1", "2014": "SRD 5.1" };
+
+/** Parts of a class sheet that can be hidden from /admin/sezioni (lib/public-sections.ts). */
+export const CLASS_PARTS = ["tab-tabella", "tab-sottoclasse", "abilita", "diventare", "lista-incantesimi", "incantesimi-del"] as const;
+export type ClassParts = Record<(typeof CLASS_PARTS)[number], { shown: boolean; hidden: boolean }>;
+const ALL_SHOWN = Object.fromEntries(CLASS_PARTS.map(key => [key, { shown: true, hidden: false }])) as ClassParts;
 
 /** Full-width header in the colour of the class. */
 export function ClassHeader({ id, name, line }: { id: ClassId; name: string; line: string }) {
@@ -41,9 +47,9 @@ function KeyCard({ label, children, wide }: { label: string; children: ReactNode
 }
 
 /** A row that opens: 56 px, the title and an arrow; the content is rendered by the server. */
-function Opening({ summary, children, className = "" }: { summary: ReactNode; children: ReactNode; className?: string }) {
+function Opening({ summary, children, className = "", part }: { summary: ReactNode; children: ReactNode; className?: string; part?: string }) {
   return (
-    <details className={`group rounded-[14px] border border-border bg-card ${className}`}>
+    <details data-part={part} className={`group rounded-[14px] border border-border bg-card ${className}`}>
       <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-3 [&::-webkit-details-marker]:hidden">
         {summary}
         <ChevronDown size={20} aria-hidden="true" className="ml-auto shrink-0 text-primary transition-transform group-open:rotate-180" />
@@ -90,7 +96,7 @@ function LevelCard({ row, subclass }: { row: LevelRow; subclass: string }) {
   );
 }
 
-function FeaturesTab({ card, id, edition, spellsLink }: { card: ClassData; id: ClassId; edition: ClassEdition; spellsLink: boolean }) {
+function FeaturesTab({ card, id, edition, spellsLink, parts }: { card: ClassData; id: ClassId; edition: ClassEdition; spellsLink: boolean; parts: ClassParts }) {
   const rows = levelRows(card);
   return (
     <div className="space-y-3">
@@ -115,8 +121,8 @@ function FeaturesTab({ card, id, edition, spellsLink }: { card: ClassData; id: C
           </div>
         </Opening>
       ))}
-      {card.incantesimi && (
-        <Opening summary={<span className="font-serif text-[19px] font-bold text-primary">{card.incantesimi.titolo}</span>}>
+      {card.incantesimi && parts["lista-incantesimi"].shown && (
+        <Opening part="classi:lista-incantesimi" summary={<span className="font-serif text-[19px] font-bold text-primary">{card.incantesimi.titolo}{parts["lista-incantesimi"].hidden && <HiddenTag className="ml-2" />}</span>}>
           <div className="space-y-4">
             <ClassBlocks blocks={card.incantesimi.intro} />
             {card.incantesimi.livelli.map(level => (
@@ -137,10 +143,13 @@ function FeaturesTab({ card, id, edition, spellsLink }: { card: ClassData; id: C
           </div>
         </Opening>
       )}
-      {castsSpells(card) && spellsLink && (
-        <Link href={`/grimorio?classe=${id}&edizione=${edition}`} className="flex min-h-12 items-center justify-center rounded-[14px] bg-primary px-4 text-[16px] font-bold text-primary-foreground">
-          Incantesimi {ofClass(card.nome)} →
-        </Link>
+      {castsSpells(card) && spellsLink && parts["incantesimi-del"].shown && (
+        <div data-part="classi:incantesimi-del" className="space-y-1">
+          {parts["incantesimi-del"].hidden && <HiddenTag />}
+          <Link href={`/grimorio?classe=${id}&edizione=${edition}`} className="flex min-h-12 items-center justify-center rounded-[14px] bg-primary px-4 text-[16px] font-bold text-primary-foreground">
+            Incantesimi {ofClass(card.nome)} →
+          </Link>
+        </div>
       )}
     </div>
   );
@@ -229,8 +238,8 @@ const OPENING_ROWS = [
 ] as const;
 
 /** The body of a class sheet for one edition: key data, skills and equipment, the three tabs. */
-/** spellsLink: false while the Incantesimi section is hidden (/admin/sezioni). */
-export function ClassBody({ card, id, edition, other, spellsLink = true }: { card: ClassData; id: ClassId; edition: ClassEdition; other?: { edition: ClassEdition; href: string }; spellsLink?: boolean }) {
+/** spellsLink: false while the Incantesimi section is hidden; parts: what /admin/sezioni hides in the sheet. */
+export function ClassBody({ card, id, edition, other, spellsLink = true, parts = ALL_SHOWN }: { card: ClassData; id: ClassId; edition: ClassEdition; other?: { edition: ClassEdition; href: string }; spellsLink?: boolean; parts?: ClassParts }) {
   const die = hitDie(card);
   const dieRest = trait(card, "dado")?.slice(die?.length ?? 0).trim();
   const primary = trait(card, "primarie");
@@ -246,7 +255,7 @@ export function ClassBody({ card, id, edition, other, spellsLink = true }: { car
         <KeyCard label="Armi">{trait(card, "armi")}</KeyCard>
         <KeyCard label="Armature" wide>{trait(card, "armature")}</KeyCard>
       </div>
-      <Opening summary={<span className="text-[16px] font-bold">Abilità ed equipaggiamento iniziale</span>}>
+      {parts.abilita.shown && <Opening part="classi:abilita" summary={<span className="text-[16px] font-bold">Abilità ed equipaggiamento iniziale{parts.abilita.hidden && <HiddenTag className="ml-2" />}</span>}>
         <dl className="space-y-3 text-[15px] leading-6">
           {OPENING_ROWS.map(([label, key]) => {
             const value = trait(card, key);
@@ -258,9 +267,9 @@ export function ClassBody({ card, id, edition, other, spellsLink = true }: { car
             ) : null;
           })}
         </dl>
-      </Opening>
-      {card.diventare && (
-        <Opening summary={<span className="text-[16px] font-bold">{card.diventare.titolo}</span>}>
+      </Opening>}
+      {card.diventare && parts.diventare.shown && (
+        <Opening part="classi:diventare" summary={<span className="text-[16px] font-bold">{card.diventare.titolo}{parts.diventare.hidden && <HiddenTag className="ml-2" />}</span>}>
           <div className="space-y-4">
             {card.diventare.parti.map(part => (
               <section key={part.titolo} className="space-y-1.5">
@@ -272,9 +281,9 @@ export function ClassBody({ card, id, edition, other, spellsLink = true }: { car
         </Opening>
       )}
       <ClassTabs label={`Contenuto ${ofClass(card.nome)}`} idPrefix={`${id}-${edition}`} tabs={[
-        { key: "privilegi", label: "Privilegi", content: <FeaturesTab card={card} id={id} edition={edition} spellsLink={spellsLink} /> },
-        { key: "tabella", label: "Tabella", content: <TableTab card={card} /> },
-        { key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} /> },
+        { key: "privilegi", label: "Privilegi", content: <FeaturesTab card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} /> },
+        ...(parts["tab-tabella"].shown ? [{ key: "tabella", label: "Tabella", content: <TableTab card={card} />, part: "classi:tab-tabella", hidden: parts["tab-tabella"].hidden }] : []),
+        ...(parts["tab-sottoclasse"].shown ? [{ key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} />, part: "classi:tab-sottoclasse", hidden: parts["tab-sottoclasse"].hidden }] : []),
       ]} />
       {other && (
         // A full load: the edition is read from the address when the page opens.

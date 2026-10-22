@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
+import { PartBlock } from "@/components/sections/part-block";
+import { pageEditions } from "@/lib/section-view";
 import { MagicItemSheet } from "@/components/magic-items/magic-item-sheet";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { getCorrectedMagicItems } from "@/lib/corrected-content";
@@ -58,21 +60,24 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
   const found = findMagicItemEntry((await params).id, corrected.list);
   if (!found) notFound();
   const { entry, edition } = found;
-  const changes = compareMagicItem(entry);
+  // An edition hidden from /admin/sezioni is not in the page; an address of that edition is not found.
+  const shown = await pageEditions("oggetti-magici");
+  if ((edition && !shown.includes(edition)) || !shown.some(value => entry.editions[value])) notFound();
+  const changes = shown.length === 2 ? compareMagicItem(entry) : [];
   const also = seeAlso(entry, corrected.list);
   const corrections = corrected.corrections.get(entry.id);
   const hrefs: Partial<Record<MagicItemEdition, string>> = {};
   const panels: Partial<Record<MagicItemEdition, React.ReactNode>> = {};
   for (const value of ["2024", "2014"] as const) {
     const item = entry.editions[value];
-    if (!item) continue;
+    if (!item || !shown.includes(value)) continue;
     hrefs[value] = magicItemEntryHref(entry, value);
     const other = value === "2024" ? "2014" : "2024";
     panels[value] = (
       <div className="space-y-5">
         <MagicItemSheet item={item} edition={value} />
         <SectionCorrectionNote section="oggetti-magici" id={entry.id} edition={value} corrections={corrections?.[value]} />
-        {changes.length > 0 && <Changes changes={changes} other={other} href={magicItemEntryHref(entry, other)} />}
+        {changes.length > 0 && <PartBlock section="oggetti-magici" part="confronto"><Changes changes={changes} other={other} href={magicItemEntryHref(entry, other)} /></PartBlock>}
       </div>
     );
   }
@@ -80,7 +85,7 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
     <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
       <BackButton fallback={LIST} label="Tutti gli oggetti magici" />
       <div>
-        <GearEditionPanels panels={panels} hrefs={hrefs} fixed={edition} listHref={LIST} />
+        <GearEditionPanels section="oggetti-magici" panels={panels} hrefs={hrefs} fixed={edition} listHref={LIST} />
       </div>
       {also.length > 0 && (
         <section aria-label="Vedi anche" className="rounded-[14px] border border-border bg-card px-4 py-3 text-[15px] leading-6">

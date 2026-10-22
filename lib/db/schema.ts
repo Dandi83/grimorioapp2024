@@ -193,3 +193,20 @@ export const sectionVisibilityLog = pgTable("grimorio_section_visibility_log", {
   nascosta: boolean("nascosta").notNull(),
   creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/** Parts of a section hidden from /admin/sezioni (an edition, a tab, a block: lib/public-sections.ts). */
+export const sectionParts = pgTable("grimorio_section_parts", {
+  sezione: text("sezione").notNull(),
+  parte: text("parte").notNull(),
+  nascosta: boolean("nascosta").notNull().default(false),
+  aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+}, table => [primaryKey({ columns: [table.sezione, table.parte] })]);
+
+/** Every switch of a part (shown in /admin/registro). */
+export const sectionPartsLog = pgTable("grimorio_section_parts_log", {
+  id: uuid("id").primaryKey(),
+  sezione: text("sezione").notNull(),
+  parte: text("parte").notNull(),
+  nascosta: boolean("nascosta").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+});

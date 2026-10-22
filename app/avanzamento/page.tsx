@@ -1,4 +1,5 @@
 import { ParentLink } from "@/components/section-tiles";
+import { PartBlock } from "@/components/sections/part-block";
 import { XpCalculator } from "@/components/advancement/xp-calculator";
 import { bonusRises, CLASS_HIT_POINTS, formatNumber, LEVELS } from "@/lib/advancement";
 import { bonusFeatsRule, challengeOptions } from "@/lib/advancement-challenge";
@@ -11,6 +12,7 @@ function SectionTitle({ id, children }: { id: string; children: React.ReactNode 
   return <h2 id={id} className="border-b-2 border-primary pb-1.5 font-serif text-[24px] font-bold text-primary">{children}</h2>;
 }
 
+/** Each block can be hidden from /admin/sezioni (lib/public-sections.ts); with all four hidden the page is unavailable. */
 export default function AdvancementPage() {
   const feats = bonusFeatsRule();
   return (
@@ -21,6 +23,7 @@ export default function AdvancementPage() {
         <p className="mt-3 text-[15px] leading-6 text-muted">PE, bonus di competenza e punti ferita</p>
       </div>
 
+      <PartBlock section="avanzamento" part="tabella">
       <section aria-labelledby="tabella" className="space-y-3">
         <SectionTitle id="tabella">Tabella di avanzamento</SectionTitle>
         <p className="text-sm text-muted">Valida per le regole 2014 e 2024: le due edizioni usano gli stessi PE e bonus di competenza.</p>
@@ -44,7 +47,9 @@ export default function AdvancementPage() {
         </div>
         <p className="flex items-center gap-2 text-sm text-muted"><span className="inline-block size-3 rounded-full bg-amber" aria-hidden="true" />Il bonus di competenza sale ai livelli 5, 9, 13 e 17.</p>
       </section>
+      </PartBlock>
 
+      <PartBlock section="avanzamento" part="punti-ferita">
       <section aria-labelledby="punti-ferita" className="space-y-3">
         <SectionTitle id="punti-ferita">Punti ferita fissi per classe</SectionTitle>
         <p className="text-[15px] leading-6">Quando acquisisci un livello puoi tirare il Dado Vita o usare questo valore, sommando sempre il modificatore di Costituzione (minimo 1 PF per livello).</p>
@@ -64,8 +69,10 @@ export default function AdvancementPage() {
         </ul>
         <p className="text-sm text-muted">Dal 2º livello in su; uguale nelle regole 2014 e 2024.</p>
       </section>
+      </PartBlock>
 
       {feats && (
+        <PartBlock section="avanzamento" part="talenti">
         <section aria-labelledby="talenti" className="space-y-3">
           <SectionTitle id="talenti">Talenti bonus oltre il 20º livello</SectionTitle>
           <div className="space-y-2 rounded-[14px] border-[1.5px] border-amber bg-[#FBEBC2] p-4">
@@ -76,13 +83,16 @@ export default function AdvancementPage() {
             </p>
           </div>
         </section>
+        </PartBlock>
       )}
 
+      <PartBlock section="avanzamento" part="calcolatore">
       <section aria-labelledby="calcolatore" className="space-y-3">
         <SectionTitle id="calcolatore">Calcolatore di PE</SectionTitle>
         <p className="text-sm text-muted">I PE di ogni grado sfida vengono dalle schede dei mostri dell’app. Tutto resta sul telefono: niente viene salvato.</p>
         <XpCalculator options={challengeOptions()} />
       </section>
+      </PartBlock>
     </div>
   );
 }

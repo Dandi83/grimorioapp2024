@@ -7,6 +7,7 @@ import { FileText, Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
+import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
 
@@ -60,7 +61,9 @@ export function GrimorioBrowser({
   // Until 2014 spells are in the catalog the 2014 list would be empty: no selector, 2024 only.
   const hasLegacy = useMemo(() => spells.some(spell => spell.edizione === "2014"), [spells]);
   const [chosenEdizione, setEdizione] = useState<SpellEdition>(initialEdizione);
-  const edizione: SpellEdition = hasLegacy ? chosenEdizione : "2024";
+  // An edition hidden from /admin/sezioni is never shown, even if it was the last one chosen.
+  const { allowed } = useEditions("incantesimi");
+  const edizione: SpellEdition = !hasLegacy ? "2024" : allowed.includes(chosenEdizione) ? chosenEdizione : allowed[0];
   const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
@@ -125,7 +128,7 @@ export function GrimorioBrowser({
   return (
     <div>
       <div className="px-6 pb-2 pt-8">
-        <CatalogTitle title="Incantesimi" edition={edizione} onEdition={hasLegacy ? chooseEdition : undefined} />
+        <CatalogTitle section="incantesimi" title="Incantesimi" edition={edizione} onEdition={hasLegacy ? chooseEdition : undefined} />
         <SearchAndFilters query={q} onQuery={setQ} label="Cerca un incantesimo" active={active.length} onOpen={() => setDraft(filters)} />
         <ActiveFilters filters={active} />
       </div>

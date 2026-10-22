@@ -9,6 +9,8 @@ import type { ContentOverride } from "@/lib/content-overrides-apply";
 import { compareWeapon, getWeapon, masteryText, propertyCards, specialRule, weaponSources, weapons, type WeaponEditionView } from "@/lib/equipment";
 import { WEAPON_GROUP_NAMES, type EquipmentEdition } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
+import { PartBlock } from "@/components/sections/part-block";
+import { pageEditions } from "@/lib/section-view";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
@@ -103,17 +105,21 @@ export default async function WeaponPage({ params }: { params: Promise<{ id: str
   if (!weapon) notFound();
   const compare = compareWeapon(weapon);
   const corrections = corrected.corrections.get(id);
+  // An edition hidden from /admin/sezioni is not in the page; a weapon printed only there is not found.
+  const shown = await pageEditions("armi");
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
   for (const edition of ["2014", "2024"] as const) {
     const view = weapon.editions[edition];
-    if (view) panels[edition] = <Sheet weapon={view} group={weapon.gruppo} corrections={corrections?.[edition]} />;
+    if (view && shown.includes(edition)) panels[edition] = <Sheet weapon={view} group={weapon.gruppo} corrections={corrections?.[edition]} />;
   }
+  if (!Object.keys(panels).length) notFound();
   return (
     <article className="px-4 pb-8 pt-4 sm:px-6">
       <BackButton fallback="/equipaggiamento/armi" label="Tutte le armi" />
-      <EditionPanels panels={panels} missing={{ "2024": "Non presente nella tabella 2024", "2014": "Nuova nel 2024" }} />
-      {(compare.rows.length > 0 || compare.note) && (
-        <section className="mt-5 space-y-2.5" aria-label="Differenze tra le edizioni">
+      <EditionPanels section="armi" panels={panels} missing={{ "2024": "Non presente nella tabella 2024", "2014": "Nuova nel 2024" }} />
+      {(compare.rows.length > 0 || compare.note) && shown.length === 2 && (
+        <PartBlock section="armi" part="confronto" className="mt-5">
+        <section className="space-y-2.5" aria-label="Differenze tra le edizioni">
           <h2 className="font-serif text-[22px] font-bold text-primary">2014 → 2024</h2>
           {compare.rows.length > 0 ? (
             <table className="w-full table-fixed overflow-hidden rounded-[14px] border border-border bg-card text-[14px]">
@@ -134,6 +140,7 @@ export default async function WeaponPage({ params }: { params: Promise<{ id: str
             <p className="rounded-[14px] border border-border bg-card px-4 py-3 text-[15px] font-semibold">{compare.note}</p>
           )}
         </section>
+        </PartBlock>
       )}
       <ReportLink />
     </article>

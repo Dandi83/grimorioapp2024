@@ -9,7 +9,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 const require=createRequire(import.meta.url),root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const monster={...JSON.parse(readFileSync(path.join(root,'lib/data/srd-monster-sample.json'))).monster,id:'shared',nome:'Mostro salvato'};
 const spell={id:'shared',nome_italiano:'Incantesimo salvato',livello_num:1,scuola:'Evocazione'};
-let favorites=['mostro:shared'],loaded=true,out=[];
+let favorites=['mostro:shared'],loaded=true,out=[],parts=[];
 const state={useFavorites:()=>({favorites,loaded,isFavorite:id=>favorites.includes(id),toggle:()=>{throw Error('Rendering must not toggle favorites')}})};
 function load(file){
  if(file.endsWith('.json'))return JSON.parse(readFileSync(file));
@@ -17,7 +17,7 @@ function load(file){
  new Function('require','module','exports',code)(id=>{
   if(id==='@/components/favorites-provider')return state;
   if(id==='@/lib/spell-index')return {getSpellIndex:async()=>[spell]};
-  if(id==='@/lib/section-view')return {sectionsOut:async()=>out};
+  if(id==='@/lib/section-view')return {sectionsOut:async()=>out,partsOut:async()=>parts};
   if(id==='@/lib/monster-index')return {getMonsterListIndex:async()=>[monster]};
   if(id==='next/navigation')return {useRouter:()=>({prefetch:()=>{}})};
   if(id==='next/link')return {__esModule:true,default:({children,prefetch,...p})=>createElement('a',p,children)};
@@ -32,6 +32,8 @@ favorites=['shared'];markup=await render();assert.ok(markup.includes('/spell/sha
 favorites=['shared','mostro:shared'];markup=await render();assert.ok(markup.includes('/spell/shared')&&markup.includes('/mostro/shared'));assert.deepEqual(favorites,['shared','mostro:shared']);
 // A hidden section (/admin/sezioni) leaves the page; the saved favorites stay as they are.
 out=['incantesimi'];markup=await render();assert.ok(!markup.includes('/spell/shared')&&markup.includes('/mostro/shared'));assert.deepEqual(favorites,['shared','mostro:shared']);out=[];
+// A hidden edition or collection leaves the page too.
+parts=['bestiario:mostri'];markup=await render();assert.ok(markup.includes('/spell/shared')&&!markup.includes('/mostro/shared'));parts=['incantesimi:2024'];markup=await render();assert.ok(!markup.includes('/spell/shared')&&markup.includes('/mostro/shared'));parts=[];
 favorites=[];markup=await render();assert.ok(!markup.includes('/mostro/shared')&&!markup.includes('/spell/shared'));
 loaded=false;favorites=['mostro:shared'];markup=await render();assert.ok(!markup.includes('/mostro/shared'));
 console.log('[favorites] Saved monsters/spells, ID namespaces, mixed favorites, removal and loading state verified through actual page and row components.');

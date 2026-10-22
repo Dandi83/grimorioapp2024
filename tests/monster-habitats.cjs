@@ -116,7 +116,7 @@ const form = (data, habitats) => {
   ]);
   Object.assign(deps,{
     '@/lib/monsters':{getMonsterById:async id=>sheets.get(id)},
-    '@/lib/section-view':{sectionsOut:async()=>[]},
+    '@/lib/section-view':{sectionsOut:async()=>[],partsOut:async()=>[],linksOut:async()=>[],partState:async()=>({shown:true,hidden:false}),editionCard:async()=>false,pageEditions:async()=>['2024','2014']},'@/components/sections/part-block':{HiddenPartBar:()=>null,PartBlock:({children})=>children},
     'next/navigation':{notFound:()=>{throw new Error('NOT_FOUND');}},
     '@/components/back-button':{BackButton:()=>null},'@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button':{FavoriteButton:()=>null},
     'next/link':{__esModule:true,default:({children,...props})=>createElement('a',props,children)},
