@@ -175,3 +175,21 @@ export const editorLog = pgTable("grimorio_editor_log", {
   creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
   annullata_il: timestamp("annullata_il", { withTimezone: true }),
 });
+
+/**
+ * Public sections hidden from /admin/sezioni (lib/section-visibility.ts): one row per section ever
+ * switched, a section without a row is visible. Hiding never touches the content.
+ */
+export const sectionVisibility = pgTable("grimorio_section_visibility", {
+  sezione: text("sezione").primaryKey(),
+  nascosta: boolean("nascosta").notNull().default(false),
+  aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Every switch of a section (shown in /admin/registro). */
+export const sectionVisibilityLog = pgTable("grimorio_section_visibility_log", {
+  id: uuid("id").primaryKey(),
+  sezione: text("sezione").notNull(),
+  nascosta: boolean("nascosta").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+});

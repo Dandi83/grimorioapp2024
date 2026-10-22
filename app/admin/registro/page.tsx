@@ -11,6 +11,8 @@ import { EDITOR_FIELDS, allEditorLog, type EditorSection } from "@/lib/editor-lo
 import { formatWhen } from "@/lib/feedback-input";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { getSpellIndex } from "@/lib/spell-index";
+import { isPublicSectionKey, publicSection } from "@/lib/public-sections";
+import { allSectionLog } from "@/lib/section-visibility";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Registro modifiche — Il Grimorio.App", robots: { index: false, follow: false } };
@@ -24,6 +26,8 @@ const HEALTH: Record<string, string> = {
 interface LogItem {
   id: string; editor: boolean; sezione: string; when: Date; undoneAt: Date | null; inForce: boolean;
   title: string; card: string; href?: string; field: string; before: string; after: string; motivo: string; warning?: string;
+  /** Shown instead of «Annulla»: a section switch is undone by switching it again. */
+  fixed?: string;
 }
 
 const short = (text: string) => (text.length > 280 ? `${text.slice(0, 280).trimEnd()}…` : text);
@@ -32,12 +36,12 @@ const EDITOR_TITLES: Record<EditorSection, string> = { incantesimi: "Incantesimi
 export default async function LogPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   if (!(await isAdmin())) return <AdminLogin />;
   const query = await searchParams;
-  const keys = [...CONTENT_SECTIONS.map(section => section.key), "incantesimi", "mostri"];
+  const keys = [...CONTENT_SECTIONS.map(section => section.key), "incantesimi", "mostri", "sezioni"];
   const sezione = typeof query.sezione === "string" && keys.includes(query.sezione) ? query.sezione : undefined;
   const stato = query.stato === "annullate" ? "annullate" : query.stato === "tutte" ? "tutte" : "attive";
 
-  const [overrides, editorRows, spells, monsters] = await Promise.all([
-    allOverrides(), allEditorLog(), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
+  const [overrides, editorRows, sectionRows, spells, monsters] = await Promise.all([
+    allOverrides(), allEditorLog(), allSectionLog(), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
   ]);
   const inForce = new Set([...activeOverrideMap(overrides).values()].map(row => row.id));
   const items: LogItem[] = [
@@ -63,6 +67,13 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       field: EDITOR_FIELDS[row.sezione].label[row.campo] ?? row.campo.replace(/_/g, " "),
       before: row.valore_prima, after: row.valore_dopo, motivo: "Modifica dall’editor",
     })),
+    // Sections shown or hidden from /admin/sezioni: what the public sees, no content changed.
+    ...sectionRows.map(row => ({
+      id: row.id, editor: false, sezione: "sezioni", when: new Date(row.creata_il), undoneAt: null, inForce: true,
+      title: "Sezioni dell’app", card: isPublicSectionKey(row.sezione) ? publicSection(row.sezione).title : row.sezione, href: "/admin/sezioni",
+      field: "visibilità", before: row.nascosta ? "Visibile" : "Nascosta", after: row.nascosta ? "Nascosta" : "Visibile",
+      motivo: row.nascosta ? "Nascosta al pubblico: dati e correzioni restano com’erano." : "Di nuovo visibile al pubblico.", fixed: "cambio di stato",
+    })),
   ].sort((a, b) => b.when.getTime() - a.when.getTime());
   const shown = items.filter(item => (!sezione || item.sezione === sezione) && (stato === "tutte" || (stato === "attive" ? item.inForce : !item.inForce)));
 
@@ -75,7 +86,7 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
     return `/admin/registro${params.size ? `?${params}` : ""}`;
   };
   const pill = (on: boolean) => `inline-flex min-h-11 shrink-0 items-center rounded-[22px] border-[1.5px] px-3.5 text-sm font-semibold ${on ? "border-primary bg-primary text-primary-foreground" : "border-chip-border bg-card text-primary"}`;
-  const filters = [{ key: "incantesimi", title: "Incantesimi" }, { key: "mostri", title: "Mostri" }, ...CONTENT_SECTIONS.map(section => ({ key: section.key, title: section.title }))];
+  const filters = [{ key: "incantesimi", title: "Incantesimi" }, { key: "mostri", title: "Mostri" }, ...CONTENT_SECTIONS.map(section => ({ key: section.key, title: section.title })), { key: "sezioni", title: "Sezioni dell’app" }];
   const now = new Date();
   const documented = documentedRepairs();
   return (
@@ -101,7 +112,7 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
             <li key={item.id} className="border-t border-elevated px-3.5 py-3 first:border-t-0">
               <div className="flex items-start justify-between gap-2 text-xs text-muted">
                 <span>{formatWhen(item.when, now)} · {item.title}</span>
-                {item.inForce ? <UndoButton id={item.id} editor={item.editor} /> : <span>{item.undoneAt ? `annullata ${formatWhen(item.undoneAt, now)}` : "sostituita"}</span>}
+                {item.fixed ? <span>{item.fixed}</span> : item.inForce ? <UndoButton id={item.id} editor={item.editor} /> : <span>{item.undoneAt ? `annullata ${formatWhen(item.undoneAt, now)}` : "sostituita"}</span>}
               </div>
               <p className="mt-0.5 text-[15px] font-bold">
                 {item.href ? <Link href={item.href} className="underline underline-offset-4">{item.card}</Link> : item.card} · {item.field}

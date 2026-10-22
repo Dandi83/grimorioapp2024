@@ -2,6 +2,8 @@ import { inlineSpellReferences } from "@/lib/spell-references";
 import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
 import Image from "next/image";
 import Link from "next/link";
+import { visibleLinks } from "@/lib/public-sections";
+import { sectionsOut } from "@/lib/section-view";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
@@ -68,6 +70,8 @@ export default async function SpellDetailPage({
   const original = getOriginalSource(spell.id, spell.descrizione);
   const legacy = spell.edizione === "2014";
   const legacySource = getLegacySpellSource(spell);
+  // Conditions of a hidden section (/admin/sezioni) stay plain text.
+  const out = await sectionsOut();
   const otherEdition = spellEditionLink(spell.id, process.env.VERCEL_ENV);
 
   return (
@@ -151,7 +155,7 @@ export default async function SpellDetailPage({
           Descrizione
         </h2>
         {spell.descrizione ? (
-          <HtmlText html={spell.descrizione} damageIcons references={legacy ? legacyInlineConditionReferences : inlineConditionReferences} spellReferences={inlineSpellReferences(spell.descrizione, legacy)} />
+          <HtmlText html={spell.descrizione} damageIcons references={visibleLinks(legacy ? legacyInlineConditionReferences : inlineConditionReferences, out)} spellReferences={inlineSpellReferences(spell.descrizione, legacy)} />
         ) : (
           <p className="font-serif text-[15px] italic leading-6 text-muted">
             Descrizione non disponibile per questo incantesimo.
@@ -161,7 +165,7 @@ export default async function SpellDetailPage({
       {original?.statBlockSummary && (
         <section className="px-6 pb-6">
           <h2 className="mb-3 font-serif text-lg font-semibold text-primary">Spirito richiamato — riepilogo</h2>
-          <HtmlText html={original.statBlockSummary} damageIcons references={inlineConditionReferences} spellReferences={inlineSpellReferences(original.statBlockSummary)} />
+          <HtmlText html={original.statBlockSummary} damageIcons references={visibleLinks(inlineConditionReferences, out)} spellReferences={inlineSpellReferences(original.statBlockSummary)} />
           <p className="mt-3 text-xs leading-5 text-muted">
             Riepilogo operativo: per tutti i dettagli della creatura consulta la scheda 2024 collegata qui sotto.
             Il bonus di competenza dello spirito è il tuo; le CD indicate usano la tua CD degli incantesimi.

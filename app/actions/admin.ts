@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath, updateTag } from "next/cache";
-import { headers } from "next/headers";
+import { draftMode, headers } from "next/headers";
 import { eq } from "drizzle-orm";
 
 import { spells } from "@/lib/db/schema";
@@ -46,6 +46,8 @@ export async function loginAction(_prev: unknown, formData: FormData) {
     }
     await clearLoginFailures(key);
     await startAdminSession();
+    // Preview mode: the public pages are rendered for the administrator, hidden sections included (/admin/sezioni).
+    (await draftMode()).enable();
   } catch {
     // Without the attempt counter or the session list the login stays closed.
     return { ok: false as const, error: "Accesso temporaneamente non disponibile. Riprova tra poco." };
@@ -56,6 +58,7 @@ export async function loginAction(_prev: unknown, formData: FormData) {
 
 export async function logoutAction() {
   await endAdminSession();
+  (await draftMode()).disable();
   revalidatePath("/admin");
 }
 

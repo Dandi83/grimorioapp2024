@@ -2,17 +2,20 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { BookOpen, Home, ScrollText, Skull, Star } from "lucide-react";
 import type { ComponentType } from "react";
 
 import { notePathChange } from "@/components/navigation-memory";
+import type { PublicSectionKey } from "@/lib/public-sections";
 
 interface NavItem {
   href: string;
   label: string;
   Icon: ComponentType<{ size?: number; className?: string; strokeWidth?: number }>;
   match: (path: string) => boolean;
+  /** The public section of the tab (lib/public-sections.ts): a hidden one leaves the bar. */
+  section?: PublicSectionKey;
 }
 
 const ITEMS: NavItem[] = [
@@ -22,12 +25,14 @@ const ITEMS: NavItem[] = [
     label: "Incantesimi",
     Icon: BookOpen,
     match: (p) => p.startsWith("/grimorio") || p.startsWith("/spell"),
+    section: "incantesimi",
   },
   {
     href: "/bestiario",
     label: "Bestiario",
     Icon: Skull,
     match: (p) => p.startsWith("/bestiario") || p.startsWith("/mostro"),
+    section: "bestiario",
   },
   {
     href: "/compendio",
@@ -43,8 +48,12 @@ const ITEMS: NavItem[] = [
   },
 ];
 
-export function BottomNav() {
+const NONE: readonly string[] = [];
+
+/** hidden: sections hidden from /admin/sezioni; admin: the administrator still sees them, labelled «Nascosta». */
+export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?: readonly string[]; admin?: boolean }) {
   const pathname = usePathname();
+  const items = useMemo(() => ITEMS.filter(item => adminView || !item.section || !hidden.includes(item.section)), [hidden, adminView]);
   const router = useRouter();
   const admin = pathname.startsWith("/admin");
 
@@ -58,14 +67,14 @@ export function BottomNav() {
 
   useEffect(() => {
     if (admin) return;
-    const warm = () => { for (const { href } of ITEMS) router.prefetch(href); };
+    const warm = () => { for (const { href } of items) router.prefetch(href); };
     if (typeof window.requestIdleCallback === "function") {
       const handle = window.requestIdleCallback(warm);
       return () => window.cancelIdleCallback(handle);
     }
     const handle = window.setTimeout(warm, 300);
     return () => window.clearTimeout(handle);
-  }, [router, admin]);
+  }, [router, admin, items]);
 
   // L'area riservata non fa parte della navigazione pubblica.
   if (admin) return null;
@@ -76,16 +85,18 @@ export function BottomNav() {
       className="fixed inset-x-0 bottom-0 z-50 mx-auto h-[calc(80px+env(safe-area-inset-bottom,0px))] w-full max-w-2xl border-t border-border bg-nav pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
     >
       <ul className="flex h-[80px] items-stretch">
-        {ITEMS.map(({ href, label, Icon, match }) => {
+        {items.map(({ href, label, Icon, match, section }) => {
           const active = match(pathname);
+          const off = section !== undefined && hidden.includes(section);
           return (
             <li key={href} className="flex-1">
               <Link
                 href={href}
                 prefetch={false}
                 aria-current={active ? "page" : undefined}
-                className="flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"
+                className="relative flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"
               >
+                {off && <span className="absolute left-1/2 top-1 -translate-x-1/2 rounded-[6px] bg-[#2B2118] px-1.5 text-[10px] font-bold leading-4 text-amber">Nascosta</span>}
                 <Icon
                   size={26}
                   strokeWidth={1.75}

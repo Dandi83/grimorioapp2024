@@ -90,7 +90,7 @@ function LevelCard({ row, subclass }: { row: LevelRow; subclass: string }) {
   );
 }
 
-function FeaturesTab({ card, id, edition }: { card: ClassData; id: ClassId; edition: ClassEdition }) {
+function FeaturesTab({ card, id, edition, spellsLink }: { card: ClassData; id: ClassId; edition: ClassEdition; spellsLink: boolean }) {
   const rows = levelRows(card);
   return (
     <div className="space-y-3">
@@ -137,7 +137,7 @@ function FeaturesTab({ card, id, edition }: { card: ClassData; id: ClassId; edit
           </div>
         </Opening>
       )}
-      {castsSpells(card) && (
+      {castsSpells(card) && spellsLink && (
         <Link href={`/grimorio?classe=${id}&edizione=${edition}`} className="flex min-h-12 items-center justify-center rounded-[14px] bg-primary px-4 text-[16px] font-bold text-primary-foreground">
           Incantesimi {ofClass(card.nome)} →
         </Link>
@@ -229,7 +229,8 @@ const OPENING_ROWS = [
 ] as const;
 
 /** The body of a class sheet for one edition: key data, skills and equipment, the three tabs. */
-export function ClassBody({ card, id, edition, other }: { card: ClassData; id: ClassId; edition: ClassEdition; other?: { edition: ClassEdition; href: string } }) {
+/** spellsLink: false while the Incantesimi section is hidden (/admin/sezioni). */
+export function ClassBody({ card, id, edition, other, spellsLink = true }: { card: ClassData; id: ClassId; edition: ClassEdition; other?: { edition: ClassEdition; href: string }; spellsLink?: boolean }) {
   const die = hitDie(card);
   const dieRest = trait(card, "dado")?.slice(die?.length ?? 0).trim();
   const primary = trait(card, "primarie");
@@ -271,7 +272,7 @@ export function ClassBody({ card, id, edition, other }: { card: ClassData; id: C
         </Opening>
       )}
       <ClassTabs label={`Contenuto ${ofClass(card.nome)}`} idPrefix={`${id}-${edition}`} tabs={[
-        { key: "privilegi", label: "Privilegi", content: <FeaturesTab card={card} id={id} edition={edition} /> },
+        { key: "privilegi", label: "Privilegi", content: <FeaturesTab card={card} id={id} edition={edition} spellsLink={spellsLink} /> },
         { key: "tabella", label: "Tabella", content: <TableTab card={card} /> },
         { key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} /> },
       ]} />

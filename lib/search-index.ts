@@ -27,6 +27,7 @@ import { getSpellIndex } from "./spell-index";
 import { capitalizeWords } from "./spells-types";
 import { toolListRows } from "./tools-editions";
 import { fold, type SearchIndex, type SearchSectionKey } from "./search";
+import { isHiddenPath } from "./public-sections";
 
 export interface SourceRow { nome: string; label: string; href: string; edizione?: EquipmentEdition }
 
@@ -143,11 +144,14 @@ export function mergeEditions(rows: SourceRow[]): { nome: string; label: string;
   return out;
 }
 
-/** The compact index of the given sources, sections in the order of their first source. */
-export async function buildSearchIndex(environment = process.env.VERCEL_ENV, sources = SEARCH_SOURCES): Promise<SearchIndex> {
+/**
+ * The compact index of the given sources, sections in the order of their first source.
+ * hidden: sections hidden from /admin/sezioni (lib/public-sections.ts), whose pages are left out.
+ */
+export async function buildSearchIndex(environment = process.env.VERCEL_ENV, sources = SEARCH_SOURCES, hidden: readonly string[] = []): Promise<SearchIndex> {
   const index: SearchIndex = { v: 1, sections: [], rows: [] };
   for (const source of sources) {
-    const rows = mergeEditions(await source.rows(environment)).filter(row => row.nome && row.href);
+    const rows = mergeEditions((await source.rows(environment)).filter(row => !isHiddenPath(row.href, hidden))).filter(row => row.nome && row.href);
     if (!rows.length) continue;
     let position = index.sections.findIndex(section => section.k === source.section);
     if (position < 0) position = index.sections.push({ k: source.section, t: source.title, e: source.editionKey }) - 1;

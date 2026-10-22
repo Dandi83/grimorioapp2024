@@ -3,6 +3,10 @@ import { formatMonsterSpellLists, inlineSpellReferences } from "@/lib/spell-refe
 import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
 import { ReferenceText, MonsterText } from "@/components/html-text";
 import { abilityMod, type Monster } from "@/lib/monsters-types";
+import { visibleLinks } from "@/lib/public-sections";
+
+/** Links to conditions, without those of a hidden section (/admin/sezioni). */
+const conditionLinks = (legacy: boolean, hidden: readonly string[]) => visibleLinks(legacy ? legacyInlineConditionReferences : inlineConditionReferences, hidden);
 
 /**
  * One creature sheet for every source: 2024 and 2014 SRD sheets, sheets made in the
@@ -54,24 +58,24 @@ function Box({ label, value, note, noteItalic = false }: { label: string; value:
   );
 }
 
-function Line({ label, value, legacy, damageIcons = false }: { label: string; value?: string; legacy: boolean; damageIcons?: boolean }) {
+function Line({ label, value, legacy, hidden, damageIcons = false }: { label: string; value?: string; legacy: boolean; hidden: readonly string[]; damageIcons?: boolean }) {
   if (!value) return null;
   return (
     <p className="text-[16px] leading-6 text-foreground">
       <span className="font-bold">{label}</span>{" "}
-      <ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={legacy ? legacyInlineConditionReferences : inlineConditionReferences} />
+      <ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={conditionLinks(legacy, hidden)} />
     </p>
   );
 }
 
-function Section({ title, html, legacy }: { title: string; html?: string; legacy: boolean }) {
+function Section({ title, html, legacy, hidden }: { title: string; html?: string; legacy: boolean; hidden: readonly string[] }) {
   if (!html || !html.replace(/<[^>]+>/g, "").trim()) return null;
   return (
     <section data-monster-section>
       <h2>{title}</h2>
       <MonsterText html={formatMonsterSpellLists(html, legacy)} damageIcons
-        references={legacy ? legacyInlineConditionReferences : inlineConditionReferences}
-        spellReferences={inlineSpellReferences(html, legacy)} />
+        references={conditionLinks(legacy, hidden)}
+        spellReferences={visibleLinks(inlineSpellReferences(html, legacy), hidden)} />
     </section>
   );
 }
@@ -91,7 +95,8 @@ export function MonsterSheetTitle({ monster, label, before }: { monster: Partial
   );
 }
 
-export function MonsterSheetBody({ monster, legacy }: { monster: Partial<Monster>; legacy: boolean }) {
+/** hidden: sections hidden from /admin/sezioni, whose pages the texts do not link. */
+export function MonsterSheetBody({ monster, legacy, hidden = [] }: { monster: Partial<Monster>; legacy: boolean; hidden?: readonly string[] }) {
   const ca = splitBoxValue(monster.classe_armatura);
   const pf = splitBoxValue(monster.punti_ferita);
   // The official initiative keeps its passive value in brackets: "+17" and "(27)" below.
@@ -126,16 +131,16 @@ export function MonsterSheetBody({ monster, legacy }: { monster: Partial<Monster
           })}
         </div>
         <div className="mt-4 space-y-1">
-          <Line label="Tiri salvezza" value={monster.tiri_salvezza} legacy={legacy} />
-          <Line label="Abilità" value={monster.abilita} legacy={legacy} />
-          <Line label="Vulnerabilità" value={monster.vulnerabilita} legacy={legacy} damageIcons />
-          <Line label="Resistenze" value={monster.resistenze} legacy={legacy} damageIcons />
-          <Line label="Immunità ai danni" value={monster.immunita_danni} legacy={legacy} damageIcons />
-          <Line label="Immunità alle condizioni" value={monster.immunita_condizioni} legacy={legacy} />
-          <Line label="Immunità" value={monster.immunita} legacy={legacy} damageIcons />
-          <Line label="Equipaggiamento" value={monster.attrezzatura} legacy={legacy} />
-          <Line label="Sensi" value={monster.sensi} legacy={legacy} />
-          <Line label="Linguaggi" value={monster.linguaggi} legacy={legacy} />
+          <Line label="Tiri salvezza" value={monster.tiri_salvezza} legacy={legacy} hidden={hidden} />
+          <Line label="Abilità" value={monster.abilita} legacy={legacy} hidden={hidden} />
+          <Line label="Vulnerabilità" value={monster.vulnerabilita} legacy={legacy} hidden={hidden} damageIcons />
+          <Line label="Resistenze" value={monster.resistenze} legacy={legacy} hidden={hidden} damageIcons />
+          <Line label="Immunità ai danni" value={monster.immunita_danni} legacy={legacy} hidden={hidden} damageIcons />
+          <Line label="Immunità alle condizioni" value={monster.immunita_condizioni} legacy={legacy} hidden={hidden} />
+          <Line label="Immunità" value={monster.immunita} legacy={legacy} hidden={hidden} damageIcons />
+          <Line label="Equipaggiamento" value={monster.attrezzatura} legacy={legacy} hidden={hidden} />
+          <Line label="Sensi" value={monster.sensi} legacy={legacy} hidden={hidden} />
+          <Line label="Linguaggi" value={monster.linguaggi} legacy={legacy} hidden={hidden} />
           {gs && (
             <p className="text-[16px] leading-6 text-foreground">
               <span className="font-bold">Grado sfida</span>{" "}
@@ -148,12 +153,12 @@ export function MonsterSheetBody({ monster, legacy }: { monster: Partial<Monster
         </div>
       </section>
 
-      <Section title="Tratti" html={tratti} legacy={legacy} />
-      <Section title="Azioni" html={azioni} legacy={legacy} />
-      <Section title="Azioni bonus" html={monster.azioni_bonus} legacy={legacy} />
-      <Section title="Reazioni" html={monster.reazioni} legacy={legacy} />
-      <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} legacy={legacy} />
-      <Section title="Descrizione" html={monster.descrizione} legacy={legacy} />
+      <Section title="Tratti" html={tratti} legacy={legacy} hidden={hidden} />
+      <Section title="Azioni" html={azioni} legacy={legacy} hidden={hidden} />
+      <Section title="Azioni bonus" html={monster.azioni_bonus} legacy={legacy} hidden={hidden} />
+      <Section title="Reazioni" html={monster.reazioni} legacy={legacy} hidden={hidden} />
+      <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} legacy={legacy} hidden={hidden} />
+      <Section title="Descrizione" html={monster.descrizione} legacy={legacy} hidden={hidden} />
     </>
   );
 }

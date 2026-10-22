@@ -13,7 +13,7 @@ function worker({version='v2',caches:shared}={}){
   async match(request){const r=entries.get(typeof request==='string'?new URL(request,ORIGIN).href:request.url??new URL(request.href).href);return r?r.clone():undefined;},
   async put(request,response){entries.set(typeof request==='string'?new URL(request,ORIGIN).href:request.url??request.href,response.clone());},
   async keys(){return [...entries.keys()].map(url=>({url}));},
-  async delete(key){return entries.delete(key.url??key);},
+  async delete(key){return entries.delete(key.url??new URL(key,ORIGIN).href);},
  };};
  const network={online:true,slow:false,calls:[],pages:{},cacheModes:[]};
  const fetchMock=async(input)=>{
@@ -125,6 +125,33 @@ const text=r=>r.text();
  assert.ok(statics.includes(ORIGIN+'/_next/static/css/a.css'));
  assert.ok(!statics.some(u=>u.includes('example.com')||u.includes('/api/')));
 
+ // Hidden sections (/admin/sezioni): their saved copies are deleted and never shown, also after a restart.
+ sw.network.online=true;
+ for(const p of ['/classi','/classi/mago','/compendio/condizioni','/manuale/condizioni-accecato'])await sw.fetchEvent(sw.request(p));
+ const pages=()=>[...sw.store.get('grimorio-pages-v2').keys()].map(u=>new URL(u).pathname);
+ assert.ok(pages().includes('/classi/mago'));
+ await sw.message({type:'hidden-sections',paths:['/classi','/compendio/condizioni','/manuale/condizioni-']});
+ assert.deepEqual(pages().filter(p=>/classi|condizioni/.test(p)),[],'saved copies of hidden sections are deleted');
+ assert.ok(pages().includes('/spell/scudo'),'the other saved pages stay');
+ ({response}=await sw.fetchEvent(sw.request('/classi')));
+ assert.equal(response.status,200);assert.ok(!pages().includes('/classi'),'online, a hidden page is not saved again');
+ sw.network.online=false;
+ ({response}=await sw.fetchEvent(sw.request('/classi')));
+ assert.equal(response.status,503,'offline, a hidden page shows the offline notice, never a saved copy');
+ const restarted=worker({caches:sw.store});
+ restarted.store.get('grimorio-pages-v2').set(ORIGIN+'/classi/mago',new Response('copia vecchia',{headers:{'Content-Type':'text/html'}}));
+ restarted.network.online=false;
+ ({response}=await restarted.fetchEvent(restarted.request('/classi/mago')));
+ assert.equal(response.status,503,'the hidden list survives a stopped worker');
+ // A page answered 404 online (hidden while the phone did not know yet) loses its saved copy.
+ restarted.network.online=true;
+ restarted.store.get('grimorio-pages-v2').set(ORIGIN+'/oggetti-magici/manca-ali',new Response('copia vecchia'));
+ await restarted.fetchEvent(restarted.request('/oggetti-magici/manca-ali'));
+ assert.equal(restarted.store.get('grimorio-pages-v2').has(ORIGIN+'/oggetti-magici/manca-ali'),false,'a 404 deletes the saved copy');
+ await restarted.message({type:'hidden-sections',paths:[]});
+ await restarted.fetchEvent(restarted.request('/classi'));
+ assert.ok(restarted.store.get('grimorio-pages-v2').has(ORIGIN+'/classi'),'shown again: saved again');
+
  // The route serves this worker with its version, or the self-removing one when switched off.
  const routeFile=path.resolve('app/sw.js/route.ts');
  const loadRoute=()=>{const mod={exports:{}};new Function('require','module','exports',ts.transpileModule(fs.readFileSync(routeFile,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText)(id=>id==='@/lib/service-worker-config'?{serviceWorkerEnabled:()=>process.env.GRIMORIO_SERVICE_WORKER!=='off'}:createRequire(routeFile)(id),mod,mod.exports);return mod.exports;};
@@ -145,5 +172,5 @@ const text=r=>r.text();
  let done;listeners.activate({waitUntil:p=>{done=p;}});await done;
  assert.deepEqual([...store.keys()],['altro']);assert.ok(unregistered);assert.deepEqual(reloaded,['/grimorio']);
 
- console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch.');
+ console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch, hidden sections never served from a saved copy.');
 })().catch(error=>{console.error(error);process.exit(1);});

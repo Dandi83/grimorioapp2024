@@ -50,7 +50,7 @@ function load(relative, deps={}) {
  assert.equal(se.props.spells[0].id,spell.id);assert.equal(se.props.spells[0].nome_italiano,spell.nome_italiano);
  assert.deepEqual(se.props.spells[0].classi,['mago']);assert.deepEqual(se.props.meta,st.computeMeta([spell]));
  assert.equal(JSON.stringify(spell),spellBefore);
- const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList},'@/lib/spell-index':{getSpellIndex:async()=>index}}).default;
+ const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/section-view':{sectionsOut:async()=>[]}}).default;
  const fe=await favorites();
  assert.strictEqual(fe.props.spells,index);
  assert.ok(!fe.props.monsters.some(m=>'azioni' in m||'descrizione' in m));
