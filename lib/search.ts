@@ -10,7 +10,7 @@ export interface SearchIndex {
   rows: [number, string, string, string, string?][];
 }
 
-export type SearchSectionKey = "incantesimi" | "mostri" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "manuale";
+export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "manuale";
 
 export interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string }
 

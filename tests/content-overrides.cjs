@@ -41,7 +41,7 @@ assert.equal(armi.href('tridente','2014'),'/equipaggiamento/armi/tridente?edizio
 // Every registered section: each card's printed values pass their checks, and reading then
 // writing the fields gives back the same card (the overlay never changes what it does not correct).
 const adapters=load('lib/content-adapters.ts');
-assert.deepEqual(sections.CONTENT_SECTIONS.map(x=>x.key),['armi','armature','avventura','strumenti','oggetti-magici','condizioni','manuale']);
+assert.deepEqual(sections.CONTENT_SECTIONS.map(x=>x.key),['armi','armature','avventura','strumenti','oggetti-magici','classi','condizioni','manuale']);
 let checked=0;
 for(const section of sections.CONTENT_SECTIONS)for(const edition of section.editions)for(const item of section.items(edition)){
  const original=section.original(item.id,edition);
@@ -71,6 +71,20 @@ assert.equal(fixedWand.blocchi[0].text,'Testo corretto.');assert.deepEqual(fixed
 assert.notEqual(wand.blocchi[0].text,'Testo corretto.','the original card is not modified');
 const tableIndex=wand.blocchi.findIndex(b=>b.kind==='table');
 assert.equal(`blocco-${tableIndex+1}` in adapters.magicItemAdapter.read(wand),false,'tables are not editable fields');
+// Classes: reading then writing gives back the same card; a corrected paragraph changes only itself.
+for(const entry of load('lib/classes.ts').classEntries){
+ const card=entry.editions['2024'];
+ assert.deepEqual(adapters.classAdapter.write(card,adapters.classAdapter.read(card)),card,entry.id);
+}
+const fighter=load('lib/classes.ts').classEntries.find(e=>e.id==='guerriero').editions['2024'];
+const fighterFields=adapters.classAdapter.read(fighter);
+assert.equal(fighterFields['privilegio-1-titolo'],'Stile di combattimento');
+assert.equal(adapters.classAdapter.label(fighter,'privilegio-1-1'),'Livello 1: Stile di combattimento · paragrafo 1');
+const fixedFighter=adapters.classAdapter.write(fighter,{'privilegio-1-1':'Testo corretto.'});
+assert.equal(fixedFighter.privilegi[0].contenuto[0].testo,'Testo corretto.');
+assert.notEqual(fighter.privilegi[0].contenuto[0].testo,'Testo corretto.','the original card is not modified');
+assert.deepEqual(fixedFighter.tabella,fighter.tabella,'the table is not an editable field');
+assert.ok(!Object.keys(fighterFields).some(k=>/tabella/.test(k)));
 const blinded=load('lib/conditions.ts').conditions.find(e=>e.id==='condizioni-accecato');
 assert.equal(adapters.manualAdapter.label(blinded,'blocco-1'),blinded.blocks[0].kind==='heading'?'Titoletto 1':'Paragrafo 1');
 assert.deepEqual(adapters.manualAdapter.write(blinded,adapters.manualAdapter.read(blinded)),blinded);

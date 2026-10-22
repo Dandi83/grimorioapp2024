@@ -12,6 +12,7 @@ const STUBS={
   getCorrectedGear:async()=>({list:load('lib/adventuring-gear-editions.ts').gearEntries,corrections:new Map()}),
   getCorrectedTools:async()=>({list:load('lib/tools-editions.ts').toolEntries,corrections:new Map()}),
   getCorrectedMagicItems:async()=>({list:load('lib/magic-items-editions.ts').magicItemEntries,corrections:new Map()}),
+  getCorrectedClasses:async()=>({list:load('lib/classes.ts').classEntries,corrections:new Map()}),
   getCorrectedConditions:async()=>{const c=load('lib/conditions.ts');return {list:{'2024':c.conditions,'2014':c.legacyConditions},corrections:new Map()};},
   getCorrectedManualEntries:async()=>load('lib/manual.ts').manualEntries.filter(e=>e.category!=='condizioni'),
  },
@@ -56,8 +57,8 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  const production=await idx.buildSearchIndex('production');
  const preview=await idx.buildSearchIndex('preview');
  // Sections in order; the Manual only where it is published (its conditions are under Condizioni).
- assert.deepEqual(production.sections.map(x=>x.k),['incantesimi','mostri','equipaggiamento','oggetti-magici','condizioni']);
- assert.deepEqual(preview.sections.map(x=>x.k),['incantesimi','mostri','equipaggiamento','oggetti-magici','condizioni','manuale']);
+ assert.deepEqual(production.sections.map(x=>x.k),['incantesimi','mostri','classi','equipaggiamento','oggetti-magici','condizioni']);
+ assert.deepEqual(preview.sections.map(x=>x.k),['incantesimi','mostri','classi','equipaggiamento','oggetti-magici','condizioni','manuale']);
  assert.ok(!preview.rows.some(r=>r[3].startsWith('/manuale/condizioni-')&&preview.sections[r[0]].k==='manuale'));
  // Edition storage keys: the ones the catalogs use.
  assert.ok(fs.readFileSync('components/grimorio-browser.tsx','utf8').includes(`SPELL_EDITION_KEY = "${idx.SPELL_EDITION_STORAGE}"`));
@@ -95,6 +96,10 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  const magicNames=new Set(bySection('oggetti-magici').map(r=>s.fold(r.nome)));
  for(const e of magicItemEntries)for(const it of Object.values(e.editions))assert.ok(magicNames.has(s.fold(it.nome)),it.nome);
  assert.equal(bySection('oggetti-magici').length,magicItemEntries.reduce((n,e)=>n+(e.editions['2014']&&e.editions['2024']&&s.fold(e.editions['2014'].nome)!==s.fold(e.editions['2024'].nome)?2:1),0));
+ // Classes: the twelve classes and their subclass, the subclass opening the tab of the sheet.
+ assert.equal(bySection('classi').length,24);
+ assert.deepEqual(['Guerriero','Campione'].map(n=>rows.find(r=>r.nome===n)).map(r=>[r.label,r.href]),[['Classe · D10','/classi/guerriero'],['Sottoclasse del guerriero','/classi/guerriero#sottoclasse']]);
+ assert.equal(rows.find(r=>r.nome==='Stregoneria draconica').label,'Sottoclasse dello stregone');
  assert.equal(bySection('condizioni').length,15,JSON.stringify(bySection('condizioni').map(r=>r.nome+'|'+r.label)));
  const data=f=>JSON.parse(fs.readFileSync('lib/data/'+f,'utf8'));
  const equipNames=new Set(bySection('equipaggiamento').map(r=>s.fold(r.nome)));
@@ -102,6 +107,7 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  // Every address exists: equipment, magic items and conditions against their data (spells and monsters in the browser tests).
  const {findGearEntry}=load('lib/adventuring-gear-editions.ts');const {getToolEntry}=load('lib/tools-editions.ts');
  const {findMagicItemEntry}=load('lib/magic-items-editions.ts');const {getWeapon}=load('lib/equipment.ts');const {getArmor}=load('lib/armor.ts');
+ const classIds=new Set(load('lib/classes.ts').CLASS_IDS);
  const conditionIds=new Set([...data('srd-conditions-5.2.1-it.json'),...data('srd-conditions-5.1-it.json')].map(e=>e.id));
  const exists=href=>{
   const [p]=href.split('?');const parts=p.split('/');const id=parts.at(-1);
@@ -111,6 +117,7 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
   if(p.startsWith('/equipaggiamento/strumenti/'))return !!getToolEntry(id);
   if(p.startsWith('/oggetti-magici/'))return !!findMagicItemEntry(id);
   if(p.startsWith('/manuale/condizioni-'))return conditionIds.has(id);
+  if(p.startsWith('/classi/'))return classIds.has(id.split('#')[0]);
   if(p.startsWith('/spell/')||p.startsWith('/mostro/'))return true;
   return false;
  };

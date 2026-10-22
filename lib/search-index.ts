@@ -14,7 +14,8 @@
 import { conditionRows } from "./conditions-list";
 import { gearListRows } from "./adventuring-gear-editions";
 import { armorListItems } from "./armor";
-import { getCorrectedArmors, getCorrectedConditions, getCorrectedGear, getCorrectedMagicItems, getCorrectedManualEntries, getCorrectedTools, getCorrectedWeapons } from "./corrected-content";
+import { classHref, hitDie, ofClass } from "./classes";
+import { getCorrectedArmors, getCorrectedClasses, getCorrectedConditions, getCorrectedGear, getCorrectedMagicItems, getCorrectedManualEntries, getCorrectedTools, getCorrectedWeapons } from "./corrected-content";
 import { weaponListItems } from "./equipment";
 import { ARMOR_CATEGORY_NAMES, EQUIPMENT_EDITION_KEY, WEAPON_GROUP_NAMES, type EquipmentEdition } from "./equipment-types";
 import { magicItemEditionRows } from "./magic-items-editions";
@@ -58,6 +59,17 @@ export const SEARCH_SOURCES: SearchSource[] = [
       nome: monster.nome,
       label: [typeCategory(monster.tipo) || monster.tipo, monster.grado_sfida ? `GS ${monster.grado_sfida}` : ""].filter(Boolean).join(" · "),
       href: `/mostro/${monster.id}`, edizione: monster.edizione,
+    })),
+  },
+  {
+    // Classes and their subclass: the subclass opens the sheet on its tab.
+    section: "classi", title: "Classi", editionKey: EQUIPMENT_EDITION_KEY,
+    rows: async () => (await getCorrectedClasses()).list.flatMap(entry => (["2024", "2014"] as const).flatMap(edition => {
+      const card = entry.editions[edition];
+      return card ? [
+        { nome: card.nome, label: `Classe · ${hitDie(card)}`, href: classHref(entry.id), edizione: edition },
+        { nome: card.sottoclasse.nome, label: `Sottoclasse ${ofClass(card.nome)}`, href: `${classHref(entry.id)}#sottoclasse`, edizione: edition },
+      ] : [];
     })),
   },
   {
