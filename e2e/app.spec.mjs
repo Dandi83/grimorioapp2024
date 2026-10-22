@@ -1405,3 +1405,229 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await publicContext.close();
   expect(errors).toEqual([]);
 });
+
+test("parts of the sections: every part in its page, editions, collections, class sheet, comparisons, Avanzamento blocks, section first, log, narrow phones", async ({ page, browser }) => {
+  test.setTimeout(600_000);
+  // The registry of lib/public-sections.ts, read as it is: every part it lists must be in its page.
+  const ts = await import("typescript");
+  const source = ts.default.transpileModule(readFileSync("lib/public-sections.ts", "utf8"), { compilerOptions: { module: ts.default.ModuleKind.ES2022, target: ts.default.ScriptTarget.ES2022 } }).outputText;
+  const registry = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
+  const publicContext = await browser.newContext({ ...devices["iPhone 13"], baseURL: test.info().project.use.baseURL });
+  await publicContext.addInitScript(() => {
+    try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
+  });
+  const pub = await publicContext.newPage();
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  pub.on("pageerror", error => errors.push(error.message));
+
+  for (const section of registry.PUBLIC_SECTIONS) {
+    for (const part of section.parts) {
+      await pub.goto(part.page);
+      if (section.key === "bestiario" && part.group === "raccolte") await pub.getByRole("button", { name: "Filtri" }).click();
+      expect(await pub.locator(`[data-part="${section.key}:${part.key}"]`).count(), `${section.key}:${part.key} in ${part.page}`).toBeGreaterThan(0);
+      if (section.key === "bestiario" && part.group === "raccolte") await pub.keyboard.press("Escape");
+    }
+  }
+
+  await page.goto("/admin");
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await page.getByRole("link", { name: "Sezioni dell’app" }).click();
+  const opener = key => page.locator(`button[aria-controls="parti-${key}"]`);
+  await expect(opener("incantesimi")).toHaveText(/^2 parti/);
+  await expect(opener("classi")).toHaveText(/^8 parti/);
+  await expect(opener("avanzamento")).toHaveText(/^4 parti/);
+  await opener("classi").click();
+  await expect(page.locator("#parti-classi").getByRole("heading", { level: 3 })).toHaveText(["Edizioni", "Raccolte e schede"]);
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin parts ${width}`).toBeLessThanOrEqual(width);
+    for (const box of await page.locator("#parti-classi button").evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().toJSON()))) {
+      expect([Math.round(box.width), Math.round(box.height)]).toEqual([52, 44]);
+    }
+    expect((await opener("classi").boundingBox()).height).toBeGreaterThanOrEqual(44);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const togglePart = async (key, title, hide) => {
+    if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
+    if ((await opener(key).getAttribute("aria-expanded")) !== "true") await opener(key).click();
+    const box = page.locator(`#parti-${key}`);
+    const button = box.getByRole("button", { name: `${hide ? "Nascondi" : "Mostra"} ${title}`, exact: true });
+    await expect(button).toHaveAttribute("aria-pressed", hide ? "true" : "false");
+    await button.click();
+    const after = box.getByRole("button", { name: `${hide ? "Mostra" : "Nascondi"} ${title}`, exact: true });
+    await expect(after).toHaveAttribute("aria-pressed", hide ? "false" : "true");
+    await expect(after).toBeEnabled();
+    await expect(page.getByRole("status")).toHaveText(`${title} ora è ${hide ? "nascosta" : "visibile"}`);
+  };
+  const toggleSection = async (title, hide) => {
+    if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
+    const button = page.getByRole("button", { name: `${hide ? "Nascondi" : "Mostra"} ${title}`, exact: true });
+    await button.click();
+    await expect(page.getByRole("button", { name: `${hide ? "Mostra" : "Nascondi"} ${title}`, exact: true })).toBeEnabled();
+    await expect(page.getByRole("status")).toHaveText(`${title} ora è ${hide ? "nascosta" : "visibile"}`);
+  };
+  const unavailable = async path => {
+    const response = await pub.goto(path);
+    expect(response.status(), path).toBe(404);
+    await expect(pub.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente non disponibile");
+    expect((await pub.locator('meta[name="robots"]').evaluateAll(metas => metas.map(m => m.content))).join(" "), path).toContain("noindex");
+  };
+  const selector = target => target.getByRole("group", { name: "Edizione delle regole" });
+  const searchIndex = async () => (await (await pub.request.get("/ricerca-indice.json")).json());
+
+  // Edizione 2014 of the spells hidden: no selector, the remembered 2014 gives way to 2024, 2014 cards 404, no link, no search row.
+  await pub.goto("/grimorio");
+  await pub.evaluate(() => window.localStorage.setItem("grimorio.incantesimi.edizione", "2014"));
+  await togglePart("incantesimi", "Edizione 2014", true);
+  await expect(page.getByText("1 parte nascosta")).toBeVisible();
+  await pub.goto("/grimorio");
+  await expect(selector(pub)).toHaveCount(0);
+  await expect(pub.locator('main a[href^="/spell/"]').first()).toBeAttached();
+  await expect(pub.locator('main a[href$="-2014"]')).toHaveCount(0);
+  await unavailable("/spell/palla-di-fuoco-2014");
+  await pub.goto("/spell/palla-di-fuoco");
+  await expect(pub.getByRole("link", { name: "Passa alla versione 2014" })).toHaveCount(0);
+  let index = await searchIndex();
+  expect(index.rows.some(row => /^\/spell\/.*-2014$/.test(row[3]) || (row[4] ?? "").startsWith("/spell/"))).toBe(false);
+  // The administrator: the 2014 button labelled «Nascosta», the 2014 card with the bar and «Mostra».
+  await page.goto("/grimorio");
+  await expect(selector(page).getByRole("button", { name: /2014/ })).toContainText("Nascosta");
+  expect((await page.goto("/spell/palla-di-fuoco-2014")).status()).toBe(200);
+  await expect(page.locator("form").filter({ hasText: "Nascosta" }).getByRole("button", { name: "Mostra" })).toBeVisible();
+  // The section wins over its parts and keeps them: hidden and shown again, 2014 is still hidden.
+  await toggleSection("Incantesimi", true);
+  await unavailable("/spell/palla-di-fuoco");
+  await toggleSection("Incantesimi", false);
+  await pub.goto("/grimorio");
+  await expect(selector(pub)).toHaveCount(0);
+  // «Mostra» from the bar of the card puts 2014 back.
+  await page.goto("/spell/palla-di-fuoco-2014");
+  await page.locator("form").filter({ hasText: "Nascosta" }).getByRole("button", { name: "Mostra" }).click();
+  await expect(page.locator("form").filter({ hasText: "Nascosta" })).toHaveCount(0);
+  expect((await pub.goto("/spell/palla-di-fuoco-2014")).status()).toBe(200);
+  await pub.goto("/grimorio");
+  await expect(selector(pub)).toBeVisible();
+
+  // Edizione 2014 of the weapons: no selector, no 2014 → 2024 box; Armi tile «Parti nascoste» in the admin home.
+  await togglePart("armi", "Edizione 2014", true);
+  await pub.goto("/equipaggiamento/armi");
+  await expect(selector(pub)).toHaveCount(0);
+  await pub.goto("/equipaggiamento/armi/tridente");
+  await expect(selector(pub)).toHaveCount(0);
+  await expect(pub.getByRole("heading", { name: "2014 → 2024" })).toHaveCount(0);
+  await page.goto("/admin");
+  const armiTile = page.getByRole("navigation", { name: "Sezioni da modificare" }).getByRole("link").filter({ hasText: "Armi" });
+  await expect(armiTile.getByText("Parti nascoste", { exact: true })).toBeVisible();
+  await expect(armiTile.getByText("Nascosta", { exact: true })).toHaveCount(0);
+  await togglePart("armi", "Edizione 2014", false);
+  // The 2014 → 2024 box alone; Dotazioni.
+  await togglePart("armi", "Riquadro «2014 → 2024»", true);
+  await togglePart("avventura", "Blocco «Dotazioni»", true);
+  await pub.goto("/equipaggiamento/armi/tridente");
+  await expect(selector(pub)).toBeVisible();
+  await expect(pub.getByRole("heading", { name: "2014 → 2024" })).toHaveCount(0);
+  await pub.goto("/equipaggiamento/avventura");
+  await expect(pub.getByRole("heading", { name: "Dotazioni" })).toHaveCount(0);
+  await expect(pub.getByRole("heading", { name: "Tutti gli oggetti" })).toBeVisible();
+  await page.goto("/equipaggiamento/armi/tridente");
+  await expect(page.locator('[data-part="armi:confronto"]')).toContainText("Nascosta");
+  await page.goto("/equipaggiamento/avventura");
+  await expect(page.getByRole("heading", { name: /Dotazioni/ })).toContainText("Nascosta");
+  await togglePart("armi", "Riquadro «2014 → 2024»", false);
+  await togglePart("avventura", "Blocco «Dotazioni»", false);
+
+  // Bestiario: Animali hidden → no Categoria filter, animal cards 404, no animal in the search.
+  await togglePart("bestiario", "Raccolta Animali", true);
+  await pub.goto("/bestiario");
+  await pub.getByRole("button", { name: "Filtri" }).click();
+  await expect(pub.getByRole("group", { name: "Categoria" })).toHaveCount(0);
+  await pub.keyboard.press("Escape");
+  await unavailable("/mostro/alce");
+  index = await searchIndex();
+  expect(index.rows.some(row => row[3] === "/mostro/alce")).toBe(false);
+  expect((await page.goto("/mostro/alce")).status()).toBe(200);
+  await togglePart("bestiario", "Raccolta Animali", false);
+  expect((await pub.goto("/mostro/alce")).status()).toBe(200);
+
+  // Class sheet: tabs, rows, spell list and button hidden; the subclass leaves the search.
+  const classParts = ["Tab Tabella", "Tab Sottoclasse", "Riga «Abilità ed equipaggiamento iniziale»", "Riga «Diventare un…»", "Lista degli incantesimi", "Pulsante «Incantesimi del…»"];
+  for (const title of classParts) await togglePart("classi", title, true);
+  await pub.goto("/classi/mago");
+  const body = pub.locator("main");
+  await expect(body.getByRole("tab").filter({ visible: true })).toHaveText(["Privilegi"]);
+  await expect(body.getByText("Abilità ed equipaggiamento iniziale")).toHaveCount(0);
+  await expect(body.getByText(/^Diventare un/)).toHaveCount(0);
+  for (const key of ["abilita", "diventare", "lista-incantesimi", "incantesimi-del", "tab-tabella", "tab-sottoclasse"]) await expect(pub.locator(`[data-part="classi:${key}"]`)).toHaveCount(0);
+  await expect(pub.getByRole("link", { name: "Incantesimi del mago →" })).toHaveCount(0);
+  index = await searchIndex();
+  expect(index.rows.some(row => row[3].includes("#sottoclasse"))).toBe(false);
+  await page.goto("/classi/mago");
+  const tabs = page.locator("main").getByRole("tab").filter({ visible: true });
+  await expect(tabs).toHaveCount(3);
+  await expect(tabs.nth(1)).toContainText("Nascosta");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    await pub.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin class ${width}`).toBeLessThanOrEqual(width);
+    await pub.goto("/classi/mago");
+    expect(await pub.evaluate(() => document.documentElement.scrollWidth), `public class ${width}`).toBeLessThanOrEqual(width);
+    for (const box of await tabs.evaluateAll(list => list.map(t => t.getBoundingClientRect().height))) expect(box).toBeGreaterThanOrEqual(44);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await pub.setViewportSize({ width: 390, height: 844 });
+  for (const title of classParts) await togglePart("classi", title, false);
+
+  // Both editions of the conditions hidden: the section behaves as hidden; «Mostra» in the band shows them again.
+  await togglePart("condizioni", "Edizione 2014", true);
+  await togglePart("condizioni", "Edizione 2024", true);
+  await unavailable("/compendio/condizioni");
+  await unavailable("/manuale/condizioni-accecato");
+  await pub.goto("/compendio");
+  await expect(pub.getByRole("link", { name: /Condizioni/ })).toHaveCount(0);
+  await page.goto("/compendio/condizioni");
+  await page.getByRole("note").getByRole("button", { name: "Mostra" }).click();
+  await expect(page.getByRole("note")).toHaveCount(0);
+  expect((await pub.goto("/compendio/condizioni")).status()).toBe(200);
+  await expect(selector(pub)).toBeVisible();
+
+  // Avanzamento: blocks one by one, all four → unavailable; the band shows them all again.
+  const blocks = ["Tabella di avanzamento", "Punti ferita fissi per classe", "Talenti bonus oltre il 20º livello"];
+  for (const title of blocks) await togglePart("avanzamento", title, true);
+  await pub.goto("/avanzamento");
+  await expect(pub.locator("main h2")).toHaveText(["Calcolatore di PE"]);
+  await page.goto("/avanzamento");
+  await expect(page.locator('[data-part="avanzamento:tabella"]')).toContainText("Nascosta");
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin avanzamento ${width}`).toBeLessThanOrEqual(width);
+    expect((await page.locator('[data-part="avanzamento:tabella"]').getByRole("button", { name: "Mostra" }).boundingBox()).height).toBeGreaterThanOrEqual(44);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await togglePart("avanzamento", "Calcolatore di PE", true);
+  await unavailable("/avanzamento");
+  await page.goto("/avanzamento");
+  await page.getByRole("note").getByRole("button", { name: "Mostra" }).click();
+  await expect(page.getByRole("note")).toHaveCount(0);
+  await pub.goto("/avanzamento");
+  await expect(pub.locator("main h2")).toHaveCount(4);
+
+  // The log: section, part, new state.
+  await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
+  const log = page.getByRole("list", { name: "Modifiche" }).locator(":scope > li");
+  await expect(log.filter({ hasText: "Classi · Tab Tabella · visibilità" })).toHaveCount(2);
+  await expect(log.filter({ hasText: "Avanzamento · Calcolatore di PE · visibilità" }).first()).toContainText("Visibile");
+
+  // Everything visible again; the pages built meanwhile are built again for the next server (see the sections test).
+  await page.goto("/admin/sezioni");
+  await expect(page.getByText("10 visibili")).toBeVisible();
+  await expect(page.getByText(/parti? nascost/)).toHaveCount(0);
+  for (const path of ["/", "/grimorio", "/spell/palla-di-fuoco", "/spell/palla-di-fuoco-2014", "/bestiario", "/mostro/alce", "/classi", "/classi/mago", "/compendio", "/compendio/condizioni",
+    "/manuale/condizioni-accecato", "/equipaggiamento/armi", "/equipaggiamento/armi/tridente", "/equipaggiamento/avventura", "/avanzamento", "/preferiti", "/ricerca-indice.json"]) {
+    expect((await pub.request.get(path)).status(), path).toBe(200);
+  }
+  await publicContext.close();
+  expect(errors).toEqual([]);
+});

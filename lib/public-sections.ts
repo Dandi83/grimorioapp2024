@@ -71,16 +71,16 @@ export const PUBLIC_SECTIONS = [
   { key: "armature", title: "Armature", where: "Compendio · Equipaggiamento", paths: ["/equipaggiamento/armature"], parts: editions("/equipaggiamento/armature") },
   { key: "avventura", title: "Equipaggiamento d’avventura", where: "Compendio · Equipaggiamento", paths: ["/equipaggiamento/avventura"], parts: [
     ...editions("/equipaggiamento/avventura"),
-    { key: "confronto", title: COMPARISON, group: "raccolte", page: "/equipaggiamento/avventura/abaco" },
+    { key: "confronto", title: COMPARISON, group: "raccolte", page: "/equipaggiamento/avventura/ampolla" },
     { key: "dotazioni", title: "Blocco «Dotazioni»", group: "blocchi", page: "/equipaggiamento/avventura" },
   ] },
   { key: "strumenti", title: "Strumenti", where: "Compendio · Equipaggiamento", paths: ["/equipaggiamento/strumenti"], parts: [
     ...editions("/equipaggiamento/strumenti"),
-    { key: "confronto", title: COMPARISON, group: "raccolte", page: "/equipaggiamento/strumenti/liuto" },
+    { key: "confronto", title: COMPARISON, group: "raccolte", page: "/equipaggiamento/strumenti/mazzo-di-carte" },
   ] },
   { key: "oggetti-magici", title: "Oggetti magici", where: "Compendio", paths: ["/oggetti-magici"], parts: [
     ...editions("/oggetti-magici"),
-    { key: "confronto", title: COMPARISON, group: "raccolte", page: "/oggetti-magici/ali-del-volo" },
+    { key: "confronto", title: COMPARISON, group: "raccolte", page: "/oggetti-magici/anello-di-resistenza" },
   ] },
   { key: "condizioni", title: "Condizioni", where: "Compendio", paths: ["/compendio/condizioni", "/manuale/condizioni-"], parts: editions("/compendio/condizioni") },
   { key: "avanzamento", title: "Avanzamento", where: "Compendio", paths: ["/avanzamento"], parts: [
