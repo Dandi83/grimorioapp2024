@@ -10,11 +10,12 @@ import { deleteContentWithEdition } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { db } from "@/lib/db";
 import { getSrdMonsterSource, previewMonsterById, usesLegacyMonsterRules } from "@/lib/srd-monsters";
-import { monsterExtraFieldsFromForm } from "@/lib/monster-extra-fields";
-import { saveMonsterExtraFields } from "@/lib/monster-extra-storage";
+import { MONSTER_EXTRA_FIELDS, monsterExtraFieldsFromForm, type MonsterExtraFields } from "@/lib/monster-extra-fields";
+import { getMonsterExtraFields, saveMonsterExtraFields } from "@/lib/monster-extra-storage";
+import { changedEditorFields } from "@/lib/editor-changes";
 import { habitatsFromForm } from "@/lib/habitats";
 import { saveMonsterHabitats } from "@/lib/monster-habitats";
-import { editorLogReady, logEditorSave } from "@/lib/editor-log";
+import { EDITOR_FIELDS, editorLogReady, logEditorSave } from "@/lib/editor-log";
 
 function num(v: FormDataEntryValue | null, fallback = 10): number {
   const n = parseInt(clean(v), 10);
@@ -54,6 +55,10 @@ function fromForm(formData: FormData) {
   };
 }
 
+type MonsterInput = ReturnType<typeof fromForm>;
+/** Columns written by the visual editor (blocks of traits, actions, description). */
+const MONSTER_HTML_FIELDS = ["tratti", "azioni", "reazioni", "azioni_leggendarie", "descrizione"];
+
 function revalidateMonster(id: string) {
   updateTag("monsters");
   revalidatePath("/bestiario");
@@ -83,31 +88,39 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
   await requireAdmin();
   const id = clean(formData.get("id"));
   if (!id) return { ok: false as const, error: "ID mancante." };
-  const input = fromForm(formData);
-  if (!input.nome) {
+  // Fields missing from the form stay as they are: only what was sent can change.
+  const { columns, integers } = EDITOR_FIELDS.mostri;
+  const sent: Partial<Record<string, string | number>> = {};
+  for (const field of columns) if (formData.has(field)) sent[field] = integers.includes(field) ? num(formData.get(field)) : clean(formData.get(field));
+  if (sent.nome !== undefined && !sent.nome) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
-  const extraFields = monsterExtraFieldsFromForm(formData);
   const habitats = habitatsFromForm(formData);
   // A sheet that exists only in the project files is not in the database:
   // only its habitat (and matching edition label) is saved, the text stays the official one.
-  const inDatabase = (await db.select({ id: monsters.id }).from(monsters).where(eq(monsters.id, id)).limit(1)).length > 0;
-  if (!inDatabase && previewMonsterById(id, process.env.VERCEL_ENV)) {
+  const [stored] = await db.select().from(monsters).where(eq(monsters.id, id)).limit(1);
+  if (!stored && previewMonsterById(id, process.env.VERCEL_ENV)) {
     const projectEdition = usesLegacyMonsterRules({ id }) ? "2014" : "2024";
     const saved = await saveAdminContent("monster", id, formData, projectEdition, database => saveMonsterHabitats(database, id, habitats));
     if (!saved.ok) return saved;
     revalidateMonster(id);
     return { ok: true as const, error: null, id };
   }
-  const sourceEdition = getSrdMonsterSource({ ...input, ...extraFields, id, gs_num: parseGs(input.grado_sfida) })?.edition;
+  if (!stored) return { ok: false as const, error: "Scheda non trovata." };
+  // A save rewrites only the fields that really changed: the others keep their exact bytes.
+  const changes = changedEditorFields(columns, MONSTER_HTML_FIELDS, stored, sent) as Partial<MonsterInput>;
+  const storedExtras = (await getMonsterExtraFields(id)).get(id) ?? {};
+  const extraFields = changedEditorFields(MONSTER_EXTRA_FIELDS, ["azioni_bonus"], storedExtras, monsterExtraFieldsFromForm(formData)) as MonsterExtraFields;
+  const current = { ...stored, ...storedExtras, ...changes, ...extraFields };
+  const sourceEdition = getSrdMonsterSource({ ...current, id, gs_num: parseGs(current.grado_sfida) })?.edition;
   const logged = await editorLogReady();
   const result = await saveAdminContent("monster", id, formData, sourceEdition, async database => {
     // Every changed field of the sheet goes to the Registro modifiche, where it can be undone.
-    if (logged) await logEditorSave(database, "mostri", id, input);
+    if (logged) await logEditorSave(database, "mostri", id, changes);
     const updated = await database.update(monsters)
     .set({
-      ...input,
-      sort_key: input.nome.toLowerCase(),
+      ...changes,
+      ...(changes.nome ? { sort_key: changes.nome.toLowerCase() } : {}),
       updated_at: new Date(),
     })
     .where(eq(monsters.id, id)).returning({ id: monsters.id });
