@@ -900,10 +900,10 @@ test("security: headers on every kind of page, admin pages and API closed withou
     expect(headers["referrer-policy"], path).toBe("strict-origin-when-cross-origin");
   }
   // Admin pages without login: the login form, never the data.
-  for (const path of ["/admin", "/admin/segnalazioni", "/admin/statistiche", "/admin/segnalazioni/11111111-1111-4111-8111-111111111111"]) {
+  for (const path of ["/admin", "/admin/segnalazioni", "/admin/statistiche", "/admin/notifiche", "/admin/segnalazioni/11111111-1111-4111-8111-111111111111"]) {
     const html = await (await request.get(path)).text();
     expect(html, path).toContain("Area riservata");
-    expect(html, path).not.toMatch(/Rispondi via email|Visitatori unici|incantesimi · \d+ mostri/);
+    expect(html, path).not.toMatch(/Rispondi via email|Visitatori unici|incantesimi · \d+ mostri|Dispositivi attivi/);
   }
   // Maintenance API: 401 without the secret or with a wrong one.
   expect((await request.get("/api/analytics/maintenance")).status()).toBe(401);
@@ -1215,4 +1215,74 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await result.click();
   await expect(page.getByRole("tab", { name: "Sottoclasse" })).toHaveAttribute("aria-selected", "true");
   expect(errors).toEqual([]);
+});
+
+test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home screen, computer offers activation, denied permission, kind switch, narrow phones", async ({ page, browser }) => {
+  // The phone of the tests is an iPhone opened in Safari (not from the Home screen).
+  await page.goto("/admin");
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  const tile = page.getByRole("link", { name: /Notifiche/ });
+  await expect(tile).toContainText("Nessun dispositivo attivo");
+  expect(await tile.locator("svg").first().getAttribute("width")).toBe("24");
+  await tile.click();
+  await expect(page).toHaveURL(/\/admin\/notifiche$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Notifiche" })).toBeVisible();
+  const device = page.getByRole("region", { name: "Questo dispositivo" });
+  await expect(device.getByRole("status")).toHaveText("Non attive su questo dispositivo");
+  await expect(device.getByRole("listitem")).toHaveText([/Tocca Condividi/, /Aggiungi alla schermata Home/, /Apri il Grimorio dall’icona/]);
+  await expect(device.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toHaveCount(0);
+  await expect(page.getByText("Nessun dispositivo: le notifiche non arrivano da nessuna parte.")).toBeVisible();
+  // The kinds of notification: Segnalazioni, on by default; the switch is saved.
+  const kind = page.getByRole("switch", { name: "Notifiche: Segnalazioni" });
+  await expect(kind).toHaveAttribute("aria-checked", "true");
+  await kind.click();
+  await expect(page.getByRole("status").filter({ hasText: "Segnalazioni: notifiche spente." })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("switch", { name: "Notifiche: Segnalazioni" })).toHaveAttribute("aria-checked", "false");
+  await page.getByRole("switch", { name: "Notifiche: Segnalazioni" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Segnalazioni: notifiche attive." })).toBeVisible();
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `notifiche ${width}`).toBeLessThanOrEqual(width);
+    expect((await page.getByRole("switch", { name: "Notifiche: Segnalazioni" }).boundingBox()).height).toBeGreaterThanOrEqual(44);
+  }
+
+  // A computer browser: the activation button (the system permission is asked only on tap).
+  const cookies = await page.context().cookies();
+  const desktop = await browser.newContext({ viewport: { width: 390, height: 844 }, baseURL: test.info().project.use.baseURL, userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" });
+  await desktop.addCookies(cookies);
+  // A browser with Web Push (the headless Chromium of CI has no PushManager or Notification): the page is tested, not the browser.
+  // The permission starts as «not asked yet» (CI's Chromium blocks notifications by default).
+  await desktop.addInitScript(() => {
+    if (!("PushManager" in window)) window.PushManager = function PushManager() {};
+    if (!("Notification" in window)) window.Notification = { requestPermission: async () => "default" };
+    Object.defineProperty(window.Notification, "permission", { configurable: true, get: () => "default" });
+  });
+  const computer = await desktop.newPage();
+  await computer.goto("/admin/notifiche");
+  const here = computer.getByRole("region", { name: "Questo dispositivo" });
+  await expect(here, "the page shows the activation button").toContainText("Attiva notifiche su questo dispositivo");
+  await expect(here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toBeVisible();
+  expect((await here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" }).boundingBox()).height).toBeGreaterThanOrEqual(44);
+  for (const width of [360, 375, 390]) {
+    await computer.setViewportSize({ width, height: 800 });
+    expect(await computer.evaluate(() => document.documentElement.scrollWidth), `computer ${width}`).toBeLessThanOrEqual(width);
+  }
+  // Permission denied on this device: how to allow it again, no button.
+  await computer.addInitScript(() => Object.defineProperty(window.Notification, "permission", { configurable: true, get: () => "denied" }));
+  await computer.reload();
+  await expect(here).toContainText("Le notifiche per il Grimorio sono bloccate su questo dispositivo.");
+  await expect(here).toContainText("Impostazioni → Notifiche → Grimorio");
+  await expect(here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toHaveCount(0);
+  await desktop.close();
+  // A browser without Web Push: it says so, no button.
+  const plain = await browser.newContext({ viewport: { width: 390, height: 844 }, baseURL: test.info().project.use.baseURL, userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" });
+  await plain.addCookies(cookies);
+  await plain.addInitScript(() => { delete window.PushManager; });
+  const old = await plain.newPage();
+  await old.goto("/admin/notifiche");
+  await expect(old.getByRole("region", { name: "Questo dispositivo" })).toContainText("Questo browser non supporta le notifiche push.");
+  await expect(old.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toHaveCount(0);
+  await plain.close();
 });

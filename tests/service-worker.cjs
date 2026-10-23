@@ -24,8 +24,9 @@ function worker({version='v2',caches:shared}={}){
   const response=new Response(body,{status:url.pathname.includes('manca')?404:200,headers:{'Content-Type':'text/html'}});
   Object.defineProperty(response,'type',{value:'basic'});return response;
  };
+ const shown=[],opened=[],windows=[];
  const self={location:new URL(ORIGIN+'/sw.js'),addEventListener:(type,fn)=>{listeners[type]=fn;},skipWaiting:async()=>{},
-  clients:{claim:async()=>{}},registration:{}};
+  clients:{claim:async()=>{},matchAll:async()=>windows,openWindow:async url=>{opened.push(url);}},registration:{showNotification:async(title,options)=>{shown.push({title,options});}}};
  const context=vm.createContext({self,caches:{open:async name=>cacheFor(name),keys:async()=>[...store.keys()],delete:async name=>store.delete(name)},
   fetch:fetchMock,Request:function(request,init){network.cacheModes.push(init&&init.cache);return Object.assign(Object.create(request),{url:request.url,cache:init&&init.cache});},Response,Headers,URL,Map,Promise,Number,String,Array,Math,Date,console,
   setTimeout:(fn,ms,...args)=>setTimeout(fn,ms>=3000?20:ms,...args)});
@@ -41,7 +42,9 @@ function worker({version='v2',caches:shared}={}){
  const fetchEventRaw=(req,respondWith)=>listeners.fetch({request:req,resultingClientId:'slow',respondWith,waitUntil(){}});
  const ask=pathname=>new Promise(resolve=>listeners.message({data:{type:'saved-copy?',path:pathname},source:{id:'c'},ports:[{postMessage:resolve}]}));
  const message=async data=>{let done;listeners.message({data,source:{id:'x'},ports:[],waitUntil:p=>{done=p;}});await done;};
- return {store,network,lifecycle,request,fetchEvent,fetchEventRaw,ask,message};
+ const pushEvent=async data=>{let done;listeners.push({data:data===undefined?null:{json:()=>{if(typeof data==='string')throw new SyntaxError('bad');return data;}},waitUntil:p=>{done=p;}});await done;};
+ const click=async url=>{let done,closed=false;listeners.notificationclick({notification:{data:{url},close:()=>{closed=true;}},waitUntil:p=>{done=p;}});await done;return closed;};
+ return {store,network,lifecycle,request,fetchEvent,fetchEventRaw,ask,message,pushEvent,click,shown,opened,windows};
 }
 const text=r=>r.text();
 
@@ -164,6 +167,22 @@ const text=r=>r.text();
  await restarted.message({type:'hidden-sections',paths:[],parts:[]});
  assert.ok(!saved().includes('/avanzamento'),'parts shown again: the copy without them is deleted too');
 
+ // Admin notifications: a push shows title, text and the address to open; a tap opens it.
+ const n=worker();
+ await n.pushEvent({title:'Nuova segnalazione',body:'Errore · Palla di fuoco\nLa gittata',url:'/admin/segnalazioni/abc',tag:'segnalazione-abc'});
+ assert.deepEqual(JSON.parse(JSON.stringify(n.shown[0])),{title:'Nuova segnalazione',options:{body:'Errore · Palla di fuoco\nLa gittata',tag:'segnalazione-abc',icon:'/icon-512.png',badge:'/icon-512.png',data:{url:'/admin/segnalazioni/abc'}}});
+ await n.pushEvent({title:'X',url:'https://altro-sito.example/'});
+ await n.pushEvent({title:'Y',url:'//altro-sito.example/'});
+ assert.deepEqual(n.shown.slice(1).map(x=>x.options.data.url),['/admin','/admin'],'a notification never opens another site');
+ await n.pushEvent('non json');await n.pushEvent();
+ assert.deepEqual(n.shown.slice(3).map(x=>x.title),['Il Grimorio.App','Il Grimorio.App'],'a broken or empty push still shows something');
+ assert.equal(await n.click('/admin/segnalazioni/abc'),true,'the notification is closed');
+ assert.deepEqual(n.opened,[ORIGIN+'/admin/segnalazioni/abc'],'no window open: a new one');
+ const visited=[];let focused=0;
+ n.windows.push({url:ORIGIN+'/grimorio',focus:async()=>{focused++;},navigate:async url=>{visited.push(url);}});
+ await n.click('/admin/segnalazioni/def');
+ assert.deepEqual([focused,visited,n.opened.length],[1,[ORIGIN+'/admin/segnalazioni/def'],1],'an open window of the app is used');
+
  // The route serves this worker with its version, or the self-removing one when switched off.
  const routeFile=path.resolve('app/sw.js/route.ts');
  const loadRoute=()=>{const mod={exports:{}};new Function('require','module','exports',ts.transpileModule(fs.readFileSync(routeFile,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText)(id=>id==='@/lib/service-worker-config'?{serviceWorkerEnabled:()=>process.env.GRIMORIO_SERVICE_WORKER!=='off'}:createRequire(routeFile)(id),mod,mod.exports);return mod.exports;};
@@ -184,5 +203,5 @@ const text=r=>r.text();
  let done;listeners.activate({waitUntil:p=>{done=p;}});await done;
  assert.deepEqual([...store.keys()],['altro']);assert.ok(unregistered);assert.deepEqual(reloaded,['/grimorio']);
 
- console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch, hidden sections never served from a saved copy, copies dropped when hidden parts change.');
+ console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch, hidden sections never served from a saved copy, copies dropped when hidden parts change, admin notifications shown and opened on this site only.');
 })().catch(error=>{console.error(error);process.exit(1);});

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse, after } from "next/server";
-import { BODY_MAX_BYTES, parseFeedback } from "@/lib/feedback-input";
+import { BODY_MAX_BYTES, TYPE_LABELS, parseFeedback } from "@/lib/feedback-input";
+import { feedbackPayload, sendPush } from "@/lib/push";
 import {
   checkFormToken, deviceKey, feedbackLimited, issueFormToken, markEmailSent,
   recordFeedbackSend, saveFeedback, sendFeedbackEmail, turnstilePassed,
@@ -56,9 +57,14 @@ export async function POST(request: NextRequest) {
     if (await feedbackLimited(key)) return reply({ error: "Hai inviato molte segnalazioni: riprova più tardi." }, 429);
     const report = await saveFeedback(parsed.value);
     await recordFeedbackSend(key);
-    // Saved first; the email follows after the answer, and its failure never reaches the visitor.
+    // Saved first; the email and the admin notification follow after the answer, and their failure
+    // never reaches the visitor (the report stays saved).
     after(async () => {
-      const result = await sendFeedbackEmail(report, { origin, name: await pageName(report.percorso, report.edizione) });
+      const name = await pageName(report.percorso, report.edizione).catch(() => null);
+      const [result] = await Promise.all([
+        sendFeedbackEmail(report, { origin, name }),
+        sendPush("segnalazioni", feedbackPayload(report, TYPE_LABELS[report.tipo], name)).catch(() => console.warn("[notifiche] Invio della notifica non riuscito.")),
+      ]);
       if (result === "sent") await markEmailSent(report.id).catch(() => undefined);
     });
     return reply({ ok: true });
