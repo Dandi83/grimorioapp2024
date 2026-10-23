@@ -22,11 +22,11 @@ import { magicItemEditionRows } from "./magic-items-editions";
 import { manualAvailable } from "./manual";
 import { MANUAL_CATEGORIES } from "./manual-types";
 import { getMonsterListIndex } from "./monster-index";
-import { isSrdAnimal, typeCategory } from "./monsters-types";
+import { collectionOf, typeCategory } from "./monsters-types";
 import { getSpellIndex } from "./spell-index";
 import { spellName } from "./spell-name";
 import { toolListRows } from "./tools-editions";
-import { fold, type SearchIndex, type SearchSectionKey } from "./search";
+import { HOMEBREW_LABEL, fold, type SearchIndex, type SearchSectionKey } from "./search";
 import { isHiddenPath, partId, sectionOfPath } from "./public-sections";
 
 /** A row of a hidden section, or of a hidden edition, collection or tab (hidden: sections and part ids). */
@@ -64,10 +64,11 @@ export const SEARCH_SOURCES: SearchSource[] = [
   },
   {
     section: "mostri", title: "Mostri", editionKey: MONSTER_EDITION_STORAGE,
+    // Homebrew creatures: «Homebrew» first in the label (the panel shows it as the amber pill); «Entrambe» belongs to no single edition.
     rows: async () => (await getMonsterListIndex()).map(monster => ({
       nome: monster.nome,
-      label: [typeCategory(monster.tipo) || monster.tipo, monster.grado_sfida ? `GS ${monster.grado_sfida}` : ""].filter(Boolean).join(" · "),
-      href: `/mostro/${monster.id}`, edizione: monster.edizione, parte: isSrdAnimal(monster) ? "animali" : "mostri",
+      label: [monster.homebrew ? HOMEBREW_LABEL : "", typeCategory(monster.tipo) || monster.tipo, monster.grado_sfida ? `GS ${monster.grado_sfida}` : ""].filter(Boolean).join(" · "),
+      href: `/mostro/${monster.id}`, ...(monster.entrambe ? {} : { edizione: monster.edizione }), parte: collectionOf(monster),
     })),
   },
   {

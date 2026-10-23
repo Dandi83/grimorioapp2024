@@ -2,7 +2,7 @@
 
 import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Skull, Star } from "lucide-react";
+import { FlaskConical, Skull, Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
@@ -11,7 +11,9 @@ import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useEditions, usePart } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
-import { computeMonstersMeta, isSrdAnimal, typeCategory, type MonsterListItem } from "@/lib/monsters-types";
+import { collectionOf, computeMonstersMeta, isSrdAnimal, typeCategory, type MonsterListItem } from "@/lib/monsters-types";
+import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
+import { authorLine } from "@/lib/homebrew-types";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
 
 export type Edition = "2024" | "2014";
@@ -19,9 +21,9 @@ export type Edition = "2024" | "2014";
 export const EDITION_KEY = "grimorio.bestiario.edizione";
 const PAGE_SIZE = 40;
 
-export type Category = "tutti" | "mostri" | "animali";
-const CATEGORIES: readonly Category[] = ["tutti", "mostri", "animali"];
-const CATEGORY_LABEL: Record<Category, string> = { tutti: "Tutti", mostri: "Mostri", animali: "Animali" };
+export type Category = "tutti" | "mostri" | "animali" | "homebrew";
+const CATEGORIES: readonly Category[] = ["tutti", "mostri", "animali", "homebrew"];
+const CATEGORY_LABEL: Record<Category, string> = { tutti: "Tutti", mostri: "Mostri", animali: "Animali", homebrew: "Homebrew" };
 
 /** Challenge-rating bands of the filter panel; several can be chosen. */
 export const GS_BANDS = ["0-1", "2-4", "5-10", "11-16", "17+"] as const;
@@ -36,9 +38,13 @@ export const NO_FILTERS: MonsterFilters = { categoria: "tutti", gs: [], tipo: []
 
 export type MonsterListState = MonsterFilters & { url: string; q: string; edizione: Edition; limit: number; scroll: number };
 
-/** "o" inside the same filter, "e" between different filters. */
+/**
+ * "o" inside the same filter, "e" between different filters. Homebrew creatures are only in their own
+ * collection («Homebrew»): «Tutti», «Mostri» and «Animali» stay the SRD catalog.
+ */
 export function matchesFilters(monster: MonsterListItem, filters: MonsterFilters): boolean {
-  if (filters.categoria !== "tutti" && (filters.categoria === "animali") !== isSrdAnimal(monster)) return false;
+  if ((filters.categoria === "homebrew") !== !!monster.homebrew) return false;
+  if (filters.categoria !== "tutti" && filters.categoria !== "homebrew" && (filters.categoria === "animali") !== isSrdAnimal(monster)) return false;
   if (filters.gs.length && !filters.gs.includes(gsBand(monster.gs_num))) return false;
   if (filters.tipo.length && !filters.tipo.includes(typeCategory(monster.tipo))) return false;
   if (filters.taglia.length && !filters.taglia.includes(monster.taglia)) return false;
@@ -75,15 +81,18 @@ export function BestiarioBrowser({
   // Editions and collections hidden from /admin/sezioni: never shown to the public, labelled for the administrator.
   const { allowed } = useEditions("bestiario");
   const edizione: Edition = allowed.includes(chosenEdizione) ? chosenEdizione : allowed[0];
-  const monstersPart = usePart("bestiario", "mostri"), animalsPart = usePart("bestiario", "animali");
-  const categories = CATEGORIES.filter(c => c === "tutti" || (c === "mostri" ? monstersPart : animalsPart).shown);
-  const categoryLabel = (c: Category) => `${CATEGORY_LABEL[c]}${(c === "mostri" && monstersPart.hidden) || (c === "animali" && animalsPart.hidden) ? " · Nascosta" : ""}`;
+  const monstersPart = usePart("bestiario", "mostri"), animalsPart = usePart("bestiario", "animali"), homebrewPart = usePart("bestiario", "homebrew");
+  const parts = { mostri: monstersPart, animali: animalsPart, homebrew: homebrewPart };
+  const categories = CATEGORIES.filter(c => c === "tutti" || parts[c].shown);
+  const categoryLabel = (c: Category) => `${CATEGORY_LABEL[c]}${c !== "tutti" && parts[c].hidden ? " · Nascosta" : ""}`;
+  // A homebrew «Entrambe» is in both editions.
+  const collectionShown = (monster: MonsterListItem) => parts[collectionOf(monster)].shown;
   const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
 
-  const editionMonsters = useMemo(() => monsters.filter(monster => monster.edizione === edizione
-    && (isSrdAnimal(monster) ? animalsPart.shown : monstersPart.shown)), [monsters, edizione, animalsPart.shown, monstersPart.shown]);
+  const editionMonsters = useMemo(() => monsters.filter(monster => (monster.edizione === edizione || monster.entrambe)
+    && collectionShown(monster)), [monsters, edizione, animalsPart.shown, monstersPart.shown, homebrewPart.shown]); // eslint-disable-line react-hooks/exhaustive-deps
   const meta = useMemo(() => computeMonstersMeta(editionMonsters), [editionMonsters]);
   const searched = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
@@ -170,8 +179,8 @@ export function BestiarioBrowser({
         count={draftCount}
       >
         {draft && <>
-          {categories.length > 2 && <div data-part="bestiario:mostri"><div data-part="bestiario:animali"><FilterGroup title="Categoria" segmented options={categories} selected={[draft.categoria]} label={categoryLabel}
-            onToggle={categoria => setDraft({ ...draft, categoria })} /></div></div>}
+          {categories.length > 2 && <div data-part="bestiario:mostri"><div data-part="bestiario:animali"><div data-part="bestiario:homebrew"><FilterGroup title="Categoria" segmented options={categories} selected={[draft.categoria]} label={categoryLabel}
+            onToggle={categoria => setDraft({ ...draft, categoria })} /></div></div></div>}
           <FilterGroup title="Grado sfida" options={GS_BANDS} selected={draft.gs} label={band => BAND_LABEL[band]}
             onToggle={band => setDraft({ ...draft, gs: toggle(draft.gs, band, GS_BANDS) })} />
           <FilterGroup title="Tipo" options={meta.tipi} selected={draft.tipo}
@@ -183,6 +192,7 @@ export function BestiarioBrowser({
         </>}
       </FilterSheet>
 
+      {filters.categoria === "homebrew" && <HomebrewIntro />}
       <div className="px-6">
         <div className={`${pane ? "flex" : "grid grid-cols-[minmax(0,1.3fr)_48px_minmax(0,0.8fr)_44px]"} items-end gap-2 border-b-2 border-border-strong pb-2 pt-4 text-[12px] font-bold uppercase tracking-[0.06em] text-muted`}>
           <span role="status" className="whitespace-nowrap" aria-live="polite">{pane ? "" : "Nome · "}{results.length} {results.length === 1 ? "risultato" : "risultati"}</span>
@@ -241,6 +251,7 @@ const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle }: { mons
         <span className="min-w-0">
           <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{monster.nome}{monster.nascosta && <> <HiddenTag /></>}</span>
           <span className="block truncate text-[15px] text-muted">{monster.taglia}</span>
+          {monster.homebrew && <HomebrewLine monster={monster} />}
         </span>
         <span className="font-serif text-[21px] font-bold tabular-nums text-primary">{monster.grado_sfida || "—"}</span>
         <span className="truncate text-base text-foreground">{typeCategory(monster.tipo)}</span>
@@ -270,6 +281,7 @@ const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected }: { mo
         <span className="min-w-0">
           <span className="block truncate font-serif text-[19px] font-bold leading-tight text-foreground">{monster.nome}</span>
           <span className="block truncate text-[14px] text-muted">{typeCategory(monster.tipo)}</span>
+          {monster.homebrew && <HomebrewLine monster={monster} />}
           {monster.nascosta && <HiddenTag />}
         </span>
       </Link>
@@ -280,3 +292,29 @@ const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected }: { mo
     </div>
   );
 });
+
+/** The pills and the author of a homebrew row: «Homebrew», «2014 e 2024», «di <nickname>» or «del Grimorio». */
+function HomebrewLine({ monster }: { monster: MonsterListItem }) {
+  return (
+    <span className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+      <HomebrewPill />
+      {monster.entrambe && <BothEditionsPill />}
+      <span className="text-[13px] text-muted">{authorLine(monster.autore, "list")}</span>
+    </span>
+  );
+}
+
+/** At the top of the Homebrew collection: what it is, and the way to propose a creature. */
+function HomebrewIntro() {
+  return (
+    <div className="mx-6 mb-2 rounded-[12px] border-2 border-[#E0A21A] bg-card p-4">
+      <p className="flex gap-2 text-[15px] leading-6 text-foreground">
+        <FlaskConical size={20} className="mt-0.5 shrink-0 text-[#5C3F00]" aria-hidden="true" />
+        Creature create dai master della community. Non sono ufficiali e non fanno parte dell’SRD.
+      </p>
+      <Link href="/bestiario/proponi" className="mt-3 flex min-h-11 items-center justify-center rounded-[8px] bg-primary px-4 text-[15px] font-bold text-primary-foreground">
+        Proponi una creatura
+      </Link>
+    </div>
+  );
+}

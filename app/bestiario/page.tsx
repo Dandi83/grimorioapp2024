@@ -1,7 +1,7 @@
 import { BestiarioWithFilters } from "@/components/catalog-browsers";
 import { EmptyCard } from "@/components/layout/catalog-split";
 import { getMonsterListIndex } from "@/lib/monster-index";
-import { visibleCards } from "@/lib/section-view";
+import { bestiaryList, visibleCards } from "@/lib/section-view";
 
 export const revalidate = 300;
 
@@ -11,7 +11,7 @@ export const metadata = {
 
 export default async function BestiarioPage() {
   // Cards hidden with the eye of the admin area: out for the public, labelled for the administrator.
-  const monsters = await visibleCards("mostro", await getMonsterListIndex());
+  const monsters = await bestiaryList(await visibleCards("mostro", await getMonsterListIndex()));
 
   // Computer: the list is in the left column (components/layout/catalog-split.tsx), here the empty card.
   return (

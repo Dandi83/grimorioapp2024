@@ -99,10 +99,12 @@ function load(relative) {
   assert.equal(calls.length, 1);
   assert.deepEqual(await actions.setNotificationTypeAction('segnalazioni', false), {ok: true});
   assert.deepEqual(await actions.setNotificationTypeAction('inventato', false), {ok: false, error: 'Tipo di notifica sconosciuto.'});
-  assert.deepEqual(await push.notificationTypes(), {segnalazioni: false});
+  assert.deepEqual(await push.notificationTypes(), {segnalazioni: false, proposte: true});
   assert.deepEqual(await push.sendPush('segnalazioni', payload, {send}), {sent: 0, removed: 0, failed: 0, skipped: 'type-off'});
   await actions.setNotificationTypeAction('segnalazioni', true);
-  assert.deepEqual(push.NOTIFICATION_TYPES.map(t => [t.key, t.default]), [['segnalazioni', true]], 'Segnalazioni, on by default');
+  assert.deepEqual(push.NOTIFICATION_TYPES.map(t => [t.key, t.default]), [['segnalazioni', true], ['proposte', true]], 'Segnalazioni and Nuova proposta homebrew, on by default');
+  const proposal = push.proposalPayload({id: 'p1', nickname: 'Master Ombra', scheda: {nome: 'Drago di nebbia', grado_sfida: '5', edizione: 'entrambe'}}, 3);
+  assert.deepEqual(proposal, {title: 'Nuova proposta homebrew', body: 'Drago di nebbia · GS 5 · 2014 e 2024\ndi Master Ombra', url: '/admin/proposte', tag: 'proposta-p1', badge: 3});
 
   // Removal: by this device's address and by id from the list.
   assert.deepEqual(await actions.removeDeviceAction({endpoint: 'https://push.esempio.it/quattro'}), {ok: true});
@@ -122,6 +124,8 @@ function load(relative) {
     sendFeedbackEmail: async () => { emails++; return 'sent'; },
   };
   deps['@/lib/feedback-names'] = {pageName: async () => 'Palla di fuoco'};
+  // The badge counts new reports and homebrew proposals to review (lib/admin-badge.ts).
+  deps['@/lib/admin-badge'] = {adminBadgeCount: async () => 7};
   let pushed;
   deps['@/lib/push'] = {feedbackPayload: push.feedbackPayload, sendPush: async (type, body) => { pushes++; pushed = body; throw new Error('push service down'); }};
   const route = load('app/api/segnalazioni/route.ts');
@@ -133,7 +137,7 @@ function load(relative) {
   for (const fn of later) await fn();
   console.warn = warn;
   assert.equal(pushes, 1); assert.equal(emails, 1, 'the email is still sent');
-  assert.equal(pushed.badge, 7, 'the push carries the new reports for the badge');
+  assert.equal(pushed.badge, 7, 'the push carries the number for the badge');
   assert.deepEqual(warnings, ['[notifiche] Invio della notifica non riuscito.'], 'only a short warning: no key, address or text in the logs');
 
   await pg.close();

@@ -86,7 +86,8 @@ function Section({ title, html, legacy, hidden }: { title: string; html?: string
 }
 
 /** Title, edition label, 4 px rule and the italic type line. */
-export function MonsterSheetTitle({ monster, label, before }: { monster: Partial<Monster>; label?: ReactNode; before?: ReactNode }) {
+/** byline: the author line of a homebrew creature («Proposta da …»), under the type line. */
+export function MonsterSheetTitle({ monster, label, before, byline }: { monster: Partial<Monster>; label?: ReactNode; before?: ReactNode; byline?: ReactNode }) {
   const sottotitolo = monster.sottotitolo_fonte || [monster.taglia, monster.tipo, monster.allineamento].filter(Boolean).join(" · ");
   return (
     <header className="px-6">
@@ -102,6 +103,7 @@ export function MonsterSheetTitle({ monster, label, before }: { monster: Partial
         )}
       </div>
       {sottotitolo && <p className="mt-2 font-serif text-[19px] italic text-muted">{sottotitolo}</p>}
+      {byline && <p className="mt-1 text-[15px] text-muted">{byline}</p>}
     </header>
   );
 }

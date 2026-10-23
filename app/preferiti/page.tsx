@@ -1,6 +1,6 @@
 import { FavoritesList } from "@/components/favorites-list";
 import { getMonsterListIndex } from "@/lib/monster-index";
-import { isSrdAnimal } from "@/lib/monsters-types";
+import { collectionOf } from "@/lib/monsters-types";
 import { markedCards, partsOut, sectionView, sectionsOut } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
 
@@ -22,7 +22,7 @@ export default async function PreferitiPage() {
   return (
     <FavoritesList
       spells={await markedCards("incantesimo", parts.length ? spells.filter(spell => shown("incantesimi", spell.edizione ?? "2024")) : spells)}
-      monsters={await markedCards("mostro", parts.length ? monsters.filter(monster => shown("bestiario", monster.edizione) && shown("bestiario", isSrdAnimal(monster) ? "animali" : "mostri")) : monsters)}
+      monsters={await markedCards("mostro", parts.length ? monsters.filter(monster => (shown("bestiario", monster.edizione) || (!!monster.entrambe && shown("bestiario", "2014"))) && shown("bestiario", collectionOf(monster))) : monsters)}
       unavailable={!(await sectionView()).admin}
     />
   );

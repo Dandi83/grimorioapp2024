@@ -235,6 +235,49 @@ export const cardVisibilityLog = pgTable("grimorio_card_visibility_log", {
   creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Published homebrew creatures (lib/homebrew.ts): the plain-text draft, its edition and its author (null: the Grimorio). */
+export const homebrew = pgTable("grimorio_homebrew", {
+  id: text("id").primaryKey(),
+  scheda: jsonb("scheda").notNull(),
+  edizione: text("edizione").notNull(),
+  autore: text("autore"),
+  proposta_id: uuid("proposta_id"),
+  pubblicata_il: timestamp("pubblicata_il", { withTimezone: true }).notNull().defaultNow(),
+  aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Creatures proposed from /bestiario/proponi; the optional email is deleted at the decision. */
+export const homebrewProposals = pgTable("grimorio_homebrew_proposals", {
+  id: uuid("id").primaryKey(),
+  stato: text("stato").notNull().default("da-vedere"),
+  scheda: jsonb("scheda").notNull(),
+  nickname: text("nickname").notNull(),
+  email: text("email"),
+  originale: boolean("originale").notNull(),
+  autorizza: boolean("autorizza").notNull(),
+  impronta: text("impronta"),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+  decisa_il: timestamp("decisa_il", { withTimezone: true }),
+  motivo: text("motivo"),
+  homebrew_id: text("homebrew_id"),
+});
+
+/** Send limits of the proposals: salted hash of the address, one day. */
+export const homebrewLimits = pgTable("grimorio_homebrew_limits", {
+  device_hash: text("device_hash").notNull(),
+  sent_at: timestamp("sent_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Published, created, corrected, deleted, refused (shown in /admin/registro). */
+export const homebrewLog = pgTable("grimorio_homebrew_log", {
+  id: uuid("id").primaryKey(),
+  homebrew_id: text("homebrew_id").notNull(),
+  nome: text("nome").notNull(),
+  edizione: text("edizione").notNull(),
+  azione: text("azione").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
 /**
  * VAPID key pair of the admin push notifications (lib/push.ts), only when the server variables
  * VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY are not set: generated once, never sent to the browser.

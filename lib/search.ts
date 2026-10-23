@@ -71,3 +71,6 @@ export function search(index: SearchIndex, rows: SearchRow[], query: string, opt
 export function rowHref(row: SearchRow, chosen: string | null | undefined): string {
   return chosen === "2014" && row.href2014 ? row.href2014 : row.href;
 }
+
+/** First word of the label of a homebrew creature: the search panel shows it as the «Homebrew» pill. */
+export const HOMEBREW_LABEL = "Homebrew";

@@ -54,6 +54,8 @@ export const PUBLIC_SECTIONS = [
     ...editions("/bestiario"),
     { key: "mostri", title: "Raccolta Mostri", group: "raccolte", set: "raccolta", page: "/bestiario" },
     { key: "animali", title: "Raccolta Animali", group: "raccolte", set: "raccolta", page: "/bestiario" },
+    // Homebrew creatures and the form «Proponi una creatura» (/bestiario/proponi).
+    { key: "homebrew", title: "Raccolta Homebrew", group: "raccolte", set: "raccolta", page: "/bestiario" },
   ] },
   { key: "classi", title: "Classi", where: "Compendio · Personaggi", paths: ["/classi"], parts: [
     ...editions("/classi/mago"),

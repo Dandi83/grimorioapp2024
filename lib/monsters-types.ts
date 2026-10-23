@@ -1,6 +1,10 @@
 import animalIds from "./data/srd-animal-ids.json";
 const ANIMAL_IDS = new Set(animalIds);
 export function isSrdAnimal(monster: {id:string}) { return ANIMAL_IDS.has(monster.id); }
+/** The collection of a creature in the Bestiario: Mostri, Animali or Homebrew. */
+export function collectionOf(monster: {id:string; homebrew?: unknown}): "mostri" | "animali" | "homebrew" {
+  return monster.homebrew ? "homebrew" : ANIMAL_IDS.has(monster.id) ? "animali" : "mostri";
+}
 
 // Tipi e utility PURE per i mostri (nessun accesso al DB) — sicure sia lato
 // client che lato server.
@@ -54,6 +58,9 @@ export interface Monster {
   habitat?: string[];
   /** Sheet that exists only in the project files, not in the database. */
   solo_progetto?: boolean;
+  /** A homebrew creature (lib/homebrew.ts): its edition, and its author (null: made by the Grimorio). */
+  homebrew_edizione?: "2014" | "2024" | "entrambe";
+  homebrew_autore?: string | null;
 }
 
 export const SIZES = [
@@ -135,6 +142,11 @@ export type MonsterListItem = Pick<Monster, "id" | "nome" | "tipo" | "taglia" | 
   edizione: "2014" | "2024";
   /** Hidden from the public with the eye of the admin area: present only in the administrator's lists and in Preferiti. */
   nascosta?: true;
+  /** A homebrew creature: shown only in the «Homebrew» collection, with its author (null: «del Grimorio»). */
+  homebrew?: true;
+  autore?: string | null;
+  /** A homebrew for both editions: listed in 2014 and in 2024 (edizione is "2024", its format). */
+  entrambe?: true;
 };
 
 /** List rows carry only what the catalog shows and filters on, never the full sheet. */

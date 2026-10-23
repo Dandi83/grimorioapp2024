@@ -2,10 +2,11 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { BODY_MAX_BYTES, TYPE_LABELS, parseFeedback } from "@/lib/feedback-input";
 import { feedbackPayload, sendPush } from "@/lib/push";
 import {
-  checkFormToken, countNewFeedback, deviceKey, feedbackLimited, issueFormToken, markEmailSent,
+  checkFormToken, deviceKey, feedbackLimited, issueFormToken, markEmailSent,
   recordFeedbackSend, saveFeedback, sendFeedbackEmail, turnstilePassed,
 } from "@/lib/feedback";
 import { pageName } from "@/lib/feedback-names";
+import { adminBadgeCount } from "@/lib/admin-badge";
 
 // Anonymous reports from /segnala. Never cached, never handled by the service worker.
 export const dynamic = "force-dynamic";
@@ -60,8 +61,8 @@ export async function POST(request: NextRequest) {
     // Saved first; the email and the admin notification follow after the answer, and their failure
     // never reaches the visitor (the report stays saved).
     after(async () => {
-      // The number for the app icon badge travels with the notification (the new reports, this one included).
-      const [name, badge] = await Promise.all([pageName(report.percorso, report.edizione).catch(() => null), countNewFeedback().catch(() => null)]);
+      // The number for the app icon badge travels with the notification (new reports, this one included, and proposals).
+      const [name, badge] = await Promise.all([pageName(report.percorso, report.edizione).catch(() => null), adminBadgeCount().catch(() => null)]);
       const [result] = await Promise.all([
         sendFeedbackEmail(report, { origin, name }),
         sendPush("segnalazioni", feedbackPayload(report, TYPE_LABELS[report.tipo], name, badge)).catch(() => console.warn("[notifiche] Invio della notifica non riuscito.")),

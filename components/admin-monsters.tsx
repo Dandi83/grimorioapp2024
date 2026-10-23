@@ -6,6 +6,9 @@ import { useMemo, useState } from "react";
 import {
   deleteMonsterAction,
 } from "@/app/actions/admin-monsters";
+import { deleteHomebrewAction } from "@/app/actions/admin-homebrew";
+import { EditHomebrewDialog, NewHomebrewButton } from "./homebrew/admin-proposals";
+import type { HomebrewDraft } from "@/lib/homebrew-types";
 import type { Monster } from "@/lib/monsters-types";
 import { gsLabel, monsterColor, typeCategory } from "@/lib/monsters-types";
 import { Plus, Search } from "lucide-react";
@@ -20,7 +23,7 @@ type Editing =
   | { mode: "edit"; monster: Monster };
 
 /** hiddenIds: the creatures hidden from the site with the eye. */
-export function AdminMonsters({ monsters, edition, hiddenIds = [] }: { monsters: Monster[]; edition: AdminEdition; hiddenIds?: string[] }) {
+export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDrafts = {} }: { monsters: Monster[]; edition: AdminEdition; hiddenIds?: string[]; homebrewDrafts?: Record<string, HomebrewDraft> }) {
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Editing>({ mode: "closed" });
   const visibility = useCardVisibility("mostro", hiddenIds);
@@ -52,6 +55,7 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [] }: { monsters:
             className="w-full rounded-lg border border-border bg-background py-2.5 pl-10 pr-4 text-foreground outline-none focus:border-primary"
           />
         </div>
+        <NewHomebrewButton edition={edition} />
         <button
           type="button"
           onClick={() => setEditing({ mode: "create" })}
@@ -77,13 +81,13 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [] }: { monsters:
             }
             name={m.nome}
             meta={`${gsLabel(m.grado_sfida)} · ${typeCategory(m.tipo) || "—"}${m.taglia ? ` · ${m.taglia}` : ""}`}
-            origine={m.provenienza?.document ?? "Aggiunta da te"}
+            origine={m.homebrew_edizione ? `Homebrew${m.homebrew_edizione === "entrambe" ? " · 2014 e 2024" : ""}` : m.provenienza?.document ?? "Aggiunta da te"}
             href={`/mostro/${m.id}`}
             hidden={visibility.isHidden(m.id)}
             onToggleHidden={() => visibility.toggle(m.id, m.nome)}
             onEdit={() => setEditing({ mode: "edit", monster: m })}
             // Only creatures made or added here can be deleted: an SRD sheet stays (the server refuses it too).
-            remove={m.provenienza ? undefined : <DeleteButton id={m.id} nome={m.nome} />}
+            remove={m.provenienza ? undefined : <AdminDeleteButton id={m.id} nome={m.nome} action={m.homebrew_edizione ? deleteHomebrewAction : deleteMonsterAction} />}
           />
         ))}
         {filtered.length === 0 ? (
@@ -93,7 +97,9 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [] }: { monsters:
         ) : null}
       </ul>
 
-      {editing.mode !== "closed" ? (
+      {editing.mode === "edit" && homebrewDrafts[editing.monster.id] ? (
+        <EditHomebrewDialog id={editing.monster.id} nome={editing.monster.nome} draft={homebrewDrafts[editing.monster.id]} onClose={() => setEditing({ mode: "closed" })} />
+      ) : editing.mode !== "closed" ? (
         <MonsterEditor
           key={editing.mode === "edit" ? editing.monster.id : "create"}
           monster={editing.mode === "edit" ? editing.monster : null}
@@ -111,6 +117,3 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [] }: { monsters:
   );
 }
 
-function DeleteButton({ id, nome }: { id: string; nome: string }) {
-  return <AdminDeleteButton id={id} nome={nome} action={deleteMonsterAction} />;
-}

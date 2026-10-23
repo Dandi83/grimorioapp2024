@@ -1,0 +1,257 @@
+{
+ "metodo": "Mediane per grado di sfida di 652 creature SRD del catalogo (SRD 5.2.1 mostri e animali, SRD 5.1 mostri), calcolate da scripts/build-cr-reference.mjs con le funzioni di lib/homebrew-cr.ts.",
+ "righe": [
+  {
+   "gs": "0",
+   "n": 58,
+   "pf": 3,
+   "ca": 12,
+   "attacco": 2,
+   "cd": 10,
+   "danni": 0
+  },
+  {
+   "gs": "1/8",
+   "n": 38,
+   "pf": 9,
+   "ca": 12,
+   "attacco": 4,
+   "cd": 11,
+   "danni": 5
+  },
+  {
+   "gs": "1/4",
+   "n": 64,
+   "pf": 13,
+   "ca": 12,
+   "attacco": 4,
+   "cd": 11,
+   "danni": 6
+  },
+  {
+   "gs": "1/2",
+   "n": 60,
+   "pf": 22,
+   "ca": 12,
+   "attacco": 4,
+   "cd": 11,
+   "danni": 9
+  },
+  {
+   "gs": "1",
+   "n": 52,
+   "pf": 26,
+   "ca": 13,
+   "attacco": 5,
+   "cd": 11,
+   "danni": 10
+  },
+  {
+   "gs": "2",
+   "n": 83,
+   "pf": 45,
+   "ca": 13,
+   "attacco": 5,
+   "cd": 12,
+   "danni": 14
+  },
+  {
+   "gs": "3",
+   "n": 45,
+   "pf": 59,
+   "ca": 14,
+   "attacco": 5,
+   "cd": 12,
+   "danni": 21
+  },
+  {
+   "gs": "4",
+   "n": 27,
+   "pf": 78,
+   "ca": 14,
+   "attacco": 6,
+   "cd": 13,
+   "danni": 24
+  },
+  {
+   "gs": "5",
+   "n": 50,
+   "pf": 100,
+   "ca": 15,
+   "attacco": 7,
+   "cd": 15,
+   "danni": 28
+  },
+  {
+   "gs": "6",
+   "n": 21,
+   "pf": 114,
+   "ca": 15,
+   "attacco": 7,
+   "cd": 15,
+   "danni": 40
+  },
+  {
+   "gs": "7",
+   "n": 12,
+   "pf": 127,
+   "ca": 17,
+   "attacco": 7,
+   "cd": 14,
+   "danni": 44
+  },
+  {
+   "gs": "8",
+   "n": 20,
+   "pf": 136,
+   "ca": 15,
+   "attacco": 7,
+   "cd": 15,
+   "danni": 47
+  },
+  {
+   "gs": "9",
+   "n": 16,
+   "pf": 159,
+   "ca": 17,
+   "attacco": 10,
+   "cd": 16,
+   "danni": 52
+  },
+  {
+   "gs": "10",
+   "n": 12,
+   "pf": 178,
+   "ca": 18,
+   "attacco": 10,
+   "cd": 17,
+   "danni": 54
+  },
+  {
+   "gs": "11",
+   "n": 14,
+   "pf": 195,
+   "ca": 17,
+   "attacco": 10,
+   "cd": 17,
+   "danni": 50
+  },
+  {
+   "gs": "12",
+   "n": 4,
+   "pf": 162,
+   "ca": 18,
+   "attacco": 8,
+   "cd": 15,
+   "danni": 81
+  },
+  {
+   "gs": "13",
+   "n": 12,
+   "pf": 190,
+   "ca": 18,
+   "attacco": 11,
+   "cd": 18,
+   "danni": 54
+  },
+  {
+   "gs": "14",
+   "n": 6,
+   "pf": 190,
+   "ca": 18,
+   "attacco": 11,
+   "cd": 18,
+   "danni": 59
+  },
+  {
+   "gs": "15",
+   "n": 8,
+   "pf": 210,
+   "ca": 18,
+   "attacco": 11,
+   "cd": 19,
+   "danni": 62
+  },
+  {
+   "gs": "16",
+   "n": 10,
+   "pf": 218,
+   "ca": 19,
+   "attacco": 12,
+   "cd": 19,
+   "danni": 65
+  },
+  {
+   "gs": "17",
+   "n": 8,
+   "pf": 256,
+   "ca": 19,
+   "attacco": 14,
+   "cd": 21,
+   "danni": 61
+  },
+  {
+   "gs": "19",
+   "n": 2,
+   "pf": 275,
+   "ca": 19,
+   "attacco": 14,
+   "cd": 20,
+   "danni": 69
+  },
+  {
+   "gs": "20",
+   "n": 6,
+   "pf": 333,
+   "ca": 20,
+   "attacco": 14,
+   "cd": 21,
+   "danni": 75
+  },
+  {
+   "gs": "21",
+   "n": 8,
+   "pf": 333,
+   "ca": 21,
+   "attacco": 15,
+   "cd": 22,
+   "danni": 81
+  },
+  {
+   "gs": "22",
+   "n": 4,
+   "pf": 423,
+   "ca": 22,
+   "attacco": 16,
+   "cd": 23,
+   "danni": 82
+  },
+  {
+   "gs": "23",
+   "n": 6,
+   "pf": 481,
+   "ca": 22,
+   "attacco": 17,
+   "cd": 24,
+   "danni": 86
+  },
+  {
+   "gs": "24",
+   "n": 4,
+   "pf": 546,
+   "ca": 22,
+   "attacco": 17,
+   "cd": 24,
+   "danni": 88
+  },
+  {
+   "gs": "30",
+   "n": 2,
+   "pf": 687,
+   "ca": 25,
+   "attacco": 19,
+   "cd": 24,
+   "danni": 85
+  }
+ ]
+}

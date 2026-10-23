@@ -1,6 +1,7 @@
 import "server-only";
 import { unstable_cache } from "next/cache";
 import { getAllMonsters } from "./monsters";
+import { homebrewListItem, publishedHomebrew } from "./homebrew";
 import { toMonsterListItem, type MonsterListItem } from "./monsters-types";
 import { previewMonsters, usesLegacyMonsterRules } from "./srd-monsters";
 import habitats from "./data/habitat-mostri.json";
@@ -22,9 +23,15 @@ function projectCatalogVersion(): string {
 
 // Keep the complete existing catalog, including administrative and virtual rows.
 // Admin saves invalidate the "monsters" tag; the hour is only a safety net.
+// Homebrew creatures (lib/homebrew.ts) follow the SRD ones; before the first one the list is the SRD catalog alone.
 export const getMonsterListIndex = unstable_cache(
-  async (): Promise<MonsterListItem[]> => (await getAllMonsters()).map(monster =>
-    toMonsterListItem({ ...monster, edizione: usesLegacyMonsterRules(monster) ? "2014" : "2024" })),
+  async (): Promise<MonsterListItem[]> => {
+    const [monsters, homebrew] = await Promise.all([getAllMonsters(), publishedHomebrew()]);
+    return [
+      ...monsters.map(monster => toMonsterListItem({ ...monster, edizione: usesLegacyMonsterRules(monster) ? "2014" : "2024" })),
+      ...homebrew.map(homebrewListItem),
+    ];
+  },
   ["monster-list-index", process.env.VERCEL_ENV ?? "local", projectCatalogVersion()],
   { tags: ["monsters"], revalidate: 3600 },
 );

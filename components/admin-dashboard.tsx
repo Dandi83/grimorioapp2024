@@ -17,6 +17,7 @@ import { spellName } from "@/lib/spell-name";
 import { SpellEditor } from "./admin-spell-editor";
 import { AdminDeleteButton } from "./admin-delete-button";
 import type { AdminEdition } from "@/lib/admin-edition";
+import type { HomebrewDraft } from "@/lib/homebrew-types";
 import {
   BookOpen,
   Skull,
@@ -38,12 +39,15 @@ export function AdminDashboard({
   edition,
   hiddenSpells = [],
   hiddenMonsters = [],
+  homebrewDrafts = {},
 }: {
   spells: Spell[];
   monsters: Monster[];
   /** Ids of the cards hidden from the site with the eye. */
   hiddenSpells?: string[];
   hiddenMonsters?: string[];
+  /** Plain drafts of the homebrew creatures of the list, for their guided editor. */
+  homebrewDrafts?: Record<string, HomebrewDraft>;
   initialTab?: "spells" | "monsters";
   /** The edition of the admin area: the lists hold only its cards. */
   edition: AdminEdition;
@@ -118,7 +122,7 @@ export function AdminDashboard({
       </div>
 
       {tab === "monsters" ? (
-        <AdminMonsters monsters={monsters} edition={edition} hiddenIds={hiddenMonsters} />
+        <AdminMonsters monsters={monsters} edition={edition} hiddenIds={hiddenMonsters} homebrewDrafts={homebrewDrafts} />
       ) : (
       <>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">

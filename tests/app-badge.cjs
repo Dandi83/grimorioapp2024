@@ -61,11 +61,14 @@ function load(relative) {
   let admin = false;
   deps['@/lib/admin-auth'] = {isAdmin: async () => admin};
   deps['@/lib/feedback'] = {countNewFeedback: async () => 5};
+  // Homebrew proposals still to review count too (lib/admin-badge.ts).
+  deps['./feedback'] = deps['@/lib/feedback'];
+  deps['./homebrew'] = {countProposalsToReview: async () => 2};
   deps['next/server'] = {NextResponse: {json: (value, init) => ({value, status: init?.status ?? 200, headers: init?.headers})}};
   const route = load('app/api/admin/badge/route.ts');
   assert.deepEqual(await route.GET(), {value: {error: 'Non autorizzato'}, status: 401, headers: {'Cache-Control': 'no-store'}}, 'visitors get no number');
   admin = true;
-  assert.deepEqual(await route.GET(), {value: {count: 5}, status: 200, headers: {'Cache-Control': 'no-store'}});
+  assert.deepEqual(await route.GET(), {value: {count: 7}, status: 200, headers: {'Cache-Control': 'no-store'}}, '5 new reports + 2 proposals');
 
   // The page side asks only on devices subscribed to the admin notifications.
   const sync = fs.readFileSync('components/app-badge-sync.tsx', 'utf8');
@@ -73,5 +76,5 @@ function load(relative) {
   assert.match(sync, /visibilitychange/, 'realigned when the app comes back to the front');
 
   await pg.close();
-  console.log('App badge: new reports counted, down when read, archived or deleted, cleared at 0, nothing without the Badging API, number for the administrator only.');
+  console.log('App badge: new reports and homebrew proposals counted, down when read, archived or deleted, cleared at 0, nothing without the Badging API, number for the administrator only.');
 })().catch(error => { console.error(error); process.exit(1); });
