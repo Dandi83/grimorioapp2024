@@ -856,7 +856,8 @@ test("reports: Segnala from a card with its edition, without email, invalid emai
   await expect(rows).toHaveCount(2);
   await expect(rows.first()).toContainText("Una modalità per giocare la sera");
   await expect(rows.first()).toContainText("Consiglio");
-  await expect(rows.nth(1)).toContainText("Spada lunga (2014)");
+  await expect(rows.nth(1)).toContainText("Spada lunga");
+  await expect(rows.nth(1).getByTestId("edition-chip")).toHaveText("Edizione 2014");
   await expect(page.getByText("Compra ora")).toHaveCount(0);
   await expect(rows.first().getByText("Email di avviso non inviata")).toBeVisible();
   // Filters.
@@ -947,13 +948,15 @@ test("admin corrections: tiles, weapons list per edition, edit with reason, publ
   await expect(page.getByRole("tab", { name: "Mostri" })).toHaveAttribute("aria-selected", "true");
   await page.goto("/admin");
   await tiles.getByRole("link", { name: /^Armi/ }).click();
-  // Weapons list: 2014 selector and search.
-  await page.getByRole("navigation", { name: "Edizione" }).getByRole("link", { name: "2014" }).click();
-  await expect(page).toHaveURL(/edizione=2014/);
+  // Weapons list: the 2014 edition from the switch of the admin area, and search.
+  const adminEdition = page.getByRole("group", { name: "Edizione dell’area riservata" });
+  await adminEdition.getByRole("button", { name: "2014" }).click();
+  await expect(page.getByText("Stai modificando: edizione 2014")).toBeVisible();
   await page.getByRole("searchbox", { name: "Cerca una scheda" }).fill("trid");
   await expect(page.locator("main ul li")).toHaveCount(1);
   await page.getByRole("searchbox", { name: "Cerca una scheda" }).fill("");
-  await page.getByRole("navigation", { name: "Edizione" }).getByRole("link", { name: "2024" }).click();
+  await adminEdition.getByRole("button", { name: "2024" }).click();
+  await expect(page.getByText("Stai modificando: edizione 2024")).toBeVisible();
   await page.getByRole("link", { name: /^Tridente/ }).click();
   await expect(page.getByRole("heading", { name: "Tridente (2024)" })).toBeVisible();
   // Edit: invalid values and missing reason are refused before saving.
@@ -1080,14 +1083,134 @@ test("admin corrections in every section: armor, magic item text, condition titl
   await expect(page.getByText("Nessuna modifica.")).toBeVisible();
   await page.goto("/spell/dardo-incantato");
   await expect(page.getByText(before).first()).toBeVisible();
-  // Clean up the corrections for the next tests.
-  await page.goto("/admin/registro");
+  // Clean up the corrections for the next tests (all editions: the armor is a 2014 card).
+  await page.goto("/admin/registro?edizioni=tutte");
   for (let i = 0; i < 3; i++) {
     page.once("dialog", dialog => dialog.accept());
     await page.getByRole("list", { name: "Modifiche" }).getByRole("button", { name: "Annulla modifica" }).first().click();
     await expect(page.getByRole("list", { name: "Modifiche" }).getByRole("listitem")).toHaveCount(2 - i, { timeout: 10000 }).catch(() => undefined);
   }
   await expect(page.getByText("Nessuna modifica.")).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test("admin area by edition: switch remembered, band, counts and lists of the edition, confirmed move, link of the other edition, log, shared pages, narrow phones", async ({ page }) => {
+  test.setTimeout(180_000);
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(String(error)));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/admin");
+  await expect(page.getByRole("group", { name: "Edizione dell’area riservata" })).toHaveCount(0);
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  const editions = page.getByRole("group", { name: "Edizione dell’area riservata" });
+  const band = page.getByTestId("admin-edition-band");
+  // 2024 by default: bordeaux band.
+  await expect(editions.getByRole("button", { name: "2024" })).toHaveAttribute("aria-pressed", "true");
+  await expect(band).toHaveText("Stai modificando: edizione 2024");
+  await expect(band).toHaveCSS("background-color", "rgb(122, 31, 43)");
+  await expect(band).toHaveCSS("color", "rgb(255, 251, 240)");
+  const tiles = page.getByRole("navigation", { name: "Sezioni da modificare" });
+  const tileCount = async name => Number((await tiles.getByRole("link", { name: new RegExp(`^${name} · \\d+`) }).innerText()).match(new RegExp(`^${name} · (\\d+)`))[1]);
+  // Each tile counts the entries of the edition and opens the list with the same number.
+  const check = async (edition) => {
+    for (const [name, key] of [["Armi", "armi"], ["Oggetti magici", "oggetti-magici"], ["Condizioni", "condizioni"]]) {
+      await page.goto("/admin");
+      const n = await tileCount(name);
+      await tiles.getByRole("link", { name: new RegExp(`^${name}`) }).click();
+      await expect(page).toHaveURL(new RegExp(`/admin/contenuti/${key}$`));
+      await expect(band).toHaveText(`Stai modificando: edizione ${edition}`);
+      await expect(page.locator("main ul li")).toHaveCount(n);
+    }
+    await page.goto("/admin");
+    const spells = await tileCount("Incantesimi");
+    await page.goto("/admin/incantesimi");
+    await expect(page.getByText(new RegExp(`^Edizione ${edition}: ${spells} incantesimi · \\d+ mostri$`))).toBeVisible();
+    // Only cards of the edition (their label says so).
+    const labels = await page.getByRole("combobox", { name: /^Edizione di / }).evaluateAll(list => list.map(select => select.value));
+    expect(labels.filter(value => value === (edition === "2024" ? "2014" : "2024"))).toEqual([]);
+  };
+  await check("2024");
+  // 2014: blue band, other counts; remembered after a reload, in an admin-only cookie.
+  await page.goto("/admin");
+  await editions.getByRole("button", { name: "2014" }).click();
+  await expect(band).toHaveText("Stai modificando: edizione 2014");
+  await expect(band).toHaveCSS("background-color", "rgb(45, 76, 122)");
+  await page.reload();
+  await expect(editions.getByRole("button", { name: "2014" })).toHaveAttribute("aria-pressed", "true");
+  const cookie = (await page.context().cookies()).find(c => c.name === "__Host-grimorio_admin_edizione");
+  expect([cookie?.value, cookie?.httpOnly]).toEqual(["2014", true]);
+  await expect(tiles.getByRole("link", { name: /^Manuale/ })).toContainText("Solo edizione 2024");
+  await check("2014");
+  await page.goto("/admin/contenuti/manuale");
+  await expect(page.getByText("Manuale ha solo l’edizione 2024")).toBeVisible();
+  // A card of the other edition from a direct link: said so, one tap switches.
+  await page.goto("/admin/contenuti/armi/tridente?edizione=2024");
+  await expect(page.getByTestId("edition-chip").first()).toHaveText("Edizione 2024");
+  await expect(page.getByText("Questa voce è dell’edizione 2024, ma stai modificando l’edizione 2014.")).toBeVisible();
+  await page.getByRole("button", { name: "Passa all’edizione 2024" }).click();
+  await expect(band).toHaveText("Stai modificando: edizione 2024");
+  await expect(page.getByText(/Questa voce è dell’edizione/)).toHaveCount(0);
+  // Moving one card to the other edition asks first; «Annulla» changes nothing.
+  await page.goto("/admin/incantesimi");
+  await page.getByPlaceholder("Cerca per nome o scuola…").fill("dardo incantato");
+  const row = page.locator("main ul li").filter({ hasText: "Dardo incantato" }).first();
+  await row.getByRole("combobox", { name: /^Edizione di / }).selectOption("2014");
+  let asked = "";
+  page.once("dialog", dialog => { asked = dialog.message(); dialog.dismiss(); });
+  await row.getByRole("button", { name: /^Salva etichetta/ }).click();
+  await expect.poll(() => asked).toBe("Spostare questa scheda nell’edizione 2014?");
+  await expect(page.getByText("Etichetta salvata.")).toHaveCount(0);
+  await page.reload();
+  await page.getByPlaceholder("Cerca per nome o scuola…").fill("dardo incantato");
+  await expect(page.locator("main ul li").filter({ hasText: "Dardo incantato" }).first()).toBeVisible();
+  // Log: one 2024 and one 2014 correction; each edition sees its own, «Tutte le edizioni» both.
+  const save = async (url, fill, reason) => {
+    await page.goto(url);
+    await fill();
+    await page.getByLabel("Motivo della modifica (obbligatorio)").fill(reason);
+    page.once("dialog", dialog => dialog.accept());
+    await page.getByRole("button", { name: "Salva modifica" }).click();
+    await expect(page.getByText(/^Salvato:/)).toBeVisible();
+  };
+  await save("/admin/contenuti/armi/tridente?edizione=2024", () => page.getByLabel("Peso", { exact: true }).fill("3 kg"), "Prova edizioni 2024");
+  await save("/admin/contenuti/armature/cuoio?edizione=2014", () => page.getByLabel("Peso", { exact: true }).fill("4,5 kg"), "Prova edizioni 2014");
+  const log = page.getByRole("list", { name: "Modifiche" });
+  await page.goto("/admin/registro");
+  await expect(band).toHaveText("Stai modificando: edizione 2024");
+  await expect(log.getByText("Prova edizioni 2024")).toBeVisible();
+  await expect(log.getByText("Prova edizioni 2014")).toHaveCount(0);
+  await page.getByRole("link", { name: "Tutte le edizioni" }).click();
+  await expect(log.getByText(/^Prova edizioni 20\d\d$/)).toHaveCount(2);
+  await editions.getByRole("button", { name: "2014" }).click();
+  await page.getByRole("link", { name: "Solo edizione 2014" }).click();
+  await expect(log.getByText("Prova edizioni 2014")).toBeVisible();
+  await expect(log.getByText("Prova edizioni 2024")).toHaveCount(0);
+  await page.goto("/admin/registro?edizioni=tutte");
+  for (let i = 2; i > 0; i--) {
+    page.once("dialog", dialog => dialog.accept());
+    await log.getByRole("button", { name: "Annulla modifica" }).first().click();
+    if (i > 1) await expect(log.getByRole("listitem")).toHaveCount(i - 1);
+  }
+  await expect(page.getByText("Nessuna modifica.")).toBeVisible();
+  // Shared pages: the switch stays, no band, «Comune alle due edizioni».
+  for (const url of ["/admin/segnalazioni", "/admin/notifiche", "/admin/statistiche", "/admin/sezioni"]) {
+    await page.goto(url);
+    await expect(page.getByText("Comune alle due edizioni"), url).toBeVisible();
+    await expect(band, url).toHaveCount(0);
+    await expect(editions, url).toBeVisible();
+  }
+  // Narrow phones: no horizontal scroll, buttons of at least 44 px.
+  for (const url of ["/admin", "/admin/contenuti/armi", "/admin/registro", "/admin/incantesimi", "/admin/segnalazioni", "/admin/contenuti/armi/tridente?edizione=2024"]) {
+    await page.goto(url);
+    for (const width of [360, 375, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth), `${url} ${width}`).toBeLessThanOrEqual(width);
+      for (const button of await editions.getByRole("button").all()) expect((await button.boundingBox()).height, `${url} ${width}`).toBeGreaterThanOrEqual(44);
+    }
+  }
   expect(errors).toEqual([]);
 });
 

@@ -4,12 +4,17 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { setContentEditionAction } from "@/app/actions/admin-editions";
 
-export function AdminEditionPicker({ kind, id, name, edition }: {
+export function AdminEditionPicker({ kind, id, name, edition, listEdition }: {
   kind: "monster" | "spell"; id: string; name: string; edition?: "2014" | "2024";
+  /** The edition of the list: moving the card to the other one makes it leave the list, so it is confirmed first. */
+  listEdition: "2014" | "2024";
 }) {
   const [result, action] = useActionState(setContentEditionAction, null);
   return (
-    <form action={action} className="mt-2 flex flex-wrap items-center gap-2">
+    <form action={action} className="mt-2 flex flex-wrap items-center gap-2" onSubmit={event => {
+      const chosen = new FormData(event.currentTarget).get("edition");
+      if ((chosen === "2014" || chosen === "2024") && chosen !== listEdition && !confirm(`Spostare questa scheda nell’edizione ${chosen}?`)) event.preventDefault();
+    }}>
       <input type="hidden" name="kind" value={kind} />
       <input type="hidden" name="id" value={id} />
       <PickerFields name={name} edition={edition} />

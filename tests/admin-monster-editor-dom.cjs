@@ -46,7 +46,7 @@ const button=text=>[...document.querySelectorAll('button')].find(b=>b.textConten
 const input=async(el,value)=>{await act(async()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new InputEvent('input',{bubbles:true}))})};
 const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal(el?.tagName,'SELECT',`${id} must offer a native dropdown`);await act(async()=>{el.value=value;el.dispatchEvent(new Event('change',{bubbles:true}))})};
 (async()=>{
- await act(async()=>root.render(React.createElement(MonsterEditor,{monster:null,onClose:()=>closed++})));
+ await act(async()=>root.render(React.createElement(MonsterEditor,{edition:'2024',monster:null,onClose:()=>closed++})));
  await input(document.getElementById('nome'),'Guardiano di prova');
  assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D5e 2024','D&D5e 2014']);
  await choose('edition','2024');
@@ -129,17 +129,21 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.ok(new FormData(document.querySelector('form')).get('azioni').includes('<br><br>Testo'));
  // Source editing opens without rewriting imported content.
  const lich=requireProject('./lib/data/srd-monsters-5.2.1-it.json').records.find(r=>r.monster.id==='lich').monster;
- await act(async()=>root.render(React.createElement(MonsterEditor,{key:'lich',monster:lich,onClose:()=>closed++})));
+ await act(async()=>root.render(React.createElement(MonsterEditor,{edition:'2024',key:'lich',monster:lich,onClose:()=>closed++})));
  for(const field of ['tratti','azioni','azioni_bonus','reazioni','azioni_leggendarie','descrizione','iniziativa','bonus_competenza','attrezzatura','immunita','sottotitolo_fonte'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',field);
  for(const field of ['tipo','taglia','allineamento','grado_sfida','velocita','resistenze','immunita_condizioni','sensi','linguaggi'])assert.equal(new FormData(document.querySelector('form')).get(field),lich[field]||'',`unchanged ${field}`);
  assert.equal(document.getElementById('tipo-custom').value,'Non morto (mago)','existing subtypes remain editable without truncation');
- await act(async()=>root.render(React.createElement(MonsterEditor,{key:'lich-habitat',monster:{...lich,habitat:['Sottosuolo'],solo_progetto:true},onClose:()=>closed++})));
+ await act(async()=>root.render(React.createElement(MonsterEditor,{edition:'2024',key:'lich-habitat',monster:{...lich,habitat:['Sottosuolo'],solo_progetto:true},onClose:()=>closed++})));
  assert.deepEqual(new FormData(document.querySelector('form')).getAll('habitat'),['Sottosuolo'],'saved habitats start ticked');
  assert.ok(document.querySelector('dialog').textContent.includes('il salvataggio aggiorna solo habitat ed etichetta'),'project sheets say what is saved');
  await choose('edition','2014');
  await click(button('Anteprima'));
  assert.equal(document.querySelector('article [data-monster-provenance]').textContent,'2014','preview shows the 2014 edition label');
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,0,'preview uses selected edition');
+ // Admin area on 2014: a new creature starts in 2014 and the editor says which edition it edits.
+ await act(async()=>root.render(React.createElement(MonsterEditor,{key:'new-2014',edition:'2014',monster:null,onClose:()=>closed++})));
+ assert.equal(document.getElementById('edition').value,'2014','a new card starts in the edition of the admin area');
+ assert.equal(document.querySelector('[data-testid="edition-chip"]').textContent,'Edizione 2014');
  await act(async()=>root.unmount());
  console.log('DOM interactions: named blocks, body formatting, ability modifiers, preview with links and no writes, return-to-form, failed-save draft retention, clear formatting, exact existing-source submission passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

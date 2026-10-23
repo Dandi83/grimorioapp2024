@@ -5,12 +5,17 @@ import { logoutAction } from "@/app/actions/admin";
 import { AdminLogin } from "@/components/admin-login";
 import { AdminPublicLink } from "@/components/admin-public-link";
 import { isAdmin } from "@/lib/admin-auth";
+import { spellEdition } from "@/lib/admin-edition";
+import { adminEdition } from "@/lib/admin-edition-server";
 import { CONTENT_SECTIONS } from "@/lib/content-sections";
 import { allOverrides } from "@/lib/content-overrides";
 import { countNewFeedback } from "@/lib/feedback";
 import { PUBLIC_SECTIONS, effectiveHidden, type PublicSectionKey } from "@/lib/public-sections";
 import { hiddenPartIds, sectionStates } from "@/lib/section-visibility";
 import { listDevices } from "@/lib/push";
+import { getAllMonsters } from "@/lib/monsters";
+import { getAllSpells } from "@/lib/spells";
+import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 
 export const dynamic = "force-dynamic";
 
@@ -51,14 +56,14 @@ const LINKS: [string, string, LucideIcon][] = [
 
 type TileState = "nascosta" | "parti" | undefined;
 
-function Tile({ href, title, hint, count, icon, hidden }: { href?: string; title: string; hint: string; count?: number; icon?: string; hidden?: TileState }) {
+function Tile({ href, title, hint, count, items, icon, hidden }: { href?: string; title: string; hint: string; count?: number; items?: number | null; icon?: string; hidden?: TileState }) {
   const Icon = icon ? TILE_ICONS[icon]?.Icon : undefined;
   const body = (
     <>
       <span className="flex items-start justify-between gap-2">
         <span className="flex min-w-0 items-center gap-2">
           {Icon && <Icon size={24} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />}
-          <span className="font-serif text-xl font-bold text-primary">{title}</span>
+          <span className="font-serif text-xl font-bold text-primary">{title}{typeof items === "number" && <span className="tabular-nums"> · {items}</span>}</span>
         </span>
         <span className="flex shrink-0 items-center gap-1">
           {hidden === "nascosta" && <span className="rounded-[6px] bg-[#2B2118] px-1.5 text-[11px] font-bold leading-4 text-[#E0A21A]">Nascosta</span>}
@@ -81,7 +86,15 @@ export default async function AdminPage() {
   const [newReports, overrides, states, parts] = await Promise.all([
     countNewFeedback().catch(() => null), allOverrides().catch(() => null), sectionStates().catch(() => null), hiddenPartIds().catch(() => [] as string[]),
   ]);
-  const devices = await listDevices().then(list => list.length).catch(() => null);
+  const edition = await adminEdition();
+  const [devices, spells, monsters] = await Promise.all([
+    listDevices().then(list => list.length).catch(() => null),
+    getAllSpells({ includePreview: false }).catch(() => null),
+    getAllMonsters().catch(() => null),
+  ]);
+  // Entries of the chosen edition: the same rule as the lists they open (and as the public site).
+  const spellCount = spells?.filter(spell => spellEdition(spell) === edition).length ?? null;
+  const monsterCount = monsters?.filter(monster => (usesLegacyMonsterRules(monster) ? "2014" : "2024") === edition).length ?? null;
   // On the tiles: «Nascosta» for the sections hidden from the public (also through all their editions or
   // blocks), «Parti nascoste» when only some parts are (/admin/sezioni).
   const hiddenSections = effectiveHidden(states ? PUBLIC_SECTIONS.filter(section => states[section.key]).map(section => section.key) : [], parts);
@@ -91,7 +104,7 @@ export default async function AdminPage() {
     if (hiddenSections.includes(section)) return "nascosta";
     return parts.some(id => id.startsWith(`${section}:`)) ? "parti" : undefined;
   };
-  const active = overrides?.filter(row => !row.annullata_il) ?? [];
+  const active = overrides?.filter(row => !row.annullata_il && row.edizione === edition) ?? [];
   const perSection = (key: string) => active.filter(row => row.sezione === key).length;
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
@@ -120,9 +133,13 @@ export default async function AdminPage() {
         </span>
       </Link>
       <nav aria-label="Sezioni da modificare" className="grid grid-cols-2 gap-2.5">
-        <Tile href="/admin/incantesimi" title="Incantesimi" hint="Modifica testi e dati" icon="incantesimi" hidden={tileState("incantesimi")} />
-        <Tile href="/admin/mostri" title="Mostri" hint="Modifica schede" icon="mostri" hidden={tileState("mostri")} />
-        {CONTENT_SECTIONS.map(section => <Tile key={section.key} href={`/admin/contenuti/${section.key}`} title={section.title} hint={section.hint} count={perSection(section.key)} icon={section.key} hidden={tileState(section.key)} />)}
+        <Tile href="/admin/incantesimi" title="Incantesimi" items={spellCount} hint="Modifica testi e dati" icon="incantesimi" hidden={tileState("incantesimi")} />
+        <Tile href="/admin/mostri" title="Mostri" items={monsterCount} hint="Modifica schede" icon="mostri" hidden={tileState("mostri")} />
+        {CONTENT_SECTIONS.map(section => {
+          const has = section.editions.includes(edition);
+          return <Tile key={section.key} href={`/admin/contenuti/${section.key}`} title={section.title} items={has ? section.items(edition).length : undefined}
+            hint={has ? section.hint : `Solo edizione ${section.editions.join(" e ")}`} count={perSection(section.key)} icon={section.key} hidden={tileState(section.key)} />;
+        })}
         {COMING.filter(item => !CONTENT_SECTIONS.some(section => section.title === item.title)).map(item => <Tile key={item.title} title={item.title} hint={item.hint} />)}
       </nav>
       <nav aria-label="Altro" className="flex flex-wrap gap-2">
