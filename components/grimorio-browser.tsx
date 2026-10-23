@@ -7,6 +7,7 @@ import { FileText, Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { spellName } from "@/lib/spell-name";
 import { saveListState } from "@/components/navigation-memory";
+import { HiddenTag } from "@/components/sections/hidden-tag";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useEditions } from "@/components/sections/parts-context";
@@ -232,7 +233,7 @@ const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected =
   return (
     <div className={`flex min-h-[62px] items-center gap-2 border-b border-divider${selected ? " -mx-3 rounded-[10px] bg-primary-faint px-3 shadow-[inset_3px_0_0_var(--color-primary)]" : ""}`}>
       <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="min-w-0 flex-1 py-2.5">
-        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{spellName(spell.nome_italiano, spell.edizione)}</span>
+        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{spellName(spell.nome_italiano, spell.edizione)}{spell.nascosta && <> <HiddenTag /></>}</span>
         {details && <span className="block text-[15px] text-muted">{details}</span>}
         {(spell.concentrazione || spell.rituale) && (
           <span className="mt-1 flex flex-wrap gap-1.5">

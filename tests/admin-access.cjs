@@ -175,9 +175,50 @@ function load(relative) {
   assert.equal(partLog.length,10,'one log row per part switch');
   assert.ok(partLog.every(row=>row.sezione&&row.parte&&typeof row.nascosta==='boolean'&&row.creata_il));
   assert.equal((await pg.query("SELECT count(*)::int AS n FROM grimorio_section_parts")).rows[0].n,5,'one record per part');
+  // Single cards (the eye of /admin/incantesimi and /admin/mostri): checked against the catalog, state only, logged.
+  deps['@/lib/spell-index'] = {getSpellIndex:async()=>[
+    {id:'palla-di-fuoco',nome_italiano:'PALLA DI FUOCO',livello_num:3,scuola:'Invocazione',classi:[]},
+    {id:'allarme-2014',nome_italiano:'Allarme',livello_num:1,scuola:'Abiurazione',classi:[],edizione:'2014'},
+  ]};
+  deps['@/lib/monster-index'] = {getMonsterListIndex:async()=>[{id:'aboleth',nome:'Aboleth',tipo:'Aberrazione',taglia:'Grande',grado_sfida:'10',gs_num:10,edizione:'2024'}]};
+  const cards = load('app/actions/admin-cards.ts');
+  jar.clear(); draft.on = false;
+  await assert.rejects(cards.setCardVisibilityAction('incantesimo','palla-di-fuoco',true),/Non autorizzato/,'no public request can hide a card');
+  assert.deepEqual((await visibility.visibilityState()).cards,[],'every card is visible by default');
+  assert.equal((await attempt('passcode-di-prova','203.0.113.62')).ok,true);
+  assert.deepEqual(await cards.setCardVisibilityAction('incantesimo','inventata',true),{ok:false,error:'Scheda sconosciuta.'},'no invented ids');
+  assert.deepEqual(await cards.setCardVisibilityAction('oggetto','palla-di-fuoco',true),{ok:false,error:'Scheda sconosciuta.'});
+  assert.deepEqual(await cards.setCardVisibilityAction('mostro','palla-di-fuoco',true),{ok:false,error:'Scheda sconosciuta.'},'a spell id is not a creature');
+  draft.on = false;
+  assert.deepEqual(await cards.setCardVisibilityAction('incantesimo','palla-di-fuoco',true),{ok:true,hidden:true});
+  assert.equal(draft.on,true,'a switch turns on the preview for the administrator');
+  assert.deepEqual(await cards.setCardVisibilityAction('incantesimo','palla-di-fuoco',true),{ok:true,hidden:true},'the same state twice logs nothing');
+  assert.deepEqual(await cards.setCardVisibilityAction('incantesimo','allarme-2014',true),{ok:true,hidden:true},'a 2014 card read from the SRD file');
+  assert.deepEqual(await cards.setCardVisibilityAction('mostro','aboleth',true),{ok:true,hidden:true});
+  assert.deepEqual((await visibility.visibilityState()).cards,['/mostro/aboleth','/spell/allarme-2014','/spell/palla-di-fuoco']);
+  assert.deepEqual(await visibility.hiddenCardPaths(),['/mostro/aboleth','/spell/allarme-2014','/spell/palla-di-fuoco']);
+  // «Annulla» and «Mostra»: the same action back.
+  assert.deepEqual(await cards.setCardVisibilityAction('incantesimo','palla-di-fuoco',false),{ok:true,hidden:false});
+  const showCard = new FormData(); showCard.set('tipo','mostro'); showCard.set('scheda','aboleth');
+  await cards.showCardAction(showCard);
+  assert.deepEqual((await visibility.visibilityState()).cards,['/spell/allarme-2014']);
+  const cardLog = await visibility.allCardLog();
+  assert.deepEqual(cardLog.map(row=>[row.tipo,row.scheda,row.nome,row.edizione,row.nascosta]).sort(),[
+    ['incantesimo','allarme-2014','Allarme','2014',true],
+    ['incantesimo','palla-di-fuoco','Palla di fuoco','2024',false],
+    ['incantesimo','palla-di-fuoco','Palla di fuoco','2024',true],
+    ['mostro','aboleth','Aboleth','2024',false],
+    ['mostro','aboleth','Aboleth','2024',true],
+  ],'one log row per change, with the name and edition of the card');
+  assert.ok(cardLog.every(row=>row.creata_il&&row.autore==='amministratore'));
+  assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_card_visibility')).rows[0].n,3,'one record per card, state only');
+  jar.clear();
+  await assert.rejects(cards.showCardAction(showCard),/Non autorizzato/,'«Mostra» needs the login too');
+  assert.equal((await attempt('passcode-di-prova','203.0.113.63')).ok,true);
+  await cards.setCardVisibilityAction('incantesimo','allarme-2014',false);
   await load('app/actions/admin.ts').logoutAction();
   assert.equal(draft.on,false,'logout turns the preview off');
   global.setTimeout = originalTimeout;
 
-  console.log('Admin access: signed 7-day __Host- sessions revoked at logout, server expiry, old/forged/changed-passcode cookies refused, login limited per address and overall, hashed addresses, fail-closed counter; sections shown/hidden only by the administrator, logged, parts too, preview on at login and off at logout.');
+  console.log('Admin access: signed 7-day __Host- sessions revoked at logout, server expiry, old/forged/changed-passcode cookies refused, login limited per address and overall, hashed addresses, fail-closed counter; sections shown/hidden only by the administrator, logged, parts and single cards too (catalog ids only), preview on at login and off at logout.');
 })().catch(error=>{console.error(error);process.exit(1);});

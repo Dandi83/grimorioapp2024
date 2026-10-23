@@ -6,6 +6,7 @@ import { Skull, Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
+import { HiddenTag } from "@/components/sections/hidden-tag";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useEditions, usePart } from "@/components/sections/parts-context";
@@ -238,7 +239,7 @@ const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle }: { mons
         className="col-span-3 grid min-w-0 grid-cols-subgrid items-center py-2.5"
       >
         <span className="min-w-0">
-          <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{monster.nome}</span>
+          <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{monster.nome}{monster.nascosta && <> <HiddenTag /></>}</span>
           <span className="block truncate text-[15px] text-muted">{monster.taglia}</span>
         </span>
         <span className="font-serif text-[21px] font-bold tabular-nums text-primary">{monster.grado_sfida || "—"}</span>
@@ -269,6 +270,7 @@ const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected }: { mo
         <span className="min-w-0">
           <span className="block truncate font-serif text-[19px] font-bold leading-tight text-foreground">{monster.nome}</span>
           <span className="block truncate text-[14px] text-muted">{typeCategory(monster.tipo)}</span>
+          {monster.nascosta && <HiddenTag />}
         </span>
       </Link>
       <button type="button" onClick={() => onToggle(favId)} aria-label={fav ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"} aria-pressed={fav}

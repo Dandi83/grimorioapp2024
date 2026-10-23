@@ -8,15 +8,22 @@ import { PUBLIC_SECTIONS, isPartId, type PublicSectionKey } from "./public-secti
  * Which public sections are hidden (/admin/sezioni). One row per section that was ever switched;
  * a section without a row is visible. Hiding changes only what the public sees: data, corrections,
  * favorites and logs are never touched. Every switch is also a row of the log, shown in /admin/registro.
- * Parts of a section (an edition, a tab, a block: lib/public-sections.ts) have their own two tables.
+ * Parts of a section (an edition, a tab, a block: lib/public-sections.ts) have their own two tables, and
+ * so do single cards (a spell or a creature, also those read from the SRD files: only the state is saved).
  */
 
 export const SECTIONS_TAG = "section-visibility";
 
 export interface SectionLogRow { id: string; sezione: string; parte?: string | null; nascosta: boolean; creata_il: Date | string }
 
-/** Hidden sections and parts ("<section>:<part>"). */
-export interface VisibilityState { sections: PublicSectionKey[]; parts: string[] }
+export type CardKind = "incantesimo" | "mostro";
+export interface CardLogRow { id: string; tipo: CardKind; scheda: string; nome: string; edizione: string; nascosta: boolean; autore: string; creata_il: Date | string }
+
+/** Hidden sections, parts ("<section>:<part>") and cards (their addresses: "/spell/<id>", "/mostro/<id>"). */
+export interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards: string[] }
+
+/** The address of a card, which is also how a hidden card is named in the lists of hidden things. */
+export const cardPath = (kind: CardKind, id: string) => `${kind === "incantesimo" ? "/spell" : "/mostro"}/${id}`;
 
 let tablesReady: Promise<void> | undefined;
 /** Additive migration: the tables are created by the first switch (never by a public page). */
@@ -42,6 +49,22 @@ export function ensureSectionTables() {
     parte text NOT NULL,
     nascosta boolean NOT NULL,
     creata_il timestamptz NOT NULL DEFAULT now()
+  )`)).then(() => pool.query(`CREATE TABLE IF NOT EXISTS grimorio_card_visibility (
+    tipo text NOT NULL,
+    scheda text NOT NULL,
+    nascosta boolean NOT NULL DEFAULT false,
+    aggiornata_il timestamptz NOT NULL DEFAULT now(),
+    autore text NOT NULL DEFAULT 'amministratore',
+    PRIMARY KEY (tipo, scheda)
+  )`)).then(() => pool.query(`CREATE TABLE IF NOT EXISTS grimorio_card_visibility_log (
+    id uuid PRIMARY KEY,
+    tipo text NOT NULL,
+    scheda text NOT NULL,
+    nome text NOT NULL,
+    edizione text NOT NULL,
+    nascosta boolean NOT NULL,
+    autore text NOT NULL DEFAULT 'amministratore',
+    creata_il timestamptz NOT NULL DEFAULT now()
   )`)).then(() => undefined).catch(error => { tablesReady = undefined; throw error; });
   return tablesReady;
 }
@@ -64,11 +87,16 @@ async function readHidden(): Promise<PublicSectionKey[]> {
 }
 
 async function readState(): Promise<VisibilityState> {
-  const [sections, parts] = await Promise.all([
+  const [sections, parts, cards] = await Promise.all([
     readHidden(),
     hiddenRows<{ sezione: string; parte: string }>("SELECT sezione, parte FROM grimorio_section_parts WHERE nascosta"),
+    hiddenRows<{ tipo: string; scheda: string }>("SELECT tipo, scheda FROM grimorio_card_visibility WHERE nascosta"),
   ]);
-  return { sections, parts: parts.map(row => `${row.sezione}:${row.parte}`).filter(isPartId).sort() };
+  return {
+    sections,
+    parts: parts.map(row => `${row.sezione}:${row.parte}`).filter(isPartId).sort(),
+    cards: cards.filter(row => row.tipo === "incantesimo" || row.tipo === "mostro").map(row => cardPath(row.tipo as CardKind, row.scheda)).sort(),
+  };
 }
 
 const cachedState = unstable_cache(readState, ["section-visibility-state"], { tags: [SECTIONS_TAG], revalidate: 300 });
@@ -82,7 +110,7 @@ export async function visibilityState(): Promise<VisibilityState> {
     return await cachedState();
   } catch {
     console.warn("[sezioni] Database non leggibile: tutte le sezioni restano visibili.");
-    return { sections: [], parts: [] };
+    return { sections: [], parts: [], cards: [] };
   }
 }
 
@@ -150,6 +178,45 @@ export async function setPartHidden(sezione: PublicSectionKey, parte: string, na
   } finally {
     client.release();
   }
+}
+
+/** Hidden cards for the admin lists (not cached), as addresses. Only reads: the tables come with the first switch. */
+export async function hiddenCardPaths(): Promise<string[]> {
+  return (await readState()).cards;
+}
+
+/**
+ * Saves the new state of one card and its log row (with the name and edition it has now, for the log);
+ * false when the state was already that.
+ */
+export async function setCardHidden(card: { tipo: CardKind; scheda: string; nome: string; edizione: string }, nascosta: boolean): Promise<boolean> {
+  await ensureSectionTables();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const { rows } = await client.query<{ nascosta: boolean }>("SELECT nascosta FROM grimorio_card_visibility WHERE tipo = $1 AND scheda = $2 FOR UPDATE", [card.tipo, card.scheda]);
+    if ((rows[0]?.nascosta ?? false) === nascosta) {
+      await client.query("ROLLBACK");
+      return false;
+    }
+    await client.query(`INSERT INTO grimorio_card_visibility (tipo, scheda, nascosta, aggiornata_il, autore) VALUES ($1, $2, $3, now(), 'amministratore')
+      ON CONFLICT (tipo, scheda) DO UPDATE SET nascosta = EXCLUDED.nascosta, aggiornata_il = now(), autore = EXCLUDED.autore`, [card.tipo, card.scheda, nascosta]);
+    await client.query("INSERT INTO grimorio_card_visibility_log (id, tipo, scheda, nome, edizione, nascosta) VALUES ($1, $2, $3, $4, $5, $6)",
+      [randomUUID(), card.tipo, card.scheda, card.nome, card.edizione, nascosta]);
+    await client.query("COMMIT");
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+/** Every card shown or hidden, newest first, for /admin/registro. */
+export async function allCardLog(): Promise<CardLogRow[]> {
+  await ensureSectionTables();
+  return (await pool.query<CardLogRow>("SELECT id, tipo, scheda, nome, edizione, nascosta, autore, creata_il FROM grimorio_card_visibility_log ORDER BY creata_il DESC, id")).rows;
 }
 
 /** Every switch of sections and parts, newest first, for /admin/registro and its export. */

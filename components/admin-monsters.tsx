@@ -3,15 +3,15 @@
 import { AdminDeleteButton } from "./admin-delete-button";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import {
   deleteMonsterAction,
 } from "@/app/actions/admin-monsters";
 import type { Monster } from "@/lib/monsters-types";
 import { gsLabel, monsterColor, typeCategory } from "@/lib/monsters-types";
-import { Pencil, Plus, Search, ExternalLink } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { MonsterEditor } from "./admin-monster-editor";
-import { SourceLabel } from "./admin-source-label";
+import { AdminCardRow } from "./admin-card-row";
+import { VisibilityFilterBar, useCardVisibility, useVisibilityFilter, type VisibilityFilter } from "./admin-card-eye";
 import type { AdminEdition } from "@/lib/admin-edition";
 
 type Editing =
@@ -19,11 +19,15 @@ type Editing =
   | { mode: "create" }
   | { mode: "edit"; monster: Monster };
 
-export function AdminMonsters({ monsters, edition }: { monsters: Monster[]; edition: AdminEdition }) {
+/** hiddenIds: the creatures hidden from the site with the eye. */
+export function AdminMonsters({ monsters, edition, hiddenIds = [] }: { monsters: Monster[]; edition: AdminEdition; hiddenIds?: string[] }) {
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Editing>({ mode: "closed" });
+  const visibility = useCardVisibility("mostro", hiddenIds);
+  const [shown, setShown] = useState<VisibilityFilter>("tutte");
+  const hiddenCount = useMemo(() => monsters.filter(monster => visibility.isHidden(monster.id)).length, [monsters, visibility]);
 
-  const filtered = useMemo(() => {
+  const searched = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return monsters;
     return monsters.filter(
@@ -31,6 +35,7 @@ export function AdminMonsters({ monsters, edition }: { monsters: Monster[]; edit
         m.nome.toLowerCase().includes(q) || m.tipo.toLowerCase().includes(q),
     );
   }, [query, monsters]);
+  const filtered = useVisibilityFilter(searched, shown, visibility.isHidden);
 
   return (
     <>
@@ -57,49 +62,29 @@ export function AdminMonsters({ monsters, edition }: { monsters: Monster[]; edit
         </button>
       </div>
 
+      <VisibilityFilterBar value={shown} onChange={setShown} hiddenCount={hiddenCount} />
       <ul className="flex flex-col gap-2">
         {filtered.map((m) => (
-          <li
+          <AdminCardRow
             key={m.id}
-            className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3"
-          >
-            <span
-              className="flex h-9 min-w-9 shrink-0 items-center justify-center rounded-lg px-1.5 text-xs font-semibold"
-              style={{
-                backgroundColor: `${monsterColor(m.tipo)}22`,
-                color: monsterColor(m.tipo),
-              }}
-            >
-              {m.grado_sfida || "?"}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-medium text-foreground">{m.nome}</p>
-              <p className="flex min-w-0 gap-1 text-xs text-muted-foreground">
-                <span className="truncate">
-                  {gsLabel(m.grado_sfida)} · {typeCategory(m.tipo) || "—"}
-                  {m.taglia ? ` · ${m.taglia}` : ""}
-                </span>
-                <span className="shrink-0">· <SourceLabel origine={m.provenienza?.document ?? "Aggiunta da te"} /></span>
-              </p>
-            </div>
-            <Link
-              href={`/mostro/${m.id}`}
-              className="rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
-              title="Vedi"
-            >
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-            </Link>
-            <button
-              type="button"
-              onClick={() => setEditing({ mode: "edit", monster: m })}
-              className="rounded-md p-2 text-muted-foreground transition-colors hover:text-primary"
-              title="Modifica"
-            >
-              <Pencil className="h-4 w-4" aria-hidden="true" />
-            </button>
-            {/* Only creatures made or added here can be deleted: an SRD sheet stays (the server refuses it too). */}
-            {m.provenienza ? <span className="w-8 shrink-0" aria-hidden="true" /> : <DeleteButton id={m.id} nome={m.nome} />}
-          </li>
+            badge={
+              <span
+                className="flex h-9 min-w-9 shrink-0 items-center justify-center rounded-lg px-1.5 text-xs font-semibold"
+                style={{ backgroundColor: `${monsterColor(m.tipo)}22`, color: monsterColor(m.tipo) }}
+              >
+                {m.grado_sfida || "?"}
+              </span>
+            }
+            name={m.nome}
+            meta={`${gsLabel(m.grado_sfida)} · ${typeCategory(m.tipo) || "—"}${m.taglia ? ` · ${m.taglia}` : ""}`}
+            origine={m.provenienza?.document ?? "Aggiunta da te"}
+            href={`/mostro/${m.id}`}
+            hidden={visibility.isHidden(m.id)}
+            onToggleHidden={() => visibility.toggle(m.id, m.nome)}
+            onEdit={() => setEditing({ mode: "edit", monster: m })}
+            // Only creatures made or added here can be deleted: an SRD sheet stays (the server refuses it too).
+            remove={m.provenienza ? undefined : <DeleteButton id={m.id} nome={m.nome} />}
+          />
         ))}
         {filtered.length === 0 ? (
           <li className="rounded-xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
@@ -114,8 +99,14 @@ export function AdminMonsters({ monsters, edition }: { monsters: Monster[]; edit
           monster={editing.mode === "edit" ? editing.monster : null}
           edition={edition}
           onClose={() => setEditing({ mode: "closed" })}
+          visibility={editing.mode === "edit" ? {
+            hidden: visibility.isHidden(editing.monster.id),
+            onToggle: () => visibility.toggle(editing.monster.id, editing.monster.nome),
+            notice: visibility.notice,
+          } : undefined}
         />
       ) : null}
+      {editing.mode === "closed" && visibility.notice}
     </>
   );
 }

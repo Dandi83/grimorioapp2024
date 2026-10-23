@@ -4,13 +4,15 @@ import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 import { isAdmin } from "./admin-auth";
 import { effectiveHidden, partId, shownEditions, type Edition, type PublicSectionKey } from "./public-sections";
-import { visibilityState } from "./section-visibility";
+import { cardPath, visibilityState, type CardKind } from "./section-visibility";
 
 export interface SectionView {
   /** Sections the public does not see: hidden, or with all the parts of a set hidden. */
   hidden: PublicSectionKey[];
   /** Parts hidden from the public ("<section>:<part>"). */
   hiddenParts: string[];
+  /** Single cards hidden from the public, by address ("/spell/<id>", "/mostro/<id>"). */
+  hiddenCards: string[];
   /** The viewer is the administrator: hidden sections and parts stay visible, with the «Nascosta» label. */
   admin: boolean;
 }
@@ -23,8 +25,8 @@ export interface SectionView {
 export const sectionView = cache(async (): Promise<SectionView> => {
   const state = await visibilityState();
   const hidden = effectiveHidden(state.sections, state.parts);
-  const view = { hidden, hiddenParts: state.parts };
-  if ((!hidden.length && !state.parts.length) || !(await draftMode()).isEnabled) return { ...view, admin: false };
+  const view = { hidden, hiddenParts: state.parts, hiddenCards: state.cards };
+  if ((!hidden.length && !state.parts.length && !state.cards.length) || !(await draftMode()).isEnabled) return { ...view, admin: false };
   return { ...view, admin: await isAdmin() };
 });
 
@@ -40,9 +42,43 @@ export async function partsOut(): Promise<string[]> {
   return view.admin ? [] : view.hiddenParts;
 }
 
-/** What the links of this page may not lead to: hidden sections and parts (for visibleLinks / isHiddenPath). */
+/** Cards to leave out of this page (their addresses): none for the administrator. */
+export async function cardsOut(): Promise<string[]> {
+  const view = await sectionView();
+  return view.admin ? [] : view.hiddenCards;
+}
+
+/** What the links of this page may not lead to: hidden sections, parts and cards (for visibleLinks / isHiddenPath). */
 export async function linksOut(): Promise<string[]> {
-  return [...await sectionsOut(), ...await partsOut()];
+  return [...await sectionsOut(), ...await partsOut(), ...await cardsOut()];
+}
+
+/**
+ * A list of spells or creatures for this page: hidden cards left out for the public; for the administrator
+ * they stay, marked `nascosta` (the «Nascosta» label). With no hidden card the list is returned as it is.
+ */
+export async function visibleCards<T extends { id: string }>(kind: CardKind, list: T[]): Promise<(T & { nascosta?: true })[]> {
+  const view = await sectionView();
+  if (!view.hiddenCards.length) return list;
+  const hidden = new Set(view.hiddenCards);
+  const isHidden = (item: T) => hidden.has(cardPath(kind, item.id));
+  return view.admin ? list.map(item => (isHidden(item) ? { ...item, nascosta: true as const } : item)) : list.filter(item => !isHidden(item));
+}
+
+/** Every card of the list kept, the hidden ones marked `nascosta` (Preferiti: «Non disponibile al momento» for the public). */
+export async function markedCards<T extends { id: string }>(kind: CardKind, list: T[]): Promise<(T & { nascosta?: true })[]> {
+  const view = await sectionView();
+  if (!view.hiddenCards.length) return list;
+  const hidden = new Set(view.hiddenCards);
+  return list.map(item => (hidden.has(cardPath(kind, item.id)) ? { ...item, nascosta: true as const } : item));
+}
+
+/** A single card: not found for the public while hidden; true when the administrator sees it hidden. */
+export async function cardHidden(kind: CardKind, id: string): Promise<boolean> {
+  const view = await sectionView();
+  const hidden = view.hiddenCards.includes(cardPath(kind, id));
+  if (hidden && !view.admin) notFound();
+  return hidden;
 }
 
 /**

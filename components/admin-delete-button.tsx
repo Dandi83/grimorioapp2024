@@ -36,7 +36,7 @@ export function AdminDeleteButton({ id, nome, action }: {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-md p-2 text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
+        className="grid size-11 place-items-center rounded-md text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
         title="Elimina"
       >
         <Trash2 className="h-4 w-4" aria-hidden="true" />

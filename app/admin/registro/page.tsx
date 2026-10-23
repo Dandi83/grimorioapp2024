@@ -17,7 +17,7 @@ import { spellName } from "@/lib/spell-name";
 
 const spellNameOf = (spell: { nome_italiano: string; edizione?: string } | undefined) => (spell ? spellName(spell.nome_italiano, spell.edizione) : undefined);
 import { isPublicSectionKey, publicSection, sectionParts } from "@/lib/public-sections";
-import { allSectionLog } from "@/lib/section-visibility";
+import { allCardLog, allSectionLog } from "@/lib/section-visibility";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Registro modifiche — Il Grimorio.App", robots: { index: false, follow: false } };
@@ -49,8 +49,8 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
   const edition = await adminEdition();
   const allEditions = query.edizioni === "tutte";
 
-  const [overrides, editorRows, sectionRows, spells, monsters] = await Promise.all([
-    allOverrides(), allEditorLog(), allSectionLog(), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
+  const [overrides, editorRows, sectionRows, cardRows, spells, monsters] = await Promise.all([
+    allOverrides(), allEditorLog(), allSectionLog(), allCardLog(), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
   ]);
   const inForce = new Set([...activeOverrideMap(overrides).values()].map(row => row.id));
   const items: LogItem[] = [
@@ -92,6 +92,18 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       // An edition hidden or shown belongs to that edition; everything else is shared.
       edition: isAdminEdition(row.parte) ? row.parte : null,
     })),
+    // Single cards shown or hidden with the eye: name and edition as they were at the switch.
+    ...cardRows.map(row => {
+      const sezione = row.tipo === "incantesimo" ? "incantesimi" : "mostri";
+      const cardEdition = isAdminEdition(row.edizione) ? row.edizione : null;
+      return {
+        id: row.id, editor: false, sezione, when: new Date(row.creata_il), undoneAt: null, inForce: true,
+        title: `${EDITOR_TITLES[sezione]}${cardEdition ? ` ${cardEdition}` : ""} · visibilità`, edition: cardEdition,
+        card: row.nome, href: row.tipo === "incantesimo" ? `/spell/${row.scheda}` : `/mostro/${row.scheda}`,
+        field: "visibilità", before: row.nascosta ? "Visibile" : "Nascosta", after: row.nascosta ? "Nascosta" : "Visibile",
+        motivo: row.nascosta ? "Nascosta dal sito: la scheda e i suoi dati restano com’erano." : "Di nuovo visibile sul sito.", fixed: "cambio di stato",
+      };
+    }),
   ].sort((a, b) => b.when.getTime() - a.when.getTime());
   const shown = items.filter(item => inAdminEdition(item.edition, edition, allEditions) && (!sezione || item.sezione === sezione) && (stato === "tutte" || (stato === "attive" ? item.inForce : !item.inForce)));
 

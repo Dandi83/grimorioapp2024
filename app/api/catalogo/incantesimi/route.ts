@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { sectionsOut } from "@/lib/section-view";
+import { sectionsOut, visibleCards } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
 import { computeMeta } from "@/lib/spells-types";
 
@@ -12,6 +12,6 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   if ((await sectionsOut()).includes("incantesimi")) return NextResponse.json({ error: "Sezione non disponibile" }, { status: 404 });
-  const spells = await getSpellIndex();
+  const spells = await visibleCards("incantesimo", await getSpellIndex());
   return NextResponse.json({ spells, meta: computeMeta(spells) }, { headers: { "Cache-Control": "private, no-store" } });
 }

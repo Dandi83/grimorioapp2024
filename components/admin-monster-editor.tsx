@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createMonsterAction, updateMonsterAction } from "@/app/actions/admin-monsters";
 import { abilityMod, type Monster } from "@/lib/monsters-types";
@@ -10,6 +10,8 @@ import { AdminMonsterPreview } from "./admin-monster-preview";
 import { AdminEditionField, confirmEditionMove } from "./admin-edition-field";
 import type { AdminEdition } from "@/lib/admin-edition";
 import { AdminHabitatField } from "./admin-habitat-field";
+import { EyeButton } from "./admin-card-eye";
+import { HiddenTag } from "./sections/hidden-tag";
 
 type Field = { name: keyof Monster; label: string; placeholder?: string };
 const IDENTITY: Field[] = [
@@ -97,11 +99,14 @@ export function MonsterEditor({
   monster,
   onClose,
   edition,
+  visibility,
 }: {
   monster: Monster | null;
   onClose: () => void;
   /** The edition of the admin area: the card belongs to it, and a new card starts in it. */
   edition: AdminEdition;
+  /** The eye of the list, also at the top of the editor (cards already saved), with its notice. */
+  visibility?: { hidden: boolean; onToggle: () => void; notice?: ReactNode };
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const form = useRef<HTMLFormElement>(null);
@@ -172,16 +177,20 @@ export function MonsterEditor({
               Scheda SRD: il salvataggio aggiorna solo habitat ed etichetta, il testo resta quello ufficiale.
             </p>
           )}
+          {visibility?.hidden && <p className="mt-1 text-xs text-muted-foreground"><HiddenTag /> Il pubblico non vede questa scheda.</p>}
         </div>
-        <button
-          type="button"
-          disabled={saving}
-          onClick={onClose}
-          aria-label="Chiudi editor"
-          className="min-h-11 min-w-11 rounded-lg text-muted-foreground hover:bg-elevated"
-        >
-          <X className="mx-auto h-5 w-5" aria-hidden />
-        </button>
+        <div className="flex shrink-0 items-center">
+          {visibility && monster && <EyeButton hidden={visibility.hidden} nome={monster.nome} onToggle={visibility.onToggle} />}
+          <button
+            type="button"
+            disabled={saving}
+            onClick={onClose}
+            aria-label="Chiudi editor"
+            className="min-h-11 min-w-11 rounded-lg text-muted-foreground hover:bg-elevated"
+          >
+            <X className="mx-auto h-5 w-5" aria-hidden />
+          </button>
+        </div>
       </header>
       <form
         ref={form}
@@ -312,6 +321,7 @@ export function MonsterEditor({
           </div>
         </footer>
       </form>
+      {visibility?.notice}
     </dialog>
   );
 }

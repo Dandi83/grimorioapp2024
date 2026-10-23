@@ -69,11 +69,14 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   // Hidden sections (/admin/sezioni): out of the bottom bar for the public, labelled for the administrator.
-  const { hidden, hiddenParts, admin } = await sectionView();
-  const hiddenPaths = PUBLIC_SECTIONS.filter(section => hidden.includes(section.key)).flatMap(section => section.paths);
-  // Pages of a section with hidden parts: the phone drops the copies saved before the change (the signature changes).
+  const { hidden, hiddenParts, hiddenCards, admin } = await sectionView();
+  // Cards hidden with the eye of the admin area are addresses too: the phone deletes their saved copies.
+  const hiddenPaths = [...PUBLIC_SECTIONS.filter(section => hidden.includes(section.key)).flatMap(section => section.paths), ...hiddenCards];
+  // Pages of a section with hidden parts or cards: the phone drops the copies saved before the change (the signature changes).
+  const cardPrefix: Record<string, string> = { incantesimi: "/spell/", bestiario: "/mostro/" };
+  const cardsOf = (key: string) => (cardPrefix[key] ? hiddenCards.filter(path => path.startsWith(cardPrefix[key])) : []);
   const partPaths = PUBLIC_SECTIONS.filter(section => !hidden.includes(section.key)).flatMap(section => {
-    const parts = hiddenParts.filter(id => id.startsWith(`${section.key}:`));
+    const parts = [...hiddenParts.filter(id => id.startsWith(`${section.key}:`)), ...cardsOf(section.key)];
     return parts.length ? section.paths.map(path => ({ path, signature: parts.join(",") })) : [];
   });
   return (

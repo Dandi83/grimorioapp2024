@@ -127,10 +127,12 @@ export function editionOfPath(href: string): Edition | undefined {
 }
 
 /**
- * True when the address belongs to a hidden section, or to a hidden edition of its section.
- * hidden: section keys and part ids ("incantesimi:2014") together.
+ * True when the address belongs to a hidden section, or to a hidden edition of its section, or is a hidden card.
+ * hidden: section keys, part ids ("incantesimi:2014") and card addresses together.
  */
 export function isHiddenPath(href: string, hidden: readonly string[]): boolean {
+  // A single hidden card is named by its address ("/spell/<id>", "/mostro/<id>").
+  if (hidden.length && hidden.includes(href.split(/[?#]/)[0])) return true;
   const key = sectionOfPath(href);
   if (key === undefined) return false;
   if (hidden.includes(key)) return true;

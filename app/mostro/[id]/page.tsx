@@ -9,7 +9,8 @@ import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters"
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
-import { editionCard, linksOut, partState } from "@/lib/section-view";
+import { cardHidden, cardsOut, editionCard, linksOut, partState } from "@/lib/section-view";
+import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { isSrdAnimal } from "@/lib/monsters-types";
 
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
@@ -37,7 +38,7 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const monster = await getMonsterById(id);
-  if (!monster) return { title: "Mostro non trovato" };
+  if (!monster || (await cardsOut()).includes(`/mostro/${monster.id}`)) return { title: "Mostro non trovato" };
   const description = monster.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
     `${monster.nome}, ${monster.tipo}.`;
   const url = `https://ilgrimorio.app/mostro/${encodeURIComponent(monster.id)}`;
@@ -65,11 +66,14 @@ export default async function MonsterDetailPage({
   // A creature of an edition or a collection hidden from /admin/sezioni is not found (the administrator sees it, labelled).
   const edition = monster.edizione === "2014" || (!monster.edizione && legacy) ? "2014" : "2024";
   const collection = isSrdAnimal(monster) ? "animali" : "mostri";
+  // A card hidden with the eye of the admin area: not found for the public, labelled for the administrator.
+  const hiddenCard = await cardHidden("mostro", monster.id);
   const hiddenParts = [...(await editionCard("bestiario", edition) ? [partId("bestiario", edition)] : []), ...(await collectionCard(collection) ? [partId("bestiario", collection)] : [])];
 
   return (
     <article className="monster-sheet relative pb-2 pt-4">
       {hiddenParts.map(id => <div key={id} className="px-6"><HiddenPartBar id={id} /></div>)}
+      {hiddenCard && <div className="px-6"><HiddenCardBar kind="mostro" id={monster.id} /></div>}
       <MonsterSheetTitle
         monster={monster}
         before={

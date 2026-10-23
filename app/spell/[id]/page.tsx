@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { isHiddenPath, partId, visibleLinks } from "@/lib/public-sections";
-import { editionCard, linksOut } from "@/lib/section-view";
+import { cardHidden, cardsOut, editionCard, linksOut } from "@/lib/section-view";
+import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
@@ -37,7 +38,7 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const spell = await getSpellById(id);
-  if (!spell) return { title: "Incantesimo non trovato" };
+  if (!spell || (await cardsOut()).includes(`/spell/${spell.id}`)) return { title: "Incantesimo non trovato" };
   const titolo = spellName(spell.nome_italiano, spell.edizione);
   const description = spell.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
     `${titolo}, incantesimo di ${spell.scuola}.`;
@@ -75,6 +76,8 @@ export default async function SpellDetailPage({
   // A card of an edition hidden from /admin/sezioni is not found; links to hidden pages stay plain text.
   const edition = spell.edizione === "2014" ? "2014" : "2024";
   const hiddenEdition = await editionCard("incantesimi", edition);
+  // A card hidden with the eye of the admin area: not found for the public, labelled for the administrator.
+  const hiddenCard = await cardHidden("incantesimo", spell.id);
   const out = await linksOut();
   const link = spellEditionLink(spell.id, process.env.VERCEL_ENV);
   const otherEdition = link && !isHiddenPath(link.href, out) ? link : undefined;
@@ -82,6 +85,7 @@ export default async function SpellDetailPage({
   return (
     <article className="spell-sheet">
       {hiddenEdition && <div className="px-6 pt-2"><HiddenPartBar id={partId("incantesimi", edition)} /></div>}
+      {hiddenCard && <div className="px-6 pt-2"><HiddenCardBar kind="incantesimo" id={spell.id} /></div>}
       {/* Hero */}
       <header className="relative h-[360px] overflow-hidden">
         <Image
