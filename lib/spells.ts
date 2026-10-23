@@ -10,7 +10,7 @@ import { parseLivello, type Spell } from "./spells-types";
 import { applySrdDescription, getSrdSource } from "./srd-descriptions";
 import { applyOriginalDescription, getOriginalSource } from "./original-descriptions";
 import { previewSpellRows, previewSpellById } from "./srd-additions";
-import { isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
+import { getLegacySpellSource, isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
 import { repairCatalogSpell } from "./spell-catalog-repairs";
 import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { repairSpellText } from "./spell-text-repairs";
@@ -68,7 +68,8 @@ export async function getAdminSpells(): Promise<Spell[]> {
   return withLegacySpells(previewSpellRows(rows.filter(row => !(row.id in MERGED_SPELL_IDS)), environment), environment)
     .map(row => {
       const spell = toSpell(row, false);
-      return { ...spell, edizione: editions.get(row.id) ?? spell.edizione, ...(stored.has(row.id) ? {} : { da_file: true as const }) };
+      const fonte = getLegacySpellSource(spell) ? "SRD 5.1" as const : getSrdSource(spell.id, spell.descrizione) ? "SRD 5.2.1" as const : undefined;
+      return { ...spell, edizione: editions.get(row.id) ?? spell.edizione, ...(fonte ? { fonte } : {}), ...(stored.has(row.id) ? {} : { da_file: true as const }) };
     });
 }
 

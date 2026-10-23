@@ -36,3 +36,18 @@ Per questo nell'edizione 2014 l'admin mostrava «0 incantesimi», mentre il sito
   - conteggi di incantesimi e mostri dell'admin uguali a quelli pubblici, nelle due edizioni;
   - «Allarme» 2014 dal file: salvataggio senza modifiche, gittata cambiata (una riga nel registro), annullamento con scheda pubblica identica;
   - elenco 2014 a 360, 375 e 390 px.
+
+## Etichetta dell'edizione (aggiunta)
+- **Righe degli elenchi**: dalle righe di Incantesimi e Mostri sono stati tolti la tendina «Automatica / D&D5e 2014 / D&D5e 2024» e il pulsante «Salva etichetta». L'edizione si sceglie con il selettore in alto e il componente `admin-edition-picker.tsx` è stato rimosso.
+- **Editor**, in cima, tramite `AdminEditionField`:
+  - schede con fonte SRD verificata: testo fisso «Edizione 2014 · SRD 5.1» o «Edizione 2024 · SRD 5.2.1». Il modulo non invia l'edizione e i dati salvati restano come sono;
+  - fonte degli incantesimi: trascrizione esatta del file 5.1 (`getLegacySpellSource`) o testo SRD 5.2.1 (`getSrdSource`);
+  - fonte dei mostri: `provenienza` verificata;
+  - altre schede (create o aggiunte qui): tendina «Edizione» 2024/2014, che parte dall'edizione della scheda. Prima di salvare nell'altra edizione chiede «Spostare questa scheda nell'edizione …?»; con «Annulla» non si salva niente;
+  - «+ Nuovo» parte dall'edizione selezionata in alto.
+- **Salvataggio**: le azioni non salvano come etichetta l'edizione che la scheda ha già. Le etichette già salvate restano.
+- `tests/catalog-editions.cjs`:
+  - per ogni scheda del catalogo l'editor mostra l'edizione dell'elenco pubblico;
+  - le fonti SRD fissano l'edizione giusta;
+  - il salvataggio di ogni incantesimo senza modifiche non scrive niente e nessuna scheda pubblica cambia edizione;
+  - una creatura creata qui non riceve un'etichetta inutile.

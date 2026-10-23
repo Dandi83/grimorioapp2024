@@ -121,7 +121,8 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   // Nothing changed (fields and edition label): nothing is written, no row, no label, no log.
   const label = (await getContentEditions("spell", id)).get(id);
   const edition = formData.get("edition");
-  const current = label ?? (isLegacySpellId(id) ? "2014" : sourceEdition);
+  // The edition the public list gives the card: its label, else 2014 for the SRD 5.1 cards, else 2024.
+  const current = label ?? (isLegacySpellId(id) ? "2014" : "2024");
   const sameEdition = edition === null || (edition === "" ? !label : edition === current);
   if (!Object.keys(changes).length && sameEdition) return { ok: true as const, error: null, id };
   // The edition the card already has is not stored again as a manual label.

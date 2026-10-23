@@ -126,10 +126,15 @@ function load(relative, deps = {}) {
   assert.ok(revalidated.includes('/bestiario') && revalidated.includes('/grimorio') && revalidated.includes('/preferiti') && revalidated.includes('/admin'));
   const failing = load('lib/content-editions.ts', {'server-only': {}, './db': {pool:{query:async()=>{throw Object.assign(new Error('offline'),{code:'ECONNREFUSED'});}}}});
   await assert.rejects(()=>failing.getContentEditions('monster'),/offline/,'connection errors cannot masquerade as empty metadata');
-  const {AdminEditionPicker} = load('components/admin-edition-picker.tsx', {'@/app/actions/admin-editions': {setContentEditionAction: action}});
-  const ui = renderToStaticMarkup(React.createElement(AdminEditionPicker,{kind:'monster',id:monster.id,name:monster.nome,edition:'2014'}));
-  assert.ok(ui.includes('<select') && ui.includes('D&amp;D5e 2014') && ui.includes('D&amp;D5e 2024') && ui.includes('Automatica'));
-  assert.ok(ui.includes('aria-label="Edizione di Creatura manuale"'));
+  // The edition at the top of the editor: fixed for a verified SRD source, a 2024/2014 dropdown otherwise.
+  const {AdminEditionField} = load('components/admin-edition-field.tsx');
+  const fixed = renderToStaticMarkup(React.createElement(AdminEditionField,{edition:'2014',source:'SRD 5.1'}));
+  assert.equal(fixed.replace(/<[^>]*>/g,''),'Edizione 2014 · SRD 5.1');
+  assert.ok(!fixed.includes('<select') && !fixed.includes('name="edition"'),'an SRD card sends no edition: its source decides');
+  assert.equal(renderToStaticMarkup(React.createElement(AdminEditionField,{edition:'2024',source:'SRD 5.2.1'})).replace(/<[^>]*>/g,''),'Edizione 2024 · SRD 5.2.1');
+  const ui = renderToStaticMarkup(React.createElement(AdminEditionField,{edition:'2014'}));
+  assert.ok(ui.includes('<select') && ui.includes('name="edition"') && ui.includes('>Edizione</label>'));
+  assert.deepEqual([...ui.matchAll(/<option value="(\d+)"/g)].map(m=>m[1]),['2024','2014'],'no «Automatica»: 2024 or 2014');
   assert.ok(ui.includes('value="2014" selected=""'));
   const {MonsterProvenanceBadge} = load('components/monster-provenance-badge.tsx');
   const badge = renderToStaticMarkup(React.createElement(MonsterProvenanceBadge,{edition:'2014'}));

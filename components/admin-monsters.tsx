@@ -10,7 +10,6 @@ import {
 import type { Monster } from "@/lib/monsters-types";
 import { gsLabel, monsterColor, typeCategory } from "@/lib/monsters-types";
 import { Pencil, Plus, Search, ExternalLink } from "lucide-react";
-import { AdminEditionPicker } from "./admin-edition-picker";
 import { MonsterEditor } from "./admin-monster-editor";
 import type { AdminEdition } from "@/lib/admin-edition";
 
@@ -78,7 +77,6 @@ export function AdminMonsters({ monsters, edition }: { monsters: Monster[]; edit
                 {gsLabel(m.grado_sfida)} · {typeCategory(m.tipo) || "—"}
                 {m.taglia ? ` · ${m.taglia}` : ""}
               </p>
-              <AdminEditionPicker key={`${m.id}-${m.edizione ?? "auto"}`} kind="monster" id={m.id} name={m.nome} edition={m.edizione} listEdition={edition} />
             </div>
             <Link
               href={`/mostro/${m.id}`}

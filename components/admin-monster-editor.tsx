@@ -7,8 +7,7 @@ import { abilityMod, type Monster } from "@/lib/monsters-types";
 import { AdminMonsterField } from "./admin-monster-field";
 import { MonsterContentEditor } from "./admin-monster-content";
 import { AdminMonsterPreview } from "./admin-monster-preview";
-import { AdminEditionField } from "./admin-edition-field";
-import { EditionChip } from "./admin-edition/edition-chip";
+import { AdminEditionField, confirmEditionMove } from "./admin-edition-field";
 import type { AdminEdition } from "@/lib/admin-edition";
 import { AdminHabitatField } from "./admin-habitat-field";
 
@@ -104,10 +103,6 @@ export function MonsterEditor({
   /** The edition of the admin area: the card belongs to it, and a new card starts in it. */
   edition: AdminEdition;
 }) {
-  const sourceEdition = monster?.provenienza?.edition;
-  const initialEdition = monster
-    ? monster.edizione ?? (sourceEdition === "2014" || sourceEdition === "2024" ? sourceEdition : undefined)
-    : edition;
   const dialog = useRef<HTMLDialogElement>(null);
   const form = useRef<HTMLFormElement>(null);
   const [preview, setPreview] = useState<Partial<Monster> | null>(null);
@@ -128,7 +123,7 @@ export function MonsterEditor({
       ...entries,
       habitat: new FormData(form.current).getAll("habitat"),
       id: monster?.id || "unsaved-monster",
-      edizione: entries.edition || undefined,
+      edizione: entries.edition || edition,
     };
     for (const field of ABILITIES) snapshot[field.name] = Number(entries[field.name]) || 10;
     setPreview(snapshot as Partial<Monster>);
@@ -169,7 +164,6 @@ export function MonsterEditor({
           <h2 id="monster-editor-heading" className="font-serif text-2xl">
             {monster ? "Modifica mostro" : "Nuovo mostro"}
           </h2>
-          <EditionChip edition={edition} />
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Compila la scheda: alla formattazione pensa il Grimorio.
           </p>
@@ -193,20 +187,21 @@ export function MonsterEditor({
         ref={form}
         onSubmit={(event) => {
           event.preventDefault();
-          void action(new FormData(event.currentTarget));
+          const data = new FormData(event.currentTarget);
+          if (confirmEditionMove(data, edition)) void action(data);
         }}
         className="min-w-0"
       >
         {monster && <input type="hidden" name="id" value={monster.id} />}
         <fieldset disabled={saving} className="min-w-0 p-4 sm:p-6">
           <div hidden={preview !== null} className="space-y-5">
+            <AdminEditionField edition={edition} source={monster?.provenienza?.document} />
             <details open className="rounded-xl border border-border p-4">
               <summary className="mb-3 min-h-11 cursor-pointer font-serif text-xl text-primary">
                 Identità
               </summary>
               <EditorFields fields={IDENTITY} monster={monster} />
             </details>
-            <AdminEditionField edition={initialEdition} />
             <AdminHabitatField habitats={monster?.habitat} projectOnly={!!monster?.solo_progetto} />
             <details open className="rounded-xl border border-border p-4">
               <summary className="mb-3 min-h-11 cursor-pointer font-serif text-xl text-primary">

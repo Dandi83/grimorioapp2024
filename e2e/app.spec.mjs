@@ -1128,9 +1128,9 @@ test("admin area by edition: switch remembered, band, counts and lists of the ed
     const spells = await tileCount("Incantesimi");
     await page.goto("/admin/incantesimi");
     await expect(page.getByText(new RegExp(`^Edizione ${edition}: ${spells} incantesimi · \\d+ mostri$`))).toBeVisible();
-    // Only cards of the edition (their label says so).
-    const labels = await page.getByRole("combobox", { name: /^Edizione di / }).evaluateAll(list => list.map(select => select.value));
-    expect(labels.filter(value => value === (edition === "2024" ? "2014" : "2024"))).toEqual([]);
+    // No edition dropdown in the rows: the switch at the top decides.
+    await expect(page.locator("main ul li select")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Salva etichetta/ })).toHaveCount(0);
   };
   await check("2024");
   // 2014: blue band, other counts; remembered after a reload, in an admin-only cookie.
@@ -1153,19 +1153,38 @@ test("admin area by edition: switch remembered, band, counts and lists of the ed
   await page.getByRole("button", { name: "Passa all’edizione 2024" }).click();
   await expect(band).toHaveText("Stai modificando: edizione 2024");
   await expect(page.getByText(/Questa voce è dell’edizione/)).toHaveCount(0);
-  // Moving one card to the other edition asks first; «Annulla» changes nothing.
+  // Editor of a card without SRD source: the «Edizione» dropdown starts in the edition at the top;
+  // moving the card to the other edition asks first, and «Annulla» saves nothing.
   await page.goto("/admin/incantesimi");
-  await page.getByPlaceholder("Cerca per nome o scuola…").fill("dardo incantato");
-  const row = page.locator("main ul li").filter({ hasText: "Dardo incantato" }).first();
-  await row.getByRole("combobox", { name: /^Edizione di / }).selectOption("2014");
+  await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  const editor = page.getByRole("dialog");
+  const cardEdition = editor.getByLabel("Edizione", { exact: true });
+  await expect(cardEdition).toHaveValue("2024");
+  await expect(cardEdition.locator("option")).toHaveText(["2024", "2014"]);
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `editor ${width}`).toBeLessThanOrEqual(width);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  await editor.getByLabel("Nome *").fill("Prova di spostamento");
+  await editor.locator("#spell-level").selectOption({ index: 1 });
+  await editor.locator("#spell-school").selectOption({ index: 1 });
+  await cardEdition.selectOption("2014");
   let asked = "";
   page.once("dialog", dialog => { asked = dialog.message(); dialog.dismiss(); });
-  await row.getByRole("button", { name: /^Salva etichetta/ }).click();
+  await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect.poll(() => asked).toBe("Spostare questa scheda nell’edizione 2014?");
-  await expect(page.getByText("Etichetta salvata.")).toHaveCount(0);
+  await expect(editor).toBeVisible();
+  await editor.getByRole("button", { name: "Chiudi editor" }).click();
   await page.reload();
-  await page.getByPlaceholder("Cerca per nome o scuola…").fill("dardo incantato");
-  await expect(page.locator("main ul li").filter({ hasText: "Dardo incantato" }).first()).toBeVisible();
+  await page.getByPlaceholder("Cerca per nome o scuola…").fill("prova di spostamento");
+  await expect(page.locator("main ul li").filter({ hasText: "Prova di spostamento" })).toHaveCount(0);
+  // Editor of a card with a verified SRD source: its edition, fixed, no dropdown.
+  await page.getByPlaceholder("Cerca per nome o scuola…").fill("bagliore lunare");
+  await page.locator("main ul li").filter({ hasText: /bagliore lunare/i }).first().getByRole("button", { name: "Modifica", exact: true }).click();
+  await expect(editor.getByTestId("card-edition")).toHaveText("Edizione 2024 · SRD 5.2.1");
+  await expect(editor.getByLabel("Edizione", { exact: true })).toHaveCount(0);
+  await editor.getByRole("button", { name: "Chiudi editor" }).click();
   // Log: one 2024 and one 2014 correction; each edition sees its own, «Tutte le edizioni» both.
   const save = async (url, fill, reason) => {
     await page.goto(url);
@@ -1274,6 +1293,8 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
     return editor;
   };
   let editor = await open();
+  await expect(editor.getByTestId("card-edition")).toHaveText("Edizione 2014 · SRD 5.1");
+  await expect(editor.getByLabel("Edizione", { exact: true })).toHaveCount(0);
   await expect(editor.getByLabel("Gittata", { exact: true })).toHaveValue("9 metri");
   await editor.getByRole("button", { name: "Salva modifiche" }).click();
   await expect(editor).toHaveCount(0);
