@@ -38,7 +38,9 @@ export function AdminEditionBar({ edition: initial }: { edition: AdminEdition })
       <div role="group" aria-label="Edizione dell’area riservata" className="mx-4 mt-3 flex gap-1 rounded-xl bg-elevated p-1 lg:mx-auto lg:w-[calc(100%-2rem)] lg:max-w-[1168px]">
         {ADMIN_EDITIONS.map(value => (
           <button key={value} type="button" aria-pressed={value === edition} disabled={pending} onClick={() => choose(value)}
-            className={`flex min-h-11 flex-1 items-center justify-center rounded-[9px] font-bold tabular-nums ${value === edition ? "bg-primary text-primary-foreground" : "text-muted"}`}>
+            // The chosen edition in its own colour, the same as the band (bordeaux 2024, blue 2014).
+            style={value === edition ? { background: EDITION_BAND[value].background, color: EDITION_BAND[value].text } : undefined}
+            className={`flex min-h-11 flex-1 items-center justify-center rounded-[9px] font-bold tabular-nums ${value === edition ? "" : "text-muted"}`}>
             {value}
           </button>
         ))}

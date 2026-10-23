@@ -5,8 +5,10 @@ import Link from "next/link";
 import { FileText, Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
+import { spellName } from "@/lib/spell-name";
 import { saveListState } from "@/components/navigation-memory";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
+import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
@@ -99,6 +101,26 @@ export function GrimorioBrowser({
   }, [key]);
   const visible = results.slice(0, limit);
 
+  // Computer column: a card opened from a direct link shows its row, in its edition and page.
+  const selectedId = pane?.selectedId;
+  const root = useRef<HTMLDivElement>(null);
+  const shownFor = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (!selectedId || shownFor.current === selectedId) return;
+    const selected = spells.find(item => item.id === selectedId);
+    if (!selected) return;
+    const own: SpellEdition = selected.edizione === "2014" ? "2014" : "2024";
+    if (own !== edizione && allowed.includes(own)) {
+      setEdizione(own);
+      setFilters(NO_SPELL_FILTERS);
+      return;
+    }
+    shownFor.current = selectedId;
+    const index = results.findIndex(item => item.id === selectedId);
+    if (index >= limit) setLimit(Math.ceil((index + 1) / PAGE_SIZE) * PAGE_SIZE);
+  }, [selectedId, spells, results, edizione, allowed, limit]);
+  useRevealSelected(root, selectedId);
+
   // Remember the list for "back" from a card; the scroll is taken when a row is opened.
   const scroll = useRef(initialScroll ?? 0);
   const save = () => saveListState<SpellListState>("grimorio",
@@ -129,7 +151,7 @@ export function GrimorioBrowser({
   ];
 
   return (
-    <div>
+    <div ref={root}>
       <div className="px-6 pb-2 pt-8">
         <CatalogTitle section="incantesimi" title="Incantesimi" edition={edizione} onEdition={hasLegacy ? chooseEdition : undefined} />
         <SearchAndFilters query={q} onQuery={setQ} label="Cerca un incantesimo" active={active.length} onOpen={() => setDraft(filters)} />
@@ -210,7 +232,7 @@ const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected =
   return (
     <div className={`flex min-h-[62px] items-center gap-2 border-b border-divider${selected ? " -mx-3 rounded-[10px] bg-primary-faint px-3 shadow-[inset_3px_0_0_var(--color-primary)]" : ""}`}>
       <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="min-w-0 flex-1 py-2.5">
-        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{capitalizeWords(spell.nome_italiano)}</span>
+        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{spellName(spell.nome_italiano, spell.edizione)}</span>
         {details && <span className="block text-[15px] text-muted">{details}</span>}
         {(spell.concentrazione || spell.rituale) && (
           <span className="mt-1 flex flex-wrap gap-1.5">

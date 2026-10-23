@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse, after } from "next/server";
+import { spellName } from "@/lib/spell-name";
 import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
 import { isAdmin } from "@/lib/admin-auth";
 import {
@@ -114,7 +115,7 @@ export async function POST(request: NextRequest) {
       const id = cardId!,
         record = await getSpellById(id);
       if (!record) return response({ ignored: true });
-      card = { id, kind: "spell", title: record.nome_italiano };
+      card = { id, kind: "spell", title: spellName(record.nome_italiano) };
     } else if (input.path.startsWith("/mostro/")) {
       const id = cardId!,
         record = await getMonsterById(id);

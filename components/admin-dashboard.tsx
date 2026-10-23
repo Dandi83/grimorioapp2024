@@ -11,7 +11,8 @@ import { levelLabel } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
 import type { Monster } from "@/lib/monsters-types";
 import { AdminMonsters } from "@/components/admin-monsters";
-import { SpellProvenanceMarker } from "./spell-provenance-marker";
+import { SourceLabel } from "./admin-source-label";
+import { spellName } from "@/lib/spell-name";
 import { SpellEditor } from "./admin-spell-editor";
 import { AdminDeleteButton } from "./admin-delete-button";
 import type { AdminEdition } from "@/lib/admin-edition";
@@ -53,6 +54,7 @@ export function AdminDashboard({
     return spells.filter(
       (s) =>
         s.nome_italiano.toLowerCase().includes(q) ||
+        (s.nome_mostrato ?? "").toLowerCase().includes(q) ||
         s.scuola.toLowerCase().includes(q),
     );
   }, [query, spells]);
@@ -151,11 +153,11 @@ export function AdminDashboard({
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-foreground">
-                {s.nome_italiano}
-                <SpellProvenanceMarker id={s.id} />
+                {s.nome_mostrato ?? spellName(s.nome_italiano, s.edizione)}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
-                {levelLabel(s.livello_num)} · {s.scuola || "—"}{s.da_file ? " · dai file SRD" : ""}
+              <p className="flex min-w-0 gap-1 text-xs text-muted-foreground">
+                <span className="truncate">{levelLabel(s.livello_num)} · {s.scuola || "—"}</span>
+                {s.origine && <span className="shrink-0">· <SourceLabel origine={s.origine} /></span>}
               </p>
             </div>
             <Link
@@ -173,8 +175,8 @@ export function AdminDashboard({
             >
               <Pencil className="h-4 w-4" aria-hidden="true" />
             </button>
-            {/* A card of the project files has no row to delete: it is part of the published SRD. */}
-            {s.da_file ? null : <DeleteButton id={s.id} nome={s.nome_italiano} />}
+            {/* Only cards made or added here can be deleted: an SRD card stays (the server refuses it too). */}
+            {s.fonte ? <span className="w-8 shrink-0" aria-hidden="true" /> : <DeleteButton id={s.id} nome={s.nome_mostrato ?? spellName(s.nome_italiano, s.edizione)} />}
           </li>
         ))}
         {filtered.length === 0 ? (

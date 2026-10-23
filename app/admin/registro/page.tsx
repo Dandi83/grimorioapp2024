@@ -13,6 +13,9 @@ import { EDITOR_FIELDS, allEditorLog, type EditorSection } from "@/lib/editor-lo
 import { formatWhen } from "@/lib/feedback-input";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { getSpellIndex } from "@/lib/spell-index";
+import { spellName } from "@/lib/spell-name";
+
+const spellNameOf = (spell: { nome_italiano: string; edizione?: string } | undefined) => (spell ? spellName(spell.nome_italiano, spell.edizione) : undefined);
 import { isPublicSectionKey, publicSection, sectionParts } from "@/lib/public-sections";
 import { allSectionLog } from "@/lib/section-visibility";
 
@@ -73,7 +76,7 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       return {
       id: row.id, editor: true, sezione: row.sezione, when: new Date(row.creata_il), undoneAt: row.annullata_il ? new Date(row.annullata_il) : null, inForce: !row.annullata_il,
       title: `${EDITOR_TITLES[row.sezione]}${cardEdition ? ` ${cardEdition}` : ""} · editor`, edition: cardEdition,
-      card: (row.sezione === "incantesimi" ? spells.find(spell => spell.id === row.scheda_id)?.nome_italiano : monsters.find(monster => monster.id === row.scheda_id)?.nome) ?? row.scheda_id,
+      card: (row.sezione === "incantesimi" ? spellNameOf(spells.find(spell => spell.id === row.scheda_id)) : monsters.find(monster => monster.id === row.scheda_id)?.nome) ?? row.scheda_id,
       href: row.sezione === "incantesimi" ? `/spell/${row.scheda_id}` : `/mostro/${row.scheda_id}`,
       field: EDITOR_FIELDS[row.sezione].label[row.campo] ?? row.campo.replace(/_/g, " "),
       before: row.valore_prima, after: row.valore_dopo, motivo: "Modifica dall’editor",

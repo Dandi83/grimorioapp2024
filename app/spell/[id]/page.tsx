@@ -15,6 +15,7 @@ import { HtmlText } from "@/components/html-text";
 import { SpellProvenanceMarker } from "@/components/spell-provenance-marker";
 import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { capitalizeWords, getSpellById } from "@/lib/spells";
+import { spellName } from "@/lib/spell-name";
 import { schoolColor } from "@/lib/school-colors";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
@@ -37,7 +38,7 @@ export async function generateMetadata({
   const { id } = await params;
   const spell = await getSpellById(id);
   if (!spell) return { title: "Incantesimo non trovato" };
-  const titolo = capitalizeWords(spell.nome_italiano);
+  const titolo = spellName(spell.nome_italiano, spell.edizione);
   const description = spell.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
     `${titolo}, incantesimo di ${spell.scuola}.`;
   const url = `https://ilgrimorio.app/spell/${encodeURIComponent(spell.id)}`;
@@ -62,7 +63,7 @@ export default async function SpellDetailPage({
   if (!spell) notFound();
 
   const color = schoolColor(spell.scuola);
-  const titolo = capitalizeWords(spell.nome_italiano);
+  const titolo = spellName(spell.nome_italiano, spell.edizione);
   const badge =
     spell.livello_num === 0
       ? `Trucchetto · ${spell.scuola}`

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createSpellAction, updateSpellAction } from "@/app/actions/admin";
 import { capitalizeWords, parseLivello, type Spell } from "@/lib/spells-types";
+import { spellName } from "@/lib/spell-name";
 import { inlineConditionReferences } from "@/lib/conditions";
 import { inlineSpellReferences } from "@/lib/spell-references";
 import { AdminChoiceField } from "./admin-choice-field";
@@ -83,7 +84,7 @@ function SpellPreview({ spell }: { spell: Spell }) {
         Anteprima · non ancora salvata
       </p>
       <h2 className="break-words font-serif text-3xl text-foreground">
-        {capitalizeWords(spell.nome_italiano)}
+        {spellName(spell.nome_italiano, spell.edizione)}
       </h2>
       <RulesEditionBadge edition={spell.edizione} compact />
       <p className="mt-2 text-sm text-primary">{spell.livello}</p>
@@ -185,11 +186,6 @@ export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; 
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Scegli le caratteristiche e scrivi gli effetti: il Grimorio prepara la scheda.
           </p>
-          {spell?.da_file && (
-            <p className="mt-1 text-xs leading-5 text-primary">
-              Scheda dai file SRD: il primo salvataggio con una modifica la copia nel database. Ogni campo cambiato va nel Registro modifiche e si può annullare.
-            </p>
-          )}
         </div>
         <button
           type="button"

@@ -6,6 +6,13 @@ export interface Spell {
   edizione?: "2014" | "2024";
   /** Admin list only: the verified SRD source of the text, which fixes the edition of the card. */
   fonte?: "SRD 5.1" | "SRD 5.2.1";
+  /**
+   * Admin list only: where the card comes from, the same label in both editions («SRD 5.1», «SRD 5.2.1»,
+   * «Sintesi originale» for the 49 original summaries of the 2024 rules, «Aggiunta da te» for the others).
+   */
+  origine?: "SRD 5.1" | "SRD 5.2.1" | "Sintesi originale" | "Aggiunta da te";
+  /** Admin list only: the name as the site shows it (lib/spell-name.ts, after the display repairs). */
+  nome_mostrato?: string;
   /** Admin list only: a card read from the project files (SRD), not yet a database row. */
   da_file?: true;
   id: string;

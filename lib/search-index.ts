@@ -24,7 +24,7 @@ import { MANUAL_CATEGORIES } from "./manual-types";
 import { getMonsterListIndex } from "./monster-index";
 import { isSrdAnimal, typeCategory } from "./monsters-types";
 import { getSpellIndex } from "./spell-index";
-import { capitalizeWords } from "./spells-types";
+import { spellName } from "./spell-name";
 import { toolListRows } from "./tools-editions";
 import { fold, type SearchIndex, type SearchSectionKey } from "./search";
 import { isHiddenPath, partId, sectionOfPath } from "./public-sections";
@@ -57,7 +57,7 @@ export const SEARCH_SOURCES: SearchSource[] = [
   {
     section: "incantesimi", title: "Incantesimi", editionKey: SPELL_EDITION_STORAGE,
     rows: async () => (await getSpellIndex()).map(spell => ({
-      nome: capitalizeWords(spell.nome_italiano),
+      nome: spellName(spell.nome_italiano, spell.edizione),
       label: [spell.scuola, spell.livello_num === 0 ? "trucchetto" : spell.livello_num > 0 ? `liv. ${spell.livello_num}` : ""].filter(Boolean).join(" · "),
       href: `/spell/${spell.id}`, edizione: spell.edizione ?? "2024",
     })),

@@ -74,7 +74,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.equal(data.getAll('componenti').length,1);
  await click(button('Anteprima'));
  assert.equal(calls,0);
- assert.ok(document.querySelector('article').textContent.includes('Gelo Di Prova'));
+ assert.ok(document.querySelector('article').textContent.includes('Gelo di prova'));
  assert.ok(document.querySelector('article').textContent.includes('Invocazione'));
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,1);
  await click(button('Torna al modulo'));

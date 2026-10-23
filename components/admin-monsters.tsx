@@ -11,6 +11,7 @@ import type { Monster } from "@/lib/monsters-types";
 import { gsLabel, monsterColor, typeCategory } from "@/lib/monsters-types";
 import { Pencil, Plus, Search, ExternalLink } from "lucide-react";
 import { MonsterEditor } from "./admin-monster-editor";
+import { SourceLabel } from "./admin-source-label";
 import type { AdminEdition } from "@/lib/admin-edition";
 
 type Editing =
@@ -73,9 +74,12 @@ export function AdminMonsters({ monsters, edition }: { monsters: Monster[]; edit
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate font-medium text-foreground">{m.nome}</p>
-              <p className="truncate text-xs text-muted-foreground">
-                {gsLabel(m.grado_sfida)} · {typeCategory(m.tipo) || "—"}
-                {m.taglia ? ` · ${m.taglia}` : ""}
+              <p className="flex min-w-0 gap-1 text-xs text-muted-foreground">
+                <span className="truncate">
+                  {gsLabel(m.grado_sfida)} · {typeCategory(m.tipo) || "—"}
+                  {m.taglia ? ` · ${m.taglia}` : ""}
+                </span>
+                <span className="shrink-0">· <SourceLabel origine={m.provenienza?.document ?? "Aggiunta da te"} /></span>
               </p>
             </div>
             <Link
@@ -93,7 +97,8 @@ export function AdminMonsters({ monsters, edition }: { monsters: Monster[]; edit
             >
               <Pencil className="h-4 w-4" aria-hidden="true" />
             </button>
-            <DeleteButton id={m.id} nome={m.nome} />
+            {/* Only creatures made or added here can be deleted: an SRD sheet stays (the server refuses it too). */}
+            {m.provenienza ? <span className="w-8 shrink-0" aria-hidden="true" /> : <DeleteButton id={m.id} nome={m.nome} />}
           </li>
         ))}
         {filtered.length === 0 ? (

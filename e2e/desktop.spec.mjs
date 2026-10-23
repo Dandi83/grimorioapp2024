@@ -108,3 +108,52 @@ test("tablet and iPad landscape: bar of about 620 px, tiles on three columns, no
   // iPad landscape (1194): the side column.
   await expect(page.getByRole("navigation", { name: "Navigazione laterale" })).toBeVisible();
 });
+
+test("computer: a card opened from a direct link shows its row in the list column; a click on a row in view does not move the list; short creature placeholder", async ({ page }) => {
+  test.setTimeout(120_000);
+  const inView = async (aside, row) => {
+    const [a, r] = [await aside.boundingBox(), await row.boundingBox()];
+    return r.y >= a.y - 1 && r.y + r.height <= a.y + a.height + 1;
+  };
+  // A 2014 card far down the list: the column switches to 2014, loads the page with it and shows the row.
+  await page.goto("/spell/desiderio-2014");
+  const spells = page.getByRole("complementary", { name: "Elenco degli incantesimi" });
+  const wish = spells.locator('a[aria-current="page"]');
+  await expect(wish).toHaveAttribute("href", "/spell/desiderio-2014");
+  await expect(spells.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" })).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => inView(spells, wish)).toBe(true);
+  expect(await spells.evaluate(node => node.scrollTop)).toBeGreaterThan(0);
+  // A row already in view: the card changes, the list stays where it is.
+  const before = await spells.evaluate(node => node.scrollTop);
+  const near = wish.locator("xpath=preceding::a[starts-with(@href, '/spell/')][1]");
+  const href = await near.getAttribute("href");
+  expect(await inView(spells, near)).toBe(true);
+  await near.click();
+  await expect(page).toHaveURL(href);
+  await expect(spells.locator('a[aria-current="page"]')).toHaveAttribute("href", href);
+  await page.waitForTimeout(300);
+  expect(await spells.evaluate(node => node.scrollTop)).toBe(before);
+
+  // Creatures: the last challenge rating, and a placeholder that fits the 320 px column.
+  await page.goto("/mostro/tarrasque");
+  const creatures = page.getByRole("complementary", { name: "Elenco del bestiario" });
+  const tarrasque = creatures.locator('a[aria-current="page"]');
+  await expect(tarrasque).toHaveAttribute("href", "/mostro/tarrasque");
+  await expect.poll(() => inView(creatures, tarrasque)).toBe(true);
+  const search = creatures.getByRole("searchbox", { name: "Cerca una creatura" });
+  await expect(search).toHaveAttribute("placeholder", "Cerca…");
+  expect(await search.evaluate(input => {
+    const probe = document.createElement("span");
+    probe.style.font = getComputedStyle(input).font;
+    probe.style.position = "absolute";
+    probe.textContent = input.placeholder;
+    document.body.append(probe);
+    const width = probe.getBoundingClientRect().width;
+    probe.remove();
+    return width <= input.clientWidth;
+  })).toBe(true);
+  // The phone keeps its text.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/bestiario");
+  await expect(page.getByRole("searchbox", { name: "Cerca una creatura" })).toHaveAttribute("placeholder", "Cerca per nome…");
+});

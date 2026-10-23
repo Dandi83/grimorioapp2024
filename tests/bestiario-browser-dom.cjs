@@ -167,8 +167,9 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  window.localStorage.setItem(storageKey,JSON.stringify(['spell-0','mostro:gatto']));
  const storagePrototype=Object.getPrototypeOf(window.localStorage),originalSet=storagePrototype.setItem,writes=[];
  storagePrototype.setItem=function(key,value){if(key===storageKey)writes.push(value);return originalSet.call(this,key,value)};
- const types=load('lib/spells-types.ts'),originalCapitalize=types.capitalizeWords,renderCounts=new Map();
- types.capitalizeWords=text=>{renderCounts.set(text,(renderCounts.get(text)||0)+1);return originalCapitalize(text)};
+ // Rows render their name with lib/spell-name.ts: counting its calls counts the rows rendered.
+ const names=load('lib/spell-name.ts'),originalName=names.spellName,renderCounts=new Map();
+ names.spellName=(text,edition)=>{renderCounts.set(text,(renderCounts.get(text)||0)+1);return originalName(text,edition)};
  const pair=[{...spells[0],nome_italiano:'Abiurazione',scuola:'Abiurazione'},{...spells[1],nome_italiano:'Evocazione',scuola:'Evocazione'}];
  const pairProps={spells:pair,meta:{livelli:[0],scuole:['Abiurazione','Evocazione'],classi:['mago']}};
  const renderPair=()=>React.createElement(React.StrictMode,null,React.createElement(provider.FavoritesProvider,null,React.createElement(GrimorioBrowser,pairProps)));
@@ -183,7 +184,7 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await act(async()=>root.render(React.createElement('div')));
  await act(async()=>root.render(renderPair()));
  assert.equal(document.querySelector('a[href="/spell/spell-0"]').closest('li').querySelector('button').getAttribute('aria-pressed'),'false','saved state survives remount');
- types.capitalizeWords=originalCapitalize;storagePrototype.setItem=originalSet;
+ names.spellName=originalName;storagePrototype.setItem=originalSet;
  // Static list shells read URL filters on the client, including same-path navigation.
  const {GrimorioWithFilters,BestiarioWithFilters}=load('components/catalog-browsers.tsx');
  navigateQuery('livello=9&scuola=invocazione&classe=mago');
