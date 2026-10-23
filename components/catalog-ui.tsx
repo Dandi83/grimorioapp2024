@@ -168,7 +168,8 @@ export function FilterGroup<T extends string>({ title, options, selected, onTogg
               aria-pressed={on}
               onClick={() => onToggle(value)}
               className={segmented
-                ? `min-h-11 rounded-[6px] px-2 text-base font-bold ${on ? "bg-primary text-primary-foreground" : "text-foreground"}`
+                // Four choices (the Bestiario collections with Homebrew) stay whole on a 360 px phone.
+                ? `min-h-11 min-w-0 rounded-[6px] font-bold ${options.length > 3 ? "px-0.5 text-[14px]" : "px-2 text-base"} ${on ? "bg-primary text-primary-foreground" : "text-foreground"}`
                 : `min-h-11 rounded-[8px] border-2 px-4 text-base font-bold ${on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-transparent text-foreground"}`}
             >
               {label(value)}
