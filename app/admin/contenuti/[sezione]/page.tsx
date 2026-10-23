@@ -26,7 +26,7 @@ export default async function ContentSectionPage({ params, searchParams }: {
   if (!section.editions.includes(chosen)) {
     const only = section.editions[0];
     return (
-      <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
+      <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-8 pt-4">
         <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
         <h1 className="font-serif text-[30px] font-bold text-primary">{section.title}</h1>
         <OtherEditionNotice current={chosen} target={only} message={`${section.title} ha solo l’edizione ${only}: nell’edizione ${chosen} non c’è niente da modificare.`} />
@@ -39,7 +39,7 @@ export default async function ContentSectionPage({ params, searchParams }: {
   const changed = new Set(active.map(row => row.scheda_id));
   const items = section.items(edition).map(item => ({ ...item, modificato: changed.has(item.id) }));
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
+    <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-8 pt-4">
       <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
       <h1 className="font-serif text-[30px] font-bold text-primary">{section.title}</h1>
       {linked && <OtherEditionNotice current={edition} target={linked} message={`Il link apriva l’edizione ${linked}: qui vedi l’edizione ${edition}.`} />}

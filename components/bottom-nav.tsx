@@ -3,57 +3,15 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
-import { BookOpen, Home, ScrollText, Skull, Star } from "lucide-react";
-import type { ComponentType } from "react";
-
 import { notePathChange } from "@/components/navigation-memory";
-import type { PublicSectionKey } from "@/lib/public-sections";
-
-interface NavItem {
-  href: string;
-  label: string;
-  Icon: ComponentType<{ size?: number; className?: string; strokeWidth?: number }>;
-  match: (path: string) => boolean;
-  /** The public section of the tab (lib/public-sections.ts): a hidden one leaves the bar. */
-  section?: PublicSectionKey;
-}
-
-const ITEMS: NavItem[] = [
-  { href: "/", label: "Home", Icon: Home, match: (p) => p === "/" },
-  {
-    href: "/grimorio",
-    label: "Incantesimi",
-    Icon: BookOpen,
-    match: (p) => p.startsWith("/grimorio") || p.startsWith("/spell"),
-    section: "incantesimi",
-  },
-  {
-    href: "/bestiario",
-    label: "Bestiario",
-    Icon: Skull,
-    match: (p) => p.startsWith("/bestiario") || p.startsWith("/mostro"),
-    section: "bestiario",
-  },
-  {
-    href: "/compendio",
-    label: "Compendio",
-    Icon: ScrollText,
-    match: (p) => p.startsWith("/compendio") || p.startsWith("/equipaggiamento") || p.startsWith("/avanzamento") || p.startsWith("/oggetti-magici") || p.startsWith("/classi"),
-  },
-  {
-    href: "/preferiti",
-    label: "Preferiti",
-    Icon: Star,
-    match: (p) => p.startsWith("/preferiti"),
-  },
-];
+import { visibleNavItems } from "@/components/nav-items";
 
 const NONE: readonly string[] = [];
 
 /** hidden: sections hidden from /admin/sezioni; admin: the administrator still sees them, labelled «Nascosta». */
 export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?: readonly string[]; admin?: boolean }) {
   const pathname = usePathname();
-  const items = useMemo(() => ITEMS.filter(item => adminView || !item.section || !hidden.includes(item.section)), [hidden, adminView]);
+  const items = useMemo(() => visibleNavItems(hidden, adminView), [hidden, adminView]);
   const router = useRouter();
   const admin = pathname.startsWith("/admin");
 
@@ -82,7 +40,7 @@ export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?
   return (
     <nav
       aria-label="Navigazione principale"
-      className="fixed inset-x-0 bottom-0 z-50 mx-auto h-[calc(80px+env(safe-area-inset-bottom,0px))] w-full max-w-2xl border-t border-border bg-nav pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto h-[calc(80px+env(safe-area-inset-bottom,0px))] w-full max-w-2xl border-t border-border bg-nav pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)] md:max-w-[620px] lg:hidden"
     >
       <ul className="flex h-[80px] items-stretch">
         {items.map(({ href, label, Icon, match, section }) => {

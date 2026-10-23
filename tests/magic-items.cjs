@@ -160,7 +160,7 @@ assert.ok(!publicPage.test('/oggetti-magici/a/b'));
 const compendio=fs.readFileSync('app/compendio/page.tsx','utf8');
 assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]).slice(0,4),['/classi','/equipaggiamento','/avanzamento','/oggetti-magici']);
 assert.ok(compendio.includes('text: "Elenco A–Z con rarità e sintonia"'));
-const nav=fs.readFileSync('components/bottom-nav.tsx','utf8');
+const nav=fs.readFileSync('components/nav-items.ts','utf8').split('export const FOOT_LINKS')[0];
 assert.equal([...nav.matchAll(/href: "/g)].length,5);
 assert.ok(nav.includes('p.startsWith("/oggetti-magici")'));
 // The rules on magic items are a link to the manual entry, only where the manual is published.

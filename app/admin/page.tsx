@@ -107,7 +107,7 @@ export default async function AdminPage() {
   const active = overrides?.filter(row => !row.annullata_il && row.edizione === edition) ?? [];
   const perSection = (key: string) => active.filter(row => row.sezione === key).length;
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
+    <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-8 pt-4">
       <div className="flex items-center justify-between gap-3">
         <AdminPublicLink />
         <form action={logoutAction}>
@@ -132,7 +132,7 @@ export default async function AdminPage() {
           <span className="block text-[13px] text-muted">{devices === null ? "Avvisi sul telefono" : devices === 0 ? "Nessun dispositivo attivo" : devices === 1 ? "1 dispositivo attivo" : `${devices} dispositivi attivi`}</span>
         </span>
       </Link>
-      <nav aria-label="Sezioni da modificare" className="grid grid-cols-2 gap-2.5">
+      <nav aria-label="Sezioni da modificare" className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
         <Tile href="/admin/incantesimi" title="Incantesimi" items={spellCount} hint="Modifica testi e dati" icon="incantesimi" hidden={tileState("incantesimi")} />
         <Tile href="/admin/mostri" title="Mostri" items={monsterCount} hint="Modifica schede" icon="mostri" hidden={tileState("mostri")} />
         {CONTENT_SECTIONS.map(section => {

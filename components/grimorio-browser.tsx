@@ -44,6 +44,8 @@ interface Props {
   initialQuery?: string;
   initialLimit?: number;
   initialScroll?: number;
+  /** The list column of the computer layout: the open card highlighted, no state saved for «back». */
+  pane?: { selectedId?: string };
 }
 
 export function GrimorioBrowser({
@@ -54,6 +56,7 @@ export function GrimorioBrowser({
   initialQuery = "",
   initialLimit = PAGE_SIZE,
   initialScroll,
+  pane,
 }: Props) {
   const [q, setQ] = useState(initialQuery);
   const [filters, setFilters] = useState<SpellFilters>(initialFilters);
@@ -100,7 +103,7 @@ export function GrimorioBrowser({
   const scroll = useRef(initialScroll ?? 0);
   const save = () => saveListState<SpellListState>("grimorio",
     { url: window.location.search, q, ...filters, edizione, limit, scroll: scroll.current });
-  useEffect(save);
+  useEffect(() => { if (!pane) save(); });
   useEffect(() => {
     if (initialScroll) window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo(0, initialScroll)));
   }, [initialScroll]);
@@ -164,7 +167,7 @@ export function GrimorioBrowser({
           </p>
         </div>
       ) : (
-        <ul className="px-6 pb-2" onClickCapture={() => { scroll.current = window.scrollY; save(); }}>
+        <ul className="px-6 pb-2" onClickCapture={() => { if (pane) return; scroll.current = window.scrollY; save(); }}>
           {visible.map((spell, i) => {
             const prev = visible[i - 1];
             const newGroup = !prev || prev.livello_num !== spell.livello_num;
@@ -178,7 +181,7 @@ export function GrimorioBrowser({
                     <span className="text-[15px] text-muted">{count} {count === 1 ? "incantesimo" : "incantesimi"}</span>
                   </div>
                 )}
-                <GrimorioRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggleFavorite} />
+                <GrimorioRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggleFavorite} selected={pane?.selectedId === spell.id} />
               </li>
             );
           })}
@@ -200,13 +203,13 @@ export function GrimorioBrowser({
 }
 
 // Memoized: toggling one star re-renders only that row.
-const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void }) {
+const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean }) {
   const href = `/spell/${spell.id}`;
   const prefetch = useIntentPrefetch(href);
   const details = [spell.scuola, spell.tempo_di_lancio].filter(Boolean).join(" · ");
   return (
-    <div className="flex min-h-[62px] items-center gap-2 border-b border-divider">
-      <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} className="min-w-0 flex-1 py-2.5">
+    <div className={`flex min-h-[62px] items-center gap-2 border-b border-divider${selected ? " -mx-3 rounded-[10px] bg-primary-faint px-3 shadow-[inset_3px_0_0_var(--color-primary)]" : ""}`}>
+      <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="min-w-0 flex-1 py-2.5">
         <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{capitalizeWords(spell.nome_italiano)}</span>
         {details && <span className="block text-[15px] text-muted">{details}</span>}
         {(spell.concentrazione || spell.rituale) && (

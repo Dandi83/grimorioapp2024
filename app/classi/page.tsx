@@ -17,7 +17,7 @@ function ClassGrid({ entries, edition }: { entries: ClassEntry[]; edition: Class
   return (
     <>
       <p className="mt-2 text-[15px] leading-6 text-muted">{cards.length} classi, ognuna con la sua sottoclasse del manuale.</p>
-      <ul className="mt-4 grid grid-cols-2 gap-[10px]">
+      <ul className="mt-4 grid grid-cols-2 gap-[10px] md:grid-cols-3 md:gap-4 lg:grid-cols-4">
         {cards.map(({ id, card }) => (
           <li key={id} className="min-w-0">
             <Link href={classHref(id)} className="flex h-full min-h-[132px] flex-col rounded-[14px] border border-border bg-card p-3 shadow-[0_1px_0_var(--color-divider)]">

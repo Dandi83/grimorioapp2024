@@ -25,8 +25,10 @@ function load(relative, deps={}) {
  assert.notEqual(changedKey[2],monsterKey[2]);
  const monsterList=await monsterIndex.getMonsterListIndex();
  assert.deepEqual((await monsterIndex.getMonsterIdIndex()).map(m=>m.id),all.map(m=>m.id),'static generation keeps every creature ID');
- const page=load('app/bestiario/page.tsx',{'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList}}).default;
- const element=await page();
+ const page=load('app/bestiario/page.tsx',{'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/components/layout/catalog-split':{EmptyCard:'empty-card'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList}}).default;
+ // Phone: the list itself (in a block hidden only on a computer, where it is in the left column); then the empty card of the computer.
+ const listOf=fragment=>{const [phone,empty]=fragment.props.children;assert.equal(phone.props.className,'lg:hidden');assert.equal(empty.type,'empty-card');return phone.props.children;};
+ const element=listOf(await page());
  assert.equal(element.type,'test-browser','The static page renders the catalog directly, without a Suspense fallback');
  const list=element.props.monsters;
  const legacyCount=JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.1-it.json','utf8')).records.length;
@@ -41,8 +43,8 @@ function load(relative, deps={}) {
  const spell={id:'custom-admin-spell',nome_italiano:'Incantesimo di prova',livello:'Evocazione di 3° livello (mago)',livello_num:3,scuola:'Evocazione',classi:['mago'],descrizione:'FULL_BODY_NOT_FOR_LIST '.repeat(1000),tempo_di_lancio:'azione',gittata:'18 m',componenti:'V',durata:'1 minuto'};
  const spellBefore=JSON.stringify(spell);
  const index=[{id:spell.id,nome_italiano:spell.nome_italiano,livello_num:spell.livello_num,scuola:spell.scuola,classi:spell.classi}];
- const sp=load('app/grimorio/page.tsx',{'@/components/catalog-browsers':{GrimorioWithFilters:'test-browser'},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/spells-types':st}).default;
- const se=await sp();
+ const sp=load('app/grimorio/page.tsx',{'@/components/catalog-browsers':{GrimorioWithFilters:'test-browser'},'@/components/layout/catalog-split':{EmptyCard:'empty-card'},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/spells-types':st}).default;
+ const se=listOf(await sp());
  assert.equal(se.type,'test-browser','The static page renders spell names directly');
  assert.ok(!('descrizione' in se.props.spells[0]),'Spell lists must not ship complete descriptions');
  assert.deepEqual(Object.keys(se.props.spells[0]).sort(),['id','nome_italiano','livello_num','scuola','classi'].sort());

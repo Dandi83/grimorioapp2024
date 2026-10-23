@@ -151,3 +151,88 @@
 }
 
 
+
+/* Computer shortcuts: not shown on phones and tablets. */
+.shortcuts {
+  display: none;
+}
+
+/*
+ * Tablet: the picture keeps its width. Computer (≥1024 px): the side column has the logo and the links,
+ * the picture fills the area on its right under a dark veil from the left, the sentence is large.
+ */
+@media (min-width: 1024px) {
+  .home {
+    min-height: 100dvh;
+  }
+
+  .header {
+    display: none;
+  }
+
+  .library {
+    min-height: 100dvh;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 64px clamp(48px, 7vw, 112px);
+    text-align: left;
+  }
+
+  .image {
+    object-position: center 40%;
+  }
+
+  .shade {
+    background: linear-gradient(90deg, rgb(43 33 24 / 88%) 0%, rgb(43 33 24 / 66%) 42%, rgb(43 33 24 / 18%) 100%);
+  }
+
+  .copy {
+    max-width: 680px;
+  }
+
+  .quote {
+    color: var(--color-card);
+    font-size: 64px;
+    line-height: 1.06;
+  }
+
+  .quote em {
+    color: var(--color-amber);
+  }
+
+  .shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .shortcuts a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1.5px solid rgb(255 251 240 / 55%);
+    border-radius: 22px;
+    background: rgb(255 251 240 / 12%);
+    padding: 0 18px;
+    color: var(--color-card);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .shortcuts a:hover {
+    background: rgb(255 251 240 / 22%);
+  }
+
+  .shortcuts a:focus-visible,
+  .report:focus-visible {
+    outline: 2px solid var(--color-amber);
+    outline-offset: 3px;
+  }
+
+  .report {
+    margin-top: 10px;
+    padding: 0;
+    color: rgb(255 251 240 / 80%);
+  }
+}

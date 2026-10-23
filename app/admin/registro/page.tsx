@@ -106,7 +106,7 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
   const now = new Date();
   const documented = documentedRepairs();
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
+    <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-8 pt-4">
       <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
       <h1 className="font-serif text-[30px] font-bold text-primary">Registro modifiche</h1>
       <p className="text-sm text-muted">Tutto ciò che è diverso dal manuale originale, con motivo e possibilità di annullare. I file originali non vengono mai modificati; incantesimi e mostri sono schede del database e qui c’è il valore precedente di ogni modifica.</p>
