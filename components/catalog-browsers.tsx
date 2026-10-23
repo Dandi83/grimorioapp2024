@@ -14,27 +14,33 @@ import { normalizeHabitats } from "@/lib/habitats";
 
 // Server rendering and initial hydration show real, unfiltered rows. URL filters
 // are applied after mount, without a useSearchParams/Suspense client bailout.
-function useCatalogSearch() {
+// listPath: the list column of the computer layout reads the address only while it is the list's own
+// (/grimorio, /bestiario), so opening a card keeps the filters it came with.
+function useCatalogSearch(listPath?: string) {
   const [search, setSearch] = useState("");
   // Also sync after a same-route client navigation that renders this component.
-  useEffect(() => { setSearch(window.location.search); });
+  useEffect(() => { if (!listPath || window.location.pathname === listPath) setSearch(window.location.search); });
   useEffect(() => {
-    const sync = () => setSearch(window.location.search);
+    const sync = () => { if (!listPath || window.location.pathname === listPath) setSearch(window.location.search); };
     window.addEventListener("popstate", sync);
     return () => window.removeEventListener("popstate", sync);
-  }, []);
+  }, [listPath]);
   return { params: new URLSearchParams(search), search };
 }
 
+/** The list column of the computer layout (components/layout/catalog-split.tsx): the open card is highlighted. */
+export interface ListPane { selectedId?: string }
+
 // After "back" from a card, restore the list exactly as it was left
 // (search, filters, pages shown, scroll). Other arrivals start fresh.
-function useRestoredList<T extends { url: string }>(key: string, search: string) {
+// The list column of the computer stays mounted, so it never needs this (pane).
+function useRestoredList<T extends { url: string }>(key: string, search: string, pane?: ListPane) {
   const [restored, setRestored] = useState<T | null>(null);
   // Read during the first client render: the freshly mounted list saves its own
   // state in an effect that runs before this component's effects.
   const snapshot = useRef<T | null | undefined>(undefined);
   if (snapshot.current === undefined && typeof window !== "undefined") {
-    snapshot.current = returningBack() ? readListState<T>(key) : null;
+    snapshot.current = !pane && returningBack() ? readListState<T>(key) : null;
   }
   useEffect(() => {
     const saved = snapshot.current;
@@ -56,13 +62,13 @@ export function spellFiltersFromParams(params: URLSearchParams): SpellFilters {
   };
 }
 
-export function GrimorioWithFilters({ spells, meta }: { spells: SpellListItem[]; meta: SpellsMeta }) {
-  const { params, search } = useCatalogSearch();
+export function GrimorioWithFilters({ spells, meta, pane }: { spells: SpellListItem[]; meta: SpellsMeta; pane?: ListPane }) {
+  const { params, search } = useCatalogSearch(pane ? "/grimorio" : undefined);
   const filters = spellFiltersFromParams(params);
   const requested = params.get("edizione");
   const storedEdition = useStoredEdition(SPELL_EDITION_KEY);
   const edizione = isEdition(requested) ? requested : storedEdition ?? "2024";
-  const restored = useRestoredList<SpellListState>("grimorio", search);
+  const restored = useRestoredList<SpellListState>("grimorio", search, pane);
   const restoredFilters: SpellFilters | null = restored && Array.isArray(restored.livello)
     ? { livello: restored.livello, scuola: restored.scuola, classe: restored.classe, tempo: Array.isArray(restored.tempo) ? restored.tempo : [], concentrazione: restored.concentrazione, rituale: restored.rituale }
     : null;
@@ -70,7 +76,7 @@ export function GrimorioWithFilters({ spells, meta }: { spells: SpellListItem[];
     spells={spells} meta={meta} initialFilters={restoredFilters ?? filters}
     initialEdizione={restoredFilters ? restored!.edizione : edizione}
     initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
-    initialScroll={restoredFilters ? restored!.scroll : undefined} />;
+    initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} />;
 }
 
 const isEdition = (value: string | null): value is Edition => value === "2024" || value === "2014";
@@ -104,13 +110,13 @@ export function filtersFromParams(params: URLSearchParams): MonsterFilters {
   };
 }
 
-export function BestiarioWithFilters({ monsters }: { monsters: MonsterListItem[] }) {
-  const { params, search } = useCatalogSearch();
+export function BestiarioWithFilters({ monsters, pane }: { monsters: MonsterListItem[]; pane?: ListPane }) {
+  const { params, search } = useCatalogSearch(pane ? "/bestiario" : undefined);
   const filters = filtersFromParams(params);
   const requested = params.get("edizione");
   const storedEdition = useStoredEdition();
   const edizione = isEdition(requested) ? requested : storedEdition ?? "2024";
-  const restored = useRestoredList<MonsterListState>("bestiario", search);
+  const restored = useRestoredList<MonsterListState>("bestiario", search, pane);
   const restoredFilters: MonsterFilters | null = restored && Array.isArray(restored.gs)
     ? { categoria: restored.categoria, gs: restored.gs, tipo: restored.tipo, taglia: restored.taglia, habitat: restored.habitat }
     : null;
@@ -118,5 +124,5 @@ export function BestiarioWithFilters({ monsters }: { monsters: MonsterListItem[]
     monsters={monsters} initialFilters={restoredFilters ?? filters}
     initialEdizione={restoredFilters ? restored!.edizione : edizione}
     initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
-    initialScroll={restoredFilters ? restored!.scroll : undefined} />;
+    initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} />;
 }

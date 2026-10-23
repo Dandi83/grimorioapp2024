@@ -53,6 +53,8 @@ interface Props {
   initialQuery?: string;
   initialLimit?: number;
   initialScroll?: number;
+  /** The list column of the computer layout: GS badge on the left, the open card highlighted, no state saved for «back». */
+  pane?: { selectedId?: string };
 }
 
 export function BestiarioBrowser({
@@ -62,6 +64,7 @@ export function BestiarioBrowser({
   initialQuery = "",
   initialLimit = PAGE_SIZE,
   initialScroll,
+  pane,
 }: Props) {
   const [q, setQ] = useState(initialQuery);
   const [filters, setFilters] = useState<MonsterFilters>(initialFilters);
@@ -104,7 +107,7 @@ export function BestiarioBrowser({
   const scroll = useRef(initialScroll ?? 0);
   const save = () => saveListState<MonsterListState>("bestiario",
     { url: window.location.search, q, ...filters, edizione, limit, scroll: scroll.current });
-  useEffect(save);
+  useEffect(() => { if (!pane) save(); });
   useEffect(() => {
     if (initialScroll) window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo(0, initialScroll)));
   }, [initialScroll]);
@@ -159,11 +162,13 @@ export function BestiarioBrowser({
       </FilterSheet>
 
       <div className="px-6">
-        <div className="grid grid-cols-[minmax(0,1.3fr)_48px_minmax(0,0.8fr)_44px] items-end gap-2 border-b-2 border-border-strong pb-2 pt-4 text-[12px] font-bold uppercase tracking-[0.06em] text-muted">
-          <span role="status" className="whitespace-nowrap" aria-live="polite">Nome · {results.length} {results.length === 1 ? "risultato" : "risultati"}</span>
-          <span>GS</span>
-          <span>Tipo</span>
-          <span />
+        <div className={`${pane ? "flex" : "grid grid-cols-[minmax(0,1.3fr)_48px_minmax(0,0.8fr)_44px]"} items-end gap-2 border-b-2 border-border-strong pb-2 pt-4 text-[12px] font-bold uppercase tracking-[0.06em] text-muted`}>
+          <span role="status" className="whitespace-nowrap" aria-live="polite">{pane ? "" : "Nome · "}{results.length} {results.length === 1 ? "risultato" : "risultati"}</span>
+          {!pane && <>
+            <span>GS</span>
+            <span>Tipo</span>
+            <span />
+          </>}
         </div>
         {results.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
@@ -171,10 +176,12 @@ export function BestiarioBrowser({
             <p className="font-serif text-lg italic text-muted">Nessuna creatura trovata.</p>
           </div>
         ) : (
-          <ul onClickCapture={() => { scroll.current = window.scrollY; save(); }}>
+          <ul onClickCapture={() => { if (pane) return; scroll.current = window.scrollY; save(); }}>
             {visible.map(monster => (
               <li key={monster.id} className="catalog-row border-b border-divider">
-                <BestiaryRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} />
+                {pane
+                  ? <PaneRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} selected={pane.selectedId === monster.id} />
+                  : <BestiaryRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} />}
               </li>
             ))}
           </ul>
@@ -224,6 +231,28 @@ const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle }: { mons
         className="grid size-11 place-items-center transition-transform active:scale-90"
       >
         <Star size={24} strokeWidth={1.75} className={fav ? "fill-primary text-primary" : "text-primary"} />
+      </button>
+    </div>
+  );
+});
+
+// The list column of the computer (320 px): GS badge on the left, name, type.
+const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void; selected: boolean }) {
+  const favId = `mostro:${monster.id}`;
+  const href = `/mostro/${monster.id}`;
+  const prefetch = useIntentPrefetch(href);
+  return (
+    <div className={`flex min-h-[58px] items-center gap-2.5${selected ? " -mx-3 rounded-[10px] bg-primary-faint px-3 shadow-[inset_3px_0_0_var(--color-primary)]" : ""}`}>
+      <Link href={href} prefetch={false} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="flex min-w-0 flex-1 items-center gap-3 py-2">
+        <span className="grid h-9 min-w-10 shrink-0 place-items-center rounded-[8px] bg-primary px-1.5 font-serif text-[15px] font-bold tabular-nums text-primary-foreground">{monster.grado_sfida || "—"}</span>
+        <span className="min-w-0">
+          <span className="block truncate font-serif text-[19px] font-bold leading-tight text-foreground">{monster.nome}</span>
+          <span className="block truncate text-[14px] text-muted">{typeCategory(monster.tipo)}</span>
+        </span>
+      </Link>
+      <button type="button" onClick={() => onToggle(favId)} aria-label={fav ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"} aria-pressed={fav}
+        className="grid size-11 shrink-0 place-items-center transition-transform active:scale-90">
+        <Star size={22} strokeWidth={1.75} className={fav ? "fill-primary text-primary" : "text-primary"} />
       </button>
     </div>
   );

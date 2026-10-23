@@ -33,3 +33,17 @@
   flex-shrink: 0;
   color: var(--color-primary);
 }
+
+/* Computer (≥1024 px): a taller field, aligned with the sentence of the Home. */
+@media (min-width: 1024px) {
+  .search {
+    max-width: 640px;
+    align-items: flex-start;
+    margin: 26px 0 0;
+  }
+
+  .field {
+    min-height: 60px;
+    border-radius: 30px;
+  }
+}

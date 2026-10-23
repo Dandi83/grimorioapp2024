@@ -60,7 +60,7 @@ export function AdminDashboard({
   }, [query, spells]);
 
   return (
-    <main className="mx-auto max-w-3xl px-5 pb-24 pt-8">
+    <main className="mx-auto max-w-3xl px-5 pb-24 pt-8 lg:max-w-[1200px]">
       <Link href="/admin" className="mb-4 inline-flex min-h-11 items-center text-[15px] font-bold text-primary">‹ Amministrazione</Link>
       <header className="mb-6 flex items-center justify-between gap-3">
         <div>

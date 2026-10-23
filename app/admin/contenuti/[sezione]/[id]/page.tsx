@@ -36,7 +36,7 @@ export default async function ContentEditPage({ params, searchParams }: {
   });
   const back = `/admin/contenuti/${section.key}`;
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
+    <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-8 pt-4">
       <Link href={back} className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ {section.title}</Link>
       <EditionChip edition={edition} />
       {edition !== chosen && <OtherEditionNotice current={chosen} target={edition} message={`Questa voce è dell’edizione ${edition}, ma stai modificando l’edizione ${chosen}. Le modifiche valgono solo per questa voce ${edition}.`} />}
