@@ -6,7 +6,7 @@ const ts=require('typescript');
 const {createRequire}=require('node:module');
 
 const ORIGIN='https://ilgrimorio.app';
-function worker({version='v2',caches:shared}={}){
+function worker({version='v2',caches:shared,navigator}={}){
  const listeners={};
  const store=shared||new Map();
  const cacheFor=name=>{if(!store.has(name))store.set(name,new Map());const entries=store.get(name);return {
@@ -26,7 +26,7 @@ function worker({version='v2',caches:shared}={}){
  };
  const shown=[],opened=[],windows=[];
  const self={location:new URL(ORIGIN+'/sw.js'),addEventListener:(type,fn)=>{listeners[type]=fn;},skipWaiting:async()=>{},
-  clients:{claim:async()=>{},matchAll:async()=>windows,openWindow:async url=>{opened.push(url);}},registration:{showNotification:async(title,options)=>{shown.push({title,options});}}};
+  clients:{claim:async()=>{},matchAll:async()=>windows,openWindow:async url=>{opened.push(url);}},registration:{showNotification:async(title,options)=>{shown.push({title,options});}},navigator};
  const context=vm.createContext({self,caches:{open:async name=>cacheFor(name),keys:async()=>[...store.keys()],delete:async name=>store.delete(name)},
   fetch:fetchMock,Request:function(request,init){network.cacheModes.push(init&&init.cache);return Object.assign(Object.create(request),{url:request.url,cache:init&&init.cache});},Response,Headers,URL,Map,Promise,Number,String,Array,Math,Date,console,
   setTimeout:(fn,ms,...args)=>setTimeout(fn,ms>=3000?20:ms,...args)});
@@ -183,6 +183,23 @@ const text=r=>r.text();
  await n.click('/admin/segnalazioni/def');
  assert.deepEqual([focused,visited,n.opened.length],[1,[ORIGIN+'/admin/segnalazioni/def'],1],'an open window of the app is used');
 
+ // App icon badge: the push sets the number of new reports, 0 removes it, no badge field leaves it alone.
+ const badges=[];
+ const b=worker({navigator:{setAppBadge:async c=>{badges.push(c);},clearAppBadge:async()=>{badges.push('clear');}}});
+ await b.pushEvent({title:'Nuova segnalazione',url:'/admin/segnalazioni/a',badge:3});
+ await b.pushEvent({title:'Nuova segnalazione',url:'/admin/segnalazioni/b',badge:0});
+ await b.pushEvent({title:'Notifica di prova',url:'/admin/notifiche'});
+ await b.pushEvent({title:'X',badge:-1});await b.pushEvent({title:'X',badge:'7'});await b.pushEvent({title:'X',badge:2.5});
+ assert.deepEqual(badges,[3,'clear'],'set, cleared at 0, untouched without a valid number');
+ assert.equal(b.shown.length,6,'every push still shows its notification');
+ // Badge refused (no permission) or not supported: the notification is shown, no error.
+ const refused=worker({navigator:{setAppBadge:async()=>{throw new Error('NotAllowedError');}}});
+ await refused.pushEvent({title:'Nuova segnalazione',badge:1});
+ assert.equal(refused.shown.length,1);
+ const none=worker();
+ await none.pushEvent({title:'Nuova segnalazione',badge:4});await none.pushEvent({title:'Nuova segnalazione',badge:0});
+ assert.equal(none.shown.length,2,'no Badging API: nothing happens');
+
  // The route serves this worker with its version, or the self-removing one when switched off.
  const routeFile=path.resolve('app/sw.js/route.ts');
  const loadRoute=()=>{const mod={exports:{}};new Function('require','module','exports',ts.transpileModule(fs.readFileSync(routeFile,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}}).outputText)(id=>id==='@/lib/service-worker-config'?{serviceWorkerEnabled:()=>process.env.GRIMORIO_SERVICE_WORKER!=='off'}:createRequire(routeFile)(id),mod,mod.exports);return mod.exports;};
@@ -203,5 +220,5 @@ const text=r=>r.text();
  let done;listeners.activate({waitUntil:p=>{done=p;}});await done;
  assert.deepEqual([...store.keys()],['altro']);assert.ok(unregistered);assert.deepEqual(reloaded,['/grimorio']);
 
- console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch, hidden sections never served from a saved copy, copies dropped when hidden parts change, admin notifications shown and opened on this site only.');
+ console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch, hidden sections never served from a saved copy, copies dropped when hidden parts change, admin notifications shown and opened on this site only, app icon badge set and cleared from the push.');
 })().catch(error=>{console.error(error);process.exit(1);});

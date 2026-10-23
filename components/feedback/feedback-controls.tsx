@@ -4,6 +4,7 @@ import { useActionState, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { deleteFeedbackAction, feedbackNoteAction, feedbackStateAction } from "@/app/actions/admin-feedback";
+import { BADGE_SYNC_EVENT } from "@/lib/app-badge";
 import { NOTE_MAX, type FeedbackState } from "@/lib/feedback-input";
 
 const BUTTONS: { value: FeedbackState; label: string; tone: string }[] = [
@@ -28,7 +29,7 @@ export function FeedbackControls({ id, stato, nota }: { id: string; stato: Feedb
     startTransition(async () => {
       try {
         const result = await feedbackStateAction(form);
-        if (result.ok) setCurrent(value);
+        if (result.ok) { setCurrent(value); window.dispatchEvent(new Event(BADGE_SYNC_EVENT)); }
         else setError(result.error);
       } catch {
         setError("Modifica non riuscita. Controlla la connessione e riprova.");
@@ -68,7 +69,7 @@ export function FeedbackControls({ id, stato, nota }: { id: string; stato: Feedb
         startTransition(async () => {
           try {
             const result = await deleteFeedbackAction(formData);
-            if (result.ok) router.replace("/admin/segnalazioni");
+            if (result.ok) { window.dispatchEvent(new Event(BADGE_SYNC_EVENT)); router.replace("/admin/segnalazioni"); }
             else setError(result.error);
           } catch {
             setError("Eliminazione non riuscita. Controlla la connessione e riprova.");
