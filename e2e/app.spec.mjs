@@ -1591,3 +1591,137 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
   await expect(old.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toHaveCount(0);
   await plain.close();
 });
+
+test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a creature leave every public place, the administrator still sees them, Annulla, log, Preferiti, rows never cut", async ({ page, browser, request }) => {
+  test.setTimeout(240_000);
+  const errors = [];
+  page.on("pageerror", error => errors.push(String(error)));
+  const cards = [
+    { href: "/spell/palla-di-fuoco", name: "Palla di fuoco", list: "/admin/incantesimi", edition: "2024", search: "Cerca per nome o scuola…", query: "palla di fuoco" },
+    { href: "/spell/allarme-2014", name: "Allarme", list: "/admin/incantesimi", edition: "2014", search: "Cerca per nome o scuola…", query: "allarme" },
+    { href: "/mostro/aboleth", name: "Aboleth", list: "/admin/mostri", edition: "2024", search: "Cerca per nome o tipo…", query: "aboleth" },
+  ];
+  const homeCounts = async () => (await (await request.get("/")).text()).match(/Incantesimi · (\d+)[\s\S]*Bestiario · (\d+)/).slice(1).map(Number);
+  const json = async path => (await request.get(path)).text();
+  // Before: everything public, the favorite saved on the visitor's phone, the link inside the Lich.
+  const before = { counts: await homeCounts(), index: await json("/ricerca-indice.json") };
+  for (const card of cards) {
+    expect((await request.get(card.href)).status(), card.href).toBe(200);
+    expect(before.index, card.href).toContain(`"${card.href}"`);
+  }
+  const visitor = await (await browser.newContext({ baseURL: test.info().project.use.baseURL })).newPage();
+  await visitor.goto("/spell/palla-di-fuoco");
+  await visitor.getByRole("button", { name: "Aggiungi ai preferiti" }).first().click();
+  await visitor.goto("/mostro/lich");
+  await expect(visitor.locator('a[href="/spell/palla-di-fuoco"]').first()).toBeVisible();
+
+  // The administrator hides the three cards from the lists, in their editions; Annulla brings one back at once.
+  await page.goto("/admin");
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  const editions = page.getByRole("group", { name: "Edizione dell’area riservata" });
+  const rowOf = name => page.locator("main ul li[data-card-row]").filter({ has: page.locator("p.font-medium", { hasText: new RegExp(`^${name}(?: Nascosta)?$`) }) });
+  for (const [i, card] of cards.entries()) {
+    await page.goto(card.list);
+    await editions.getByRole("button", { name: card.edition }).click();
+    await expect(page.getByText(`Stai modificando: edizione ${card.edition}`)).toBeVisible();
+    await page.getByPlaceholder(card.search).fill(card.query);
+    const row = rowOf(card.name);
+    await expect(row).toHaveCount(1);
+    await row.getByRole("button", { name: `Nascondi dal sito: ${card.name}` }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Nascosta dal sito" })).toBeVisible();
+    await expect(row.getByText("Nascosta", { exact: true })).toBeVisible();
+    await expect(row.getByRole("button", { name: `Mostra sul sito: ${card.name}` })).toHaveAttribute("aria-pressed", "true");
+    if (i === 0) {
+      await page.getByRole("button", { name: "Annulla" }).click();
+      await expect(row.getByRole("button", { name: `Nascondi dal sito: ${card.name}` })).toBeVisible();
+      await expect(row.getByText("Nascosta", { exact: true })).toHaveCount(0);
+      await expect.poll(async () => (await request.get(card.href)).status()).toBe(200);
+      await row.getByRole("button", { name: `Nascondi dal sito: ${card.name}` }).click();
+      await expect(row.getByText("Nascosta", { exact: true })).toBeVisible();
+    }
+    // The filter counts the hidden cards of the edition and shows only them.
+    await page.getByPlaceholder(card.search).fill("");
+    await page.getByRole("button", { name: "Nascoste · 1" }).click();
+    await expect(page.locator("main ul li[data-card-row]")).toHaveCount(1);
+    await page.getByRole("button", { name: "Tutte" }).click();
+  }
+  // The same eye at the top of the editor.
+  await page.getByPlaceholder("Cerca per nome o tipo…").fill("aboleth");
+  await rowOf("Aboleth").getByRole("button", { name: "Modifica", exact: true }).click();
+  await expect(page.getByRole("dialog").getByRole("button", { name: "Mostra sul sito: Aboleth" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("dialog").getByRole("button", { name: "Chiudi editor" }).click();
+
+  // Public: out of lists, search, index, counts, the computer list, links (plain text) and the addresses (404).
+  for (const card of cards) {
+    await expect.poll(async () => (await request.get(card.href)).status(), card.href).toBe(404);
+  }
+  await expect.poll(() => json("/ricerca-indice.json")).not.toContain('"/spell/palla-di-fuoco"');
+  const index = await json("/ricerca-indice.json");
+  for (const card of cards) expect(index, card.href).not.toContain(`"${card.href}"`);
+  await expect.poll(homeCounts).toEqual([before.counts[0] - 2, before.counts[1] - 1]);
+  const spellsApi = await (await request.get("/api/catalogo/incantesimi")).json();
+  expect(spellsApi.spells.map(spell => spell.id)).not.toContain("palla-di-fuoco");
+  expect(spellsApi.spells.map(spell => spell.id)).not.toContain("allarme-2014");
+  expect(spellsApi.spells.filter(spell => spell.edizione === "2014")).toHaveLength(318);
+  expect(spellsApi.spells.filter(spell => spell.edizione !== "2014")).toHaveLength(387);
+  expect((await (await request.get("/api/catalogo/bestiario")).json()).monsters.map(monster => monster.id)).not.toContain("aboleth");
+  await visitor.goto("/grimorio");
+  await visitor.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("palla di fuoco");
+  await expect(visitor.locator('a[href="/spell/palla-di-fuoco-ritardata"]')).toBeVisible();
+  await expect(visitor.locator('a[href="/spell/palla-di-fuoco"]')).toHaveCount(0);
+  await visitor.goto("/mostro/lich");
+  await expect(visitor.locator('a[href="/spell/palla-di-fuoco"]')).toHaveCount(0);
+  await expect(visitor.getByText(/palla di fuoco/i).first()).toBeVisible();
+  // Preferiti: the saved card stays, dimmed, without its link.
+  await visitor.goto("/preferiti");
+  const unavailable = visitor.locator("li").filter({ hasText: "Palla di fuoco" });
+  await expect(unavailable.getByText("Non disponibile al momento")).toBeVisible();
+  await expect(unavailable.locator("a")).toHaveCount(0);
+
+  // The administrator still sees them, labelled, with «Mostra» on the card.
+  await page.goto("/spell/palla-di-fuoco");
+  await expect(page.getByText("Il pubblico non vede questa scheda.")).toBeVisible();
+  await page.goto("/grimorio");
+  await page.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("palla di fuoco");
+  await expect(page.locator('a[href="/spell/palla-di-fuoco"]').getByText("Nascosta", { exact: true })).toBeVisible();
+  // The log: one row per change, with name and edition.
+  await page.goto("/admin/registro?edizioni=tutte");
+  await expect(page.getByText(/Incantesimi 2024 · visibilità/)).toHaveCount(3);
+  await expect(page.getByText(/Incantesimi 2014 · visibilità/)).toHaveCount(1);
+  await expect(page.getByText(/Mostri 2024 · visibilità/)).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Palla di fuoco" }).first()).toBeVisible();
+
+  // Rows of the admin lists at 360–390 px with a hidden card and the longest labels: nothing cut with dots.
+  await page.goto("/admin/incantesimi");
+  await editions.getByRole("button", { name: "2024" }).click();
+  for (const width of [360, 375, 390]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth), `${width}`).toBeLessThanOrEqual(width);
+    // No text cut with dots, and no text wider than its row.
+    const cut = await page.locator("main ul li[data-card-row]").evaluateAll(rows => rows.slice(0, 80).flatMap(row =>
+      [...row.querySelectorAll("*")].filter(el => getComputedStyle(el).textOverflow === "ellipsis" || el.getBoundingClientRect().right > row.getBoundingClientRect().right + 0.5).map(el => el.textContent)));
+    expect(cut, `${width}`).toEqual([]);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  // Shown again from the card and the lists: public as before.
+  await page.goto("/spell/palla-di-fuoco");
+  await page.getByRole("button", { name: "Mostra", exact: true }).click();
+  await expect(page.getByText("Il pubblico non vede questa scheda.")).toHaveCount(0);
+  for (const card of cards.slice(1)) {
+    await page.goto(card.list);
+    await editions.getByRole("button", { name: card.edition }).click();
+    await page.getByPlaceholder(card.search).fill(card.query);
+    await rowOf(card.name).getByRole("button", { name: `Mostra sul sito: ${card.name}` }).click();
+    await expect(rowOf(card.name).getByText("Nascosta", { exact: true })).toHaveCount(0);
+  }
+  for (const card of cards) await expect.poll(async () => (await request.get(card.href)).status(), card.href).toBe(200);
+  await expect.poll(homeCounts).toEqual(before.counts);
+  await expect.poll(() => json("/ricerca-indice.json")).toBe(before.index);
+  await visitor.goto("/preferiti");
+  await expect(visitor.locator('a[href="/spell/palla-di-fuoco"]')).toBeVisible();
+  await visitor.context().close();
+  expect(errors).toEqual([]);
+});

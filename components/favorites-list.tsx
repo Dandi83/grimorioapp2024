@@ -10,7 +10,8 @@ import type { SpellListItem } from "@/lib/spells-types";
 
 const sortRank = (value: number) => value >= 0 ? value : Number.POSITIVE_INFINITY;
 
-export function FavoritesList({ spells, monsters = [] }: { spells: SpellListItem[]; monsters?: MonsterListItem[] }) {
+/** unavailable: the cards marked `nascosta` are hidden from the public (not the administrator, who sees them labelled). */
+export function FavoritesList({ spells, monsters = [], unavailable = false }: { spells: SpellListItem[]; monsters?: MonsterListItem[]; unavailable?: boolean }) {
   const { favorites, loaded, isFavorite, toggle } = useFavorites();
 
   const favSpells = spells
@@ -52,7 +53,7 @@ export function FavoritesList({ spells, monsters = [] }: { spells: SpellListItem
               <ul>{favSpells.map((spell, i) => (
                 <li key={spell.id}>
                   {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
-                  <SpellRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggle} />
+                  <SpellRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggle} unavailable={unavailable} />
                 </li>
               ))}</ul>
             </section>
@@ -63,7 +64,7 @@ export function FavoritesList({ spells, monsters = [] }: { spells: SpellListItem
               <ul>{favMonsters.map((monster, i) => (
                 <li key={monster.id}>
                   {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
-                  <MonsterRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggle} />
+                  <MonsterRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggle} unavailable={unavailable} />
                 </li>
               ))}</ul>
             </section>

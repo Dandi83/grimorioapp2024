@@ -11,7 +11,8 @@ import { levelLabel } from "@/lib/spells-types";
 import { schoolColor } from "@/lib/school-colors";
 import type { Monster } from "@/lib/monsters-types";
 import { AdminMonsters } from "@/components/admin-monsters";
-import { SourceLabel } from "./admin-source-label";
+import { AdminCardRow } from "./admin-card-row";
+import { VisibilityFilterBar, useCardVisibility, useVisibilityFilter, type VisibilityFilter } from "./admin-card-eye";
 import { spellName } from "@/lib/spell-name";
 import { SpellEditor } from "./admin-spell-editor";
 import { AdminDeleteButton } from "./admin-delete-button";
@@ -19,11 +20,9 @@ import type { AdminEdition } from "@/lib/admin-edition";
 import {
   BookOpen,
   Skull,
-  Pencil,
   Plus,
   LogOut,
   Search,
-  ExternalLink,
 } from "lucide-react";
 
 type Editing =
@@ -37,9 +36,14 @@ export function AdminDashboard({
   monsters,
   initialTab = "spells",
   edition,
+  hiddenSpells = [],
+  hiddenMonsters = [],
 }: {
   spells: Spell[];
   monsters: Monster[];
+  /** Ids of the cards hidden from the site with the eye. */
+  hiddenSpells?: string[];
+  hiddenMonsters?: string[];
   initialTab?: "spells" | "monsters";
   /** The edition of the admin area: the lists hold only its cards. */
   edition: AdminEdition;
@@ -47,8 +51,11 @@ export function AdminDashboard({
   const [tab, setTab] = useState<"spells" | "monsters">(initialTab);
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Editing>({ mode: "closed" });
+  const visibility = useCardVisibility("incantesimo", hiddenSpells);
+  const [shown, setShown] = useState<VisibilityFilter>("tutte");
+  const hiddenCount = useMemo(() => spells.filter(spell => visibility.isHidden(spell.id)).length, [spells, visibility]);
 
-  const filtered = useMemo(() => {
+  const searched = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return spells;
     return spells.filter(
@@ -58,6 +65,7 @@ export function AdminDashboard({
         s.scuola.toLowerCase().includes(q),
     );
   }, [query, spells]);
+  const filtered = useVisibilityFilter(searched, shown, visibility.isHidden);
 
   return (
     <main className="mx-auto max-w-3xl px-5 pb-24 pt-8 lg:max-w-[1200px]">
@@ -110,7 +118,7 @@ export function AdminDashboard({
       </div>
 
       {tab === "monsters" ? (
-        <AdminMonsters monsters={monsters} edition={edition} />
+        <AdminMonsters monsters={monsters} edition={edition} hiddenIds={hiddenMonsters} />
       ) : (
       <>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
@@ -136,49 +144,33 @@ export function AdminDashboard({
         </button>
       </div>
 
+      <VisibilityFilterBar value={shown} onChange={setShown} hiddenCount={hiddenCount} />
       <ul className="flex flex-col gap-2">
-        {filtered.map((s) => (
-          <li
-            key={s.id}
-            className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3"
-          >
-            <span
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-semibold"
-              style={{
-                backgroundColor: `${schoolColor(s.scuola)}22`,
-                color: schoolColor(s.scuola),
-              }}
-            >
-              {s.livello_num < 0 ? "?" : s.livello_num}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-medium text-foreground">
-                {s.nome_mostrato ?? spellName(s.nome_italiano, s.edizione)}
-              </p>
-              <p className="flex min-w-0 gap-1 text-xs text-muted-foreground">
-                <span className="truncate">{levelLabel(s.livello_num)} · {s.scuola || "—"}</span>
-                {s.origine && <span className="shrink-0">· <SourceLabel origine={s.origine} /></span>}
-              </p>
-            </div>
-            <Link
+        {filtered.map((s) => {
+          const nome = s.nome_mostrato ?? spellName(s.nome_italiano, s.edizione);
+          return (
+            <AdminCardRow
+              key={s.id}
+              badge={
+                <span
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-semibold"
+                  style={{ backgroundColor: `${schoolColor(s.scuola)}22`, color: schoolColor(s.scuola) }}
+                >
+                  {s.livello_num < 0 ? "?" : s.livello_num}
+                </span>
+              }
+              name={nome}
+              meta={`${levelLabel(s.livello_num)} · ${s.scuola || "—"}`}
+              origine={s.origine}
               href={`/spell/${s.id}`}
-              className="rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
-              title="Vedi"
-            >
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-            </Link>
-            <button
-              type="button"
-              onClick={() => setEditing({ mode: "edit", spell: s })}
-              className="rounded-md p-2 text-muted-foreground transition-colors hover:text-primary"
-              title="Modifica"
-            >
-              <Pencil className="h-4 w-4" aria-hidden="true" />
-            </button>
-            {/* Only cards made or added here can be deleted: an SRD card stays (the server refuses it too). */}
-            {s.fonte ? <span className="w-8 shrink-0" aria-hidden="true" /> : <DeleteButton id={s.id} nome={s.nome_mostrato ?? spellName(s.nome_italiano, s.edizione)} />}
-          </li>
-        ))}
+              hidden={visibility.isHidden(s.id)}
+              onToggleHidden={() => visibility.toggle(s.id, nome)}
+              onEdit={() => setEditing({ mode: "edit", spell: s })}
+              // Only cards made or added here can be deleted: an SRD card stays (the server refuses it too).
+              remove={s.fonte ? undefined : <DeleteButton id={s.id} nome={nome} />}
+            />
+          );
+        })}
         {filtered.length === 0 ? (
           <li className="rounded-xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
             Nessun incantesimo trovato.
@@ -192,10 +184,16 @@ export function AdminDashboard({
           spell={editing.mode === "edit" ? editing.spell : null}
           edition={edition}
           onClose={() => setEditing({ mode: "closed" })}
+          visibility={editing.mode === "edit" ? {
+            hidden: visibility.isHidden(editing.spell.id),
+            onToggle: () => visibility.toggle(editing.spell.id, editing.spell.nome_mostrato ?? spellName(editing.spell.nome_italiano, editing.spell.edizione)),
+            notice: visibility.notice,
+          } : undefined}
         />
       ) : null}
       </>
       )}
+      {editing.mode === "closed" && visibility.notice}
     </main>
   );
 }

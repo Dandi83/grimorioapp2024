@@ -212,6 +212,30 @@ export const sectionPartsLog = pgTable("grimorio_section_parts_log", {
 });
 
 /**
+ * Single cards hidden with the eye of /admin/incantesimi and /admin/mostri (lib/section-visibility.ts):
+ * tipo "incantesimo" | "mostro" and the card id, also for the cards still read from the SRD files.
+ */
+export const cardVisibility = pgTable("grimorio_card_visibility", {
+  tipo: text("tipo").notNull(),
+  scheda: text("scheda").notNull(),
+  nascosta: boolean("nascosta").notNull().default(false),
+  aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+  autore: text("autore").notNull().default("amministratore"),
+}, table => [primaryKey({ columns: [table.tipo, table.scheda] })]);
+
+/** Every switch of a card, with its name and edition at that moment (shown in /admin/registro). */
+export const cardVisibilityLog = pgTable("grimorio_card_visibility_log", {
+  id: uuid("id").primaryKey(),
+  tipo: text("tipo").notNull(),
+  scheda: text("scheda").notNull(),
+  nome: text("nome").notNull(),
+  edizione: text("edizione").notNull(),
+  nascosta: boolean("nascosta").notNull(),
+  autore: text("autore").notNull().default("amministratore"),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/**
  * VAPID key pair of the admin push notifications (lib/push.ts), only when the server variables
  * VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY are not set: generated once, never sent to the browser.
  */

@@ -5,15 +5,19 @@ import { HomeSearch } from "@/components/search/home-search";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { isSrdAnimal } from "@/lib/monsters-types";
 import { partId } from "@/lib/public-sections";
-import { partsOut, sectionsOut } from "@/lib/section-view";
+import { partsOut, sectionsOut, visibleCards } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
 import styles from "./home.module.css";
 
 export const revalidate = 300;
 
-/** Shortcuts of the computer Home, with the number of cards the visitor can open (hidden editions and collections left out). */
+/** Shortcuts of the computer Home, with the number of cards the visitor can open (hidden editions, collections and cards left out). */
 async function shortcuts() {
-  const [spells, monsters, out, parts] = await Promise.all([getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []), sectionsOut(), partsOut()]);
+  const [spells, monsters, out, parts] = await Promise.all([
+    getSpellIndex().catch(() => []).then(list => visibleCards("incantesimo", list)),
+    getMonsterListIndex().catch(() => []).then(list => visibleCards("mostro", list)),
+    sectionsOut(), partsOut(),
+  ]);
   const spellCount = spells.filter(spell => !parts.includes(partId("incantesimi", spell.edizione === "2014" ? "2014" : "2024"))).length;
   const monsterCount = monsters.filter(monster => !parts.includes(partId("bestiario", monster.edizione))
     && !parts.includes(partId("bestiario", isSrdAnimal(monster) ? "animali" : "mostri"))).length;

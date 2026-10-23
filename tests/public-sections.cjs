@@ -55,10 +55,15 @@ for (const href of [...Object.keys(cases), '/', '/compendio', '/spell', '/manual
   assert.equal(isHidden(pathname, all), ps.sectionOfPath(href) !== undefined, `service worker: ${href}`);
 }
 
-// Hiding is reversible and never touches content: the switch only writes its two tables.
+// Hiding is reversible and never touches content: the switches only write their own tables (sections, parts, cards).
 const store = fs.readFileSync('lib/section-visibility.ts', 'utf8');
 const written = [...store.matchAll(/(?:INSERT INTO|DELETE FROM|(?<!DO )UPDATE)\s+(\w+)/g)].map(m => m[1]);
-assert.deepEqual([...new Set(written)].sort(), ['grimorio_section_parts', 'grimorio_section_parts_log', 'grimorio_section_visibility', 'grimorio_section_visibility_log']);
+assert.deepEqual([...new Set(written)].sort(), ['grimorio_card_visibility', 'grimorio_card_visibility_log', 'grimorio_section_parts', 'grimorio_section_parts_log', 'grimorio_section_visibility', 'grimorio_section_visibility_log']);
+const cardAction = fs.readFileSync('app/actions/admin-cards.ts', 'utf8');
+assert.ok(/export async function setCardVisibilityAction[^{]*\{\s*await requireAdmin\(\);/.test(cardAction), 'the card action starts with requireAdmin');
+// The service worker deletes the saved copy of a hidden card (its address), not the others.
+assert.equal(isHidden('/spell/palla-di-fuoco', ['/spell/palla-di-fuoco']), true);
+assert.equal(isHidden('/spell/palla-di-fuoco-2014', ['/spell/palla-di-fuoco']), false);
 const action = fs.readFileSync('app/actions/admin-sections.ts', 'utf8');
 assert.ok(/export async function setSectionVisibilityAction[^{]*\{\s*await requireAdmin\(\);/.test(action), 'the action starts with requireAdmin');
 assert.ok(/export async function setPartVisibilityAction[^{]*\{\s*await requireAdmin\(\);/.test(action), 'the part action starts with requireAdmin');
@@ -102,6 +107,14 @@ for (const [href, edition] of [['/spell/palla-di-fuoco', '2024'], ['/spell/palla
 assert.equal(ps.isHiddenPath('/spell/palla-di-fuoco-2014', ['incantesimi:2014']), true);
 assert.equal(ps.isHiddenPath('/spell/palla-di-fuoco', ['incantesimi:2014']), false);
 assert.equal(ps.isHiddenPath('/manuale/condizioni-prono', ['condizioni:2024']), true);
+// A single card hidden with the eye of the admin area is named by its address: only that card, its links and copies.
+assert.equal(ps.isHiddenPath('/spell/palla-di-fuoco', ['/spell/palla-di-fuoco']), true);
+assert.equal(ps.isHiddenPath('/spell/palla-di-fuoco?da=ricerca#effetti', ['/spell/palla-di-fuoco']), true);
+assert.equal(ps.isHiddenPath('/spell/palla-di-fuoco-2014', ['/spell/palla-di-fuoco']), false, 'the other edition stays');
+assert.equal(ps.isHiddenPath('/spell/palla-di-fuoco-ritardata', ['/spell/palla-di-fuoco']), false);
+assert.equal(ps.isHiddenPath('/mostro/aboleth', ['/spell/aboleth']), false, 'a spell and a creature with the same id are different cards');
+assert.deepEqual(ps.visibleLinks([{ href: '/spell/scudo', label: 'scudo' }, { href: '/spell/palla-di-fuoco', label: 'palla di fuoco' }], ['/spell/palla-di-fuoco']).map(l => l.label), ['scudo'],
+  'a link to a hidden card becomes plain text');
 assert.ok(!/api\/.*sezion/i.test(fs.readdirSync('app/api').join(' ')), 'no public route for the sections');
 
 console.log(`Public sections: ${keys.length} sections in one registry, every page folder gated, same address rule for pages, search links and service worker, switch writes only its own tables; ${ps.PUBLIC_SECTIONS.reduce((n, s) => n + s.parts.length, 0)} parts with their rules.`);

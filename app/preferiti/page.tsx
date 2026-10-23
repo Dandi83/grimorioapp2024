@@ -1,7 +1,7 @@
 import { FavoritesList } from "@/components/favorites-list";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { isSrdAnimal } from "@/lib/monsters-types";
-import { partsOut, sectionsOut } from "@/lib/section-view";
+import { markedCards, partsOut, sectionView, sectionsOut } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
 
 export const revalidate = 300;
@@ -18,10 +18,12 @@ export default async function PreferitiPage() {
     out.includes("incantesimi") ? [] : getSpellIndex(),
     out.includes("bestiario") ? [] : getMonsterListIndex(),
   ]);
+  // A single hidden card (the eye of the admin area) stays, marked: dimmed and without its link for the public.
   return (
     <FavoritesList
-      spells={parts.length ? spells.filter(spell => shown("incantesimi", spell.edizione ?? "2024")) : spells}
-      monsters={parts.length ? monsters.filter(monster => shown("bestiario", monster.edizione) && shown("bestiario", isSrdAnimal(monster) ? "animali" : "mostri")) : monsters}
+      spells={await markedCards("incantesimo", parts.length ? spells.filter(spell => shown("incantesimi", spell.edizione ?? "2024")) : spells)}
+      monsters={await markedCards("mostro", parts.length ? monsters.filter(monster => shown("bestiario", monster.edizione) && shown("bestiario", isSrdAnimal(monster) ? "animali" : "mostri")) : monsters)}
+      unavailable={!(await sectionView()).admin}
     />
   );
 }

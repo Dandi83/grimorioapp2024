@@ -120,6 +120,8 @@ export type SpellListItem = Pick<Spell, "id" | "nome_italiano" | "livello_num" |
   rituale?: true;
   /** Only 2014 is stored: every other spell belongs to the 2024 list. */
   edizione?: "2014";
+  /** Hidden from the public with the eye of the admin area: present only in the administrator's lists and in Preferiti. */
+  nascosta?: true;
 };
 
 /** Light list fields derived from the stored text (duration and casting time are not changed). */

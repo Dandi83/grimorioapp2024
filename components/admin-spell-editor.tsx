@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createSpellAction, updateSpellAction } from "@/app/actions/admin";
 import { capitalizeWords, parseLivello, type Spell } from "@/lib/spells-types";
@@ -14,6 +14,8 @@ import { HtmlText } from "./html-text";
 import { AdminEditionField, confirmEditionMove } from "./admin-edition-field";
 import type { AdminEdition } from "@/lib/admin-edition";
 import { RulesEditionBadge } from "./rules-edition-badge";
+import { EyeButton } from "./admin-card-eye";
+import { HiddenTag } from "./sections/hidden-tag";
 
 const inputClass =
   "w-full min-w-0 rounded-lg border border-border bg-background px-3 py-2.5 text-base text-foreground outline-none focus:border-primary";
@@ -128,7 +130,13 @@ function SpellPreview({ spell }: { spell: Spell }) {
   );
 }
 
-export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; onClose: () => void; edition: AdminEdition }) {
+/** visibility: the eye of the list, also at the top of the editor (cards already saved), with its notice. */
+export function SpellEditor({ spell, onClose, edition, visibility }: {
+  spell: Spell | null;
+  onClose: () => void;
+  edition: AdminEdition;
+  visibility?: { hidden: boolean; onToggle: () => void; notice?: ReactNode };
+}) {
   const dialog = useRef<HTMLDialogElement>(null),
     form = useRef<HTMLFormElement>(null);
   const [description, setDescription] = useState(spell?.descrizione || "");
@@ -186,16 +194,20 @@ export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; 
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Scegli le caratteristiche e scrivi gli effetti: il Grimorio prepara la scheda.
           </p>
+          {visibility?.hidden && <p className="mt-1 text-xs text-muted-foreground"><HiddenTag /> Il pubblico non vede questa scheda.</p>}
         </div>
-        <button
-          type="button"
-          disabled={saving}
-          onClick={onClose}
-          aria-label="Chiudi editor"
-          className="min-h-11 min-w-11 rounded-lg text-muted-foreground hover:bg-elevated"
-        >
-          <X className="mx-auto h-5 w-5" aria-hidden />
-        </button>
+        <div className="flex shrink-0 items-center">
+          {visibility && spell && <EyeButton hidden={visibility.hidden} nome={spell.nome_mostrato ?? spellName(spell.nome_italiano, spell.edizione)} onToggle={visibility.onToggle} />}
+          <button
+            type="button"
+            disabled={saving}
+            onClick={onClose}
+            aria-label="Chiudi editor"
+            className="min-h-11 min-w-11 rounded-lg text-muted-foreground hover:bg-elevated"
+          >
+            <X className="mx-auto h-5 w-5" aria-hidden />
+          </button>
+        </div>
       </header>
       <form
         ref={form}
@@ -306,6 +318,7 @@ export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; 
           </div>
         </footer>
       </form>
+      {visibility?.notice}
     </dialog>
   );
 }

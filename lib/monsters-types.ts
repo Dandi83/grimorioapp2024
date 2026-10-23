@@ -133,6 +133,8 @@ export interface MonstersMeta {
 export type MonsterListItem = Pick<Monster, "id" | "nome" | "tipo" | "taglia" | "grado_sfida" | "gs_num" | "habitat"> & {
   /** Rules edition of the sheet, used by the 2024 | 2014 selector. */
   edizione: "2014" | "2024";
+  /** Hidden from the public with the eye of the admin area: present only in the administrator's lists and in Preferiti. */
+  nascosta?: true;
 };
 
 /** List rows carry only what the catalog shows and filters on, never the full sheet. */

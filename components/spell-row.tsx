@@ -4,6 +4,7 @@ import Link from "next/link";
 import { memo } from "react";
 import { Star } from "lucide-react";
 
+import { HiddenTag } from "@/components/sections/hidden-tag";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 
 import type { SpellListItem } from "@/lib/spells-types";
@@ -16,10 +17,12 @@ function metaLine(spell: SpellListItem): string {
   return `${spell.livello_num}° liv. · ${spell.scuola}`;
 }
 
-export const SpellRow = memo(function SpellRow({ spell, fav, onToggle }: {
+export const SpellRow = memo(function SpellRow({ spell, fav, onToggle, unavailable = false }: {
   spell: SpellListItem;
   fav: boolean;
   onToggle: (id: string) => void;
+  /** Preferiti: a card hidden from the public stays in the list, dimmed and without its link, until it is shown again. */
+  unavailable?: boolean;
 }) {
 
   const href = `/spell/${spell.id}`;
@@ -31,6 +34,12 @@ export const SpellRow = memo(function SpellRow({ spell, fav, onToggle }: {
         className="mr-3 h-8 w-[3px] flex-shrink-0 rounded-r-sm"
         style={{ backgroundColor: schoolColor(spell.scuola) }}
       />
+      {unavailable && spell.nascosta ? (
+        <div className="min-w-0 flex-1 py-3 opacity-60">
+          <p className="min-w-0 truncate font-serif text-lg font-semibold text-foreground">{spellName(spell.nome_italiano, spell.edizione)}</p>
+          <p className="text-xs tracking-wide text-muted">Non disponibile al momento</p>
+        </div>
+      ) : (
       <Link
         href={href}
         prefetch={false}
@@ -42,11 +51,13 @@ export const SpellRow = memo(function SpellRow({ spell, fav, onToggle }: {
           <p className="min-w-0 truncate font-serif text-lg font-semibold text-foreground">
             {spellName(spell.nome_italiano, spell.edizione)}
           </p>
+          {spell.nascosta && <HiddenTag className="shrink-0" />}
         </div>
         <p className="truncate text-xs uppercase tracking-wide text-muted">
           {metaLine(spell)}
         </p>
       </Link>
+      )}
       <button
         type="button"
         onClick={() => onToggle(spell.id)}
