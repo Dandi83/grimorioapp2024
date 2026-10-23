@@ -26,10 +26,15 @@ export function proficiencyFromChallenge(gsNum: number): string | undefined {
   return `+${2 + (Math.max(0, Math.ceil(gsNum) - 1) >> 2)}`;
 }
 
+/** "5.900" → "5.900 PE" (also "5.900 PE, o 7.200 nella tana"); a value that already names its unit stays as it is. */
+export function experience(px: string): string {
+  return /\b(?:PX|PE|XP)\b/i.test(px) ? px : px.replace(/^([\d.]+)/, "$1 PE");
+}
+
 /** "13 (10.000 PE; bonus di competenza +5)": GS, experience and proficiency on one line. */
 export function challengeDetails(monster: Pick<Monster, "px" | "bonus_competenza" | "gs_num">, legacy: boolean): string {
   const px = (monster.px || "").trim();
-  const xp = !px ? "" : /\b(?:PX|PE|XP)\b/i.test(px) ? px : px.replace(/^([\d.]+)/, "$1 PE");
+  const xp = !px ? "" : experience(px);
   const bonus = monster.bonus_competenza || (legacy ? proficiencyFromChallenge(monster.gs_num) : undefined);
   return [xp, bonus ? `bonus di competenza ${bonus}` : ""].filter(Boolean).join("; ");
 }
@@ -48,11 +53,11 @@ export function placeLegacySpellcasting(tratti: string, azioni: string): { tratt
   };
 }
 
-function Box({ label, value, note, noteItalic = false }: { label: string; value: string; note?: string; noteItalic?: boolean }) {
+function Box({ label, value, note, noteItalic = false, small = false }: { label: string; value: string; note?: string; noteItalic?: boolean; small?: boolean }) {
   return (
     <div className="min-w-0 rounded-[8px] border border-border bg-elevated px-3 py-2.5">
       <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-muted">{label}</p>
-      <p className="font-serif text-[28px] font-bold leading-8 text-foreground">{value}</p>
+      <p className={small ? "font-serif text-[19px] font-bold leading-6 text-foreground" : "font-serif text-[28px] font-bold leading-8 text-foreground"}>{value}</p>
       {note && <p className={`text-[13px] leading-4 text-muted${noteItalic ? " font-serif italic" : ""}`}>{note}</p>}
     </div>
   );
@@ -87,8 +92,14 @@ export function MonsterSheetTitle({ monster, label, before }: { monster: Partial
     <header className="px-6">
       {before}
       <div className="flex items-start justify-between gap-3 border-b-4 border-primary pb-2">
-        <h1 className="min-w-0 break-words font-serif text-[42px] font-bold leading-[1.05] text-foreground">{monster.nome || "Nome del mostro"}</h1>
+        <h1 className="min-w-0 break-words font-serif text-[42px] font-bold leading-[1.05] text-foreground lg:text-[46px]">{monster.nome || "Nome del mostro"}</h1>
         {label && <div className="shrink-0 pt-3">{label}</div>}
+        {/* Computer: GS and PE as a bordeaux pill at the top right. */}
+        {monster.grado_sfida && (
+          <span className="mt-3 hidden shrink-0 items-center rounded-full bg-primary px-3.5 py-1 font-serif text-[17px] font-bold text-primary-foreground lg:inline-flex">
+            GS {monster.grado_sfida}{monster.px ? ` · ${experience(monster.px)}` : ""}
+          </span>
+        )}
       </div>
       {sottotitolo && <p className="mt-2 font-serif text-[19px] italic text-muted">{sottotitolo}</p>}
     </header>
@@ -107,14 +118,23 @@ export function MonsterSheetBody({ monster, legacy, hidden = [] }: { monster: Pa
   const { tratti, azioni } = legacy ? placeLegacySpellcasting(monster.tratti || "", monster.azioni || "") : { tratti: monster.tratti, azioni: monster.azioni };
   const gs = monster.grado_sfida;
   const details = challengeDetails({ px: monster.px || "", bonus_competenza: monster.bonus_competenza, gs_num: monster.gs_num ?? -1 }, legacy);
+  // Wide card (≥820 px of room, a computer): two columns, statistics and traits on the left, actions on the
+  // right; the page width decides, so the phone and the editor preview keep one column.
   return (
-    <>
-      <div className="grid grid-cols-3 gap-2.5 px-6 pt-5">
+    <div className="@container">
+    <div className="@[820px]:grid @[820px]:grid-cols-2 @[820px]:items-start">
+    <div>
+      <div className="grid grid-cols-3 gap-2.5 px-6 pt-5 @[820px]:hidden">
         <Box label="CA" value={ca.value} note={ca.note} />
         <Box label="PF" value={pf.value} note={pf.note} />
         {ini && <Box label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} />}
       </div>
-      {monster.velocita && <p className="px-6 pt-3 text-[16px] leading-6 text-foreground"><span className="font-bold">Velocità</span> {monster.velocita}</p>}
+      {monster.velocita && <p className="px-6 pt-3 text-[16px] leading-6 text-foreground @[820px]:hidden"><span className="font-bold">Velocità</span> {monster.velocita}</p>}
+      <div className="hidden grid-cols-3 gap-2.5 px-6 pt-5 @[820px]:grid">
+        <Box label="CA" value={ca.value} note={[ca.note, ini && `Iniziativa ${ini.value}${ini.note ? ` ${ini.note}` : ""}`].filter(Boolean).join(" · ")} />
+        <Box label="PF" value={pf.value} note={pf.note} />
+        <Box label="Velocità" value={monster.velocita || "—"} small />
+      </div>
 
       <section data-monster-section className="mt-6">
         <h2>Caratteristiche</h2>
@@ -154,11 +174,15 @@ export function MonsterSheetBody({ monster, legacy, hidden = [] }: { monster: Pa
       </section>
 
       <Section title="Tratti" html={tratti} legacy={legacy} hidden={hidden} />
+    </div>
+    <div>
       <Section title="Azioni" html={azioni} legacy={legacy} hidden={hidden} />
       <Section title="Azioni bonus" html={monster.azioni_bonus} legacy={legacy} hidden={hidden} />
       <Section title="Reazioni" html={monster.reazioni} legacy={legacy} hidden={hidden} />
       <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} legacy={legacy} hidden={hidden} />
+    </div>
+    </div>
       <Section title="Descrizione" html={monster.descrizione} legacy={legacy} hidden={hidden} />
-    </>
+    </div>
   );
 }

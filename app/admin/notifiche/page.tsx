@@ -13,7 +13,7 @@ export default async function NotificationsPage() {
   if (!(await isAdmin())) return <AdminLogin />;
   const [devices, types] = await Promise.all([listDevices(), notificationTypes()]);
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-28 pt-4">
+    <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-28 pt-4">
       <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
       <PushSettings
         workerEnabled={serviceWorkerEnabled()}

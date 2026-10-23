@@ -35,7 +35,7 @@ export function AdminEditionBar({ edition: initial }: { edition: AdminEdition })
   const band = EDITION_BAND[edition];
   return (
     <>
-      <div role="group" aria-label="Edizione dell’area riservata" className="mx-4 mt-3 flex gap-1 rounded-xl bg-elevated p-1">
+      <div role="group" aria-label="Edizione dell’area riservata" className="mx-4 mt-3 flex gap-1 rounded-xl bg-elevated p-1 lg:mx-auto lg:w-[calc(100%-2rem)] lg:max-w-[1168px]">
         {ADMIN_EDITIONS.map(value => (
           <button key={value} type="button" aria-pressed={value === edition} disabled={pending} onClick={() => choose(value)}
             className={`flex min-h-11 flex-1 items-center justify-center rounded-[9px] font-bold tabular-nums ${value === edition ? "bg-primary text-primary-foreground" : "text-muted"}`}>
@@ -44,12 +44,12 @@ export function AdminEditionBar({ edition: initial }: { edition: AdminEdition })
         ))}
       </div>
       {common ? (
-        <p data-testid="admin-edition-common" className="mx-auto mt-2 w-full max-w-2xl px-4">
+        <p data-testid="admin-edition-common" className="mx-auto mt-2 w-full max-w-2xl px-4 lg:max-w-[1200px]">
           <span className="block rounded-[10px] border border-border bg-card px-3 py-2 text-center text-sm font-semibold text-muted">Comune alle due edizioni</span>
         </p>
       ) : (
         // A sibling of the page content: it stays visible at the top while the page scrolls.
-        <div className="sticky top-0 z-20 mx-auto w-full max-w-2xl bg-background px-4 pb-1 pt-2">
+        <div className="sticky top-0 z-20 mx-auto w-full max-w-2xl bg-background px-4 pb-1 pt-2 lg:max-w-[1200px]">
           <p data-testid="admin-edition-band" className="rounded-[10px] px-3 py-2 text-center text-sm font-bold" style={{ background: band.background, color: band.text }}>
             {band.label}
           </p>

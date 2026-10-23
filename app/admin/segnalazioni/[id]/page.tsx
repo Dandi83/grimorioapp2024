@@ -25,7 +25,7 @@ export default async function FeedbackDetailPage({ params }: { params: Promise<{
   const name = await pageName(report.percorso, report.edizione);
   const subject = encodeURIComponent("La tua segnalazione su Il Grimorio.App");
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-3.5 px-4 pb-8 pt-4">
+    <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3.5 px-4 pb-8 pt-4">
       <Link href="/admin/segnalazioni" className="inline-flex min-h-11 items-center gap-1 self-start text-[15px] font-bold text-primary">
         <ChevronLeft size={18} aria-hidden="true" /> Segnalazioni
       </Link>

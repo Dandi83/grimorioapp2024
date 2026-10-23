@@ -39,7 +39,7 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
   const names = await Promise.all(reports.map(report => pageName(report.percorso, report.edizione)));
   const now = new Date();
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
+    <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-8 pt-4">
       <Link href="/admin" className="inline-flex min-h-11 items-center gap-1 self-start text-[15px] font-bold text-primary">
         <ChevronLeft size={18} aria-hidden="true" /> Amministrazione
       </Link>

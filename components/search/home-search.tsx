@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import { createPortal } from "react-dom";
 import { Search } from "lucide-react";
 
@@ -33,12 +33,26 @@ export function HomeSearch() {
     return () => window.removeEventListener("popstate", read);
   }, []);
 
+  const showRef = useRef<(query: string) => void>(() => undefined);
   const show = (query: string) => {
     const url = `/?cerca=${encodeURIComponent(query)}`;
     window.history.pushState({ ...window.history.state, grimorioSearch: true }, "", url);
     if (Panel) setOpen({ query });
     else loadPanel().then(component => { setPanel(() => component); setOpen({ query }); });
   };
+
+  useEffect(() => { showRef.current = show; });
+  // ⌘K / Ctrl+K opens the search from anywhere on the Home (a keyboard shortcut of computers).
+  useEffect(() => {
+    const key = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k" && !open) {
+        event.preventDefault();
+        showRef.current("");
+      }
+    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [open]);
 
   const close = () => {
     setOpen(null);
