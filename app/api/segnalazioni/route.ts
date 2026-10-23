@@ -2,7 +2,7 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { BODY_MAX_BYTES, TYPE_LABELS, parseFeedback } from "@/lib/feedback-input";
 import { feedbackPayload, sendPush } from "@/lib/push";
 import {
-  checkFormToken, deviceKey, feedbackLimited, issueFormToken, markEmailSent,
+  checkFormToken, countNewFeedback, deviceKey, feedbackLimited, issueFormToken, markEmailSent,
   recordFeedbackSend, saveFeedback, sendFeedbackEmail, turnstilePassed,
 } from "@/lib/feedback";
 import { pageName } from "@/lib/feedback-names";
@@ -60,10 +60,11 @@ export async function POST(request: NextRequest) {
     // Saved first; the email and the admin notification follow after the answer, and their failure
     // never reaches the visitor (the report stays saved).
     after(async () => {
-      const name = await pageName(report.percorso, report.edizione).catch(() => null);
+      // The number for the app icon badge travels with the notification (the new reports, this one included).
+      const [name, badge] = await Promise.all([pageName(report.percorso, report.edizione).catch(() => null), countNewFeedback().catch(() => null)]);
       const [result] = await Promise.all([
         sendFeedbackEmail(report, { origin, name }),
-        sendPush("segnalazioni", feedbackPayload(report, TYPE_LABELS[report.tipo], name)).catch(() => console.warn("[notifiche] Invio della notifica non riuscito.")),
+        sendPush("segnalazioni", feedbackPayload(report, TYPE_LABELS[report.tipo], name, badge)).catch(() => console.warn("[notifiche] Invio della notifica non riuscito.")),
       ]);
       if (result === "sent") await markEmailSent(report.id).catch(() => undefined);
     });

@@ -30,7 +30,8 @@ const SUBJECT = "https://ilgrimorio.app";
 
 export interface PushDevice { id: string; endpoint: string; dispositivo: string; creata_il: Date | string }
 export interface PushSubscriptionInput { endpoint: string; keys: { p256dh: string; auth: string } }
-export interface PushPayload { title: string; body: string; url: string; tag?: string }
+/** badge: the number for the app icon (new reports), set by the service worker even with the app closed. */
+export interface PushPayload { title: string; body: string; url: string; tag?: string; badge?: number }
 
 let tablesReady: Promise<void> | undefined;
 /** Additive migration: created at the first use from the admin area or the first send. */
@@ -154,7 +155,7 @@ export async function sendPush(type: NotificationType, payload: PushPayload, opt
 }
 
 /** «Errore · Palla di fuoco» and the first 80 characters of the message: never the reply address. */
-export function feedbackPayload(report: { id: string; tipo: string; messaggio: string }, typeLabel: string, pageTitle: string | null): PushPayload {
+export function feedbackPayload(report: { id: string; tipo: string; messaggio: string }, typeLabel: string, pageTitle: string | null, badge?: number | null): PushPayload {
   const text = report.messaggio.replace(/\s+/g, " ").trim();
   const start = text.length > 80 ? `${text.slice(0, 79).trimEnd()}…` : text;
   return {
@@ -162,5 +163,6 @@ export function feedbackPayload(report: { id: string; tipo: string; messaggio: s
     body: `${typeLabel} · ${pageTitle || "Generale"}\n${start}`,
     url: `/admin/segnalazioni/${report.id}`,
     tag: `segnalazione-${report.id}`,
+    ...(typeof badge === "number" ? { badge } : {}),
   };
 }

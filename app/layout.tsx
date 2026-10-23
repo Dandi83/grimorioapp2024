@@ -7,6 +7,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { AnalyticsProvider } from "@/components/analytics-provider";
 import { InstallPrompt } from "@/components/install-prompt";
 import { ServiceWorker } from "@/components/service-worker";
+import { AppBadgeSync } from "@/components/app-badge-sync";
 import { serviceWorkerEnabled } from "@/lib/service-worker-config";
 import { PUBLIC_SECTIONS } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
@@ -89,6 +90,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <BottomNav hidden={hidden} admin={admin} />
           </div>
           <InstallPrompt />
+          <AppBadgeSync />
           <AnalyticsProvider />
         </FavoritesProvider>
       </body>

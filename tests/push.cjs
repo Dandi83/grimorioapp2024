@@ -81,6 +81,8 @@ function load(relative) {
   assert.ok(start.length <= 80 && start.endsWith('…') && start.startsWith('La gittata è sbagliata.'), 'the start of the message, at most 80 characters');
   assert.ok(!JSON.stringify(payload).includes('segnalatore@esempio.it'), 'never the reply address');
   assert.equal(push.feedbackPayload({...report, messaggio: 'Breve'}, 'Consiglio', null).body, 'Consiglio · Generale\nBreve');
+  assert.equal(push.feedbackPayload(report, 'Errore', null, 3).badge, 3, 'the number for the app icon travels with the notification');
+  assert.ok(!('badge' in push.feedbackPayload(report, 'Errore', null, null)), 'count not available: the badge stays as it is');
   const result = await push.sendPush('segnalazioni', payload, {send});
   assert.deepEqual(result, {sent: 1, removed: 2, failed: 1});
   assert.equal(calls.length, 4);
@@ -116,11 +118,12 @@ function load(relative) {
   deps['@/lib/feedback-input'] = {BODY_MAX_BYTES: 8192, TYPE_LABELS: {errore: 'Errore'}, parseFeedback: () => ({ok: true, value: {tipo: 'errore'}, token: 't'})};
   deps['@/lib/feedback'] = {
     checkFormToken: () => 'ok', deviceKey: () => null, feedbackLimited: async () => false, issueFormToken: () => 't', turnstilePassed: async () => true,
-    saveFeedback: async () => report, recordFeedbackSend: async () => {}, markEmailSent: async () => {},
+    saveFeedback: async () => report, recordFeedbackSend: async () => {}, markEmailSent: async () => {}, countNewFeedback: async () => 7,
     sendFeedbackEmail: async () => { emails++; return 'sent'; },
   };
   deps['@/lib/feedback-names'] = {pageName: async () => 'Palla di fuoco'};
-  deps['@/lib/push'] = {feedbackPayload: push.feedbackPayload, sendPush: async () => { pushes++; throw new Error('push service down'); }};
+  let pushed;
+  deps['@/lib/push'] = {feedbackPayload: push.feedbackPayload, sendPush: async (type, body) => { pushes++; pushed = body; throw new Error('push service down'); }};
   const route = load('app/api/segnalazioni/route.ts');
   const headers = new Map([['origin', 'https://ilgrimorio.app'], ['host', 'ilgrimorio.app'], ['content-type', 'application/json']]);
   const response = await route.POST({headers: {get: name => headers.get(name) ?? null}, text: async () => '{}'});
@@ -130,6 +133,7 @@ function load(relative) {
   for (const fn of later) await fn();
   console.warn = warn;
   assert.equal(pushes, 1); assert.equal(emails, 1, 'the email is still sent');
+  assert.equal(pushed.badge, 7, 'the push carries the new reports for the badge');
   assert.deepEqual(warnings, ['[notifiche] Invio della notifica non riuscito.'], 'only a short warning: no key, address or text in the logs');
 
   await pg.close();
