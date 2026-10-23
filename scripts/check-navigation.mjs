@@ -9,7 +9,10 @@ const require = createRequire(import.meta.url);
 let pathname = '/';
 const code = ts.transpileModule(readFileSync(new URL('../components/bottom-nav.tsx',import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
 const mod = {exports:{}};
-new Function('require','module','exports',code)(id => id === 'next/navigation' ? { usePathname: () => pathname, useRouter: () => ({prefetch:()=>{}}) } : id === 'next/link' ? { __esModule:true, default:({children,prefetch,...props})=>{assert.equal(prefetch,false,'Main navigation defers prefetch to idle work');return createElement('a',props,children)} } : id === '@/components/navigation-memory' ? { notePathChange: () => {} } : require(id),mod,mod.exports);
+// The items are shared with the side column of computers (components/nav-items.ts).
+const navItems = { exports: {} };
+new Function('require','module','exports',ts.transpileModule(readFileSync(new URL('../components/nav-items.ts',import.meta.url),'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2017,module:ts.ModuleKind.CommonJS,esModuleInterop:true}}).outputText)(require,navItems,navItems.exports);
+new Function('require','module','exports',code)(id => id === 'next/navigation' ? { usePathname: () => pathname, useRouter: () => ({prefetch:()=>{}}) } : id === 'next/link' ? { __esModule:true, default:({children,prefetch,...props})=>{assert.equal(prefetch,false,'Main navigation defers prefetch to idle work');return createElement('a',props,children)} } : id === '@/components/navigation-memory' ? { notePathChange: () => {} } : id === '@/components/nav-items' ? navItems.exports : require(id),mod,mod.exports);
 const {BottomNav} = mod.exports;
 const cases = [
   ['/', '/', 'Home'],

@@ -87,13 +87,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               column on the left takes the place of the bottom bar, the content fills the rest; without the
               column (admin area) the content is centred, up to about 1200 px. */}
           <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x md:w-[calc(100%-80px)] md:max-w-4xl lg:max-w-[1280px] lg:has-[>[data-side-nav]]:ml-[240px] lg:has-[>[data-side-nav]]:mr-0 lg:has-[>[data-side-nav]]:w-auto lg:has-[>[data-side-nav]]:max-w-none lg:has-[>[data-side-nav]]:border-x-0">
-            <SideNav hidden={hidden} admin={admin} />
             {/* The offline notice sits in the page flow above the content: it never covers the controls at the top. */}
             <ServiceWorker enabled={serviceWorkerEnabled()} hiddenPaths={hiddenPaths} partPaths={partPaths} />
             <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))] lg:pb-0">
               <PartsProvider hidden={hiddenParts} admin={admin}><CharacterSessionProvider><ContentFrame>{children}</ContentFrame></CharacterSessionProvider></PartsProvider>
             </main>
             <BottomNav hidden={hidden} admin={admin} />
+            {/* After the content in the page order (it is fixed on the left): on phones the order stays the same. */}
+            <SideNav hidden={hidden} admin={admin} />
           </div>
           <InstallPrompt />
           <AppBadgeSync />
