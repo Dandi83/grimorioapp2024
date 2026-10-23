@@ -13,13 +13,15 @@ import {
 import { clean, requireAdmin, uniqueId, type DeleteResult } from "@/lib/admin-action-helpers";
 import { addressKey, clientAddress, clearLoginFailures, loginBlocked, recordLoginFailure } from "@/lib/admin-login-limit";
 import { slugify } from "@/lib/spells-types";
-import { deleteContentWithEdition } from "@/lib/content-editions";
+import { deleteContentWithEdition, getContentEditions } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { getSrdSource } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
 import { editorLogReady, logEditorSave } from "@/lib/editor-log";
 import { changedSpellFields, SPELL_EDITOR_FIELDS } from "@/lib/spell-update";
 import { db } from "@/lib/db";
+import { spellFileRow } from "@/lib/spells";
+import { isLegacySpellId } from "@/lib/srd-spells-2014";
 
 export interface SpellInput {
   nome_italiano: string;
@@ -107,14 +109,31 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
   const [stored] = await db.select().from(spells).where(eq(spells.id, id)).limit(1);
-  if (!stored) return { ok: false as const, error: "Scheda non trovata." };
+  // A card still only in the project files (2014 SRD, SRD 2024 additions): the file values are the
+  // starting point, and its first real change creates the database row.
+  const fileRow = stored ? undefined : spellFileRow(id);
+  const base = stored ?? fileRow;
+  if (!base) return { ok: false as const, error: "Scheda non trovata." };
   // A save rewrites only the fields that really changed: the others keep their exact bytes.
-  const changes = changedSpellFields(stored, sent);
-  const description = changes.descrizione ?? stored.descrizione ?? "";
+  const changes = changedSpellFields(base, sent);
+  const description = changes.descrizione ?? base.descrizione ?? "";
   const sourceEdition = getSrdSource(id, description) || getOriginalSource(id, description) ? "2024" : undefined;
+  // Nothing changed (fields and edition label): nothing is written, no row, no label, no log.
+  const label = (await getContentEditions("spell", id)).get(id);
+  const edition = formData.get("edition");
+  // The edition the public list gives the card: its label, else 2014 for the SRD 5.1 cards, else 2024.
+  const current = label ?? (isLegacySpellId(id) ? "2014" : "2024");
+  const sameEdition = edition === null || (edition === "" ? !label : edition === current);
+  if (!Object.keys(changes).length && sameEdition) return { ok: true as const, error: null, id };
+  // The edition the card already has is not stored again as a manual label.
+  if (sameEdition) formData.delete("edition");
   const logged = await editorLogReady();
   const result = await saveAdminContent("spell", id, formData, sourceEdition, async database => {
-    // Every changed field goes to the Registro modifiche, where it can be undone.
+    if (fileRow) {
+      if (!Object.keys(changes).length) return;
+      await database.insert(spells).values({ ...fileRow, id, sort_key: fileRow.nome_italiano.toLowerCase() });
+    }
+    // Every changed field goes to the Registro modifiche (before = the stored or file value), where it can be undone.
     if (logged) await logEditorSave(database, "incantesimi", id, changes);
     const updated = await database.update(spells)
     .set({

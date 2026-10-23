@@ -52,7 +52,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.equal(new FormData(document.querySelector('form')).get('componenti'),'');
  for(const type of ['V','S','M'])assert.equal(document.getElementById('component-'+type).checked,false);
  await input(document.getElementById('nome_italiano'),'Gelo di prova');
- assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D5e 2024','D&D5e 2014']);
+ assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['2024','2014'],'a card without SRD source: 2024 or 2014, no «automatica»');
  await choose('edition','2024');
  await choose('spell-level','2');
  await choose('spell-school','Invocazione');
@@ -102,8 +102,12 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  assert.equal(new FormData(document.querySelector('form')).get('descrizione'),record.descrizione,'metadata edits preserve tables and paragraphs');
  await click(button('Anteprima'));
  assert.ok(document.querySelector('article pre'),'existing tables remain rendered in preview');
+ // A verified SRD card: fixed edition with its source, no dropdown.
+ await act(async()=>root.render(React.createElement(SpellEditor,{edition:'2024',key:'srd',spell:{...spell,fonte:'SRD 5.2.1'},onClose:()=>closed++})));
+ assert.equal(document.querySelector('[data-testid="card-edition"]').textContent,'Edizione 2024 · SRD 5.2.1');
+ assert.equal(new FormData(document.querySelector('form')).get('edition'),null);
  const custom={...spell,edizione:'2014',livello:'Potere speciale (classe personalizzata)',componenti:'Materiali speciali: una chiave',durata:'finché il portale rimane aperto'};
- await act(async()=>root.render(React.createElement(SpellEditor,{edition:'2024',key:'custom',spell:custom,onClose:()=>closed++})));
+ await act(async()=>root.render(React.createElement(SpellEditor,{edition:'2014',key:'custom',spell:custom,onClose:()=>closed++})));
  for(const field of ['livello','componenti','durata'])assert.equal(new FormData(document.querySelector('form')).get(field),custom[field]);
  assert.equal(document.getElementById('edition').value,'2014');
  await click(button('Anteprima'));

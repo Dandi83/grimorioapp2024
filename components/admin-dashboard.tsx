@@ -12,7 +12,6 @@ import { schoolColor } from "@/lib/school-colors";
 import type { Monster } from "@/lib/monsters-types";
 import { AdminMonsters } from "@/components/admin-monsters";
 import { SpellProvenanceMarker } from "./spell-provenance-marker";
-import { AdminEditionPicker } from "./admin-edition-picker";
 import { SpellEditor } from "./admin-spell-editor";
 import { AdminDeleteButton } from "./admin-delete-button";
 import type { AdminEdition } from "@/lib/admin-edition";
@@ -156,9 +155,8 @@ export function AdminDashboard({
                 <SpellProvenanceMarker id={s.id} />
               </p>
               <p className="truncate text-xs text-muted-foreground">
-                {levelLabel(s.livello_num)} · {s.scuola || "—"}
+                {levelLabel(s.livello_num)} · {s.scuola || "—"}{s.da_file ? " · dai file SRD" : ""}
               </p>
-              <AdminEditionPicker key={`${s.id}-${s.edizione ?? "auto"}`} kind="spell" id={s.id} name={s.nome_italiano} edition={s.edizione} listEdition={edition} />
             </div>
             <Link
               href={`/spell/${s.id}`}
@@ -175,7 +173,8 @@ export function AdminDashboard({
             >
               <Pencil className="h-4 w-4" aria-hidden="true" />
             </button>
-            <DeleteButton id={s.id} nome={s.nome_italiano} />
+            {/* A card of the project files has no row to delete: it is part of the published SRD. */}
+            {s.da_file ? null : <DeleteButton id={s.id} nome={s.nome_italiano} />}
           </li>
         ))}
         {filtered.length === 0 ? (

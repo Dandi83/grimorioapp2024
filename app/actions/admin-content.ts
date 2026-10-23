@@ -9,6 +9,7 @@ import { cardFields, isContentEdition, sectionSpec } from "@/lib/content-section
 import { fieldError, normalizeValue, reasonError } from "@/lib/content-validate";
 import { db } from "@/lib/db";
 import { ensureEditorLogTable, undoEditorChange, type UndoResult } from "@/lib/editor-log";
+import { dropSpellRowLikeFile } from "@/lib/spells";
 
 export type ContentActionResult = { ok: true; message: string } | { ok: false; error: string; fields?: Record<string, string> };
 
@@ -80,7 +81,10 @@ export async function undoEditorAction(formData: FormData): Promise<ContentActio
   let result: UndoResult;
   try {
     await ensureEditorLogTable();
-    result = await db.transaction(database => undoEditorChange(database, id));
+    // A spell card of the project files back to exactly its file values is read from the file again.
+    result = await db.transaction(database => undoEditorChange(database, id, async (tx, row) => {
+      if (row.sezione === "incantesimi") await dropSpellRowLikeFile(tx, row.scheda_id);
+    }));
   } catch {
     return { ok: false, error: "Annullamento non riuscito. Riprova tra poco." };
   }

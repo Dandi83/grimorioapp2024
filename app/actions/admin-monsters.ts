@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 import { monsters } from "@/lib/db/schema";
 import { clean, requireAdmin, uniqueId, type DeleteResult } from "@/lib/admin-action-helpers";
 import { monsterSlugify, parseGs } from "@/lib/monsters-types";
-import { deleteContentWithEdition } from "@/lib/content-editions";
+import { deleteContentWithEdition, getContentEditions } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { db } from "@/lib/db";
 import { getSrdMonsterSource, previewMonsterById, usesLegacyMonsterRules } from "@/lib/srd-monsters";
@@ -96,6 +96,9 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
   const habitats = habitatsFromForm(formData);
+  // The edition the card already has (its label, else the one of its rules) is not stored again as a label.
+  const label = (await getContentEditions("monster", id)).get(id);
+  if (formData.get("edition") === (label ?? (usesLegacyMonsterRules({ id }) ? "2014" : "2024"))) formData.delete("edition");
   // A sheet that exists only in the project files is not in the database:
   // only its habitat (and matching edition label) is saved, the text stays the official one.
   const [stored] = await db.select().from(monsters).where(eq(monsters.id, id)).limit(1);

@@ -10,8 +10,7 @@ import { AdminChoiceField } from "./admin-choice-field";
 import { AdminVisualText } from "./admin-visual-text";
 import { SpellClassification, SpellComponents } from "./admin-spell-fields";
 import { HtmlText } from "./html-text";
-import { AdminEditionField } from "./admin-edition-field";
-import { EditionChip } from "./admin-edition/edition-chip";
+import { AdminEditionField, confirmEditionMove } from "./admin-edition-field";
 import type { AdminEdition } from "@/lib/admin-edition";
 import { RulesEditionBadge } from "./rules-edition-badge";
 
@@ -148,7 +147,7 @@ export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; 
     setPreview({
       ...values,
       id: spell?.id || "unsaved-spell",
-      edizione: values.edition || undefined,
+      edizione: values.edition || edition,
       ...parseLivello(values.livello),
     } as Spell);
     dialog.current?.scrollTo({ top: 0 });
@@ -183,10 +182,14 @@ export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; 
           <h2 id="spell-editor-heading" className="font-serif text-2xl">
             {spell ? "Modifica incantesimo" : "Nuovo incantesimo"}
           </h2>
-          <EditionChip edition={edition} />
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Scegli le caratteristiche e scrivi gli effetti: il Grimorio prepara la scheda.
           </p>
+          {spell?.da_file && (
+            <p className="mt-1 text-xs leading-5 text-primary">
+              Scheda dai file SRD: il primo salvataggio con una modifica la copia nel database. Ogni campo cambiato va nel Registro modifiche e si può annullare.
+            </p>
+          )}
         </div>
         <button
           type="button"
@@ -202,12 +205,14 @@ export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; 
         ref={form}
         onSubmit={(event) => {
           event.preventDefault();
-          void save(new FormData(event.currentTarget));
+          const data = new FormData(event.currentTarget);
+          if (confirmEditionMove(data, edition)) void save(data);
         }}
       >
         {spell && <input type="hidden" name="id" value={spell.id} />}
         <fieldset disabled={saving} className="min-w-0 p-4 sm:p-6">
           <div hidden={preview !== null} className="space-y-5">
+            <AdminEditionField edition={edition} source={spell?.fonte} />
             <div>
               <label htmlFor="nome_italiano" className="mb-1.5 block text-sm text-muted-foreground">
                 Nome *
@@ -222,7 +227,6 @@ export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; 
               />
             </div>
             <SpellClassification initialValue={spell?.livello || ""} />
-            <AdminEditionField edition={spell ? spell.edizione : edition} />
             <section className="space-y-4 rounded-xl border border-border p-4">
               <h3 className="font-serif text-xl text-primary">Lancio, gittata e durata</h3>
               <div className="grid gap-4 sm:grid-cols-2">

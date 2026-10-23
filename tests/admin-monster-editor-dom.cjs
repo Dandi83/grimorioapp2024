@@ -48,7 +48,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
 (async()=>{
  await act(async()=>root.render(React.createElement(MonsterEditor,{edition:'2024',monster:null,onClose:()=>closed++})));
  await input(document.getElementById('nome'),'Guardiano di prova');
- assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['Da verificare / automatica','D&D5e 2024','D&D5e 2014']);
+ assert.deepEqual([...document.getElementById('edition').options].map(o=>o.textContent),['2024','2014'],'a card without SRD source: 2024 or 2014, no «automatica»');
  await choose('edition','2024');
  // Habitat: several boxes from the fixed list, sent with a marker so older forms keep the saved value.
  const habitatBoxes=[...document.querySelectorAll('input[name="habitat"]')];
@@ -143,7 +143,22 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  // Admin area on 2014: a new creature starts in 2014 and the editor says which edition it edits.
  await act(async()=>root.render(React.createElement(MonsterEditor,{key:'new-2014',edition:'2014',monster:null,onClose:()=>closed++})));
  assert.equal(document.getElementById('edition').value,'2014','a new card starts in the edition of the admin area');
- assert.equal(document.querySelector('[data-testid="edition-chip"]').textContent,'Edizione 2014');
+ // Moving a card to the other edition asks first: «Annulla» sends nothing.
+ let asked=[];
+ window.confirm=global.confirm=message=>{asked.push(message);return false;};
+ await choose('edition','2024');
+ await input(document.getElementById('nome'),'Spostato');
+ const before=calls;
+ await act(async()=>document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+ assert.deepEqual([asked,calls],[['Spostare questa scheda nell’edizione 2024?'],before],'cancelled: nothing saved');
+ window.confirm=global.confirm=message=>{asked.push(message);return true;};
+ await act(async()=>document.querySelector('form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
+ assert.equal(calls,before+1,'confirmed: saved');
+ // A card with a verified SRD source: the edition of its source, fixed, and no edition sent.
+ await act(async()=>root.render(React.createElement(MonsterEditor,{key:'lich-srd',edition:'2024',monster:{...lich,provenienza:{document:'SRD 5.2.1',edition:'2024'}},onClose:()=>closed++})));
+ assert.equal(document.querySelector('[data-testid="card-edition"]').textContent,'Edizione 2024 · SRD 5.2.1');
+ assert.equal(document.getElementById('edition'),null);
+ assert.equal(new FormData(document.querySelector('form')).get('edition'),null,'the source decides: nothing to change');
  await act(async()=>root.unmount());
  console.log('DOM interactions: named blocks, body formatting, ability modifiers, preview with links and no writes, return-to-form, failed-save draft retention, clear formatting, exact existing-source submission passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

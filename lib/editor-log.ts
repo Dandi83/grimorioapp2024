@@ -88,8 +88,11 @@ export async function allEditorLog(): Promise<EditorLogRow[]> {
 
 export type UndoResult = { ok: true; row: EditorLogRow } | { ok: false; error: string };
 
-/** Puts the value before the change back, only if the field still holds the logged value. */
-export async function undoEditorChange(database: Database, id: string): Promise<UndoResult> {
+/**
+ * Puts the value before the change back, only if the field still holds the logged value.
+ * afterUndo runs in the same transaction (a spell card back to its file values drops its row).
+ */
+export async function undoEditorChange(database: Database, id: string, afterUndo?: (database: Database, row: EditorLogRow) => Promise<void>): Promise<UndoResult> {
   const [row] = await database.select().from(schema.editorLog).where(eq(schema.editorLog.id, id)).limit(1);
   if (!row || row.annullata_il) return { ok: false, error: "Modifica non trovata o già annullata." };
   const sezione = row.sezione as EditorSection;
@@ -104,5 +107,6 @@ export async function undoEditorChange(database: Database, id: string): Promise<
   const value = fields.integers.includes(row.campo) ? Number.parseInt(row.valore_prima, 10) : row.valore_prima;
   await database.update(table).set({ [row.campo]: value, updated_at: new Date() } as never).where(eq(table.id, row.scheda_id));
   await database.update(schema.editorLog).set({ annullata_il: new Date() }).where(eq(schema.editorLog.id, id));
+  if (afterUndo) await afterUndo(database, { ...row, sezione } as EditorLogRow);
   return { ok: true, row: { ...row, sezione } as EditorLogRow };
 }
