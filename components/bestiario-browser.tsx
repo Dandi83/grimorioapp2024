@@ -7,6 +7,7 @@ import { Skull, Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
+import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useEditions, usePart } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { computeMonstersMeta, isSrdAnimal, typeCategory, type MonsterListItem } from "@/lib/monsters-types";
@@ -103,6 +104,25 @@ export function BestiarioBrowser({
   }, [key]);
   const visible = results.slice(0, limit);
 
+  // Computer column: a card opened from a direct link shows its row, in its edition and page.
+  const selectedId = pane?.selectedId;
+  const root = useRef<HTMLDivElement>(null);
+  const shownFor = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (!selectedId || shownFor.current === selectedId) return;
+    const selected = monsters.find(item => item.id === selectedId);
+    if (!selected) return;
+    if (selected.edizione !== edizione && allowed.includes(selected.edizione)) {
+      setEdizione(selected.edizione);
+      setFilters(NO_FILTERS);
+      return;
+    }
+    shownFor.current = selectedId;
+    const index = results.findIndex(item => item.id === selectedId);
+    if (index >= limit) setLimit(Math.ceil((index + 1) / PAGE_SIZE) * PAGE_SIZE);
+  }, [selectedId, monsters, results, edizione, allowed, limit]);
+  useRevealSelected(root, selectedId);
+
   // Remember the list for "back" from a card; the scroll is taken when a row is opened.
   const scroll = useRef(initialScroll ?? 0);
   const save = () => saveListState<MonsterListState>("bestiario",
@@ -133,10 +153,11 @@ export function BestiarioBrowser({
   ];
 
   return (
-    <div>
+    <div ref={root}>
       <div className="px-6 pb-2 pt-8">
         <CatalogTitle section="bestiario" title="Bestiario" edition={edizione} onEdition={chooseEdition} />
-        <SearchAndFilters query={q} onQuery={setQ} label="Cerca una creatura" active={active.length} onOpen={() => setDraft(filters)} />
+        <SearchAndFilters query={q} onQuery={setQ} label="Cerca una creatura"
+          placeholder={pane ? "Cerca…" : undefined} active={active.length} onOpen={() => setDraft(filters)} />
         <ActiveFilters filters={active} />
       </div>
 

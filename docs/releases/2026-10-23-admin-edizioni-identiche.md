@@ -1,6 +1,6 @@
 # Area riservata: 2024 e 2014 identiche — 23 ottobre 2026
 
-Ramo `fix/admin-edizioni-identiche-20261023`, base `main` b84212e (#69). Non unito: attende l'OK di Daniele. Le due edizioni ora sono uguali nell'aspetto e nel comportamento; cambia solo il colore del selettore e della fascia.
+Ramo `fix/admin-edizioni-identiche-20261023`, base `main` b84212e (#69), poi aggiornato con `main` 6f61602 (#70, layout tablet e computer). Non unito: attende l'OK di Daniele. Le due edizioni ora sono uguali nell'aspetto e nel comportamento; cambia solo il colore del selettore e della fascia.
 
 ## Nomi degli incantesimi (solo visualizzazione)
 `lib/spell-name.ts` → `spellName(nome, edizione)` scrive i nomi come il manuale italiano:
@@ -29,3 +29,14 @@ I mostri avevano già la grafia del manuale (l'unica maiuscola interna è «Mino
 - Il pulsante attivo del selettore ha il colore della fascia (blu 2014, bordeaux 2024): prima era bordeaux in tutte e due.
 - Elenco degli incantesimi ordinato per nome mostrato in tutte e due le edizioni. Prima il 2024 era ordinato per nome e il 2014 seguiva l'ordine del file.
 - L'etichetta di fonte non si tronca a 390 px: è in un elemento a parte.
+
+## Colonna dell'elenco sul computer (dopo la #70)
+- `components/layout/use-reveal-selected.ts`: quando si apre una scheda, anche da link diretto, la colonna dell'elenco scorre fino alla riga evidenziata. Scorre solo se la riga non è già visibile, quindi un clic su una riga in vista non sposta l'elenco.
+- Se la scheda è dell'altra edizione, la colonna passa a quell'edizione, senza salvarla come scelta, e carica le pagine necessarie per mostrare la riga.
+- Bestiario nella colonna da 320 px: il campo di ricerca è largo 111 px. «Cerca una creatura…» misura 141 px e verrebbe tagliato, quindi sul computer il testo è «Cerca…» (53 px). Sul telefono resta «Cerca per nome…».
+- Prova `e2e/desktop.spec.mjs`:
+  - /spell/desiderio-2014 a 1440 px: riga visibile e colonna passata al 2014;
+  - un clic su una riga vicina non sposta l'elenco;
+  - /mostro/tarrasque: riga visibile;
+  - testo del campo intero;
+  - telefono invariato.

@@ -27,12 +27,13 @@ export function CatalogTitle({ title, section, edition, onEdition }: {
 }
 
 /** Search field and "Filtri" button; the button turns bordeaux with an amber count when filters are active. */
-export function SearchAndFilters({ query, onQuery, label, active, onOpen }: {
+export function SearchAndFilters({ query, onQuery, label, active, onOpen, placeholder = "Cerca per nome…" }: {
   query: string;
   onQuery: (value: string) => void;
   label: string;
   active: number;
   onOpen: () => void;
+  placeholder?: string;
 }) {
   return (
     <div className="mt-4 flex gap-3">
@@ -43,7 +44,7 @@ export function SearchAndFilters({ query, onQuery, label, active, onOpen }: {
           onChange={event => onQuery(event.target.value)}
           type="search"
           aria-label={label}
-          placeholder="Cerca per nome…"
+          placeholder={placeholder}
           autoCorrect="off"
           autoCapitalize="none"
           className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted"
