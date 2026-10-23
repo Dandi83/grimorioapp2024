@@ -2,6 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AdminContentForm } from "@/components/admin-content/content-form";
+import { OtherEditionNotice } from "@/components/admin-edition/edition-bar";
+import { EditionChip } from "@/components/admin-edition/edition-chip";
+import { adminEdition } from "@/lib/admin-edition-server";
 import { AdminLogin } from "@/components/admin-login";
 import { isAdmin } from "@/lib/admin-auth";
 import { activeOverrideMap, overrideKey } from "@/lib/content-overrides-apply";
@@ -20,7 +23,10 @@ export default async function ContentEditPage({ params, searchParams }: {
   const section = sectionSpec(sezione);
   if (!section) notFound();
   const requested = (await searchParams).edizione;
-  const edition = isContentEdition(requested) && section.editions.includes(requested) ? requested : section.editions[0];
+  const chosen = await adminEdition();
+  // The edition of the link; without one, the edition of the admin area when the card exists there.
+  const edition = isContentEdition(requested) && section.editions.includes(requested) ? requested
+    : section.editions.includes(chosen) && section.original(id, chosen) ? chosen : section.editions[0];
   const original = section.original(id, edition);
   if (!original) notFound();
   const active = activeOverrideMap((await allOverrides()).filter(row => row.sezione === section.key && row.scheda_id === id));
@@ -28,10 +34,12 @@ export default async function ContentEditPage({ params, searchParams }: {
     const row = active.get(overrideKey(section.key, id, edition, field.name));
     return { ...field, original: original[field.name], current: row ? row.valore_nuovo : original[field.name], motivo: row?.motivo };
   });
-  const back = `/admin/contenuti/${section.key}?edizione=${edition}`;
+  const back = `/admin/contenuti/${section.key}`;
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
       <Link href={back} className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ {section.title}</Link>
+      <EditionChip edition={edition} />
+      {edition !== chosen && <OtherEditionNotice current={chosen} target={edition} message={`Questa voce è dell’edizione ${edition}, ma stai modificando l’edizione ${chosen}. Le modifiche valgono solo per questa voce ${edition}.`} />}
       <h1 className="font-serif text-[28px] font-bold leading-tight text-primary">{fields.find(field => field.name === "nome" || field.name === "title")?.current ?? id} ({edition})</h1>
       <a href={section.href(id, edition)} className="self-start text-sm text-primary underline underline-offset-4">Apri la scheda pubblica</a>
       <AdminContentForm section={section.key} id={id} edition={edition} fields={fields} back={back} />

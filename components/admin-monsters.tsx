@@ -12,13 +12,14 @@ import { gsLabel, monsterColor, typeCategory } from "@/lib/monsters-types";
 import { Pencil, Plus, Search, ExternalLink } from "lucide-react";
 import { AdminEditionPicker } from "./admin-edition-picker";
 import { MonsterEditor } from "./admin-monster-editor";
+import type { AdminEdition } from "@/lib/admin-edition";
 
 type Editing =
   | { mode: "closed" }
   | { mode: "create" }
   | { mode: "edit"; monster: Monster };
 
-export function AdminMonsters({ monsters }: { monsters: Monster[] }) {
+export function AdminMonsters({ monsters, edition }: { monsters: Monster[]; edition: AdminEdition }) {
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Editing>({ mode: "closed" });
 
@@ -77,7 +78,7 @@ export function AdminMonsters({ monsters }: { monsters: Monster[] }) {
                 {gsLabel(m.grado_sfida)} · {typeCategory(m.tipo) || "—"}
                 {m.taglia ? ` · ${m.taglia}` : ""}
               </p>
-              <AdminEditionPicker key={`${m.id}-${m.edizione ?? "auto"}`} kind="monster" id={m.id} name={m.nome} edition={m.edizione} />
+              <AdminEditionPicker key={`${m.id}-${m.edizione ?? "auto"}`} kind="monster" id={m.id} name={m.nome} edition={m.edizione} listEdition={edition} />
             </div>
             <Link
               href={`/mostro/${m.id}`}
@@ -108,6 +109,7 @@ export function AdminMonsters({ monsters }: { monsters: Monster[] }) {
         <MonsterEditor
           key={editing.mode === "edit" ? editing.monster.id : "create"}
           monster={editing.mode === "edit" ? editing.monster : null}
+          edition={edition}
           onClose={() => setEditing({ mode: "closed" })}
         />
       ) : null}

@@ -8,6 +8,8 @@ import { AdminMonsterField } from "./admin-monster-field";
 import { MonsterContentEditor } from "./admin-monster-content";
 import { AdminMonsterPreview } from "./admin-monster-preview";
 import { AdminEditionField } from "./admin-edition-field";
+import { EditionChip } from "./admin-edition/edition-chip";
+import type { AdminEdition } from "@/lib/admin-edition";
 import { AdminHabitatField } from "./admin-habitat-field";
 
 type Field = { name: keyof Monster; label: string; placeholder?: string };
@@ -95,14 +97,17 @@ function EditorFields({ fields, monster }: { fields: Field[]; monster: Monster |
 export function MonsterEditor({
   monster,
   onClose,
+  edition,
 }: {
   monster: Monster | null;
   onClose: () => void;
+  /** The edition of the admin area: the card belongs to it, and a new card starts in it. */
+  edition: AdminEdition;
 }) {
   const sourceEdition = monster?.provenienza?.edition;
-  const initialEdition =
-    monster?.edizione ??
-    (sourceEdition === "2014" || sourceEdition === "2024" ? sourceEdition : undefined);
+  const initialEdition = monster
+    ? monster.edizione ?? (sourceEdition === "2014" || sourceEdition === "2024" ? sourceEdition : undefined)
+    : edition;
   const dialog = useRef<HTMLDialogElement>(null);
   const form = useRef<HTMLFormElement>(null);
   const [preview, setPreview] = useState<Partial<Monster> | null>(null);
@@ -164,6 +169,7 @@ export function MonsterEditor({
           <h2 id="monster-editor-heading" className="font-serif text-2xl">
             {monster ? "Modifica mostro" : "Nuovo mostro"}
           </h2>
+          <EditionChip edition={edition} />
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Compila la scheda: alla formattazione pensa il Grimorio.
           </p>

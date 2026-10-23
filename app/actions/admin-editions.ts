@@ -36,7 +36,7 @@ export async function setContentEditionAction(_previous: Result | null, form: Fo
   } catch {
     return { ok: false, error: "Etichetta non salvata. Riprova." };
   }
-  for (const route of ["/admin", "/bestiario", "/grimorio", "/preferiti", kind === "monster" ? `/mostro/${id}` : `/spell/${id}`]) {
+  for (const route of ["/admin", "/admin/incantesimi", "/admin/mostri", "/bestiario", "/grimorio", "/preferiti", kind === "monster" ? `/mostro/${id}` : `/spell/${id}`]) {
     revalidatePath(route);
   }
   return { ok: true };

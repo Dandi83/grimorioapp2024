@@ -15,6 +15,7 @@ import { SpellProvenanceMarker } from "./spell-provenance-marker";
 import { AdminEditionPicker } from "./admin-edition-picker";
 import { SpellEditor } from "./admin-spell-editor";
 import { AdminDeleteButton } from "./admin-delete-button";
+import type { AdminEdition } from "@/lib/admin-edition";
 import {
   BookOpen,
   Skull,
@@ -35,10 +36,13 @@ export function AdminDashboard({
   spells,
   monsters,
   initialTab = "spells",
+  edition,
 }: {
   spells: Spell[];
   monsters: Monster[];
   initialTab?: "spells" | "monsters";
+  /** The edition of the admin area: the lists hold only its cards. */
+  edition: AdminEdition;
 }) {
   const [tab, setTab] = useState<"spells" | "monsters">(initialTab);
   const [query, setQuery] = useState("");
@@ -61,7 +65,7 @@ export function AdminDashboard({
         <div>
           <h1 className="font-serif text-2xl text-foreground">Incantesimi e mostri</h1>
           <p className="text-sm text-muted-foreground">
-            {spells.length} incantesimi · {monsters.length} mostri
+            Edizione {edition}: {spells.length} incantesimi · {monsters.length} mostri
           </p>
         </div>
         <form action={logoutAction}>
@@ -105,7 +109,7 @@ export function AdminDashboard({
       </div>
 
       {tab === "monsters" ? (
-        <AdminMonsters monsters={monsters} />
+        <AdminMonsters monsters={monsters} edition={edition} />
       ) : (
       <>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
@@ -154,7 +158,7 @@ export function AdminDashboard({
               <p className="truncate text-xs text-muted-foreground">
                 {levelLabel(s.livello_num)} · {s.scuola || "—"}
               </p>
-              <AdminEditionPicker key={`${s.id}-${s.edizione ?? "auto"}`} kind="spell" id={s.id} name={s.nome_italiano} edition={s.edizione} />
+              <AdminEditionPicker key={`${s.id}-${s.edizione ?? "auto"}`} kind="spell" id={s.id} name={s.nome_italiano} edition={s.edizione} listEdition={edition} />
             </div>
             <Link
               href={`/spell/${s.id}`}
@@ -185,6 +189,7 @@ export function AdminDashboard({
         <SpellEditor
           key={editing.mode === "edit" ? editing.spell.id : "create"}
           spell={editing.mode === "edit" ? editing.spell : null}
+          edition={edition}
           onClose={() => setEditing({ mode: "closed" })}
         />
       ) : null}

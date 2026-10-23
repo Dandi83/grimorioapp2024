@@ -47,7 +47,7 @@ const button=text=>[...document.querySelectorAll('button')].find(b=>b.textConten
 const input=async(el,value)=>{assert.ok(el);await act(async()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new InputEvent('input',{bubbles:true}))})};
 const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal(el?.tagName,'SELECT');await act(async()=>{el.value=value;el.dispatchEvent(new Event('change',{bubbles:true}))})};
 (async()=>{
- await act(async()=>root.render(React.createElement(SpellEditor,{spell:null,onClose:()=>closed++})));
+ await act(async()=>root.render(React.createElement(SpellEditor,{edition:'2024',spell:null,onClose:()=>closed++})));
  assert.equal(document.getElementById('spell-components-mode').selectedOptions[0].textContent,'Seleziona le componenti…','new spell must not appear to have prefilled components');
  assert.equal(new FormData(document.querySelector('form')).get('componenti'),'');
  for(const type of ['V','S','M'])assert.equal(document.getElementById('component-'+type).checked,false);
@@ -89,7 +89,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  const record=requireProject('./lib/data/srd-italiano-5.2.1.json').spells.find(s=>s.id==='muro-prismatico');
  const {parseLivello}=load('lib/spells-types.ts');
  const spell={...record,nome_italiano:record.appName,...parseLivello(record.livello)};
- await act(async()=>root.render(React.createElement(SpellEditor,{key:'existing',spell,onClose:()=>closed++})));
+ await act(async()=>root.render(React.createElement(SpellEditor,{edition:'2024',key:'existing',spell,onClose:()=>closed++})));
  data=new FormData(document.querySelector('form'));
  for(const field of ['nome_italiano','livello','tempo_di_lancio','gittata','componenti','durata','descrizione'])assert.equal(data.get(field),spell[field],field+' must remain exact');
  const table=document.querySelector('#spell-description pre');
@@ -103,7 +103,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  await click(button('Anteprima'));
  assert.ok(document.querySelector('article pre'),'existing tables remain rendered in preview');
  const custom={...spell,edizione:'2014',livello:'Potere speciale (classe personalizzata)',componenti:'Materiali speciali: una chiave',durata:'finché il portale rimane aperto'};
- await act(async()=>root.render(React.createElement(SpellEditor,{key:'custom',spell:custom,onClose:()=>closed++})));
+ await act(async()=>root.render(React.createElement(SpellEditor,{edition:'2024',key:'custom',spell:custom,onClose:()=>closed++})));
  for(const field of ['livello','componenti','durata'])assert.equal(new FormData(document.querySelector('form')).get(field),custom[field]);
  assert.equal(document.getElementById('edition').value,'2014');
  await click(button('Anteprima'));
@@ -113,7 +113,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  const {renderToStaticMarkup}=requireProject('react-dom/server');
  for(const record of requireProject('./lib/data/srd-italiano-5.2.1.json').spells) {
   const source={...record,nome_italiano:record.appName,...parseLivello(record.livello)};
-  const markup=renderToStaticMarkup(React.createElement(SpellEditor,{spell:source,onClose:()=>{}}));
+  const markup=renderToStaticMarkup(React.createElement(SpellEditor,{edition:'2024',spell:source,onClose:()=>{}}));
   const page=new dom.window.DOMParser().parseFromString(markup,'text/html');
   const submission=new FormData(page.querySelector('form'));
   for(const field of ['nome_italiano','livello','tempo_di_lancio','gittata','componenti','durata','descrizione'])assert.equal(submission.get(field),source[field],record.id+'.'+field+' source preservation');

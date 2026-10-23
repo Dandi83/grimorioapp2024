@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AdminContentList } from "@/components/admin-content/content-list";
+import { OtherEditionNotice } from "@/components/admin-edition/edition-bar";
+import { adminEdition } from "@/lib/admin-edition-server";
 import { AdminLogin } from "@/components/admin-login";
 import { isAdmin } from "@/lib/admin-auth";
 import { activeOverrideMap } from "@/lib/content-overrides-apply";
@@ -18,8 +20,21 @@ export default async function ContentSectionPage({ params, searchParams }: {
   if (!(await isAdmin())) return <AdminLogin />;
   const section = sectionSpec((await params).sezione);
   if (!section) notFound();
+  // The edition comes from the switch at the top of the admin area; a link of the other edition says so.
+  const chosen = await adminEdition();
   const requested = (await searchParams).edizione;
-  const edition = isContentEdition(requested) && section.editions.includes(requested) ? requested : section.editions[0];
+  if (!section.editions.includes(chosen)) {
+    const only = section.editions[0];
+    return (
+      <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
+        <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
+        <h1 className="font-serif text-[30px] font-bold text-primary">{section.title}</h1>
+        <OtherEditionNotice current={chosen} target={only} message={`${section.title} ha solo l’edizione ${only}: nell’edizione ${chosen} non c’è niente da modificare.`} />
+      </div>
+    );
+  }
+  const edition = chosen;
+  const linked = isContentEdition(requested) && requested !== edition && section.editions.includes(requested) ? requested : undefined;
   const active = [...activeOverrideMap((await allOverrides()).filter(row => row.sezione === section.key && row.edizione === edition)).values()];
   const changed = new Set(active.map(row => row.scheda_id));
   const items = section.items(edition).map(item => ({ ...item, modificato: changed.has(item.id) }));
@@ -27,16 +42,7 @@ export default async function ContentSectionPage({ params, searchParams }: {
     <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4">
       <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
       <h1 className="font-serif text-[30px] font-bold text-primary">{section.title}</h1>
-      {section.editions.length > 1 && (
-        <nav aria-label="Edizione" className="flex gap-1 rounded-xl bg-elevated p-1">
-          {section.editions.map(value => (
-            <Link key={value} href={`/admin/contenuti/${section.key}?edizione=${value}`} aria-current={value === edition ? "page" : undefined}
-              className={`flex min-h-11 flex-1 items-center justify-center rounded-[9px] font-bold tabular-nums ${value === edition ? "bg-primary text-primary-foreground" : "text-muted"}`}>
-              {value}
-            </Link>
-          ))}
-        </nav>
-      )}
+      {linked && <OtherEditionNotice current={edition} target={linked} message={`Il link apriva l’edizione ${linked}: qui vedi l’edizione ${edition}.`} />}
       <AdminContentList section={section.key} edition={edition} items={items} />
     </div>
   );

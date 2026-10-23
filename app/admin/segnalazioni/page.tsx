@@ -7,6 +7,8 @@ import { listFeedback, type FeedbackFilter } from "@/lib/feedback";
 import { pageName } from "@/lib/feedback-names";
 import { FEEDBACK_STATES, FEEDBACK_TYPES, aboutLabel, formatWhen, type FeedbackState, type FeedbackType } from "@/lib/feedback-input";
 import { TypePill } from "@/components/feedback/type-pill";
+import { EditionChip } from "@/components/admin-edition/edition-chip";
+import { isAdminEdition } from "@/lib/admin-edition";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Segnalazioni — Il Grimorio.App", robots: { index: false, follow: false } };
@@ -77,8 +79,9 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
                 <span className="flex items-center gap-2">
                   <TypePill tipo={report.tipo} />
                   <span className="min-w-0 flex-1 truncate text-xs text-muted">
-                    {formatWhen(new Date(report.creato_il), now)} · {report.percorso ? aboutLabel(names[i], report.percorso, report.edizione) : "nessuna pagina"}
+                    {formatWhen(new Date(report.creato_il), now)} · {report.percorso ? aboutLabel(names[i], report.percorso, null) : "nessuna pagina"}
                   </span>
+                  {isAdminEdition(report.edizione) && <EditionChip edition={report.edizione} />}
                   {report.stato === "nuova" && <span className="shrink-0 rounded-[10px] bg-amber px-2 py-0.5 text-[11px] font-bold text-foreground">NUOVA</span>}
                 </span>
                 <span className="line-clamp-2 break-words text-[15px] leading-[1.3]">{report.messaggio}</span>

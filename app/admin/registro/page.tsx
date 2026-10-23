@@ -3,6 +3,8 @@ import Link from "next/link";
 import { AdminLogin } from "@/components/admin-login";
 import { UndoButton } from "@/components/admin-content/undo-button";
 import { isAdmin } from "@/lib/admin-auth";
+import { inAdminEdition, isAdminEdition, type AdminEdition } from "@/lib/admin-edition";
+import { adminEdition } from "@/lib/admin-edition-server";
 import { activeOverrideMap, overrideHealth } from "@/lib/content-overrides-apply";
 import { allOverrides } from "@/lib/content-overrides";
 import { CONTENT_SECTIONS, fieldLabels, isContentEdition, sectionSpec } from "@/lib/content-sections";
@@ -26,6 +28,8 @@ const HEALTH: Record<string, string> = {
 interface LogItem {
   id: string; editor: boolean; sezione: string; when: Date; undoneAt: Date | null; inForce: boolean;
   title: string; card: string; href?: string; field: string; before: string; after: string; motivo: string; warning?: string;
+  /** The edition of the card; none for what both editions share (a section shown or hidden). */
+  edition: AdminEdition | null;
   /** Shown instead of «Annulla»: a section switch is undone by switching it again. */
   fixed?: string;
 }
@@ -39,6 +43,8 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
   const keys = [...CONTENT_SECTIONS.map(section => section.key), "incantesimi", "mostri", "sezioni"];
   const sezione = typeof query.sezione === "string" && keys.includes(query.sezione) ? query.sezione : undefined;
   const stato = query.stato === "annullate" ? "annullate" : query.stato === "tutte" ? "tutte" : "attive";
+  const edition = await adminEdition();
+  const allEditions = query.edizioni === "tutte";
 
   const [overrides, editorRows, sectionRows, spells, monsters] = await Promise.all([
     allOverrides(), allEditorLog(), allSectionLog(), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
@@ -57,16 +63,22 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
         href: active && section && edition ? `/admin/contenuti/${row.sezione}/${row.scheda_id}?edizione=${edition}` : undefined,
         field: ((edition && fieldLabels(row.sezione, row.scheda_id, edition)[row.campo]) ?? row.campo).toLowerCase(),
         before: row.valore_originale, after: row.valore_nuovo, motivo: row.motivo, ...(health !== "ok" ? { warning: HEALTH[health] } : {}),
+        edition: isAdminEdition(row.edizione) ? row.edizione : null,
       };
     }),
-    ...editorRows.map(row => ({
+    ...editorRows.map(row => {
+      // Spells and creatures: the edition the card has now (as in the lists of /admin/incantesimi and /admin/mostri).
+      const found = row.sezione === "incantesimi" ? spells.find(spell => spell.id === row.scheda_id) : monsters.find(monster => monster.id === row.scheda_id);
+      const cardEdition: AdminEdition | null = !found ? null : found.edizione === "2014" ? "2014" : "2024";
+      return {
       id: row.id, editor: true, sezione: row.sezione, when: new Date(row.creata_il), undoneAt: row.annullata_il ? new Date(row.annullata_il) : null, inForce: !row.annullata_il,
-      title: `${EDITOR_TITLES[row.sezione]} · editor`,
+      title: `${EDITOR_TITLES[row.sezione]}${cardEdition ? ` ${cardEdition}` : ""} · editor`, edition: cardEdition,
       card: (row.sezione === "incantesimi" ? spells.find(spell => spell.id === row.scheda_id)?.nome_italiano : monsters.find(monster => monster.id === row.scheda_id)?.nome) ?? row.scheda_id,
       href: row.sezione === "incantesimi" ? `/spell/${row.scheda_id}` : `/mostro/${row.scheda_id}`,
       field: EDITOR_FIELDS[row.sezione].label[row.campo] ?? row.campo.replace(/_/g, " "),
       before: row.valore_prima, after: row.valore_dopo, motivo: "Modifica dall’editor",
-    })),
+    };
+    }),
     // Sections shown or hidden from /admin/sezioni: what the public sees, no content changed.
     ...sectionRows.map(row => ({
       id: row.id, editor: false, sezione: "sezioni", when: new Date(row.creata_il), undoneAt: null, inForce: true,
@@ -74,16 +86,19 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       card: [isPublicSectionKey(row.sezione) ? publicSection(row.sezione).title : row.sezione, ...(row.parte ? [sectionParts(row.sezione).find(part => part.key === row.parte)?.title ?? row.parte] : [])].join(" · "),
       field: "visibilità", before: row.nascosta ? "Visibile" : "Nascosta", after: row.nascosta ? "Nascosta" : "Visibile",
       motivo: row.nascosta ? "Nascosta al pubblico: dati e correzioni restano com’erano." : "Di nuovo visibile al pubblico.", fixed: "cambio di stato",
+      // An edition hidden or shown belongs to that edition; everything else is shared.
+      edition: isAdminEdition(row.parte) ? row.parte : null,
     })),
   ].sort((a, b) => b.when.getTime() - a.when.getTime());
-  const shown = items.filter(item => (!sezione || item.sezione === sezione) && (stato === "tutte" || (stato === "attive" ? item.inForce : !item.inForce)));
+  const shown = items.filter(item => inAdminEdition(item.edition, edition, allEditions) && (!sezione || item.sezione === sezione) && (stato === "tutte" || (stato === "attive" ? item.inForce : !item.inForce)));
 
-  const href = (next: { sezione?: string; stato?: string }) => {
+  const href = (next: { sezione?: string; stato?: string; tutte?: boolean }) => {
     const params = new URLSearchParams();
     const s = "sezione" in next ? next.sezione : sezione;
     const t = next.stato ?? stato;
     if (s) params.set("sezione", s);
     if (t !== "attive") params.set("stato", t);
+    if (next.tutte ?? allEditions) params.set("edizioni", "tutte");
     return `/admin/registro${params.size ? `?${params}` : ""}`;
   };
   const pill = (on: boolean) => `inline-flex min-h-11 shrink-0 items-center rounded-[22px] border-[1.5px] px-3.5 text-sm font-semibold ${on ? "border-primary bg-primary text-primary-foreground" : "border-chip-border bg-card text-primary"}`;
@@ -95,6 +110,10 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
       <h1 className="font-serif text-[30px] font-bold text-primary">Registro modifiche</h1>
       <p className="text-sm text-muted">Tutto ciò che è diverso dal manuale originale, con motivo e possibilità di annullare. I file originali non vengono mai modificati; incantesimi e mostri sono schede del database e qui c’è il valore precedente di ogni modifica.</p>
+      <nav aria-label="Edizioni" className="flex gap-2">
+        <Link href={href({ tutte: false })} aria-current={!allEditions ? "page" : undefined} className={pill(!allEditions)}>Solo edizione {edition}</Link>
+        <Link href={href({ tutte: true })} aria-current={allEditions ? "page" : undefined} className={pill(allEditions)}>Tutte le edizioni</Link>
+      </nav>
       <nav aria-label="Sezione" className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
         <Link href={href({ sezione: undefined })} className={pill(!sezione)} aria-current={!sezione ? "page" : undefined}>Tutte</Link>
         {filters.map(filter => <Link key={filter.key} href={href({ sezione: filter.key })} className={pill(sezione === filter.key)} aria-current={sezione === filter.key ? "page" : undefined}>{filter.title}</Link>)}

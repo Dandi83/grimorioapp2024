@@ -11,6 +11,8 @@ import { AdminVisualText } from "./admin-visual-text";
 import { SpellClassification, SpellComponents } from "./admin-spell-fields";
 import { HtmlText } from "./html-text";
 import { AdminEditionField } from "./admin-edition-field";
+import { EditionChip } from "./admin-edition/edition-chip";
+import type { AdminEdition } from "@/lib/admin-edition";
 import { RulesEditionBadge } from "./rules-edition-badge";
 
 const inputClass =
@@ -126,7 +128,7 @@ function SpellPreview({ spell }: { spell: Spell }) {
   );
 }
 
-export function SpellEditor({ spell, onClose }: { spell: Spell | null; onClose: () => void }) {
+export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; onClose: () => void; edition: AdminEdition }) {
   const dialog = useRef<HTMLDialogElement>(null),
     form = useRef<HTMLFormElement>(null);
   const [description, setDescription] = useState(spell?.descrizione || "");
@@ -181,6 +183,7 @@ export function SpellEditor({ spell, onClose }: { spell: Spell | null; onClose: 
           <h2 id="spell-editor-heading" className="font-serif text-2xl">
             {spell ? "Modifica incantesimo" : "Nuovo incantesimo"}
           </h2>
+          <EditionChip edition={edition} />
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Scegli le caratteristiche e scrivi gli effetti: il Grimorio prepara la scheda.
           </p>
@@ -219,7 +222,7 @@ export function SpellEditor({ spell, onClose }: { spell: Spell | null; onClose: 
               />
             </div>
             <SpellClassification initialValue={spell?.livello || ""} />
-            <AdminEditionField edition={spell?.edizione} />
+            <AdminEditionField edition={spell ? spell.edizione : edition} />
             <section className="space-y-4 rounded-xl border border-border p-4">
               <h3 className="font-serif text-xl text-primary">Lancio, gittata e durata</h3>
               <div className="grid gap-4 sm:grid-cols-2">
