@@ -26,6 +26,8 @@ export function useCardVisibility(kind: CardKind, hidden: readonly string[]) {
     timer.current = setTimeout(() => setToast(null), 6000);
   }, []);
 
+  // «Annulla» calls the same switch back: through a ref, so the callback does not refer to itself.
+  const setRef = useRef<(id: string, nome: string, hide: boolean, withUndo?: boolean) => Promise<void>>(undefined);
   const set = useCallback(async (id: string, nome: string, hide: boolean, withUndo = true) => {
     const apply = (value: boolean) => setIds(current => {
       const next = new Set(current);
@@ -33,7 +35,7 @@ export function useCardVisibility(kind: CardKind, hidden: readonly string[]) {
       return next;
     });
     apply(hide);
-    const undo = withUndo ? () => void set(id, nome, !hide, false) : undefined;
+    const undo = withUndo ? () => void setRef.current?.(id, nome, !hide, false) : undefined;
     show({ at: Date.now(), text: hide ? "Nascosta dal sito" : "Di nuovo visibile sul sito", label: nome, undo });
     try {
       const result = await setCardVisibilityAction(kind, id, hide);
@@ -43,6 +45,7 @@ export function useCardVisibility(kind: CardKind, hidden: readonly string[]) {
       show({ at: Date.now(), text: "Salvataggio non riuscito: la scheda è rimasta com’era." });
     }
   }, [kind, show]);
+  useEffect(() => { setRef.current = set; }, [set]);
 
   const isHidden = useCallback((id: string) => ids.has(id), [ids]);
   const toggle = useCallback((id: string, nome: string) => void set(id, nome, !ids.has(id)), [ids, set]);

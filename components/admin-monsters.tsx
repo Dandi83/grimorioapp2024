@@ -3,7 +3,6 @@
 import { AdminDeleteButton } from "./admin-delete-button";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import {
   deleteMonsterAction,
 } from "@/app/actions/admin-monsters";
