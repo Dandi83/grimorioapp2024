@@ -100,6 +100,7 @@ function load(relative, deps = {}) {
     './db/schema': {spells:{}}, './content-editions': storage, './spells-types': load('lib/spells-types.ts'),
     './srd-descriptions': load('lib/srd-descriptions.ts'), './original-descriptions': load('lib/original-descriptions.ts'),
     './srd-additions': load('lib/srd-additions.ts'), './srd-spells-2014': load('lib/srd-spells-2014.ts'), './spell-catalog-repairs': load('lib/spell-catalog-repairs.ts',{'./spells-types':load('lib/spells-types.ts')}),
+    './monster-id-aliases': load('lib/monster-id-aliases.ts'),
   });
   assert.equal((await spellReader.getAllSpells())[0].edizione,'2024');
   assert.equal((await spellReader.getSpellById(spell.id)).edizione,'2024');
@@ -117,6 +118,7 @@ function load(relative, deps = {}) {
       './spells-types':load('lib/spells-types.ts'),'./srd-descriptions':load('lib/srd-descriptions.ts'),
       './original-descriptions':load('lib/original-descriptions.ts'),'./srd-additions':load('lib/srd-additions.ts'),
       './srd-spells-2014':load('lib/srd-spells-2014.ts'),'./spell-catalog-repairs':load('lib/spell-catalog-repairs.ts',{'./spells-types':load('lib/spells-types.ts')}),
+      './monster-id-aliases':load('lib/monster-id-aliases.ts'),
     });
     assert.equal((await autoReader.getAllSpells())[0].edizione,expected,record.id+': catalog edition follows verified content');
     assert.equal((await autoReader.getSpellById(record.id)).edizione,expected,record.id+': detail edition follows verified content');

@@ -4,6 +4,8 @@ import originalDescriptionIds from "./data/original-description-ids.json";
 
 export interface Spell {
   edizione?: "2014" | "2024";
+  /** Admin list only: a card read from the project files (SRD), not yet a database row. */
+  da_file?: true;
   id: string;
   nome_italiano: string;
   livello: string;

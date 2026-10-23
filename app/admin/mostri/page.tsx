@@ -1,5 +1,5 @@
 import { isAdmin } from "@/lib/admin-auth";
-import { getAllSpells } from "@/lib/spells";
+import { getAdminSpells } from "@/lib/spells";
 import { getAllMonsters } from "@/lib/monsters";
 import { AdminLogin } from "@/components/admin-login";
 import { AdminDashboard } from "@/components/admin-dashboard";
@@ -12,7 +12,7 @@ export const metadata = { title: "Amministrazione — Grimorio", robots: { index
 
 export default async function AdminEditorsPage() {
   if (!(await isAdmin())) return <AdminLogin />;
-  const [spells, monsters, edition] = await Promise.all([getAllSpells({ includePreview: false }), getAllMonsters(), adminEdition()]);
+  const [spells, monsters, edition] = await Promise.all([getAdminSpells(), getAllMonsters(), adminEdition()]);
   // Only the chosen edition (same rule as the public lists): no card changes, it is only a filter.
   return <AdminDashboard edition={edition} initialTab="monsters"
     spells={spells.filter(spell => spellEdition(spell) === edition)}

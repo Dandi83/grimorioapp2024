@@ -187,6 +187,11 @@ export function SpellEditor({ spell, onClose, edition }: { spell: Spell | null; 
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
             Scegli le caratteristiche e scrivi gli effetti: il Grimorio prepara la scheda.
           </p>
+          {spell?.da_file && (
+            <p className="mt-1 text-xs leading-5 text-primary">
+              Scheda dai file SRD: il primo salvataggio con una modifica la copia nel database. Ogni campo cambiato va nel Registro modifiche e si può annullare.
+            </p>
+          )}
         </div>
         <button
           type="button"

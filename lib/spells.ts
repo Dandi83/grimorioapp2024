@@ -12,6 +12,7 @@ import { applyOriginalDescription, getOriginalSource } from "./original-descript
 import { previewSpellRows, previewSpellById } from "./srd-additions";
 import { isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
 import { repairCatalogSpell } from "./spell-catalog-repairs";
+import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { repairSpellText } from "./spell-text-repairs";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
@@ -50,16 +51,51 @@ function toSpell(r: RawRow, repair = true): Spell {
   };
 }
 
-export async function getAllSpells(options: { includePreview?: boolean } = {}): Promise<Spell[]> {
+/** A spell card read from the project files (2014 SRD 5.1, SRD 2024 additions) where the site shows them. */
+export function spellFileRow(id: string, environment = process.env.VERCEL_ENV): RawRow | undefined {
+  return legacySpellById(id, environment) ?? previewSpellById(id, environment);
+}
+
+/**
+ * The catalog of the reserved area: the same cards as the public list (database rows and the cards of
+ * the project files, merged duplicates left out), with the stored values the editor changes, not the
+ * display-only repairs. Cards still only in the files are marked: their first real save creates the row.
+ */
+export async function getAdminSpells(): Promise<Spell[]> {
+  const [rows, editions] = await Promise.all([db.select().from(spellsTable).orderBy(asc(spellsTable.sort_key)), getContentEditions("spell")]);
+  const stored = new Set(rows.map(row => row.id));
+  const environment = process.env.VERCEL_ENV;
+  return withLegacySpells(previewSpellRows(rows.filter(row => !(row.id in MERGED_SPELL_IDS)), environment), environment)
+    .map(row => {
+      const spell = toSpell(row, false);
+      return { ...spell, edizione: editions.get(row.id) ?? spell.edizione, ...(stored.has(row.id) ? {} : { da_file: true as const }) };
+    });
+}
+
+const SPELL_FILE_FIELDS = ["nome_italiano", "livello", "tempo_di_lancio", "gittata", "componenti", "durata", "descrizione"] as const;
+
+/**
+ * After an undo: a card of the project files whose row holds again exactly the file values loses that
+ * row, so the site reads the file as before the first change (and shows its SRD source again).
+ */
+export async function dropSpellRowLikeFile(database: Pick<typeof db, "select" | "delete">, id: string): Promise<boolean> {
+  const file = spellFileRow(id);
+  if (!file) return false;
+  const [row] = await database.select().from(spellsTable).where(eq(spellsTable.id, id)).limit(1);
+  if (!row || !SPELL_FILE_FIELDS.every(field => (row[field] ?? "") === (file[field] ?? ""))) return false;
+  await database.delete(spellsTable).where(eq(spellsTable.id, id));
+  return true;
+}
+
+export async function getAllSpells(): Promise<Spell[]> {
   const [rows, editions] = await Promise.all([db
     .select()
     .from(spellsTable)
     .orderBy(asc(spellsTable.sort_key)), getContentEditions("spell")]);
-  // The admin always sees only real, editable database rows.
-  const environment = options.includePreview === false ? undefined : process.env.VERCEL_ENV;
+  const environment = process.env.VERCEL_ENV;
   return withLegacySpells(previewSpellRows(rows, environment), environment)
     .map(row => {
-      const spell = toSpell(row, options.includePreview !== false);
+      const spell = toSpell(row);
       return { ...spell, edizione: editions.get(row.id) ?? spell.edizione };
     });
 }

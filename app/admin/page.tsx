@@ -14,7 +14,7 @@ import { PUBLIC_SECTIONS, effectiveHidden, type PublicSectionKey } from "@/lib/p
 import { hiddenPartIds, sectionStates } from "@/lib/section-visibility";
 import { listDevices } from "@/lib/push";
 import { getAllMonsters } from "@/lib/monsters";
-import { getAllSpells } from "@/lib/spells";
+import { getAdminSpells } from "@/lib/spells";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 
 export const dynamic = "force-dynamic";
@@ -89,7 +89,7 @@ export default async function AdminPage() {
   const edition = await adminEdition();
   const [devices, spells, monsters] = await Promise.all([
     listDevices().then(list => list.length).catch(() => null),
-    getAllSpells({ includePreview: false }).catch(() => null),
+    getAdminSpells().catch(() => null),
     getAllMonsters().catch(() => null),
   ]);
   // Entries of the chosen edition: the same rule as the lists they open (and as the public site).
