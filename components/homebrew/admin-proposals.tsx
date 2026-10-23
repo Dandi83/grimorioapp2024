@@ -96,6 +96,24 @@ export interface ProposalCardData {
   draft: HomebrewDraft;
 }
 
+const NOTICE_EVENT = "grimorio:proposte-avviso";
+
+/** The outcome of «Approva» and «Rifiuta», above the list (the card itself moves to another tab). */
+export function ProposalsNotice() {
+  const [text, setText] = useState("");
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const show = (event: Event) => {
+      setText(String((event as CustomEvent).detail ?? ""));
+      clearTimeout(timer);
+      timer = setTimeout(() => setText(""), 8000);
+    };
+    window.addEventListener(NOTICE_EVENT, show);
+    return () => { window.removeEventListener(NOTICE_EVENT, show); clearTimeout(timer); };
+  }, []);
+  return text ? <p role="status" className="rounded-[12px] bg-[#2B2118] px-4 py-3 text-[15px] font-semibold text-[#FFFBF0]">{text}</p> : null;
+}
+
 const pill = "inline-flex min-h-6 items-center rounded-full border px-2 text-[12px] font-semibold leading-4";
 
 /** A proposal: name, author and time, the pills of the checks, and the four buttons (44 px). */
@@ -106,7 +124,12 @@ export function ProposalCard({ data }: { data: ProposalCardData }) {
   const [motivo, setMotivo] = useState("");
   const [message, setMessage] = useState("");
   const [pending, start] = useTransition();
-  const done = (text: string) => { setMessage(text); window.dispatchEvent(new Event(BADGE_SYNC_EVENT)); router.refresh(); };
+  // The page refreshes after the action and the card leaves this tab: the outcome is told by the page notice.
+  const done = (text: string) => {
+    window.dispatchEvent(new CustomEvent(NOTICE_EVENT, { detail: text }));
+    window.dispatchEvent(new Event(BADGE_SYNC_EVENT));
+    router.refresh();
+  };
   const approve = () => start(async () => {
     const result = await approveProposalAction(data.id);
     if (!result.ok) return setMessage(result.error);

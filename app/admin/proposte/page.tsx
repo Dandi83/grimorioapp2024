@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { AdminLogin } from "@/components/admin-login";
-import { HomebrewSectionEye, ProposalCard, type ProposalCardData } from "@/components/homebrew/admin-proposals";
+import { HomebrewSectionEye, ProposalCard, ProposalsNotice, type ProposalCardData } from "@/components/homebrew/admin-proposals";
 import { isAdmin } from "@/lib/admin-auth";
 import reference from "@/lib/data/gs-riferimento.json";
 import { formatWhen } from "@/lib/feedback-input";
@@ -52,6 +52,7 @@ export default async function ProposalsPage({ searchParams }: { searchParams: Pr
           </Link>
         ))}
       </nav>
+      <ProposalsNotice />
       {cards.length === 0 ? (
         <p className="rounded-[14px] border-[1.5px] border-border bg-card px-4 py-6 text-center text-[15px] text-muted">
           {stato === "da-vedere" ? "Nessuna proposta da vedere." : stato === "approvata" ? "Nessuna proposta approvata." : "Nessuna proposta rifiutata."}
