@@ -8,17 +8,12 @@ import { useEffect, useRef, type RefObject } from "react";
  * the list. Rows rendered later (another edition, more pages) are waited for.
  */
 export function useRevealSelected(root: RefObject<HTMLElement | null>, selectedId: string | undefined) {
-  const pending = useRef<string | undefined>(undefined);
-  const last = useRef<string | undefined>(undefined);
-  if (selectedId !== last.current) {
-    last.current = selectedId;
-    pending.current = selectedId;
-  }
+  const shown = useRef<string | undefined>(undefined);
   useEffect(() => {
-    if (!pending.current || !root.current) return;
+    if (!selectedId || shown.current === selectedId || !root.current) return;
     const link = root.current.querySelector<HTMLElement>('a[aria-current="page"]');
     if (!link) return;
-    pending.current = undefined;
+    shown.current = selectedId;
     const row = link.closest("li") ?? link;
     const column = root.current.closest("aside");
     if (!column) return;
