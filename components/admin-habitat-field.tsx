@@ -8,7 +8,7 @@ export function AdminHabitatField({ habitats = [], projectOnly = false }: { habi
       <input type="hidden" name="habitat_present" value="1" />
       <p className="mb-3 text-xs leading-5 text-muted-foreground">
         Scegli uno o più habitat. Le due edizioni dello stesso mostro condividono l’habitat.
-        {projectOnly && " Questa scheda viene dai file del progetto: si può modificare solo l’habitat."}
+        {projectOnly && " Scheda SRD: si può modificare solo l’habitat."}
       </p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {HABITATS.map(habitat => (

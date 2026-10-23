@@ -169,7 +169,7 @@ export function MonsterEditor({
           </p>
           {monster?.solo_progetto && (
             <p className="mt-1 text-xs leading-5 text-primary">
-              Scheda dai file del progetto: il salvataggio aggiorna solo habitat ed etichetta, il testo resta quello ufficiale.
+              Scheda SRD: il salvataggio aggiorna solo habitat ed etichetta, il testo resta quello ufficiale.
             </p>
           )}
         </div>

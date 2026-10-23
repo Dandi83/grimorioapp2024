@@ -13,6 +13,7 @@ import { previewSpellRows, previewSpellById } from "./srd-additions";
 import { getLegacySpellSource, isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
 import { repairCatalogSpell } from "./spell-catalog-repairs";
 import { MERGED_SPELL_IDS } from "./monster-id-aliases";
+import { spellName } from "./spell-name";
 import { repairSpellText } from "./spell-text-repairs";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
@@ -69,8 +70,15 @@ export async function getAdminSpells(): Promise<Spell[]> {
     .map(row => {
       const spell = toSpell(row, false);
       const fonte = getLegacySpellSource(spell) ? "SRD 5.1" as const : getSrdSource(spell.id, spell.descrizione) ? "SRD 5.2.1" as const : undefined;
-      return { ...spell, edizione: editions.get(row.id) ?? spell.edizione, ...(fonte ? { fonte } : {}), ...(stored.has(row.id) ? {} : { da_file: true as const }) };
-    });
+      const origine = fonte ?? (getOriginalSource(spell.id, spell.descrizione) ? "Sintesi originale" as const : "Aggiunta da te" as const);
+      return {
+        ...spell, edizione: editions.get(row.id) ?? spell.edizione, ...(fonte ? { fonte } : {}), origine,
+        nome_mostrato: spellName(repairCatalogSpell(row).nome_italiano, editions.get(row.id) ?? spell.edizione),
+        ...(stored.has(row.id) ? {} : { da_file: true as const }),
+      };
+    })
+    // The same order in both editions: by the name shown.
+    .sort((a, b) => a.nome_mostrato.localeCompare(b.nome_mostrato, "it"));
 }
 
 const SPELL_FILE_FIELDS = ["nome_italiano", "livello", "tempo_di_lancio", "gittata", "componenti", "durata", "descrizione"] as const;

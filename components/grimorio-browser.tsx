@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FileText, Star } from "lucide-react";
 
 import { useFavorites } from "@/components/favorites-provider";
+import { spellName } from "@/lib/spell-name";
 import { saveListState } from "@/components/navigation-memory";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useEditions } from "@/components/sections/parts-context";
@@ -207,7 +208,7 @@ const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle }: { spell:
   return (
     <div className="flex min-h-[62px] items-center gap-2 border-b border-divider">
       <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} className="min-w-0 flex-1 py-2.5">
-        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{capitalizeWords(spell.nome_italiano)}</span>
+        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{spellName(spell.nome_italiano, spell.edizione)}</span>
         {details && <span className="block text-[15px] text-muted">{details}</span>}
         {(spell.concentrazione || spell.rituale) && (
           <span className="mt-1 flex flex-wrap gap-1.5">

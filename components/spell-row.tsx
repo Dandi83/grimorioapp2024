@@ -6,7 +6,8 @@ import { Star } from "lucide-react";
 
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 
-import { capitalizeWords, type SpellListItem } from "@/lib/spells-types";
+import type { SpellListItem } from "@/lib/spells-types";
+import { spellName } from "@/lib/spell-name";
 import { schoolColor } from "@/lib/school-colors";
 
 function metaLine(spell: SpellListItem): string {
@@ -39,7 +40,7 @@ export const SpellRow = memo(function SpellRow({ spell, fav, onToggle }: {
       >
         <div className="flex min-w-0 items-center gap-2">
           <p className="min-w-0 truncate font-serif text-lg font-semibold text-foreground">
-            {capitalizeWords(spell.nome_italiano)}
+            {spellName(spell.nome_italiano, spell.edizione)}
           </p>
         </div>
         <p className="truncate text-xs uppercase tracking-wide text-muted">

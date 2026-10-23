@@ -1284,12 +1284,12 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   // Allarme 2014, from the file: opened in the editor; a save without changes writes nothing.
   const open = async () => {
     await page.getByPlaceholder("Cerca per nome o scuola…").fill("allarme");
-    const row = page.locator("main ul li").filter({ hasText: "dai file SRD" }).filter({ hasText: "Allarme" }).first();
+    const row = page.locator("main ul li").filter({ hasText: "SRD 5.1" }).filter({ hasText: "Allarme" }).first();
     await expect(row).toBeVisible();
     await expect(row.getByRole("button", { name: /^Elimina/ })).toHaveCount(0);
     await row.getByRole("button", { name: "Modifica", exact: true }).click();
     const editor = page.getByRole("dialog");
-    await expect(editor.getByText(/^Scheda dai file SRD/)).toBeVisible();
+    await expect(editor.getByTestId("card-edition")).toBeVisible();
     return editor;
   };
   let editor = await open();
@@ -1323,7 +1323,76 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   // Still in the 2014 list, read from the file again.
   await page.goto("/admin/incantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("allarme");
-  await expect(page.locator("main ul li").filter({ hasText: "dai file SRD" }).filter({ hasText: "Allarme" })).toHaveCount(1);
+  await expect(page.locator("main ul li").filter({ hasText: "SRD 5.1" }).filter({ hasText: "Allarme" })).toHaveCount(1);
+  expect(errors).toEqual([]);
+});
+
+test("admin lists the same in both editions: manual names, source labels, Elimina only on cards made here; search unchanged", async ({ page }) => {
+  test.setTimeout(120_000);
+  const errors = [];
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("pageerror", error => errors.push(String(error)));
+  // Public search: capitals or not, the same results; names as the manual writes them.
+  await page.goto("/grimorio");
+  const editionButton = edition => page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: edition });
+  const search = page.getByRole("searchbox", { name: "Cerca un incantesimo" });
+  await editionButton("2014").click();
+  for (const query of ["palla di fuoco", "PALLA DI FUOCO"]) {
+    await search.fill(query);
+    await expect(page.locator(`a[href="/spell/palla-di-fuoco-2014"]`).filter({ hasText: /^Palla di fuoco/ })).toBeVisible();
+  }
+  await editionButton("2024").click();
+  await search.fill("bigby");
+  await expect(page.getByRole("link", { name: /^Mano di Bigby / })).toBeVisible();
+  await page.goto("/admin");
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  const editions = page.getByRole("group", { name: "Edizione dell’area riservata" });
+  const rows = page.locator("main ul li");
+  for (const edition of ["2024", "2014"]) {
+    await page.goto("/admin/incantesimi");
+    await editions.getByRole("button", { name: edition }).click();
+    await expect(page.getByText(`Stai modificando: edizione ${edition}`)).toBeVisible();
+    await expect(page.getByText(/dai file/)).toHaveCount(0);
+    const names = await rows.locator("p.font-medium").allTextContents();
+    expect(names.length).toBeGreaterThan(20);
+    expect(names.filter(name => (name.length > 3 && name === name.toUpperCase()) || /\s(?:Di|Del|Della|Dei|Degli) /.test(name)), edition).toEqual([]);
+    expect([...names].sort((a, b) => a.localeCompare(b, "it")), `${edition}: by name`).toEqual(names);
+    // Labels from the source; Elimina only where the card is not SRD.
+    for (const row of await rows.all()) {
+      const label = (await row.locator("[data-source-label]").textContent()).trim();
+      expect(["SRD 5.1", "SRD 5.2.1", "Sintesi originale", "Aggiunta da te"]).toContain(label);
+      await expect(row.getByRole("button", { name: "Elimina" })).toHaveCount(label.startsWith("SRD") ? 0 : 1);
+      if (label.startsWith("SRD")) break;
+    }
+    await page.getByPlaceholder("Cerca per nome o scuola…").fill(edition === "2024" ? "mano di bigby" : "palla di fuoco");
+    const srdRow = rows.filter({ has: page.locator("[data-source-label]", { hasText: /^SRD/ }) }).first();
+    if (await srdRow.count()) await expect(srdRow.getByRole("button", { name: "Elimina" })).toHaveCount(0);
+    for (const width of [360, 375, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth), `${edition} ${width}`).toBeLessThanOrEqual(width);
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
+  }
+  // Creatures: SRD sheets without Elimina; a creature made here has it (and can be deleted).
+  await page.goto("/admin/mostri");
+  await editions.getByRole("button", { name: "2024" }).click();
+  await page.getByPlaceholder("Cerca per nome o tipo…").fill("aboleth");
+  const aboleth = rows.filter({ hasText: "Aboleth" }).first();
+  await expect(aboleth.locator("[data-source-label]")).toHaveText("SRD 5.2.1");
+  await expect(aboleth.getByRole("button", { name: "Elimina" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  const editor = page.getByRole("dialog");
+  await editor.locator("#nome").fill("Beholder di prova");
+  await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
+  await expect(editor).toHaveCount(0);
+  await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder di prova");
+  const beholder = rows.filter({ hasText: "Beholder di prova" }).first();
+  await expect(beholder.locator("[data-source-label]")).toHaveText("Aggiunta da te");
+  page.once("dialog", dialog => dialog.accept());
+  await beholder.getByRole("button", { name: "Elimina" }).click();
+  await expect(rows.filter({ hasText: "Beholder di prova" })).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 

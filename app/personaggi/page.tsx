@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { spellName } from "@/lib/spell-name";
 import type { Metadata } from "next";
 import { CharacterWorkshop } from "@/components/characters/workshop";
 import { manualEntries } from "@/lib/manual";
@@ -22,7 +23,7 @@ export default async function CharactersPage() {
         // The character workshop follows the 2024 rules.
         spells: spells
           .filter((s) => s.edizione !== "2014")
-          .map((s) => ({ id: s.id, name: s.nome_italiano, level: s.livello_num }))
+          .map((s) => ({ id: s.id, name: spellName(s.nome_italiano), level: s.livello_num }))
           .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name, "it")),
       }}
     />

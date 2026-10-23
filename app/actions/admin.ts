@@ -20,8 +20,8 @@ import { getOriginalSource } from "@/lib/original-descriptions";
 import { editorLogReady, logEditorSave } from "@/lib/editor-log";
 import { changedSpellFields, SPELL_EDITOR_FIELDS } from "@/lib/spell-update";
 import { db } from "@/lib/db";
-import { spellFileRow } from "@/lib/spells";
-import { isLegacySpellId } from "@/lib/srd-spells-2014";
+import { getSpellById, spellFileRow } from "@/lib/spells";
+import { getLegacySpellSource, isLegacySpellId } from "@/lib/srd-spells-2014";
 
 export interface SpellInput {
   nome_italiano: string;
@@ -153,6 +153,11 @@ export async function deleteSpellAction(formData: FormData): Promise<DeleteResul
   await requireAdmin();
   const id = clean(formData.get("id"));
   if (!id) return { ok: false, error: "ID mancante." };
+  // SRD cards are corrected, never deleted (the list has no «Elimina» for them; this also stops a direct call).
+  const spell = await getSpellById(id);
+  if (spell && (getLegacySpellSource(spell) || getSrdSource(id, spell.descrizione))) {
+    return { ok: false, error: "Le schede SRD non si eliminano: si possono solo correggere." };
+  }
   try {
     await deleteContentWithEdition("spell", id);
   } catch {

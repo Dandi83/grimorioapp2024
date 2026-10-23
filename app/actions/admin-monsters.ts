@@ -9,6 +9,7 @@ import { monsterSlugify, parseGs } from "@/lib/monsters-types";
 import { deleteContentWithEdition, getContentEditions } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { db } from "@/lib/db";
+import { getMonsterById } from "@/lib/monsters";
 import { getSrdMonsterSource, previewMonsterById, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import { MONSTER_EXTRA_FIELDS, monsterExtraFieldsFromForm, type MonsterExtraFields } from "@/lib/monster-extra-fields";
 import { getMonsterExtraFields, saveMonsterExtraFields } from "@/lib/monster-extra-storage";
@@ -140,6 +141,11 @@ export async function deleteMonsterAction(formData: FormData): Promise<DeleteRes
   await requireAdmin();
   const id = clean(formData.get("id"));
   if (!id) return { ok: false, error: "ID mancante." };
+  // SRD sheets are corrected, never deleted (the list has no «Elimina» for them; this also stops a direct call).
+  const monster = await getMonsterById(id);
+  if (monster && getSrdMonsterSource(monster)) {
+    return { ok: false, error: "Le schede SRD non si eliminano: si possono solo correggere." };
+  }
   try {
     await deleteContentWithEdition("monster", id);
   } catch {

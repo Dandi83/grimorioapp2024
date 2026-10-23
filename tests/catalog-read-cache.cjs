@@ -52,6 +52,7 @@ async function render(check) {
       './spell-catalog-repairs':{repairCatalogSpell:row => row},
       './spell-text-repairs':{repairSpellText:(_id, text) => text},
       './monster-id-aliases':{MERGED_SPELL_IDS:{}},
+      './spell-name':{spellName:name => name},
     };
     const reader = load(`lib/${kind === 'monster' ? 'monsters' : 'spells'}.ts`, deps);
     const read = kind === 'monster' ? reader.getMonsterById : reader.getSpellById;

@@ -113,6 +113,22 @@ function load(relative) {
   assert.equal((await updateMonsterAction(null, form)).ok, true);
   assert.equal((await getContentEditions('monster')).has('beholder'), false, 'its own edition is not stored again');
 
+  // Delete: never an SRD card (also when the action is called directly), always a card made here.
+  const {deleteSpellAction} = load('app/actions/admin.ts');
+  const {deleteMonsterAction} = load('app/actions/admin-monsters.ts');
+  const del = id => { const f = new FormData(); f.set('id', id); return f; };
+  const refused = {ok: false, error: 'Le schede SRD non si eliminano: si possono solo correggere.'};
+  const card51 = admin.find(card => card.fonte === 'SRD 5.1'), card521 = admin.find(card => card.fonte === 'SRD 5.2.1');
+  assert.deepEqual(await deleteSpellAction(del(card51.id)), refused, 'SRD 5.1 spell');
+  assert.deepEqual(await deleteSpellAction(del(card521.id)), refused, 'SRD 5.2.1 spell');
+  assert.deepEqual(await deleteMonsterAction(del('aboleth')), refused, 'SRD creature');
+  assert.deepEqual(await deleteSpellAction(del('raggio-di-prova')), {ok: true}, 'a spell made here');
+  assert.deepEqual(await deleteMonsterAction(del('beholder')), {ok: true}, 'a creature made here');
+  assert.equal((await pg.query("SELECT count(*)::int AS n FROM spells WHERE id = 'raggio-di-prova'")).rows[0].n, 0);
+  // The label of the source: the same rule in both editions.
+  assert.deepEqual([...new Set(admin.map(card => card.origine))].sort(), ['Aggiunta da te', 'SRD 5.1', 'SRD 5.2.1']);
+  assert.ok(admin.every(card => (card.origine === 'SRD 5.1' || card.origine === 'SRD 5.2.1') === !!card.fonte));
+
   await pg.close();
   console.log(`Catalog editions: ${admin.length} spells (${srd51} SRD 5.1, ${srd521} SRD 5.2.1, ${own} created here) and ${monsters.length} creatures keep their public edition; saving every spell without changes writes nothing.`);
 })().catch(error => { console.error(error); process.exit(1); });
