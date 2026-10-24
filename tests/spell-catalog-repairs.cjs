@@ -37,7 +37,7 @@ for(const [id,{da,a}] of Object.entries(catalogRepairs.nomi)){
 }
 // Casting times of the 2024 list: the card value, only while the stored value is still the broken one.
 const times=catalogRepairs.tempi;
-assert.equal(Object.keys(times).length,55);
+assert.equal(Object.keys(times).length,56);
 for(const [id,{da,a}] of Object.entries(times)){
  const reference=srd.get(id)||original.get(id);
  assert.equal(a,reference.tempo_di_lancio,`${id}: the card's casting time`);

@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from "react";
 // Relative path: the test harnesses load this file without the "@/" alias.
 import spellIndex from "../lib/data/spell-reference-index.json";
+import { normalizeLayout } from "../lib/display-layout";
 
 /**
  * Minimal, safe renderer for spell descriptions.
@@ -223,9 +224,10 @@ function SpellProse({ html, damageIcons = false, references = [], spellReference
   return <div className="min-w-0 max-w-full">{sections}</div>;
 }
 
-/** Preserve the source tables without allowing attributes or executable markup. */
-export function HtmlText({ html, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
-  if (!html?.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />;
+/** Preserve the source tables without allowing attributes or executable markup. The layout of the PDF is repaired first (lib/display-layout.ts). */
+export function HtmlText({ html: source, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
+  const html = normalizeLayout(source || "");
+  if (!html.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />;
   const parts = html.split(/(<pre>[\s\S]*?<\/pre>)/g);
   return (
     <div className="min-w-0 max-w-full space-y-5">
@@ -249,20 +251,12 @@ export function HtmlText({ html, damageIcons = false, references = [], spellRefe
   );
 }
 
-/** Display-only cleanup of PDF paragraph breaks in creature stat blocks. */
-export function MonsterText({ html, ...props }: HtmlTextProps) {
-  if (!html) return null;
+/** Creature stat blocks: the layout of the PDF repaired (lib/display-layout.ts, e.g. a bold title split by a page), then one paragraph per block. */
+export function MonsterText({ html: source, ...props }: HtmlTextProps) {
+  if (!source) return null;
+  const html = normalizeLayout(source);
   if (html.includes("<pre>")) return <HtmlText html={html} {...props} />;
   let formatted = html;
-  for (let pass = 0; pass < 4; pass++) {
-    const repaired = formatted.replace(/<(strong|b)>([^<]*)<\/\1>\s*(?:<br\s*\/?>\s*)+<(strong|b)>([^<]*)<\/\3>/gi, (whole, tag, left: string, _rightTag, right: string) => {
-      const open = (left.match(/\(/g) || []).length;
-      const close = (left.match(/\)/g) || []).length;
-      return open > close ? `<${tag}>${left.trimEnd()} ${right.trimStart()}</${tag}>` : whole;
-    });
-    if (repaired === formatted) break;
-    formatted = repaired;
-  }
   // 2014 casting lists print their labels in plain text at the start of a line ("1° livello (4 slot):"):
   // shown in bold like the 2024 labels, so every sheet groups its spell lists the same way.
   formatted = formatted.replace(/(^|<br\s*\/?>)\s*((?:Trucchetti\s*\(a volontà\)|\d+°\s*livello\s*\([^)<]*\)|A\s+volontà|\d+\s*\/\s*giorno(?:\s+ciascuno)?|\d+\s+volte\s+al\s+giorno[^:<]*):)\s*/gi, "$1<strong>$2</strong> ");

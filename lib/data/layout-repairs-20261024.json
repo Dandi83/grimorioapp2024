@@ -1,0 +1,10 @@
+{
+  "nota": "Riparazioni di sola impaginazione (tag e a capo), applicate alla visualizzazione da lib/display-layout.ts. Le parole restano identiche: tests/display-layout.cjs lo verifica. Confrontate con il PDF SRD 5.2.1 italiano.",
+  "riparazioni": [
+    {
+      "scheda": "Triceratopo (2024), Azioni: «Multiattacco.» è il titolo, il resto è testo; nel PDF «Trafiggere» chiude la frase.",
+      "da": "<strong>Multiattacco. Il triceratopo effettua due attacchi </strong><br><br><strong>Trafiggere.</strong>",
+      "a": "<strong>Multiattacco.</strong> Il triceratopo effettua due attacchi Trafiggere."
+    }
+  ]
+}
