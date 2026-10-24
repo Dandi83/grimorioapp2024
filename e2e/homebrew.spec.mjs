@@ -81,7 +81,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: /Proposte/ })).toContainText("3 proposte da vedere");
+  await expect(page.getByRole("link", { name: "Proposte homebrew · 3 da vedere" })).toBeVisible();
   await page.getByRole("link", { name: /Proposte/ }).click();
   await expect(page.getByText("Comune alle due edizioni")).toBeVisible();
   await expect(page.locator("[data-homebrew-section]")).toContainText("Visibile al pubblico");
@@ -159,7 +159,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   // The eye of the single card (#72) on a homebrew.
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
-  await expect(page.getByText("Stai modificando: edizione 2024")).toBeVisible();
+  await expect(page.getByText("Stai modificando il 2024")).toBeVisible();
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("drago di nebbia");
   const adminRow = page.locator("main ul li[data-card-row]").filter({ hasText: "Drago di nebbia" });
   await expect(adminRow.locator("[data-source-label]")).toHaveText("Homebrew · 2014 e 2024");
@@ -188,7 +188,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   // «+ Nuova homebrew» of the administrator: «del Grimorio», 2014 only; the bin removes it.
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2014" }).click();
-  await expect(page.getByText("Stai modificando: edizione 2014")).toBeVisible();
+  await expect(page.getByText("Stai modificando il 2014")).toBeVisible();
   await expect(page.getByText(/Edizione 2014: \d+ incantesimi/)).toBeVisible();
   await page.getByRole("button", { name: "+ Nuova homebrew" }).click();
   const editor = page.getByRole("dialog");
@@ -210,7 +210,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
 
   // Clean up the published card: lists, index and API as before.
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
-  await expect(page.getByText("Stai modificando: edizione 2024")).toBeVisible();
+  await expect(page.getByText("Stai modificando il 2024")).toBeVisible();
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("drago di nebbia");
   page.once("dialog", dialog => dialog.accept());
   await page.locator("main ul li[data-card-row]").filter({ hasText: "Drago di nebbia" }).getByRole("button", { name: "Elimina" }).click();

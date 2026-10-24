@@ -32,8 +32,8 @@ function load(relative) {
   assert.equal(edition.parseAdminEdition('2014'), '2014');
   assert.equal(edition.parseAdminEdition('1999'), '2024');
   // The band: colors and texts asked for.
-  assert.deepEqual(edition.EDITION_BAND['2024'], {background: '#7A1F2B', text: '#FFFBF0', label: 'Stai modificando: edizione 2024'});
-  assert.deepEqual(edition.EDITION_BAND['2014'], {background: '#2D4C7A', text: '#FFFBF0', label: 'Stai modificando: edizione 2014'});
+  assert.deepEqual(edition.EDITION_BAND['2024'], {background: '#7A1F2B', text: '#FFFBF0', label: 'Stai modificando il 2024'});
+  assert.deepEqual(edition.EDITION_BAND['2014'], {background: '#2D4C7A', text: '#FFFBF0', label: 'Stai modificando il 2014'});
   // Shared pages: no band.
   for (const page of ['/admin/segnalazioni', '/admin/segnalazioni/abc', '/admin/notifiche', '/admin/statistiche', '/admin/sezioni']) assert.equal(edition.isCommonAdminPath(page), true, page);
   for (const page of ['/admin', '/admin/incantesimi', '/admin/mostri', '/admin/contenuti/armi', '/admin/contenuti/armi/tridente', '/admin/registro', '/admin/sezionix']) assert.equal(edition.isCommonAdminPath(page), false, page);
