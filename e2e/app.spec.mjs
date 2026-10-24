@@ -784,7 +784,8 @@ test("search in Home: field only, panel with filters, results by section, back a
   // Every address of the index exists.
   const index = await (await request.get("/ricerca-indice.json")).json();
   expect(index.sections.map(s => s.k)).not.toContain("manuale");
-  const hrefs = [...new Set(index.rows.flatMap(row => row.slice(3)))];
+  // Address and 2014 address (the sixth cell is the only edition of the result, not an address).
+  const hrefs = [...new Set(index.rows.flatMap(row => row.slice(3, 5)).filter(Boolean))];
   for (const href of hrefs) expect((await request.get(href)).status(), href).toBe(200);
   expect(errors).toEqual([]);
 });
@@ -1517,7 +1518,7 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
 
   // Home search: a subclass opens the sheet on its tab.
   await page.goto("/");
-  await page.locator("button[aria-haspopup=dialog]").first().click();
+  await page.getByRole("button", { name: /^Cerca nel Grimorio/ }).click();
   await page.getByRole("dialog").getByRole("searchbox").fill("campione");
   const result = page.getByRole("dialog").getByRole("link", { name: /Campione/ });
   await expect(result).toHaveAttribute("href", "/classi/guerriero#sottoclasse");

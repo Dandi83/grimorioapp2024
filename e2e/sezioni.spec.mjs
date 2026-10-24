@@ -135,7 +135,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   expect(index.sections.map(section => section.k)).toEqual(["oggetti-magici"]);
   expect(index.rows.every(row => row[3].startsWith("/oggetti-magici/"))).toBe(true);
   await pub.goto("/");
-  await pub.locator("button[aria-haspopup=dialog]").first().click();
+  await pub.getByRole("button", { name: /^Cerca nel Grimorio/ }).click();
   await pub.getByRole("dialog").getByRole("searchbox").fill("campione");
   await expect(pub.getByRole("dialog")).toContainText("Nessun risultato");
   // Narrow phones: the 404 page and the admin pages with the band, no horizontal scroll, taps of 44 px.
@@ -463,7 +463,7 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
   const publicContext = await browser.newContext({ ...devices["iPhone 13"], baseURL: test.info().project.use.baseURL });
   await publicContext.addInitScript(() => window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)));
   const pub = await publicContext.newPage();
-  await expect.poll(async () => { await pub.goto("/"); return pub.getByText("Edizione 2024", { exact: true }).count(); }).toBe(1);
+  await expect.poll(async () => { await pub.goto("/"); return pub.getByText("Edizione 2024", { exact: true }).filter({ visible: true }).count(); }).toBe(1);
   await pub.waitForTimeout(500);
   await expect(pub.getByRole("dialog", { name: "Con quale edizione giochi?" })).toHaveCount(0);
   await expect(pub.getByRole("button", { name: /Edizione 20\d\d/ })).toHaveCount(0);
