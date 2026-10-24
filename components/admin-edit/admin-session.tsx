@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { usePathname } from "next/navigation";
 
 import { ADMIN_HINT_COOKIE } from "@/lib/admin-edit-link";
+import { refreshSavedPage } from "@/lib/admin-edit-return";
 
 const AdminSessionContext = createContext(false);
 
@@ -18,6 +19,14 @@ const hinted = () => document.cookie.split(";").some(part => part.trim().startsW
 export function AdminSessionProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [admin, setAdmin] = useState(false);
+
+  // A card a save went back to: shown again from the browser's memory, it is loaded again (lib/admin-edit-return.ts).
+  useEffect(() => {
+    refreshSavedPage(false);
+    const shown = (event: PageTransitionEvent) => { if (event.persisted) refreshSavedPage(true); };
+    window.addEventListener("pageshow", shown);
+    return () => window.removeEventListener("pageshow", shown);
+  }, []);
 
   useEffect(() => {
     if (pathname?.startsWith("/admin")) return;

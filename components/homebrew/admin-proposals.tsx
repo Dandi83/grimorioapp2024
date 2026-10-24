@@ -46,7 +46,8 @@ export function HomebrewEditorDialog({ title, initial, onSave, onClose, page = f
   title: string;
   initial: HomebrewDraft;
   onSave: (draft: HomebrewDraft) => Promise<{ ok: true } | { ok: false; error: string }>;
-  onClose: () => void;
+  /** saved: true after a successful save. */
+  onClose: (saved?: boolean) => void;
   page?: boolean;
 }) {
   const { dialog, heading, frame, header } = useEditorFrame(page);
@@ -63,14 +64,14 @@ export function HomebrewEditorDialog({ title, initial, onSave, onClose, page = f
     setError("");
     const result = await onSave(checked.draft).catch(() => ({ ok: false as const, error: "Salvataggio non riuscito. Riprova." }));
     setSaving(false);
-    if (result.ok) onClose(); else setError(result.error);
+    if (result.ok) onClose(true); else setError(result.error);
   }
   return (
     <dialog ref={dialog} open={page || undefined} aria-label={title} onCancel={event => { event.preventDefault(); if (!saving) onClose(); }}
       className={`${frame} bg-background`}>
       <header className={`${header} flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3`}>
         <h2 ref={heading} tabIndex={-1} className="font-serif text-2xl outline-none">{title}</h2>
-        <button type="button" onClick={onClose} disabled={saving} aria-label="Chiudi editor" className="grid size-11 place-items-center rounded-lg text-muted"><X className="h-5 w-5" aria-hidden="true" /></button>
+        <button type="button" onClick={() => onClose()} disabled={saving} aria-label="Chiudi editor" className="grid size-11 place-items-center rounded-lg text-muted"><X className="h-5 w-5" aria-hidden="true" /></button>
       </header>
       <div className="p-4"><HomebrewEditor value={draft} onChange={setDraft} idPrefix="admin-hb" /></div>
       <footer className="sticky bottom-0 z-10 border-t border-border bg-card px-4 py-3">
@@ -199,7 +200,7 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
 }
 
 /** «Modifica» of a published homebrew in /admin/mostri. */
-export function EditHomebrewDialog({ id, nome, draft, onClose, page }: { id: string; nome: string; draft: HomebrewDraft; onClose: () => void; page?: boolean }) {
+export function EditHomebrewDialog({ id, nome, draft, onClose, page }: { id: string; nome: string; draft: HomebrewDraft; onClose: (saved?: boolean) => void; page?: boolean }) {
   const router = useRouter();
   return <HomebrewEditorDialog title={`Modifica «${nome}»`} initial={draft} onClose={onClose} page={page}
     onSave={async next => { const result = await updateHomebrewAction(id, next); if (result.ok) router.refresh(); return result; }} />;

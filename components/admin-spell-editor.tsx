@@ -97,7 +97,8 @@ function SpellPreview({ spell }: { spell: Spell }) {
  */
 export function SpellEditor({ spell, onClose, edition, visibility, page = false }: {
   spell: Spell | null;
-  onClose: () => void;
+  /** saved: true after a successful save (the page opened by «Modifica» shows the new data). */
+  onClose: (saved?: boolean) => void;
   edition: AdminEdition;
   visibility?: { hidden: boolean; onToggle: () => void; notice?: ReactNode };
   page?: boolean;
@@ -131,7 +132,7 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
       const result = spell
         ? await updateSpellAction(null, data)
         : await createSpellAction(null, data);
-      if (result?.ok) onClose();
+      if (result?.ok) onClose(true);
       else setError(result?.error || "Salvataggio non riuscito. I campi sono conservati: riprova.");
     } catch {
       setError("Salvataggio non riuscito. I campi sono conservati: riprova.");
@@ -165,7 +166,7 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
           <button
             type="button"
             disabled={saving}
-            onClick={onClose}
+            onClick={() => onClose()}
             aria-label="Chiudi editor"
             className="min-h-11 min-w-11 rounded-lg text-muted-foreground hover:bg-elevated"
           >
