@@ -113,7 +113,7 @@ export function EditionProvider({ forced, children }: { forced?: Edition; childr
   return (
     <EditionContext.Provider value={value}>
       <PageEditionContext.Provider value={pageValue}>{children}</PageEditionContext.Provider>
-      <p role="status" aria-live="polite" data-testid="edition-status" className="sr-only">{said}</p>
+      <p aria-live="polite" data-testid="edition-status" className="sr-only">{said}</p>
     </EditionContext.Provider>
   );
 }
