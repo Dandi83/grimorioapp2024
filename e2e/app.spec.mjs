@@ -1220,12 +1220,12 @@ test("admin area by edition: switch remembered, band, counts and lists of the ed
     if (i > 1) await expect(log.getByRole("listitem")).toHaveCount(i - 1);
   }
   await expect(page.getByText("Nessuna modifica.")).toBeVisible();
-  // Shared pages: the switch stays, no band, «Comune alle due edizioni».
-  for (const url of ["/admin/segnalazioni", "/admin/notifiche", "/admin/statistiche", "/admin/sezioni"]) {
+  // Shared pages: «Comune alle due edizioni» in place of the edition control.
+  for (const url of ["/admin/segnalazioni", "/admin/notifiche", "/admin/statistiche", "/admin/sezioni", "/admin/proposte"]) {
     await page.goto(url);
     await expect(page.getByText("Comune alle due edizioni"), url).toBeVisible();
     await expect(band, url).toHaveCount(0);
-    await expect(editions, url).toBeVisible();
+    await expect(editions, url).toHaveCount(0);
   }
   // Narrow phones: no horizontal scroll, buttons of at least 44 px.
   for (const url of ["/admin", "/admin/contenuti/armi", "/admin/registro", "/admin/incantesimi", "/admin/segnalazioni", "/admin/contenuti/armi/tridente?edizione=2024"]) {
@@ -1534,8 +1534,8 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
   const tile = page.getByRole("link", { name: /Notifiche/ });
-  await expect(tile).toContainText("Nessun dispositivo attivo");
-  expect(await tile.locator("svg").first().getAttribute("width")).toBe("24");
+  await expect(tile).toHaveAttribute("aria-label", "Notifiche · 0 dispositivi");
+  expect(await tile.locator("svg").first().getAttribute("width")).toBe("22");
   await tile.click();
   await expect(page).toHaveURL(/\/admin\/notifiche$/);
   await expect(page.getByRole("heading", { level: 1, name: "Notifiche" })).toBeVisible();
