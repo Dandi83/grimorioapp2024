@@ -66,7 +66,7 @@ assert.ok(home.includes('<Link href="/info">Info e note legali</Link>'));
 const info=readFileSync(new URL('../app/info/page.tsx',import.meta.url),'utf8');
 for(const href of ['/fonti','/privacy','/segnala'])assert.ok(info.includes(`href: "${href}"`),href);
 assert.ok(info.includes('Compatibile con la quinta edizione. Le attribuzioni complete sono in'));
-assert.ok(!info.includes('Termini d’uso'),'the Termini d’uso tile comes with their own page');
+assert.ok(info.includes('href: "/termini", title: "Termini d’uso"'),'Termini d’uso is the first tile');
 const dicePage=readFileSync(new URL('../app/dadi/page.tsx',import.meta.url),'utf8');
 assert.ok(!dicePage.includes('DiceRoller'),'The removed dice section must not render');
 assert.match(dicePage,/redirect\("\/"\)/,'Existing dice URLs must return to Home');

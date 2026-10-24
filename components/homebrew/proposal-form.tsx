@@ -134,7 +134,11 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
           </label>
           <label className="flex min-h-11 items-start gap-3 text-[15px] leading-6">
             <input type="checkbox" checked={autorizza} onChange={event => setAutorizza(event.target.checked)} className="mt-1 size-5 shrink-0 accent-[#7A1F2B]" />
-            Autorizzo Il Grimorio.App a pubblicarla e a modificarla.
+            <span>
+              Autorizzo Il Grimorio.App a pubblicarla e a modificarla, come spiegato nei{" "}
+              {/* A new tab: the form being filled is not lost. */}
+              <a href="/termini" target="_blank" rel="noopener" className="font-semibold text-primary underline underline-offset-4">Termini d’uso</a>.
+            </span>
           </label>
         </div>
       </section>

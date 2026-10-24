@@ -29,7 +29,8 @@ async function propose(page, { nome, edizione, azione, nickname, email }) {
   await page.getByLabel("Nickname *").fill(nickname);
   if (email) await page.getByLabel("Email (facoltativa)").fill(email);
   await page.getByLabel("È una mia creazione originale, non copiata da manuali o siti.").check();
-  await page.getByLabel("Autorizzo Il Grimorio.App a pubblicarla e a modificarla.").check();
+  await page.getByLabel(/^Autorizzo Il Grimorio\.App a pubblicarla e a modificarla, come spiegato nei Termini d’uso/).check();
+  await expect(page.getByRole("link", { name: "Termini d’uso" })).toHaveAttribute("href", "/termini");
   await page.getByRole("button", { name: "Invia la proposta" }).click();
 }
 
