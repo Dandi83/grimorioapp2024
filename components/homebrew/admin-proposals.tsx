@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, Eye, EyeOff, FileSearch, Pencil, X } from "lucide-react";
@@ -10,6 +10,7 @@ import { setPartVisibilityAction } from "@/app/actions/admin-sections";
 import { BADGE_SYNC_EVENT } from "@/lib/app-badge";
 import { EMPTY_DRAFT, parseDraft, type HomebrewDraft } from "@/lib/homebrew-types";
 import { HomebrewEditor } from "./homebrew-editor";
+import { useEditorFrame } from "../admin-editor-frame";
 
 /** «Sezione Homebrew · Visibile al pubblico»: the same switch as the collection in /admin/sezioni. */
 export function HomebrewSectionEye({ hidden: initial }: { hidden: boolean }) {
@@ -37,18 +38,21 @@ export function HomebrewSectionEye({ hidden: initial }: { hidden: boolean }) {
   );
 }
 
-/** The guided editor in a dialog: «Correggi» of a proposal, «+ Nuova homebrew», «Modifica» of a published homebrew. */
-export function HomebrewEditorDialog({ title, initial, onSave, onClose }: {
+/**
+ * The guided editor in a dialog: «Correggi» of a proposal, «+ Nuova homebrew», «Modifica» of a published
+ * homebrew. page: the editor is the page («Modifica» on the public card), not a dialog over the list.
+ */
+export function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false }: {
   title: string;
   initial: HomebrewDraft;
   onSave: (draft: HomebrewDraft) => Promise<{ ok: true } | { ok: false; error: string }>;
   onClose: () => void;
+  page?: boolean;
 }) {
-  const dialog = useRef<HTMLDialogElement>(null);
+  const { dialog, heading, frame, header } = useEditorFrame(page);
   const [draft, setDraft] = useState(initial);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  useEffect(() => { dialog.current?.showModal(); }, []);
   async function save() {
     const checked = parseDraft(draft);
     if (!checked.ok) {
@@ -62,10 +66,10 @@ export function HomebrewEditorDialog({ title, initial, onSave, onClose }: {
     if (result.ok) onClose(); else setError(result.error);
   }
   return (
-    <dialog ref={dialog} aria-label={title} onCancel={event => { event.preventDefault(); if (!saving) onClose(); }}
-      className="fixed inset-0 m-auto max-h-[94dvh] w-[calc(100%-1rem)] max-w-3xl overflow-y-auto overscroll-contain rounded-2xl border border-border bg-background p-0 text-foreground shadow-2xl backdrop:bg-black/80">
-      <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
-        <h2 className="font-serif text-2xl">{title}</h2>
+    <dialog ref={dialog} open={page || undefined} aria-label={title} onCancel={event => { event.preventDefault(); if (!saving) onClose(); }}
+      className={`${frame} bg-background`}>
+      <header className={`${header} flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3`}>
+        <h2 ref={heading} tabIndex={-1} className="font-serif text-2xl outline-none">{title}</h2>
         <button type="button" onClick={onClose} disabled={saving} aria-label="Chiudi editor" className="grid size-11 place-items-center rounded-lg text-muted"><X className="h-5 w-5" aria-hidden="true" /></button>
       </header>
       <div className="p-4"><HomebrewEditor value={draft} onChange={setDraft} idPrefix="admin-hb" /></div>
@@ -195,8 +199,8 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
 }
 
 /** «Modifica» of a published homebrew in /admin/mostri. */
-export function EditHomebrewDialog({ id, nome, draft, onClose }: { id: string; nome: string; draft: HomebrewDraft; onClose: () => void }) {
+export function EditHomebrewDialog({ id, nome, draft, onClose, page }: { id: string; nome: string; draft: HomebrewDraft; onClose: () => void; page?: boolean }) {
   const router = useRouter();
-  return <HomebrewEditorDialog title={`Modifica «${nome}»`} initial={draft} onClose={onClose}
+  return <HomebrewEditorDialog title={`Modifica «${nome}»`} initial={draft} onClose={onClose} page={page}
     onSave={async next => { const result = await updateHomebrewAction(id, next); if (result.ok) router.refresh(); return result; }} />;
 }

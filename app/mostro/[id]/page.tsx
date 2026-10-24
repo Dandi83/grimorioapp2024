@@ -95,7 +95,7 @@ export default async function MonsterDetailPage({
             <BackButton fallback="/bestiario" label="Bestiario" />
             <div className="flex items-center">
               {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
-              <AdminEditButton target={{ kind: "mostro", id: monster.id }} desktop="lg:static lg:mr-2" />
+              <AdminEditButton target={{ kind: "mostro", id: monster.id, edition: homebrew ? (monster.homebrew_edizione === "entrambe" ? undefined : monster.homebrew_edizione) : legacy ? "2014" : "2024" }} desktop="lg:static lg:mr-2" />
               <ShareButton inline path={`/mostro/${encodeURIComponent(monster.id)}`} title={monster.nome} />
               <FavoriteButton inline id={`mostro:${monster.id}`} />
             </div>

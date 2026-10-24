@@ -10,10 +10,13 @@ import type { Edition } from "./public-sections";
  */
 export const ADMIN_HINT_COOKIE = "grimorio_admin_ui";
 
-/** The card a «Modifica» button opens: a spell or a creature (their editors), or a card of /admin/contenuti. */
+/**
+ * The card a «Modifica» button opens: a spell or a creature (/admin/incantesimi/<id>, /admin/mostri/<id>,
+ * with the edition of the card when it has one), or a card of /admin/contenuti.
+ */
 export type AdminEditTarget =
-  | { kind: "incantesimo"; id: string }
-  | { kind: "mostro"; id: string }
+  | { kind: "incantesimo"; id: string; edition?: Edition }
+  | { kind: "mostro"; id: string; edition?: Edition }
   | { kind: "contenuto"; section: string; id: string; edition: Edition };
 
 /**
@@ -42,9 +45,15 @@ export function adminEditHref(target: AdminEditTarget, ritorno?: string): string
     path = `/admin/contenuti/${encodeURIComponent(target.section)}/${encodeURIComponent(target.id)}`;
     params.set("edizione", target.edition);
   } else {
-    path = target.kind === "incantesimo" ? "/admin/incantesimi" : "/admin/mostri";
-    params.set("modifica", target.id);
+    // The editor as its own page: drawn by the server at once, never the list of the admin area first.
+    path = `${target.kind === "incantesimo" ? "/admin/incantesimi" : "/admin/mostri"}/${encodeURIComponent(target.id)}`;
+    if (target.edition) params.set("impostata", "1");
   }
   if (back) params.set("ritorno", back);
-  return `${path}?${params}`;
+  const query = params.toString();
+  const editor = query ? `${path}?${query}` : path;
+  // With the card's edition: the admin area moves to it on the way (a redirect, no page in between).
+  return target.kind !== "contenuto" && target.edition
+    ? `/admin/edizione?${new URLSearchParams({ valore: target.edition, poi: editor })}`
+    : editor;
 }

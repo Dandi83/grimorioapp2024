@@ -108,7 +108,7 @@ export default async function SpellDetailPage({
         <FavoriteButton id={spell.id} />
         <div className="absolute inset-x-0 bottom-0 p-6">
           {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
-          <AdminEditButton target={{ kind: "incantesimo", id: spell.id }} />
+          <AdminEditButton target={{ kind: "incantesimo", id: spell.id, edition }} />
           <span
             className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground"
             style={{ borderColor: color }}

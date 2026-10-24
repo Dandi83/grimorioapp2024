@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createMonsterAction, updateMonsterAction } from "@/app/actions/admin-monsters";
 import { abilityMod, type Monster } from "@/lib/monsters-types";
@@ -12,6 +12,7 @@ import type { AdminEdition } from "@/lib/admin-edition";
 import { AdminHabitatField } from "./admin-habitat-field";
 import { EyeButton } from "./admin-card-eye";
 import { HiddenTag } from "./sections/hidden-tag";
+import { useEditorFrame } from "./admin-editor-frame";
 
 type Field = { name: keyof Monster; label: string; placeholder?: string };
 const IDENTITY: Field[] = [
@@ -100,6 +101,7 @@ export function MonsterEditor({
   onClose,
   edition,
   visibility,
+  page = false,
 }: {
   monster: Monster | null;
   onClose: () => void;
@@ -107,8 +109,10 @@ export function MonsterEditor({
   edition: AdminEdition;
   /** The eye of the list, also at the top of the editor (cards already saved), with its notice. */
   visibility?: { hidden: boolean; onToggle: () => void; notice?: ReactNode };
+  /** The editor is the page («Modifica» on the public card), not a dialog over the list. */
+  page?: boolean;
 }) {
-  const dialog = useRef<HTMLDialogElement>(null);
+  const { dialog, heading, frame, header, toTop } = useEditorFrame(page);
   const form = useRef<HTMLFormElement>(null);
   const [preview, setPreview] = useState<Partial<Monster> | null>(null);
   const [error, setError] = useState("");
@@ -116,10 +120,6 @@ export function MonsterEditor({
   const [scores, setScores] = useState(() =>
     Object.fromEntries(ABILITIES.map((field) => [field.name, Number(monster?.[field.name] ?? 10)])),
   );
-  useEffect(() => {
-    dialog.current?.showModal();
-  }, []);
-
   function showPreview() {
     if (!form.current) return;
     if (!form.current.reportValidity()) return;
@@ -132,7 +132,7 @@ export function MonsterEditor({
     };
     for (const field of ABILITIES) snapshot[field.name] = Number(entries[field.name]) || 10;
     setPreview(snapshot as Partial<Monster>);
-    dialog.current?.scrollTo({ top: 0 });
+    toTop();
   }
 
   async function action(data: FormData) {
@@ -157,16 +157,17 @@ export function MonsterEditor({
   return (
     <dialog
       ref={dialog}
+      open={page || undefined}
       aria-labelledby="monster-editor-heading"
       onCancel={(event) => {
         event.preventDefault();
         if (!saving) onClose();
       }}
-      className="fixed inset-0 m-auto max-h-[94dvh] w-[calc(100%-1rem)] max-w-3xl overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-0 text-foreground shadow-2xl backdrop:bg-black/80"
+      className={`${frame} bg-card`}
     >
-      <header className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-border bg-card px-4 py-4 sm:px-6">
+      <header className={`${header} flex items-start justify-between gap-3 border-b border-border bg-card px-4 py-4 sm:px-6`}>
         <div>
-          <h2 id="monster-editor-heading" className="font-serif text-2xl">
+          <h2 ref={heading} tabIndex={-1} id="monster-editor-heading" className="font-serif text-2xl outline-none">
             {monster ? "Modifica mostro" : "Nuovo mostro"}
           </h2>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">

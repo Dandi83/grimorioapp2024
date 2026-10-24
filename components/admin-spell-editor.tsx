@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createSpellAction, updateSpellAction } from "@/app/actions/admin";
 import { capitalizeWords, castingTimeLabel, parseLivello, type Spell } from "@/lib/spells-types";
@@ -16,6 +16,7 @@ import type { AdminEdition } from "@/lib/admin-edition";
 import { RulesEditionBadge } from "./rules-edition-badge";
 import { EyeButton } from "./admin-card-eye";
 import { HiddenTag } from "./sections/hidden-tag";
+import { useEditorFrame } from "./admin-editor-frame";
 
 const inputClass =
   "w-full min-w-0 rounded-lg border border-border bg-background px-3 py-2.5 text-base text-foreground outline-none focus:border-primary";
@@ -130,23 +131,23 @@ function SpellPreview({ spell }: { spell: Spell }) {
   );
 }
 
-/** visibility: the eye of the list, also at the top of the editor (cards already saved), with its notice. */
-export function SpellEditor({ spell, onClose, edition, visibility }: {
+/**
+ * visibility: the eye of the list, also at the top of the editor (cards already saved), with its notice.
+ * page: the editor is the page («Modifica» on the public card), not a dialog over the list.
+ */
+export function SpellEditor({ spell, onClose, edition, visibility, page = false }: {
   spell: Spell | null;
   onClose: () => void;
   edition: AdminEdition;
   visibility?: { hidden: boolean; onToggle: () => void; notice?: ReactNode };
+  page?: boolean;
 }) {
-  const dialog = useRef<HTMLDialogElement>(null),
-    form = useRef<HTMLFormElement>(null);
+  const { dialog, heading, frame, header, toTop } = useEditorFrame(page);
+  const form = useRef<HTMLFormElement>(null);
   const [description, setDescription] = useState(spell?.descrizione || "");
   const [preview, setPreview] = useState<Spell | null>(null);
   const [saving, setSaving] = useState(false),
     [error, setError] = useState("");
-  useEffect(() => {
-    dialog.current?.showModal();
-  }, []);
-
   function showPreview() {
     if (!form.current?.reportValidity()) return;
     const values = Object.fromEntries(new FormData(form.current).entries()) as Record<
@@ -159,7 +160,7 @@ export function SpellEditor({ spell, onClose, edition, visibility }: {
       edizione: values.edition || edition,
       ...parseLivello(values.livello),
     } as Spell);
-    dialog.current?.scrollTo({ top: 0 });
+    toTop();
   }
   async function save(data: FormData) {
     setSaving(true);
@@ -179,16 +180,17 @@ export function SpellEditor({ spell, onClose, edition, visibility }: {
   return (
     <dialog
       ref={dialog}
+      open={page || undefined}
       aria-labelledby="spell-editor-heading"
       onCancel={(event) => {
         event.preventDefault();
         if (!saving) onClose();
       }}
-      className="fixed inset-0 m-auto max-h-[94dvh] w-[calc(100%-1rem)] max-w-3xl overflow-y-auto overscroll-contain rounded-2xl border border-border bg-card p-0 text-foreground shadow-2xl backdrop:bg-black/80"
+      className={`${frame} bg-card`}
     >
-      <header className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-border bg-card px-4 py-4 sm:px-6">
+      <header className={`${header} flex items-start justify-between gap-3 border-b border-border bg-card px-4 py-4 sm:px-6`}>
         <div>
-          <h2 id="spell-editor-heading" className="font-serif text-2xl">
+          <h2 ref={heading} tabIndex={-1} id="spell-editor-heading" className="font-serif text-2xl outline-none">
             {spell ? "Modifica incantesimo" : "Nuovo incantesimo"}
           </h2>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
