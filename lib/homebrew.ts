@@ -2,7 +2,7 @@ import "server-only";
 import { createHmac, randomUUID } from "node:crypto";
 import { pool } from "./db";
 import { clientAddress } from "./admin-login-limit";
-import { draftToMonster, homebrewId, isHomebrewId, type HomebrewDraft, type HomebrewEdition } from "./homebrew-types";
+import { HOMEBREW_LICENSE, draftToMonster, homebrewId, isHomebrewId, type HomebrewDraft, type HomebrewEdition } from "./homebrew-types";
 import { toMonsterListItem, type Monster, type MonsterListItem } from "./monsters-types";
 
 /**
@@ -21,9 +21,10 @@ export type ProposalState = (typeof PROPOSAL_STATES)[number];
 /** 3 proposals an hour and 10 a day from one device; 30 an hour from everyone together. */
 export const PROPOSAL_LIMITS = { perHour: 3, perDay: 10, overallPerHour: 30 } as const;
 
-export interface HomebrewRow { id: string; scheda: HomebrewDraft; edizione: HomebrewEdition; autore: string | null; pubblicata_il: Date | string; aggiornata_il: Date | string }
+/** licenza: the licence the author accepted (HOMEBREW_LICENSE); null on what came before it (column added later). */
+export interface HomebrewRow { id: string; scheda: HomebrewDraft; edizione: HomebrewEdition; autore: string | null; licenza?: string | null; pubblicata_il: Date | string; aggiornata_il: Date | string }
 export interface ProposalRow {
-  id: string; stato: ProposalState; scheda: HomebrewDraft; nickname: string; email: string | null; originale: boolean; autorizza: boolean;
+  id: string; stato: ProposalState; scheda: HomebrewDraft; nickname: string; email: string | null; originale: boolean; autorizza: boolean; licenza?: string | null;
   creata_il: Date | string; decisa_il: Date | string | null; motivo: string | null; homebrew_id: string | null;
 }
 export interface HomebrewLogRow { id: string; homebrew_id: string; nome: string; edizione: string; azione: string; creata_il: Date | string }
@@ -38,7 +39,8 @@ export function ensureHomebrewTables() {
       autore text,
       proposta_id uuid,
       pubblicata_il timestamptz NOT NULL DEFAULT now(),
-      aggiornata_il timestamptz NOT NULL DEFAULT now()
+      aggiornata_il timestamptz NOT NULL DEFAULT now(),
+      licenza text
     )`);
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_homebrew_proposals (
       id uuid PRIMARY KEY,
@@ -52,8 +54,12 @@ export function ensureHomebrewTables() {
       creata_il timestamptz NOT NULL DEFAULT now(),
       decisa_il timestamptz,
       motivo text,
-      homebrew_id text
+      homebrew_id text,
+      licenza text
     )`);
+    // The licence came later: the tables made before get the column, empty on the rows they already have.
+    await pool.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS licenza text");
+    await pool.query("ALTER TABLE grimorio_homebrew_proposals ADD COLUMN IF NOT EXISTS licenza text");
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_homebrew_limits (
       device_hash text NOT NULL,
       sent_at timestamptz NOT NULL DEFAULT now()
@@ -81,9 +87,17 @@ async function read<T extends object>(sql: string, params: unknown[] = []): Prom
   }
 }
 
+/**
+ * The licence a card shows: the one accepted with it; the Grimorio's own cards have the same one. A creature
+ * proposed before the licence shows none (its author never accepted it).
+ */
+export function homebrewLicense(row: Pick<HomebrewRow, "autore" | "licenza">): string | null {
+  return row.licenza || (row.autore ? null : HOMEBREW_LICENSE);
+}
+
 /** The card of a published homebrew, as the sheet component expects it. */
 export function homebrewMonster(row: HomebrewRow): Monster {
-  return { ...draftToMonster(row.scheda, row.id), homebrew_edizione: row.edizione, homebrew_autore: row.autore, fonte_scheda: "Homebrew" };
+  return { ...draftToMonster(row.scheda, row.id), homebrew_edizione: row.edizione, homebrew_autore: row.autore, homebrew_licenza: homebrewLicense(row), fonte_scheda: "Homebrew" };
 }
 
 /** The row of the lists: the light fields, «homebrew», the author and, for «Entrambe», both editions. */
@@ -96,12 +110,13 @@ export function homebrewListItem(row: HomebrewRow): MonsterListItem {
 }
 
 export async function publishedHomebrew(): Promise<HomebrewRow[]> {
-  return read<HomebrewRow>("SELECT id, scheda, edizione, autore, pubblicata_il, aggiornata_il FROM grimorio_homebrew ORDER BY scheda->>'nome'");
+  // «*»: the column licenza is added at the first write after this version; the reads work before it too.
+  return read<HomebrewRow>("SELECT * FROM grimorio_homebrew ORDER BY scheda->>'nome'");
 }
 
 export async function getHomebrew(id: string): Promise<HomebrewRow | undefined> {
   if (!isHomebrewId(id)) return undefined;
-  return (await read<HomebrewRow>("SELECT id, scheda, edizione, autore, pubblicata_il, aggiornata_il FROM grimorio_homebrew WHERE id = $1", [id]))[0];
+  return (await read<HomebrewRow>("SELECT * FROM grimorio_homebrew WHERE id = $1", [id]))[0];
 }
 
 async function freeId(nome: string): Promise<string> {
@@ -116,11 +131,11 @@ async function log(homebrewIdValue: string, nome: string, edizione: string, azio
   await pool.query("INSERT INTO grimorio_homebrew_log (id, homebrew_id, nome, edizione, azione) VALUES ($1, $2, $3, $4, $5)", [randomUUID(), homebrewIdValue, nome, edizione, azione]);
 }
 
-/** A homebrew made in the admin area («del Grimorio»). */
+/** A homebrew made in the admin area («del Grimorio»): the same licence as the proposed ones. */
 export async function createHomebrew(draft: HomebrewDraft): Promise<string> {
   await ensureHomebrewTables();
   const id = await freeId(draft.nome);
-  await pool.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore) VALUES ($1, $2, $3, NULL)", [id, JSON.stringify(draft), draft.edizione]);
+  await pool.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, licenza) VALUES ($1, $2, $3, NULL, $4)", [id, JSON.stringify(draft), draft.edizione, HOMEBREW_LICENSE]);
   await log(id, draft.nome, draft.edizione, "creata");
   return id;
 }
@@ -170,12 +185,13 @@ export async function recordProposalSend(key: string | null): Promise<void> {
   await pool.query("DELETE FROM grimorio_homebrew_limits WHERE sent_at < now() - interval '1 day'");
 }
 
-export async function saveProposal(input: { draft: HomebrewDraft; nickname: string; email: string | null; impronta: string | null }): Promise<ProposalRow> {
+/** licenza: the version of the licence accepted with the box of the form (HOMEBREW_LICENSE). */
+export async function saveProposal(input: { draft: HomebrewDraft; nickname: string; email: string | null; licenza: string; impronta: string | null }): Promise<ProposalRow> {
   await ensureHomebrewTables();
   const { rows } = await pool.query<ProposalRow>(
-    `INSERT INTO grimorio_homebrew_proposals (id, scheda, nickname, email, originale, autorizza, impronta)
-     VALUES ($1, $2, $3, $4, true, true, $5) RETURNING *`,
-    [randomUUID(), JSON.stringify(input.draft), input.nickname, input.email, input.impronta]);
+    `INSERT INTO grimorio_homebrew_proposals (id, scheda, nickname, email, originale, autorizza, licenza, impronta)
+     VALUES ($1, $2, $3, $4, true, true, $5, $6) RETURNING *`,
+    [randomUUID(), JSON.stringify(input.draft), input.nickname, input.email, input.licenza, input.impronta]);
   return rows[0];
 }
 
@@ -206,10 +222,11 @@ export async function updateProposal(id: string, draft: HomebrewDraft): Promise<
 }
 
 /**
- * «Approva»: the card is published with the nickname as author, the proposal remembers it and its email is
- * deleted (it is returned once, for the notice). One transaction: never a card without its proposal decided.
+ * «Approva»: the card is published with the nickname as author and the licence accepted, the proposal remembers
+ * it and its email is deleted (it is returned once, for the notice). One transaction: never a card without its
+ * proposal decided. A proposal sent before the licence (none accepted) is not published: «no-license».
  */
-export async function approveProposal(id: string): Promise<{ homebrewId: string; nome: string; email: string | null } | null> {
+export async function approveProposal(id: string): Promise<{ homebrewId: string; nome: string; email: string | null } | "no-license" | null> {
   if (!UUID.test(id)) return null;
   await ensureHomebrewTables();
   const client = await pool.connect();
@@ -221,12 +238,16 @@ export async function approveProposal(id: string): Promise<{ homebrewId: string;
       await client.query("ROLLBACK");
       return null;
     }
+    if (!proposal.licenza) {
+      await client.query("ROLLBACK");
+      return "no-license";
+    }
     const base = homebrewId(proposal.scheda.nome);
     const taken = new Set((await client.query<{ id: string }>("SELECT id FROM grimorio_homebrew WHERE id = $1 OR id LIKE $2", [base, `${base}-%`])).rows.map(row => row.id));
     let card = base;
     for (let n = 2; taken.has(card); n++) card = `${base}-${n}`;
-    await client.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, proposta_id) VALUES ($1, $2, $3, $4, $5)",
-      [card, JSON.stringify(proposal.scheda), proposal.scheda.edizione, proposal.nickname, proposal.id]);
+    await client.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, proposta_id, licenza) VALUES ($1, $2, $3, $4, $5, $6)",
+      [card, JSON.stringify(proposal.scheda), proposal.scheda.edizione, proposal.nickname, proposal.id, proposal.licenza]);
     await client.query("UPDATE grimorio_homebrew_proposals SET stato = 'approvata', decisa_il = now(), email = NULL, homebrew_id = $2 WHERE id = $1", [id, card]);
     await client.query("INSERT INTO grimorio_homebrew_log (id, homebrew_id, nome, edizione, azione) VALUES ($1, $2, $3, $4, 'pubblicata')",
       [randomUUID(), card, proposal.scheda.nome, proposal.scheda.edizione]);

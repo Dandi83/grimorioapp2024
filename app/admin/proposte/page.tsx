@@ -39,7 +39,7 @@ export default async function ProposalsPage({ searchParams }: { searchParams: Pr
       esito: { label: VERDICT_LABEL[check.esito], tone: check.esito === "in-linea" ? "ok" : "warn" },
       formato: mismatchedFormat({ edizione: draft.edizione, text: draftActionText(draft) }),
       simile: similarName(draft.nome, names.filter(name => name !== draft.nome || stato === "da-vedere")),
-      email: !!proposal.email, stato: proposal.stato, motivo: proposal.motivo, homebrewId: proposal.homebrew_id, draft,
+      email: !!proposal.email, stato: proposal.stato, motivo: proposal.motivo, homebrewId: proposal.homebrew_id, licenza: proposal.licenza ?? null, draft,
     };
   });
   const tab = (on: boolean) => `inline-flex min-h-11 shrink-0 items-center rounded-[22px] border-[1.5px] px-3.5 text-sm font-semibold ${on ? "border-primary bg-primary text-primary-foreground" : "border-chip-border bg-card text-primary"}`;

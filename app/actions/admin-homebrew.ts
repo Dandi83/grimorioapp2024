@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 import { requireAdmin } from "@/lib/admin-action-helpers";
 import { approveProposal, createHomebrew, deleteHomebrew, getHomebrew, refuseProposal, sendPublishedEmail, updateHomebrew, updateProposal } from "@/lib/homebrew";
-import { LIMITS, parseDraft, plainText } from "@/lib/homebrew-types";
+import { HOMEBREW_LICENSE, LIMITS, parseDraft, plainText } from "@/lib/homebrew-types";
 
 export type HomebrewResult = { ok: true; id?: string; email?: "sent" | "not-configured" | "failed" | "none" } | { ok: false; error: string };
 
@@ -32,6 +32,7 @@ export async function approveProposalAction(id: string): Promise<HomebrewResult>
     return { ok: false, error: "Pubblicazione non riuscita. Riprova tra poco." };
   }
   if (!approved) return { ok: false, error: "Proposta non trovata o già decisa." };
+  if (approved === "no-license") return { ok: false, error: `Proposta arrivata prima della licenza: chiedi all’autore il consenso alla licenza ${HOMEBREW_LICENSE} prima di pubblicarla.` };
   refresh();
   const email = approved.email ? await sendPublishedEmail(approved.email, approved.nome, `${await siteOrigin()}/mostro/${approved.homebrewId}`) : "none";
   return { ok: true, id: approved.homebrewId, email };

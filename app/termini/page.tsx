@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
 
 export const metadata = { title: "Termini d’uso — Il Grimorio.App" };
 
@@ -53,6 +54,13 @@ export default function TermsPage() {
           <li>accetti che il nickname che scegli compaia sulla scheda («Proposta da …»);</li>
           <li>resti responsabile di ciò che proponi.</li>
         </ul>
+        <p>
+          Le creature homebrew sono pubblicate con licenza Creative Commons Attribuzione – Non commerciale – Condividi allo
+          stesso modo 4.0 (<a href={HOMEBREW_LICENSE_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline underline-offset-4">CC BY-NC-SA 4.0</a>):
+          chiunque può condividerle e adattarle per scopi non commerciali, citando l’autore e Il Grimorio.App e pubblicando gli
+          adattamenti con la stessa licenza. La licenza non si può revocare: se chiedi la rimozione di una creatura, la togliamo
+          dall’app, ma chi l’ha già riusata rispettando la licenza può continuare a farlo.
+        </p>
         <p>
           L’amministratore può rifiutare una proposta o rimuovere in qualsiasi momento una creatura già pubblicata, a sua
           discrezione. Puoi chiedere quando vuoi la rimozione di una creatura che hai proposto, scrivendoci da{" "}

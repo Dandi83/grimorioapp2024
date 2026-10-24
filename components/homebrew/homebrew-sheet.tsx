@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
-import { authorLine } from "@/lib/homebrew-types";
+import { HOMEBREW_LICENSE_URL, authorLine } from "@/lib/homebrew-types";
 import type { Monster } from "@/lib/monsters-types";
 import type { CardDisplayContext } from "@/lib/card-display";
 import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
@@ -14,6 +14,21 @@ export function HomebrewLabel({ edizione }: { edizione: "2014" | "2024" | "entra
       <HomebrewPill />
       {edizione === "entrambe" ? <BothEditionsPill /> : <MonsterProvenanceBadge edition={edizione} variant="dark" />}
     </span>
+  );
+}
+
+/** «Proposta da …» or «Creata dal Grimorio», then the licence in small print (none when it was never accepted). */
+export function HomebrewByline({ autore, licenza }: { autore: string | null | undefined; licenza: string | null | undefined }) {
+  return (
+    <>
+      {authorLine(autore, "card")}
+      {licenza && (
+        <span className="block text-[13px] leading-5" data-homebrew-license="">
+          Licenza{" "}
+          <a href={HOMEBREW_LICENSE_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{licenza}</a>
+        </span>
+      )}
+    </>
   );
 }
 
@@ -31,7 +46,7 @@ export function HomebrewSheet({ monster, before, context = {} }: { monster: Mons
   const edizione = monster.homebrew_edizione ?? "2024";
   return (
     <article className="monster-sheet relative pb-2 pt-4">
-      <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} />} byline={authorLine(monster.homebrew_autore, "card")} />
+      <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} />} byline={<HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} />} />
       <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} />
       <HomebrewNote />
     </article>

@@ -3,6 +3,7 @@ import { AnalyticsPreferencesButton } from "@/components/analytics-provider";
 import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
 import legacyMonsters from "@/lib/data/srd-monsters-5.1-it.json";
 import legacySpells from "@/lib/data/spell-reference-index-2014.json";
+import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
 
 export const metadata = { title: "Fonti e licenze — Il Grimorio.App" };
 
@@ -78,6 +79,17 @@ export default function SourcesPage() {
           della scheda con la trascrizione. Per versioni modificate o prive di riscontro
           l’etichetta manuale dell’edizione non certifica una fonte o una licenza.
         </p>
+      </section>
+      <section aria-labelledby="homebrew-license" className="space-y-3 text-sm leading-6 text-muted">
+        <h2 id="homebrew-license" className="font-serif text-xl font-bold text-foreground">Creature homebrew</h2>
+        <p>
+          Le creature homebrew, proposte dagli utenti o create dal Grimorio, non fanno parte dell’SRD e sono pubblicate con
+          licenza Creative Commons Attribuzione – Non commerciale – Condividi allo stesso modo 4.0 (CC BY-NC-SA 4.0): puoi
+          condividerle e adattarle per scopi non commerciali, citando l’autore e Il Grimorio.App e pubblicando gli adattamenti
+          con la stessa licenza.
+        </p>
+        <p>Esempio di attribuzione: «“Granchio-lanterna” di Gildor_DM, da Il Grimorio.App, CC BY-NC-SA 4.0».</p>
+        <p><a className="text-primary underline underline-offset-4" href={HOMEBREW_LICENSE_URL} target="_blank" rel="noopener noreferrer">Licenza Creative Commons Attribuzione – Non commerciale – Condividi allo stesso modo 4.0 Internazionale</a></p>
       </section>
       <section className="space-y-3 text-sm leading-6 text-muted">
         <h2 className="font-serif text-xl font-bold text-foreground">Significato dell’asterisco *</h2>
