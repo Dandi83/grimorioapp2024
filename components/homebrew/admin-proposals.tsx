@@ -98,6 +98,8 @@ export interface ProposalCardData {
   stato: "da-vedere" | "approvata" | "rifiutata";
   motivo?: string | null;
   homebrewId?: string | null;
+  /** The licence accepted with the form; null: sent before it, not to be published without the author's consent. */
+  licenza: string | null;
   draft: HomebrewDraft;
 }
 
@@ -150,19 +152,21 @@ export function ProposalCard({ data }: { data: ProposalCardData }) {
     <li className="rounded-[14px] border-[1.5px] border-border bg-card p-3.5" data-proposal={data.id}>
       <p className="break-words font-serif text-xl font-bold text-foreground">{data.nome}</p>
       <p className="text-[13px] text-muted">di {data.nickname} · {data.quando}</p>
+      <p className="text-[13px] text-muted" data-proposal-license={data.licenza ?? ""}>{data.licenza ? `Licenza accettata: ${data.licenza}` : "Licenza non indicata"}</p>
       <div className="mt-2 flex flex-wrap gap-1.5">
         <span className={`${pill} border-border bg-background`}>{data.edizione} · GS {data.gs}</span>
         {data.esito && <span className={`${pill} ${data.esito.tone === "ok" ? "border-[#2D4C7A]/40 bg-[#E8EEF7] text-[#1E3557]" : "border-[#E0A21A] bg-[#F6E3B0] text-[#5C3F00]"}`}>{data.esito.label}</span>}
         {data.formato && <span className={`${pill} border-[#2D4C7A]/40 bg-[#E8EEF7] text-[#1E3557]`}>Formato {data.formato} rilevato</span>}
         {data.simile && <span className={`${pill} border-primary/40 bg-primary-faint text-primary`} title={`Somiglia a «${data.simile}»`}>Nome simile a una creatura del catalogo</span>}
         {data.email && <span className={`${pill} border-border bg-background`}>Email lasciata</span>}
+        {!data.licenza && data.stato !== "rifiutata" && <span className={`${pill} border-[#E0A21A] bg-[#F6E3B0] text-[#5C3F00]`}>Chiedere il consenso alla licenza</span>}
       </div>
       {data.stato === "rifiutata" && data.motivo && <p className="mt-2 text-[13px] text-muted">Motivo: {data.motivo}</p>}
       {data.stato === "da-vedere" ? (
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
           <Link href={`/admin/proposte/${data.id}`} className="flex min-h-11 items-center justify-center gap-1.5 rounded-[8px] border border-border text-[14px] font-semibold"><FileSearch size={16} aria-hidden="true" />Anteprima</Link>
           <button type="button" onClick={() => setEditing(true)} className="flex min-h-11 items-center justify-center gap-1.5 rounded-[8px] border border-border text-[14px] font-semibold"><Pencil size={16} aria-hidden="true" />Correggi</button>
-          <button type="button" onClick={approve} disabled={pending} className="flex min-h-11 items-center justify-center gap-1.5 rounded-[8px] bg-primary text-[14px] font-bold text-primary-foreground disabled:opacity-60"><Check size={16} aria-hidden="true" />Approva</button>
+          <button type="button" onClick={approve} disabled={pending || !data.licenza} title={data.licenza ? undefined : "Prima serve il consenso dell’autore alla licenza"} className="flex min-h-11 items-center justify-center gap-1.5 rounded-[8px] bg-primary text-[14px] font-bold text-primary-foreground disabled:opacity-60"><Check size={16} aria-hidden="true" />Approva</button>
           <button type="button" onClick={() => setRefusing(open => !open)} disabled={pending} aria-expanded={refusing} className="flex min-h-11 items-center justify-center gap-1.5 rounded-[8px] border border-primary/50 text-[14px] font-semibold text-primary"><X size={16} aria-hidden="true" />Rifiuta</button>
         </div>
       ) : data.homebrewId ? (

@@ -1,5 +1,7 @@
 import { chooseEdition, editionPill } from "./edition-pill.mjs";
 import { test, expect } from "@playwright/test";
+import pg from "pg";
+import { TEST_DATABASE_URL } from "./test-db.mjs";
 
 // Homebrew creatures: proposals of the community, approval, the Homebrew collection. Local test database only.
 test.beforeEach(async ({ page }) => {
@@ -13,6 +15,9 @@ test.beforeEach(async ({ page }) => {
 });
 
 const CARD = "/mostro/homebrew-drago-di-nebbia";
+const LICENSE = "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.it";
+const SHOTS = process.env.HOMEBREW_SHOTS;
+const LICENSE_BOX = /^Pubblico la creatura con licenza CC BY-NC-SA 4\.0 e autorizzo Il Grimorio\.App a pubblicarla e a modificarla, come spiegato nei Termini d’uso/;
 
 async function propose(page, { nome, edizione, azione, nickname, email }) {
   await page.goto("/bestiario/proponi");
@@ -29,8 +34,12 @@ async function propose(page, { nome, edizione, azione, nickname, email }) {
   await page.getByLabel("Nickname *").fill(nickname);
   if (email) await page.getByLabel("Email (facoltativa)").fill(email);
   await page.getByLabel("È una mia creazione originale, non copiata da manuali o siti.").check();
-  await page.getByLabel(/^Autorizzo Il Grimorio\.App a pubblicarla e a modificarla, come spiegato nei Termini d’uso/).check();
+  await page.getByLabel(LICENSE_BOX).check();
+  // Both links of the box open a new tab: the form being filled stays.
   await expect(page.getByRole("link", { name: "Termini d’uso" })).toHaveAttribute("href", "/termini");
+  await expect(page.getByRole("link", { name: "Termini d’uso" })).toHaveAttribute("target", "_blank");
+  await expect(page.getByRole("link", { name: "CC BY-NC-SA 4.0" })).toHaveAttribute("href", LICENSE);
+  await expect(page.getByRole("link", { name: "CC BY-NC-SA 4.0" })).toHaveAttribute("target", "_blank");
   await page.getByRole("button", { name: "Invia la proposta" }).click();
 }
 
@@ -59,6 +68,17 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(page.locator("[data-format-hint]")).toHaveCount(0);
   await expect(page.locator("[data-initiative]")).toContainText("+0 (10)");
   await expect(page.locator("[data-cr-check]")).toBeVisible();
+
+  // Without the box of the licence the form is not sent (checked in the browser and again by the server).
+  await page.locator("#hb-nome").fill("Senza licenza");
+  await page.locator("#hb-azioni-0-nome").fill("Morso");
+  await page.locator("#hb-azioni-0-testo").fill("Tiro per colpire in mischia: +4, portata 1,5 m. Colpito: 7 (2d4 + 2) danni perforanti.");
+  await page.getByLabel("Nickname *").fill("Lia");
+  await page.getByLabel("È una mia creazione originale, non copiata da manuali o siti.").check();
+  await expect(page.getByLabel(LICENSE_BOX)).not.toBeChecked();
+  await page.getByRole("button", { name: "Invia la proposta" }).click();
+  await expect(page.getByText("Pubblica la creatura con licenza CC BY-NC-SA 4.0 e autorizza Il Grimorio.App a pubblicarla e a modificarla.")).toBeVisible();
+  await expect(page.getByText("Grazie! L’amministratore la guarderà presto.")).toHaveCount(0);
 
   // Three proposals from this device: one for both editions with an email, one to refuse, one more; the fourth is refused by the limit.
   await propose(page, { nome: "Drago di nebbia", edizione: "Entrambe", nickname: "Master Ombra", email: "master@esempio.it",
@@ -92,6 +112,9 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(card("Drago di nebbia")).toContainText("di Master Ombra");
   await expect(card("Drago di nebbia")).toContainText("Entrambe · GS 7");
   await expect(card("Drago di nebbia")).toContainText("Email lasciata");
+  // The licence accepted, saved with the proposal.
+  await expect(card("Drago di nebbia").locator("[data-proposal-license]")).toHaveText("Licenza accettata: CC BY-NC-SA 4.0");
+  await expect(card("Drago di nebbia")).not.toContainText("Chiedere il consenso alla licenza");
   await expect(card("Abolet")).toContainText("Formato 2024 rilevato");
   await expect(card("Abolet")).toContainText("Nome simile a una creatura del catalogo");
   await expect(card("Abolet").getByText(/GS in linea|Troppo forte|Troppo debole/)).toBeVisible();
@@ -99,6 +122,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await card("Drago di nebbia").getByRole("link", { name: "Anteprima" }).click();
   await expect(page.getByRole("heading", { name: "Drago di nebbia", level: 1 })).toBeVisible();
   await expect(page.getByText("Proposta da Master Ombra")).toBeVisible();
+  await expect(page.locator("[data-homebrew-license]")).toHaveText("Licenza CC BY-NC-SA 4.0");
   await expect(page.getByText("Creatura homebrew, non ufficiale. Non fa parte dell’SRD e non è materiale Wizards of the Coast.")).toBeVisible();
   await page.getByRole("link", { name: "‹ Proposte" }).click();
   // Correggi: the editor already filled in.
@@ -122,6 +146,21 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await page.goto("/admin/registro?edizioni=tutte&sezione=mostri");
   await expect(page.getByText("Pubblicata", { exact: true })).toBeVisible();
 
+  // A proposal sent before the licence (the column empty, as on the proposals already in the database):
+  // «Licenza non indicata», the amber pill, «Approva» unavailable; then refused, nothing published.
+  const client = new pg.Client({ connectionString: TEST_DATABASE_URL });
+  await client.connect();
+  await client.query("INSERT INTO grimorio_homebrew_proposals (id, scheda, nickname, originale, autorizza, creata_il) VALUES ('44444444-4444-4444-8444-444444444444', (SELECT scheda FROM grimorio_homebrew_proposals WHERE nickname = 'Lia' LIMIT 1) || '{\"nome\": \"Proposta di prima\"}'::jsonb, 'Vecchio', true, true, now() - interval '1 day')");
+  await client.end();
+  await page.goto("/admin/proposte");
+  await expect(card("Proposta di prima").locator("[data-proposal-license]")).toHaveText("Licenza non indicata");
+  await expect(card("Proposta di prima")).toContainText("Chiedere il consenso alla licenza");
+  await expect(card("Proposta di prima").getByRole("button", { name: "Approva" })).toBeDisabled();
+  if (SHOTS) await card("Proposta di prima").screenshot({ path: `${SHOTS}/proposta-senza-licenza.png` });
+  await card("Proposta di prima").getByRole("button", { name: "Rifiuta" }).click();
+  await card("Proposta di prima").getByRole("button", { name: "Conferma il rifiuto" }).click();
+  await expect(page.getByRole("link", { name: "Da vedere · 1" })).toBeVisible();
+
   // Public: the card, the collection in both editions, search, API, favorites.
   const visitorContext = await browser.newContext({ baseURL: test.info().project.use.baseURL, viewport: { width: 390, height: 844 } });
   await visitorContext.addInitScript(() => { if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024"); });
@@ -131,6 +170,10 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(visitor.getByRole("heading", { name: "Drago di nebbia", level: 1 })).toBeVisible();
   await expect(visitor.locator("[data-homebrew-pill]")).toBeVisible();
   await expect(visitor.getByText("Proposta da Master Ombra")).toBeVisible();
+  // The licence, small, under the author, with its link.
+  await expect(visitor.locator("[data-homebrew-license]")).toHaveText("Licenza CC BY-NC-SA 4.0");
+  await expect(visitor.locator("[data-homebrew-license] a")).toHaveAttribute("href", LICENSE);
+  if (SHOTS) await visitor.screenshot({ path: `${SHOTS}/scheda-homebrew-390.png` });
   await expect(visitor.getByText("12 m, volo 24 m").first()).toBeVisible();
   await expect(visitor.getByText("Iniziativa", { exact: true }).first()).toBeVisible();
   await expect(visitor.getByText(/Fonte ufficiale/)).toHaveCount(0);
@@ -203,6 +246,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect.poll(async () => (await request.get("/mostro/homebrew-guardiano-di-sale")).status()).toBe(200);
   await visitor.goto("/mostro/homebrew-guardiano-di-sale");
   await expect(visitor.getByText("Creata dal Grimorio")).toBeVisible();
+  await expect(visitor.locator("[data-homebrew-license]"), "the Grimorio's own homebrew: the same licence").toHaveText("Licenza CC BY-NC-SA 4.0");
   // As on the SRD 2014 sheets: the initiative box comes from Dexterity, not from the sheet.
   await expect(visitor.getByText("dalla Destrezza").first()).toBeVisible();
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("guardiano di sale");

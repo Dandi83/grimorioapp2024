@@ -13,8 +13,7 @@ import { partId } from "@/lib/public-sections";
 import { cardHidden, cardsOut, editionCard, linksOut, partState } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { collectionOf } from "@/lib/monsters-types";
-import { HomebrewLabel, HomebrewNote } from "@/components/homebrew/homebrew-sheet";
-import { authorLine } from "@/lib/homebrew-types";
+import { HomebrewByline, HomebrewLabel, HomebrewNote } from "@/components/homebrew/homebrew-sheet";
 
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
@@ -104,7 +103,7 @@ export default async function MonsterDetailPage({
         }
         // Homebrew: the amber pill next to the edition label, where the sheets show their labels.
         label={homebrew ? <HomebrewLabel edizione={monster.homebrew_edizione!} /> : <MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
-        byline={homebrew ? authorLine(monster.homebrew_autore, "card") : undefined}
+        byline={homebrew ? <HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} /> : undefined}
       />
       <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} catalog={await getSpellReferenceCatalog()} />
       {source && (

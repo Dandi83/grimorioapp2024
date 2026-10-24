@@ -90,12 +90,17 @@ assert.equal(types.similarName('Drago di nebbia', ['Drago rosso adulto', 'Lich']
 assert.equal(types.homebrewId('Drago di nébbia!'), 'homebrew-drago-di-nebbia');
 
 // Proposal of the form: nickname, two boxes, optional email.
-const proposal = {scheda: draft(), nickname: 'Master Ombra', email: '', originale: true, autorizza: true, token: 't'};
+const proposal = {scheda: draft(), nickname: 'Master Ombra', email: '', originale: true, autorizza: true, licenza: 'CC BY-NC-SA 4.0', token: 't'};
 assert.equal(types.parseProposal(proposal).ok, true);
+assert.equal(types.parseProposal(proposal).value.licenza, 'CC BY-NC-SA 4.0', 'the version of the licence is saved with the proposal');
+assert.equal(types.HOMEBREW_LICENSE_URL, 'https://creativecommons.org/licenses/by-nc-sa/4.0/deed.it');
 assert.match(types.parseProposal({...proposal, nickname: ''}).error, /nickname/);
 assert.match(types.parseProposal({...proposal, email: 'non-una-email'}).error, /Email/);
 assert.match(types.parseProposal({...proposal, originale: false}).error, /originale/);
-assert.match(types.parseProposal({...proposal, autorizza: false}).error, /Autorizza/);
+assert.match(types.parseProposal({...proposal, autorizza: false}).error, /licenza CC BY-NC-SA 4\.0 e autorizza/);
+// A page opened before the licence (its box did not name it) sends none: refused, the page must be reloaded.
+assert.match(types.parseProposal({...proposal, licenza: undefined}).error, /Ricarica la pagina/);
+assert.match(types.parseProposal({...proposal, licenza: 'CC BY 4.0'}).error, /Ricarica la pagina/);
 assert.equal(types.parseProposal({...proposal, sito: 'http://spam'}).spam, true, 'honeypot');
 
 // Challenge check: reference from the SRD creatures only, then the estimate within ±1 for SRD creatures of different ratings.
@@ -132,9 +137,11 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
   const homebrew = load('lib/homebrew.ts');
   assert.deepEqual(await homebrew.publishedHomebrew(), [], 'no table yet: no homebrew, no error');
   assert.equal(await homebrew.countProposalsToReview(), 0);
-  const saved = await homebrew.saveProposal({draft: ok.draft, nickname: 'Master Ombra', email: 'master@esempio.it', impronta: 'hash'});
-  const both = await homebrew.saveProposal({draft: {...ok.draft, nome: 'Spirito del guado', edizione: 'entrambe'}, nickname: 'Lia', email: null, impronta: null});
-  const refused = await homebrew.saveProposal({draft: {...ok.draft, nome: 'Copia di un manuale'}, nickname: 'X', email: 'x@esempio.it', impronta: null});
+  const licenza = 'CC BY-NC-SA 4.0';
+  const saved = await homebrew.saveProposal({draft: ok.draft, nickname: 'Master Ombra', email: 'master@esempio.it', licenza, impronta: 'hash'});
+  assert.equal(saved.licenza, licenza, 'the licence accepted is saved with the proposal');
+  const both = await homebrew.saveProposal({draft: {...ok.draft, nome: 'Spirito del guado', edizione: 'entrambe'}, nickname: 'Lia', email: null, licenza, impronta: null});
+  const refused = await homebrew.saveProposal({draft: {...ok.draft, nome: 'Copia di un manuale'}, nickname: 'X', email: 'x@esempio.it', licenza, impronta: null});
   assert.equal(await homebrew.countProposalsToReview(), 3);
   assert.deepEqual((await homebrew.listProposals('da-vedere')).map(row => row.scheda.nome), ['Drago di nebbia', 'Spirito del guado', 'Copia di un manuale']);
   assert.deepEqual(await homebrew.publishedHomebrew(), [], 'nothing published before the approval');
@@ -152,18 +159,32 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
   assert.deepEqual(items.map(item => [item.homebrew, item.autore, item.edizione, item.entrambe]), [[true, 'Master Ombra', '2024', undefined], [true, 'Lia', '2024', true]]);
   assert.ok(!items.some(item => 'azioni' in item), 'lists never ship full sheets');
   const card = homebrew.homebrewMonster(published[0]);
+  assert.equal(published[0].licenza, licenza, 'the published card keeps the licence of its proposal');
+  assert.equal(card.homebrew_licenza, licenza);
   assert.equal(card.homebrew_autore, 'Master Ombra'); assert.equal(card.homebrew_edizione, '2024'); assert.equal(card.nome, 'Drago di nebbia');
   assert.equal(await homebrew.getHomebrew('aboleth'), undefined, 'only homebrew ids');
   // Same name again: a new address, never one taken.
-  const second = await homebrew.saveProposal({draft: ok.draft, nickname: 'Altro', email: null, impronta: null});
+  const second = await homebrew.saveProposal({draft: ok.draft, nickname: 'Altro', email: null, licenza, impronta: null});
   assert.equal((await homebrew.approveProposal(second.id)).homebrewId, 'homebrew-drago-di-nebbia-2');
   // «+ Nuova homebrew» of the administrator: «del Grimorio» (no author), corrections, the bin.
   const own = await homebrew.createHomebrew({...ok.draft, nome: 'Guardiano di sale', edizione: '2014'});
   assert.equal((await homebrew.getHomebrew(own)).autore, null);
+  assert.equal((await homebrew.getHomebrew(own)).licenza, licenza, 'the homebrew of the Grimorio has the same licence');
+  // A proposal sent before the licence (a row of the old table, the column empty): shown without one, never published.
+  await pg.query("INSERT INTO grimorio_homebrew_proposals (id, scheda, nickname, originale, autorizza) VALUES ('22222222-2222-4222-8222-222222222222', $1, 'Vecchia', true, true)", [JSON.stringify({...ok.draft, nome: 'Proposta di prima'})]);
+  assert.equal((await homebrew.getProposal('22222222-2222-4222-8222-222222222222')).licenza, null);
+  assert.equal(await homebrew.approveProposal('22222222-2222-4222-8222-222222222222'), 'no-license');
+  assert.equal((await homebrew.getProposal('22222222-2222-4222-8222-222222222222')).stato, 'da-vedere', 'still to review, nothing published');
+  assert.ok(!(await homebrew.publishedHomebrew()).some(row => row.scheda.nome === 'Proposta di prima'));
+  await homebrew.refuseProposal('22222222-2222-4222-8222-222222222222', null);
+  // The licence a card shows: the one accepted; the Grimorio's own cards have it; a proposed card from before none.
+  assert.equal(homebrew.homebrewLicense({autore: 'Lia', licenza: null}), null);
+  assert.equal(homebrew.homebrewLicense({autore: null, licenza: null}), licenza);
+  assert.equal(homebrew.homebrewLicense({autore: 'Lia', licenza}), licenza);
   assert.equal(await homebrew.updateHomebrew(own, {...ok.draft, nome: 'Guardiano di sale', edizione: '2014', pf: 90}), true);
   assert.equal(await homebrew.deleteHomebrew(own), true);
-  assert.deepEqual((await homebrew.allHomebrewLog()).map(row => row.azione).sort(), ['corretta', 'creata', 'eliminata', 'pubblicata', 'pubblicata', 'pubblicata', 'rifiutata']);
-  assert.deepEqual((await homebrew.proposalCounts()), {'da-vedere': 0, approvata: 3, rifiutata: 1});
+  assert.deepEqual((await homebrew.allHomebrewLog()).map(row => row.azione).sort(), ['corretta', 'creata', 'eliminata', 'pubblicata', 'pubblicata', 'pubblicata', 'rifiutata', 'rifiutata']);
+  assert.deepEqual((await homebrew.proposalCounts()), {'da-vedere': 0, approvata: 3, rifiutata: 2});
   const tables = (await pg.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name")).rows.map(row => row.table_name);
   assert.deepEqual(tables, ['grimorio_homebrew', 'grimorio_homebrew_limits', 'grimorio_homebrew_log', 'grimorio_homebrew_proposals'], 'only its own tables');
   // Send limits per device (salted hash, never the address) and overall.
@@ -194,5 +215,23 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
     await assert.rejects(call(), /Non autorizzato/);
   }
   await pg.close();
-  console.log(`Homebrew: plain-text form checked on the server, sheets in the 2014/2024 SRD format, format hint, similar names, proposals approved/refused with the email deleted, «Entrambe» in both editions, limits, notice only with Resend, admin actions closed without login; challenge check from ${sheets.length} SRD creatures, within ±1 for ${within} (${lines.join('; ')}).`);
+
+  // A database with the tables made before the licence (production): the column is added, empty on the rows it
+  // already has, and the reads work before it too.
+  const old = new PGlite();
+  await old.exec(`CREATE TABLE grimorio_homebrew (id text PRIMARY KEY, scheda jsonb NOT NULL, edizione text NOT NULL, autore text, proposta_id uuid, pubblicata_il timestamptz NOT NULL DEFAULT now(), aggiornata_il timestamptz NOT NULL DEFAULT now());
+    CREATE TABLE grimorio_homebrew_proposals (id uuid PRIMARY KEY, stato text NOT NULL DEFAULT 'da-vedere', scheda jsonb NOT NULL, nickname text NOT NULL, email text, originale boolean NOT NULL, autorizza boolean NOT NULL, impronta text, creata_il timestamptz NOT NULL DEFAULT now(), decisa_il timestamptz, motivo text, homebrew_id text);`);
+  await old.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore) VALUES ('homebrew-di-prima', $1, '2024', 'Lia')", [JSON.stringify({...ok.draft, nome: 'Di prima'})]);
+  await old.query("INSERT INTO grimorio_homebrew_proposals (id, scheda, nickname, originale, autorizza) VALUES ('33333333-3333-4333-8333-333333333333', $1, 'Lia', true, true)", [JSON.stringify(ok.draft)]);
+  deps['./db'] = deps['@/lib/db'] = {db: {}, pool: {query: (sql, params) => old.query(sql, params), connect: async () => ({query: (sql, params) => old.query(sql, params), release() {}})}};
+  cache.delete(path.resolve('lib/homebrew.ts'));
+  const before = load('lib/homebrew.ts');
+  assert.equal(before.homebrewMonster(await before.getHomebrew('homebrew-di-prima')).homebrew_licenza, null, 'read before the column: no licence shown');
+  assert.equal((await before.getProposal('33333333-3333-4333-8333-333333333333')).licenza, undefined);
+  await before.ensureHomebrewTables();
+  assert.deepEqual((await old.query("SELECT licenza FROM grimorio_homebrew_proposals")).rows, [{licenza: null}], 'column added, the proposal keeps no licence');
+  assert.deepEqual((await old.query("SELECT licenza FROM grimorio_homebrew")).rows, [{licenza: null}]);
+  assert.equal(await before.approveProposal('33333333-3333-4333-8333-333333333333'), 'no-license');
+  await old.close();
+  console.log(`Homebrew: plain-text form checked on the server, sheets in the 2014/2024 SRD format, format hint, similar names, proposals approved/refused with the email deleted, licence CC BY-NC-SA 4.0 saved with proposals and cards (none: never published; the column added to the tables made before), «Entrambe» in both editions, limits, notice only with Resend, admin actions closed without login; challenge check from ${sheets.length} SRD creatures, within ±1 for ${within} (${lines.join('; ')}).`);
 })().catch(error => { console.error(error); process.exit(1); });

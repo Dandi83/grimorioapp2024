@@ -20,7 +20,7 @@ export default async function ProposalPreview({ params }: { params: Promise<{ id
   if (!(await isAdmin())) return <AdminLogin />;
   const proposal = await getProposal((await params).id);
   if (!proposal) notFound();
-  const monster = { ...draftToMonster(proposal.scheda, "anteprima"), homebrew_edizione: proposal.scheda.edizione, homebrew_autore: proposal.nickname };
+  const monster = { ...draftToMonster(proposal.scheda, "anteprima"), homebrew_edizione: proposal.scheda.edizione, homebrew_autore: proposal.nickname, homebrew_licenza: proposal.licenza ?? null };
   return (
     <div className="pb-8">
       <div className="px-6 pt-4">

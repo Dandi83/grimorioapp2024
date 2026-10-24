@@ -244,6 +244,8 @@ export const homebrew = pgTable("grimorio_homebrew", {
   proposta_id: uuid("proposta_id"),
   pubblicata_il: timestamp("pubblicata_il", { withTimezone: true }).notNull().defaultNow(),
   aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+  /** The licence of the card (CC BY-NC-SA 4.0); empty on the creatures proposed before it. */
+  licenza: text("licenza"),
 });
 
 /** Creatures proposed from /bestiario/proponi; the optional email is deleted at the decision. */
@@ -260,6 +262,8 @@ export const homebrewProposals = pgTable("grimorio_homebrew_proposals", {
   decisa_il: timestamp("decisa_il", { withTimezone: true }),
   motivo: text("motivo"),
   homebrew_id: text("homebrew_id"),
+  /** The licence accepted with the form («CC BY-NC-SA 4.0»); empty on the proposals sent before it. */
+  licenza: text("licenza"),
 });
 
 /** Send limits of the proposals: salted hash of the address, one day. */

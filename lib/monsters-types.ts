@@ -62,6 +62,8 @@ export interface Monster {
   /** A homebrew creature (lib/homebrew.ts): its edition, and its author (null: made by the Grimorio). */
   homebrew_edizione?: "2014" | "2024" | "entrambe";
   homebrew_autore?: string | null;
+  /** The licence a homebrew card shows (lib/homebrew.ts homebrewLicense); null: none accepted. */
+  homebrew_licenza?: string | null;
   /** The label of the card: «SRD 5.2.1», «SRD 5.1», «Aggiunta da te», «Homebrew»; none for an SRD sheet edited. */
   fonte_scheda?: CardSource;
 }

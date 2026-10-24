@@ -302,7 +302,11 @@ export function authorLine(autore: string | null | undefined, where: "list" | "c
 /** Modifier of a score, for the editor. */
 export const modifier = abilityMod;
 
-export interface ProposalInput { draft: HomebrewDraft; nickname: string; email: string | null }
+/** The licence of the homebrew creatures (proposed and of the Grimorio), as it is saved with each one. */
+export const HOMEBREW_LICENSE = "CC BY-NC-SA 4.0";
+export const HOMEBREW_LICENSE_URL = "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.it";
+
+export interface ProposalInput { draft: HomebrewDraft; nickname: string; email: string | null; licenza: string }
 export type ProposalParse = { ok: true; value: ProposalInput; spam: boolean; token: string } | { ok: false; error: string };
 
 // Practical email check, the same as the reports form (lib/feedback-input.ts).
@@ -323,6 +327,8 @@ export function parseProposal(body: unknown): ProposalParse {
     email = written || null;
   }
   if (data.originale !== true) return { ok: false, error: "Conferma che la creatura è una tua creazione originale." };
-  if (data.autorizza !== true) return { ok: false, error: "Autorizza Il Grimorio.App a pubblicarla e a modificarla." };
-  return { ok: true, spam: typeof data.sito === "string" && data.sito.trim() !== "", token: typeof data.token === "string" ? data.token : "", value: { draft: checked.draft, nickname, email } };
+  if (data.autorizza !== true) return { ok: false, error: `Pubblica la creatura con licenza ${HOMEBREW_LICENSE} e autorizza Il Grimorio.App a pubblicarla e a modificarla.` };
+  // The version of the licence shown next to the box: a page opened before it was there sends none.
+  if (data.licenza !== HOMEBREW_LICENSE) return { ok: false, error: `Ricarica la pagina: la seconda casella ora indica la licenza ${HOMEBREW_LICENSE}.` };
+  return { ok: true, spam: typeof data.sito === "string" && data.sito.trim() !== "", token: typeof data.token === "string" ? data.token : "", value: { draft: checked.draft, nickname, email, licenza: HOMEBREW_LICENSE } };
 }

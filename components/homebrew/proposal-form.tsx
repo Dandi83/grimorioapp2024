@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 
 import { MIN_FILL_MS } from "@/lib/feedback-input";
-import { EMPTY_DRAFT, LIMITS, parseProposal, type HomebrewDraft } from "@/lib/homebrew-types";
+import { EMPTY_DRAFT, HOMEBREW_LICENSE, HOMEBREW_LICENSE_URL, LIMITS, parseProposal, type HomebrewDraft } from "@/lib/homebrew-types";
 import { HomebrewEditor } from "./homebrew-editor";
 
 const OFFLINE = "Invio non riuscito: sei offline o la connessione non risponde. La scheda è ancora qui: riprova quando torni online.";
@@ -63,7 +63,7 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     setError("");
-    const body = { scheda: draft, nickname, email: email.trim() || null, originale, autorizza };
+    const body = { scheda: draft, nickname, email: email.trim() || null, originale, autorizza, licenza: autorizza ? HOMEBREW_LICENSE : null };
     const checked = parseProposal(body);
     if (!checked.ok) {
       setError(checked.error);
@@ -135,8 +135,10 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
           <label className="flex min-h-11 items-start gap-3 text-[15px] leading-6">
             <input type="checkbox" checked={autorizza} onChange={event => setAutorizza(event.target.checked)} className="mt-1 size-5 shrink-0 accent-[#7A1F2B]" />
             <span>
-              Autorizzo Il Grimorio.App a pubblicarla e a modificarla, come spiegato nei{" "}
-              {/* A new tab: the form being filled is not lost. */}
+              {/* New tabs: the form being filled is not lost. */}
+              Pubblico la creatura con licenza{" "}
+              <a href={HOMEBREW_LICENSE_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary underline underline-offset-4">{HOMEBREW_LICENSE}</a>{" "}
+              e autorizzo Il Grimorio.App a pubblicarla e a modificarla, come spiegato nei{" "}
               <a href="/termini" target="_blank" rel="noopener" className="font-semibold text-primary underline underline-offset-4">Termini d’uso</a>.
             </span>
           </label>
