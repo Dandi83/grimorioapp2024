@@ -69,9 +69,9 @@ export function findIndexLeaks(file = SEARCH_INDEX_FILE, prints = sheetFingerpri
   const text = readFileSync(file, 'utf8');
   const leaks = prints.filter(print => text.includes(print.fragment)).map(print => ({ path: file, ...print }));
   const index = JSON.parse(text);
-  // A row is [section, name, label, address, address 2014?]: short strings, never a text.
+  // A row is [section, name, label, address, address 2014?, only edition?]: short strings, never a text.
   for (const row of index.rows) {
-    if (row.length > 5 || row.slice(1).some(cell => typeof cell !== 'string' || cell.length > 120)) leaks.push({ path: file, id: String(row[1]), file: 'search index', fragment: 'row too long' });
+    if (row.length > 6 || row.slice(1).some(cell => typeof cell !== 'string' || cell.length > 120) || (row.length === 6 && !['2024', '2014'].includes(row[5]))) leaks.push({ path: file, id: String(row[1]), file: 'search index', fragment: 'row too long' });
   }
   return leaks;
 }
