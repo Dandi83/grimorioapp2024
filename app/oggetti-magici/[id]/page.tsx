@@ -11,6 +11,7 @@ import { getCorrectedMagicItems } from "@/lib/corrected-content";
 import { compareMagicItem, findMagicItemEntry, magicItemEntries, magicItemEntryHref, seeAlso, type MagicItemChange } from "@/lib/magic-items-editions";
 import type { MagicItemEdition } from "@/lib/magic-items-types";
 import { ReportLink } from "@/components/feedback/report-link";
+import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
@@ -75,6 +76,8 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
     const other = value === "2024" ? "2014" : "2024";
     panels[value] = (
       <div className="space-y-5">
+        {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
+        <AdminEditButton target={{ kind: "contenuto", section: "oggetti-magici", id: entry.id, edition: value }} />
         <MagicItemSheet item={item} edition={value} />
         <SectionCorrectionNote section="oggetti-magici" id={entry.id} edition={value} corrections={corrections?.[value]} />
         {changes.length > 0 && <PartBlock section="oggetti-magici" part="confronto"><Changes changes={changes} other={other} href={magicItemEntryHref(entry, other)} /></PartBlock>}

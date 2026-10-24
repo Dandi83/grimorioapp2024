@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { ChevronRight, Coins, Weight, ArrowRight } from "lucide-react";
 
 import { CatalogTitle } from "@/components/catalog-ui";
@@ -70,7 +71,7 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
                   <span className="text-sm text-muted">{plural(rows.length)}</span>
                 </div>
                 <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-                  {rows.map(item => <WeaponRow key={item.id} item={item} weapon={item.editions[edition]!} />)}
+                  {rows.map(item => <WeaponRow key={item.id} item={item} weapon={item.editions[edition]!} edition={edition} />)}
                 </ul>
               </section>
             );
@@ -104,10 +105,12 @@ function Chip({ pressed, onClick, dark = false, children }: { pressed: boolean; 
   );
 }
 
-function WeaponRow({ item, weapon }: { item: WeaponListItem; weapon: WeaponListEdition }) {
+function WeaponRow({ item, weapon, edition }: { item: WeaponListItem; weapon: WeaponListEdition; edition: EquipmentEdition }) {
   return (
-    <li className="border-b border-divider last:border-b-0">
-      <Link href={`/equipaggiamento/armi/${item.id}`} prefetch={false} className="flex min-h-14 items-center gap-2.5 px-3.5 py-2">
+    <li className="flex items-center border-b border-divider last:border-b-0">
+      {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
+      <AdminEditPencil target={{ kind: "contenuto", section: "armi", id: item.id, edition }} name={weapon.nome} />
+      <Link href={`/equipaggiamento/armi/${item.id}`} prefetch={false} className="flex min-h-14 min-w-0 flex-1 items-center gap-2.5 px-3.5 py-2">
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
             <span className="font-serif text-xl font-bold leading-tight">{weapon.nome}</span>
@@ -125,9 +128,10 @@ function WeaponRow({ item, weapon }: { item: WeaponListItem; weapon: WeaponListE
 function WeaponCard({ item, weapon, edition }: { item: WeaponListItem; weapon: WeaponListEdition; edition: EquipmentEdition }) {
   const dice = weapon.danni || "—";
   return (
-    <li>
+    <li className="flex items-center">
+      <AdminEditPencil target={{ kind: "contenuto", section: "armi", id: item.id, edition }} name={weapon.nome} />
       <Link href={`/equipaggiamento/armi/${item.id}`} prefetch={false}
-        className="flex overflow-hidden rounded-[14px] border border-border bg-card shadow-[0_1px_0_var(--color-divider)]">
+        className="flex min-w-0 flex-1 overflow-hidden rounded-[14px] border border-border bg-card shadow-[0_1px_0_var(--color-divider)]">
         <span className="flex w-[84px] shrink-0 flex-col items-center justify-center gap-0.5 border-r border-chip-border bg-primary-faint px-1 py-2.5 text-center">
           <span className={`font-serif font-bold leading-none text-primary ${dice.length > 3 ? "text-[28px]" : "text-[34px]"}`}>{dice}</span>
           <span className="text-[12px] font-semibold leading-tight text-muted">{damageType(weapon)}</span>

@@ -5,6 +5,7 @@ import { ClassBody, ClassHeader, CLASS_PARTS, CLASS_SOURCES, type ClassParts } f
 import { ClassSheetEditions } from "@/components/classes/class-editions";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { ReportLink } from "@/components/feedback/report-link";
+import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 import { getCorrectedClasses } from "@/lib/corrected-content";
 import { CLASS_IDS, isClassId } from "@/lib/classes";
 import type { ClassEdition } from "@/lib/classes-types";
@@ -41,7 +42,13 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
   for (const edition of shown) {
     const card = entry.editions[edition];
     const name = (card ?? entry.editions["2024"]!).nome;
-    headers[edition] = <ClassHeader id={id} name={name} line={card ? `Classe · ${CLASS_SOURCES[edition]}, p. ${card.pagina}` : `Classe · ${CLASS_SOURCES[edition]}`} />;
+    headers[edition] = (
+      <div className="relative">
+        <ClassHeader id={id} name={name} line={card ? `Classe · ${CLASS_SOURCES[edition]}, p. ${card.pagina}` : `Classe · ${CLASS_SOURCES[edition]}`} />
+        {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
+        {card && <AdminEditButton target={{ kind: "contenuto", section: "classi", id, edition }} desktop="lg:absolute lg:right-6 lg:top-6" />}
+      </div>
+    );
     bodies[edition] = card ? (
       <div className="space-y-5 px-4 pt-4 sm:px-6">
         <ClassBody card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} other={entry.editions[edition === "2024" ? "2014" : "2024"] && shown.length === 2 ? { edition: edition === "2024" ? "2014" : "2024", href: `/classi/${id}?edizione=${edition === "2024" ? "2014" : "2024"}` } : undefined} />

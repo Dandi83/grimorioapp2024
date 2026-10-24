@@ -22,6 +22,7 @@ import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
 import { getLegacySpellSource, spellEditionLink } from "@/lib/srd-spells-2014";
 import { ReportLink } from "@/components/feedback/report-link";
+import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -107,6 +108,8 @@ export default async function SpellDetailPage({
         <ShareButton path={`/spell/${encodeURIComponent(spell.id)}`} title={titolo} />
         <FavoriteButton id={spell.id} />
         <div className="absolute inset-x-0 bottom-0 p-6">
+          {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
+          <AdminEditButton target={{ kind: "incantesimo", id: spell.id }} />
           <span
             className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground"
             style={{ borderColor: color }}

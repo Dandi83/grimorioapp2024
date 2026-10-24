@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { ChevronRight } from "lucide-react";
 
 import { CatalogTitle } from "@/components/catalog-ui";
@@ -33,8 +34,10 @@ export function ArmorBrowser({ items, times, sameNumbers }: { items: ArmorListIt
                 {rows.map(item => {
                   const armor = item.editions[edition];
                   return (
-                    <li key={item.id} className="border-b border-divider last:border-b-0">
-                      <Link href={`/equipaggiamento/armature/${item.id}`} prefetch={false} className="flex min-h-16 items-center gap-3 px-3 py-2.5">
+                    <li key={item.id} className="flex items-center border-b border-divider last:border-b-0">
+                      {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
+                      <AdminEditPencil target={{ kind: "contenuto", section: "armature", id: item.id, edition }} name={armor.nome} />
+                      <Link href={`/equipaggiamento/armature/${item.id}`} prefetch={false} className="flex min-h-16 min-w-0 flex-1 items-center gap-3 px-3 py-2.5">
                         <ArmorBadge ca={armor.ca} note={armor.caNote} />
                         <span className="flex min-w-0 flex-1 flex-col gap-1.5">
                           <span className="font-serif text-xl font-bold leading-tight">{armor.nome}</span>

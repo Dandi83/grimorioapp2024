@@ -14,6 +14,7 @@ import { serviceWorkerEnabled } from "@/lib/service-worker-config";
 import { PUBLIC_SECTIONS } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
 import { PartsProvider } from "@/components/sections/parts-context";
+import { AdminSessionProvider } from "@/components/admin-edit/admin-session";
 import { EditionProvider } from "@/components/edition/edition-provider";
 import { forcedEdition } from "@/lib/user-edition";
 import "./globals.css";
@@ -97,7 +98,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               {/* The offline notice sits in the page flow above the content: it never covers the controls at the top. */}
               <ServiceWorker enabled={serviceWorkerEnabled()} hiddenPaths={hiddenPaths} partPaths={partPaths} />
               <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))] lg:pb-0">
-                <PartsProvider hidden={hiddenParts} admin={admin}><CharacterSessionProvider><ContentFrame>{children}</ContentFrame></CharacterSessionProvider></PartsProvider>
+                {/* AdminSessionProvider: the «Modifica» buttons, drawn in the browser after the server checks the session. */}
+                <PartsProvider hidden={hiddenParts} admin={admin}><AdminSessionProvider><CharacterSessionProvider><ContentFrame>{children}</ContentFrame></CharacterSessionProvider></AdminSessionProvider></PartsProvider>
               </main>
               <BottomNav hidden={hidden} admin={admin} />
               {/* After the content in the page order (it is fixed on the left): on phones the order stays the same. */}

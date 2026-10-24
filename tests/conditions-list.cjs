@@ -24,14 +24,15 @@ assert.deepEqual(rows['2014'].map(r=>r.nome).sort(),data2014.map(e=>e.title).sor
 assert.equal(rows['2014'].length,11);
 for(const missing of ['Prono','Spaventato','Stordito','Trattenuto'])assert.ok(!rows['2014'].some(r=>r.nome===missing),missing);
 // The note under the 2014 list: the four 2024 conditions not printed in the SRD 5.1, linked to their 2024 pages.
-assert.deepEqual(conditionsOnly2024(),[{nome:'Prono',href:'/manuale/condizioni-prono'},{nome:'Spaventato',href:'/manuale/condizioni-spaventato'},{nome:'Stordito',href:'/manuale/condizioni-stordito'},{nome:'Trattenuto',href:'/manuale/condizioni-trattenuto'}]);
+assert.deepEqual(conditionsOnly2024(),['prono','spaventato','stordito','trattenuto'].map(key=>({id:`condizioni-${key}`,nome:key[0].toUpperCase()+key.slice(1),href:`/manuale/condizioni-${key}`})));
 // Every row opens an existing condition page of its own edition (generated at build time).
 const ids2024=new Set(data2024.map(e=>e.id)),ids2014=new Set(data2014.map(e=>e.id));
 for(const r of rows['2024'])assert.ok(ids2024.has(r.href.replace('/manuale/','')),r.href);
 for(const r of rows['2014'])assert.ok(ids2014.has(r.href.replace('/manuale/','')),r.href);
 assert.ok(rows['2014'].every(r=>r.href.endsWith('-2014')));
-// The light rows carry names and addresses only.
-for(const r of [...rows['2024'],...rows['2014']])assert.deepEqual(Object.keys(r).sort(),['href','nome']);
+// The light rows carry names, addresses and the id of the condition only.
+// The id is the condition in /admin/contenuti/condizioni («Modifica» pencil of the administrator).
+for(const r of [...rows['2024'],...rows['2014']]){assert.deepEqual(Object.keys(r).sort(),['href','id','nome']);assert.equal(r.href,`/manuale/${r.id}`);}
 // Compendio: fourth tile of «Regole e oggetti» after Oggetti magici, the same style as the others (no «nuovo» label).
 const compendio=fs.readFileSync('app/compendio/page.tsx','utf8');
 assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]),['/classi','/equipaggiamento','/avanzamento','/oggetti-magici','/compendio/condizioni']);

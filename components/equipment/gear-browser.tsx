@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { ChevronRight, Search } from "lucide-react";
 
 import { ParentLink } from "@/components/section-tiles";
@@ -15,10 +16,12 @@ import type { EquipmentEdition } from "@/lib/equipment-types";
 const fold = (text: string) => text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, " ");
 const weight = (peso?: string) => (peso === "—" ? "peso trascurabile" : peso);
 
-function GearRow({ row }: { row: GearListRow }) {
+function GearRow({ row, edition }: { row: GearListRow; edition: EquipmentEdition }) {
   return (
-    <li className="border-b border-divider last:border-b-0">
-      <Link href={row.href} prefetch={false} className="flex min-h-14 items-center gap-3 px-3.5 py-2">
+    <li className="flex items-center border-b border-divider last:border-b-0">
+      {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
+      <AdminEditPencil target={{ kind: "contenuto", section: "avventura", id: row.id, edition }} name={row.nome} />
+      <Link href={row.href} prefetch={false} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
           <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
           {row.peso && <span className="block text-[14px] text-muted">{weight(row.peso)}</span>}
@@ -31,10 +34,11 @@ function GearRow({ row }: { row: GearListRow }) {
 }
 
 /** A 2014 group (Focus arcano, Munizioni…): its rows inside one card that opens the group sheet. */
-function GroupRow({ row }: { row: GearListRow }) {
+function GroupRow({ row, edition }: { row: GearListRow; edition: EquipmentEdition }) {
   return (
-    <li className="border-b border-divider last:border-b-0">
-      <Link href={row.href} prefetch={false} className="block px-3.5 py-2">
+    <li className="flex items-start border-b border-divider last:border-b-0">
+      <span className="pt-2.5 empty:hidden"><AdminEditPencil target={{ kind: "contenuto", section: "avventura", id: row.id, edition }} name={row.nome} /></span>
+      <Link href={row.href} prefetch={false} className="block min-w-0 flex-1 px-3.5 py-2">
         <span className="flex min-h-10 items-center gap-3">
           <span className="min-w-0 flex-1 font-serif text-xl font-bold leading-tight">{row.nome}</span>
           <ChevronRight size={18} className="shrink-0 text-muted" aria-hidden="true" />
@@ -97,7 +101,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
             <p className="text-sm text-muted">Pacchetti di oggetti pronti per l’avventura</p>
           </div>
           <ul className="overflow-hidden rounded-b-[14px] border-2 border-t-0 border-amber bg-card">
-            {packs.map(row => <GearRow key={row.href} row={row} />)}
+            {packs.map(row => <GearRow key={row.href} row={row} edition={edition} />)}
           </ul>
         </section>
       )}
@@ -105,7 +109,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
         <h2 id="tutti" className="border-b-2 border-primary px-0.5 pb-1.5 font-serif text-[22px] font-bold text-primary">Tutti gli oggetti</h2>
         {found.length ? (
           <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-            {found.map(row => (row.righe ? <GroupRow key={row.href} row={row} /> : <GearRow key={row.href} row={row} />))}
+            {found.map(row => (row.righe ? <GroupRow key={row.href} row={row} edition={edition} /> : <GearRow key={row.href} row={row} edition={edition} />))}
           </ul>
         ) : (
           <p className="mt-3 text-[15px]">Nessun oggetto con questo nome.</p>
