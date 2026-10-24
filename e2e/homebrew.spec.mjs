@@ -1,3 +1,4 @@
+import { chooseEdition, editionPill } from "./edition-pill.mjs";
 import { test, expect } from "@playwright/test";
 
 // Homebrew creatures: proposals of the community, approval, the Homebrew collection. Local test database only.
@@ -135,7 +136,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await visitor.getByRole("button", { name: "Aggiungi ai preferiti" }).first().click();
   for (const edition of ["2024", "2014"]) {
     await visitor.goto("/bestiario");
-    await visitor.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: edition }).click();
+    if ((await editionPill(visitor).getAttribute("aria-label")).slice(9, 13) !== edition) await chooseEdition(visitor, edition);
     await visitor.getByRole("searchbox", { name: "Cerca una creatura" }).fill("drago di nebbia");
     await expect(visitor.locator(`a[href="${CARD}"]`), `${edition}: not among the SRD creatures`).toHaveCount(0);
     await visitor.getByRole("button", { name: /^Filtri/ }).click();

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import type { Edition } from "@/lib/public-sections";
 import { USER_EDITION_KEY, isEdition, storedEdition } from "@/lib/user-edition";
@@ -21,6 +21,20 @@ export interface UserEdition {
 }
 
 const EditionContext = createContext<UserEdition>({ edition: "2024", chosen: false, ready: false, firstLaunch: false, choose: () => undefined });
+
+/**
+ * The edition a section page shows, which an address can set apart from the user's one
+ * (/spell/…-2014, ?edizione=2014): the pills (page and computer column) show it and choose through the page.
+ * editions: those the page offers (an edition hidden from /admin/sezioni only to the administrator, labelled).
+ */
+export interface PageEdition {
+  section: string;
+  shown: Edition;
+  editions: { value: Edition; hidden: boolean }[];
+  choose: (value: Edition) => void;
+}
+
+const PageEditionContext = createContext<{ page?: PageEdition; setPage: (page: PageEdition | undefined) => void }>({ setPage: () => undefined });
 
 function read(key: string): string | null {
   try {
@@ -76,9 +90,12 @@ export function EditionProvider({ forced, children }: { forced?: Edition; childr
     return () => window.removeEventListener("storage", sync);
   }, []);
 
+  // Said to screen readers after a choice: the panels close at once, so the line lives here, on every page.
+  const [said, setSaid] = useState("");
   const choose = useCallback((value: Edition) => {
     write(value);
     setState(current => ({ ...current, edition: value, chosen: true }));
+    setSaid(`Ora tutta l’app parte dal ${value}.`);
   }, []);
 
   const value = useMemo<UserEdition>(() => ({
@@ -90,9 +107,37 @@ export function EditionProvider({ forced, children }: { forced?: Edition; childr
     choose,
   }), [forced, state, choose]);
 
-  return <EditionContext.Provider value={value}>{children}</EditionContext.Provider>;
+  const [page, setPage] = useState<PageEdition>();
+  const pageValue = useMemo(() => ({ page, setPage }), [page]);
+
+  return (
+    <EditionContext.Provider value={value}>
+      <PageEditionContext.Provider value={pageValue}>{children}</PageEditionContext.Provider>
+      <p aria-live="polite" data-testid="edition-status" className="sr-only">{said}</p>
+    </EditionContext.Provider>
+  );
 }
 
 export function useUserEdition(): UserEdition {
   return useContext(EditionContext);
+}
+
+/** The edition of the section page on screen, if any (for the pill of the computer column). */
+export function usePageEdition(): PageEdition | undefined {
+  return useContext(PageEditionContext).page;
+}
+
+/** A section page tells the pills which edition it shows and how to change it, while it is on screen. */
+export function useRegisterPageEdition(page: PageEdition | undefined) {
+  const { setPage } = useContext(PageEditionContext);
+  const choose = useRef(page?.choose);
+  useEffect(() => { choose.current = page?.choose; });
+  const section = page?.section;
+  const shown = page?.shown;
+  const editions = JSON.stringify(page?.editions ?? null);
+  useEffect(() => {
+    if (section === undefined || shown === undefined) return;
+    setPage({ section, shown, editions: JSON.parse(editions), choose: value => choose.current?.(value) });
+    return () => setPage(undefined);
+  }, [section, shown, editions, setPage]);
 }

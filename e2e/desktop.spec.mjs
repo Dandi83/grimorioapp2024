@@ -1,3 +1,4 @@
+import { chooseEdition, expectEdition } from "./edition-pill.mjs";
 import { test, expect } from "@playwright/test";
 
 // Tablet and computer layouts (the phone is covered by the other files, unchanged).
@@ -34,7 +35,10 @@ test("computer: side column, list and card side by side keeping search, edition 
   const list = page.getByRole("complementary", { name: "Elenco degli incantesimi" });
   await expect(list.getByRole("heading", { name: "Incantesimi", level: 1 })).toBeVisible();
   // Edition, search and scroll of the list, then a card.
-  await list.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  // On computers the edition pill is the one of the side column (none in the list).
+  await expect(list.getByRole("button", { name: /^Edizione 20\d\d/ })).toBeHidden();
+  await chooseEdition(page, "2014");
+  await expect(side.getByRole("button", { name: "Edizione 2014: cambia la tua edizione" })).toBeVisible();
   await list.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("a");
   await list.evaluate(element => { element.scrollTop = 900; });
   const scrolled = await list.evaluate(element => element.scrollTop);
@@ -46,7 +50,7 @@ test("computer: side column, list and card side by side keeping search, edition 
   await expect(page).toHaveURL(/\/spell\/.+-2014$/);
   await expect(page.getByRole("heading", { level: 1, name: new RegExp(firstName, "i") }).last()).toBeVisible();
   await expect(list.getByRole("searchbox", { name: "Cerca un incantesimo" })).toHaveValue("a");
-  await expect(list.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" })).toHaveAttribute("aria-pressed", "true");
+  await expectEdition(page, "2014");
   expect(Math.abs(await list.evaluate(element => element.scrollTop) - scrolled)).toBeLessThan(5);
   await expect(list.locator('a[aria-current="page"]')).toHaveCount(1);
   // Another row: only the card changes.
@@ -74,10 +78,10 @@ test("computer: side column, list and card side by side keeping search, edition 
 
   // Home: shortcuts with the real numbers of the lists.
   await page.goto("/grimorio");
-  await list.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2024" }).click();
+  await chooseEdition(page, "2024");
   const count = async () => Number((await list.getByRole("status").filter({ hasText: /risultat/ }).textContent()).match(/(\d+)/)[1]);
   const spells2024 = await count();
-  await list.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   const spells2014 = await count();
   await page.goto("/");
   const shortcuts = page.getByRole("navigation", { name: "Scorciatoie" });
@@ -129,7 +133,8 @@ test("computer: a card opened from a direct link shows its row in the list colum
   const spells = page.getByRole("complementary", { name: "Elenco degli incantesimi" });
   const wish = spells.locator('a[aria-current="page"]');
   await expect(wish).toHaveAttribute("href", "/spell/desiderio-2014");
-  await expect(spells.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" })).toHaveAttribute("aria-pressed", "true");
+  // The pill of the side column shows the edition of the list (2014), with «la tua edizione» still 2024.
+  await expectEdition(page, "2014");
   await expect.poll(() => inView(spells, wish)).toBe(true);
   expect(await spells.evaluate(node => node.scrollTop)).toBeGreaterThan(0);
   // A row already in view: the card changes, the list stays where it is.

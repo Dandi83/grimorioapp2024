@@ -66,7 +66,11 @@ for(const [id,value] of seed)if(verified.has(id))assert.equal(castingTimeGroup(v
  const click=async el=>{assert.ok(el);await act(async()=>el.dispatchEvent(new MouseEvent('click',{bubbles:true})));};
  const group=()=>[...document.querySelectorAll('fieldset')].find(f=>f.querySelector('legend').textContent==='Tempo di lancio');
  for(const [edition,list] of [['2024',only2024],['2014',only2014]]){
-  if(edition==='2014')await click([...document.querySelector('[aria-label="Edizione delle regole"]').querySelectorAll('button')].find(b=>b.textContent.trim()==='2014'));
+  if(edition==='2014'){
+   // The edition pill opens its panel: the 2014 choice.
+   await click(document.querySelector('button[aria-label^="Edizione "]'));
+   await click([...document.querySelectorAll('[role="dialog"] button[aria-pressed]')].find(b=>b.textContent==='D&D 2014'));
+  }
   await click(button('Filtri'));
   assert.deepEqual([...group().querySelectorAll('button')].map(b=>b.textContent),['Azione','Azione bonus','Reazione','1 minuto o più'],'a separate group with four options');
   assert.ok([...document.querySelectorAll('legend')].some(l=>l.textContent==='Caratteristiche'),'Concentrazione and Rituale keep their own group');

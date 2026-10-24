@@ -4,30 +4,19 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
 import { HiddenTag } from "@/components/sections/hidden-tag";
-import { EditionButtons } from "@/components/sections/parts-context";
+import { SectionEditionPill } from "@/components/edition/edition-pill";
 import type { ClassEdition } from "@/lib/classes-types";
 
 const EDITIONS = ["2024", "2014"] as const;
 
-/**
- * «2024 · 2014»: the edition shown in the Classi pages, remembered like the rest of the Compendio.
- * An edition hidden from /admin/sezioni has no button (and no panel in the page).
- */
-function EditionToggle({ shown, choose, compact }: { shown: ClassEdition; choose: (value: ClassEdition) => void; compact?: boolean }) {
-  return (
-    <EditionButtons section="classi" edition={shown} choose={choose} className={`flex shrink-0 rounded-[10px] border border-border bg-elevated p-1 ${compact ? "min-w-[132px]" : "mx-auto w-full max-w-[260px]"}`}
-      button={active => `min-h-11 flex-1 rounded-[7px] px-1 text-base font-bold tabular-nums ${active ? "bg-primary text-primary-foreground" : "text-muted"}`} />
-  );
-}
-
-/** List page: the title with the selector on the same row, then the panel of the chosen edition. */
+/** List page: the title with the edition pill on the same row, then the panel of the chosen edition. */
 export function ClassListEditions({ title, panels }: { title: ReactNode; panels: Partial<Record<ClassEdition, ReactNode>> }) {
   const [edition, setEdition] = useEquipmentEdition("classi");
   return (
     <>
       <div className="flex items-center justify-between gap-3">
         {title}
-        <EditionToggle shown={edition} choose={setEdition} compact />
+        <SectionEditionPill section="classi" edition={edition} choose={setEdition} />
       </div>
       {EDITIONS.map(value => panels[value] ? <div key={value} hidden={value !== edition} data-edition={value}>{panels[value]}</div> : null)}
     </>
@@ -36,7 +25,7 @@ export function ClassListEditions({ title, panels }: { title: ReactNode; panels:
 
 /**
  * Sheet of a class: the coloured header of the chosen edition (with its h1, read by «Segnala»),
- * the selector, then the body. Both editions sit in the page, so the switch also works offline.
+ * the edition pill on the right, then the body. Both editions sit in the page, so the switch also works offline.
  */
 export function ClassSheetEditions({ headers, bodies }: { headers: Partial<Record<ClassEdition, ReactNode>>; bodies: Partial<Record<ClassEdition, ReactNode>> }) {
   const [edition, setEdition] = useEquipmentEdition("classi");
@@ -44,7 +33,7 @@ export function ClassSheetEditions({ headers, bodies }: { headers: Partial<Recor
   return (
     <>
       {editions.map(value => <div key={value} hidden={value !== edition} data-edition={value}>{headers[value]}</div>)}
-      {editions.length > 1 && <div className="px-4 pt-4 sm:px-6"><EditionToggle shown={edition} choose={setEdition} /></div>}
+      {editions.length > 1 && <div className="flex justify-end px-4 pt-4 sm:px-6 lg:hidden"><SectionEditionPill section="classi" edition={edition} choose={setEdition} /></div>}
       {editions.map(value => <div key={value} hidden={value !== edition}>{bodies[value]}</div>)}
     </>
   );

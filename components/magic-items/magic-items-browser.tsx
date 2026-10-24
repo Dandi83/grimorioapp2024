@@ -8,7 +8,7 @@ import { ActiveFilters, FilterGroup, FilterSheet, SearchAndFilters, type ActiveF
 import { RarityChip } from "@/components/magic-items/rarity-chip";
 import { ParentLink } from "@/components/section-tiles";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
-import { EditionButtons } from "@/components/sections/parts-context";
+import { SectionEditionPill } from "@/components/edition/edition-pill";
 import {
   ATTUNEMENT_FILTERS, MAGIC_ITEM_RARITIES, MAGIC_ITEM_TYPES, NO_MAGIC_ITEM_FILTERS,
   magicItemFiltersFromParams, magicItemSearch, searchMagicItems,
@@ -90,9 +90,11 @@ export function MagicItemsBrowser({ rows: byEdition, title = "Oggetti magici", r
     // px-6 like the other catalogs: the active filter labels scroll edge to edge (-mx-6).
     <div className="px-6 pb-8 pt-4">
       <ParentLink href="/compendio" label="Compendio" />
+      {/* The long title keeps its line on phones: the edition pill sits under it, on the right. */}
       <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">{title}</h1>
-      <EditionButtons section="oggetti-magici" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} className="mt-3 flex w-fit rounded-[8px] border border-border bg-elevated p-1"
-        button={active => `min-h-11 min-w-[56px] rounded-[6px] px-3 text-[15px] font-bold tabular-nums ${active ? "bg-primary text-primary-foreground" : "text-muted"}`} />
+      <div className="mt-3 flex justify-end empty:hidden lg:hidden">
+        <SectionEditionPill section="oggetti-magici" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} />
+      </div>
       {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo oggetto non c’è nel {missing}.</p>}
       {rulesHref && (
         <Link href={rulesHref} className="mt-2 inline-flex min-h-11 items-center gap-1 text-[15px] font-bold text-primary underline underline-offset-4">

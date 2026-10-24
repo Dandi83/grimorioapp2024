@@ -10,6 +10,7 @@ import { HiddenTag } from "@/components/sections/hidden-tag";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useUserEdition } from "@/components/edition/edition-provider";
+import { useFollowEdition } from "@/components/edition/use-follow-edition";
 import { useEditions, usePart } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { collectionOf, computeMonstersMeta, isSrdAnimal, typeCategory, type MonsterListItem } from "@/lib/monsters-types";
@@ -57,6 +58,10 @@ interface Props {
   monsters: MonsterListItem[];
   initialFilters?: MonsterFilters;
   initialEdizione?: Edition;
+  /** The edition to show from now on (the address, else «la tua edizione»), followed without rebuilding the list. */
+  edizione?: Edition;
+  /** «La tua edizione» has been read from the device. */
+  editionReady?: boolean;
   initialQuery?: string;
   initialLimit?: number;
   initialScroll?: number;
@@ -68,6 +73,8 @@ export function BestiarioBrowser({
   monsters,
   initialFilters = NO_FILTERS,
   initialEdizione = "2024",
+  edizione: targetEdizione,
+  editionReady = false,
   initialQuery = "",
   initialLimit = PAGE_SIZE,
   initialScroll,
@@ -78,6 +85,7 @@ export function BestiarioBrowser({
   const [draft, setDraft] = useState<MonsterFilters | null>(null);
   const { choose: chooseUserEdition } = useUserEdition();
   const [chosenEdizione, setEdizione] = useState<Edition>(initialEdizione);
+  useFollowEdition(targetEdizione, editionReady, setEdizione, () => setFilters(NO_FILTERS));
   // Editions and collections hidden from /admin/sezioni: never shown to the public, labelled for the administrator.
   const { allowed } = useEditions("bestiario");
   const edizione: Edition = allowed.includes(chosenEdizione) ? chosenEdizione : allowed[0];
