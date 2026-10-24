@@ -151,25 +151,30 @@ test("sections of the app: admin hides and shows every section; public 404 page,
     expect((await band().getByRole("button", { name: "Mostra" }).boundingBox()).height).toBeGreaterThanOrEqual(44);
   }
 
-  // Admin home: an icon on every tile and button, «Nascosta» on the tiles of the hidden sections (no switch there).
+  // Admin home: an icon on every row, «Nascosta» under the name of the rows of the hidden sections (no switch there).
   await page.goto("/admin");
-  const adminTiles = page.getByRole("navigation", { name: "Sezioni da modificare" }).getByRole("link");
+  const adminTiles = page.getByRole("region", { name: /^Contenuti 20\d\d$/ }).getByRole("link");
   await expect(adminTiles).toHaveCount(10);
-  expect(await adminTiles.evaluateAll(links => links.map(a => a.querySelectorAll('svg[aria-hidden="true"]').length))).toEqual(Array(10).fill(1));
+  expect(await adminTiles.evaluateAll(links => links.map(a => a.querySelectorAll('svg[aria-hidden="true"]').length))).toEqual(Array(10).fill(2));
   const labelled = await adminTiles.evaluateAll(links => links.filter(a => /Nascosta/.test(a.textContent)).map(a => a.getAttribute("href")));
   expect(labelled.sort()).toEqual(["/admin/contenuti/armature", "/admin/contenuti/armi", "/admin/contenuti/avventura", "/admin/contenuti/classi", "/admin/contenuti/condizioni", "/admin/contenuti/strumenti", "/admin/incantesimi", "/admin/mostri"]);
-  await expect(page.getByRole("navigation", { name: "Sezioni da modificare" }).getByRole("button")).toHaveCount(0);
+  await expect(page.getByRole("region", { name: /^Contenuti 20\d\d$/ }).getByRole("button")).toHaveCount(0);
   const nascosta = adminTiles.first().getByText("Nascosta", { exact: true });
   expect(await nascosta.evaluate(el => { const s = getComputedStyle(el); return [s.backgroundColor, s.color, s.fontSize, s.fontWeight]; })).toEqual(["rgb(43, 33, 24)", "rgb(224, 162, 26)", "11px", "700"]);
-  const tileIcon = adminTiles.first().locator("svg");
-  expect(await tileIcon.evaluate(svg => [svg.getAttribute("width"), svg.getAttribute("stroke"), svg.getAttribute("stroke-width")])).toEqual(["24", "#7A1F2B", "1.8"]);
-  const pills = page.getByRole("navigation", { name: "Altro" }).getByRole("link");
-  await expect(pills).toHaveText(["Sezioni dell’app", "Segnalazioni", "Registro modifiche", "Statistiche"]);
-  expect(await pills.evaluateAll(links => links.map(a => a.querySelector('svg[aria-hidden="true"]')?.getAttribute("width")))).toEqual(["18", "18", "18", "18"]);
+  // The pill sits under the name, never over it.
+  const [nameBox, pillBox] = [await adminTiles.first().locator("span.font-serif").boundingBox(), await nascosta.boundingBox()];
+  expect(pillBox.y).toBeGreaterThanOrEqual(nameBox.y + nameBox.height - 1);
+  const tileIcon = adminTiles.first().locator("svg").first();
+  expect(await tileIcon.evaluate(svg => [svg.getAttribute("width"), svg.getAttribute("stroke"), svg.getAttribute("stroke-width")])).toEqual(["22", "#7A1F2B", "1.8"]);
+  const pills = page.getByRole("region", { name: "Gestione · tutte le edizioni" }).getByRole("link");
+  await expect(pills).toHaveCount(4);
+  expect(await pills.evaluateAll(links => links.map(a => a.getAttribute("aria-label").split(" · ")[0]))).toEqual(["Sezioni dell’app", "Notifiche", "Registro modifiche", "Statistiche"]);
+  await expect(pills.first()).toHaveAttribute("aria-label", /^Sezioni dell’app · \d+ sezion[ei] nascost[ae]/);
+  expect(await pills.evaluateAll(links => links.map(a => a.querySelector('svg[aria-hidden="true"]')?.getAttribute("width")))).toEqual(["22", "22", "22", "22"]);
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin home ${width}`).toBeLessThanOrEqual(width);
-    for (const box of [...await adminTiles.evaluateAll(links => links.map(a => a.getBoundingClientRect().height)), ...await pills.evaluateAll(links => links.map(a => a.getBoundingClientRect().height))]) expect(box).toBeGreaterThanOrEqual(44);
+    for (const box of [...await adminTiles.evaluateAll(links => links.map(a => a.getBoundingClientRect().height)), ...await pills.evaluateAll(links => links.map(a => a.getBoundingClientRect().height))]) expect(box).toBeGreaterThanOrEqual(56);
   }
 
   // The administrator sees everything, labelled «Nascosta»: Compendio tiles and bottom bar.
@@ -328,7 +333,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await expect(selector(pub)).toHaveCount(0);
   await expect(pub.getByRole("heading", { name: "2014 → 2024" })).toHaveCount(0);
   await page.goto("/admin");
-  const armiTile = page.getByRole("navigation", { name: "Sezioni da modificare" }).getByRole("link").filter({ hasText: "Armi" });
+  const armiTile = page.getByRole("region", { name: /^Contenuti 20\d\d$/ }).getByRole("link").filter({ hasText: "Armi" });
   await expect(armiTile.getByText("Parti nascoste", { exact: true })).toBeVisible();
   await expect(armiTile.getByText("Nascosta", { exact: true })).toHaveCount(0);
   await togglePart("armi", "Edizione 2014", false);

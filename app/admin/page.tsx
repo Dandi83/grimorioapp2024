@@ -1,11 +1,12 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { Backpack, BarChart3, Bell, BookOpen, Eye, FlaskConical, Gem, Hammer, HeartPulse, History, LogOut, MessageSquareWarning, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
+import { Backpack, BarChart3, Bell, BookOpen, ChevronLeft, ChevronRight, Crown, Eye, Flag, FlaskConical, Gem, Hammer, HeartPulse, History, LogOut, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/admin";
+import { AdminEditionSwitch } from "@/components/admin-edition/edition-bar";
 import { AdminLogin } from "@/components/admin-login";
-import { AdminPublicLink } from "@/components/admin-public-link";
 import { isAdmin } from "@/lib/admin-auth";
-import { spellEdition } from "@/lib/admin-edition";
+import { EDITION_BAND, spellEdition } from "@/lib/admin-edition";
 import { adminEdition } from "@/lib/admin-edition-server";
 import { CONTENT_SECTIONS } from "@/lib/content-sections";
 import { allOverrides } from "@/lib/content-overrides";
@@ -25,60 +26,68 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Sections not yet editable here (PR C2): shown so the map of the admin area is complete. */
-const COMING = [
-  { title: "Armature", hint: "CA, requisiti" },
-  { title: "Equipaggiamento", hint: "Avventura e strumenti" },
-  { title: "Oggetti magici", hint: "Testi e tabelle" },
-  { title: "Condizioni", hint: "Testi 2014/2024" },
-  { title: "Manuale", hint: "Voci e regole" },
-];
+/** The contents of the chosen edition, in this order; Manuale only where the section has the edition (2024). */
+const CONTENT_ORDER = ["incantesimi", "mostri", "classi", "condizioni", "oggetti-magici", "armi", "armature", "avventura", "strumenti", "manuale"] as const;
 
-/** Icon of each tile (Classi: the Shield of the public Compendio tile) and the public section it shows or hides. */
-const TILE_ICONS: Record<string, { Icon: LucideIcon; section?: PublicSectionKey }> = {
+/** Icon of each row (all different) and the public section it shows or hides. */
+const ROW_ICONS: Record<string, { Icon: LucideIcon; section?: PublicSectionKey }> = {
   incantesimi: { Icon: Sparkles, section: "incantesimi" },
   mostri: { Icon: Skull, section: "bestiario" },
+  classi: { Icon: Crown, section: "classi" },
+  condizioni: { Icon: HeartPulse, section: "condizioni" },
+  "oggetti-magici": { Icon: Gem, section: "oggetti-magici" },
   armi: { Icon: Sword, section: "armi" },
   armature: { Icon: Shield, section: "armature" },
   avventura: { Icon: Backpack, section: "avventura" },
   strumenti: { Icon: Hammer, section: "strumenti" },
-  "oggetti-magici": { Icon: Gem, section: "oggetti-magici" },
-  classi: { Icon: Shield, section: "classi" },
-  condizioni: { Icon: HeartPulse, section: "condizioni" },
   manuale: { Icon: BookOpen },
 };
 
-const LINKS: [string, string, LucideIcon][] = [
-  ["/admin/sezioni", "Sezioni dell’app", Eye],
-  ["/admin/segnalazioni", "Segnalazioni", MessageSquareWarning],
-  ["/admin/registro", "Registro modifiche", History],
-  ["/admin/statistiche", "Statistiche", BarChart3],
-];
+type RowState = "nascosta" | "parti" | undefined;
 
-type TileState = "nascosta" | "parti" | undefined;
+/** A number with its noun: «1 dispositivo», «3 dispositivi». */
+const many = (count: number, one: string, more: string) => `${count} ${count === 1 ? one : more}`;
 
-function Tile({ href, title, hint, count, items, icon, hidden }: { href?: string; title: string; hint: string; count?: number; items?: number | null; icon?: string; hidden?: TileState }) {
-  const Icon = icon ? TILE_ICONS[icon]?.Icon : undefined;
-  const body = (
-    <>
-      <span className="flex items-start justify-between gap-2">
-        <span className="flex min-w-0 items-center gap-2">
-          {Icon && <Icon size={24} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />}
-          <span className="font-serif text-xl font-bold text-primary">{title}{typeof items === "number" && <span className="tabular-nums"> · {items}</span>}</span>
+/**
+ * One row of a group: a single link at least 56 px high, the icon, the name on one line (with the
+ * «Nascosta» or «Parti nascoste» pill under it), then the number, the state or the bordeaux pill, and the arrow.
+ */
+function Row({ href, name, Icon, count, status, pill, hidden }: {
+  href: string;
+  name: string;
+  Icon: LucideIcon;
+  count?: number | null;
+  status?: string;
+  pill?: string;
+  hidden?: RowState;
+}) {
+  // One name for screen readers (and the tests): «Incantesimi · 319», «Segnalazioni · 2 nuove», «Classi · 12 · Parti nascoste».
+  const label = [name, pill ?? (typeof count === "number" ? String(count) : status), hidden === "nascosta" ? "Nascosta" : hidden === "parti" ? "Parti nascoste" : undefined].filter(Boolean).join(" · ");
+  return (
+    <li>
+      <Link href={href} aria-label={label} className="flex min-h-14 items-center gap-3 px-4 py-2 focus-visible:outline-[3px] focus-visible:-outline-offset-[3px] focus-visible:outline-primary">
+        <Icon size={22} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />
+        <span className="min-w-0 shrink-0 grow">
+          <span className="block whitespace-nowrap font-serif text-[19px] font-bold leading-tight text-foreground">{name}</span>
+          {hidden === "nascosta" && <span className="mt-1 inline-block rounded-[6px] bg-[#2B2118] px-1.5 text-[11px] font-bold leading-4 text-[#E0A21A]">Nascosta</span>}
+          {hidden === "parti" && <span className="mt-1 inline-block rounded-[6px] border border-[#2B2118] px-1.5 text-[11px] font-bold leading-[14px] text-[#2B2118]">Parti nascoste</span>}
         </span>
-        <span className="flex shrink-0 items-center gap-1">
-          {hidden === "nascosta" && <span className="rounded-[6px] bg-[#2B2118] px-1.5 text-[11px] font-bold leading-4 text-[#E0A21A]">Nascosta</span>}
-          {hidden === "parti" && <span className="rounded-[6px] border border-[#2B2118] px-1.5 text-[11px] font-bold leading-[14px] text-[#2B2118]">Parti nascoste</span>}
-          {count ? <span className="rounded-[10px] bg-amber px-2 py-0.5 text-[11px] font-bold text-foreground">{count}</span> : null}
-        </span>
-      </span>
-      <span className="mt-0.5 block text-[13px] text-muted">{href ? hint : "In arrivo"}</span>
-    </>
+        {pill ? <span className="shrink-0 whitespace-nowrap rounded-full bg-primary px-2.5 py-0.5 text-[14px] font-bold tabular-nums text-primary-foreground">{pill}</span>
+          : typeof count === "number" ? <span className="shrink-0 text-[16px] font-semibold tabular-nums text-muted">{count}</span>
+          : status ? <span className="min-w-0 text-right text-[14px] leading-tight text-muted">{status}</span> : null}
+        <ChevronRight size={18} strokeWidth={2.2} className="shrink-0 text-[#B9A57C]" aria-hidden="true" />
+      </Link>
+    </li>
   );
-  return href ? (
-    <Link href={href} className="block min-h-[76px] rounded-[14px] border-[1.5px] border-border bg-card p-3.5">{body}</Link>
-  ) : (
-    <div aria-disabled="true" className="min-h-[76px] rounded-[14px] border-[1.5px] border-dashed border-border bg-card/60 p-3.5 opacity-70">{body}</div>
+}
+
+/** A group: small spaced capital label, one cream box with the rows separated by a thin line. */
+function Group({ id, label, color, className = "", children }: { id: string; label: string; color?: string; className?: string; children: ReactNode }) {
+  return (
+    <section aria-labelledby={id} className={className}>
+      <h2 id={id} className="px-1 pb-2 text-[13px] font-bold uppercase tracking-[0.12em] text-muted" style={color ? { color } : undefined}>{label}</h2>
+      <ul className="divide-y divide-divider overflow-hidden rounded-[16px] border-[1.5px] border-border bg-card">{children}</ul>
+    </section>
   );
 }
 
@@ -97,68 +106,59 @@ export default async function AdminPage() {
   // Entries of the chosen edition: the same rule as the lists they open (and as the public site).
   const spellCount = spells?.filter(spell => spellEdition(spell) === edition).length ?? null;
   const monsterCount = monsters?.filter(monster => (usesLegacyMonsterRules(monster) ? "2014" : "2024") === edition).length ?? null;
-  // On the tiles: «Nascosta» for the sections hidden from the public (also through all their editions or
-  // blocks), «Parti nascoste» when only some parts are (/admin/sezioni).
+  // «Nascosta» for the sections hidden from the public (also through all their editions or blocks),
+  // «Parti nascoste» when only some parts are (/admin/sezioni).
   const hiddenSections = effectiveHidden(states ? PUBLIC_SECTIONS.filter(section => states[section.key]).map(section => section.key) : [], parts);
-  const tileState = (key: string): TileState => {
-    const section = TILE_ICONS[key]?.section;
+  const rowState = (key: string): RowState => {
+    const section = ROW_ICONS[key]?.section;
     if (!section) return undefined;
     if (hiddenSections.includes(section)) return "nascosta";
     return parts.some(id => id.startsWith(`${section}:`)) ? "parti" : undefined;
   };
   const active = overrides?.filter(row => !row.annullata_il && row.edizione === edition) ?? [];
-  const perSection = (key: string) => active.filter(row => row.sezione === key).length;
+  const band = EDITION_BAND[edition];
+  const contents = CONTENT_ORDER.flatMap((key): { key: string; href: string; name: string; count: number | null }[] => {
+    if (key === "incantesimi") return [{ key, href: "/admin/incantesimi", name: "Incantesimi", count: spellCount }];
+    if (key === "mostri") return [{ key, href: "/admin/mostri", name: "Mostri", count: monsterCount }];
+    const section = CONTENT_SECTIONS.find(item => item.key === key);
+    return section && section.editions.includes(edition) ? [{ key, href: `/admin/contenuti/${key}`, name: section.title, count: section.items(edition).length }] : [];
+  });
+  const hiddenStatus = [
+    hiddenSections.length ? many(hiddenSections.length, "sezione nascosta", "sezioni nascoste") : "",
+    parts.length ? many(parts.length, "parte nascosta", "parti nascoste") : "",
+  ].filter(Boolean).join(" · ") || "tutto visibile";
   return (
-    <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-8 pt-4">
+    <div className="mx-auto flex max-w-2xl flex-col px-4 pb-8 pt-3 lg:max-w-[1200px]">
       <div className="flex items-center justify-between gap-3">
-        <AdminPublicLink />
+        <Link href="/" className="-ml-2 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-[15px] font-semibold text-primary focus-visible:outline-2 focus-visible:outline-primary">
+          <ChevronLeft size={18} strokeWidth={2.4} aria-hidden="true" /> Torna al sito
+        </Link>
         <form action={logoutAction}>
-          <button type="submit" className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted">
-            <LogOut className="h-4 w-4" aria-hidden="true" /> Esci
+          <button type="submit" className="-mr-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-[15px] text-muted focus-visible:outline-2 focus-visible:outline-primary">
+            <LogOut size={16} aria-hidden="true" /> Esci
           </button>
         </form>
       </div>
-      <h1 className="font-serif text-[30px] font-bold text-primary">Amministrazione</h1>
-      <div className="flex gap-2">
-        <Link href="/admin/segnalazioni" className="flex-1 rounded-[14px] bg-primary p-3 text-sm text-primary-foreground">
-          <b className="block text-[22px]">{newReports ?? "—"}</b>{newReports === 1 ? "segnalazione nuova" : "segnalazioni nuove"}
-        </Link>
-        <Link href="/admin/registro" className="flex-1 rounded-[14px] border-[1.5px] border-border bg-card p-3 text-sm">
-          <b className="block text-[22px] text-primary">{overrides ? active.length : "—"}</b>{active.length === 1 ? "modifica manuale" : "modifiche manuali"}
-        </Link>
+      <h1 className="mt-1 font-serif text-[36px] font-bold leading-tight text-primary">Amministrazione</h1>
+      <AdminEditionSwitch key={edition} edition={edition} className="-mx-4 px-4" />
+      {/* Phone and tablet: Da fare, Contenuti, Gestione. Computer: Contenuti on the left, the other two on the right. */}
+      <div className="mt-2 grid gap-6 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-8">
+        <Group id="gruppo-da-fare" label="Da fare" className="lg:col-start-2 lg:row-start-1">
+          <Row href="/admin/segnalazioni" name="Segnalazioni" Icon={Flag}
+            pill={newReports ? `${newReports} ${newReports === 1 ? "nuova" : "nuove"}` : undefined} status={newReports === null ? undefined : "nessuna nuova"} />
+          <Row href="/admin/proposte" name="Proposte homebrew" Icon={FlaskConical}
+            pill={proposals ? `${proposals} da vedere` : undefined} status={proposals === null ? undefined : "nessuna da vedere"} />
+        </Group>
+        <Group id="gruppo-contenuti" label={`Contenuti ${edition}`} color={band.background} className="lg:col-start-1 lg:row-span-2 lg:row-start-1">
+          {contents.map(item => <Row key={item.key} href={item.href} name={item.name} Icon={ROW_ICONS[item.key].Icon} count={item.count} hidden={rowState(item.key)} />)}
+        </Group>
+        <Group id="gruppo-gestione" label="Gestione · tutte le edizioni" className="lg:col-start-2 lg:row-start-2">
+          <Row href="/admin/sezioni" name="Sezioni dell’app" Icon={Eye} status={states ? hiddenStatus : undefined} />
+          <Row href="/admin/notifiche" name="Notifiche" Icon={Bell} status={devices === null ? undefined : many(devices, "dispositivo", "dispositivi")} />
+          <Row href="/admin/registro" name="Registro modifiche" Icon={History} status={overrides ? many(active.length, "manuale", "manuali") : undefined} />
+          <Row href="/admin/statistiche" name="Statistiche" Icon={BarChart3} />
+        </Group>
       </div>
-      <Link href="/admin/notifiche" className="flex min-h-[64px] items-center gap-3 rounded-[14px] border-[1.5px] border-border bg-card px-3.5 py-2.5">
-        <Bell size={24} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />
-        <span className="min-w-0 flex-1">
-          <span className="block font-serif text-xl font-bold text-primary">Notifiche</span>
-          <span className="block text-[13px] text-muted">{devices === null ? "Avvisi sul telefono" : devices === 0 ? "Nessun dispositivo attivo" : devices === 1 ? "1 dispositivo attivo" : `${devices} dispositivi attivi`}</span>
-        </span>
-      </Link>
-      <Link href="/admin/proposte" className="flex min-h-[64px] items-center gap-3 rounded-[14px] border-[1.5px] border-border bg-card px-3.5 py-2.5">
-        <FlaskConical size={24} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />
-        <span className="min-w-0 flex-1">
-          <span className="block font-serif text-xl font-bold text-primary">Proposte</span>
-          <span className="block text-[13px] text-muted">{proposals === null ? "Creature homebrew della community" : proposals === 0 ? "Nessuna proposta da vedere" : proposals === 1 ? "1 proposta da vedere" : `${proposals} proposte da vedere`}</span>
-        </span>
-        {proposals ? <span className="rounded-[10px] bg-amber px-2 py-0.5 text-[13px] font-bold text-foreground" aria-label={`${proposals} da vedere`}>{proposals}</span> : null}
-      </Link>
-      <nav aria-label="Sezioni da modificare" className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
-        <Tile href="/admin/incantesimi" title="Incantesimi" items={spellCount} hint="Modifica testi e dati" icon="incantesimi" hidden={tileState("incantesimi")} />
-        <Tile href="/admin/mostri" title="Mostri" items={monsterCount} hint="Modifica schede" icon="mostri" hidden={tileState("mostri")} />
-        {CONTENT_SECTIONS.map(section => {
-          const has = section.editions.includes(edition);
-          return <Tile key={section.key} href={`/admin/contenuti/${section.key}`} title={section.title} items={has ? section.items(edition).length : undefined}
-            hint={has ? section.hint : `Solo edizione ${section.editions.join(" e ")}`} count={perSection(section.key)} icon={section.key} hidden={tileState(section.key)} />;
-        })}
-        {COMING.filter(item => !CONTENT_SECTIONS.some(section => section.title === item.title)).map(item => <Tile key={item.title} title={item.title} hint={item.hint} />)}
-      </nav>
-      <nav aria-label="Altro" className="flex flex-wrap gap-2">
-        {LINKS.map(([href, label, Icon]) => (
-          <Link key={href} href={href} className="inline-flex min-h-11 items-center gap-1.5 rounded-[22px] border-[1.5px] border-chip-border bg-card px-3.5 text-sm font-semibold text-primary">
-            <Icon size={18} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />{label}
-          </Link>
-        ))}
-      </nav>
     </div>
   );
 }
