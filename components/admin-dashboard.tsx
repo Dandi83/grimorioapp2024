@@ -40,8 +40,6 @@ export function AdminDashboard({
   hiddenSpells = [],
   hiddenMonsters = [],
   homebrewDrafts = {},
-  open,
-  returnTo,
 }: {
   spells: Spell[];
   monsters: Monster[];
@@ -53,19 +51,11 @@ export function AdminDashboard({
   initialTab?: "spells" | "monsters";
   /** The edition of the admin area: the lists hold only its cards. */
   edition: AdminEdition;
-  /** The card whose editor opens at once («Modifica» on its public page). */
-  open?: string;
-  /** The public page to go back to when that editor is saved or closed (a path of the site). */
-  returnTo?: string;
 }) {
   const [tab, setTab] = useState<"spells" | "monsters">(initialTab);
   const [query, setQuery] = useState("");
-  const [editing, setEditing] = useState<Editing>(() => {
-    const spell = initialTab === "spells" && open ? spells.find(row => row.id === open) : undefined;
-    return spell ? { mode: "edit", spell } : { mode: "closed" };
-  });
-  // Opened from a public page: saving or closing goes back to it, reloaded (it shows the saved card).
-  const close = () => (returnTo ? window.location.assign(returnTo) : setEditing({ mode: "closed" }));
+  const [editing, setEditing] = useState<Editing>({ mode: "closed" });
+  const close = () => setEditing({ mode: "closed" });
   const visibility = useCardVisibility("incantesimo", hiddenSpells);
   const [shown, setShown] = useState<VisibilityFilter>("tutte");
   const hiddenCount = useMemo(() => spells.filter(spell => visibility.isHidden(spell.id)).length, [spells, visibility]);
@@ -133,7 +123,7 @@ export function AdminDashboard({
       </div>
 
       {tab === "monsters" ? (
-        <AdminMonsters monsters={monsters} edition={edition} hiddenIds={hiddenMonsters} homebrewDrafts={homebrewDrafts} open={initialTab === "monsters" ? open : undefined} returnTo={returnTo} />
+        <AdminMonsters monsters={monsters} edition={edition} hiddenIds={hiddenMonsters} homebrewDrafts={homebrewDrafts} />
       ) : (
       <>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">

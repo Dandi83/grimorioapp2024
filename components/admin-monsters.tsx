@@ -22,19 +22,13 @@ type Editing =
   | { mode: "create" }
   | { mode: "edit"; monster: Monster };
 
-/**
- * hiddenIds: the creatures hidden from the site with the eye. open: the creature whose editor (or guided
- * homebrew editor) opens at once; returnTo: the public page that saving or closing it goes back to.
- */
-export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDrafts = {}, open, returnTo }: {
-  monsters: Monster[]; edition: AdminEdition; hiddenIds?: string[]; homebrewDrafts?: Record<string, HomebrewDraft>; open?: string; returnTo?: string;
+/** hiddenIds: the creatures hidden from the site with the eye. */
+export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDrafts = {} }: {
+  monsters: Monster[]; edition: AdminEdition; hiddenIds?: string[]; homebrewDrafts?: Record<string, HomebrewDraft>;
 }) {
   const [query, setQuery] = useState("");
-  const [editing, setEditing] = useState<Editing>(() => {
-    const monster = open ? monsters.find(row => row.id === open) : undefined;
-    return monster ? { mode: "edit", monster } : { mode: "closed" };
-  });
-  const close = () => (returnTo ? window.location.assign(returnTo) : setEditing({ mode: "closed" }));
+  const [editing, setEditing] = useState<Editing>({ mode: "closed" });
+  const close = () => setEditing({ mode: "closed" });
   const visibility = useCardVisibility("mostro", hiddenIds);
   const [shown, setShown] = useState<VisibilityFilter>("tutte");
   const hiddenCount = useMemo(() => monsters.filter(monster => visibility.isHidden(monster.id)).length, [monsters, visibility]);

@@ -33,11 +33,14 @@ for(const [value,expected] of [
   ['javascript:alert(1)',undefined],['spell/x',undefined],['',undefined],[undefined,undefined],[['/a'],undefined],
   ['/a\nb',undefined],['/a%0d%0ab','/a%0d%0ab'],[`/${'x'.repeat(700)}`,undefined],
 ])assert.equal(link.safeReturnPath(value),expected,String(value));
-// Editor addresses: spells and creatures open their editor (?modifica), the other cards /admin/contenuti with the edition.
-assert.equal(link.adminEditHref({kind:'incantesimo',id:'palla-di-fuoco'},'/spell/palla-di-fuoco'),'/admin/incantesimi?modifica=palla-di-fuoco&ritorno=%2Fspell%2Fpalla-di-fuoco');
-assert.equal(link.adminEditHref({kind:'mostro',id:'bugbear-2014'},'/mostro/bugbear-2014'),'/admin/mostri?modifica=bugbear-2014&ritorno=%2Fmostro%2Fbugbear-2014');
+// Editor addresses: spells and creatures open their editor as its own page, the other cards /admin/contenuti with the edition.
+assert.equal(link.adminEditHref({kind:'incantesimo',id:'palla-di-fuoco'},'/spell/palla-di-fuoco'),'/admin/incantesimi/palla-di-fuoco?ritorno=%2Fspell%2Fpalla-di-fuoco');
+assert.equal(link.adminEditHref({kind:'mostro',id:'bugbear-2014'},'/mostro/bugbear-2014'),'/admin/mostri/bugbear-2014?ritorno=%2Fmostro%2Fbugbear-2014');
 assert.equal(link.adminEditHref({kind:'contenuto',section:'armi',id:'ascia',edition:'2014'},'/equipaggiamento/armi?edizione=2014'),'/admin/contenuti/armi/ascia?edizione=2014&ritorno=%2Fequipaggiamento%2Farmi%3Fedizione%3D2014');
-assert.equal(link.adminEditHref({kind:'incantesimo',id:'x'},'https://evil.example'),'/admin/incantesimi?modifica=x','an outside address is dropped');
+assert.equal(link.adminEditHref({kind:'incantesimo',id:'x'},'https://evil.example'),'/admin/incantesimi/x','an outside address is dropped');
+// With the card's edition: through /admin/edizione (a redirect that moves the admin area), straight on to the editor.
+assert.equal(link.adminEditHref({kind:'incantesimo',id:'amicizia',edition:'2014'},'/spell/amicizia'),'/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi%2Famicizia%3Fimpostata%3D1%26ritorno%3D%252Fspell%252Famicizia');
+assert.equal(link.adminEditHref({kind:'mostro',id:'orco-2014',edition:'2014'}),'/admin/edizione?valore=2014&poi=%2Fadmin%2Fmostri%2Forco-2014%3Fimpostata%3D1');
 
 // The buttons: nothing without a session checked by the server, never in the server HTML.
 const session=load('components/admin-edit/admin-session.tsx',{'next/navigation':{usePathname:()=>window.location.pathname}});
@@ -59,7 +62,7 @@ const buttons=()=>[...document.querySelectorAll('[data-admin-edit]')];
   await mount();
   assert.equal(asked,1);assert.equal(buttons().length,2);
   assert.equal(buttons()[0].textContent,'Modifica');
-  assert.equal(buttons()[0].getAttribute('href'),'/admin/incantesimi?modifica=palla-di-fuoco&ritorno=%2Fspell%2Fpalla-di-fuoco%3Fedizione%3D2024');
+  assert.equal(buttons()[0].getAttribute('href'),'/admin/incantesimi/palla-di-fuoco?ritorno=%2Fspell%2Fpalla-di-fuoco%3Fedizione%3D2024');
   assert.match(buttons()[0].className,/fixed bottom-\[calc\(92px\+env\(safe-area-inset-bottom,0px\)\)\] right-4/);assert.match(buttons()[0].className,/min-h-12/);
   assert.equal(buttons()[1].getAttribute('aria-label'),'Modifica Ascia');
   assert.equal(buttons()[1].getAttribute('href'),'/admin/contenuti/armi/ascia?edizione=2024&ritorno=%2Fspell%2Fpalla-di-fuoco%3Fedizione%3D2024');
@@ -79,11 +82,28 @@ const buttons=()=>[...document.querySelectorAll('[data-admin-edit]')];
   assert.match(read('app/layout.tsx'),/<AdminSessionProvider>/);
   // The service worker never handles the API: the answer never enters the offline copies.
   assert.ok(!/api/.test(read('lib/sw/service-worker.js').match(/const PUBLIC_PAGE = (.*);/)[1]));
-  // Direct editors: login first, the card's edition, the way back only to this site.
-  const view=read('components/admin-editors-view.tsx');
+  // Direct editors: login first, the card's edition, the way back only to this site; older ?modifica links go on to them.
+  const view=read('components/admin-card-editor-view.tsx');
   assert.match(view,/if \(!\(await isAdmin\(\)\)\) return <AdminLogin \/>;/);
   assert.match(view,/const ritorno = safeReturnPath\(params\.ritorno\);/);
   assert.match(view,/redirect\(`\/admin\/edizione\?/);
+  assert.match(view,/back=\{ritorno \?\? publicPath\}/);
+  const lists=read('components/admin-editors-view.tsx');
+  assert.match(lists,/if \(!\(await isAdmin\(\)\)\) return <AdminLogin \/>;\n  const params = await searchParams;\n  if \(typeof params\.modifica === "string"/);
+  for(const segment of ['incantesimi','mostri']){
+    assert.match(read(`app/admin/${segment}/[id]/page.tsx`),/<AdminCardEditorView kind=/);
+    // While it loads: the cream page with the title of the editor, never the list.
+    assert.match(read(`app/admin/${segment}/[id]/loading.tsx`),segment==='incantesimi'?/title="Modifica incantesimo"/:/title="Modifica creatura"/);
+  }
+  // The editor as the page: an open dialog in the server HTML, no modal, no list; focus on the title, not on the eye.
+  const frame=read('components/admin-editor-frame.ts');
+  assert.match(frame,/if \(!page\) dialog\.current\?\.showModal\(\);\n    heading\.current\?\.focus\(/);
+  for(const file of ['components/admin-spell-editor.tsx','components/admin-monster-editor.tsx','components/homebrew/admin-proposals.tsx']){
+    const source=read(file);
+    assert.match(source,/open=\{page \|\| undefined\}/,file);
+    assert.match(source,/<h2 ref=\{heading\} tabIndex=\{-1\}/,file);
+    assert.ok(!source.includes('showModal'),file);
+  }
   const edition=read('app/admin/edizione/route.ts');
   assert.match(edition,/next && next\.startsWith\("\/admin\/"\) \? next : "\/admin"/,'the edition route only goes on into the admin area');
   assert.match(edition,/isAdminEdition\(valore\) && \(await isAdmin\(\)\)/,'the cookie only for the administrator');
@@ -92,8 +112,8 @@ const buttons=()=>[...document.querySelectorAll('[data-admin-edit]')];
   assert.match(content,/const ritorno = safeReturnPath\(query\.ritorno\);/);
   // Where the buttons are: cards and the rows of the lists.
   for(const [file,pattern] of [
-    ['app/spell/[id]/page.tsx',/<AdminEditButton target=\{\{ kind: "incantesimo", id: spell\.id \}\}/],
-    ['app/mostro/[id]/page.tsx',/<AdminEditButton target=\{\{ kind: "mostro", id: monster\.id \}\}/],
+    ['app/spell/[id]/page.tsx',/<AdminEditButton target=\{\{ kind: "incantesimo", id: spell\.id, edition \}\}/],
+    ['app/mostro/[id]/page.tsx',/<AdminEditButton target=\{\{ kind: "mostro", id: monster\.id, edition: homebrew \?/],
     ['app/oggetti-magici/[id]/page.tsx',/section: "oggetti-magici", id: entry\.id, edition: value/],
     ['app/classi/[id]/page.tsx',/section: "classi", id, edition/],
     ['app/manuale/[id]/page.tsx',/section: "condizioni", id: entry\.id, edition[\s\S]*section: "manuale"/],

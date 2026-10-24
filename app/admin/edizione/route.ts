@@ -7,8 +7,8 @@ import { safeReturnPath } from "@/lib/admin-edit-link";
 export const dynamic = "force-dynamic";
 
 /**
- * The editor of a card opened from a public page (?modifica=…) puts the admin area on the card's edition,
- * then goes on to that editor: /admin/edizione?valore=2014&poi=/admin/incantesimi?modifica=…
+ * The editor of a card opened from a public page (/admin/incantesimi/<id>, /admin/mostri/<id>) puts the admin
+ * area on the card's edition, then goes on to that editor: /admin/edizione?valore=2014&poi=/admin/incantesimi/<id>…
  * Only for the administrator (the session is checked before the cookie is set) and only to the admin area.
  */
 export async function GET(request: NextRequest) {

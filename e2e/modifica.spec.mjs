@@ -37,7 +37,7 @@ test("visitors: no «Modifica» anywhere, in the page or in its HTML, and the se
   }
   expect(asked).toEqual([]);
   // The editor addresses without the login: the passcode is asked.
-  for (const path of ["/admin/incantesimi?modifica=palla-di-fuoco&ritorno=%2Fspell%2Fpalla-di-fuoco", "/admin/mostri?modifica=orco-2014", "/admin/contenuti/armi/ascia?edizione=2024&ritorno=%2Fequipaggiamento%2Farmi"]) {
+  for (const path of ["/admin/incantesimi/palla-di-fuoco?ritorno=%2Fspell%2Fpalla-di-fuoco", "/admin/mostri/orco-2014", "/admin/incantesimi?modifica=palla-di-fuoco&ritorno=%2Fspell%2Fpalla-di-fuoco", "/admin/mostri?modifica=orco-2014", "/admin/contenuti/armi/ascia?edizione=2024&ritorno=%2Fequipaggiamento%2Farmi"]) {
     await page.goto(path);
     await expect(page.getByLabel("Passcode"), path).toBeVisible();
     await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -99,7 +99,7 @@ test("administrator: «Modifica» opens the editor of the card and comes back; a
   const band = edition => expect(page.getByText(`Stai modificando il ${edition}`)).toBeVisible();
   const closeDialog = async () => page.getByRole("dialog").getByRole("button", { name: "Chiudi editor" }).click();
   await roundTrip("/spell/palla-di-fuoco", async () => {
-    await expect(page).toHaveURL(/\/admin\/incantesimi\?modifica=palla-di-fuoco/);
+    await expect(page).toHaveURL(/\/admin\/incantesimi\/palla-di-fuoco\?(impostata=1&)?ritorno=%2Fspell%2Fpalla-di-fuoco$/);
     await band("2024");
     await expect(page.getByRole("dialog")).toContainText("Modifica incantesimo");
     await expect(page.getByRole("dialog").getByLabel("Nome *")).toHaveValue(/Palla di fuoco/i);
@@ -168,15 +168,18 @@ test("administrator: «Modifica» opens the editor of the card and comes back; a
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/scheda-mostro-1440.png` });
   await page.setViewportSize({ width: 390, height: 844 });
 
-  // A return address outside the site is ignored: closing stays in the admin area.
+  // A return address outside the site is ignored: closing goes to the public card. Older ?modifica links go on to the editor page.
   await page.goto("/admin/incantesimi?modifica=palla-di-fuoco&ritorno=https%3A%2F%2Fevil.example%2F");
+  await expect(page).toHaveURL(/\/admin\/incantesimi\/palla-di-fuoco(\?impostata=1)?$/);
   await closeDialog();
-  await expect(page).toHaveURL(/\/admin\/incantesimi\?/);
+  await expect(page).toHaveURL(/\/spell\/palla-di-fuoco$/);
+  await page.goto("/admin/mostri?modifica=orco-2014&ritorno=%2Fmostro%2Forco-2014");
+  await expect(page).toHaveURL(/\/admin\/mostri\/orco-2014\?(impostata=1&)?ritorno=%2Fmostro%2Forco-2014$/);
   await page.goto("/admin/contenuti/armi/ascia?edizione=2024&ritorno=%2F%2Fevil.example");
   await expect(page.getByRole("link", { name: "Annulla" })).toHaveAttribute("href", "/admin/contenuti/armi");
 
-  // Clean up: the card added and the homebrew.
-  await page.goto("/admin/mostri");
+  // Clean up: the card added and the homebrew (2024: the Orc above moved the admin area to 2014).
+  await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
   for (const name of ["Scheda di prova Modificata", "Lupo di cenere"]) {
     await page.getByPlaceholder("Cerca per nome o tipo…").fill(name.toLowerCase());
     page.once("dialog", dialog => dialog.accept());
