@@ -19,7 +19,7 @@ function load(relative){
  const mod={exports:{}};cache.set(filename,mod);
  const code=ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
  new Function('require','module','exports',code)(id=>{
-  if(id==='next/image')return {__esModule:true,default:({fill,priority,...props})=>React.createElement('img',props)};
+  if(id==='next/image')return {__esModule:true,default:props=>{const rest={...props};delete rest.fill;delete rest.priority;return React.createElement('img',rest);}};
   if(id.startsWith('@/')||id.startsWith('.')){
    let file=id.startsWith('@/')?path.resolve(id.slice(2)):path.resolve(path.dirname(filename),id);
    if(file.endsWith('.json'))return JSON.parse(fs.readFileSync(file,'utf8'));
