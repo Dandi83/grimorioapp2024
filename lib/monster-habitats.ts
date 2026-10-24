@@ -22,6 +22,7 @@ export async function getMonsterHabitatOverrides(): Promise<Map<string, Habitat[
 /**
  * The admin choice wins when it names at least one habitat; an empty saved list counts as «not set»
  * (rule of 24 October 2026: it never hides the habitat of the project file).
+ * Changing the rule: change HABITAT_RULE in lib/monster-index.ts too, so the cached list is rebuilt.
  */
 export function resolveHabitats(id: string, overrides: Map<string, Habitat[]>): Habitat[] {
   const key = habitatKey(id);
