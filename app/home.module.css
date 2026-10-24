@@ -93,6 +93,8 @@
 .copy {
   width: 100%;
   max-width: 660px;
+  /* The space of the old «Segnala» link under the search: the field keeps its place over the picture. */
+  padding-bottom: 58px;
 }
 
 .quote {
@@ -206,6 +208,7 @@
 
   .copy {
     max-width: 680px;
+    padding-bottom: 0;
   }
 
   .quote {
