@@ -71,7 +71,7 @@ assert.deepEqual(data.records.map(r=>r.en).sort(),JSON.parse(english2014).sort()
 assert.equal(data.records[0].page,129);assert.equal(data.records.at(-1).sourceName,'Zona di verità');
 const perLevel=[0,0,0,0,0,0,0,0,0,0];for(const r of data.records)perLevel[parseLivello(r.spell.livello).livello_num]++;
 assert.deepEqual(perLevel,[24,49,54,42,31,37,31,20,16,15],'spells per level as in the SRD 5.1');
-// One 2014 card per 2024 card: the "Passa alla versione 2014" link is never ambiguous.
+// One 2014 card per 2024 card in the edition links of the data (kept: the cards no longer link to the other edition).
 const targets=Object.values(links).map(l=>l.id2024);assert.equal(new Set(targets).size,targets.length);
 assert.equal(Object.keys(links).length,317,'317 links; Regressione mentale and Punizione marchiante have none');
 
@@ -86,13 +86,11 @@ const aiuto=legacy.legacySpellById('aiuto-2014','production');
 assert.equal(aiuto.livello,'Abiurazione di 2° livello (chierico, paladino)');
 assert.equal(legacy.getLegacySpellSource(aiuto).page,129);
 assert.equal(legacy.getLegacySpellSource({...aiuto,durata:'1 ora'}),undefined,'an edited text loses the source label');
-assert.deepEqual(legacy.spellEditionLink('aiuto-2014','preview'),{href:'/spell/aiuto',label:'Passa alla versione 2024'});
-assert.deepEqual(legacy.spellEditionLink('aiuto','preview'),{href:'/spell/aiuto-2014',label:'Passa alla versione 2014'});
-assert.deepEqual(legacy.spellEditionLink('capanna-2014','preview'),{href:'/spell/capanna-di-leomund',label:'Passa alla versione 2024'});
-assert.deepEqual(legacy.spellEditionLink('vuoto-mentale','preview'),{href:'/spell/vuoto-mentale-2014',label:'Passa alla versione 2014'},'Mind Blank leads to Mind Blank');
-for(const id of ['disorientare','punizione-splendente'])assert.equal(legacy.spellEditionLink(id,'preview'),undefined,`${id}: no 2014 link with a different English identifier`);
-assert.equal(legacy.spellEditionLink('regressione-mentale-2014','preview'),undefined);
-assert.equal(legacy.spellEditionLink('aiuto',undefined),undefined);
+assert.equal(links['aiuto-2014'].id2024,'aiuto');assert.equal(links['capanna-2014'].id2024,'capanna-di-leomund');assert.equal(links['vuoto-mentale-2014'].id2024,'vuoto-mentale');
+assert.equal(links['regressione-mentale-2014'],undefined);
+// The cards no longer link to the other edition: the edition is chosen with the pill only.
+assert.equal(legacy.spellEditionLink,undefined);
+assert.doesNotMatch(fs.readFileSync('app/spell/[id]/page.tsx','utf8'),/Passa alla versione|spellEditionLink/);
 
 (async()=>{
  // The 2014 selector appears as soon as the catalog has 2014 spells, and lists exactly them.
