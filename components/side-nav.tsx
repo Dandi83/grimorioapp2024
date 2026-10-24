@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
 import { FOOT_LINKS, visibleNavItems } from "@/components/nav-items";
+import { EditionPill } from "@/components/edition/edition-pill";
 
 const NONE: readonly string[] = [];
 
@@ -22,9 +23,11 @@ export function SideNav({ hidden = NONE, admin: adminView = false }: { hidden?: 
       data-side-nav=""
       className="fixed inset-y-0 left-0 z-40 hidden w-[240px] flex-col border-r border-border bg-[#EDE3CC] pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pt-[env(safe-area-inset-top,0px)] lg:flex"
     >
-      <Link href="/" className="mx-4 mt-6 mb-6 rounded-md px-2 font-serif text-[26px] font-semibold leading-tight text-primary focus-visible:outline-2 focus-visible:outline-primary">
+      <Link href="/" className="mx-4 mt-6 mb-3 rounded-md px-2 font-serif text-[26px] font-semibold leading-tight text-primary focus-visible:outline-2 focus-visible:outline-primary">
         Il Grimorio<span className="text-amber">.App</span>
       </Link>
+      {/* «La tua edizione», for the whole app. */}
+      <EditionPill place="side" className="mx-6 mb-5" />
       <ul className="flex flex-col gap-1 px-3">
         {items.map(({ href, label, Icon, match, section }) => {
           const active = match(pathname);

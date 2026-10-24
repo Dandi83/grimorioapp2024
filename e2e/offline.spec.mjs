@@ -29,6 +29,13 @@ async function stopServer() {
 }
 test.afterEach(stopServer);
 
+// A visitor who has already chosen «la tua edizione» (2024): the first launch has its own test (e2e/edizione.spec.mjs).
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try { if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024"); } catch { /* no storage */ }
+  });
+});
+
 test("offline: visited pages open from the saved copy with a notice, others say offline", async ({ page }) => {
   test.setTimeout(120_000);
   await startServer();
@@ -61,7 +68,7 @@ test("offline: visited pages open from the saved copy with a notice, others say 
 
   // The search panel, opened once with the connection: its index is saved too.
   await page.goto(base + "/");
-  await page.getByRole("button", { name: "Cerca in tutto il Grimorio…" }).click();
+  await page.getByRole("button", { name: /^Cerca nel Grimorio/ }).click();
   await page.getByRole("dialog").getByRole("searchbox").fill("spada");
   await expect(page.getByRole("dialog").getByRole("region", { name: "Equipaggiamento" })).toBeVisible();
 
@@ -96,7 +103,7 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   // Search in airplane mode, after a reload of the Home.
   await page.goto(base + "/");
   await page.reload();
-  await page.getByRole("button", { name: "Cerca in tutto il Grimorio…" }).click();
+  await page.getByRole("button", { name: /^Cerca nel Grimorio/ }).click();
   await page.getByRole("dialog").getByRole("searchbox").fill("avvelenato");
   await expect(page.getByRole("dialog").getByRole("region", { name: "Condizioni" })).toBeVisible();
   // The main sections were saved when the service worker was installed, the Compendio too.

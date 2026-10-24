@@ -4,11 +4,11 @@
  * HOW TO ADD A SECTION (Creati da noi, Cavalcature…): add ONE entry to SEARCH_SOURCES below with
  *   - section / title: the group and filter shown in the panel (an existing section, or a new
  *     SearchSectionKey in lib/search.ts);
- *   - editionKey: where the section remembers the edition chosen on the phone;
  *   - rows(environment): the public pages of the section, each { nome, label, href, edizione? },
  *     the label derived from the data ("Invocazione · liv. 3"), never from the page text.
- * Rows of the two editions with the same name become one result that opens the edition chosen in the
- * section; a 2014-only row says "· 2014". The index is served at /ricerca-indice.json, built with the
+ * Rows of the two editions with the same name become one result that opens «la tua edizione»
+ * (lib/user-edition.ts); a 2014-only row says "· 2014", and a row of one edition only is marked so
+ * the panel shows the user's edition first. The index is served at /ricerca-indice.json, built with the
  * site (same lists as the catalogs, so every address exists) and saved offline by the service worker.
  */
 import { conditionRows } from "./conditions-list";
@@ -17,7 +17,7 @@ import { armorListItems } from "./armor";
 import { classHref, hitDie, ofClass } from "./classes";
 import { getCorrectedArmors, getCorrectedClasses, getCorrectedConditions, getCorrectedGear, getCorrectedMagicItems, getCorrectedManualEntries, getCorrectedTools, getCorrectedWeapons } from "./corrected-content";
 import { weaponListItems } from "./equipment";
-import { ARMOR_CATEGORY_NAMES, EQUIPMENT_EDITION_KEY, WEAPON_GROUP_NAMES, type EquipmentEdition } from "./equipment-types";
+import { ARMOR_CATEGORY_NAMES, WEAPON_GROUP_NAMES, type EquipmentEdition } from "./equipment-types";
 import { magicItemEditionRows } from "./magic-items-editions";
 import { manualAvailable } from "./manual";
 import { MANUAL_CATEGORIES } from "./manual-types";
@@ -42,20 +42,15 @@ export interface SourceRow { nome: string; label: string; href: string; edizione
 export interface SearchSource {
   section: SearchSectionKey;
   title: string;
-  editionKey: string;
   rows: (environment: string | undefined) => SourceRow[] | Promise<SourceRow[]>;
 }
-
-/** Storage keys of the editions chosen in the catalogs (components/grimorio-browser.tsx, bestiario-browser.tsx). */
-export const SPELL_EDITION_STORAGE = "grimorio.incantesimi.edizione";
-export const MONSTER_EDITION_STORAGE = "grimorio.bestiario.edizione";
 
 const bothEditions = <T,>(list: Record<EquipmentEdition, T[]>, row: (item: T, edition: EquipmentEdition) => SourceRow) =>
   (["2024", "2014"] as const).flatMap(edition => list[edition].map(item => row(item, edition)));
 
 export const SEARCH_SOURCES: SearchSource[] = [
   {
-    section: "incantesimi", title: "Incantesimi", editionKey: SPELL_EDITION_STORAGE,
+    section: "incantesimi", title: "Incantesimi",
     rows: async () => (await getSpellIndex()).map(spell => ({
       nome: spellName(spell.nome_italiano, spell.edizione),
       label: [spell.scuola, spell.livello_num === 0 ? "trucchetto" : spell.livello_num > 0 ? `liv. ${spell.livello_num}` : ""].filter(Boolean).join(" · "),
@@ -63,7 +58,7 @@ export const SEARCH_SOURCES: SearchSource[] = [
     })),
   },
   {
-    section: "mostri", title: "Mostri", editionKey: MONSTER_EDITION_STORAGE,
+    section: "mostri", title: "Mostri",
     // Homebrew creatures: «Homebrew» first in the label (the panel shows it as the amber pill); «Entrambe» belongs to no single edition.
     rows: async () => (await getMonsterListIndex()).map(monster => ({
       nome: monster.nome,
@@ -73,7 +68,7 @@ export const SEARCH_SOURCES: SearchSource[] = [
   },
   {
     // Classes and their subclass: the subclass opens the sheet on its tab.
-    section: "classi", title: "Classi", editionKey: EQUIPMENT_EDITION_KEY,
+    section: "classi", title: "Classi",
     rows: async () => (await getCorrectedClasses()).list.flatMap(entry => (["2024", "2014"] as const).flatMap(edition => {
       const card = entry.editions[edition];
       const page = `${classHref(entry.id)}${edition === "2014" ? "?edizione=2014" : ""}`;
@@ -84,7 +79,7 @@ export const SEARCH_SOURCES: SearchSource[] = [
     })),
   },
   {
-    section: "equipaggiamento", title: "Equipaggiamento", editionKey: EQUIPMENT_EDITION_KEY,
+    section: "equipaggiamento", title: "Equipaggiamento",
     // Corrected names and costs (lib/corrected-content.ts): the search finds what the cards show.
     rows: async () => weaponListItems((await getCorrectedWeapons()).weapons).flatMap(weapon => (["2024", "2014"] as const).flatMap(edition => {
       const item = weapon.editions[edition];
@@ -92,33 +87,33 @@ export const SEARCH_SOURCES: SearchSource[] = [
     })),
   },
   {
-    section: "equipaggiamento", title: "Equipaggiamento", editionKey: EQUIPMENT_EDITION_KEY,
+    section: "equipaggiamento", title: "Equipaggiamento",
     rows: async () => armorListItems((await getCorrectedArmors()).list).flatMap(armor => (["2024", "2014"] as const).map(edition => ({
       nome: armor.editions[edition].nome, label: `${ARMOR_CATEGORY_NAMES[armor.categoria]} · ${armor.editions[edition].costo}`,
       href: `/equipaggiamento/armature/${armor.id}`, edizione: edition,
     }))),
   },
   {
-    section: "equipaggiamento", title: "Equipaggiamento", editionKey: EQUIPMENT_EDITION_KEY,
+    section: "equipaggiamento", title: "Equipaggiamento",
     rows: async () => bothEditions(gearListRows((await getCorrectedGear()).list), (row, edition) => ({
       nome: row.nome, label: [row.dotazione ? "Dotazione" : "Equipaggiamento d’avventura", row.prezzo].filter(Boolean).join(" · "), href: row.href, edizione: edition,
     })),
   },
   {
-    section: "equipaggiamento", title: "Equipaggiamento", editionKey: EQUIPMENT_EDITION_KEY,
+    section: "equipaggiamento", title: "Equipaggiamento",
     rows: async () => bothEditions(toolListRows((await getCorrectedTools()).list), (row, edition) => ({ nome: row.nome, label: [row.gruppo, row.costo].filter(Boolean).join(" · "), href: row.href, edizione: edition })),
   },
   {
-    section: "oggetti-magici", title: "Oggetti magici", editionKey: EQUIPMENT_EDITION_KEY,
+    section: "oggetti-magici", title: "Oggetti magici",
     rows: async () => bothEditions(magicItemEditionRows((await getCorrectedMagicItems()).list), (row, edition) => ({ nome: row.nome, label: `${row.tipo} · ${row.rarita}`, href: row.href, edizione: edition })),
   },
   {
-    section: "condizioni", title: "Condizioni", editionKey: EQUIPMENT_EDITION_KEY,
+    section: "condizioni", title: "Condizioni",
     rows: async () => bothEditions(conditionRows((await getCorrectedConditions()).list), (row, edition) => ({ nome: row.nome, label: "Condizione", href: row.href, edizione: edition })),
   },
   {
     // Only where the Manual is published (preview); its condition pages are already under Condizioni.
-    section: "manuale", title: "Manuale", editionKey: EQUIPMENT_EDITION_KEY,
+    section: "manuale", title: "Manuale",
     rows: async environment => manualAvailable(environment)
       ? (await getCorrectedManualEntries()).map(entry => ({
         nome: entry.title, label: [MANUAL_CATEGORIES[entry.category], entry.subgroup !== MANUAL_CATEGORIES[entry.category] ? entry.subgroup : ""].filter(Boolean).join(" · "),
@@ -128,15 +123,18 @@ export const SEARCH_SOURCES: SearchSource[] = [
   },
 ];
 
+/** A result of the index: solo, the only edition it exists in (none when in both, or edition-free). */
+export interface MergedRow { nome: string; label: string; href: string; href2014?: string; solo?: EquipmentEdition }
+
 /**
  * One result per name and source: a 2024 row and a 2014 row with the same name become one row with
  * both addresses (one when the page is the same); an unpaired 2014 row says "· 2014".
  */
-export function mergeEditions(rows: SourceRow[]): { nome: string; label: string; href: string; href2014?: string }[] {
-  const out: { nome: string; label: string; href: string; href2014?: string }[] = [];
-  const open2024 = new Map<string, { nome: string; label: string; href: string; href2014?: string }[]>();
+export function mergeEditions(rows: SourceRow[]): MergedRow[] {
+  const out: MergedRow[] = [];
+  const open2024 = new Map<string, MergedRow[]>();
   for (const row of rows.filter(r => r.edizione !== "2014")) {
-    const merged = { nome: row.nome, label: row.label, href: row.href };
+    const merged: MergedRow = { nome: row.nome, label: row.label, href: row.href };
     out.push(merged);
     if (row.edizione === "2024") open2024.set(fold(row.nome), [...(open2024.get(fold(row.nome)) ?? []), merged]);
   }
@@ -147,9 +145,11 @@ export function mergeEditions(rows: SourceRow[]): { nome: string; label: string;
       if (row.href !== pair.href) pair.href2014 = row.href;
     } else {
       // A 2014 name on a page shared with a different 2024 name: the page opens on 2014.
-      out.push({ nome: row.nome, label: `${row.label} · 2014`, href: pages2024.has(row.href) ? `${row.href}?edizione=2014` : row.href });
+      out.push({ nome: row.nome, label: `${row.label} · 2014`, href: pages2024.has(row.href) ? `${row.href}?edizione=2014` : row.href, solo: "2014" });
     }
   }
+  // 2024 rows left without a 2014 name.
+  for (const left of open2024.values()) for (const row of left) row.solo = "2024";
   return out;
 }
 
@@ -163,8 +163,11 @@ export async function buildSearchIndex(environment = process.env.VERCEL_ENV, sou
     const rows = mergeEditions((await source.rows(environment)).filter(row => !hiddenRow(row, hidden))).filter(row => row.nome && row.href);
     if (!rows.length) continue;
     let position = index.sections.findIndex(section => section.k === source.section);
-    if (position < 0) position = index.sections.push({ k: source.section, t: source.title, e: source.editionKey }) - 1;
-    for (const row of rows) index.rows.push(row.href2014 ? [position, row.nome, row.label, row.href, row.href2014] : [position, row.nome, row.label, row.href]);
+    if (position < 0) position = index.sections.push({ k: source.section, t: source.title }) - 1;
+    for (const row of rows) {
+      index.rows.push(row.solo ? [position, row.nome, row.label, row.href, row.href2014 ?? "", row.solo]
+        : row.href2014 ? [position, row.nome, row.label, row.href, row.href2014] : [position, row.nome, row.label, row.href]);
+    }
   }
   return index;
 }

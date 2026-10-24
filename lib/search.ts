@@ -4,15 +4,18 @@
 /** Compact index: sections, then one row per result. */
 export interface SearchIndex {
   v: 1;
-  /** Section key, title shown as group heading and filter, storage key of the edition chosen in that section. */
-  sections: { k: SearchSectionKey; t: string; e: string }[];
-  /** [section position, name, label, address, address of the 2014 edition when the same name has its own page]. */
-  rows: [number, string, string, string, string?][];
+  /** Section key, title shown as group heading and filter. */
+  sections: { k: SearchSectionKey; t: string }[];
+  /**
+   * [section position, name, label, address, address of the 2014 edition when the same name has its own
+   * page (else empty), the only edition the result exists in (none: both editions, or edition-free)].
+   */
+  rows: [number, string, string, string, string?, ("2024" | "2014")?][];
 }
 
 export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "manuale";
 
-export interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string }
+export interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014" }
 
 export interface SearchMatch extends SearchRow { start: number }
 
@@ -40,9 +43,20 @@ export function matchStart(name: string, query: string): number {
 }
 
 export function rowsOf(index: SearchIndex): SearchRow[] {
-  return index.rows.map(([section, nome, label, href, href2014]) => ({
-    section: index.sections[section].k, nome, label, href, ...(href2014 ? { href2014 } : {}),
+  return index.rows.map(([section, nome, label, href, href2014, solo]) => ({
+    section: index.sections[section].k, nome, label, href, ...(href2014 ? { href2014 } : {}), ...(solo === "2024" || solo === "2014" ? { solo } : {}),
   }));
+}
+
+/**
+ * The results of «la tua edizione» (in both editions, edition-free, or only in it) and those that
+ * exist only in the other edition («Cerca anche nel 2014»).
+ */
+export function splitByEdition(rows: SearchRow[], edition: "2024" | "2014"): { own: SearchRow[]; other: SearchRow[] } {
+  const own: SearchRow[] = [];
+  const other: SearchRow[] = [];
+  for (const row of rows) (row.solo && row.solo !== edition ? other : own).push(row);
+  return { own, other };
 }
 
 /**
@@ -67,9 +81,17 @@ export function search(index: SearchIndex, rows: SearchRow[], query: string, opt
   });
 }
 
-/** The address of a row for the edition chosen in its section: the 2014 page only when it is the chosen one. */
+/**
+ * The address of a row for «la tua edizione»: the 2014 page only when it is the chosen one. A 2024-only
+ * result of a page shared by the editions (Compendio) opens on 2024 even while the user plays 2014.
+ */
 export function rowHref(row: SearchRow, chosen: string | null | undefined): string {
-  return chosen === "2014" && row.href2014 ? row.href2014 : row.href;
+  if (chosen === "2014" && row.href2014) return row.href2014;
+  if (chosen === "2014" && row.solo === "2024" && !/^\/(spell|mostro|manuale)\//.test(row.href) && !row.href.includes("?")) {
+    const [path, hash] = row.href.split("#");
+    return `${path}?edizione=2024${hash ? `#${hash}` : ""}`;
+  }
+  return row.href;
 }
 
 /** First word of the label of a homebrew creature: the search panel shows it as the «Homebrew» pill. */

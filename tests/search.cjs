@@ -60,12 +60,12 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  assert.deepEqual(production.sections.map(x=>x.k),['incantesimi','mostri','classi','equipaggiamento','oggetti-magici','condizioni']);
  assert.deepEqual(preview.sections.map(x=>x.k),['incantesimi','mostri','classi','equipaggiamento','oggetti-magici','condizioni','manuale']);
  assert.ok(!preview.rows.some(r=>r[3].startsWith('/manuale/condizioni-')&&preview.sections[r[0]].k==='manuale'));
- // Edition storage keys: the ones the catalogs use.
- assert.ok(fs.readFileSync('components/grimorio-browser.tsx','utf8').includes(`SPELL_EDITION_KEY = "${idx.SPELL_EDITION_STORAGE}"`));
- assert.ok(fs.readFileSync('components/bestiario-browser.tsx','utf8').includes(`EDITION_KEY = "${idx.MONSTER_EDITION_STORAGE}"`));
+ // One edition for the whole app («la tua edizione»): the index no longer names a storage key per section.
+ assert.ok(production.sections.every(x=>Object.keys(x).join()==='k,t'));
+ assert.ok(!fs.readFileSync('components/search/search-panel.tsx','utf8').includes('localStorage'),'the panel reads the edition from the shared provider');
  const rows=s.rowsOf(production);
  // No row without name, label or address; names, labels and addresses only.
- for(const r of production.rows){assert.ok(r[1]&&r[2]&&r[3]&&r[3].startsWith('/'),JSON.stringify(r));assert.ok(r.length<=5);}
+ for(const r of production.rows){assert.ok(r[1]&&r[2]&&r[3]&&r[3].startsWith('/'),JSON.stringify(r));assert.ok(r.length<=6);if(r.length===6)assert.ok(['2024','2014'].includes(r[5]));}
  const bySection=k=>rows.filter(r=>r.section===k);
  // Same name in both editions: one result with both addresses; 2014 only: «· 2014».
  const fireball=rows.filter(r=>r.nome==='Palla di fuoco');
@@ -77,13 +77,24 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  assert.equal(s.rowHref(fireball[0],'2014'),'/spell/palla-di-fuoco-2014');
  assert.equal(s.rowHref(fireball[0],'2024'),'/spell/palla-di-fuoco');
  assert.equal(s.rowHref(fireball[0],null),'/spell/palla-di-fuoco');
+ // A result of one edition only says so (solo): the panel shows «la tua edizione» first.
+ assert.equal(fireball[0].solo,undefined);assert.equal(rows.find(r=>r.nome==='Drago rosso adulto').solo,undefined);
+ assert.equal(rows.find(r=>r.nome==='Sciame di scarabei').solo,'2014');assert.equal(rows.find(r=>r.nome==='Mano magica').solo,'2024');
+ const split=s.splitByEdition(rows,'2014');
+ assert.ok(split.own.some(r=>r.nome==='Sciame di scarabei')&&split.own.some(r=>r.nome==='Palla di fuoco')&&!split.own.some(r=>r.nome==='Mano magica'));
+ assert.ok(split.other.some(r=>r.nome==='Mano magica')&&split.other.every(r=>r.solo==='2024'));
+ assert.equal(split.own.length+split.other.length,rows.length);
+ assert.ok(s.splitByEdition(rows,'2024').other.every(r=>r.solo==='2014'));
+ // A 2024-only result on a page shared by the editions opens on 2024 for a 2014 player; spells keep their page.
+ assert.equal(s.rowHref(rows.find(r=>r.nome==='Mano magica'),'2014'),'/spell/mano-magica');
  // Equipment: weapons and armor share their page; names of the other edition are searchable.
  const longsword=rows.find(r=>r.nome==='Spada lunga');
  assert.equal(longsword.href,'/equipaggiamento/armi/spada-lunga');assert.equal(longsword.href2014,undefined);
  assert.match(longsword.label,/^Arma da mischia da guerra · 15 mo$/);
  const basket=rows.find(r=>r.nome==='Canestro');
  assert.equal(basket.href,'/equipaggiamento/avventura/canestro');assert.match(basket.label,/· 2014$/);
- assert.ok(rows.find(r=>r.nome==='Cesto'));
+ const cesto=rows.find(r=>r.nome==='Cesto');assert.ok(cesto);
+ assert.equal(cesto.solo,'2024');assert.equal(s.rowHref(cesto,'2014'),`${cesto.href}?edizione=2024`);assert.equal(s.rowHref(cesto,'2024'),cesto.href);
  const deck=rows.find(r=>r.nome==='Mazzo di carte');assert.match(deck.label,/· 2014$/);
  const ring=rows.find(r=>r.nome==='Anello di resistenza');
  assert.equal(ring.label,'Anello · raro');assert.equal(ring.href,'/oggetti-magici/anello-di-resistenza');

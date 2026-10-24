@@ -5,7 +5,9 @@ import Link from "next/link";
 import { HomebrewPill } from "@/components/homebrew-pill";
 import { ChevronRight, Search } from "lucide-react";
 
-import { HOMEBREW_LABEL, rowHref, rowsOf, search, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
+import { useUserEdition } from "@/components/edition/edition-provider";
+import { HOMEBREW_LABEL, rowHref, rowsOf, search, splitByEdition, type SearchGroup, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
+import { otherEdition } from "@/lib/user-edition";
 
 export interface SearchPanelProps {
   initialQuery: string;
@@ -23,14 +25,6 @@ const loadIndex = () => (indexPromise ??= fetch("/ricerca-indice.json").then(res
   return response.json() as Promise<SearchIndex>;
 }).catch(error => { indexPromise = undefined; throw error; }));
 
-function readStored(key: string) {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
 function Highlighted({ row, length }: { row: SearchMatch; length: number }) {
   return (
     <>
@@ -41,13 +35,58 @@ function Highlighted({ row, length }: { row: SearchMatch; length: number }) {
   );
 }
 
-/** Full-screen search: filters by section, results while typing, grouped by section. */
+/** Results of one list, grouped by section, each group with «Mostra tutti». */
+function Groups({ groups, query, edition, prefix, onExpand }: {
+  groups: SearchGroup[];
+  query: string;
+  edition: string;
+  prefix: string;
+  onExpand: (section: SearchSectionKey) => void;
+}) {
+  return groups.map(group => (
+    <section key={group.section} aria-labelledby={`${prefix}-${group.section}`} className="pt-3.5">
+      <div className="flex items-baseline justify-between px-0.5 pb-1.5">
+        <h2 id={`${prefix}-${group.section}`} className="font-serif text-[21px] font-bold text-primary">{group.title}</h2>
+        <span className="text-[14px] text-muted">{group.total} {group.total === 1 ? "risultato" : "risultati"}</span>
+      </div>
+      <ul className="overflow-hidden rounded-[14px] border-[1.5px] border-border bg-card">
+        {group.rows.map(row => (
+          <li key={row.href + row.nome} className="border-t border-divider first:border-t-0">
+            <Link href={rowHref(row, edition)} prefetch={false} className="flex min-h-[52px] items-center gap-2.5 px-3.5 py-1.5">
+              <span className="min-w-0 flex-1">
+                <span className="block text-base leading-tight text-foreground"><Highlighted row={row} length={query.trim().replace(/\s+/g, " ").length} /></span>
+                {row.label.startsWith(`${HOMEBREW_LABEL} · `)
+                  ? <span className="flex flex-wrap items-center gap-1.5 text-[14px] text-muted"><HomebrewPill />{row.label.slice(HOMEBREW_LABEL.length + 3)}</span>
+                  : <span className="block text-[14px] text-muted">{row.label}</span>}
+              </span>
+              <ChevronRight size={16} strokeWidth={2.4} className="shrink-0 text-[#B9A57C]" aria-hidden="true" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+      {group.rows.length < group.total && (
+        <button type="button" onClick={() => onExpand(group.section)}
+          className="mt-1.5 min-h-11 px-1 text-[15px] font-bold text-primary">
+          Mostra tutti ({group.total})
+        </button>
+      )}
+    </section>
+  ));
+}
+
+/**
+ * Full-screen search: filters by section, results while typing, grouped by section. Results of
+ * «la tua edizione» come first; those of the other edition only at «Cerca anche nel 2014».
+ */
 export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPanelProps) {
   const [query, setQuery] = useState(initialQuery);
   const [section, setSection] = useState<SearchSectionKey | undefined>(initialSection as SearchSectionKey | undefined);
   const [expanded, setExpanded] = useState<SearchSectionKey[]>([]);
   const [index, setIndex] = useState<SearchIndex>();
   const [failed, setFailed] = useState(false);
+  const [alsoOther, setAlsoOther] = useState(false);
+  const { edition } = useUserEdition();
+  const other = otherEdition(edition);
   const input = useRef<HTMLInputElement>(null);
   const close = useRef(onClose);
   useEffect(() => { close.current = onClose; }, [onClose]);
@@ -69,10 +108,12 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
     window.history.replaceState(window.history.state, "", `/?${params}`);
   }, [query, section]);
 
-  const rows = useMemo(() => (index ? rowsOf(index) : []), [index]);
-  const editions = useMemo(() => new Map(index?.sections.map(item => [item.k, readStored(item.e)]) ?? []), [index]);
-  const groups = useMemo(() => (index ? search(index, rows, query, { section, expanded }) : []), [index, rows, query, section, expanded]);
-  const total = groups.reduce((sum, group) => sum + group.total, 0);
+  const rows = useMemo(() => splitByEdition(index ? rowsOf(index) : [], edition), [index, edition]);
+  const groups = useMemo(() => (index ? search(index, rows.own, query, { section, expanded }) : []), [index, rows, query, section, expanded]);
+  const otherGroups = useMemo(() => (index ? search(index, rows.other, query, { section, expanded }) : []), [index, rows, query, section, expanded]);
+  const ownTotal = groups.reduce((sum, group) => sum + group.total, 0);
+  const otherTotal = otherGroups.reduce((sum, group) => sum + group.total, 0);
+  const total = ownTotal + (alsoOther ? otherTotal : 0);
   const typed = query.trim().length;
   const choose = (value: string) => { setQuery(value); setExpanded([]); input.current?.focus(); };
 
@@ -84,7 +125,7 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
             <Search size={22} strokeWidth={2.2} className="shrink-0 text-primary" aria-hidden="true" />
             <span className="sr-only">Cerca in tutto il Grimorio</span>
             <input ref={input} type="search" value={query} onChange={event => { setQuery(event.target.value); setExpanded([]); }}
-              placeholder="Cerca in tutto il Grimorio…" autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
+              placeholder={`Cerca nel Grimorio ${edition}…`} autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
               aria-controls="search-results" aria-describedby="search-count"
               className="h-12 min-w-0 flex-1 bg-transparent text-[17px] text-foreground outline-none placeholder:text-[#8a7a66]" />
           </label>
@@ -123,36 +164,20 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
               </ul>
             </div>
           )}
-          {typed > 0 && index && !total && <p className="py-8 text-center text-[15px] text-muted">Nessun risultato per «{query.trim()}»</p>}
-          {groups.map(group => (
-            <section key={group.section} aria-labelledby={`gruppo-${group.section}`} className="pt-3.5">
-              <div className="flex items-baseline justify-between px-0.5 pb-1.5">
-                <h2 id={`gruppo-${group.section}`} className="font-serif text-[21px] font-bold text-primary">{group.title}</h2>
-                <span className="text-[14px] text-muted">{group.total} {group.total === 1 ? "risultato" : "risultati"}</span>
-              </div>
-              <ul className="overflow-hidden rounded-[14px] border-[1.5px] border-border bg-card">
-                {group.rows.map(row => (
-                  <li key={row.href + row.nome} className="border-t border-divider first:border-t-0">
-                    <Link href={rowHref(row, editions.get(row.section))} prefetch={false} className="flex min-h-[52px] items-center gap-2.5 px-3.5 py-1.5">
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-base leading-tight text-foreground"><Highlighted row={row} length={query.trim().replace(/\s+/g, " ").length} /></span>
-                        {row.label.startsWith(`${HOMEBREW_LABEL} · `)
-                          ? <span className="flex flex-wrap items-center gap-1.5 text-[14px] text-muted"><HomebrewPill />{row.label.slice(HOMEBREW_LABEL.length + 3)}</span>
-                          : <span className="block text-[14px] text-muted">{row.label}</span>}
-                      </span>
-                      <ChevronRight size={16} strokeWidth={2.4} className="shrink-0 text-[#B9A57C]" aria-hidden="true" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              {group.rows.length < group.total && (
-                <button type="button" onClick={() => setExpanded(list => [...list, group.section])}
-                  className="mt-1.5 min-h-11 px-1 text-[15px] font-bold text-primary">
-                  Mostra tutti ({group.total})
-                </button>
-              )}
-            </section>
-          ))}
+          {typed > 0 && index && !total && <p className="py-8 text-center text-[15px] text-muted">Nessun risultato per «{query.trim()}»{otherTotal ? ` nel ${edition}` : ""}</p>}
+          <Groups groups={groups} query={query} edition={edition} prefix="gruppo" onExpand={key => setExpanded(list => [...list, key])} />
+          {typed > 0 && otherTotal > 0 && !alsoOther && (
+            <button type="button" onClick={() => setAlsoOther(true)}
+              className="mt-4 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-[12px] border-[1.5px] border-chip-border bg-card px-4 text-[15px] font-bold text-primary">
+              Cerca anche nel {other} ({otherTotal})
+            </button>
+          )}
+          {typed > 0 && alsoOther && otherTotal > 0 && (
+            <div className="mt-6 border-t-[1.5px] border-divider pt-2">
+              <p className="px-0.5 pt-2 text-[14px] font-bold uppercase tracking-[0.06em] text-muted">Solo nel {other}</p>
+              <Groups groups={otherGroups} query={query} edition={edition} prefix="altro" onExpand={key => setExpanded(list => [...list, key])} />
+            </div>
+          )}
         </div>
       </div>
     </div>

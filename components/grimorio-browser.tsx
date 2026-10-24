@@ -10,14 +10,13 @@ import { saveListState } from "@/components/navigation-memory";
 import { HiddenTag } from "@/components/sections/hidden-tag";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
+import { useUserEdition } from "@/components/edition/edition-provider";
 import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
 
 const PAGE_SIZE = 40;
 export type SpellEdition = "2024" | "2014";
-/** The last spell edition chosen on this phone or browser. */
-export const SPELL_EDITION_KEY = "grimorio.incantesimi.edizione";
 
 export type SpellFilters = { livello: number[]; scuola: string[]; classe: string[]; tempo: CastingTime[]; concentrazione: boolean; rituale: boolean };
 export const NO_SPELL_FILTERS: SpellFilters = { livello: [], scuola: [], classe: [], tempo: [], concentrazione: false, rituale: false };
@@ -66,6 +65,7 @@ export function GrimorioBrowser({
   const [draft, setDraft] = useState<SpellFilters | null>(null);
   // Until 2014 spells are in the catalog the 2014 list would be empty: no selector, 2024 only.
   const hasLegacy = useMemo(() => spells.some(spell => spell.edizione === "2014"), [spells]);
+  const { choose: chooseUserEdition } = useUserEdition();
   const [chosenEdizione, setEdizione] = useState<SpellEdition>(initialEdizione);
   // An edition hidden from /admin/sezioni is never shown, even if it was the last one chosen.
   const { allowed } = useEditions("incantesimi");
@@ -131,15 +131,17 @@ export function GrimorioBrowser({
     if (initialScroll) window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo(0, initialScroll)));
   }, [initialScroll]);
 
+  // The 2024 · 2014 buttons change «la tua edizione» for the whole app (and drop an edition of the address).
   const chooseEdition = (value: SpellEdition) => {
     if (value === edizione) return;
     setEdizione(value);
     setFilters(NO_SPELL_FILTERS);
-    try {
-      window.localStorage.setItem(SPELL_EDITION_KEY, value);
-    } catch {
-      // the choice simply is not remembered
+    const url = new URL(window.location.href);
+    if (!pane && url.searchParams.has("edizione")) {
+      url.searchParams.delete("edizione");
+      window.history.replaceState(window.history.state, "", url);
     }
+    chooseUserEdition(value);
   };
 
   const active: ActiveFilter[] = [

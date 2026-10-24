@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ComponentType } from "react";
 import { createPortal } from "react-dom";
 import { Search } from "lucide-react";
 
+import { useUserEdition } from "@/components/edition/edition-provider";
 import type { SearchPanelProps } from "@/components/search/search-panel";
 import styles from "./home-search.module.css";
 
@@ -12,12 +13,13 @@ let loading: Promise<ComponentType<SearchPanelProps>> | undefined;
 const loadPanel = () => (loading ??= import("@/components/search/search-panel").then(module => module.SearchPanel));
 
 /**
- * Field «Cerca in tutto il Grimorio…» of the Home. The open panel lives in the address (?cerca=…),
+ * Field «Cerca nel Grimorio 2024…» of the Home (the user's edition, once read from the device). The open panel lives in the address (?cerca=…),
  * so "back" from a result reopens it with the text still written.
  */
 export function HomeSearch() {
   const [Panel, setPanel] = useState<ComponentType<SearchPanelProps>>();
   const [open, setOpen] = useState<{ query: string; section?: string } | null>(null);
+  const { edition, ready } = useUserEdition();
 
   useEffect(() => {
     const read = () => {
@@ -64,7 +66,7 @@ export function HomeSearch() {
     <div className={styles.search}>
       <button type="button" className={styles.field} onClick={() => show("")} aria-haspopup="dialog">
         <Search size={22} strokeWidth={2.2} aria-hidden="true" className={styles.lens} />
-        <span>Cerca in tutto il Grimorio…</span>
+        <span>{ready ? `Cerca nel Grimorio ${edition}…` : "Cerca nel Grimorio…"}</span>
       </button>
       {/* On the body: the picture of the Home is its own stacking context, under the header. */}
       {open && Panel && createPortal(<Panel initialQuery={open.query} initialSection={open.section} onClose={close} />, document.body)}

@@ -9,6 +9,7 @@ import { saveListState } from "@/components/navigation-memory";
 import { HiddenTag } from "@/components/sections/hidden-tag";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
+import { useUserEdition } from "@/components/edition/edition-provider";
 import { useEditions, usePart } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { collectionOf, computeMonstersMeta, isSrdAnimal, typeCategory, type MonsterListItem } from "@/lib/monsters-types";
@@ -17,8 +18,6 @@ import { authorLine } from "@/lib/homebrew-types";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
 
 export type Edition = "2024" | "2014";
-/** The last edition chosen on this phone or browser. */
-export const EDITION_KEY = "grimorio.bestiario.edizione";
 const PAGE_SIZE = 40;
 
 export type Category = "tutti" | "mostri" | "animali" | "homebrew";
@@ -77,6 +76,7 @@ export function BestiarioBrowser({
   const [q, setQ] = useState(initialQuery);
   const [filters, setFilters] = useState<MonsterFilters>(initialFilters);
   const [draft, setDraft] = useState<MonsterFilters | null>(null);
+  const { choose: chooseUserEdition } = useUserEdition();
   const [chosenEdizione, setEdizione] = useState<Edition>(initialEdizione);
   // Editions and collections hidden from /admin/sezioni: never shown to the public, labelled for the administrator.
   const { allowed } = useEditions("bestiario");
@@ -142,16 +142,18 @@ export function BestiarioBrowser({
     if (initialScroll) window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.scrollTo(0, initialScroll)));
   }, [initialScroll]);
 
+  // The 2024 · 2014 buttons change «la tua edizione» for the whole app (and drop an edition of the address).
   const chooseEdition = (value: Edition) => {
     if (value === edizione) return;
     setEdizione(value);
     // Types and sizes differ between editions: start again without filters.
     setFilters(NO_FILTERS);
-    try {
-      window.localStorage.setItem(EDITION_KEY, value);
-    } catch {
-      // the choice simply is not remembered
+    const url = new URL(window.location.href);
+    if (!pane && url.searchParams.has("edizione")) {
+      url.searchParams.delete("edizione");
+      window.history.replaceState(window.history.state, "", url);
     }
+    chooseUserEdition(value);
   };
 
   const active: ActiveFilter[] = [
