@@ -45,6 +45,27 @@ assert.deepEqual(r2014.c,{azione:242,'azione-bonus':14,reazione:4,lungo:59});
 const verified=new Map([...srd,...original]);
 for(const [id,value] of seed)if(verified.has(id))assert.equal(castingTimeGroup(value),castingTimeGroup(verified.get(id)),`${id}: "${value}" / "${verified.get(id)}"`);
 
+// One way of showing the casting time everywhere (castingTimeLabel), the stored value untouched.
+const {castingTimeLabel}=types;
+for(const [value,shown] of [['1 azione','Azione'],['azione','Azione'],['Azione','Azione'],['1 azione bonus','Azione bonus'],['azione bonus','Azione bonus'],['Azione Bonus','Azione bonus'],
+ ["azione bonus che l'incantatore effettua subito dopo","Azione bonus che l'incantatore effettua subito dopo"],
+ ["1 reazione, che l'incantatore effettua quando è colpito","Reazione, che l'incantatore effettua quando è colpito"],["reazione, che l'incantatore effettua quando","Reazione, che l'incantatore effettua quando"],
+ ['1 azione o rituale','Azione o rituale'],['azione o rituale','Azione o rituale'],['1 azione o 8 ore','Azione o 8 ore'],
+ ['1 minuto','1 minuto'],['10 minuti','10 minuti'],['1 ora','1 ora'],['8 ore','8 ore'],['1 minuto o rituale','1 minuto o rituale'],['10 minuti o rituale','10 minuti o rituale'],
+ ['Azione (Groviglio) o 8 ore (Fertilità)','Azione (Groviglio) o 8 ore (Fertilità)'],['','' ],[undefined,''],[null,'']])
+ assert.equal(castingTimeLabel(value),shown,String(value));
+// Every real value (both editions, the starting file and the approved display repairs): no «1 azione», a capital
+// first letter, and the same filter option as the stored value (the «Tempo di lancio» counts do not change).
+const repaired=Object.values(require('../lib/data/spell-casting-time-repairs-20261021.json').tempi).map(t=>['riparazione',t.a]);
+for(const [id,value] of [...legacy,...srd,...original,...seed,...repaired]){
+ const shown=castingTimeLabel(value);
+ assert.equal(castingTimeGroup(shown),castingTimeGroup(value),`${id}: "${value}" → "${shown}"`);
+ if(/^(1\s+)?(azione|reazione)/i.test(value.trim()))assert.match(shown,/^(Azione|Reazione)\b/,`${id}: "${value}" → "${shown}"`);
+ assert.doesNotMatch(shown,/^1 (azione|reazione)/i);
+ if(/^[a-z]/i.test(shown))assert.equal(shown[0],shown[0].toUpperCase(),shown);
+}
+for(const file of ['components/grimorio-browser.tsx','app/spell/[id]/page.tsx','components/admin-spell-editor.tsx'])assert.match(fs.readFileSync(file,'utf8'),/castingTimeLabel\(/,file);
+
 (async()=>{
  // Filter panel: "o" inside the group, "e" with the other groups, live counter, 2014 list too.
  const {JSDOM}=require('jsdom');

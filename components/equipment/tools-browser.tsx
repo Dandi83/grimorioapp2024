@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
+import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { ChevronRight, Search } from "lucide-react";
 
 import { ParentLink } from "@/components/section-tiles";
@@ -16,10 +17,12 @@ const GROUPS: Record<EquipmentEdition, [string, string][]> = {
   "2014": [["artigiano", "Strumenti da artigiano"], ["giochi", "Giochi"], ["musicali", "Strumenti musicali"], ["altri", "Altri strumenti"]],
 };
 
-function ToolRow({ row }: { row: ToolListRow }) {
+function ToolRow({ row, edition }: { row: ToolListRow; edition: EquipmentEdition }) {
   return (
-    <li className="border-b border-divider last:border-b-0">
-      <Link href={row.href} prefetch={false} className="flex min-h-14 items-center gap-3 px-3.5 py-2">
+    <li className="flex items-center border-b border-divider last:border-b-0">
+      {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
+      <AdminEditPencil target={{ kind: "contenuto", section: "strumenti", id: row.id, edition }} name={row.nome} />
+      <Link href={row.href} prefetch={false} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
           <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
           <span className="block text-[14px] text-muted">{row.peso === "—" ? "peso trascurabile" : row.peso}</span>
@@ -81,7 +84,7 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
               <h2 id={`gruppo-${key}`} className="border-b-2 border-primary px-0.5 pb-1.5 font-serif text-[22px] font-bold text-primary">{title}</h2>
               {!needle && groupTexts[edition][key]}
               <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-                {group.map(row => <ToolRow key={row.href} row={row} />)}
+                {group.map(row => <ToolRow key={row.href} row={row} edition={edition} />)}
               </ul>
             </section>
           );

@@ -1,4 +1,6 @@
 import { cookies } from "next/headers";
+
+import { ADMIN_HINT_COOKIE } from "./admin-edit-link";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { pool } from "./db";
 
@@ -98,6 +100,8 @@ export async function startAdminSession(): Promise<void> {
     path: "/",
     maxAge: SESSION_DAYS * 24 * 60 * 60,
   });
+  // Readable by the page, grants nothing: the public pages ask the server for the «Modifica» buttons only when it is there.
+  store.set(ADMIN_HINT_COOKIE, "1", { httpOnly: false, sameSite: isDev ? "none" : "strict", secure: true, path: "/", maxAge: SESSION_DAYS * 24 * 60 * 60 });
 }
 
 /** Logout: the session id is deleted on the server, so a copied cookie no longer works either. */
@@ -112,4 +116,5 @@ export async function endAdminSession(): Promise<void> {
   store.delete({ name: COOKIE_NAME, path: "/", secure: true });
   // Cookie of the previous version (30-day sessions): removed too.
   store.delete("grimorio_admin");
+  store.delete({ name: ADMIN_HINT_COOKIE, path: "/", secure: true });
 }

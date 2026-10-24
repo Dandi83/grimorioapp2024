@@ -40,7 +40,7 @@ function load(relative, deps = {}) {
     'next/link': {__esModule: true, default: ({children, ...props}) => createElement('a', props, children)},
     'next/navigation': {notFound: () => {throw Error('Not found');}},
     '@/components/monster-provenance-badge': {MonsterProvenanceBadge},
-    '@/components/back-button': {BackButton: () => null},
+    '@/components/back-button': {BackButton: () => null},'@/components/admin-edit/admin-edit-button':{AdminEditButton:()=>null,AdminEditPencil:()=>null},
     '@/components/meta-cell': load('components/meta-cell.tsx'),
     '@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button': {FavoriteButton: () => null},
     '@/components/html-text': load('components/html-text.tsx'),

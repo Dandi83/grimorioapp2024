@@ -11,7 +11,7 @@ const deps={
  'next/image':{__esModule:true,default:()=>{throw Error('Public creature artwork must remain disabled')}},
  'next/link':{__esModule:true,default:({children,...props})=>React.createElement('a',props,children)},
  'next/navigation':{notFound:()=>{throw Error('Not found')}},
- '@/components/back-button':{BackButton:()=>null},
+ '@/components/back-button':{BackButton:()=>null},'@/components/admin-edit/admin-edit-button':{AdminEditButton:()=>null,AdminEditPencil:()=>null},
  '@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},
  '@/components/favorite-button':{FavoriteButton:()=>null},
  '@/lib/monsters':{getMonsterById:async()=>selected},

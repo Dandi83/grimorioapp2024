@@ -10,6 +10,7 @@ import { MANUAL_CATEGORIES } from "@/lib/manual-types";
 import { ManualContent } from "@/components/manual-content";
 import { BackButton } from "@/components/back-button";
 import { ReportLink } from "@/components/feedback/report-link";
+import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { getCorrectedManualEntry } from "@/lib/corrected-content";
 
@@ -50,6 +51,8 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
         <Link href={`/manuale?sezione=${entry.category}`} className="text-sm font-semibold text-primary">← {MANUAL_CATEGORIES[entry.category]}</Link>
       )}
       <header className={isCondition ? "mb-6 mt-3 border-b border-primary/40 pb-5" : "mb-6 mt-6"}>
+        {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
+        <AdminEditButton target={isCondition ? { kind: "contenuto", section: "condizioni", id: entry.id, edition } : { kind: "contenuto", section: "manuale", id: entry.id, edition: "2024" }} />
         <p className="mb-2 text-xs uppercase tracking-widest text-primary">{entry.subgroup || (isCondition ? "Condizione" : "")}</p>
         <h1 className="font-serif text-4xl font-bold leading-tight text-foreground">{entry.title}</h1>
         {entry.edizione === "2014" && <RulesEditionBadge edition="2014" />}

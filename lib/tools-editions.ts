@@ -53,14 +53,16 @@ export function compareTool(entry: ToolEntry): ToolCompareRow[] {
   return rows;
 }
 
-export interface ToolListRow { href: string; nome: string; costo: string; peso: string; gruppo: string }
+/** id: the entry (its id in /admin/contenuti/strumenti). */
+export interface ToolListRow { id: string; href: string; nome: string; costo: string; peso: string; gruppo: string }
 
 /** Light rows of the list, per edition, in the printed order (alphabetical in both PDFs). */
 export function toolListRows(list: ToolEntry[] = toolEntries): Record<EquipmentEdition, ToolListRow[]> {
   // The tools as shown (corrected when list carries corrections), in the printed order.
   const shown = <E extends EquipmentEdition>(edition: E, id: string) => list.find(entry => entry.editions[edition]?.id === id)?.editions[edition] as ToolEntry["editions"][E];
+  const entryId = (edition: EquipmentEdition, id: string) => (list.find(entry => entry.editions[edition]?.id === id) ?? toolEntries.find(entry => entry.editions[edition]?.id === id))?.id ?? id;
   return {
-    "2014": tools2014.map(printed => shown("2014", printed.id) ?? printed).map(tool => ({ href: toolHref(tool.id), nome: tool.nome, costo: tool.costo, peso: tool.peso, gruppo: tool.gruppo })),
-    "2024": tools2024.map(printed => shown("2024", printed.id) ?? printed).map(tool => ({ href: toolHref(tool.id), nome: tool.nome, costo: tool.prezzo, peso: tool.peso, gruppo: tool.gruppo })),
+    "2014": tools2014.map(printed => shown("2014", printed.id) ?? printed).map(tool => ({ id: entryId("2014", tool.id), href: toolHref(tool.id), nome: tool.nome, costo: tool.costo, peso: tool.peso, gruppo: tool.gruppo })),
+    "2024": tools2024.map(printed => shown("2024", printed.id) ?? printed).map(tool => ({ id: entryId("2024", tool.id), href: toolHref(tool.id), nome: tool.nome, costo: tool.prezzo, peso: tool.peso, gruppo: tool.gruppo })),
   };
 }

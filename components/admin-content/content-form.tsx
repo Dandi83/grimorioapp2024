@@ -13,7 +13,11 @@ interface Field extends FieldSpec { original: string; current: string; motivo?: 
  * One input per printed value, the original under it with «Ripristina originale»,
  * a mandatory reason, a confirmation and «Salva modifica». Text only, never HTML.
  */
-export function AdminContentForm({ section, id, edition, fields, back }: { section: string; id: string; edition: string; fields: Field[]; back: string }) {
+export function AdminContentForm({ section, id, edition, fields, back, returnTo }: {
+  section: string; id: string; edition: string; fields: Field[]; back: string;
+  /** Opened from a public page («Modifica»): after saving, back to it, reloaded with the correction. */
+  returnTo?: string;
+}) {
   const router = useRouter();
   const [values, setValues] = useState(() => Object.fromEntries(fields.map(field => [field.name, field.current])));
   const [motivo, setMotivo] = useState("");
@@ -23,10 +27,11 @@ export function AdminContentForm({ section, id, edition, fields, back }: { secti
 
   useEffect(() => {
     if (!state?.ok) return;
+    if (returnTo) { window.location.assign(returnTo); return; }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- the saved reason is cleared once
     setMotivo("");
     router.refresh();
-  }, [state, router]);
+  }, [state, router, returnTo]);
 
   const changed = fields.filter(field => normalizeValue(field.kind, values[field.name] ?? "") !== field.current);
   const errors = { ...(state && !state.ok ? state.fields : {}), ...local };

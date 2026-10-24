@@ -73,6 +73,8 @@ export function compareGear(entry: GearEntry): CompareRow[] {
 
 /** Light rows of the list, per edition: no descriptions. */
 export interface GearListRow {
+  /** The entry (its id in /admin/contenuti/avventura). */
+  id: string;
   href: string;
   nome: string;
   prezzo?: string;
@@ -85,7 +87,7 @@ export interface GearListRow {
 export function gearListRows(list: GearEntry[] = gearEntries): Record<EquipmentEdition, GearListRow[]> {
   const rows = (edition: EquipmentEdition) => list.filter(entry => entry.editions[edition]).map(entry => {
     const item = entry.editions[edition]!;
-    const base = { href: gearHref(entry, edition), nome: item.nome, dotazione: item.dotazione };
+    const base = { id: entry.id, href: gearHref(entry, edition), nome: item.nome, dotazione: item.dotazione };
     if (edition === "2024") { const it = item as GearItem; return { ...base, prezzo: it.prezzo, ...(it.peso ? { peso: it.peso } : {}) }; }
     const it = item as Gear2014Item;
     return { ...base, ...(it.costo ? { prezzo: it.costo } : {}), ...(it.peso ? { peso: it.peso } : {}), ...(it.righe ? { righe: it.righe } : {}) };

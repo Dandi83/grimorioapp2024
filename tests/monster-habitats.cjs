@@ -125,7 +125,7 @@ const form = (data, habitats) => {
     '@/lib/monsters':{getMonsterById:async id=>sheets.get(id)},
     '@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l,markedCards:async(k,l)=>l,cardHidden:async()=>false,cardsOut:async()=>[],sectionView:async()=>({admin:false,hidden:[],hiddenParts:[],hiddenCards:[]}),sectionsOut:async()=>[],partsOut:async()=>[],linksOut:async()=>[],partState:async()=>({shown:true,hidden:false}),editionCard:async()=>false,pageEditions:async()=>['2024','2014']},'@/components/sections/hidden-card-bar':{HiddenCardBar:()=>null},'@/components/homebrew/homebrew-sheet':{HomebrewLabel:()=>null,HomebrewNote:()=>null},'@/lib/homebrew-types':{authorLine:()=>''},'@/components/sections/part-block':{HiddenPartBar:()=>null,PartBlock:({children})=>children},
     'next/navigation':{notFound:()=>{throw new Error('NOT_FOUND');}},
-    '@/components/back-button':{BackButton:()=>null},'@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button':{FavoriteButton:()=>null},
+    '@/components/back-button':{BackButton:()=>null},'@/components/admin-edit/admin-edit-button':{AdminEditButton:()=>null,AdminEditPencil:()=>null},'@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button':{FavoriteButton:()=>null},
     'next/link':{__esModule:true,default:({children,...props})=>createElement('a',props,children)},
   });
   const Page = load('app/mostro/[id]/page.tsx').default;

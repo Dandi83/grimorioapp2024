@@ -17,6 +17,12 @@ export function isAdminEdition(value: unknown): value is AdminEdition {
   return value === "2014" || value === "2024";
 }
 
+/** The cookie of the edition: set only after the login check (setAdminEditionAction, /admin/edizione). */
+export function adminEditionCookieOptions() {
+  const isDev = process.env.NODE_ENV !== "production";
+  return { httpOnly: true, secure: true, path: "/", sameSite: isDev ? "none" : "strict", maxAge: 365 * 24 * 3600 } as const;
+}
+
 /** Colors of each edition and the text of its half of the switch when it is the one being edited. */
 export const EDITION_BAND: Record<AdminEdition, { background: string; text: string; label: string }> = {
   "2024": { background: "#7A1F2B", text: "#FFFBF0", label: "Stai modificando il 2024" },
