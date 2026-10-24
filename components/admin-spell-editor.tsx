@@ -3,17 +3,15 @@
 import { useRef, useState, type ReactNode } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createSpellAction, updateSpellAction } from "@/app/actions/admin";
-import { capitalizeWords, castingTimeLabel, parseLivello, type Spell } from "@/lib/spells-types";
+import { parseLivello, type Spell } from "@/lib/spells-types";
 import { spellName } from "@/lib/spell-name";
-import { inlineConditionReferences } from "@/lib/conditions";
-import { inlineSpellReferences } from "@/lib/spell-references";
 import { AdminChoiceField } from "./admin-choice-field";
 import { AdminVisualText } from "./admin-visual-text";
 import { SpellClassification, SpellComponents } from "./admin-spell-fields";
-import { HtmlText } from "./html-text";
 import { AdminEditionField, confirmEditionMove } from "./admin-edition-field";
 import type { AdminEdition } from "@/lib/admin-edition";
-import { RulesEditionBadge } from "./rules-edition-badge";
+import { SpellSheetBody, SpellSheetHeading } from "./spell-sheet";
+import { useCardDisplay } from "./card-display-context";
 import { EyeButton } from "./admin-card-eye";
 import { HiddenTag } from "./sections/hidden-tag";
 import { useEditorFrame } from "./admin-editor-frame";
@@ -79,54 +77,16 @@ const PRESETS = [
   },
 ] as const;
 
+/** The editor preview: the same sheet as the public page (components/spell-sheet.tsx), with the same links and labels. */
 function SpellPreview({ spell }: { spell: Spell }) {
-  const references = spell.edizione === "2014" ? [] : inlineConditionReferences;
+  const context = useCardDisplay();
   return (
-    <article className="spell-sheet min-w-0 rounded-xl border border-primary/20 bg-background p-5 sm:p-6">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">
-        Anteprima · non ancora salvata
-      </p>
-      <h2 className="break-words font-serif text-3xl text-foreground">
-        {spellName(spell.nome_italiano, spell.edizione)}
-      </h2>
-      <RulesEditionBadge edition={spell.edizione} compact />
-      <p className="mt-2 text-sm text-primary">{spell.livello}</p>
-      <dl className="my-5 grid grid-cols-2 gap-3">
-        {(
-          [
-            ["Tempo di lancio", "tempo_di_lancio"],
-            ["Gittata", "gittata"],
-            ["Componenti", "componenti"],
-            ["Durata", "durata"],
-          ] as const
-        ).map(([label, key]) => (
-          <div key={key} className="min-w-0 rounded-xl border border-border bg-card p-3">
-            <dt className="text-xs text-muted-foreground">{label}</dt>
-            <dd className="mt-1 break-words text-sm leading-6">{(key === "tempo_di_lancio" ? castingTimeLabel(spell[key]) : spell[key]) || "—"}</dd>
-          </div>
-        ))}
-      </dl>
-      {!!spell.classi.length && (
-        <div className="mb-5 flex flex-wrap gap-2">
-          {spell.classi.map((name, index) => (
-            <span
-              key={`${name}-${index}`}
-              className="rounded-full border border-primary/30 px-3 py-1 text-xs text-primary"
-            >
-              {capitalizeWords(name)}
-            </span>
-          ))}
-        </div>
-      )}
-      <h3 className="mb-3 border-b border-primary/30 pb-2 font-serif text-xl text-primary">
-        Descrizione
-      </h3>
-      <HtmlText
-        html={spell.descrizione}
-        damageIcons
-        references={references}
-        spellReferences={spell.edizione === "2014" ? [] : inlineSpellReferences(spell.descrizione)}
-      />
+    <article className="spell-sheet min-w-0 rounded-xl border border-primary/20 bg-background pt-5">
+      <div className="px-6">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-primary">Anteprima · non ancora salvata</p>
+        <SpellSheetHeading spell={spell} context={context} heading="h2" />
+      </div>
+      <SpellSheetBody spell={spell} context={context} />
     </article>
   );
 }
@@ -159,6 +119,8 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
       id: spell?.id || "unsaved-spell",
       edizione: values.edition || edition,
       ...parseLivello(values.livello),
+      // The label of the card: a new card is «Aggiunta da te», the others keep theirs.
+      fonte_scheda: spell ? spell.fonte_scheda : "Aggiunta da te",
     } as Spell);
     toTop();
   }

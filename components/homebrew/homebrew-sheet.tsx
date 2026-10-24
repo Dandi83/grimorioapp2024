@@ -4,6 +4,7 @@ import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet"
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { authorLine } from "@/lib/homebrew-types";
 import type { Monster } from "@/lib/monsters-types";
+import type { CardDisplayContext } from "@/lib/card-display";
 import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
 
 /** The label of a homebrew sheet: the amber pill, then the edition (or «2014 e 2024»). */
@@ -25,13 +26,13 @@ export function HomebrewNote() {
   );
 }
 
-/** «Anteprima» of /admin/proposte: the sheet as the public will see it (same component, same order). */
-export function HomebrewSheet({ monster, before }: { monster: Monster; before?: ReactNode }) {
+/** «Anteprima» of /admin/proposte: the sheet as the public will see it (same component, same order, same links). */
+export function HomebrewSheet({ monster, before, context = {} }: { monster: Monster; before?: ReactNode; context?: CardDisplayContext }) {
   const edizione = monster.homebrew_edizione ?? "2024";
   return (
     <article className="monster-sheet relative pb-2 pt-4">
       <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} />} byline={authorLine(monster.homebrew_autore, "card")} />
-      <MonsterSheetBody monster={monster} legacy={edizione === "2014"} />
+      <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} />
       <HomebrewNote />
     </article>
   );

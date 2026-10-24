@@ -83,7 +83,7 @@ async function read<T extends object>(sql: string, params: unknown[] = []): Prom
 
 /** The card of a published homebrew, as the sheet component expects it. */
 export function homebrewMonster(row: HomebrewRow): Monster {
-  return { ...draftToMonster(row.scheda, row.id), homebrew_edizione: row.edizione, homebrew_autore: row.autore };
+  return { ...draftToMonster(row.scheda, row.id), homebrew_edizione: row.edizione, homebrew_autore: row.autore, fonte_scheda: "Homebrew" };
 }
 
 /** The row of the lists: the light fields, «homebrew», the author and, for «Entrambe», both editions. */

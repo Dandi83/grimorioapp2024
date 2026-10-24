@@ -1,5 +1,5 @@
 import { inlineSpellReferences } from "@/lib/spell-references";
-import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
+import { inlineConditionReferences } from "@/lib/conditions";
 import Image from "next/image";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
@@ -9,16 +9,13 @@ import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
-import { MetaCell } from "@/components/meta-cell";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";
 import { HtmlText } from "@/components/html-text";
-import { SpellProvenanceMarker } from "@/components/spell-provenance-marker";
-import { RulesEditionBadge } from "@/components/rules-edition-badge";
-import { capitalizeWords, getSpellById } from "@/lib/spells";
-import { castingTimeLabel } from "@/lib/spells-types";
+import { SpellSheetBody, SpellSheetHeading } from "@/components/spell-sheet";
+import { getSpellById } from "@/lib/spells";
 import { spellName } from "@/lib/spell-name";
-import { schoolColor } from "@/lib/school-colors";
+import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
 import { getLegacySpellSource } from "@/lib/srd-spells-2014";
@@ -65,15 +62,9 @@ export default async function SpellDetailPage({
   const spell = await getSpellById(id);
   if (!spell) notFound();
 
-  const color = schoolColor(spell.scuola);
   const titolo = spellName(spell.nome_italiano, spell.edizione);
-  const badge =
-    spell.livello_num === 0
-      ? `Trucchetto · ${spell.scuola}`
-      : `${spell.livello_num}° Livello · ${spell.scuola}`;
   const source = getSrdSource(spell.id, spell.descrizione);
   const original = getOriginalSource(spell.id, spell.descrizione);
-  const legacy = spell.edizione === "2014";
   const legacySource = getLegacySpellSource(spell);
   // A card of an edition hidden from /admin/sezioni is not found; links to hidden pages stay plain text.
   const edition = spell.edizione === "2014" ? "2014" : "2024";
@@ -81,6 +72,8 @@ export default async function SpellDetailPage({
   // A card hidden with the eye of the admin area: not found for the public, labelled for the administrator.
   const hiddenCard = await cardHidden("incantesimo", spell.id);
   const out = await linksOut();
+  // The display chain of every card (lib/card-display.ts): the spells of the catalog it links, without hidden pages.
+  const context = { catalog: await getSpellReferenceCatalog(), hidden: out };
 
   return (
     <article className="spell-sheet">
@@ -109,68 +102,15 @@ export default async function SpellDetailPage({
         <div className="absolute inset-x-0 bottom-0 p-6">
           {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
           <AdminEditButton target={{ kind: "incantesimo", id: spell.id, edition }} />
-          <span
-            className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground"
-            style={{ borderColor: color }}
-          >
-            <span
-              className="h-1.5 w-1.5 rounded-full"
-              style={{ backgroundColor: color }}
-            />
-            {badge}
-          </span>
-          <h1 className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
-            {titolo}
-            <SpellProvenanceMarker id={spell.id} />
-          </h1>
-          <RulesEditionBadge edition={spell.edizione} />
+          <SpellSheetHeading spell={spell} context={context} />
         </div>
       </header>
 
-      {/* Metadata grid */}
-      <div className="flex flex-wrap gap-3 p-6">
-        <MetaCell label="Tempo di lancio" value={castingTimeLabel(spell.tempo_di_lancio)} />
-        <MetaCell label="Gittata" value={spell.gittata} />
-        <MetaCell label="Componenti" value={spell.componenti} />
-        <MetaCell label="Durata" value={spell.durata} />
-      </div>
-
-      {/* Classes */}
-      {spell.classi.length > 0 && (
-        <section className="mb-4 px-6">
-          <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
-            Classi
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {spell.classi.map((c) => (
-              <span
-                key={c}
-                className="rounded-full border border-primary-dim bg-primary-faint px-3 py-1.5 text-xs font-semibold text-primary"
-              >
-                {capitalizeWords(c)}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Description */}
-      <section className="px-6 pb-4">
-        <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">
-          Descrizione
-        </h2>
-        {spell.descrizione ? (
-          <HtmlText html={spell.descrizione} damageIcons references={visibleLinks(legacy ? legacyInlineConditionReferences : inlineConditionReferences, out)} spellReferences={visibleLinks(inlineSpellReferences(spell.descrizione, legacy), out)} />
-        ) : (
-          <p className="font-serif text-[15px] italic leading-6 text-muted">
-            Descrizione non disponibile per questo incantesimo.
-          </p>
-        )}
-      </section>
+      <SpellSheetBody spell={spell} context={context} />
       {original?.statBlockSummary && (
         <section className="px-6 pb-6">
           <h2 className="mb-3 font-serif text-lg font-semibold text-primary">Spirito richiamato — riepilogo</h2>
-          <HtmlText html={original.statBlockSummary} damageIcons references={visibleLinks(inlineConditionReferences, out)} spellReferences={visibleLinks(inlineSpellReferences(original.statBlockSummary), out)} />
+          <HtmlText html={original.statBlockSummary} damageIcons references={visibleLinks(inlineConditionReferences, out)} spellReferences={visibleLinks(inlineSpellReferences(original.statBlockSummary, false, context.catalog), out)} />
           <p className="mt-3 text-xs leading-5 text-muted">
             Riepilogo operativo: per tutti i dettagli della creatura consulta la scheda 2024 collegata qui sotto.
             Il bonus di competenza dello spirito è il tuo; le CD indicate usano la tua CD degli incantesimi.

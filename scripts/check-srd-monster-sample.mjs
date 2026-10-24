@@ -66,7 +66,7 @@ const page=loadTs('../app/mostro/[id]/page.tsx',{
   '@/components/meta-cell':loadTs('../components/meta-cell.tsx'),
   '@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button':{FavoriteButton:()=>null},
   '@/components/html-text':loadTs('../components/html-text.tsx'),
-  '@/lib/monsters':{getMonsterById:async id=>id===selected.id?selected:undefined},
+  '@/lib/monsters':{getMonsterById:async id=>id===selected.id?selected:undefined},'@/lib/spell-reference-catalog':{getSpellReferenceCatalog:async()=>undefined},
   '@/lib/spell-references':loadTs('../lib/spell-references.ts'),
   '@/lib/conditions':loadTs('../lib/conditions.ts'),
   '@/lib/monsters-types':loadTs('../lib/monsters-types.ts'),

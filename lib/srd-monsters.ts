@@ -29,6 +29,11 @@ export function previewMonsters(rows: Monster[], environment: string | undefined
   return [...rows, ...additions.map(monster => ({ ...monster }))].sort((a, b) => a.nome.localeCompare(b.nome, "it"));
 }
 
+/** A sheet of the SRD files (2024, animals, 2014), even when edited in the reserved area. */
+export function isSrdMonsterId(id: string): boolean {
+  return recordsById.has(id);
+}
+
 /** Optional content fields must also match: an edited record never receives exact-source attribution. */
 export function getSrdMonsterSource(monster: Monster) {
   const record = recordsById.get(monster.id);

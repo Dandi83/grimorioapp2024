@@ -122,7 +122,7 @@ const form = (data, habitats) => {
     ['orco-2014',{...JSON.parse(fs.readFileSync('lib/data/srd-monsters-5.1-it.json','utf8')).records.find(r=>r.monster.id==='orco-2014').monster,habitat:['Collina','Montagna']}],
   ]);
   Object.assign(deps,{
-    '@/lib/monsters':{getMonsterById:async id=>sheets.get(id)},
+    '@/lib/monsters':{getMonsterById:async id=>sheets.get(id)},'@/lib/spell-reference-catalog':{getSpellReferenceCatalog:async()=>undefined},
     '@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l,markedCards:async(k,l)=>l,cardHidden:async()=>false,cardsOut:async()=>[],sectionView:async()=>({admin:false,hidden:[],hiddenParts:[],hiddenCards:[]}),sectionsOut:async()=>[],partsOut:async()=>[],linksOut:async()=>[],partState:async()=>({shown:true,hidden:false}),editionCard:async()=>false,pageEditions:async()=>['2024','2014']},'@/components/sections/hidden-card-bar':{HiddenCardBar:()=>null},'@/components/homebrew/homebrew-sheet':{HomebrewLabel:()=>null,HomebrewNote:()=>null},'@/lib/homebrew-types':{authorLine:()=>''},'@/components/sections/part-block':{HiddenPartBar:()=>null,PartBlock:({children})=>children},
     'next/navigation':{notFound:()=>{throw new Error('NOT_FOUND');}},
     '@/components/back-button':{BackButton:()=>null},'@/components/admin-edit/admin-edit-button':{AdminEditButton:()=>null,AdminEditPencil:()=>null},'@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button':{FavoriteButton:()=>null},

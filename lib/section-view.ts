@@ -48,6 +48,12 @@ export async function cardsOut(): Promise<string[]> {
   return view.admin ? [] : view.hiddenCards;
 }
 
+/** What the public links may not lead to, also for the administrator: the previews show the public card. */
+export async function publicLinksOut(): Promise<string[]> {
+  const view = await sectionView();
+  return [...view.hidden, ...view.hiddenParts, ...view.hiddenCards];
+}
+
 /** What the links of this page may not lead to: hidden sections, parts and cards (for visibleLinks / isHiddenPath). */
 export async function linksOut(): Promise<string[]> {
   return [...await sectionsOut(), ...await partsOut(), ...await cardsOut()];

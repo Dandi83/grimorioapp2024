@@ -64,7 +64,7 @@ for(const [id,value] of [...legacy,...srd,...original,...seed,...repaired]){
  assert.doesNotMatch(shown,/^1 (azione|reazione)/i);
  if(/^[a-z]/i.test(shown))assert.equal(shown[0],shown[0].toUpperCase(),shown);
 }
-for(const file of ['components/grimorio-browser.tsx','app/spell/[id]/page.tsx','components/admin-spell-editor.tsx'])assert.match(fs.readFileSync(file,'utf8'),/castingTimeLabel\(/,file);
+for(const file of ['components/grimorio-browser.tsx','lib/card-display.ts'])assert.match(fs.readFileSync(file,'utf8'),/castingTimeLabel\(/,file);
 
 (async()=>{
  // Filter panel: "o" inside the group, "e" with the other groups, live counter, 2014 list too.

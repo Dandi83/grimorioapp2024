@@ -1,17 +1,15 @@
 import type { ReactNode } from "react";
-import { formatMonsterSpellLists, inlineSpellReferences } from "@/lib/spell-references";
-import { inlineConditionReferences, legacyInlineConditionReferences } from "@/lib/conditions";
 import { ReferenceText, MonsterText } from "@/components/html-text";
+import { CardLabels } from "@/components/spell-sheet";
 import { abilityMod, type Monster } from "@/lib/monsters-types";
-import { visibleLinks } from "@/lib/public-sections";
-
-/** Links to conditions, without those of a hidden section (/admin/sezioni). */
-const conditionLinks = (legacy: boolean, hidden: readonly string[]) => visibleLinks(legacy ? legacyInlineConditionReferences : inlineConditionReferences, hidden);
+import { conditionLinks, prepareMonsterText, type CardSource } from "@/lib/card-display";
+import type { SpellReferenceCatalog } from "@/lib/spell-references";
 
 /**
  * One creature sheet for every source: 2024 and 2014 SRD sheets, sheets made in the
- * reserved area and the editor preview. Only order and layout are decided here; the
- * stored text is shown unchanged.
+ * reserved area, approved homebrew and the previews of the editor and of the proposals.
+ * Order and layout are decided here, the text goes through the display chain of every
+ * card (lib/card-display.ts); the stored text is never changed.
  */
 
 /** "17 (armatura naturale)" → value "17", note "armatura naturale". Anything else stays whole. */
@@ -73,14 +71,15 @@ function Line({ label, value, legacy, hidden, damageIcons = false }: { label: st
   );
 }
 
-function Section({ title, html, legacy, hidden }: { title: string; html?: string; legacy: boolean; hidden: readonly string[] }) {
+type SheetContext = { legacy: boolean; hidden: readonly string[]; catalog?: SpellReferenceCatalog; source?: CardSource };
+
+function Section({ title, html, context }: { title: string; html?: string; context: SheetContext }) {
   if (!html || !html.replace(/<[^>]+>/g, "").trim()) return null;
+  const text = prepareMonsterText(html, context.legacy, context.source, context);
   return (
     <section data-monster-section>
       <h2>{title}</h2>
-      <MonsterText html={formatMonsterSpellLists(html, legacy)} damageIcons
-        references={conditionLinks(legacy, hidden)}
-        spellReferences={visibleLinks(inlineSpellReferences(html, legacy), hidden)} />
+      <MonsterText html={text.html} damageIcons references={text.references} spellReferences={text.spellReferences} />
     </section>
   );
 }
@@ -104,12 +103,18 @@ export function MonsterSheetTitle({ monster, label, before, byline }: { monster:
       </div>
       {sottotitolo && <p className="mt-2 font-serif text-[19px] italic text-muted">{sottotitolo}</p>}
       {byline && <p className="mt-1 text-[15px] text-muted">{byline}</p>}
+      {/* Where the sheet comes from (a homebrew already says it next to the title). */}
+      {monster.fonte_scheda !== "Homebrew" && <CardLabels source={monster.fonte_scheda} />}
     </header>
   );
 }
 
-/** hidden: sections hidden from /admin/sezioni, whose pages the texts do not link. */
-export function MonsterSheetBody({ monster, legacy, hidden = [] }: { monster: Partial<Monster>; legacy: boolean; hidden?: readonly string[] }) {
+/**
+ * hidden: what the texts may not link (hidden sections, parts and cards, linksOut); catalog: the spells they
+ * link (lib/spell-reference-catalog.ts; the SRD names of the files when missing).
+ */
+export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { monster: Partial<Monster>; legacy: boolean; hidden?: readonly string[]; catalog?: SpellReferenceCatalog }) {
+  const context: SheetContext = { legacy, hidden, catalog, source: monster.fonte_scheda };
   const ca = splitBoxValue(monster.classe_armatura);
   const pf = splitBoxValue(monster.punti_ferita);
   // The official initiative keeps its passive value in brackets: "+17" and "(27)" below.
@@ -175,16 +180,16 @@ export function MonsterSheetBody({ monster, legacy, hidden = [] }: { monster: Pa
         </div>
       </section>
 
-      <Section title="Tratti" html={tratti} legacy={legacy} hidden={hidden} />
+      <Section title="Tratti" html={tratti} context={context} />
     </div>
     <div>
-      <Section title="Azioni" html={azioni} legacy={legacy} hidden={hidden} />
-      <Section title="Azioni bonus" html={monster.azioni_bonus} legacy={legacy} hidden={hidden} />
-      <Section title="Reazioni" html={monster.reazioni} legacy={legacy} hidden={hidden} />
-      <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} legacy={legacy} hidden={hidden} />
+      <Section title="Azioni" html={azioni} context={context} />
+      <Section title="Azioni bonus" html={monster.azioni_bonus} context={context} />
+      <Section title="Reazioni" html={monster.reazioni} context={context} />
+      <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} context={context} />
     </div>
     </div>
-      <Section title="Descrizione" html={monster.descrizione} legacy={legacy} hidden={hidden} />
+      <Section title="Descrizione" html={monster.descrizione} context={context} />
     </div>
   );
 }

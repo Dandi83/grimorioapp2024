@@ -7,7 +7,8 @@ import { db } from "./db";
 import { getContentEditions } from "./content-editions";
 import { monsters as monstersTable } from "./db/schema";
 import { parseGs, type Monster } from "./monsters-types";
-import { previewMonsters, previewMonsterById, getSrdMonsterSource } from "./srd-monsters";
+import { previewMonsters, previewMonsterById, getSrdMonsterSource, isSrdMonsterId } from "./srd-monsters";
+import type { CardSource } from "./card-display";
 import { getMonsterExtraFields } from "./monster-extra-storage";
 import { getMonsterHabitatOverrides, resolveHabitats } from "./monster-habitats";
 import { getHomebrew, homebrewMonster } from "./homebrew";
@@ -17,6 +18,17 @@ import { isHomebrewId } from "./homebrew-types";
 export * from "./monsters-types";
 
 type RawRow = typeof monstersTable.$inferSelect;
+
+/** The label of a sheet: its verified source, «Aggiunta da te» for a sheet made here, none for an SRD sheet edited. */
+function monsterCardSource(monster: Monster): CardSource | undefined {
+  const source = getSrdMonsterSource(monster);
+  if (source) return source.document === "SRD 5.2.1" ? "SRD 5.2.1" : "SRD 5.1";
+  return isSrdMonsterId(monster.id) ? undefined : "Aggiunta da te";
+}
+const withSource = (monster: Monster): Monster => {
+  const fonte_scheda = monsterCardSource(monster);
+  return fonte_scheda ? { ...monster, fonte_scheda } : monster;
+};
 
 function toMonster(r: RawRow): Monster {
   return {
@@ -62,7 +74,7 @@ export async function getAllMonsters(): Promise<Monster[]> {
   return previewMonsters(rows.map(toMonster), process.env.VERCEL_ENV).map(record => {
     const monster = { ...record, ...extraFields.get(record.id) };
     const source = getSrdMonsterSource(monster);
-    return {
+    return withSource({
       ...monster,
       habitat: resolveHabitats(monster.id, habitats),
       solo_progetto: inDatabase.has(monster.id) ? undefined : true,
@@ -73,7 +85,7 @@ export async function getAllMonsters(): Promise<Monster[]> {
         sourceUrl: source.sourceUrl,
         page: source.page,
       } : undefined,
-    };
+    });
   });
 }
 
@@ -92,8 +104,8 @@ export const getMonsterById = cache(async (id: string): Promise<Monster | undefi
     .limit(1), getContentEditions("monster", id), getMonsterExtraFields(id), getMonsterHabitatOverrides()]);
   const monster = rows[0] ? toMonster(rows[0]) : previewMonsterById(id, process.env.VERCEL_ENV);
   if (!monster) return undefined;
-  return {
+  return withSource({
     ...monster, ...extraFields.get(id), edizione: editions.get(id), habitat: resolveHabitats(id, habitats),
     solo_progetto: rows[0] ? undefined : true,
-  };
+  });
 });

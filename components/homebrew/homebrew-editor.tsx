@@ -12,6 +12,7 @@ import {
 } from "@/lib/homebrew-types";
 import { SIZES } from "@/lib/monsters-types";
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
+import { useCardDisplay } from "@/components/card-display-context";
 import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 
@@ -88,6 +89,8 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
   const text = useMemo(() => draftActionText(value), [value]);
   const mismatch = mismatchedFormat({ edizione: value.edizione, text });
   const sheet = useMemo(() => draftToMonster(value, "anteprima"), [value]);
+  // The preview links as the public sheet will (lib/card-display.ts), with the catalog set by the page.
+  const display = useCardDisplay();
   const check = useMemo(() => {
     if (!(value.pf > 0) || !(value.ca > 0)) return null;
     return estimateChallenge(statsOf(sheet), reference as CrReference);
@@ -135,7 +138,7 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
           <MonsterSheetTitle monster={sheet} label={
             <span className="flex flex-wrap items-center justify-end gap-1.5"><HomebrewPill />{value.edizione === "entrambe" ? <BothEditionsPill /> : <MonsterProvenanceBadge edition={format} variant="dark" />}</span>
           } />
-          <MonsterSheetBody monster={sheet} legacy={value.edizione === "2014"} />
+          <MonsterSheetBody monster={{ ...sheet, fonte_scheda: "Homebrew" }} legacy={value.edizione === "2014"} catalog={display.catalog} hidden={display.hidden} />
         </article>
       ) : (
         <>

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { isAdmin } from "@/lib/admin-auth";
 import { saveContentEdition } from "@/lib/content-editions";
 import { getMonsterById } from "@/lib/monsters";
@@ -38,6 +38,12 @@ export async function setContentEditionAction(_previous: Result | null, form: Fo
   }
   for (const route of ["/admin", "/admin/incantesimi", "/admin/mostri", "/bestiario", "/grimorio", "/preferiti", kind === "monster" ? `/mostro/${id}` : `/spell/${id}`]) {
     revalidatePath(route);
+  }
+  // A spell of the other edition is linked by the cards of that edition (lib/spell-reference-catalog.ts).
+  if (kind !== "monster") {
+    updateTag("spells");
+    revalidatePath("/spell/[id]", "page");
+    revalidatePath("/mostro/[id]", "page");
   }
   return { ok: true };
 }

@@ -1,3 +1,4 @@
+import type { CardSource } from "./card-display";
 import animalIds from "./data/srd-animal-ids.json";
 const ANIMAL_IDS = new Set(animalIds);
 export function isSrdAnimal(monster: {id:string}) { return ANIMAL_IDS.has(monster.id); }
@@ -61,6 +62,8 @@ export interface Monster {
   /** A homebrew creature (lib/homebrew.ts): its edition, and its author (null: made by the Grimorio). */
   homebrew_edizione?: "2014" | "2024" | "entrambe";
   homebrew_autore?: string | null;
+  /** The label of the card: «SRD 5.2.1», «SRD 5.1», «Aggiunta da te», «Homebrew»; none for an SRD sheet edited. */
+  fonte_scheda?: CardSource;
 }
 
 export const SIZES = [

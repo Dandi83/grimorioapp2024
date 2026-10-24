@@ -9,6 +9,8 @@ import reference from "@/lib/data/gs-riferimento.json";
 import { getProposal } from "@/lib/homebrew";
 import { estimateChallenge, statsOf, type CrReference } from "@/lib/homebrew-cr";
 import { draftToMonster } from "@/lib/homebrew-types";
+import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
+import { publicLinksOut } from "@/lib/section-view";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Anteprima della proposta — Il Grimorio.App", robots: { index: false, follow: false } };
@@ -25,7 +27,7 @@ export default async function ProposalPreview({ params }: { params: Promise<{ id
         <Link href="/admin/proposte" className="inline-flex min-h-11 items-center text-[15px] font-bold text-primary">‹ Proposte</Link>
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">Anteprima · non ancora pubblicata</p>
       </div>
-      <HomebrewSheet monster={monster} />
+      <HomebrewSheet monster={monster} context={{ catalog: await getSpellReferenceCatalog(), hidden: await publicLinksOut() }} />
       <div className="mx-6"><ChallengeCheck check={estimateChallenge(statsOf(monster), reference as CrReference)} declared={proposal.scheda.grado_sfida} /></div>
     </div>
   );

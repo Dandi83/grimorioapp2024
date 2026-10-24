@@ -80,10 +80,13 @@ const RULE_LABEL = new RegExp(
 const normalizeName = (text: string) => text.toLocaleLowerCase("it").replace(/\s+/g, " ").trim();
 const SPELL_NAMES = new Set(spellIndex.map(spell => normalizeName(spell.name)));
 
-/** True when italic text is only catalog spell names, e.g. "Cono di freddo, volare", "palla di fuoco (di 4º livello)" or "armatura magica*". */
-function isSpellNameText(text: string) {
+/**
+ * True when italic text is only catalog spell names, e.g. "Cono di freddo, volare", "palla di fuoco (di 4º livello)"
+ * or "armatura magica*". known: the spells this text links (cards of the database too, see lib/spell-reference-catalog.ts).
+ */
+function isSpellNameText(text: string, known: ReadonlySet<string>) {
   const parts = text.replace(/\([^)]*\)/g, " ").split(/[,;]/).map(part => normalizeName(part).replace(/\*+$/, "").replace(/[.!:]$/, "").trim()).filter(Boolean);
-  return parts.length > 0 && parts.every(part => SPELL_NAMES.has(part));
+  return parts.length > 0 && parts.every(part => SPELL_NAMES.has(part) || known.has(part));
 }
 
 /**
@@ -93,14 +96,14 @@ function isSpellNameText(text: string) {
 // A casting-list line: "1° livello (4 slot):", "A volontà:", "3/giorno ciascuno:"...
 const CASTING_LINE = /^\s*(?:Trucchetti\b[^:]*|\d+°\s*livello[^:]*|A volontà|\d+\s*\/\s*giorno[^:]*|\d+ volte al giorno[^:]*):/i;
 
-function normalizeEmphasis(html: string) {
+function normalizeEmphasis(html: string, known: ReadonlySet<string> = new Set()) {
   return html
     .replace(/<(em|i)>([\s\S]*?)<\/\1>/gi, (_whole, _tag, inner: string, offset: number, source: string) => {
       // Italics in a casting list are spell names even when the 2014 name differs from the catalog.
       const line = source.slice(0, offset).split(/<br\s*\/?>/i).pop()!.replace(/<[^>]+>/g, "");
       // A grouped list (label on its own line, see MonsterText) starts the paragraph with the label.
       const group = CASTING_LINE.test(source.replace(/<[^>]+>/g, ""));
-      const spells = CASTING_LINE.test(line) || group || isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " ")));
+      const spells = CASTING_LINE.test(line) || group || isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " ")), known);
       return spells ? `<spellname>${inner}</spellname>` : inner;
     })
     .replace(/<\s*\/?\s*(?:em|i)\s*>/gi, "")
@@ -168,7 +171,7 @@ function InlineHtmlText({ html, damageIcons = false, references = [], spellRefer
     );
   };
 
-  const source = normalizeEmphasis(html || "");
+  const source = normalizeEmphasis(html || "", new Set(spellReferences.map(reference => normalizeName(reference.label))));
   let m: RegExpExecArray | null;
   TAG_RE.lastIndex = 0;
   while ((m = TAG_RE.exec(source)) !== null) {

@@ -1,8 +1,9 @@
 import type { Monster } from "@/lib/monsters-types";
 import { MonsterSheetBody, MonsterSheetTitle } from "./monster-sheet";
 import { MonsterProvenanceBadge } from "./monster-provenance-badge";
+import { useCardDisplay } from "./card-display-context";
 
-/** The editor preview uses the same sheet as the public page. */
+/** The editor preview uses the same sheet as the public page, with the same links (catalog of the page). */
 export function AdminMonsterPreview({
   monster,
   legacy,
@@ -11,6 +12,7 @@ export function AdminMonsterPreview({
   legacy: boolean;
 }) {
   const edition = monster.edizione ?? (legacy ? "2014" : undefined);
+  const display = useCardDisplay();
   return (
     <article className="monster-sheet min-w-0 rounded-xl border border-primary/20 bg-background py-5">
       <MonsterSheetTitle
@@ -22,7 +24,7 @@ export function AdminMonsterPreview({
         }
         label={edition ? <MonsterProvenanceBadge edition={edition} variant="dark" /> : undefined}
       />
-      <MonsterSheetBody monster={monster} legacy={legacy} />
+      <MonsterSheetBody monster={monster} legacy={legacy} catalog={display.catalog} hidden={display.hidden} />
     </article>
   );
 }
