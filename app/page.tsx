@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Lock } from "lucide-react";
 
 import { HomeSearch } from "@/components/search/home-search";
 import { EditionPill } from "@/components/edition/edition-pill";
@@ -44,9 +45,8 @@ export default async function HomePage() {
         <div className={styles.logo}>
           Il Grimorio<span>.App</span>
         </div>
-        <nav className={styles.headerLinks} aria-label="Area riservata e informazioni legali">
-          <Link href="/admin">Area riservata</Link>
-          <Link href="/fonti">Termini e condizioni</Link>
+        <nav className={styles.headerLinks} aria-label="Area riservata">
+          <Link href="/admin"><Lock size={16} strokeWidth={2} aria-hidden="true" />Area riservata</Link>
         </nav>
       </header>
 
@@ -73,9 +73,10 @@ export default async function HomePage() {
           <nav className={styles.shortcuts} aria-label="Scorciatoie">
             <HomeShortcuts links={links} />
           </nav>
-          <Link href="/segnala" prefetch={false} className={styles.report}>Segnala un errore o un consiglio</Link>
         </div>
       </section>
+      {/* Phones and tablets: the legal pages, one small link above the bar (computers: in the side column). */}
+      <p className={styles.info}><Link href="/info">Info e note legali</Link></p>
       <FirstLaunch />
     </div>
   );

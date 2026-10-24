@@ -27,7 +27,9 @@ test("computer: side column, list and card side by side keeping search, edition 
   await expect(side).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Navigazione principale" })).toBeHidden();
   await expect(side.getByRole("link", { name: "Incantesimi" })).toHaveAttribute("aria-current", "page");
-  for (const label of ["Segnala un errore", "Area riservata", "Termini e condizioni", "Privacy"]) await expect(side.getByRole("link", { name: label })).toBeVisible();
+  // At the bottom of the column: only «Info e note legali» and «Area riservata» (with the lock).
+  for (const label of ["Info e note legali", "Area riservata"]) await expect(side.getByRole("link", { name: label })).toBeVisible();
+  for (const label of ["Segnala un errore", "Termini e condizioni", "Privacy"]) await expect(side.getByRole("link", { name: label })).toHaveCount(0);
   const box = await side.boundingBox();
   expect(Math.round(box.width)).toBe(240);
   // /grimorio: list on the left, an empty card on the right.

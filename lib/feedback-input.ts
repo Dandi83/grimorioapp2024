@@ -151,7 +151,8 @@ export const PAGE_NAMES: Record<string, string> = {
   "/oggetti-magici": "Oggetti magici",
   "/avanzamento": "Avanzamento",
   "/manuale": "Manuale",
-  "/fonti": "Termini e condizioni",
+  "/fonti": "Fonti e licenze",
+  "/info": "Info e note legali",
   "/privacy": "Privacy",
 };
 

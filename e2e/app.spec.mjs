@@ -823,9 +823,11 @@ test("reports: Segnala from a card with its edition, without email, invalid emai
   await page.getByRole("button", { name: "Invia segnalazione" }).click();
   await expect(page.getByRole("heading", { name: "Grazie!" })).toBeVisible({ timeout: 15000 });
   await expect(page.getByText("Ho ricevuto la tua segnalazione. La leggerò appena possibile.")).toBeVisible();
-  // Without email, from the Home link, as a suggestion.
+  // Without email, from «Scrivici» of «Info e note legali» (foot of the Home), as a suggestion.
   await page.getByRole("link", { name: "Torna alla Home" }).click();
-  await page.getByRole("link", { name: "Segnala un errore o un consiglio" }).click();
+  await page.getByRole("link", { name: "Info e note legali" }).click();
+  await page.getByRole("link", { name: /^Scrivici/ }).click();
+  await expect(page).toHaveURL(/\/segnala$/);
   await expect(page.getByText(/^Riguarda:/)).toHaveCount(0);
   await page.getByRole("button", { name: "Consiglio" }).click();
   await page.getByLabel("Messaggio").fill("Una modalità per giocare la sera sarebbe comoda.");
