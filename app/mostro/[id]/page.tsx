@@ -7,6 +7,7 @@ import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { getMonsterById } from "@/lib/monsters";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
+import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
 import { cardHidden, cardsOut, editionCard, linksOut, partState } from "@/lib/section-view";
@@ -93,6 +94,8 @@ export default async function MonsterDetailPage({
           <div className="flex min-h-11 items-center justify-between pb-2">
             <BackButton fallback="/bestiario" label="Bestiario" />
             <div className="flex items-center">
+              {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
+              <AdminEditButton target={{ kind: "mostro", id: monster.id }} desktop="lg:static lg:mr-2" />
               <ShareButton inline path={`/mostro/${encodeURIComponent(monster.id)}`} title={monster.nome} />
               <FavoriteButton inline id={`mostro:${monster.id}`} />
             </div>

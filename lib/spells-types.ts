@@ -161,6 +161,17 @@ export function capitalizeWords(s: string): string {
     .join(" ");
 }
 
+/**
+ * The casting time as shown everywhere (list, card, admin preview); the stored value is never changed.
+ * The SRD 2014 writes «1 azione», «1 reazione, che…», the 2024 «Azione» or «azione»: the leading «1»
+ * before an action or a reaction goes, «Azione bonus» is written one way, the first letter is a capital.
+ * Times in minutes or hours («1 minuto», «8 ore», «… o rituale») stay as they are.
+ */
+export function castingTimeLabel(tempo: string | null | undefined): string {
+  const text = (tempo ?? "").trim().replace(/^1\s+(?=(?:azione|reazione)\b)/i, "").replace(/^azione\s+bonus\b/i, "Azione bonus");
+  return text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
+}
+
 /** Options of the "Tempo di lancio" filter. */
 export const CASTING_TIMES = ["azione", "azione-bonus", "reazione", "lungo"] as const;
 export type CastingTime = (typeof CASTING_TIMES)[number];

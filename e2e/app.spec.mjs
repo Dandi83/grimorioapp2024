@@ -97,7 +97,8 @@ test("spells: 2014 selector, 2014 card with its source and 2024 link, 2014 creat
   await page.getByRole("link", { name: /^Aiuto/ }).click();
   await expect(page).toHaveURL(/\/spell\/aiuto-2014$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Aiuto");
-  await expect(page.getByRole("link", { name: "Passa alla versione 2024" })).toHaveAttribute("href", "/spell/aiuto");
+  // No link to the other edition on the cards: the edition is chosen with the pill only.
+  await expect(page.getByRole("link", { name: /^Passa alla versione/ })).toHaveCount(0);
   await expect(page.getByText("Testo integrale: SRD 5.1 italiano — Aiuto.")).toBeVisible();
   await page.goto("/mostro/accolito-2014");
   const bollino = page.getByRole("link", { name: /^benedizione$/i });
@@ -618,7 +619,7 @@ test("magic items 2014: selector remembered, search, renamed and single-edition 
   // The choice is remembered (shared with the Equipaggiamento section).
   await page.reload();
   await expect(rows).toHaveCount(240);
-  // A renamed item has its own 2014 address; the box shows name and rarity, and leads to the 2024 sheet.
+  // A renamed item has its own 2014 address; the box shows name and rarity, without a link to the other edition.
   await rows.filter({ hasText: "Pozione dell'invisibilità" }).click();
   await expect(page).toHaveURL(/\/oggetti-magici\/pozione-dell-invisibilita$/);
   const panel2014 = page.locator('[data-edition="2014"]');
@@ -626,8 +627,8 @@ test("magic items 2014: selector remembered, search, renamed and single-edition 
   const box = panel2014.getByRole("region", { name: "Differenze tra le edizioni" });
   await expect(box).toContainText("Molto rara");
   await expect(box).toContainText("Rara");
-  await box.getByRole("link", { name: "Passa alla versione 2024" }).click();
-  await expect(page).toHaveURL(/\/oggetti-magici\/pozione-di-invisibilita\?edizione=2024$/);
+  await expect(page.getByRole("link", { name: /^Passa alla versione/ })).toHaveCount(0);
+  await page.goto("/oggetti-magici/pozione-di-invisibilita?edizione=2024");
   await expect(page.locator('[data-edition="2024"]').getByRole("heading", { level: 1 })).toHaveText("Pozione di invisibilità");
   // Same name: both editions on one page, attunement change computed from the data.
   await page.goto("/oggetti-magici/scopa-volante?edizione=2014");
@@ -1061,7 +1062,7 @@ test("admin corrections in every section: armor, magic item text, condition titl
   // Condition 2024: the title on the Compendio list and on its page.
   await save("/admin/contenuti/condizioni/condizioni-accecato?edizione=2024", () => page.getByLabel("Nome", { exact: true }).fill("Accecato (prova)"), "Prova: nome della condizione");
   await page.goto("/compendio/condizioni?edizione=2024");
-  await expect(page.getByRole("link", { name: "Accecato (prova)" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Accecato (prova)", exact: true })).toBeVisible();
   await page.goto("/manuale/condizioni-accecato");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Accecato (prova)");
   await expect(page.getByText("Nome: nel manuale «Accecato»")).toBeVisible();
@@ -1263,7 +1264,11 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   expect(spells["2014"]).toBeGreaterThan(300);
   // The public 2014 card of a spell read from the SRD 5.1 file, before any change.
   await page.goto("/spell/allarme-2014");
-  const cardText = async () => (await page.locator("main").innerText()).replace(/\s+/g, " ");
+  // The text of the card as the public sees it: the administrator's «Modifica» button left out.
+  const cardText = async () => {
+    await page.addStyleTag({ content: "[data-admin-edit]{display:none!important}" });
+    return (await page.locator("main").innerText()).replace(/\s+/g, " ");
+  };
   const before = await cardText();
   expect(before).toContain("9 metri");
 
@@ -1479,11 +1484,13 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await expect(body.getByRole("tabpanel").filter({ visible: true }).getByRole("listitem").filter({ hasText: "18 · Sopravvissuto" })).toHaveCount(1);
   await body.getByRole("tab", { name: "Tabella" }).filter({ visible: true }).click();
   await expect(body.getByRole("tabpanel").filter({ visible: true }).locator("tbody tr")).toHaveCount(20);
-  await expect(body.getByRole("link", { name: "Passa alla versione 2024" })).toHaveAttribute("href", "/classi/guerriero?edizione=2024");
+  // No link to the other edition: the pill of the sheet changes it.
+  await expect(page.getByRole("link", { name: /^Passa alla versione/ })).toHaveCount(0);
   await chooseEdition(page, "2024");
-  await expect(body.getByRole("link", { name: "Passa alla versione 2014" })).toHaveAttribute("href", "/classi/guerriero?edizione=2014");
-  await body.getByRole("link", { name: "Passa alla versione 2014" }).click();
-  await expect(page.locator('[data-edition="2014"]')).toBeVisible();
+  await expect(page.locator('[data-edition="2024"]').first()).toBeVisible();
+  // The 2014 sheet still opens from its address (without changing «la tua edizione»).
+  await page.goto("/classi/guerriero?edizione=2014");
+  await expect(page.locator('[data-edition="2014"]').first()).toBeVisible();
   await page.goto("/classi/guerriero?edizione=2024");
   // «Segnala» carries the page, the class name and the edition shown.
   await body.getByRole("link", { name: "Segnala" }).click();

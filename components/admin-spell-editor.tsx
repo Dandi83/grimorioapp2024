@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createSpellAction, updateSpellAction } from "@/app/actions/admin";
-import { capitalizeWords, parseLivello, type Spell } from "@/lib/spells-types";
+import { capitalizeWords, castingTimeLabel, parseLivello, type Spell } from "@/lib/spells-types";
 import { spellName } from "@/lib/spell-name";
 import { inlineConditionReferences } from "@/lib/conditions";
 import { inlineSpellReferences } from "@/lib/spell-references";
@@ -101,7 +101,7 @@ function SpellPreview({ spell }: { spell: Spell }) {
         ).map(([label, key]) => (
           <div key={key} className="min-w-0 rounded-xl border border-border bg-card p-3">
             <dt className="text-xs text-muted-foreground">{label}</dt>
-            <dd className="mt-1 break-words text-sm leading-6">{spell[key] || "—"}</dd>
+            <dd className="mt-1 break-words text-sm leading-6">{(key === "tempo_di_lancio" ? castingTimeLabel(spell[key]) : spell[key]) || "—"}</dd>
           </div>
         ))}
       </dl>
