@@ -53,6 +53,14 @@ test("Home: «Area riservata» with the lock, «Info e note legali» at the foot
   await expect(page).toHaveURL(/\/segnala$/);
   await expect(page.getByLabel("Messaggio")).toBeVisible();
   await expect(page.getByText(/^Riguarda:/)).toHaveCount(0);
+  // The two «Scrivici» of the Termini d'uso open the same form.
+  await page.goto("/termini");
+  const write = page.getByRole("main").getByRole("link", { name: "Scrivici", exact: true });
+  await expect(write).toHaveCount(2);
+  for (const i of [0, 1]) await expect(write.nth(i)).toHaveAttribute("href", "/segnala");
+  await write.nth(1).click();
+  await expect(page).toHaveURL(/\/segnala$/);
+  await expect(page.getByLabel("Messaggio")).toBeVisible();
   await page.goto("/info");
   await page.getByRole("link", { name: "Fonti e licenze", exact: true }).click();
   await expect(page).toHaveURL(/\/fonti$/);

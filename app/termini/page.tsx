@@ -50,11 +50,13 @@ export default function TermsPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>confermi che è una tua creazione originale, non copiata da manuali, siti o altre opere;</li>
           <li>autorizzi Il Grimorio.App a pubblicarla gratuitamente nell’app e a modificarla, per esempio per correggere errori o adattarla alle regole;</li>
-          <li>accetti che il nickname che scegli compaia sulla scheda («Proposta da …»).</li>
+          <li>accetti che il nickname che scegli compaia sulla scheda («Proposta da …»);</li>
+          <li>resti responsabile di ciò che proponi.</li>
         </ul>
         <p>
-          L’amministratore può rifiutare una proposta o rimuovere in qualsiasi momento una creatura già pubblicata, senza dover
-          dare spiegazioni. Non proporre contenuti offensivi, illegali o che violano diritti di altre persone.
+          L’amministratore può rifiutare una proposta o rimuovere in qualsiasi momento una creatura già pubblicata, a sua
+          discrezione. Puoi chiedere quando vuoi la rimozione di una creatura che hai proposto, scrivendoci da{" "}
+          <Link href="/segnala" className="font-semibold text-primary underline underline-offset-4">Scrivici</Link>. Non proporre contenuti offensivi, illegali o che violano diritti di altre persone.
         </p>
       </Section>
 
@@ -62,7 +64,8 @@ export default function TermsPage() {
         <p>
           Il modulo «Segnala» e «Scrivici» servono a indicare errori nelle schede, problemi dell’app o idee per migliorarla.
           Le segnalazioni sono anonime; l’email è facoltativa e serve solo per risponderti. Come trattiamo questi dati è spiegato
-          nella pagina <Link href="/privacy" className="font-semibold text-primary underline underline-offset-4">Privacy</Link>.
+          nella pagina <Link href="/privacy" className="font-semibold text-primary underline underline-offset-4">Privacy</Link>. Per qualsiasi domanda usa{" "}
+          <Link href="/segnala" className="font-semibold text-primary underline underline-offset-4">Scrivici</Link>.
         </p>
       </Section>
 
