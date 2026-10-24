@@ -31,7 +31,6 @@
 .headerLinks {
   display: flex;
   min-width: 0;
-  max-width: 140px;
   flex-direction: column;
   align-items: flex-end;
   color: var(--color-muted);
@@ -45,7 +44,9 @@
   min-height: 44px;
   align-items: center;
   justify-content: flex-end;
+  gap: 6px;
   border-radius: 4px;
+  white-space: nowrap;
 }
 
 .library {
@@ -92,6 +93,8 @@
 .copy {
   width: 100%;
   max-width: 660px;
+  /* The space of the old «Segnala» link under the search: the field keeps its place over the picture. */
+  padding-bottom: 58px;
 }
 
 .quote {
@@ -109,19 +112,24 @@
   color: var(--color-primary);
 }
 
-.report {
+/* «Info e note legali»: small, at the bottom right above the navigation bar. */
+.info {
+  margin: 0;
+  padding: 0 16px 4px;
+  text-align: right;
+}
+
+.info a {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
-  margin-top: 14px;
-  padding: 0 8px;
-  color: var(--color-muted);
-  font-size: 14px;
+  color: #5E4E3E;
+  font-size: 13px;
   text-decoration: underline;
-  text-underline-offset: 4px;
+  text-underline-offset: 3px;
 }
 
-.report:focus-visible {
+.info a:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -200,6 +208,7 @@
 
   .copy {
     max-width: 680px;
+    padding-bottom: 0;
   }
 
   .quote {
@@ -236,15 +245,12 @@
     background: rgb(255 251 240 / 22%);
   }
 
-  .shortcuts a:focus-visible,
-  .report:focus-visible {
+  .shortcuts a:focus-visible {
     outline: 2px solid var(--color-amber);
     outline-offset: 3px;
   }
 
-  .report {
-    margin-top: 10px;
-    padding: 0;
-    color: rgb(255 251 240 / 80%);
+  .info {
+    display: none;
   }
 }

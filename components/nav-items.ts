@@ -46,12 +46,10 @@ export const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-/** The links of the foot of the Home, also at the bottom of the side column. */
-export const FOOT_LINKS: { href: string; label: string }[] = [
-  { href: "/segnala", label: "Segnala un errore" },
-  { href: "/admin", label: "Area riservata" },
-  { href: "/fonti", label: "Termini e condizioni" },
-  { href: "/privacy", label: "Privacy" },
+/** The links at the bottom of the side column (computers): the legal pages and the reserved area (with the lock). */
+export const FOOT_LINKS: { href: string; label: string; lock?: true }[] = [
+  { href: "/info", label: "Info e note legali" },
+  { href: "/admin", label: "Area riservata", lock: true },
 ];
 
 /** The items the visitor sees: hidden sections out, unless the administrator is looking. */

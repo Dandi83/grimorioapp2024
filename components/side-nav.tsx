@@ -6,6 +6,7 @@ import { useMemo } from "react";
 
 import { FOOT_LINKS, visibleNavItems } from "@/components/nav-items";
 import { EditionPill } from "@/components/edition/edition-pill";
+import { Lock } from "lucide-react";
 
 const NONE: readonly string[] = [];
 
@@ -49,9 +50,11 @@ export function SideNav({ hidden = NONE, admin: adminView = false }: { hidden?: 
         })}
       </ul>
       <ul className="mt-auto flex flex-col px-5 pb-5 pt-6 text-[13px] text-muted">
-        {FOOT_LINKS.map(({ href, label }) => (
+        {FOOT_LINKS.map(({ href, label, lock }) => (
           <li key={href}>
-            <Link href={href} prefetch={false} className="inline-flex min-h-11 items-center rounded-sm hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-primary">{label}</Link>
+            <Link href={href} prefetch={false} className="inline-flex min-h-11 items-center gap-1.5 rounded-sm hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-primary">
+              {lock && <Lock size={16} strokeWidth={2} aria-hidden="true" />}{label}
+            </Link>
           </li>
         ))}
       </ul>
