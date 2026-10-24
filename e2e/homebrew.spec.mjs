@@ -3,7 +3,11 @@ import { test, expect } from "@playwright/test";
 // Homebrew creatures: proposals of the community, approval, the Homebrew collection. Local test database only.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
+    try {
+      window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5));
+      // A visitor who has already chosen «la tua edizione» (2024): the first launch has its own test (e2e/edizione.spec.mjs).
+      if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024");
+    } catch { /* no storage */ }
   });
 });
 
@@ -117,7 +121,9 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(page.getByText("Pubblicata", { exact: true })).toBeVisible();
 
   // Public: the card, the collection in both editions, search, API, favorites.
-  const visitor = await (await browser.newContext({ baseURL: test.info().project.use.baseURL, viewport: { width: 390, height: 844 } })).newPage();
+  const visitorContext = await browser.newContext({ baseURL: test.info().project.use.baseURL, viewport: { width: 390, height: 844 } });
+  await visitorContext.addInitScript(() => { if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024"); });
+  const visitor = await visitorContext.newPage();
   await expect.poll(async () => (await request.get(CARD)).status()).toBe(200);
   await visitor.goto(CARD);
   await expect(visitor.getByRole("heading", { name: "Drago di nebbia", level: 1 })).toBeVisible();

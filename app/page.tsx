@@ -2,28 +2,36 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { HomeSearch } from "@/components/search/home-search";
+import { EditionPill } from "@/components/edition/edition-pill";
+import { FirstLaunch } from "@/components/edition/first-launch";
+import { HomeShortcuts, type HomeShortcut } from "@/components/edition/home-shortcuts";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { collectionOf } from "@/lib/monsters-types";
-import { partId } from "@/lib/public-sections";
+import { EDITIONS, partId, type Edition } from "@/lib/public-sections";
 import { partsOut, sectionsOut, visibleCards } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
 import styles from "./home.module.css";
 
 export const revalidate = 300;
 
-/** Shortcuts of the computer Home, with the number of cards the visitor can open (hidden editions, collections and cards left out). */
-async function shortcuts() {
+/**
+ * Shortcuts of the computer Home, with the number of cards the visitor can open in each edition
+ * (hidden collections and cards left out); the page shows those of «la tua edizione».
+ */
+async function shortcuts(): Promise<HomeShortcut[]> {
   const [spells, monsters, out, parts] = await Promise.all([
     getSpellIndex().catch(() => []).then(list => visibleCards("incantesimo", list)),
     getMonsterListIndex().catch(() => []).then(list => visibleCards("mostro", list)),
     sectionsOut(), partsOut(),
   ]);
-  const spellCount = spells.filter(spell => !parts.includes(partId("incantesimi", spell.edizione === "2014" ? "2014" : "2024"))).length;
-  const monsterCount = monsters.filter(monster => (!parts.includes(partId("bestiario", monster.edizione)) || (monster.entrambe && !parts.includes(partId("bestiario", "2014"))))
-    && !parts.includes(partId("bestiario", collectionOf(monster)))).length;
+  const perEdition = (count: (edition: Edition) => number) => Object.fromEntries(EDITIONS.map(edition => [edition, count(edition)])) as Record<Edition, number>;
+  const spellCounts = perEdition(edition => spells.filter(spell => (spell.edizione === "2014" ? "2014" : "2024") === edition).length);
+  // A homebrew «Entrambe» counts in both editions.
+  const monsterCounts = perEdition(edition => monsters.filter(monster => (monster.edizione === edition || monster.entrambe)
+    && !parts.includes(partId("bestiario", collectionOf(monster)))).length);
   return [
-    ...(out.includes("incantesimi") ? [] : [{ href: "/grimorio", label: `Incantesimi · ${spellCount}` }]),
-    ...(out.includes("bestiario") ? [] : [{ href: "/bestiario", label: `Bestiario · ${monsterCount}` }]),
+    ...(out.includes("incantesimi") ? [] : [{ href: "/grimorio", label: "Incantesimi", section: "incantesimi", counts: spellCounts }]),
+    ...(out.includes("bestiario") ? [] : [{ href: "/bestiario", label: "Bestiario", section: "bestiario", counts: monsterCounts }]),
     { href: "/compendio", label: "Compendio" },
   ];
 }
@@ -52,6 +60,8 @@ export default async function HomePage() {
           className={styles.image}
         />
         <div className={styles.shade} aria-hidden="true" />
+        {/* Phones and tablets; on computers the pill is in the side column. */}
+        <EditionPill place="home" className={styles.edition} />
         <div className={styles.copy}>
           <h1 id="home-quote" className={styles.quote}>
             Il sapere è la più
@@ -61,11 +71,12 @@ export default async function HomePage() {
           <HomeSearch />
           {/* Computer only (home.module.css): the quick ways into the catalog, with the real numbers. */}
           <nav className={styles.shortcuts} aria-label="Scorciatoie">
-            {links.map(link => <Link key={link.href} href={link.href} prefetch={false}>{link.label}</Link>)}
+            <HomeShortcuts links={links} />
           </nav>
           <Link href="/segnala" prefetch={false} className={styles.report}>Segnala un errore o un consiglio</Link>
         </div>
       </section>
+      <FirstLaunch />
     </div>
   );
 }

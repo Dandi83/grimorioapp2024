@@ -81,6 +81,14 @@
   );
 }
 
+/* «Edizione 2024 ⌄» at the top right of the picture (phones and tablets). */
+.edition {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  right: 16px;
+}
+
 .copy {
   width: 100%;
   max-width: 660px;
@@ -167,6 +175,10 @@
   }
 
   .header {
+    display: none;
+  }
+
+  .edition {
     display: none;
   }
 

@@ -9,7 +9,11 @@ import { readFileSync } from "node:fs";
 // The «Aggiungi alla schermata Home» prompt would cover the bottom bar (see app.spec.mjs).
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
+    try {
+      window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5));
+      // A visitor who has already chosen «la tua edizione» (2024): the first launch has its own test (e2e/edizione.spec.mjs).
+      if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024");
+    } catch { /* no storage */ }
   });
 });
 
@@ -18,7 +22,11 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   // The public: a second phone without the admin session.
   const publicContext = await browser.newContext({ ...devices["iPhone 13"], baseURL: test.info().project.use.baseURL });
   await publicContext.addInitScript(() => {
-    try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
+    try {
+      window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5));
+      // A visitor who has already chosen «la tua edizione» (2024): the first launch has its own test (e2e/edizione.spec.mjs).
+      if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024");
+    } catch { /* no storage */ }
   });
   const pub = await publicContext.newPage();
   const errors = [];
@@ -127,7 +135,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   expect(index.sections.map(section => section.k)).toEqual(["oggetti-magici"]);
   expect(index.rows.every(row => row[3].startsWith("/oggetti-magici/"))).toBe(true);
   await pub.goto("/");
-  await pub.locator("button[aria-haspopup=dialog]").first().click();
+  await pub.getByRole("button", { name: /^Cerca nel Grimorio/ }).click();
   await pub.getByRole("dialog").getByRole("searchbox").fill("campione");
   await expect(pub.getByRole("dialog")).toContainText("Nessun risultato");
   // Narrow phones: the 404 page and the admin pages with the band, no horizontal scroll, taps of 44 px.
@@ -211,7 +219,11 @@ test("parts of the sections: every part in its page, editions, collections, clas
   const registry = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
   const publicContext = await browser.newContext({ ...devices["iPhone 13"], baseURL: test.info().project.use.baseURL });
   await publicContext.addInitScript(() => {
-    try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
+    try {
+      window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5));
+      // A visitor who has already chosen «la tua edizione» (2024): the first launch has its own test (e2e/edizione.spec.mjs).
+      if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024");
+    } catch { /* no storage */ }
   });
   const pub = await publicContext.newPage();
   const errors = [];
@@ -277,7 +289,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
 
   // Edizione 2014 of the spells hidden: no selector, the remembered 2014 gives way to 2024, 2014 cards 404, no link, no search row.
   await pub.goto("/grimorio");
-  await pub.evaluate(() => window.localStorage.setItem("grimorio.incantesimi.edizione", "2014"));
+  await pub.evaluate(() => window.localStorage.setItem("grimorio.edizione", "2014"));
   await togglePart("incantesimi", "Edizione 2014", true);
   await expect(page.getByText("1 parte nascosta")).toBeVisible();
   await pub.goto("/grimorio");
@@ -427,4 +439,50 @@ test("parts of the sections: every part in its page, editions, collections, clas
   }
   await publicContext.close();
   expect(errors).toEqual([]);
+});
+
+test("«la tua edizione» with 2014 hidden in every section: no first launch, everything in 2024, the pill does not open", async ({ page, browser }) => {
+  test.setTimeout(300_000);
+  const sections = ["incantesimi", "bestiario", "classi", "armi", "armature", "avventura", "strumenti", "oggetti-magici", "condizioni"];
+  await page.goto("/admin");
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  const opener = key => page.locator(`button[aria-controls="parti-${key}"]`);
+  const toggle2014 = async (key, hide) => {
+    if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
+    if ((await opener(key).getAttribute("aria-expanded")) !== "true") await opener(key).click();
+    const box = page.locator(`#parti-${key}`);
+    await box.getByRole("button", { name: `${hide ? "Nascondi" : "Mostra"} Edizione 2014`, exact: true }).click();
+    await expect(box.getByRole("button", { name: `${hide ? "Mostra" : "Nascondi"} Edizione 2014`, exact: true })).toBeEnabled();
+    await expect(page.getByRole("status")).toHaveText(`Edizione 2014 ora è ${hide ? "nascosta" : "visibile"}`);
+  };
+  for (const key of sections) await toggle2014(key, true);
+
+  // A visitor with nothing chosen, and one who had chosen 2014.
+  const publicContext = await browser.newContext({ ...devices["iPhone 13"], baseURL: test.info().project.use.baseURL });
+  await publicContext.addInitScript(() => window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)));
+  const pub = await publicContext.newPage();
+  await expect.poll(async () => { await pub.goto("/"); return pub.getByText("Edizione 2024", { exact: true }).filter({ visible: true }).count(); }).toBe(1);
+  await pub.waitForTimeout(500);
+  await expect(pub.getByRole("dialog", { name: "Con quale edizione giochi?" })).toHaveCount(0);
+  await expect(pub.getByRole("button", { name: /Edizione 20\d\d/ })).toHaveCount(0);
+  await expect(pub.getByRole("button", { name: "Cerca nel Grimorio 2024…" })).toBeVisible();
+  await pub.evaluate(() => window.localStorage.setItem("grimorio.edizione", "2014"));
+  for (const path of ["/grimorio", "/bestiario", "/classi/mago", "/oggetti-magici"]) {
+    await pub.goto(path);
+    await expect(pub.getByRole("group", { name: "Edizione delle regole" }), path).toHaveCount(0);
+  }
+  await pub.goto("/grimorio");
+  await expect(pub.locator('main a[href^="/spell/"]').first()).not.toHaveAttribute("href", /-2014$/);
+  await publicContext.close();
+
+  // Everything visible again; the pages built meanwhile are built again for the next server.
+  for (const key of sections) await toggle2014(key, false);
+  await page.goto("/admin/sezioni");
+  await expect(page.getByText(/parti? nascost/)).toHaveCount(0);
+  for (const path of ["/", "/grimorio", "/bestiario", "/classi", "/classi/mago", "/oggetti-magici", "/compendio/condizioni", "/equipaggiamento/armi", "/equipaggiamento/armature",
+    "/equipaggiamento/avventura", "/equipaggiamento/strumenti", "/ricerca-indice.json"]) {
+    expect((await page.request.get(path)).status(), path).toBe(200);
+  }
 });

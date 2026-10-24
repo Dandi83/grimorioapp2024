@@ -2,8 +2,6 @@
 // Lists carry only names, numbers and short labels; rule texts stay on the server.
 
 export type EquipmentEdition = "2014" | "2024";
-/** The last edition chosen in the Equipaggiamento section on this phone or browser. */
-export const EQUIPMENT_EDITION_KEY = "grimorio.equipaggiamento.edizione";
 
 export const WEAPON_GROUP_TITLES = ["Mischia semplici", "Distanza semplici", "Mischia da guerra", "Distanza da guerra"] as const;
 /** "Arma da mischia semplice"… for the weapon sheet. */
