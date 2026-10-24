@@ -113,7 +113,7 @@ function Pill({ shown, page, sheet, compact, className }: { shown: Edition; page
   const pill = useRef<HTMLButtonElement>(null);
   const look = `inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-4 text-[15px] font-bold text-white shadow-[0_2px_8px_rgb(43_33_24_/_28%)] ${ready ? "" : "invisible"}`;
   // On a narrow phone the pill of a page says only «2024 ⌄», so the title keeps its line.
-  const label = <>{compact ? <span className="max-[379px]:hidden">Edizione </span> : "Edizione "}{shown}</>;
+  const label = <>{compact ? <span className="max-[419px]:hidden">Edizione </span> : "Edizione "}{shown}</>;
   if (forced) {
     return <span className={`${look} ${className}`} style={{ backgroundColor: EDITION_COLOR[shown] }}>{label}</span>;
   }
