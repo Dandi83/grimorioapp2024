@@ -7,7 +7,11 @@ const catalogRows = page => page.locator("li.catalog-row");
 // 1.2 s over the bottom bar: on a slow machine it covered the navigation the tests tap.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
+    try {
+      window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5));
+      // A visitor who has already chosen «la tua edizione» (2024): the first launch has its own test (e2e/edizione.spec.mjs).
+      if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024");
+    } catch { /* no storage */ }
   });
 });
 
@@ -708,7 +712,7 @@ test("search in Home: field only, panel with filters, results by section, back a
   page.on("pageerror", error => errors.push(error.message));
   page.on("request", req => { if (req.url().includes("/ricerca-indice.json")) indexRequests.push(req.url()); });
   await page.goto("/");
-  const field = page.getByRole("button", { name: "Cerca in tutto il Grimorio…" });
+  const field = page.getByRole("button", { name: "Cerca nel Grimorio 2024…" });
   await expect(field).toBeVisible();
   // Only the sentence and the field: the quick suggestions were removed (21 October 2026).
   await expect(page.getByRole("list", { name: "Ricerche rapide" })).toHaveCount(0);
@@ -1601,7 +1605,8 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
     { href: "/spell/allarme-2014", name: "Allarme", list: "/admin/incantesimi", edition: "2014", search: "Cerca per nome o scuola…", query: "allarme" },
     { href: "/mostro/aboleth", name: "Aboleth", list: "/admin/mostri", edition: "2024", search: "Cerca per nome o tipo…", query: "aboleth" },
   ];
-  const homeCounts = async () => (await (await request.get("/")).text()).match(/Incantesimi · (\d+)[\s\S]*Bestiario · (\d+)/).slice(1).map(Number);
+  // The Home rendered by the server shows the numbers of 2024 (the visitor's edition is read in the browser).
+  const homeCounts = async () => (await (await request.get("/")).text()).match(/Incantesimi · (\d+) del 2024[\s\S]*Bestiario · (\d+) del 2024/).slice(1).map(Number);
   const json = async path => (await request.get(path)).text();
   // Before: everything public, the favorite saved on the visitor's phone, the link inside the Lich.
   const before = { counts: await homeCounts(), index: await json("/ricerca-indice.json") };
@@ -1660,7 +1665,7 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
   await expect.poll(() => json("/ricerca-indice.json")).not.toContain('"/spell/palla-di-fuoco"');
   const index = await json("/ricerca-indice.json");
   for (const card of cards) expect(index, card.href).not.toContain(`"${card.href}"`);
-  await expect.poll(homeCounts).toEqual([before.counts[0] - 2, before.counts[1] - 1]);
+  await expect.poll(homeCounts).toEqual([before.counts[0] - 1, before.counts[1] - 1]);
   const spellsApi = await (await request.get("/api/catalogo/incantesimi")).json();
   expect(spellsApi.spells.map(spell => spell.id)).not.toContain("palla-di-fuoco");
   expect(spellsApi.spells.map(spell => spell.id)).not.toContain("allarme-2014");

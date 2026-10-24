@@ -14,6 +14,8 @@ import { serviceWorkerEnabled } from "@/lib/service-worker-config";
 import { PUBLIC_SECTIONS } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
 import { PartsProvider } from "@/components/sections/parts-context";
+import { EditionProvider } from "@/components/edition/edition-provider";
+import { forcedEdition } from "@/lib/user-edition";
 import "./globals.css";
 import {CharacterSessionProvider} from "@/components/characters/session";
 
@@ -86,22 +88,25 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     >
       <body className="min-h-dvh bg-background text-foreground antialiased">
         <FavoritesProvider>
-          {/* Phone: one column (unchanged). Tablet (md): wider, 40 px from the sides. Computer (lg): the side
-              column on the left takes the place of the bottom bar, the content fills the rest; without the
-              column (admin area) the content is centred, up to about 1200 px. */}
-          <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x md:w-[calc(100%-80px)] md:max-w-4xl lg:max-w-[1280px] lg:has-[>[data-side-nav]]:ml-[240px] lg:has-[>[data-side-nav]]:mr-0 lg:has-[>[data-side-nav]]:w-auto lg:has-[>[data-side-nav]]:max-w-none lg:has-[>[data-side-nav]]:border-x-0">
-            {/* The offline notice sits in the page flow above the content: it never covers the controls at the top. */}
-            <ServiceWorker enabled={serviceWorkerEnabled()} hiddenPaths={hiddenPaths} partPaths={partPaths} />
-            <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))] lg:pb-0">
-              <PartsProvider hidden={hiddenParts} admin={admin}><CharacterSessionProvider><ContentFrame>{children}</ContentFrame></CharacterSessionProvider></PartsProvider>
-            </main>
-            <BottomNav hidden={hidden} admin={admin} />
-            {/* After the content in the page order (it is fixed on the left): on phones the order stays the same. */}
-            <SideNav hidden={hidden} admin={admin} />
-          </div>
-          <InstallPrompt />
-          <AppBadgeSync />
-          <AnalyticsProvider />
+          {/* «La tua edizione» (one for the whole app); held to the only edition the public sees when the other is hidden everywhere. */}
+          <EditionProvider forced={admin ? undefined : forcedEdition(hidden, hiddenParts)}>
+            {/* Phone: one column (unchanged). Tablet (md): wider, 40 px from the sides. Computer (lg): the side
+                column on the left takes the place of the bottom bar, the content fills the rest; without the
+                column (admin area) the content is centred, up to about 1200 px. */}
+            <div className="mx-auto flex min-h-dvh w-full max-w-2xl flex-col border-border/60 sm:border-x md:w-[calc(100%-80px)] md:max-w-4xl lg:max-w-[1280px] lg:has-[>[data-side-nav]]:ml-[240px] lg:has-[>[data-side-nav]]:mr-0 lg:has-[>[data-side-nav]]:w-auto lg:has-[>[data-side-nav]]:max-w-none lg:has-[>[data-side-nav]]:border-x-0">
+              {/* The offline notice sits in the page flow above the content: it never covers the controls at the top. */}
+              <ServiceWorker enabled={serviceWorkerEnabled()} hiddenPaths={hiddenPaths} partPaths={partPaths} />
+              <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))] lg:pb-0">
+                <PartsProvider hidden={hiddenParts} admin={admin}><CharacterSessionProvider><ContentFrame>{children}</ContentFrame></CharacterSessionProvider></PartsProvider>
+              </main>
+              <BottomNav hidden={hidden} admin={admin} />
+              {/* After the content in the page order (it is fixed on the left): on phones the order stays the same. */}
+              <SideNav hidden={hidden} admin={admin} />
+            </div>
+            <InstallPrompt />
+            <AppBadgeSync />
+            <AnalyticsProvider />
+          </EditionProvider>
         </FavoritesProvider>
       </body>
     </html>

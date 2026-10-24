@@ -3,6 +3,13 @@ import { test, expect } from "@playwright/test";
 // Tablet and computer layouts (the phone is covered by the other files, unchanged).
 test.use({ isMobile: false, hasTouch: false, viewport: { width: 1440, height: 900 } });
 
+// A visitor who has already chosen «la tua edizione» (2024): the first launch has its own test (e2e/edizione.spec.mjs).
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    try { if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024"); } catch { /* no storage */ }
+  });
+});
+
 const noHorizontalScroll = async (page, label) => {
   const width = page.viewportSize().width;
   expect(await page.evaluate(() => document.documentElement.scrollWidth), label).toBeLessThanOrEqual(width);
@@ -74,8 +81,10 @@ test("computer: side column, list and card side by side keeping search, edition 
   const spells2014 = await count();
   await page.goto("/");
   const shortcuts = page.getByRole("navigation", { name: "Scorciatoie" });
-  await expect(shortcuts.getByRole("link", { name: `Incantesimi · ${spells2024 + spells2014}` })).toBeVisible();
-  await expect(shortcuts.getByRole("link", { name: /^Bestiario · \d+$/ })).toBeVisible();
+  // The numbers of «la tua edizione»: 2014, the last one chosen in the list.
+  await expect(shortcuts.getByRole("link", { name: `Incantesimi · ${spells2014} del 2014` })).toBeVisible();
+  await expect(shortcuts.getByRole("link", { name: /^Bestiario · \d+ del 2014$/ })).toBeVisible();
+  expect(spells2024).toBeGreaterThan(0);
   await expect(page.getByRole("heading", { name: /Il sapere è la più/ })).toHaveCSS("font-size", "64px");
   // ⌘K / Ctrl+K opens the search.
   await page.keyboard.press("Control+k");

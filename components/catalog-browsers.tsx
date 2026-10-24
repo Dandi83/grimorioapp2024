@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useUserEdition } from "@/components/edition/edition-provider";
 import { GrimorioBrowser } from "@/components/grimorio-browser";
 import { BestiarioBrowser } from "@/components/bestiario-browser";
 import type { SpellListItem, SpellsMeta } from "@/lib/spells-types";
 import type { MonsterListItem } from "@/lib/monsters-types";
 import { readListState, returningBack } from "@/components/navigation-memory";
-import { SPELL_EDITION_KEY, type SpellFilters, type SpellListState } from "@/components/grimorio-browser";
+import type { SpellFilters, SpellListState } from "@/components/grimorio-browser";
 import { CASTING_TIMES, type CastingTime } from "@/lib/spells-types";
-import { EDITION_KEY, GS_BANDS, gsBand, type Edition, type GsBand, type MonsterFilters, type MonsterListState } from "@/components/bestiario-browser";
+import { GS_BANDS, gsBand, type GsBand, type MonsterFilters, type MonsterListState } from "@/components/bestiario-browser";
+import { isEdition } from "@/lib/user-edition";
 import { parseGs } from "@/lib/monsters-types";
 import { normalizeHabitats } from "@/lib/habitats";
 
@@ -66,8 +68,9 @@ export function GrimorioWithFilters({ spells, meta, pane }: { spells: SpellListI
   const { params, search } = useCatalogSearch(pane ? "/grimorio" : undefined);
   const filters = spellFiltersFromParams(params);
   const requested = params.get("edizione");
-  const storedEdition = useStoredEdition(SPELL_EDITION_KEY);
-  const edizione = isEdition(requested) ? requested : storedEdition ?? "2024";
+  // An edition in the address opens the list there without changing «la tua edizione».
+  const { edition: userEdition } = useUserEdition();
+  const edizione = isEdition(requested) ? requested : userEdition;
   const restored = useRestoredList<SpellListState>("grimorio", search, pane);
   const restoredFilters: SpellFilters | null = restored && Array.isArray(restored.livello)
     ? { livello: restored.livello, scuola: restored.scuola, classe: restored.classe, tempo: Array.isArray(restored.tempo) ? restored.tempo : [], concentrazione: restored.concentrazione, rituale: restored.rituale }
@@ -77,22 +80,6 @@ export function GrimorioWithFilters({ spells, meta, pane }: { spells: SpellListI
     initialEdizione={restoredFilters ? restored!.edizione : edizione}
     initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
     initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} />;
-}
-
-const isEdition = (value: string | null): value is Edition => value === "2024" || value === "2014";
-
-// The edition last chosen on this phone, read after mount like the URL filters.
-function useStoredEdition(storageKey: string = EDITION_KEY) {
-  const [stored, setStored] = useState<Edition | null>(null);
-  useEffect(() => {
-    try {
-      const value = window.localStorage.getItem(storageKey);
-      if (isEdition(value)) setStored(value);
-    } catch {
-      // storage unavailable: 2024
-    }
-  }, [storageKey]);
-  return stored;
 }
 
 /** Filters from the address: old single values (?gs=1/2, ?raccolta=animali, ?tipo=Drago) keep working. */
@@ -114,8 +101,8 @@ export function BestiarioWithFilters({ monsters, pane }: { monsters: MonsterList
   const { params, search } = useCatalogSearch(pane ? "/bestiario" : undefined);
   const filters = filtersFromParams(params);
   const requested = params.get("edizione");
-  const storedEdition = useStoredEdition();
-  const edizione = isEdition(requested) ? requested : storedEdition ?? "2024";
+  const { edition: userEdition } = useUserEdition();
+  const edizione = isEdition(requested) ? requested : userEdition;
   const restored = useRestoredList<MonsterListState>("bestiario", search, pane);
   const restoredFilters: MonsterFilters | null = restored && Array.isArray(restored.gs)
     ? { categoria: restored.categoria, gs: restored.gs, tipo: restored.tipo, taglia: restored.taglia, habitat: restored.habitat }
