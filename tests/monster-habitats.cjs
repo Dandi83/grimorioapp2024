@@ -84,8 +84,15 @@ const form = (data, habitats) => {
   assert.deepEqual(overrides.get('sciame-di-insetti'),['Artico','Foresta'],'saved under the 2024 sheet, in list order');
   assert.deepEqual(storage.resolveHabitats('sciame-di-insetti',overrides),['Artico','Foresta'],'the 2024 sheet shows the habitat set from the 2014 one');
   assert.deepEqual(storage.resolveHabitats('sciame-di-ragni-2014',overrides),['Artico','Foresta']);
+  // An empty list saved from the admin counts as «not set»: the habitat of the project file shows (rule of 24 October 2026).
   await storage.saveMonsterHabitats(database,'sciame-di-insetti',[]);
-  assert.deepEqual(storage.resolveHabitats('sciame-di-insetti',await storage.getMonsterHabitatOverrides()),[],'an explicit empty choice wins over the file');
+  const emptied = await storage.getMonsterHabitatOverrides();
+  assert.deepEqual(emptied.get('sciame-di-insetti'),[],'the empty list is saved as it is');
+  assert.ok(initial['sciame-di-insetti']?.length,'the project file has a habitat for the swarm');
+  assert.deepEqual(storage.resolveHabitats('sciame-di-insetti',emptied),initial['sciame-di-insetti'],'an empty admin list does not hide the file');
+  assert.deepEqual(storage.resolveHabitats('sciame-di-ragni-2014',emptied),initial['sciame-di-insetti'],'nor on the linked 2014 sheet');
+  assert.deepEqual(storage.resolveHabitats('aboleth',new Map([['aboleth',['Urbano']]])),['Urbano'],'a list with at least one habitat still wins over the file');
+  assert.deepEqual(storage.resolveHabitats('creatura-dell-admin',new Map([['creatura-dell-admin',[]]])),[],'empty and not in the file: no habitat');
 
   // Admin actions: create and edit in the same transaction; project-only sheets save only the habitat.
   const actions = load('app/actions/admin-monsters.ts');

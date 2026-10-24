@@ -19,10 +19,14 @@ export async function getMonsterHabitatOverrides(): Promise<Map<string, Habitat[
   }
 }
 
-/** The admin choice wins, even when empty; otherwise the project file. */
+/**
+ * The admin choice wins when it names at least one habitat; an empty saved list counts as «not set»
+ * (rule of 24 October 2026: it never hides the habitat of the project file).
+ */
 export function resolveHabitats(id: string, overrides: Map<string, Habitat[]>): Habitat[] {
   const key = habitatKey(id);
-  return overrides.get(key) ?? fromFile.get(key) ?? [];
+  const chosen = overrides.get(key);
+  return chosen?.length ? chosen : fromFile.get(key) ?? [];
 }
 
 /** Called inside the same transaction as the creature and its edition. */
