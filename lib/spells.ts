@@ -15,6 +15,10 @@ import { repairCatalogSpell } from "./spell-catalog-repairs";
 import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { spellName } from "./spell-name";
 import { repairSpellText } from "./spell-text-repairs";
+import type { CardSource } from "./card-display";
+import srdSpellIndex from "./data/spell-reference-index.json";
+import legacySpellIndex from "./data/spell-reference-index-2014.json";
+import originalIds from "./data/original-description-ids.json";
 
 // Re-export pure helpers/types so existing imports from "@/lib/spells"
 // keep working. The DB access below is server-only.
@@ -31,12 +35,23 @@ interface RawRow {
   descrizione: string;
 }
 
+/** The cards of the project files (SRD 2024 and 2014, original summaries): the others were added in the reserved area. */
+const FILE_SPELL_IDS = new Set([...srdSpellIndex.map(spell => spell.id), ...legacySpellIndex.spells.map(spell => spell.id), ...originalIds]);
+
+/** The label of a card: its verified source, «Aggiunta da te» for a card made here, none for an SRD card edited. */
+export function spellCardSource(spell: Pick<Spell, "id" | "descrizione"> & Partial<Spell>): CardSource | undefined {
+  if (getLegacySpellSource(spell)) return "SRD 5.1";
+  if (getSrdSource(spell.id, spell.descrizione)) return "SRD 5.2.1";
+  if (getOriginalSource(spell.id, spell.descrizione)) return "Sintesi originale";
+  return FILE_SPELL_IDS.has(spell.id) || spellFileRow(spell.id) ? undefined : "Aggiunta da te";
+}
+
 function toSpell(r: RawRow, repair = true): Spell {
   // The reserved area edits the stored values, so it never sees the display-only repairs.
   r = applyOriginalDescription(applySrdDescription(repair ? repairCatalogSpell(r) : r));
   if (repair) r = { ...r, descrizione: repairSpellText(r.id, r.descrizione) };
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
-  return {
+  const spell: Spell = {
     edizione: isLegacySpellId(r.id) ? "2014" : getSrdSource(r.id, r.descrizione) || getOriginalSource(r.id, r.descrizione) ? "2024" : undefined,
     id: r.id,
     nome_italiano: r.nome_italiano,
@@ -50,6 +65,8 @@ function toSpell(r: RawRow, repair = true): Spell {
     scuola,
     classi,
   };
+  const fonte_scheda = spellCardSource(spell);
+  return fonte_scheda ? { ...spell, fonte_scheda } : spell;
 }
 
 /** A spell card read from the project files (2014 SRD 5.1, SRD 2024 additions) where the site shows them. */

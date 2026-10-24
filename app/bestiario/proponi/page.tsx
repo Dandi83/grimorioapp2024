@@ -5,7 +5,9 @@ import { ProposalForm } from "@/components/homebrew/proposal-form";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { turnstileConfigured } from "@/lib/feedback";
 import { partId } from "@/lib/public-sections";
-import { partState } from "@/lib/section-view";
+import { partState, publicLinksOut } from "@/lib/section-view";
+import { CardDisplayProvider } from "@/components/card-display-context";
+import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 
 export const metadata = {
   title: "Proponi una creatura — Bestiario Il Grimorio.App",
@@ -25,7 +27,10 @@ export default async function ProposePage() {
         Una creatura homebrew per la raccolta della community. Compila la scheda come nel Bestiario: l’amministratore la guarda prima di pubblicarla.
       </p>
       <div className="mt-4">
-        <ProposalForm turnstileSiteKey={turnstileConfigured() ? process.env.TURNSTILE_SITE_KEY : undefined} />
+        {/* The preview of the sheet links spells and conditions as the published sheet will. */}
+        <CardDisplayProvider value={{ catalog: await getSpellReferenceCatalog(), hidden: await publicLinksOut() }}>
+          <ProposalForm turnstileSiteKey={turnstileConfigured() ? process.env.TURNSTILE_SITE_KEY : undefined} />
+        </CardDisplayProvider>
       </div>
     </div>
   );

@@ -61,7 +61,7 @@ function load(relative, deps = {}) {
   const spell = {id: 'new-manual-spell', descrizione: 'Testo originale'};
   const provider = load('lib/srd-monsters.ts');
   const action = load('app/actions/admin-editions.ts', {
-    'next/cache': {revalidatePath: p => revalidated.push(p)},
+    'next/cache': {revalidatePath: p => revalidated.push(p), updateTag: () => {}},
     '@/lib/admin-auth': {isAdmin: async () => admin},
     '@/lib/content-editions': storage,
     '@/lib/monsters': {getMonsterById: async id => id === monster.id ? monster : provider.previewMonsterById(id, 'preview')},

@@ -11,6 +11,9 @@ import { safeReturnPath } from "@/lib/admin-edit-link";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import { hiddenCardPaths } from "@/lib/section-visibility";
 import { homebrewMonster, publishedHomebrew } from "@/lib/homebrew";
+import { publicLinksOut } from "@/lib/section-view";
+import { CardDisplayProvider } from "@/components/card-display-context";
+import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 
 type Params = Record<string, string | string[] | undefined>;
 
@@ -27,13 +30,17 @@ export async function AdminEditorsView({ tab, searchParams }: { tab: "spells" | 
     redirect(`/admin/${tab === "spells" ? "incantesimi" : "mostri"}/${encodeURIComponent(params.modifica)}${ritorno ? `?${new URLSearchParams({ ritorno })}` : ""}`);
   }
   const [spells, monsters, edition, hidden, homebrew] = await Promise.all([getAdminSpells(), getAllMonsters(), adminEdition(), hiddenCardPaths().catch(() => []), publishedHomebrew().catch(() => [])]);
+  // After the lists (one more read, cached): the spells the previews link and the pages hidden from the public.
+  const catalog = await getSpellReferenceCatalog();
+  const out = await publicLinksOut();
   // Homebrew creatures of this edition («Entrambe» in both), with their plain draft for the guided editor.
   const homebrewHere = homebrew.filter(row => row.edizione === edition || row.edizione === "entrambe");
   // Cards hidden from the site with the eye (addresses), as ids of each list.
   const hiddenOf = (prefix: string) => hidden.filter(path => path.startsWith(prefix)).map(path => path.slice(prefix.length));
   // Only the chosen edition (same rule as the public lists): no card changes, it is only a filter.
-  return <AdminDashboard edition={edition} hiddenSpells={hiddenOf("/spell/")} hiddenMonsters={hiddenOf("/mostro/")} initialTab={tab}
+  // The previews of the editors link as the public cards (lib/card-display.ts).
+  return <CardDisplayProvider value={{ catalog, hidden: out }}><AdminDashboard edition={edition} hiddenSpells={hiddenOf("/spell/")} hiddenMonsters={hiddenOf("/mostro/")} initialTab={tab}
     spells={spells.filter(spell => spellEdition(spell) === edition)}
     monsters={[...monsters.filter(monster => (usesLegacyMonsterRules(monster) ? "2014" : "2024") === edition), ...homebrewHere.map(homebrewMonster)]}
-    homebrewDrafts={Object.fromEntries(homebrewHere.map(row => [row.id, row.scheda]))} />;
+    homebrewDrafts={Object.fromEntries(homebrewHere.map(row => [row.id, row.scheda]))} /></CardDisplayProvider>;
 }

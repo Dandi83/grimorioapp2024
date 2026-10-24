@@ -44,7 +44,7 @@ function load(relative, deps = {}) {
     '@/components/meta-cell': load('components/meta-cell.tsx'),
     '@/components/share-button':{ShareButton:()=>null},'@/components/feedback/report-link':{ReportLink:()=>null},'@/components/favorite-button': {FavoriteButton: () => null},
     '@/components/html-text': load('components/html-text.tsx'),
-    '@/lib/monsters': {getMonsterById: async () => selected},
+    '@/lib/monsters': {getMonsterById: async () => selected},'@/lib/spell-reference-catalog':{getSpellReferenceCatalog:async()=>undefined},
     '@/lib/spell-references': load('lib/spell-references.ts'),
     '@/lib/conditions': load('lib/conditions.ts'),
     '@/lib/monsters-types': types,

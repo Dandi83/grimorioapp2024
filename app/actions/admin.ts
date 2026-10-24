@@ -66,7 +66,10 @@ export async function logoutAction() {
 
 function revalidateSpell(id: string) {
   updateTag("spells");
-  for (const route of ["/", "/grimorio", "/preferiti", "/admin", `/spell/${id}`]) revalidatePath(route);
+  for (const route of ["/", "/grimorio", "/preferiti", "/admin", `/spell/${id}`, "/ricerca-indice.json"]) revalidatePath(route);
+  // Every card may name this spell (lib/spell-reference-catalog.ts): its links follow a new name, edition or card at once.
+  revalidatePath("/spell/[id]", "page");
+  revalidatePath("/mostro/[id]", "page");
 }
 
 function fromForm(formData: FormData): SpellInput {

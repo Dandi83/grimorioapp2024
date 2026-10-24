@@ -1,6 +1,7 @@
 // Tipi e utility PURE (nessun accesso al DB) — sicure da importare sia lato
 // client che lato server.
 import originalDescriptionIds from "./data/original-description-ids.json";
+import type { CardSource } from "./card-display";
 
 export interface Spell {
   edizione?: "2014" | "2024";
@@ -15,6 +16,8 @@ export interface Spell {
   nome_mostrato?: string;
   /** Admin list only: a card read from the project files (SRD), not yet a database row. */
   da_file?: true;
+  /** The label of the card (lib/spells.ts spellCardSource): none for an SRD card edited in the reserved area. */
+  fonte_scheda?: CardSource;
   id: string;
   nome_italiano: string;
   livello: string;

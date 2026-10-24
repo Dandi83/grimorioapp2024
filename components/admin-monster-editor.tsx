@@ -128,6 +128,8 @@ export function MonsterEditor({
       ...entries,
       habitat: new FormData(form.current).getAll("habitat"),
       id: monster?.id || "unsaved-monster",
+      // The label of the sheet: a new sheet is «Aggiunta da te», the others keep theirs.
+      fonte_scheda: monster ? monster.fonte_scheda : "Aggiunta da te",
       edizione: entries.edition || edition,
     };
     for (const field of ABILITIES) snapshot[field.name] = Number(entries[field.name]) || 10;

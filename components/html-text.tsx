@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from "react";
 // Relative path: the test harnesses load this file without the "@/" alias.
 import spellIndex from "../lib/data/spell-reference-index.json";
+import { normalizeLayout } from "../lib/display-layout";
 
 /**
  * Minimal, safe renderer for spell descriptions.
@@ -79,10 +80,13 @@ const RULE_LABEL = new RegExp(
 const normalizeName = (text: string) => text.toLocaleLowerCase("it").replace(/\s+/g, " ").trim();
 const SPELL_NAMES = new Set(spellIndex.map(spell => normalizeName(spell.name)));
 
-/** True when italic text is only catalog spell names, e.g. "Cono di freddo, volare", "palla di fuoco (di 4º livello)" or "armatura magica*". */
-function isSpellNameText(text: string) {
+/**
+ * True when italic text is only catalog spell names, e.g. "Cono di freddo, volare", "palla di fuoco (di 4º livello)"
+ * or "armatura magica*". known: the spells this text links (cards of the database too, see lib/spell-reference-catalog.ts).
+ */
+function isSpellNameText(text: string, known: ReadonlySet<string>) {
   const parts = text.replace(/\([^)]*\)/g, " ").split(/[,;]/).map(part => normalizeName(part).replace(/\*+$/, "").replace(/[.!:]$/, "").trim()).filter(Boolean);
-  return parts.length > 0 && parts.every(part => SPELL_NAMES.has(part));
+  return parts.length > 0 && parts.every(part => SPELL_NAMES.has(part) || known.has(part));
 }
 
 /**
@@ -92,14 +96,14 @@ function isSpellNameText(text: string) {
 // A casting-list line: "1° livello (4 slot):", "A volontà:", "3/giorno ciascuno:"...
 const CASTING_LINE = /^\s*(?:Trucchetti\b[^:]*|\d+°\s*livello[^:]*|A volontà|\d+\s*\/\s*giorno[^:]*|\d+ volte al giorno[^:]*):/i;
 
-function normalizeEmphasis(html: string) {
+function normalizeEmphasis(html: string, known: ReadonlySet<string> = new Set()) {
   return html
     .replace(/<(em|i)>([\s\S]*?)<\/\1>/gi, (_whole, _tag, inner: string, offset: number, source: string) => {
       // Italics in a casting list are spell names even when the 2014 name differs from the catalog.
       const line = source.slice(0, offset).split(/<br\s*\/?>/i).pop()!.replace(/<[^>]+>/g, "");
       // A grouped list (label on its own line, see MonsterText) starts the paragraph with the label.
       const group = CASTING_LINE.test(source.replace(/<[^>]+>/g, ""));
-      const spells = CASTING_LINE.test(line) || group || isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " ")));
+      const spells = CASTING_LINE.test(line) || group || isSpellNameText(decodeEntities(inner.replace(/<[^>]+>/g, " ")), known);
       return spells ? `<spellname>${inner}</spellname>` : inner;
     })
     .replace(/<\s*\/?\s*(?:em|i)\s*>/gi, "")
@@ -167,7 +171,7 @@ function InlineHtmlText({ html, damageIcons = false, references = [], spellRefer
     );
   };
 
-  const source = normalizeEmphasis(html || "");
+  const source = normalizeEmphasis(html || "", new Set(spellReferences.map(reference => normalizeName(reference.label))));
   let m: RegExpExecArray | null;
   TAG_RE.lastIndex = 0;
   while ((m = TAG_RE.exec(source)) !== null) {
@@ -223,9 +227,10 @@ function SpellProse({ html, damageIcons = false, references = [], spellReference
   return <div className="min-w-0 max-w-full">{sections}</div>;
 }
 
-/** Preserve the source tables without allowing attributes or executable markup. */
-export function HtmlText({ html, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
-  if (!html?.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />;
+/** Preserve the source tables without allowing attributes or executable markup. The layout of the PDF is repaired first (lib/display-layout.ts). */
+export function HtmlText({ html: source, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
+  const html = normalizeLayout(source || "");
+  if (!html.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />;
   const parts = html.split(/(<pre>[\s\S]*?<\/pre>)/g);
   return (
     <div className="min-w-0 max-w-full space-y-5">
@@ -249,20 +254,12 @@ export function HtmlText({ html, damageIcons = false, references = [], spellRefe
   );
 }
 
-/** Display-only cleanup of PDF paragraph breaks in creature stat blocks. */
-export function MonsterText({ html, ...props }: HtmlTextProps) {
-  if (!html) return null;
+/** Creature stat blocks: the layout of the PDF repaired (lib/display-layout.ts, e.g. a bold title split by a page), then one paragraph per block. */
+export function MonsterText({ html: source, ...props }: HtmlTextProps) {
+  if (!source) return null;
+  const html = normalizeLayout(source);
   if (html.includes("<pre>")) return <HtmlText html={html} {...props} />;
   let formatted = html;
-  for (let pass = 0; pass < 4; pass++) {
-    const repaired = formatted.replace(/<(strong|b)>([^<]*)<\/\1>\s*(?:<br\s*\/?>\s*)+<(strong|b)>([^<]*)<\/\3>/gi, (whole, tag, left: string, _rightTag, right: string) => {
-      const open = (left.match(/\(/g) || []).length;
-      const close = (left.match(/\)/g) || []).length;
-      return open > close ? `<${tag}>${left.trimEnd()} ${right.trimStart()}</${tag}>` : whole;
-    });
-    if (repaired === formatted) break;
-    formatted = repaired;
-  }
   // 2014 casting lists print their labels in plain text at the start of a line ("1° livello (4 slot):"):
   // shown in bold like the 2024 labels, so every sheet groups its spell lists the same way.
   formatted = formatted.replace(/(^|<br\s*\/?>)\s*((?:Trucchetti\s*\(a volontà\)|\d+°\s*livello\s*\([^)<]*\)|A\s+volontà|\d+\s*\/\s*giorno(?:\s+ciascuno)?|\d+\s+volte\s+al\s+giorno[^:<]*):)\s*/gi, "$1<strong>$2</strong> ");

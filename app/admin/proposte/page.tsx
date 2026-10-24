@@ -10,6 +10,9 @@ import { estimateChallenge, statsOf, VERDICT_LABEL, type CrReference } from "@/l
 import { HOMEBREW_EDITION_LABEL, draftActionText, draftToMonster, mismatchedFormat, similarName } from "@/lib/homebrew-types";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { hiddenPartIds } from "@/lib/section-visibility";
+import { publicLinksOut } from "@/lib/section-view";
+import { CardDisplayProvider } from "@/components/card-display-context";
+import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Proposte homebrew — Il Grimorio.App", robots: { index: false, follow: false } };
@@ -40,7 +43,10 @@ export default async function ProposalsPage({ searchParams }: { searchParams: Pr
     };
   });
   const tab = (on: boolean) => `inline-flex min-h-11 shrink-0 items-center rounded-[22px] border-[1.5px] px-3.5 text-sm font-semibold ${on ? "border-primary bg-primary text-primary-foreground" : "border-chip-border bg-card text-primary"}`;
+  // «Correggi» shows the preview of the sheet: the same links as the published sheet.
+  const display = { catalog: await getSpellReferenceCatalog(), hidden: await publicLinksOut() };
   return (
+    <CardDisplayProvider value={display}>
     <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4 lg:max-w-[1200px]">
       <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
       <h1 className="font-serif text-[30px] font-bold text-primary">Proposte homebrew</h1>
@@ -63,5 +69,6 @@ export default async function ProposalsPage({ searchParams }: { searchParams: Pr
         </ul>
       )}
     </div>
+    </CardDisplayProvider>
   );
 }

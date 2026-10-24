@@ -17,6 +17,7 @@ import { HomebrewLabel, HomebrewNote } from "@/components/homebrew/homebrew-shee
 import { authorLine } from "@/lib/homebrew-types";
 
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
+import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { ReportLink } from "@/components/feedback/report-link";
 
 /** A creature of a hidden collection (Mostri, Animali) is not found; true when the administrator sees it hidden. */
@@ -105,7 +106,7 @@ export default async function MonsterDetailPage({
         label={homebrew ? <HomebrewLabel edizione={monster.homebrew_edizione!} /> : <MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
         byline={homebrew ? authorLine(monster.homebrew_autore, "card") : undefined}
       />
-      <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} />
+      <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} catalog={await getSpellReferenceCatalog()} />
       {source && (
         <aside aria-label="Fonte della scheda" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: {source.document} italiano — {source.sourceName}.</p>

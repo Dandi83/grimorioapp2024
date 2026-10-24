@@ -11,6 +11,9 @@ import { safeReturnPath } from "@/lib/admin-edit-link";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import { hiddenCardPaths } from "@/lib/section-visibility";
 import { publishedHomebrew } from "@/lib/homebrew";
+import { publicLinksOut } from "@/lib/section-view";
+import { CardDisplayProvider } from "@/components/card-display-context";
+import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 
 type Params = Record<string, string | string[] | undefined>;
 
@@ -49,5 +52,11 @@ export async function AdminCardEditorView({ kind, id, searchParams }: { kind: "i
     const here = new URLSearchParams({ impostata: "1", ...(ritorno ? { ritorno } : {}) });
     redirect(`/admin/edizione?${new URLSearchParams({ valore: wanted, poi: `/admin/${kind === "incantesimo" ? "incantesimi" : "mostri"}/${encodeURIComponent(id)}?${here}` })}`);
   }
-  return <AdminCardEditor card={card} edition={wanted ?? chosen} back={ritorno ?? publicPath} hidden={hidden.includes(publicPath)} />;
+  // The preview of the editor links as the public card (lib/card-display.ts).
+  const display = { catalog: await getSpellReferenceCatalog(), hidden: await publicLinksOut() };
+  return (
+    <CardDisplayProvider value={display}>
+      <AdminCardEditor card={card} edition={wanted ?? chosen} back={ritorno ?? publicPath} hidden={hidden.includes(publicPath)} />
+    </CardDisplayProvider>
+  );
 }

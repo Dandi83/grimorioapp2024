@@ -1,23 +1,41 @@
 import index from "./data/spell-reference-index.json";
 import legacyIndex from "./data/spell-reference-index-2014.json";
 
-type SpellReference = { id: string; name: string };
+export type SpellReference = { id: string; name: string };
+/**
+ * The spell names the cards can link: 2024 names lead to 2024 cards, 2014 names (with the SRD 5.1 aliases)
+ * to 2014 cards. The files below are the SRD names; lib/spell-reference-catalog.ts adds every card of the
+ * catalog as the site shows it (database included: added or renamed cards, with their edition).
+ */
+export interface SpellReferenceCatalog { current: readonly SpellReference[]; legacy: readonly SpellReference[] }
+
 // 2014 creature sheets name their spells as in the SRD 5.1: these names lead only to 2014 cards.
 const published = new Set(legacyIndex.spells.map(spell => spell.id));
-const legacySpellReferenceIndex: SpellReference[] = [
-  ...legacyIndex.spells,
-  ...Object.entries(legacyIndex.alias as Record<string, string>).filter(([, id]) => published.has(id)).map(([name, id]) => ({ id, name })),
-];
+export const fileSpellCatalog: SpellReferenceCatalog = {
+  current: index,
+  legacy: [
+    ...legacyIndex.spells,
+    ...Object.entries(legacyIndex.alias as Record<string, string>).filter(([, id]) => published.has(id)).map(([name, id]) => ({ id, name })),
+  ],
+};
 const normalize = (text: string) => text.toLocaleLowerCase("it").replace(/\s+/g," ").trim();
-const names = (list: SpellReference[]) => new Set(list.map(spell => normalize(spell.name)));
-const spellNames = names(index);
-// 2014 sheets keep the italics they already had; only 2014 cards become links.
-const legacySpellNames = new Set([...spellNames, ...names(legacySpellReferenceIndex)]);
+const names = (list: readonly SpellReference[]) => new Set(list.map(spell => normalize(spell.name)));
+const namesCache = new WeakMap<SpellReferenceCatalog, { current: Set<string>; legacy: Set<string> }>();
+/** 2014 sheets keep the italics they already had: their names are those of both lists; only 2014 cards become links. */
+function knownNames(catalog: SpellReferenceCatalog) {
+  let known = namesCache.get(catalog);
+  if (!known) {
+    const current = names(catalog.current);
+    known = { current, legacy: new Set([...current, ...names(catalog.legacy)]) };
+    namesCache.set(catalog, known);
+  }
+  return known;
+}
 const FREQUENCY = /^(\s*(?:<(?:strong|b|em|i)>\s*)*(?:a\s+volontà|\d+\s*(?:\/\s*(?:giorno|riposo)|volt[ae]\s+al\s+giorno))[^:<]*:\s*(?:<\/(?:strong|b|em|i)>\s*)?)([\s\S]*)$/i;
 
 /** Recognize exact catalog names only in explicit casting lists, never ordinary prose. */
-export function formatMonsterSpellLists(html: string, legacy = false): string {
-  const known = legacy ? legacySpellNames : spellNames;
+export function formatMonsterSpellLists(html: string, legacy = false, catalog: SpellReferenceCatalog = fileSpellCatalog): string {
+  const known = legacy ? knownNames(catalog).legacy : knownNames(catalog).current;
   let inList = false;
   return html.split(/(<br\s*\/?>|\r?\n)/gi).map(line => {
     if (/^(?:<br\s*\/?>|\r?\n)$/i.test(line)) return line;
@@ -41,11 +59,46 @@ export function formatMonsterSpellLists(html: string, legacy = false): string {
 }
 
 /** Explicit italics and exact names in casting lists are eligible for links. */
-export function findReferencedSpells(html: string, legacy = false): SpellReference[] {
-  const italic = [...formatMonsterSpellLists(html, legacy).matchAll(/<(em|i)>([\s\S]*?)<\/\1>/gi)].map(match => normalize(match[2].replace(/<[^>]*>/g," ").replace(/\([^)]*\)/g,"")));
-  return (legacy ? legacySpellReferenceIndex : index).filter(spell => italic.some(text => text.split(/[,;]/).some(part => normalize(part).replace(/[.!*]+$/, "") === normalize(spell.name))));
+export function findReferencedSpells(html: string, legacy = false, catalog: SpellReferenceCatalog = fileSpellCatalog): SpellReference[] {
+  const italic = [...formatMonsterSpellLists(html, legacy, catalog).matchAll(/<(em|i)>([\s\S]*?)<\/\1>/gi)].map(match => normalize(match[2].replace(/<[^>]*>/g," ").replace(/\([^)]*\)/g,"")));
+  const seen = new Set<string>();
+  return (legacy ? catalog.legacy : catalog.current).filter(spell => {
+    const name = normalize(spell.name);
+    const key = `${spell.id}|${name}`;
+    if (seen.has(key) || !italic.some(text => text.split(/[,;]/).some(part => normalize(part).replace(/[.!*]+$/, "") === name))) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
-export function inlineSpellReferences(html: string, legacy = false) {
-  return findReferencedSpells(html, legacy).map(spell => ({ label: spell.name, href: `/spell/${spell.id}` }));
+export function inlineSpellReferences(html: string, legacy = false, catalog: SpellReferenceCatalog = fileSpellCatalog) {
+  return findReferencedSpells(html, legacy, catalog).map(spell => ({ label: spell.name, href: `/spell/${spell.id}` }));
 }
+
+/**
+ * Cards written in the reserved area or proposed (plain text, no italics): the catalog names of two words or
+ * more written in the prose become spell names, as the italics of the SRD cards («palla di fuoco»). Bold
+ * titles, existing italics and tables are left as they are; a name after an article or an elision is ordinary
+ * prose («un'arma magica»); one-word names («luce», «scudo») only in casting lists or in italics.
+ */
+export function markSpellNames(html: string, legacy = false, catalog: SpellReferenceCatalog = fileSpellCatalog): string {
+  if (!html) return html;
+  const list = [...new Set((legacy ? catalog.legacy : catalog.current).map(spell => normalize(spell.name)))]
+    .filter(name => name.split(" ").length > 1)
+    .sort((a, b) => b.length - a.length);
+  if (!list.length) return html;
+  const escape = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const matcher = new RegExp(`(?<![\\p{L}\\p{N}])(${list.map(name => name.split(" ").map(escape).join("\\s+")).join("|")})(?![\\p{L}\\p{N}])`, "giu");
+  let depth = 0;
+  return html.split(/(<[^>]+>)/g).map(part => {
+    if (part.startsWith("<")) {
+      if (/^<\s*(?:strong|b|em|i|pre)\b/i.test(part)) depth++;
+      else if (/^<\s*\/\s*(?:strong|b|em|i|pre)\b/i.test(part)) depth = Math.max(0, depth - 1);
+      return part;
+    }
+    // After an article or an elision the words are ordinary prose («diventa un'arma magica»), not the spell.
+    return depth ? part : part.replace(matcher, (name: string, _group: string, offset: number) => (ARTICLE_BEFORE.test(part.slice(0, offset)) ? name : `<em>${name}</em>`));
+  }).join("");
+}
+
+const ARTICLE_BEFORE = /(?:['’]|(?:^|[^\p{L}])(?:un|una|uno|il|lo|la|i|gli|le|del|dello|della|dei|degli|delle|al|allo|alla|ai|agli|alle|dal|dallo|dalla|nel|nello|nella|sul|sullo|sulla|ogni|questo|questa|quello|quella|suo|sua|suoi|sue|loro|altro|altra)\s+)$/iu;
