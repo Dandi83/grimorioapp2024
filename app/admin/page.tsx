@@ -67,14 +67,17 @@ function Row({ href, name, Icon, count, status, pill, hidden }: {
     <li>
       <Link href={href} aria-label={label} className="flex min-h-14 items-center gap-3 px-4 py-2 focus-visible:outline-[3px] focus-visible:-outline-offset-[3px] focus-visible:outline-primary">
         <Icon size={22} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />
-        <span className="min-w-0 shrink-0 grow">
-          <span className="block whitespace-nowrap font-serif text-[19px] font-bold leading-tight text-foreground">{name}</span>
-          {hidden === "nascosta" && <span className="mt-1 inline-block rounded-[6px] bg-[#2B2118] px-1.5 text-[11px] font-bold leading-4 text-[#E0A21A]">Nascosta</span>}
-          {hidden === "parti" && <span className="mt-1 inline-block rounded-[6px] border border-[#2B2118] px-1.5 text-[11px] font-bold leading-[14px] text-[#2B2118]">Parti nascoste</span>}
+        {/* Name and value on one line; on a narrow phone a long value goes under the name, still on the right. */}
+        <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-0.5">
+          <span className="min-w-0">
+            <span className="block whitespace-nowrap font-serif text-[19px] font-bold leading-tight text-foreground">{name}</span>
+            {hidden === "nascosta" && <span className="mt-1 inline-block rounded-[6px] bg-[#2B2118] px-1.5 text-[11px] font-bold leading-4 text-[#E0A21A]">Nascosta</span>}
+            {hidden === "parti" && <span className="mt-1 inline-block rounded-[6px] border border-[#2B2118] px-1.5 text-[11px] font-bold leading-[14px] text-[#2B2118]">Parti nascoste</span>}
+          </span>
+          {pill ? <span className="ml-auto whitespace-nowrap rounded-full bg-primary px-2.5 py-0.5 text-[14px] font-bold tabular-nums text-primary-foreground">{pill}</span>
+            : typeof count === "number" ? <span className="ml-auto text-[16px] font-semibold tabular-nums text-muted">{count}</span>
+            : status ? <span className="ml-auto whitespace-nowrap text-[14px] text-muted">{status}</span> : null}
         </span>
-        {pill ? <span className="shrink-0 whitespace-nowrap rounded-full bg-primary px-2.5 py-0.5 text-[14px] font-bold tabular-nums text-primary-foreground">{pill}</span>
-          : typeof count === "number" ? <span className="shrink-0 text-[16px] font-semibold tabular-nums text-muted">{count}</span>
-          : status ? <span className="min-w-0 text-right text-[14px] leading-tight text-muted">{status}</span> : null}
         <ChevronRight size={18} strokeWidth={2.2} className="shrink-0 text-[#B9A57C]" aria-hidden="true" />
       </Link>
     </li>
