@@ -153,6 +153,7 @@ export const PAGE_NAMES: Record<string, string> = {
   "/manuale": "Manuale",
   "/fonti": "Fonti e licenze",
   "/info": "Info e note legali",
+  "/termini": "Termini d’uso",
   "/privacy": "Privacy",
 };
 
