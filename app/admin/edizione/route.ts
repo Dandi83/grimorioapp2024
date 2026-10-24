@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
   const valore = request.nextUrl.searchParams.get("valore");
   const next = safeReturnPath(request.nextUrl.searchParams.get("poi"));
   const target = next && next.startsWith("/admin/") ? next : "/admin";
-  const response = NextResponse.redirect(new URL(target, request.nextUrl.origin), 303);
-  response.headers.set("Cache-Control", "private, no-store");
+  // A relative address: always this site, whatever host the server believes it has.
+  const response = new NextResponse(null, { status: 303, headers: { Location: target, "Cache-Control": "private, no-store" } });
   if (isAdminEdition(valore) && (await isAdmin())) response.cookies.set(ADMIN_EDITION_COOKIE, valore, adminEditionCookieOptions());
   return response;
 }
