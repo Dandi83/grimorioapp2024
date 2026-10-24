@@ -78,8 +78,8 @@ export function inlineSpellReferences(html: string, legacy = false, catalog: Spe
 /**
  * Cards written in the reserved area or proposed (plain text, no italics): the catalog names of two words or
  * more written in the prose become spell names, as the italics of the SRD cards («palla di fuoco»). Bold
- * titles, existing italics and tables are left as they are; one-word names («luce», «scudo») only in casting
- * lists or in italics, never in ordinary prose.
+ * titles, existing italics and tables are left as they are; a name after an article or an elision is ordinary
+ * prose («un'arma magica»); one-word names («luce», «scudo») only in casting lists or in italics.
  */
 export function markSpellNames(html: string, legacy = false, catalog: SpellReferenceCatalog = fileSpellCatalog): string {
   if (!html) return html;
@@ -96,6 +96,9 @@ export function markSpellNames(html: string, legacy = false, catalog: SpellRefer
       else if (/^<\s*\/\s*(?:strong|b|em|i|pre)\b/i.test(part)) depth = Math.max(0, depth - 1);
       return part;
     }
-    return depth ? part : part.replace(matcher, "<em>$1</em>");
+    // After an article or an elision the words are ordinary prose («diventa un'arma magica»), not the spell.
+    return depth ? part : part.replace(matcher, (name: string, _group: string, offset: number) => (ARTICLE_BEFORE.test(part.slice(0, offset)) ? name : `<em>${name}</em>`));
   }).join("");
 }
+
+const ARTICLE_BEFORE = /(?:['’]|(?:^|[^\p{L}])(?:un|una|uno|il|lo|la|i|gli|le|del|dello|della|dei|degli|delle|al|allo|alla|ai|agli|alle|dal|dallo|dalla|nel|nello|nella|sul|sullo|sulla|ogni|questo|questa|quello|quella|suo|sua|suoi|sue|loro|altro|altra)\s+)$/iu;

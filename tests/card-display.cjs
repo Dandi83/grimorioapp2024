@@ -22,6 +22,9 @@ const catalog = {
 assert.equal(markSpellNames("Lancia palla di fuoco, poi luce.", false, catalog), "Lancia <em>palla di fuoco</em>, poi luce.");
 assert.equal(markSpellNames("<strong>Palla di fuoco.</strong> Il mago lancia Fiamma del Grimorio.", false, catalog), "<strong>Palla di fuoco.</strong> Il mago lancia <em>Fiamma del Grimorio</em>.");
 assert.equal(markSpellNames("Ha già <em>palla di fuoco</em> in corsivo.", false, catalog), "Ha già <em>palla di fuoco</em> in corsivo.");
+// Ordinary prose after an article or an elision: «un'arma magica», «la luce diurna» are not the spells.
+assert.equal(markSpellNames("Un'arma non magica che l'incantatore tocca diventa un'arma magica.", true, catalog), "Un'arma non magica che l'incantatore tocca diventa un'arma magica.");
+assert.equal(markSpellNames("Illumina come la luce diurna, poi lancia luce diurna.", false, catalog), "Illumina come la luce diurna, poi lancia <em>luce diurna</em>.");
 assert.deepEqual(inlineSpellReferences(markSpellNames("Lancia Fiamma del Grimorio.", false, catalog), false, catalog), [{ label: "Fiamma del grimorio", href: "/spell/fiamma-del-grimorio" }]);
 // The edition: a 2014 card links the 2014 spells only (Amicizia added by the administrator).
 assert.deepEqual(inlineSpellReferences("A volontà: <em>amicizia</em>", true, catalog), [{ label: "Amicizia", href: "/spell/amicizia-2" }]);
