@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
-import { EditionButtons, usePart } from "@/components/sections/parts-context";
+import { usePart } from "@/components/sections/parts-context";
+import { SectionEditionPill } from "@/components/edition/edition-pill";
 import { ParentLink } from "@/components/section-tiles";
 import type { ConditionRow } from "@/lib/conditions-list";
 import type { EquipmentEdition } from "@/lib/equipment-types";
@@ -18,9 +19,10 @@ export function ConditionsList({ rows, only2024 }: { rows: Record<EquipmentEditi
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/compendio" label="Compendio" />
-      <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">Condizioni</h1>
-      <EditionButtons section="condizioni" edition={edition} choose={setEdition} className="mt-4 flex rounded-[12px] bg-elevated p-1"
-        button={active => `min-h-11 flex-1 rounded-[9px] text-base font-bold tabular-nums ${active ? "bg-primary text-primary-foreground" : "text-foreground"}`} />
+      <div className="flex items-center justify-between gap-3 border-b-4 border-primary pb-3">
+        <h1 className="min-w-0 font-serif text-[40px] font-bold leading-tight">Condizioni</h1>
+        <SectionEditionPill section="condizioni" edition={edition} choose={setEdition} />
+      </div>
       {list.length ? (
         <ul className="mt-4 overflow-hidden rounded-[14px] border-[1.5px] border-border bg-card" aria-label={`Condizioni ${edition}`}>
           {list.map(row => (

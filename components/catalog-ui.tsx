@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Filter, Search, X } from "lucide-react";
 
-import { EditionButtons } from "@/components/sections/parts-context";
+import { SectionEditionPill } from "@/components/edition/edition-pill";
 
 /**
  * Shared catalog header: serif title, 2024 | 2014 edition selector and a 4 px bordeaux rule.
@@ -17,11 +17,8 @@ export function CatalogTitle({ title, section, edition, onEdition }: {
 }) {
   return (
     <div className="flex items-center justify-between gap-3 border-b-4 border-primary pb-3">
-      <h1 className="font-serif text-[40px] font-bold leading-tight text-foreground">{title}</h1>
-      {edition && onEdition && (
-        <EditionButtons section={section} edition={edition} choose={onEdition} className="flex shrink-0 rounded-[8px] border border-border bg-elevated p-1"
-          button={active => `min-h-11 min-w-[56px] rounded-[6px] px-3 text-[15px] font-bold tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${active ? "bg-primary text-primary-foreground" : "text-muted"}`} />
-      )}
+      <h1 className="min-w-0 font-serif text-[40px] font-bold leading-tight text-foreground">{title}</h1>
+      {edition && onEdition && <SectionEditionPill section={section} edition={edition} choose={onEdition} />}
     </div>
   );
 }

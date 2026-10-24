@@ -59,7 +59,7 @@ assert.ok(fs.readFileSync('app/layout.tsx','utf8').includes('<EditionProvider fo
 
 const {EditionProvider,useUserEdition}=load('components/edition/edition-provider.tsx');
 const {FirstLaunch}=load('components/edition/first-launch.tsx');
-const {EditionPill}=load('components/edition/edition-pill.tsx');
+const {EditionPill,SectionEditionPill}=load('components/edition/edition-pill.tsx');
 const root=createRoot(document.getElementById('root'));
 let seen;
 const Probe=()=>{seen=useUserEdition();return React.createElement('span',{id:'probe'},seen.edition);};
@@ -133,6 +133,34 @@ const key=async(k,target=window)=>act(async()=>target.dispatchEvent(new Keyboard
  assert.ok(document.body.textContent.includes('Edizione 2024'));
  localStorage.clear();await mount({forced:'2024'});assert.equal(dialog(),null,'no first launch with one edition');
 
+ // A section page opened on 2014 by its address, «la tua edizione» 2024: the page pill and the column pill
+ // show 2014, the panel says so, a choice goes through the page.
+ localStorage.clear();localStorage.setItem('grimorio.edizione','2024');
+ await act(async()=>root.render(React.createElement('div')));
+ const chosen=[];
+ const Page=()=>{const [shown,setShown]=React.useState('2014');const {choose}=useUserEdition();return React.createElement(React.Fragment,null,
+  React.createElement(SectionEditionPill,{section:'incantesimi',edition:shown,choose:value=>{chosen.push(value);setShown(value);choose(value);}}),
+  React.createElement(EditionPill,{place:'side'}));};
+ await act(async()=>root.render(React.createElement(EditionProvider,null,React.createElement(Probe),React.createElement(Page))));
+ const pills=()=>[...document.querySelectorAll('button[aria-label^="Edizione "]')];
+ assert.equal(pills().length,2);
+ assert.deepEqual(pills().map(b=>b.getAttribute('aria-label')),['Edizione 2014: cambia la tua edizione','Edizione 2014: cambia la tua edizione'],'both pills show the edition of the page');
+ assert.ok(pills()[0].parentElement.className.includes('lg:hidden'),'on computers only the column pill');
+ assert.equal(pills()[0].style.backgroundColor,'rgb(45, 76, 122)');
+ await click(pills()[0]);
+ assert.equal(document.querySelector('[data-testid="page-edition-note"]').textContent,'Questa pagina mostra il 2014. La tua edizione è il 2024.');
+ assert.ok(document.querySelector('[data-part="incantesimi:2014"]')&&document.querySelector('[data-part="incantesimi:2024"]'),'the editions of the section are parts of the page');
+ assert.equal(panel().querySelector('button[aria-pressed="true"]').textContent.slice(0,4),'2014','the edition of the page is the active one');
+ await click([...panel().querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.startsWith('2024')));
+ assert.deepEqual(chosen,['2024'],'the choice goes through the page');
+ assert.equal(seen.edition,'2024');assert.equal(document.querySelector('[data-testid="page-edition-note"]'),null,'page and user edition agree again');
+ assert.deepEqual(pills().map(b=>b.getAttribute('aria-label').slice(0,14)),['Edizione 2024:','Edizione 2024:']);
+ await click(button('Fatto'));
+ // From the column pill too.
+ await click(pills()[1]);
+ await click([...panel().querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.startsWith('2014')));
+ assert.deepEqual(chosen,['2024','2014']);assert.equal(localStorage.getItem('grimorio.edizione'),'2014');
+
  await act(async()=>root.unmount());
- console.log('User edition: one edition for the whole app, old keys adopted only when they agree, first launch only over the Home (Esc = 2024, never again), pill panel with status line and focus, other tabs follow, edition hidden by the admin forces the other.');
+ console.log('User edition: page and column pills show the edition of the page, with the note in the panel; one edition for the whole app, old keys adopted only when they agree, first launch only over the Home (Esc = 2024, never again), pill panel with status line and focus, other tabs follow, edition hidden by the admin forces the other.');
 })().catch(error=>{console.error(error);process.exit(1);});

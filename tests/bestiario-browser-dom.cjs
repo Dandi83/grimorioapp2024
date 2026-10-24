@@ -42,6 +42,9 @@ const {EditionProvider}=load('components/edition/edition-provider.tsx');
 const withEdition=element=>React.createElement(EditionProvider,null,element);
 const root=createRoot(document.getElementById('root'));
 const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(text));
+// The edition pill of the page (components/edition/edition-pill.tsx): its edition, and a choice in its panel.
+const pillEdition=()=>document.querySelector('button[aria-label^="Edizione "]')?.getAttribute('aria-label').match(/^Edizione (\d{4})/)[1];
+const chooseEdition=async edition=>{await click(document.querySelector('button[aria-label^="Edizione "]'));const panel=[...document.querySelectorAll('[role="dialog"]')].find(d=>d.textContent.includes('La tua edizione'));await click([...panel.querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.startsWith(edition)));await click([...panel.querySelectorAll('button')].find(b=>b.textContent==='Fatto'));};
 const option=text=>[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.trim()===text);
 const click=async el=>{assert.ok(el);await act(async()=>el.dispatchEvent(new MouseEvent('click',{bubbles:true})))};
 const input=async value=>{const el=document.querySelector('input');await act(async()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new InputEvent('input',{bubbles:true}))})};
@@ -104,16 +107,16 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await filterWith('Montagna');
  assert.deepEqual((await allIds()).sort(),['aquila','gatto','topo'],'either habitat matches');
  // Edition selector: the 2014 list holds the SRD 5.1 sheets; it changes «la tua edizione» on this phone; filters restart.
- assert.equal(button('2024').getAttribute('aria-pressed'),'true');
- await click(button('2014'));
- assert.equal(button('2014').getAttribute('aria-pressed'),'true');assert.deepEqual(chips(),[]);
+ assert.equal(pillEdition(),'2024');
+ await chooseEdition('2014');
+ assert.equal(pillEdition(),'2014');assert.deepEqual(chips(),[]);
  assert.equal(status(),`Nome · ${sheets2014.length} risultati`);
  assert.deepEqual((await allIds()).sort(),sheets2014.map(m=>m.id).sort());
  assert.ok(ids().includes('topo-gigante-contagioso-2014')&&ids().includes('orco-2014'));
  await filterWith('Animali');assert.deepEqual((await allIds()).sort(),expect(sheets2014,animal));
  assert.equal(window.localStorage.getItem('grimorio.edizione'),'2014');assert.equal(window.localStorage.getItem('grimorio.bestiario.edizione'),null,'the old key of the section is not written');
  await click(button('Filtri'));assert.ok([...sheet().querySelectorAll('button')].some(b=>b.textContent==='Umanoide'),'filters offer the values of the chosen edition');await click(sheet());
- await click(button('2024'));
+ await chooseEdition('2024');
  assert.equal(status(),'Nome · 330 risultati');assert.equal(window.localStorage.getItem('grimorio.edizione'),'2024');
  const spells=Array.from({length:400},(_,i)=>({id:`spell-${i}`,nome_italiano:`Incantesimo ${String(i).padStart(3,'0')}`,livello_num:Math.floor(i/40),scuola:'invocazione',classi:['mago']}));
  await act(async()=>root.render(React.createElement(GrimorioBrowser,{spells,meta:{livelli:[0,1,2,3,4,5,6,7,8,9],scuole:['invocazione'],classi:['mago']}})));
@@ -156,11 +159,11 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await filterWith('Concentrazione');assert.deepEqual([...document.querySelectorAll('a[href^="/spell/"]')].map(a=>a.getAttribute('href')),['/spell/both'],'"e" between filters');
  await click(button('Filtri'));await click(button('Azzera'));await choose('Livello 1','Livello 2');await click(applyButton());
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,3,'"o" inside the level filter');
- await click(button('2014'));assert.deepEqual([...document.querySelectorAll('a[href^="/spell/"]')].map(a=>a.getAttribute('href')),['/spell/old']);
+ await chooseEdition('2014');assert.deepEqual([...document.querySelectorAll('a[href^="/spell/"]')].map(a=>a.getAttribute('href')),['/spell/old']);
  assert.equal(window.localStorage.getItem('grimorio.edizione'),'2014','the spell selector changes «la tua edizione»');window.localStorage.removeItem('grimorio.edizione');
  // Without 2014 spells in the catalog there is no 2014 selector and no empty list, even if 2014 was remembered.
  await act(async()=>root.render(React.createElement(GrimorioBrowser,{key:'no-2014',spells:labelled.filter(s=>!s.edizione),meta:{livelli:[0,1,2],scuole:['Divinazione','Evocazione'],classi:['chierico','mago']},initialEdizione:'2014'})));
- assert.ok(!document.querySelector('[aria-label="Edizione delle regole"]'),'no edition selector while the catalog has no 2014 spells');
+ assert.ok(!document.querySelector('button[aria-label^="Edizione "]'),'no edition pill while the catalog has no 2014 spells');
  assert.equal(document.querySelectorAll('a[href^="/spell/"]').length,4,'the 2024 list is shown');
  // Real provider + memoized rows: preserve existing storage on mount and render
  // only the affected row when toggling, including React StrictMode effects.
@@ -222,9 +225,9 @@ const props={monsters,initialTaglia:null,initialTipo:null,initialGs:null};
  await act(async()=>root.render(React.createElement('div')));
  await new Promise(r=>setTimeout(r,3100)); // a fresh arrival, not "back" from a card
  await act(async()=>root.render(renderMonsterUrl()));
- assert.equal(button('2014').getAttribute('aria-pressed'),'true','the remembered edition opens');
+ assert.equal(pillEdition(),'2014','the remembered edition opens');
  await act(async()=>navigateQuery('edizione=2024&habitat=Urbano,Inventato'));await act(async()=>root.render(renderMonsterUrl()));
- assert.equal(button('2024').getAttribute('aria-pressed'),'true','an address with an edition wins');
+ assert.equal(pillEdition(),'2024','an address with an edition wins');
  assert.equal(window.localStorage.getItem('grimorio.edizione'),'2014','opening an address with an edition does not change «la tua edizione»');
  await act(async()=>navigateQuery('edizione=2024&raccolta=animali&habitat=Urbano,Inventato'));await act(async()=>root.render(renderMonsterUrl()));
  assert.deepEqual((await allIds()).sort(),['gatto','topo'],'habitat filters from the address, unknown names ignored');

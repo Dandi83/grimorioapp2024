@@ -7,7 +7,8 @@ import { ChevronRight, Search } from "lucide-react";
 import { ParentLink } from "@/components/section-tiles";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
 import { HiddenTag } from "@/components/sections/hidden-tag";
-import { EditionButtons, usePart } from "@/components/sections/parts-context";
+import { usePart } from "@/components/sections/parts-context";
+import { SectionEditionPill } from "@/components/edition/edition-pill";
 import type { GearListRow } from "@/lib/adventuring-gear-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 
@@ -75,12 +76,11 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
-      {/* The long title takes the whole width; the edition selector sits under it. */}
+      {/* The long title takes the whole width; the edition pill sits under it, on the right. */}
       <h1 className="border-b-4 border-primary pb-3 font-serif text-[34px] font-bold leading-tight">Equipaggiamento d’avventura</h1>
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-        <EditionButtons section="avventura" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} className="flex shrink-0 rounded-[8px] border border-border bg-elevated p-1"
-        button={active => `min-h-11 min-w-[56px] rounded-[6px] px-3 text-[15px] font-bold tabular-nums ${active ? "bg-primary text-primary-foreground" : "text-muted"}`} />
         <p className="text-[15px] text-muted">{count} voci · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}</p>
+        <SectionEditionPill section="avventura" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} />
       </div>
       {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo oggetto non c’è nel {missing}.</p>}
       <label className="relative mt-4 block">
