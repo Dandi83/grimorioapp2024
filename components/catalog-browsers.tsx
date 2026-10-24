@@ -11,7 +11,7 @@ import type { SpellFilters, SpellListState } from "@/components/grimorio-browser
 import { CASTING_TIMES, type CastingTime } from "@/lib/spells-types";
 import { GS_BANDS, gsBand, type GsBand, type MonsterFilters, type MonsterListState } from "@/components/bestiario-browser";
 import { isEdition } from "@/lib/user-edition";
-import { parseGs } from "@/lib/monsters-types";
+import { currentTypeNames, parseGs } from "@/lib/monsters-types";
 import { normalizeHabitats } from "@/lib/habitats";
 
 // Server rendering and initial hydration show real, unfiltered rows. URL filters
@@ -82,7 +82,7 @@ export function GrimorioWithFilters({ spells, meta, pane }: { spells: SpellListI
     initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} />;
 }
 
-/** Filters from the address: old single values (?gs=1/2, ?raccolta=animali, ?tipo=Drago) keep working. */
+/** Filters from the address: old single values (?gs=1/2, ?raccolta=animali, ?tipo=Drago) and old type names (?tipo=Fata) keep working. */
 export function filtersFromParams(params: URLSearchParams): MonsterFilters {
   const list = (name: string) => (params.get(name) || "").split(",").map(value => value.trim()).filter(Boolean);
   const collection = params.get("raccolta") || params.get("categoria");
@@ -91,7 +91,7 @@ export function filtersFromParams(params: URLSearchParams): MonsterFilters {
   return {
     categoria: collection === "animali" || collection === "mostri" ? collection : "tutti",
     gs: GS_BANDS.filter(band => gs.includes(band)),
-    tipo: list("tipo"),
+    tipo: currentTypeNames(list("tipo")),
     taglia: list("taglia"),
     habitat: normalizeHabitats(list("habitat")),
   };
@@ -105,7 +105,7 @@ export function BestiarioWithFilters({ monsters, pane }: { monsters: MonsterList
   const edizione = isEdition(requested) ? requested : userEdition;
   const restored = useRestoredList<MonsterListState>("bestiario", search, pane);
   const restoredFilters: MonsterFilters | null = restored && Array.isArray(restored.gs)
-    ? { categoria: restored.categoria, gs: restored.gs, tipo: restored.tipo, taglia: restored.taglia, habitat: restored.habitat }
+    ? { categoria: restored.categoria, gs: restored.gs, tipo: currentTypeNames(restored.tipo ?? []), taglia: restored.taglia, habitat: restored.habitat }
     : null;
   return <BestiarioBrowser key={JSON.stringify([filters, !!restoredFilters])}
     monsters={monsters} initialFilters={restoredFilters ?? filters}
