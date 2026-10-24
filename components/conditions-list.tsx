@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { ChevronRight } from "lucide-react";
 
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
@@ -26,8 +27,10 @@ export function ConditionsList({ rows, only2024 }: { rows: Record<EquipmentEditi
       {list.length ? (
         <ul className="mt-4 overflow-hidden rounded-[14px] border-[1.5px] border-border bg-card" aria-label={`Condizioni ${edition}`}>
           {list.map(row => (
-            <li key={row.href} className="border-t border-divider first:border-t-0">
-              <Link href={row.href} prefetch={false} className="flex min-h-11 items-center gap-2.5 px-3.5 py-1.5">
+            <li key={row.href} className="flex items-center border-t border-divider first:border-t-0">
+              {/* Administrator only: the pencil next to the name opens the condition in /admin/contenuti. */}
+              <AdminEditPencil target={{ kind: "contenuto", section: "condizioni", id: row.id, edition }} name={row.nome} />
+              <Link href={row.href} prefetch={false} className="flex min-h-11 min-w-0 flex-1 items-center gap-2.5 px-3.5 py-1.5">
                 <span className="min-w-0 flex-1 text-base font-semibold text-primary">{row.nome}</span>
                 <ChevronRight size={16} strokeWidth={2.4} className="shrink-0 text-[#B9A57C]" aria-hidden="true" />
               </Link>

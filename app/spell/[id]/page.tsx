@@ -3,7 +3,7 @@ import { inlineConditionReferences, legacyInlineConditionReferences } from "@/li
 import Image from "next/image";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
-import { isHiddenPath, partId, visibleLinks } from "@/lib/public-sections";
+import { partId, visibleLinks } from "@/lib/public-sections";
 import { cardHidden, cardsOut, editionCard, linksOut } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { notFound } from "next/navigation";
@@ -16,12 +16,14 @@ import { HtmlText } from "@/components/html-text";
 import { SpellProvenanceMarker } from "@/components/spell-provenance-marker";
 import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { capitalizeWords, getSpellById } from "@/lib/spells";
+import { castingTimeLabel } from "@/lib/spells-types";
 import { spellName } from "@/lib/spell-name";
 import { schoolColor } from "@/lib/school-colors";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
-import { getLegacySpellSource, spellEditionLink } from "@/lib/srd-spells-2014";
+import { getLegacySpellSource } from "@/lib/srd-spells-2014";
 import { ReportLink } from "@/components/feedback/report-link";
+import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -79,8 +81,6 @@ export default async function SpellDetailPage({
   // A card hidden with the eye of the admin area: not found for the public, labelled for the administrator.
   const hiddenCard = await cardHidden("incantesimo", spell.id);
   const out = await linksOut();
-  const link = spellEditionLink(spell.id, process.env.VERCEL_ENV);
-  const otherEdition = link && !isHiddenPath(link.href, out) ? link : undefined;
 
   return (
     <article className="spell-sheet">
@@ -107,6 +107,8 @@ export default async function SpellDetailPage({
         <ShareButton path={`/spell/${encodeURIComponent(spell.id)}`} title={titolo} />
         <FavoriteButton id={spell.id} />
         <div className="absolute inset-x-0 bottom-0 p-6">
+          {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
+          <AdminEditButton target={{ kind: "incantesimo", id: spell.id }} />
           <span
             className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground"
             style={{ borderColor: color }}
@@ -122,19 +124,12 @@ export default async function SpellDetailPage({
             <SpellProvenanceMarker id={spell.id} />
           </h1>
           <RulesEditionBadge edition={spell.edizione} />
-          {otherEdition && (
-            <p className="mt-2">
-              <Link href={otherEdition.href} className="text-sm font-semibold text-primary underline underline-offset-4">
-                {otherEdition.label}
-              </Link>
-            </p>
-          )}
         </div>
       </header>
 
       {/* Metadata grid */}
       <div className="flex flex-wrap gap-3 p-6">
-        <MetaCell label="Tempo di lancio" value={spell.tempo_di_lancio} />
+        <MetaCell label="Tempo di lancio" value={castingTimeLabel(spell.tempo_di_lancio)} />
         <MetaCell label="Gittata" value={spell.gittata} />
         <MetaCell label="Componenti" value={spell.componenti} />
         <MetaCell label="Durata" value={spell.durata} />

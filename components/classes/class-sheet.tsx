@@ -239,7 +239,7 @@ const OPENING_ROWS = [
 
 /** The body of a class sheet for one edition: key data, skills and equipment, the three tabs. */
 /** spellsLink: false while the Incantesimi section is hidden; parts: what /admin/sezioni hides in the sheet. */
-export function ClassBody({ card, id, edition, other, spellsLink = true, parts = ALL_SHOWN }: { card: ClassData; id: ClassId; edition: ClassEdition; other?: { edition: ClassEdition; href: string }; spellsLink?: boolean; parts?: ClassParts }) {
+export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SHOWN }: { card: ClassData; id: ClassId; edition: ClassEdition; spellsLink?: boolean; parts?: ClassParts }) {
   const die = hitDie(card);
   const dieRest = trait(card, "dado")?.slice(die?.length ?? 0).trim();
   const primary = trait(card, "primarie");
@@ -285,12 +285,6 @@ export function ClassBody({ card, id, edition, other, spellsLink = true, parts =
         ...(parts["tab-tabella"].shown ? [{ key: "tabella", label: "Tabella", content: <TableTab card={card} />, part: "classi:tab-tabella", hidden: parts["tab-tabella"].hidden }] : []),
         ...(parts["tab-sottoclasse"].shown ? [{ key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} />, part: "classi:tab-sottoclasse", hidden: parts["tab-sottoclasse"].hidden }] : []),
       ]} />
-      {other && (
-        // A full load: the edition is read from the address when the page opens.
-        <a href={other.href} className="inline-flex min-h-11 items-center text-[15px] font-semibold text-primary underline underline-offset-4">
-          Passa alla versione {other.edition}
-        </a>
-      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { getCorrectedMagicItems } from "@/lib/corrected-content";
 import { compareMagicItem, findMagicItemEntry, magicItemEntries, magicItemEntryHref, seeAlso, type MagicItemChange } from "@/lib/magic-items-editions";
 import type { MagicItemEdition } from "@/lib/magic-items-types";
 import { ReportLink } from "@/components/feedback/report-link";
+import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
@@ -28,8 +29,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: item ? `${item.nome} — Oggetti magici — Il Grimorio.App` : "Oggetto non trovato" };
 }
 
-/** "2014 → 2024": name, rarity and attunement when they change, and the way to the other edition's sheet. */
-function Changes({ changes, other, href }: { changes: MagicItemChange[]; other: MagicItemEdition; href: string }) {
+/** "2014 → 2024": name, rarity and attunement when they change (the edition is chosen with the pill only). */
+function Changes({ changes }: { changes: MagicItemChange[] }) {
   return (
     <section className="space-y-2.5" aria-label="Differenze tra le edizioni">
       <h2 className="font-serif text-[22px] font-bold text-primary">2014 → 2024</h2>
@@ -47,10 +48,6 @@ function Changes({ changes, other, href }: { changes: MagicItemChange[]; other: 
           ))}
         </tbody>
       </table>
-      {/* A full load: the edition is read from the address when the page opens. */}
-      <a className="inline-flex min-h-11 items-center text-[15px] font-semibold text-primary underline underline-offset-4" href={`${href}?edizione=${other}`}>
-        Passa alla versione {other}
-      </a>
     </section>
   );
 }
@@ -72,12 +69,13 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
     const item = entry.editions[value];
     if (!item || !shown.includes(value)) continue;
     hrefs[value] = magicItemEntryHref(entry, value);
-    const other = value === "2024" ? "2014" : "2024";
     panels[value] = (
       <div className="space-y-5">
+        {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
+        <AdminEditButton target={{ kind: "contenuto", section: "oggetti-magici", id: entry.id, edition: value }} />
         <MagicItemSheet item={item} edition={value} />
         <SectionCorrectionNote section="oggetti-magici" id={entry.id} edition={value} corrections={corrections?.[value]} />
-        {changes.length > 0 && <PartBlock section="oggetti-magici" part="confronto"><Changes changes={changes} other={other} href={magicItemEntryHref(entry, other)} /></PartBlock>}
+        {changes.length > 0 && <PartBlock section="oggetti-magici" part="confronto"><Changes changes={changes} /></PartBlock>}
       </div>
     );
   }
