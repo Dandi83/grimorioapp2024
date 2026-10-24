@@ -71,6 +71,7 @@ const mount=async(props={},url='/')=>{
 const dialog=()=>document.querySelector('[data-first-launch]');
 const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent.includes(text));
 const click=async el=>{assert.ok(el);await act(async()=>el.dispatchEvent(new MouseEvent('click',{bubbles:true})));};
+const status=()=>document.querySelector('[data-testid="edition-status"]');
 const key=async(k,target=window)=>act(async()=>target.dispatchEvent(new KeyboardEvent('keydown',{key:k,bubbles:true})));
 
 (async()=>{
@@ -79,14 +80,13 @@ const key=async(k,target=window)=>act(async()=>target.dispatchEvent(new Keyboard
  await mount();
  assert.equal(seen.ready,true);assert.equal(seen.chosen,false);assert.ok(dialog(),'first launch on the Home');
  assert.equal(dialog().getAttribute('role'),'dialog');assert.equal(dialog().getAttribute('aria-modal'),'true');
- assert.equal(document.getElementById(dialog().getAttribute('aria-labelledby')).textContent,'Con quale edizione giochi?');
- assert.ok(document.activeElement.textContent.startsWith('2024'),'focus on the first choice');
- assert.ok(dialog().textContent.includes('Incantesimi, bestiario, classi e regole partiranno sempre dalla tua edizione.'));
- assert.ok(dialog().textContent.includes('Puoi cambiarla quando vuoi dalla Home.'));
- assert.ok(button('Quinta edizione classica')&&button('Le regole aggiornate del 2024'));
+ assert.equal(document.getElementById(dialog().getAttribute('aria-labelledby')).textContent,'Scegli l’edizione');
+ assert.equal(document.activeElement.textContent,'D&D 2024','focus on the first choice');
+ assert.equal(dialog().textContent,'Il Grimorio.AppScegli l’edizioneD&D 2024D&D 2014','logo, title and the two choices, nothing else');
  // Choosing 2014 saves it and shows the Home; the screen does not come back.
- await click(button('Quinta edizione classica'));
+ await click(button('D&D 2014'));
  assert.equal(dialog(),null);assert.equal(localStorage.getItem('grimorio.edizione'),'2014');assert.equal(seen.edition,'2014');
+ assert.equal(status().textContent,'Ora tutta l’app parte dal 2014.','said to screen readers');
  await mount();
  assert.equal(dialog(),null,'not again after the choice');assert.equal(seen.edition,'2014');
  // Esc closes it with 2024.
@@ -109,22 +109,29 @@ const key=async(k,target=window)=>act(async()=>target.dispatchEvent(new Keyboard
  await act(async()=>window.dispatchEvent(new StorageEvent('storage',{key:'grimorio.edizione',newValue:'2014'})));
  assert.equal(seen.edition,'2014');assert.equal(document.getElementById('probe').textContent,'2014');
 
- // The pill opens the panel: the active choice full with the tick, the status line, «Fatto», Esc.
+ // The pill opens the panel: title and the two choices; a choice closes it and is said; Esc and a tap outside close it as it is.
  localStorage.setItem('grimorio.edizione','2024');await mount();
  const pill=()=>document.querySelector('button[aria-haspopup="dialog"]');
  assert.equal(pill().textContent,'Edizione 2024');assert.equal(pill().style.backgroundColor,'rgb(122, 31, 43)');
  await click(pill());
- const panel=()=>[...document.querySelectorAll('[role="dialog"]')].find(d=>d.textContent.includes('La tua edizione'));
+ const panel=()=>[...document.querySelectorAll('[role="dialog"]:not([data-first-launch])')].find(d=>d.textContent.includes('Scegli l’edizione'));
+ const choice=text=>[...panel().querySelectorAll('button[aria-pressed]')].find(b=>b.textContent===text);
  assert.ok(panel());assert.equal(pill().getAttribute('aria-expanded'),'true');
- assert.ok(panel().textContent.includes('Vale per tutta l’app: incantesimi, bestiario, classi, regole e ricerca.'));
- assert.equal(panel().querySelector('[role="status"]').textContent,'Ora tutta l’app parte dal 2024.');
+ assert.equal(panel().textContent,'Scegli l’edizioneD&D 2024D&D 2014','title and the two choices, nothing else');
+ assert.equal(panel().querySelector('[role="status"]'),null);assert.equal(button('Fatto'),undefined);
+ assert.equal(choice('D&D 2024').getAttribute('aria-pressed'),'true');assert.equal(choice('D&D 2024').style.backgroundColor,'rgb(122, 31, 43)');
+ assert.equal(choice('D&D 2014').getAttribute('aria-pressed'),'false');assert.equal(choice('D&D 2014').style.color,'rgb(45, 76, 122)');
  assert.equal(document.activeElement.getAttribute('aria-pressed'),'true','focus on the active choice');
- await click([...panel().querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.startsWith('2014')));
+ assert.equal(status().textContent,'');assert.ok(status().className.includes('sr-only'));assert.equal(status().getAttribute('aria-live'),'polite');
+ await click(choice('D&D 2014'));
+ assert.equal(panel(),undefined,'a choice closes the panel');assert.equal(document.activeElement,pill(),'focus back on the pill');
  assert.equal(localStorage.getItem('grimorio.edizione'),'2014');assert.equal(seen.edition,'2014');
- assert.equal(panel().querySelector('[role="status"]').textContent,'Ora tutta l’app parte dal 2014.');
+ assert.equal(status().textContent,'Ora tutta l’app parte dal 2014.','said to screen readers');
  assert.equal(pill().textContent,'Edizione 2014');assert.equal(pill().style.backgroundColor,'rgb(45, 76, 122)');
+ await click(pill());assert.equal(choice('D&D 2014').style.backgroundColor,'rgb(45, 76, 122)');
  await key('Escape');assert.equal(panel(),undefined,'Esc closes the panel');assert.equal(document.activeElement,pill(),'focus back on the pill');
- await click(pill());await click(button('Fatto'));assert.equal(panel(),undefined);
+ await click(pill());await click(panel().parentElement.querySelector(':scope > [aria-hidden="true"]'));
+ assert.equal(panel(),undefined,'a tap outside closes the panel');assert.equal(seen.edition,'2014','closing changes nothing');
 
  // 2014 hidden everywhere from /admin/sezioni: 2024 for everyone, no first launch, the pill does not open.
  localStorage.clear();localStorage.setItem('grimorio.edizione','2014');
@@ -150,17 +157,17 @@ const key=async(k,target=window)=>act(async()=>target.dispatchEvent(new Keyboard
  await click(pills()[0]);
  assert.equal(document.querySelector('[data-testid="page-edition-note"]').textContent,'Questa pagina mostra il 2014. La tua edizione è il 2024.');
  assert.ok(document.querySelector('[data-part="incantesimi:2014"]')&&document.querySelector('[data-part="incantesimi:2024"]'),'the editions of the section are parts of the page');
- assert.equal(panel().querySelector('button[aria-pressed="true"]').textContent.slice(0,4),'2014','the edition of the page is the active one');
- await click([...panel().querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.startsWith('2024')));
+ assert.equal(panel().querySelector('button[aria-pressed="true"]').textContent,'D&D 2014','the edition of the page is the active one');
+ await click(choice('D&D 2024'));
  assert.deepEqual(chosen,['2024'],'the choice goes through the page');
  assert.equal(seen.edition,'2024');assert.equal(document.querySelector('[data-testid="page-edition-note"]'),null,'page and user edition agree again');
  assert.deepEqual(pills().map(b=>b.getAttribute('aria-label').slice(0,14)),['Edizione 2024:','Edizione 2024:']);
- await click(button('Fatto'));
+ assert.equal(panel(),undefined,'the panel of the page closes too');
  // From the column pill too.
  await click(pills()[1]);
- await click([...panel().querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.startsWith('2014')));
+ await click(choice('D&D 2014'));
  assert.deepEqual(chosen,['2024','2014']);assert.equal(localStorage.getItem('grimorio.edizione'),'2014');
 
  await act(async()=>root.unmount());
- console.log('User edition: page and column pills show the edition of the page, with the note in the panel; one edition for the whole app, old keys adopted only when they agree, first launch only over the Home (Esc = 2024, never again), pill panel with status line and focus, other tabs follow, edition hidden by the admin forces the other.');
+ console.log('User edition: page and column pills show the edition of the page, with the note in the panel; one edition for the whole app, old keys adopted only when they agree, first launch only over the Home (Esc = 2024, never again), pill panel of two choices closing on a choice (said to screen readers), Esc and a tap outside, with focus, other tabs follow, edition hidden by the admin forces the other.');
 })().catch(error=>{console.error(error);process.exit(1);});

@@ -69,8 +69,7 @@ for(const [id,value] of seed)if(verified.has(id))assert.equal(castingTimeGroup(v
   if(edition==='2014'){
    // The edition pill opens its panel: the 2014 choice.
    await click(document.querySelector('button[aria-label^="Edizione "]'));
-   await click([...document.querySelectorAll('[role="dialog"] button[aria-pressed]')].find(b=>b.textContent.startsWith('2014')));
-   await click([...document.querySelectorAll('[role="dialog"] button')].find(b=>b.textContent==='Fatto'));
+   await click([...document.querySelectorAll('[role="dialog"] button[aria-pressed]')].find(b=>b.textContent==='D&D 2014'));
   }
   await click(button('Filtri'));
   assert.deepEqual([...group().querySelectorAll('button')].map(b=>b.textContent),['Azione','Azione bonus','Reazione','1 minuto o più'],'a separate group with four options');

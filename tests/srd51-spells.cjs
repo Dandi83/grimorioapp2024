@@ -111,7 +111,7 @@ assert.equal(legacy.spellEditionLink('aiuto',undefined),undefined);
  const pill=document.querySelector('button[aria-label^="Edizione "]');
  assert.ok(pill,'the edition pill is shown');
  await act(async()=>pill.dispatchEvent(new MouseEvent('click',{bubbles:true})));
- const choice=[...document.querySelectorAll('[role="dialog"] button[aria-pressed]')].find(b=>b.textContent.startsWith('2014'));
+ const choice=[...document.querySelectorAll('[role="dialog"] button[aria-pressed]')].find(b=>b.textContent==='D&D 2014');
  await act(async()=>choice.dispatchEvent(new MouseEvent('click',{bubbles:true})));
  const more=()=>[...document.querySelectorAll('button')].find(b=>b.textContent.startsWith('Mostra altri'));
  while(more())await act(async()=>more().dispatchEvent(new MouseEvent('click',{bubbles:true})));

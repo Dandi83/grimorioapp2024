@@ -9,7 +9,7 @@ import { EditionChoice } from "@/components/edition/edition-choice";
 import { EDITIONS } from "@/lib/public-sections";
 
 /**
- * «Con quale edizione giochi?»: full screen over the library of the Home, the first time the visit
+ * «Scegli l’edizione» with «D&D 2024» · «D&D 2014»: full screen over the library of the Home, the first time the visit
  * starts on the Home and nobody has chosen yet (never over a direct link). Drawn only in the browser,
  * after loading: search engines and link previews see the Home as it is. A choice saves «la tua
  * edizione»; Esc (computers) closes it with 2024, and it does not come back.
@@ -50,14 +50,12 @@ function FirstLaunchScreen() {
       <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-5 pb-[calc(24px+env(safe-area-inset-bottom,0px))] pt-[calc(22px+env(safe-area-inset-top,0px))] text-card">
         <p className="font-serif text-[28px] font-semibold leading-none">Il Grimorio<span className="text-amber">.App</span></p>
         <div className="flex-1" />
-        <h2 id={titleId} className="font-serif text-[40px] font-semibold leading-[1.08] tracking-[-0.4px]">Con quale edizione giochi?</h2>
-        <p className="mt-3 text-[17px] leading-snug text-card/90">Incantesimi, bestiario, classi e regole partiranno sempre dalla tua edizione.</p>
-        <div className="mt-7 flex flex-col gap-3">
+        <h2 id={titleId} className="font-serif text-[40px] font-semibold leading-[1.08] tracking-[-0.4px]">Scegli l’edizione</h2>
+        <div className="mt-6 flex flex-col gap-3">
           {EDITIONS.map((edition, index) => (
             <EditionChoice key={edition} ref={index === 0 ? first : undefined} edition={edition} onChoose={choose} />
           ))}
         </div>
-        <p className="mt-4 text-center text-[15px] text-card/80">Puoi cambiarla quando vuoi dalla Home.</p>
       </div>
     </div>
   );

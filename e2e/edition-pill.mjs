@@ -8,9 +8,9 @@ export const expectEdition = (page, edition) => expect(editionPill(page)).toHave
 
 export async function chooseEdition(page, edition) {
   await editionPill(page).click();
-  const panel = page.getByRole("dialog", { name: "La tua edizione" });
-  await panel.getByRole("button", { name: new RegExp(`^${edition}`) }).click();
-  await panel.getByRole("button", { name: "Fatto" }).click();
+  const panel = page.getByRole("dialog", { name: "Scegli l’edizione" });
+  await panel.getByRole("button", { name: `D&D ${edition}` }).click();
+  // A choice closes the panel by itself.
   await expect(panel).toHaveCount(0);
   await expectEdition(page, edition);
 }

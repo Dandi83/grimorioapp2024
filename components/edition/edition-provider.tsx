@@ -90,9 +90,12 @@ export function EditionProvider({ forced, children }: { forced?: Edition; childr
     return () => window.removeEventListener("storage", sync);
   }, []);
 
+  // Said to screen readers after a choice: the panels close at once, so the line lives here, on every page.
+  const [said, setSaid] = useState("");
   const choose = useCallback((value: Edition) => {
     write(value);
     setState(current => ({ ...current, edition: value, chosen: true }));
+    setSaid(`Ora tutta l’app parte dal ${value}.`);
   }, []);
 
   const value = useMemo<UserEdition>(() => ({
@@ -110,6 +113,7 @@ export function EditionProvider({ forced, children }: { forced?: Edition; childr
   return (
     <EditionContext.Provider value={value}>
       <PageEditionContext.Provider value={pageValue}>{children}</PageEditionContext.Provider>
+      <p role="status" aria-live="polite" data-testid="edition-status" className="sr-only">{said}</p>
     </EditionContext.Provider>
   );
 }

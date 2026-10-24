@@ -22,10 +22,11 @@ export function trapFocus(event: ReactKeyboardEvent<HTMLElement>) {
 }
 
 /**
- * «La tua edizione»: handle, title, the two large choices (the active one full with the tick), the
- * status line read by screen readers and «Fatto». A choice applies at once to the whole app.
- * page: a section page showing another edition than the user's (an address with an edition) says so,
- * and a choice also brings the page to it.
+ * «Scegli l’edizione»: handle, title and the two large choices «D&D 2024» · «D&D 2014» (the active one full).
+ * A tap applies the choice to the whole app and closes the panel (EditionProvider announces it to screen
+ * readers); a tap outside, Esc or the handle dragged down close it without changing anything.
+ * page: a section page showing another edition than the user's (an address with an edition) says so
+ * under the title, and a choice also brings the page to it.
  */
 function EditionPanel({ sheet, keyboard, onClose, pill, page }: { sheet: boolean; keyboard: boolean; onClose: () => void; pill: RefObject<HTMLButtonElement | null>; page?: PageEdition }) {
   const { edition: userEdition, choose: chooseUserEdition } = useUserEdition();
@@ -37,6 +38,9 @@ function EditionPanel({ sheet, keyboard, onClose, pill, page }: { sheet: boolean
   const active = useRef<HTMLButtonElement>(null);
   const close = useRef(onClose);
   useEffect(() => { close.current = onClose; }, [onClose]);
+  // The handle of the sheet: dragged down more than 80 px, the panel closes; less, it goes back.
+  const [drag, setDrag] = useState(0);
+  const dragFrom = useRef<number | null>(null);
 
   useEffect(() => {
     // The focus ring only for those who opened it with the keyboard (a tap shows no ring, also on iPhone).
@@ -70,28 +74,32 @@ function EditionPanel({ sheet, keyboard, onClose, pill, page }: { sheet: boolean
       className={sheet
         ? "relative w-full max-w-[560px] rounded-t-[24px] bg-background px-5 pb-[calc(20px+env(safe-area-inset-bottom,0px))] pt-2.5 shadow-[0_-8px_30px_rgb(43_33_24_/_25%)]"
         : "absolute left-0 top-[calc(100%+8px)] z-50 w-[400px] rounded-[18px] border border-border bg-background p-4 shadow-[0_12px_32px_rgb(43_33_24_/_25%)]"}
+      style={drag ? { transform: `translateY(${drag}px)` } : undefined}
     >
-      {sheet && <div aria-hidden="true" className="mx-auto mb-3 h-1.5 w-11 rounded-full bg-border" />}
-      <h2 id={titleId} className="font-serif text-[26px] font-bold leading-tight text-foreground">La tua edizione</h2>
-      <p className="mt-1 text-[15px] leading-snug text-muted">Vale per tutta l’app: incantesimi, bestiario, classi, regole e ricerca.</p>
+      {sheet && (
+        <div aria-hidden="true" className="-mx-5 -mt-2.5 flex cursor-grab touch-none justify-center pb-3 pt-2.5"
+          onPointerDown={event => { dragFrom.current = event.clientY; event.currentTarget.setPointerCapture?.(event.pointerId); }}
+          onPointerMove={event => { if (dragFrom.current !== null) setDrag(Math.max(0, event.clientY - dragFrom.current)); }}
+          onPointerUp={() => { dragFrom.current = null; if (drag > 80) onClose(); else setDrag(0); }}
+          onPointerCancel={() => { dragFrom.current = null; setDrag(0); }}>
+          <div className="h-1.5 w-11 rounded-full bg-border" />
+        </div>
+      )}
+      <h2 id={titleId} className="font-serif text-[26px] font-bold leading-tight text-foreground">Scegli l’edizione</h2>
       {shown !== userEdition && (
-        <p data-testid="page-edition-note" className="mt-2 rounded-[10px] border-[1.5px] px-3 py-2 text-[15px] font-semibold text-foreground" style={{ borderColor: EDITION_COLOR[shown] }}>
+        <p data-testid="page-edition-note" className="mt-1 text-[14px] leading-snug text-muted">
           Questa pagina mostra il {shown}. La tua edizione è il {userEdition}.
         </p>
       )}
       <div className="mt-4 flex flex-col gap-3">
         {editions.map(({ value, hidden }) => (
           <div key={value} data-part={page ? partId(page.section, value) : undefined} className="relative">
-            <EditionChoice ref={value === shown ? active : undefined} edition={value} active={value === shown} compact={!sheet} onChoose={choose} />
+            <EditionChoice ref={value === shown ? active : undefined} edition={value} active={value === shown}
+              onChoose={chosen => { choose(chosen); onClose(); }} />
             {hidden && <HiddenTag className="absolute right-3 top-2" />}
           </div>
         ))}
       </div>
-      <p role="status" aria-live="polite" className="mt-3 text-center text-[15px] font-semibold text-foreground">Ora tutta l’app parte dal {userEdition}.</p>
-      <button type="button" onClick={onClose}
-        className="mt-3 min-h-12 w-full rounded-[14px] bg-foreground text-[17px] font-bold text-card focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber">
-        Fatto
-      </button>
     </div>
   );
 

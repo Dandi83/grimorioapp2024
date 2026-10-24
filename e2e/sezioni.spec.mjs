@@ -476,7 +476,7 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
   const pub = await publicContext.newPage();
   await expect.poll(async () => { await pub.goto("/"); return pub.getByText("Edizione 2024", { exact: true }).filter({ visible: true }).count(); }).toBe(1);
   await pub.waitForTimeout(500);
-  await expect(pub.getByRole("dialog", { name: "Con quale edizione giochi?" })).toHaveCount(0);
+  await expect(pub.locator("[data-first-launch]")).toHaveCount(0);
   await expect(pub.getByRole("button", { name: /Edizione 20\d\d/ })).toHaveCount(0);
   await expect(pub.getByRole("button", { name: "Cerca nel Grimorio 2024…" })).toBeVisible();
   await pub.evaluate(() => window.localStorage.setItem("grimorio.edizione", "2014"));

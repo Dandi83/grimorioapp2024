@@ -44,7 +44,7 @@ const root=createRoot(document.getElementById('root'));
 const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent.trim().startsWith(text));
 // The edition pill of the page (components/edition/edition-pill.tsx): its edition, and a choice in its panel.
 const pillEdition=()=>document.querySelector('button[aria-label^="Edizione "]')?.getAttribute('aria-label').match(/^Edizione (\d{4})/)[1];
-const chooseEdition=async edition=>{await click(document.querySelector('button[aria-label^="Edizione "]'));const panel=[...document.querySelectorAll('[role="dialog"]')].find(d=>d.textContent.includes('La tua edizione'));await click([...panel.querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.startsWith(edition)));await click([...panel.querySelectorAll('button')].find(b=>b.textContent==='Fatto'));};
+const chooseEdition=async edition=>{await click(document.querySelector('button[aria-label^="Edizione "]'));const panel=[...document.querySelectorAll('[role="dialog"]')].find(d=>d.textContent.includes('Scegli l’edizione'));await click([...panel.querySelectorAll('button[aria-pressed]')].find(b=>b.textContent===`D&D ${edition}`));assert.ok(!panel.isConnected,'a choice closes the panel');};
 const option=text=>[...document.querySelectorAll('button[aria-pressed]')].find(b=>b.textContent.trim()===text);
 const click=async el=>{assert.ok(el);await act(async()=>el.dispatchEvent(new MouseEvent('click',{bubbles:true})))};
 const input=async value=>{const el=document.querySelector('input');await act(async()=>{Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new InputEvent('input',{bubbles:true}))})};
