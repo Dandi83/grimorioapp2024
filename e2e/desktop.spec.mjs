@@ -1,4 +1,4 @@
-import { chooseEdition, editionPill, expectEdition } from "./edition-pill.mjs";
+import { chooseEdition, expectEdition } from "./edition-pill.mjs";
 import { test, expect } from "@playwright/test";
 
 // Tablet and computer layouts (the phone is covered by the other files, unchanged).

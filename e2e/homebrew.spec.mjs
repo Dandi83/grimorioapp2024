@@ -1,4 +1,4 @@
-import { chooseEdition, editionPill, expectEdition } from "./edition-pill.mjs";
+import { chooseEdition, editionPill } from "./edition-pill.mjs";
 import { test, expect } from "@playwright/test";
 
 // Homebrew creatures: proposals of the community, approval, the Homebrew collection. Local test database only.
