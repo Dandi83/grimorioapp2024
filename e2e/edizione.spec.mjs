@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { chooseEdition, editionPill, expectEdition } from "./edition-pill.mjs";
 
 // «La tua edizione»: one edition for the whole app, chosen at the first launch (only over the Home),
 // changed from the pill of the Home or from the 2024 · 2014 buttons of any section. Local test database only.
@@ -10,8 +11,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 const firstLaunch = page => page.getByRole("dialog", { name: "Con quale edizione giochi?" });
-const selector = page => page.getByRole("group", { name: "Edizione delle regole" }).first();
-const pressed = (page, edition) => expect(selector(page).getByRole("button", { name: edition })).toHaveAttribute("aria-pressed", "true");
+// The page shows this edition: its pill says so (the old 2024 · 2014 buttons are gone from the lists).
+const pressed = (page, edition) => expectEdition(page, edition);
 const stored = page => page.evaluate(() => window.localStorage.getItem("grimorio.edizione"));
 
 test("first launch: only over the Home, 2014 chosen once for every section, search and counts of 2014", async ({ page }) => {
@@ -120,7 +121,7 @@ test("one choice everywhere: a section's buttons change the others, the pill and
   await tab.goto("/bestiario");
   await pressed(tab, "2024");
   await page.goto("/grimorio");
-  await selector(page).getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   expect(await stored(page)).toBe("2014");
   await pressed(tab, "2014");
   await page.goto("/compendio/condizioni");
@@ -128,7 +129,7 @@ test("one choice everywhere: a section's buttons change the others, the pill and
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Edizione 2014: cambia la tua edizione" })).toHaveCSS("background-color", "rgb(45, 76, 122)");
   await page.goto("/oggetti-magici");
-  await selector(page).getByRole("button", { name: "2024" }).click();
+  await chooseEdition(page, "2024");
   await page.goto("/bestiario");
   await pressed(page, "2024");
 
@@ -140,12 +141,17 @@ test("one choice everywhere: a section's buttons change the others, the pill and
   await page.goto("/grimorio?edizione=2014");
   await pressed(page, "2014");
   expect(await stored(page)).toBe("2024");
+  // The pill of such a page is blue and its panel says so.
+  await expect(editionPill(page)).toHaveCSS("background-color", "rgb(45, 76, 122)");
+  await editionPill(page).click();
+  await expect(page.getByTestId("page-edition-note")).toHaveText("Questa pagina mostra il 2014. La tua edizione è il 2024.");
+  await page.getByRole("dialog", { name: "La tua edizione" }).getByRole("button", { name: "Fatto" }).click();
   await page.goto("/grimorio");
   await pressed(page, "2024");
-  // Touching the buttons on such an address does change it (and the address drops its edition).
+  // A choice in the panel on such an address does change it (and the address drops its edition).
   await page.goto("/grimorio?edizione=2014");
-  await selector(page).getByRole("button", { name: "2024" }).click();
-  await selector(page).getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2024");
+  await chooseEdition(page, "2014");
   expect(await stored(page)).toBe("2014");
   await expect(page).toHaveURL(/\/grimorio$/);
 });

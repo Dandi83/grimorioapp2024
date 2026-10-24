@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { test, expect } from "@playwright/test";
+import { chooseEdition, editionPill } from "./edition-pill.mjs";
 
 const banner = page => page.getByRole("status").filter({ hasText: "Sei offline" });
 
@@ -135,12 +136,8 @@ test("offline: visited pages open from the saved copy with a notice, others say 
     await page.setViewportSize({ width, height: 844 });
     await page.goto(base + "/grimorio");
     await expect(banner(page)).toBeVisible();
-    for (const edition of ["2014", "2024"]) {
-      const button = page.getByRole("button", { name: edition, exact: true });
-      await button.click({ timeout: 5000 });
-      await expect(button).toHaveAttribute("aria-pressed", "true");
-    }
-    const notice = await banner(page).boundingBox(), selector = await page.getByRole("button", { name: "2014", exact: true }).boundingBox();
+    for (const edition of ["2014", "2024"]) await chooseEdition(page, edition);
+    const notice = await banner(page).boundingBox(), selector = await editionPill(page).boundingBox();
     expect(notice.y + notice.height).toBeLessThanOrEqual(selector.y);
   }
   // The report form opens offline from a card; sending fails clearly and keeps the text (nothing is queued).

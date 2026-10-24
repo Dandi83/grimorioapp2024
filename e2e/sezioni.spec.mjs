@@ -239,8 +239,10 @@ test("parts of the sections: every part in its page, editions, collections, clas
     for (const part of section.parts) {
       await pub.goto(part.page);
       if (section.key === "bestiario" && part.group === "raccolte") await pub.getByRole("button", { name: "Filtri" }).click();
+      // The editions are the choices of the pill's panel.
+      if (part.group === "edizioni") await pub.getByRole("button", { name: /^Edizione 20\d\d: cambia la tua edizione$/ }).filter({ visible: true }).click();
       expect(await pub.locator(`[data-part="${section.key}:${part.key}"]`).count(), `${section.key}:${part.key} in ${part.page}`).toBeGreaterThan(0);
-      if (section.key === "bestiario" && part.group === "raccolte") await pub.keyboard.press("Escape");
+      if ((section.key === "bestiario" && part.group === "raccolte") || part.group === "edizioni") await pub.keyboard.press("Escape");
     }
   }
 
@@ -289,7 +291,9 @@ test("parts of the sections: every part in its page, editions, collections, clas
     await expect(pub.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente non disponibile");
     expect((await pub.locator('meta[name="robots"]').evaluateAll(metas => metas.map(m => m.content))).join(" "), path).toContain("noindex");
   };
+  // Lists: the edition pill; the sheets of Equipaggiamento keep their 2024 · 2014 buttons.
   const selector = target => target.getByRole("group", { name: "Edizione delle regole" });
+  const pill = target => target.getByRole("button", { name: /^Edizione 20\d\d: cambia la tua edizione$/ }).filter({ visible: true });
   const searchIndex = async () => (await (await pub.request.get("/ricerca-indice.json")).json());
 
   // Edizione 2014 of the spells hidden: no selector, the remembered 2014 gives way to 2024, 2014 cards 404, no link, no search row.
@@ -298,7 +302,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await togglePart("incantesimi", "Edizione 2014", true);
   await expect(page.getByText("1 parte nascosta")).toBeVisible();
   await pub.goto("/grimorio");
-  await expect(selector(pub)).toHaveCount(0);
+  await expect(pill(pub)).toHaveCount(0);
   await expect(pub.locator('main a[href^="/spell/"]').first()).toBeAttached();
   await expect(pub.locator('main a[href$="-2014"]')).toHaveCount(0);
   await unavailable("/spell/palla-di-fuoco-2014");
@@ -306,9 +310,11 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await expect(pub.getByRole("link", { name: "Passa alla versione 2014" })).toHaveCount(0);
   let index = await searchIndex();
   expect(index.rows.some(row => /^\/spell\/.*-2014$/.test(row[3]) || (row[4] ?? "").startsWith("/spell/"))).toBe(false);
-  // The administrator: the 2014 button labelled «Nascosta», the 2014 card with the bar and «Mostra».
+  // The administrator: the 2014 choice of the pill labelled «Nascosta», the 2014 card with the bar and «Mostra».
   await page.goto("/grimorio");
-  await expect(selector(page).getByRole("button", { name: /2014/ })).toContainText("Nascosta");
+  await pill(page).click();
+  await expect(page.locator('[data-part="incantesimi:2014"]')).toContainText("Nascosta");
+  await page.keyboard.press("Escape");
   expect((await page.goto("/spell/palla-di-fuoco-2014")).status()).toBe(200);
   await expect(page.locator("form").filter({ hasText: "Nascosta" }).getByRole("button", { name: "Mostra" })).toBeVisible();
   // The section wins over its parts and keeps them: hidden and shown again, 2014 is still hidden.
@@ -316,19 +322,19 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await unavailable("/spell/palla-di-fuoco");
   await toggleSection("Incantesimi", false);
   await pub.goto("/grimorio");
-  await expect(selector(pub)).toHaveCount(0);
+  await expect(pill(pub)).toHaveCount(0);
   // «Mostra» from the bar of the card puts 2014 back.
   await page.goto("/spell/palla-di-fuoco-2014");
   await page.locator("form").filter({ hasText: "Nascosta" }).getByRole("button", { name: "Mostra" }).click();
   await expect(page.locator("form").filter({ hasText: "Nascosta" })).toHaveCount(0);
   expect((await pub.goto("/spell/palla-di-fuoco-2014")).status()).toBe(200);
   await pub.goto("/grimorio");
-  await expect(selector(pub)).toBeVisible();
+  await expect(pill(pub)).toBeVisible();
 
   // Edizione 2014 of the weapons: no selector, no 2014 → 2024 box; Armi tile «Parti nascoste» in the admin home.
   await togglePart("armi", "Edizione 2014", true);
   await pub.goto("/equipaggiamento/armi");
-  await expect(selector(pub)).toHaveCount(0);
+  await expect(pill(pub)).toHaveCount(0);
   await pub.goto("/equipaggiamento/armi/tridente");
   await expect(selector(pub)).toHaveCount(0);
   await expect(pub.getByRole("heading", { name: "2014 → 2024" })).toHaveCount(0);
@@ -405,7 +411,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await page.getByRole("note").getByRole("button", { name: "Mostra" }).click();
   await expect(page.getByRole("note")).toHaveCount(0);
   expect((await pub.goto("/compendio/condizioni")).status()).toBe(200);
-  await expect(selector(pub)).toBeVisible();
+  await expect(pill(pub)).toBeVisible();
 
   // Avanzamento: blocks one by one, all four → unavailable; the band shows them all again.
   const blocks = ["Tabella di avanzamento", "Punti ferita fissi per classe", "Talenti bonus oltre il 20º livello"];
@@ -476,7 +482,7 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
   await pub.evaluate(() => window.localStorage.setItem("grimorio.edizione", "2014"));
   for (const path of ["/grimorio", "/bestiario", "/classi/mago", "/oggetti-magici"]) {
     await pub.goto(path);
-    await expect(pub.getByRole("group", { name: "Edizione delle regole" }), path).toHaveCount(0);
+    await expect(pub.getByRole("button", { name: /^Edizione 20\d\d: cambia la tua edizione$/ }).filter({ visible: true }), path).toHaveCount(0);
   }
   await pub.goto("/grimorio");
   await expect(pub.locator('main a[href^="/spell/"]').first()).not.toHaveAttribute("href", /-2014$/);

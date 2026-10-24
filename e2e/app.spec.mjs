@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
+import { chooseEdition, editionPill, expectEdition } from "./edition-pill.mjs";
 
 const catalogRows = page => page.locator("li.catalog-row");
 
@@ -72,10 +73,10 @@ const sheets2014 = JSON.parse(readFileSync(new URL("../lib/data/srd-monsters-5.1
 test("bestiary: 2014 edition list, remembered on the phone, and old 2014 links", async ({ page }) => {
   await page.goto("/bestiario");
   await expect(page.getByRole("status")).toHaveText("Nome · 330 risultati");
-  await page.getByRole("button", { name: "2014", exact: true }).click();
+  await chooseEdition(page, "2014");
   await expect(page.getByRole("status")).toHaveText(`Nome · ${sheets2014} risultati`);
   await page.reload();
-  await expect(page.getByRole("button", { name: "2014", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expectEdition(page, "2014");
   await expect(page.getByRole("status")).toHaveText(`Nome · ${sheets2014} risultati`);
   await page.getByRole("searchbox", { name: "Cerca una creatura" }).fill("orco");
   await page.getByRole("link", { name: /^Orco/ }).click();
@@ -90,7 +91,7 @@ const spells2014 = JSON.parse(readFileSync(new URL("../lib/data/srd-spells-5.1-i
 
 test("spells: 2014 selector, 2014 card with its source and 2024 link, 2014 creature bollini", async ({ page }) => {
   await page.goto("/grimorio");
-  await page.getByRole("button", { name: "2014", exact: true }).click();
+  await chooseEdition(page, "2014");
   await expect(page.getByRole("status")).toHaveText(`${spells2014} risultati`);
   await page.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("aiuto");
   await page.getByRole("link", { name: /^Aiuto/ }).click();
@@ -256,8 +257,7 @@ test("equipment: Compendio tile, weapons list and cards per edition, combined fi
   await expect(page).toHaveURL(/\/equipaggiamento$/);
   await page.getByRole("link", { name: /Armi/ }).click();
   await expect(page.getByText(/^38 armi ·/)).toBeVisible();
-  const edition = page.getByRole("group", { name: "Edizione delle regole" });
-  await edition.getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   await expect(page.getByText(/^37 armi ·/)).toBeVisible();
   await expect(page.getByRole("link", { name: /^Rete/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /^Pistola/ })).toHaveCount(0);
@@ -266,7 +266,7 @@ test("equipment: Compendio tile, weapons list and cards per edition, combined fi
   await page.getByRole("group", { name: "Categoria" }).getByRole("button", { name: "Da guerra" }).click();
   await page.getByRole("group", { name: "Distanza" }).getByRole("button", { name: "Distanza" }).click();
   await expect(page.getByRole("status").filter({ hasText: /armi?$/ })).toHaveText("5 armi");
-  await edition.getByRole("button", { name: "2024" }).click();
+  await chooseEdition(page, "2024");
   await expect(page.getByRole("status").filter({ hasText: /armi?$/ })).toHaveText("6 armi");
   await expect(page.getByRole("link", { name: /Moschetto/ })).toBeVisible();
   await page.getByRole("group", { name: "Categoria" }).getByRole("button", { name: "Semplici" }).click();
@@ -294,13 +294,13 @@ test("equipment: armor list per edition with times, sheets in both editions, no 
   await expect(page).toHaveURL(/\/equipaggiamento\/armature$/);
   await expect(page.getByRole("link", { name: /Armatura imbottita/ })).toBeVisible();
   await expect(page.getByText("Indossare o togliere: azione di Utilizzo")).toBeVisible();
-  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   await expect(page.getByRole("link", { name: /^\s*11\s*\+ Des\s*Imbottita/ })).toBeVisible();
   await expect(page.getByText("Indossare 1 azione · togliere 1 azione")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
   // Each row says a thing once: no "+ Des" chip next to the badge, no label twice.
   for (const edition of ["2014", "2024"]) {
-    await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: edition }).click();
+    if ((await editionPill(page).getAttribute("aria-label")).slice(9, 13) !== edition) await chooseEdition(page, edition);
     const rows = await page.locator('main a[href^="/equipaggiamento/armature/"]').evaluateAll(links => links.map(a => a.innerText.split("\n").map(t => t.trim()).filter(Boolean)));
     expect(rows).toHaveLength(13);
     for (const row of rows) {
@@ -310,7 +310,7 @@ test("equipment: armor list per edition with times, sheets in both editions, no 
     const badges = await page.locator('main a[href^="/equipaggiamento/armature/"] > span:first-child').evaluateAll(spans => spans.map(s => s.scrollWidth <= s.clientWidth + 1));
     expect(badges.every(Boolean)).toBe(true);
   }
-  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   await page.getByRole("link", { name: /Cotta di maglia/ }).click();
   await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Cotta di maglia");
   await expect(page.locator('[data-edition="2014"]')).toContainText("For 13");
@@ -407,7 +407,7 @@ test("adventuring gear 2014: list with groups and packs, search, sheets, renamed
   page.on("console", message => { if (message.type() === "error" && !message.location().url.endsWith("/favicon.ico")) errors.push(message.text()); });
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/equipaggiamento/avventura");
-  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   await expect(page.getByText(/^106 voci · SRD 5\.1$/)).toBeVisible();
   const all = page.locator('section[aria-labelledby="tutti"] > ul > li');
   await expect(all).toHaveCount(94);
@@ -482,8 +482,9 @@ test("tools: tile, lists of both editions, search, sheets, instrument 2014 → 2
   await expect(page.locator("main section li")).toHaveText([/Arnesi da scasso/]);
   await search.fill("");
   await widths("list 2024");
+  // The list: the edition pill; the sheets keep their 2024 · 2014 buttons.
   const selector = page.getByRole("group", { name: "Edizione delle regole" });
-  await selector.getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   await expect(page.getByText(/^35 strumenti · SRD 5\.1$/)).toBeVisible();
   await expect(page.locator("main section h2")).toHaveText(["Strumenti da artigiano", "Giochi", "Strumenti musicali", "Altri strumenti"]);
   await search.fill("liuto");
@@ -604,7 +605,7 @@ test("magic items 2014: selector remembered, search, renamed and single-edition 
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/oggetti-magici");
   const rows = page.locator('main a[href^="/oggetti-magici/"]');
-  await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   await expect(rows).toHaveCount(240);
   await expect(page.getByText("SRD 5.1", { exact: true })).toBeVisible();
   const search = page.getByRole("searchbox", { name: "Cerca un oggetto magico" });
@@ -683,8 +684,7 @@ test("conditions: Compendio tile like the others, list per edition, note of the 
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `list ${width}`).toBeLessThanOrEqual(width);
   }
-  const selector = page.getByRole("group", { name: "Edizione delle regole" });
-  await selector.getByRole("button", { name: "2014" }).click();
+  await chooseEdition(page, "2014");
   await expect(rows).toHaveCount(11);
   await expect(rows.first()).toHaveAttribute("href", "/manuale/condizioni-accecato-2014");
   const note = page.getByText(/Nell’SRD 5\.1 italiano non sono stampate/);
@@ -694,10 +694,9 @@ test("conditions: Compendio tile like the others, list per edition, note of the 
   await page.reload();
   await expect(rows).toHaveCount(11);
   for (const href of await rows.evaluateAll(links => links.map(a => a.getAttribute("href")))) expect((await request.get(href)).status(), href).toBe(200);
-  await selector.getByRole("button", { name: "2024" }).click();
+  await chooseEdition(page, "2024");
   await expect(rows).toHaveCount(15);
   await expect(page.getByText(/non sono stampate/)).toHaveCount(0);
-  expect(await selector.getByRole("button").allInnerTexts()).toEqual(["2024", "2014"]);
   for (const href of await rows.evaluateAll(links => links.map(a => a.getAttribute("href")))) expect((await request.get(href)).status(), href).toBe(200);
   await rows.filter({ hasText: "Avvelenato" }).click();
   await expect(page).toHaveURL(/\/manuale\/condizioni-avvelenato$/);
@@ -1249,9 +1248,8 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
     const counts = {};
     await page.goto(url);
     for (const edition of ["2024", "2014"]) {
-      const button = page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: edition });
-      await button.click();
-      await expect(button).toHaveAttribute("aria-pressed", "true");
+      if ((await editionPill(page).getAttribute("aria-label")).slice(9, 13) !== edition) await chooseEdition(page, edition);
+      await expectEdition(page, edition);
       const status = page.getByRole("status").filter({ hasText: /\d+ risultat/ }).first();
       await expect(status).toHaveText(/\d+ risultat/);
       counts[edition] = Number((await status.textContent()).match(/(\d+) risultat/)[1]);
@@ -1340,7 +1338,7 @@ test("admin lists the same in both editions: manual names, source labels, Elimin
   page.on("pageerror", error => errors.push(String(error)));
   // Public search: capitals or not, the same results; names as the manual writes them.
   await page.goto("/grimorio");
-  const editionButton = edition => page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: edition });
+  const editionButton = edition => ({ click: () => chooseEdition(page, edition) });
   const search = page.getByRole("searchbox", { name: "Cerca un incantesimo" });
   await editionButton("2014").click();
   for (const query of ["palla di fuoco", "PALLA DI FUOCO"]) {
@@ -1416,9 +1414,9 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await tile.click();
   await expect(page).toHaveURL(/\/classi$/);
   await expect(page.getByRole("navigation", { name: "Navigazione principale" }).locator('a[aria-current="page"]')).toHaveText("Compendio");
-  // Title and selector on one row; 12 cards with hit die and primary abilities from the data.
+  // Title and edition pill on one row; 12 cards with hit die and primary abilities from the data.
   const title = await page.getByRole("heading", { level: 1, name: "Classi" }).boundingBox();
-  const selector = await page.getByRole("group", { name: "Edizione delle regole" }).boundingBox();
+  const selector = await editionPill(page).boundingBox();
   expect(Math.abs(title.y + title.height / 2 - (selector.y + selector.height / 2))).toBeLessThan(12);
   const cards = page.locator('[data-edition="2024"] a[href^="/classi/"]');
   await expect(cards).toHaveCount(12);
@@ -1426,16 +1424,16 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await expect(cards.filter({ hasText: "Guerriero" })).toContainText("D10 · Forza o Destrezza");
   await expect(cards.filter({ hasText: "Mago" })).toContainText("D6 · Intelligenza");
   // 2014: the same twelve classes from the SRD 5.1, hit dice as printed («1d10»), no primary ability line.
-  await page.getByRole("button", { name: "2014", exact: true }).click();
+  await chooseEdition(page, "2014");
   const cards2014 = page.locator('[data-edition="2014"] a[href^="/classi/"]');
   await expect(cards2014).toHaveCount(12);
   await expect(cards2014.filter({ hasText: "Guerriero" })).toContainText("1d10");
   await expect(cards2014.filter({ hasText: "Guerriero" })).not.toContainText("Forza");
-  await page.getByRole("button", { name: "2024", exact: true }).click();
+  await chooseEdition(page, "2024");
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `list ${width}`).toBeLessThanOrEqual(width);
-    for (const box of [await cards.first().boundingBox(), await page.getByRole("button", { name: "2014", exact: true }).boundingBox()]) expect(box.height).toBeGreaterThanOrEqual(44);
+    for (const box of [await cards.first().boundingBox(), await editionPill(page).boundingBox()]) expect(box.height).toBeGreaterThanOrEqual(44);
   }
 
   // Sheet: coloured header, key data, skills and equipment, the three tabs.
@@ -1469,7 +1467,7 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await expect(body.getByRole("tabpanel")).toContainText("Raggiungi l'eccellenza fisica nel combattimento");
   await expect(body.getByRole("tabpanel").getByRole("listitem").filter({ hasText: "18 · Sopravvissuto" })).toHaveCount(1);
   // 2014 on the same page: header with its source page, the Campione with the levels printed in its text.
-  await page.getByRole("button", { name: "2014", exact: true }).click();
+  await chooseEdition(page, "2014");
   const sheet2014 = page.locator('[data-edition="2014"]');
   await expect(sheet2014).toContainText("Classe · SRD 5.1, p. 24");
   await expect(body).toContainText("Tutte le armature, scudi");
@@ -1478,7 +1476,7 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await body.getByRole("tab", { name: "Tabella" }).filter({ visible: true }).click();
   await expect(body.getByRole("tabpanel").filter({ visible: true }).locator("tbody tr")).toHaveCount(20);
   await expect(body.getByRole("link", { name: "Passa alla versione 2024" })).toHaveAttribute("href", "/classi/guerriero?edizione=2024");
-  await page.getByRole("button", { name: "2024", exact: true }).click();
+  await chooseEdition(page, "2024");
   await expect(body.getByRole("link", { name: "Passa alla versione 2014" })).toHaveAttribute("href", "/classi/guerriero?edizione=2014");
   await body.getByRole("link", { name: "Passa alla versione 2014" }).click();
   await expect(page.locator('[data-edition="2014"]')).toBeVisible();
