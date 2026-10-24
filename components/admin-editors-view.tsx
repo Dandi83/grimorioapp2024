@@ -29,7 +29,10 @@ export async function AdminEditorsView({ tab, searchParams }: { tab: "spells" | 
     const ritorno = safeReturnPath(params.ritorno);
     redirect(`/admin/${tab === "spells" ? "incantesimi" : "mostri"}/${encodeURIComponent(params.modifica)}${ritorno ? `?${new URLSearchParams({ ritorno })}` : ""}`);
   }
-  const [spells, monsters, edition, hidden, homebrew, catalog, out] = await Promise.all([getAdminSpells(), getAllMonsters(), adminEdition(), hiddenCardPaths().catch(() => []), publishedHomebrew().catch(() => []), getSpellReferenceCatalog(), publicLinksOut()]);
+  const [spells, monsters, edition, hidden, homebrew] = await Promise.all([getAdminSpells(), getAllMonsters(), adminEdition(), hiddenCardPaths().catch(() => []), publishedHomebrew().catch(() => [])]);
+  // After the lists (one more read, cached): the spells the previews link and the pages hidden from the public.
+  const catalog = await getSpellReferenceCatalog();
+  const out = await publicLinksOut();
   // Homebrew creatures of this edition («Entrambe» in both), with their plain draft for the guided editor.
   const homebrewHere = homebrew.filter(row => row.edizione === edition || row.edizione === "entrambe");
   // Cards hidden from the site with the eye (addresses), as ids of each list.

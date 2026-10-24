@@ -70,7 +70,7 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
           </div>
         </section>
       )}
-      <section className="px-6 pb-4">
+      <section className="px-6 pb-4" data-card-description="">
         <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">Descrizione</h2>
         {view.html ? (
           <HtmlText html={view.html} damageIcons references={view.conditionLinks} spellReferences={view.spellLinks} />
