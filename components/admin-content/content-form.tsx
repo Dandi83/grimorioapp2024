@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { saveContentAction, type ContentActionResult } from "@/app/actions/admin-content";
 import { REASON_MAX, fieldError, normalizeValue, reasonError, type FieldSpec } from "@/lib/content-validate";
+import { adoptEditorStep, leaveEditor } from "@/lib/admin-edit-return";
 
 interface Field extends FieldSpec { original: string; current: string; motivo?: string }
 
@@ -15,7 +16,10 @@ interface Field extends FieldSpec { original: string; current: string; motivo?: 
  */
 export function AdminContentForm({ section, id, edition, fields, back, returnTo }: {
   section: string; id: string; edition: string; fields: Field[]; back: string;
-  /** Opened from a public page («Modifica»): after saving, back to it, reloaded with the correction. */
+  /**
+   * Opened from a public page («Modifica»): «Annulla» and saving go back to it in the history (never a new step,
+   * lib/admin-edit-return.ts), after a save with the correction.
+   */
   returnTo?: string;
 }) {
   const router = useRouter();
@@ -25,9 +29,10 @@ export function AdminContentForm({ section, id, edition, fields, back, returnTo 
   const [state, action, pending] = useActionState<ContentActionResult | null, FormData>(saveContentAction, null);
   const form = useRef<HTMLFormElement>(null);
 
+  useEffect(() => { if (returnTo) adoptEditorStep(returnTo); }, [returnTo]);
   useEffect(() => {
     if (!state?.ok) return;
-    if (returnTo) { window.location.assign(returnTo); return; }
+    if (returnTo) { leaveEditor(returnTo, true); return; }
     // eslint-disable-next-line react-hooks/set-state-in-effect -- the saved reason is cleared once
     setMotivo("");
     router.refresh();
@@ -98,7 +103,7 @@ export function AdminContentForm({ section, id, edition, fields, back, returnTo 
         <button type="submit" disabled={pending || !changed.length} className="min-h-[50px] flex-1 rounded-[25px] bg-primary font-bold text-primary-foreground disabled:opacity-50">
           {pending ? "Salvataggio…" : "Salva modifica"}
         </button>
-        <Link href={back} className="inline-flex min-h-[50px] items-center rounded-[25px] border-[1.5px] border-primary px-5 font-bold text-primary">Annulla</Link>
+        <Link href={back} onClick={returnTo ? event => { event.preventDefault(); leaveEditor(returnTo); } : undefined} className="inline-flex min-h-[50px] items-center rounded-[25px] border-[1.5px] border-primary px-5 font-bold text-primary">Annulla</Link>
       </div>
       <p className="text-xs text-muted">La modifica viene registrata (data, valore originale, nuovo valore, motivo) e si può annullare dal Registro. Sul sito compare come correzione, con il valore del manuale in fondo alla scheda.</p>
     </form>

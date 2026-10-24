@@ -15,12 +15,12 @@ export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?
   const router = useRouter();
   const admin = pathname.startsWith("/admin");
 
-  // Counts in-app page changes for the back button (the first page is not one).
-  const lastPath = useRef(pathname);
+  // Counts in-app page changes for the back button and remembers the pages (the first page starts the trail).
+  const lastPath = useRef<string | null>(null);
   useEffect(() => {
     if (lastPath.current === pathname) return;
     lastPath.current = pathname;
-    notePathChange();
+    notePathChange(pathname);
   }, [pathname]);
 
   useEffect(() => {

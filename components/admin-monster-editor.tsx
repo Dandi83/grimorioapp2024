@@ -104,7 +104,8 @@ export function MonsterEditor({
   page = false,
 }: {
   monster: Monster | null;
-  onClose: () => void;
+  /** saved: true after a successful save. */
+  onClose: (saved?: boolean) => void;
   /** The edition of the admin area: the card belongs to it, and a new card starts in it. */
   edition: AdminEdition;
   /** The eye of the list, also at the top of the editor (cards already saved), with its notice. */
@@ -144,7 +145,7 @@ export function MonsterEditor({
       const result = monster
         ? await updateMonsterAction(null, data)
         : await createMonsterAction(null, data);
-      if (result?.ok) onClose();
+      if (result?.ok) onClose(true);
       else
         setError(
           result?.error || "Salvataggio non riuscito. I dati inseriti sono ancora nel modulo.",
@@ -187,7 +188,7 @@ export function MonsterEditor({
           <button
             type="button"
             disabled={saving}
-            onClick={onClose}
+            onClick={() => onClose()}
             aria-label="Chiudi editor"
             className="min-h-11 min-w-11 rounded-lg text-muted-foreground hover:bg-elevated"
           >

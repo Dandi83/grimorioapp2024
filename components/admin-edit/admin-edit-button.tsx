@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 
 import { useAdminSession } from "@/components/admin-edit/admin-session";
 import { adminEditHref, type AdminEditTarget } from "@/lib/admin-edit-link";
+import { noteEditorOpened } from "@/lib/admin-edit-return";
 
 /**
  * The editor of the card, with this page (path and query) to come back to. Read again on the tap: a page
@@ -12,6 +13,12 @@ import { adminEditHref, type AdminEditTarget } from "@/lib/admin-edit-link";
  */
 function editHref(target: AdminEditTarget): string {
   return adminEditHref(target, `${window.location.pathname}${window.location.search}`);
+}
+
+/** Opens the editor, remembering this page: leaving the editor goes back to it in the history (lib/admin-edit-return.ts). */
+function openEditor(target: AdminEditTarget) {
+  noteEditorOpened(`${window.location.pathname}${window.location.search}`);
+  window.location.assign(editHref(target));
 }
 
 /**
@@ -24,7 +31,7 @@ export function AdminEditButton({ target, desktop = "lg:static lg:ml-3 lg:float-
   const admin = useAdminSession();
   if (!admin) return null;
   return (
-    <a href={editHref(target)} data-admin-edit="" onClick={event => { event.preventDefault(); window.location.assign(editHref(target)); }}
+    <a href={editHref(target)} data-admin-edit="" onClick={event => { event.preventDefault(); openEditor(target); }}
       className={`fixed bottom-[calc(92px+env(safe-area-inset-bottom,0px))] right-4 z-40 inline-flex min-h-12 items-center gap-2 rounded-full bg-primary px-5 text-[16px] font-bold text-white shadow-[0_4px_14px_rgb(43_33_24_/_28%)] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber lg:z-auto lg:min-h-11 lg:px-4 lg:text-[15px] lg:shadow-[0_2px_8px_rgb(43_33_24_/_18%)] ${desktop}`}>
       <Pencil size={18} strokeWidth={2.4} aria-hidden="true" />
       Modifica
@@ -38,7 +45,7 @@ export function AdminEditPencil({ target, name }: { target: AdminEditTarget; nam
   if (!admin) return null;
   return (
     <a href={editHref(target)} data-admin-edit="" aria-label={`Modifica ${name}`} title={`Modifica ${name}`}
-      onClick={event => { event.preventDefault(); event.stopPropagation(); window.location.assign(editHref(target)); }}
+      onClick={event => { event.preventDefault(); event.stopPropagation(); openEditor(target); }}
       className="relative z-10 ml-2 inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-primary align-middle text-white shadow-[0_1px_4px_rgb(43_33_24_/_25%)] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber">
       <Pencil size={16} strokeWidth={2.4} aria-hidden="true" />
     </a>
