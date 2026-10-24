@@ -1486,7 +1486,8 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await expect(page.getByRole("link", { name: /^Passa alla versione/ })).toHaveCount(0);
   await chooseEdition(page, "2024");
   await expect(page.locator('[data-edition="2024"]').first()).toBeVisible();
-  await chooseEdition(page, "2014");
+  // The 2014 sheet still opens from its address (without changing «la tua edizione»).
+  await page.goto("/classi/guerriero?edizione=2014");
   await expect(page.locator('[data-edition="2014"]').first()).toBeVisible();
   await page.goto("/classi/guerriero?edizione=2024");
   // «Segnala» carries the page, the class name and the edition shown.
