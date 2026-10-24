@@ -69,15 +69,15 @@ export function GrimorioWithFilters({ spells, meta, pane }: { spells: SpellListI
   const filters = spellFiltersFromParams(params);
   const requested = params.get("edizione");
   // An edition in the address opens the list there without changing «la tua edizione».
-  const { edition: userEdition } = useUserEdition();
+  const { edition: userEdition, ready } = useUserEdition();
   const edizione = isEdition(requested) ? requested : userEdition;
   const restored = useRestoredList<SpellListState>("grimorio", search, pane);
   const restoredFilters: SpellFilters | null = restored && Array.isArray(restored.livello)
     ? { livello: restored.livello, scuola: restored.scuola, classe: restored.classe, tempo: Array.isArray(restored.tempo) ? restored.tempo : [], concentrazione: restored.concentrazione, rituale: restored.rituale }
     : null;
-  return <GrimorioBrowser key={JSON.stringify([filters, edizione, !!restoredFilters])}
+  return <GrimorioBrowser key={JSON.stringify([filters, !!restoredFilters])}
     spells={spells} meta={meta} initialFilters={restoredFilters ?? filters}
-    initialEdizione={restoredFilters ? restored!.edizione : edizione}
+    initialEdizione={restoredFilters ? restored!.edizione : edizione} edizione={edizione} editionReady={ready}
     initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
     initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} />;
 }
@@ -101,15 +101,15 @@ export function BestiarioWithFilters({ monsters, pane }: { monsters: MonsterList
   const { params, search } = useCatalogSearch(pane ? "/bestiario" : undefined);
   const filters = filtersFromParams(params);
   const requested = params.get("edizione");
-  const { edition: userEdition } = useUserEdition();
+  const { edition: userEdition, ready } = useUserEdition();
   const edizione = isEdition(requested) ? requested : userEdition;
   const restored = useRestoredList<MonsterListState>("bestiario", search, pane);
   const restoredFilters: MonsterFilters | null = restored && Array.isArray(restored.gs)
     ? { categoria: restored.categoria, gs: restored.gs, tipo: restored.tipo, taglia: restored.taglia, habitat: restored.habitat }
     : null;
-  return <BestiarioBrowser key={JSON.stringify([filters, edizione, !!restoredFilters])}
+  return <BestiarioBrowser key={JSON.stringify([filters, !!restoredFilters])}
     monsters={monsters} initialFilters={restoredFilters ?? filters}
-    initialEdizione={restoredFilters ? restored!.edizione : edizione}
+    initialEdizione={restoredFilters ? restored!.edizione : edizione} edizione={edizione} editionReady={ready}
     initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
     initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} />;
 }

@@ -11,6 +11,7 @@ import { HiddenTag } from "@/components/sections/hidden-tag";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useUserEdition } from "@/components/edition/edition-provider";
+import { useFollowEdition } from "@/components/edition/use-follow-edition";
 import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
@@ -43,6 +44,10 @@ interface Props {
   meta: SpellsMeta;
   initialFilters?: SpellFilters;
   initialEdizione?: SpellEdition;
+  /** The edition to show from now on (the address, else «la tua edizione»), followed without rebuilding the list. */
+  edizione?: SpellEdition;
+  /** «La tua edizione» has been read from the device. */
+  editionReady?: boolean;
   initialQuery?: string;
   initialLimit?: number;
   initialScroll?: number;
@@ -55,6 +60,8 @@ export function GrimorioBrowser({
   meta,
   initialFilters = NO_SPELL_FILTERS,
   initialEdizione = "2024",
+  edizione: targetEdizione,
+  editionReady = false,
   initialQuery = "",
   initialLimit = PAGE_SIZE,
   initialScroll,
@@ -67,6 +74,7 @@ export function GrimorioBrowser({
   const hasLegacy = useMemo(() => spells.some(spell => spell.edizione === "2014"), [spells]);
   const { choose: chooseUserEdition } = useUserEdition();
   const [chosenEdizione, setEdizione] = useState<SpellEdition>(initialEdizione);
+  useFollowEdition(targetEdizione, editionReady, setEdizione, () => setFilters(NO_SPELL_FILTERS));
   // An edition hidden from /admin/sezioni is never shown, even if it was the last one chosen.
   const { allowed } = useEditions("incantesimi");
   const edizione: SpellEdition = !hasLegacy ? "2024" : allowed.includes(chosenEdizione) ? chosenEdizione : allowed[0];

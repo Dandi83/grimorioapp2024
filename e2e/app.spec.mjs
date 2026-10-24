@@ -121,7 +121,7 @@ test("spells: the duplicate Water Breathing address opens the kept card", async 
 test("spells: casting time filter, together with the other filters, in both editions", async ({ page }) => {
   await page.goto("/grimorio");
   for (const edition of ["2024", "2014"]) {
-    await page.getByRole("button", { name: edition, exact: true }).click();
+    if ((await editionPill(page).getAttribute("aria-label")).slice(9, 13) !== edition) await chooseEdition(page, edition);
     await page.getByRole("button", { name: /^Filtri/ }).click();
     const group = page.getByRole("group", { name: "Tempo di lancio" });
     await group.getByRole("button", { name: "Reazione", exact: true }).click();
