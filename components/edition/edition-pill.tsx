@@ -23,7 +23,7 @@ export function trapFocus(event: ReactKeyboardEvent<HTMLElement>) {
  * «La tua edizione»: handle, title, the two large choices (the active one full with the tick), the
  * status line read by screen readers and «Fatto». A choice applies at once to the whole app.
  */
-function EditionPanel({ sheet, onClose, pill }: { sheet: boolean; onClose: () => void; pill: RefObject<HTMLButtonElement | null> }) {
+function EditionPanel({ sheet, keyboard, onClose, pill }: { sheet: boolean; keyboard: boolean; onClose: () => void; pill: RefObject<HTMLButtonElement | null> }) {
   const { edition, choose } = useUserEdition();
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
@@ -32,7 +32,9 @@ function EditionPanel({ sheet, onClose, pill }: { sheet: boolean; onClose: () =>
   useEffect(() => { close.current = onClose; }, [onClose]);
 
   useEffect(() => {
-    active.current?.focus();
+    // The focus ring only for those who opened it with the keyboard (a tap shows no ring, also on iPhone).
+    const options = { focusVisible: keyboard } as FocusOptions;
+    active.current?.focus(options);
     const escape = (event: KeyboardEvent) => { if (event.key === "Escape") close.current(); };
     // The small box of the computer closes with a click anywhere else (the sheet has its veil).
     const outside = (event: PointerEvent) => {
@@ -47,9 +49,9 @@ function EditionPanel({ sheet, onClose, pill }: { sheet: boolean; onClose: () =>
       window.removeEventListener("keydown", escape);
       document.removeEventListener("pointerdown", outside);
       if (sheet) document.body.style.overflow = "";
-      button?.focus();
+      button?.focus(options);
     };
-  }, [sheet, pill]);
+  }, [sheet, keyboard, pill]);
 
   const body = (
     <div
@@ -97,6 +99,7 @@ function EditionPanel({ sheet, onClose, pill }: { sheet: boolean; onClose: () =>
 export function EditionPill({ place, className = "" }: { place: "home" | "side"; className?: string }) {
   const { edition, ready, forced } = useUserEdition();
   const [open, setOpen] = useState(false);
+  const [keyboard, setKeyboard] = useState(false);
   const pill = useRef<HTMLButtonElement>(null);
   const look = `inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 text-[15px] font-bold text-white shadow-[0_2px_8px_rgb(43_33_24_/_28%)] ${ready ? "" : "invisible"}`;
   if (forced) {
@@ -104,14 +107,14 @@ export function EditionPill({ place, className = "" }: { place: "home" | "side";
   }
   return (
     <div className={`relative ${className}`}>
-      <button ref={pill} type="button" aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(value => !value)}
+      <button ref={pill} type="button" aria-haspopup="dialog" aria-expanded={open} onClick={event => { setKeyboard(event.detail === 0); setOpen(value => !value); }}
         aria-label={`Edizione ${edition}: cambia la tua edizione`}
         className={`${look} focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber`}
         style={{ backgroundColor: EDITION_COLOR[edition] }}>
         Edizione {edition}
         <ChevronDown size={18} strokeWidth={2.6} aria-hidden="true" />
       </button>
-      {open && <EditionPanel sheet={place === "home"} pill={pill} onClose={() => setOpen(false)} />}
+      {open && <EditionPanel sheet={place === "home"} keyboard={keyboard} pill={pill} onClose={() => setOpen(false)} />}
     </div>
   );
 }

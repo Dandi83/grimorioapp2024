@@ -157,6 +157,9 @@ test("keyboard: first launch and panel reachable with Tab, visible focus, Esc cl
   await page.goto("/");
   await expect(firstLaunch(page)).toBeVisible();
   const outline = () => page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle);
+  // Focus on «2024» without the ring until a key is pressed (:focus-visible only).
+  await expect(firstLaunch(page).getByRole("button", { name: /^2024/ })).toBeFocused();
+  expect(await outline()).toBe("none");
   await page.keyboard.press("Tab");
   await expect(firstLaunch(page).getByRole("button", { name: /^2014/ })).toBeFocused();
   expect(await outline()).not.toBe("none");
@@ -179,6 +182,7 @@ test("keyboard: first launch and panel reachable with Tab, visible focus, Esc cl
   const panel = page.getByRole("dialog", { name: "La tua edizione" });
   await expect(panel).toBeVisible();
   await expect(panel.getByRole("button", { name: /^2024/ })).toBeFocused();
+  expect(await outline(), "opened with the keyboard: visible focus").not.toBe("none");
   await expect(panel.getByRole("status")).toHaveText("Ora tutta l’app parte dal 2024.");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Enter");
@@ -208,6 +212,9 @@ test("phone: pill on the picture of the Home, sheet from the bottom closed by Fa
   expect(box.x + box.width).toBeGreaterThan(330);
   await pill.click();
   const panel = page.getByRole("dialog", { name: "La tua edizione" });
+  // Opened with a tap: focus on the active choice, no ring.
+  await expect(panel.getByRole("button", { name: /^2024/ })).toBeFocused();
+  expect(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle)).toBe("none");
   await expect(panel).toContainText("Vale per tutta l’app: incantesimi, bestiario, classi, regole e ricerca.");
   await panel.getByRole("button", { name: /^2014/ }).click();
   await expect(page.getByRole("button", { name: "Cerca nel Grimorio 2014…" })).toBeVisible();
