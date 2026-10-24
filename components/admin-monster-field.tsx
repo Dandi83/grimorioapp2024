@@ -7,7 +7,7 @@ import { AdminChoiceField } from "./admin-choice-field";
 
 const inputClass="w-full min-w-0 rounded-lg border border-border bg-background px-3 py-2.5 text-base text-foreground outline-none focus:border-primary";
 const CHOICES: Partial<Record<keyof Monster,readonly string[]>> = {
-  tipo:TYPE_KEYWORDS.map(type=>type==="Fata" ? "Folletto" : type==="Pianta" ? "Vegetale" : type),
+  tipo:TYPE_KEYWORDS,
   taglia:SIZES,
   allineamento:["legale buono","neutrale buono","caotico buono","legale neutrale","neutrale","caotico neutrale","legale malvagio","neutrale malvagio","caotico malvagio","senza allineamento","qualsiasi allineamento"],
   grado_sfida:["0","1/8","1/4","1/2",...Array.from({length:30},(_,index)=>String(index+1))],

@@ -35,7 +35,7 @@ export function blocksOf(edition: HomebrewEdition): EntryBlock[] {
 }
 
 export const CHALLENGE_RATINGS = ["0", "1/8", "1/4", "1/2", ...Array.from({ length: 30 }, (_, i) => String(i + 1))] as const;
-export const HOMEBREW_TYPES = TYPE_KEYWORDS.map(type => (type === "Fata" ? "Folletto" : type === "Pianta" ? "Vegetale" : type));
+export const HOMEBREW_TYPES = TYPE_KEYWORDS;
 export const HOMEBREW_ALIGNMENTS = ["legale buono", "neutrale buono", "caotico buono", "legale neutrale", "neutrale", "caotico neutrale", "legale malvagio", "neutrale malvagio", "caotico malvagio", "senza allineamento", "qualsiasi allineamento"] as const;
 
 export interface HomebrewEntry { nome: string; testo: string }

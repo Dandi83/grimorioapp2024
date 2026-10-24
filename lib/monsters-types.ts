@@ -80,15 +80,23 @@ export const TYPE_KEYWORDS = [
   "Costrutto",
   "Drago",
   "Elementale",
-  "Fata",
+  "Folletto",
   "Immondo",
   "Gigante",
   "Umanoide",
   "Melma",
   "Mostruosità",
-  "Pianta",
+  "Vegetale",
   "Non morto",
 ] as const;
+
+/** Old names of two categories, still in saved filters and old addresses (?tipo=Fata). */
+const OLD_TYPE_NAMES: Record<string, string> = { Fata: "Folletto", Pianta: "Vegetale" };
+
+/** A Tipo filter with the current names: «Fata» → «Folletto», «Pianta» → «Vegetale», no repeats. */
+export function currentTypeNames(types: readonly string[]): string[] {
+  return [...new Set(types.map(type => OLD_TYPE_NAMES[type] ?? type))];
+}
 
 /** Converte un grado sfida testuale ("1/4", "0", "5") in un numero ordinabile. */
 export function parseGs(gs: string): number {
@@ -106,8 +114,6 @@ export function parseGs(gs: string): number {
 export function typeCategory(tipo: string): string {
   const t = (tipo || "").toLowerCase();
   if (t.includes("bestie")) return "Bestia";
-  if (t.includes("folletto")) return "Fata";
-  if (t.includes("vegetale")) return "Pianta";
   if (/non mort[oi]/.test(t)) return "Non morto";
   for (const k of TYPE_KEYWORDS) {
     if (t.includes(k.toLowerCase())) return k;
@@ -187,13 +193,13 @@ export const typeColors: Record<string, string> = {
   Costrutto: "#5F5F5F",
   Drago: "#C74848",
   Elementale: "#4C6B8A",
-  Fata: "#B85C8A",
+  Folletto: "#B85C8A",
   Immondo: "#A83E3E",
   Gigante: "#C97A3E",
   Umanoide: "#7A6BA8",
   Melma: "#6BA88A",
   "Mostruosità": "#B8863E",
-  Pianta: "#5EA86B",
+  Vegetale: "#5EA86B",
   "Non morto": "#7A7A7A",
 };
 

@@ -21,7 +21,7 @@ assert.equal(new Set(result.map(x=>x.id)).size,result.length);
 assert.equal(provider.getSrdMonsterSource(custom),undefined);
 for(const r of data.records){const m=provider.previewMonsterById(r.monster.id,'preview');assert.deepEqual(m,r.monster);assert.equal(provider.getSrdMonsterSource(m).page,r.page);assert.deepEqual(provider.previewMonsterById(m.id,'production'),m);assert.equal(provider.getSrdMonsterSource({...m,azioni_bonus:'An unauthorized additional power'}),undefined);}
 const types=load('lib/monsters-types.ts');
-assert.equal(types.typeCategory('Folletto (goblinoide)'),'Fata');assert.equal(types.typeCategory('Vegetale'),'Pianta');assert.equal(types.typeCategory('Sciame di non morti Minuscoli'),'Non morto');
+assert.equal(types.typeCategory('Folletto (goblinoide)'),'Folletto');assert.equal(types.typeCategory('Vegetale'),'Vegetale');assert.deepEqual(types.currentTypeNames(['Fata','Pianta','Folletto','Drago']),['Folletto','Vegetale','Drago']);assert.equal(types.typeCategory('Sciame di non morti Minuscoli'),'Non morto');
 let selected;
 const page=load('app/mostro/[id]/page.tsx',{
  '@/components/monster-provenance-badge':load('components/monster-provenance-badge.tsx'),
