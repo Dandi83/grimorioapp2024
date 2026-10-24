@@ -50,9 +50,10 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
  await load('lib/content-overrides.ts').ensureOverridesTable();
  await load('lib/editor-log.ts').ensureEditorLogTable();
  await load('lib/section-visibility.ts').ensureSectionTables();
+ await load('lib/homebrew.ts').ensureHomebrewTables();
  deps['web-push']={generateVAPIDKeys:()=>({publicKey:'p',privateKey:'k'})};
  await load('lib/push.ts').ensurePushTables();
- for(const table of [schema.contentEditions,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.adminSessions,schema.contentOverrides,schema.editorLog,schema.sectionVisibility,schema.sectionVisibilityLog,schema.sectionParts,schema.sectionPartsLog,schema.cardVisibility,schema.cardVisibilityLog,schema.pushKeys,schema.pushSubscriptions,schema.pushTypes]){
+ for(const table of [schema.contentEditions,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.adminSessions,schema.contentOverrides,schema.editorLog,schema.sectionVisibility,schema.sectionVisibilityLog,schema.sectionParts,schema.sectionPartsLog,schema.cardVisibility,schema.cardVisibilityLog,schema.homebrew,schema.homebrewProposals,schema.homebrewLimits,schema.homebrewLog,schema.pushKeys,schema.pushSubscriptions,schema.pushTypes]){
   const config=getTableConfig(table);
   const {rows}=await pg.query('SELECT column_name,data_type,is_nullable,column_default FROM information_schema.columns WHERE table_name=$1 ORDER BY ordinal_position',[config.name]);
   assert.ok(rows.length,`${config.name} is created by the runtime code`);
@@ -66,5 +67,5 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
   }
  }
  await pg.close();
- console.log('Schema: runtime-created tables (editions, creature details, habitats, analytics, login failures, reports, admin sessions, manual corrections, editor log, section visibility, parts, cards and their logs, push keys, devices and kinds) match their schema.ts descriptions.');
+ console.log('Schema: runtime-created tables (editions, creature details, habitats, analytics, login failures, reports, admin sessions, manual corrections, editor log, section visibility, parts, cards and their logs, homebrew creatures and proposals, push keys, devices and kinds) match their schema.ts descriptions.');
 })().catch(error=>{console.error(error);process.exit(1);});

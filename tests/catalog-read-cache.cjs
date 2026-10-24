@@ -42,6 +42,7 @@ async function render(check) {
       './content-editions':{getContentEditions:async () => {editionReads++; return new Map([['manual', revision === 1 ? '2014' : '2024']]);}},
       './monster-extra-storage':{getMonsterExtraFields:async () => {extraReads++; return new Map([['manual', {iniziativa:`+${revision}`}]]);}},
       './monster-habitats':{getMonsterHabitatOverrides:async () => new Map(), resolveHabitats:() => []},
+      './homebrew':{getHomebrew:async () => undefined, homebrewMonster:row => row}, './homebrew-types':{isHomebrewId:id => id.startsWith('homebrew-')},
       './monsters-types':load('lib/monsters-types.ts'),
       './spells-types':load('lib/spells-types.ts'),
       './srd-monsters':{previewMonsterById:() => undefined},

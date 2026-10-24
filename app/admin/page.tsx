@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Backpack, BarChart3, Bell, BookOpen, Eye, Gem, Hammer, HeartPulse, History, LogOut, MessageSquareWarning, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
+import { Backpack, BarChart3, Bell, BookOpen, Eye, FlaskConical, Gem, Hammer, HeartPulse, History, LogOut, MessageSquareWarning, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/admin";
 import { AdminLogin } from "@/components/admin-login";
@@ -10,6 +10,7 @@ import { adminEdition } from "@/lib/admin-edition-server";
 import { CONTENT_SECTIONS } from "@/lib/content-sections";
 import { allOverrides } from "@/lib/content-overrides";
 import { countNewFeedback } from "@/lib/feedback";
+import { countProposalsToReview } from "@/lib/homebrew";
 import { PUBLIC_SECTIONS, effectiveHidden, type PublicSectionKey } from "@/lib/public-sections";
 import { hiddenPartIds, sectionStates } from "@/lib/section-visibility";
 import { listDevices } from "@/lib/push";
@@ -87,10 +88,11 @@ export default async function AdminPage() {
     countNewFeedback().catch(() => null), allOverrides().catch(() => null), sectionStates().catch(() => null), hiddenPartIds().catch(() => [] as string[]),
   ]);
   const edition = await adminEdition();
-  const [devices, spells, monsters] = await Promise.all([
+  const [devices, spells, monsters, proposals] = await Promise.all([
     listDevices().then(list => list.length).catch(() => null),
     getAdminSpells().catch(() => null),
     getAllMonsters().catch(() => null),
+    countProposalsToReview().catch(() => null),
   ]);
   // Entries of the chosen edition: the same rule as the lists they open (and as the public site).
   const spellCount = spells?.filter(spell => spellEdition(spell) === edition).length ?? null;
@@ -131,6 +133,14 @@ export default async function AdminPage() {
           <span className="block font-serif text-xl font-bold text-primary">Notifiche</span>
           <span className="block text-[13px] text-muted">{devices === null ? "Avvisi sul telefono" : devices === 0 ? "Nessun dispositivo attivo" : devices === 1 ? "1 dispositivo attivo" : `${devices} dispositivi attivi`}</span>
         </span>
+      </Link>
+      <Link href="/admin/proposte" className="flex min-h-[64px] items-center gap-3 rounded-[14px] border-[1.5px] border-border bg-card px-3.5 py-2.5">
+        <FlaskConical size={24} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />
+        <span className="min-w-0 flex-1">
+          <span className="block font-serif text-xl font-bold text-primary">Proposte</span>
+          <span className="block text-[13px] text-muted">{proposals === null ? "Creature homebrew della community" : proposals === 0 ? "Nessuna proposta da vedere" : proposals === 1 ? "1 proposta da vedere" : `${proposals} proposte da vedere`}</span>
+        </span>
+        {proposals ? <span className="rounded-[10px] bg-amber px-2 py-0.5 text-[13px] font-bold text-foreground" aria-label={`${proposals} da vedere`}>{proposals}</span> : null}
       </Link>
       <nav aria-label="Sezioni da modificare" className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
         <Tile href="/admin/incantesimi" title="Incantesimi" items={spellCount} hint="Modifica testi e dati" icon="incantesimi" hidden={tileState("incantesimi")} />

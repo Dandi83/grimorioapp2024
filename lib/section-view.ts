@@ -102,3 +102,11 @@ export async function partState(section: PublicSectionKey, part: string): Promis
 export async function pageEditions(section: PublicSectionKey): Promise<Edition[]> {
   return shownEditions(section, await partsOut());
 }
+
+/**
+ * The creature list of a page: without the homebrew creatures while their collection is hidden from the public
+ * (the other collections are left out by the browser, which knows the hidden parts). Same list otherwise.
+ */
+export async function bestiaryList<T extends { homebrew?: true }>(list: T[]): Promise<T[]> {
+  return (await partsOut()).includes(partId("bestiario", "homebrew")) ? list.filter(item => !item.homebrew) : list;
+}

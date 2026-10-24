@@ -5,6 +5,7 @@ import { memo } from "react";
 import { Star } from "lucide-react";
 
 import { HiddenTag } from "@/components/sections/hidden-tag";
+import { HomebrewPill } from "@/components/homebrew-pill";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 
 import {
@@ -50,6 +51,7 @@ export const MonsterRow = memo(function MonsterRow({ monster, fav, onToggle, una
           <p className="min-w-0 truncate font-serif text-lg font-semibold text-foreground">
             {monster.nome}
           </p>
+          {monster.homebrew && <HomebrewPill />}
           {monster.nascosta && <HiddenTag className="shrink-0" />}
         </div>
         <p className="truncate text-xs uppercase tracking-wide text-muted">

@@ -183,8 +183,9 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   const log = page.getByRole("list", { name: "Modifiche" }).locator(":scope > li");
   await expect(log.first()).toContainText("Classi · visibilità");
   await expect(log.first()).toContainText("Visibile");
-  // 10 sections hidden and shown again, 8 hidden together, Classi shown from the band.
-  await expect(log).toHaveCount(29);
+  // 10 sections hidden and shown again, 8 hidden together, Classi shown from the band (the Homebrew collection,
+  // hidden and shown by e2e/homebrew.spec.mjs on the same database, has its own rows).
+  await expect(log.filter({ hasNotText: "Raccolta Homebrew" })).toHaveCount(29);
 
   // Back to the start: every section visible.
   for (const title of ["Incantesimi", "Condizioni", "Armi", "Armature", "Equipaggiamento d’avventura", "Strumenti", "Bestiario"]) await toggle(title, false);
@@ -335,11 +336,11 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await togglePart("armi", "Riquadro «2014 → 2024»", false);
   await togglePart("avventura", "Blocco «Dotazioni»", false);
 
-  // Bestiario: Animali hidden → no Categoria filter, animal cards 404, no animal in the search.
+  // Bestiario: Animali hidden → no «Animali» in the Categoria filter (Tutti, Mostri and Homebrew stay), animal cards 404, no animal in the search.
   await togglePart("bestiario", "Raccolta Animali", true);
   await pub.goto("/bestiario");
   await pub.getByRole("button", { name: "Filtri" }).click();
-  await expect(pub.getByRole("group", { name: "Categoria" })).toHaveCount(0);
+  await expect(pub.getByRole("group", { name: "Categoria" }).getByRole("button")).toHaveText(["Tutti", "Mostri", "Homebrew"]);
   await pub.keyboard.press("Escape");
   await unavailable("/mostro/alce");
   index = await searchIndex();

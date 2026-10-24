@@ -92,6 +92,7 @@ function load(relative, deps = {}) {
     './content-editions': storage, './monsters-types': load('lib/monsters-types.ts'), './srd-monsters': provider,
     './monster-extra-storage': {getMonsterExtraFields:async()=>new Map()},
     './monster-habitats': {getMonsterHabitatOverrides:async()=>new Map(),resolveHabitats:()=>[]},
+    './homebrew': {getHomebrew:async()=>undefined,homebrewMonster:row=>row}, './homebrew-types': {isHomebrewId:id=>id.startsWith('homebrew-')},
   });
   assert.equal((await monsterReader.getAllMonsters())[0].edizione,'2014');
   assert.equal((await monsterReader.getMonsterById(monster.id)).edizione,'2014');

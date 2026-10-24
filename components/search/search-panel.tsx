@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { HomebrewPill } from "@/components/homebrew-pill";
 import { ChevronRight, Search } from "lucide-react";
 
-import { rowHref, rowsOf, search, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
+import { HOMEBREW_LABEL, rowHref, rowsOf, search, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
 
 export interface SearchPanelProps {
   initialQuery: string;
@@ -135,7 +136,9 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
                     <Link href={rowHref(row, editions.get(row.section))} prefetch={false} className="flex min-h-[52px] items-center gap-2.5 px-3.5 py-1.5">
                       <span className="min-w-0 flex-1">
                         <span className="block text-base leading-tight text-foreground"><Highlighted row={row} length={query.trim().replace(/\s+/g, " ").length} /></span>
-                        <span className="block text-[14px] text-muted">{row.label}</span>
+                        {row.label.startsWith(`${HOMEBREW_LABEL} · `)
+                          ? <span className="flex flex-wrap items-center gap-1.5 text-[14px] text-muted"><HomebrewPill />{row.label.slice(HOMEBREW_LABEL.length + 3)}</span>
+                          : <span className="block text-[14px] text-muted">{row.label}</span>}
                       </span>
                       <ChevronRight size={16} strokeWidth={2.4} className="shrink-0 text-[#B9A57C]" aria-hidden="true" />
                     </Link>

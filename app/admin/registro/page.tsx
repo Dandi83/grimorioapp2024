@@ -18,6 +18,7 @@ import { spellName } from "@/lib/spell-name";
 const spellNameOf = (spell: { nome_italiano: string; edizione?: string } | undefined) => (spell ? spellName(spell.nome_italiano, spell.edizione) : undefined);
 import { isPublicSectionKey, publicSection, sectionParts } from "@/lib/public-sections";
 import { allCardLog, allSectionLog } from "@/lib/section-visibility";
+import { allHomebrewLog } from "@/lib/homebrew";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Registro modifiche — Il Grimorio.App", robots: { index: false, follow: false } };
@@ -37,6 +38,8 @@ interface LogItem {
   fixed?: string;
 }
 
+const HOMEBREW_ACTIONS: Record<string, string> = { pubblicata: "Pubblicata", creata: "Creata dal Grimorio", corretta: "Corretta", eliminata: "Eliminata", rifiutata: "Proposta rifiutata" };
+
 const short = (text: string) => (text.length > 280 ? `${text.slice(0, 280).trimEnd()}…` : text);
 const EDITOR_TITLES: Record<EditorSection, string> = { incantesimi: "Incantesimi", mostri: "Mostri" };
 
@@ -49,8 +52,8 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
   const edition = await adminEdition();
   const allEditions = query.edizioni === "tutte";
 
-  const [overrides, editorRows, sectionRows, cardRows, spells, monsters] = await Promise.all([
-    allOverrides(), allEditorLog(), allSectionLog(), allCardLog(), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
+  const [overrides, editorRows, sectionRows, cardRows, homebrewRows, spells, monsters] = await Promise.all([
+    allOverrides(), allEditorLog(), allSectionLog(), allCardLog(), allHomebrewLog().catch(() => []), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
   ]);
   const inForce = new Set([...activeOverrideMap(overrides).values()].map(row => row.id));
   const items: LogItem[] = [
@@ -102,6 +105,17 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
         card: row.nome, href: row.tipo === "incantesimo" ? `/spell/${row.scheda}` : `/mostro/${row.scheda}`,
         field: "visibilità", before: row.nascosta ? "Visibile" : "Nascosta", after: row.nascosta ? "Nascosta" : "Visibile",
         motivo: row.nascosta ? "Nascosta dal sito: la scheda e i suoi dati restano com’erano." : "Di nuovo visibile sul sito.", fixed: "cambio di stato",
+      };
+    }),
+    // Homebrew creatures: published from a proposal, created, corrected, deleted, or a proposal refused.
+    ...homebrewRows.map(row => {
+      const both = row.edizione === "entrambe";
+      return {
+        id: row.id, editor: false, sezione: "mostri", when: new Date(row.creata_il), undoneAt: null, inForce: true,
+        title: `Mostri ${both ? "2014 e 2024" : row.edizione} · homebrew`, edition: both || !isAdminEdition(row.edizione) ? null : row.edizione,
+        card: row.nome, href: row.azione === "rifiutata" ? "/admin/proposte?stato=rifiutata" : row.azione === "eliminata" ? undefined : `/mostro/${row.homebrew_id}`,
+        field: "homebrew", before: "—", after: HOMEBREW_ACTIONS[row.azione] ?? row.azione,
+        motivo: row.azione === "rifiutata" ? "Proposta della community non pubblicata." : "Creatura homebrew, non SRD.", fixed: "homebrew",
       };
     }),
   ].sort((a, b) => b.when.getTime() - a.when.getTime());

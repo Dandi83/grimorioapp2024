@@ -10,6 +10,8 @@ import { parseGs, type Monster } from "./monsters-types";
 import { previewMonsters, previewMonsterById, getSrdMonsterSource } from "./srd-monsters";
 import { getMonsterExtraFields } from "./monster-extra-storage";
 import { getMonsterHabitatOverrides, resolveHabitats } from "./monster-habitats";
+import { getHomebrew, homebrewMonster } from "./homebrew";
+import { isHomebrewId } from "./homebrew-types";
 
 // Re-export dei tipi/utility puri per comodità (l'accesso DB resta server-only).
 export * from "./monsters-types";
@@ -78,6 +80,11 @@ export async function getAllMonsters(): Promise<Monster[]> {
 // Metadata and the page share the same read within a server render. This cache
 // is request-scoped: an administrative save is visible on the next request.
 export const getMonsterById = cache(async (id: string): Promise<Monster | undefined> => {
+  // Homebrew cards have their own table and «homebrew-» ids, never those of the catalog.
+  if (isHomebrewId(id)) {
+    const row = await getHomebrew(id);
+    return row ? homebrewMonster(row) : undefined;
+  }
   const [rows, editions, extraFields, habitats] = await Promise.all([db
     .select()
     .from(monstersTable)

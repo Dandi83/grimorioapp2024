@@ -17,6 +17,7 @@ import { pool } from "./db";
 
 export const NOTIFICATION_TYPES = [
   { key: "segnalazioni", title: "Segnalazioni", hint: "Una notifica per ogni nuova segnalazione da /segnala.", default: true },
+  { key: "proposte", title: "Nuova proposta homebrew", hint: "Una notifica per ogni creatura proposta da /bestiario/proponi.", default: true },
 ] as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number]["key"];
@@ -30,7 +31,7 @@ const SUBJECT = "https://ilgrimorio.app";
 
 export interface PushDevice { id: string; endpoint: string; dispositivo: string; creata_il: Date | string }
 export interface PushSubscriptionInput { endpoint: string; keys: { p256dh: string; auth: string } }
-/** badge: the number for the app icon (new reports), set by the service worker even with the app closed. */
+/** badge: the number for the app icon (new reports and proposals to review), set by the service worker even with the app closed. */
 export interface PushPayload { title: string; body: string; url: string; tag?: string; badge?: number }
 
 let tablesReady: Promise<void> | undefined;
@@ -163,6 +164,17 @@ export function feedbackPayload(report: { id: string; tipo: string; messaggio: s
     body: `${typeLabel} · ${pageTitle || "Generale"}\n${start}`,
     url: `/admin/segnalazioni/${report.id}`,
     tag: `segnalazione-${report.id}`,
+    ...(typeof badge === "number" ? { badge } : {}),
+  };
+}
+
+export function proposalPayload(proposal: { id: string; nickname: string; scheda: { nome: string; grado_sfida: string; edizione: string } }, badge?: number | null): PushPayload {
+  const edition = proposal.scheda.edizione === "entrambe" ? "2014 e 2024" : proposal.scheda.edizione;
+  return {
+    title: "Nuova proposta homebrew",
+    body: `${proposal.scheda.nome} · GS ${proposal.scheda.grado_sfida} · ${edition}\ndi ${proposal.nickname}`,
+    url: "/admin/proposte",
+    tag: `proposta-${proposal.id}`,
     ...(typeof badge === "number" ? { badge } : {}),
   };
 }

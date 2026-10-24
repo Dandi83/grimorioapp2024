@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { HomeSearch } from "@/components/search/home-search";
 import { getMonsterListIndex } from "@/lib/monster-index";
-import { isSrdAnimal } from "@/lib/monsters-types";
+import { collectionOf } from "@/lib/monsters-types";
 import { partId } from "@/lib/public-sections";
 import { partsOut, sectionsOut, visibleCards } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
@@ -19,8 +19,8 @@ async function shortcuts() {
     sectionsOut(), partsOut(),
   ]);
   const spellCount = spells.filter(spell => !parts.includes(partId("incantesimi", spell.edizione === "2014" ? "2014" : "2024"))).length;
-  const monsterCount = monsters.filter(monster => !parts.includes(partId("bestiario", monster.edizione))
-    && !parts.includes(partId("bestiario", isSrdAnimal(monster) ? "animali" : "mostri"))).length;
+  const monsterCount = monsters.filter(monster => (!parts.includes(partId("bestiario", monster.edizione)) || (monster.entrambe && !parts.includes(partId("bestiario", "2014"))))
+    && !parts.includes(partId("bestiario", collectionOf(monster)))).length;
   return [
     ...(out.includes("incantesimi") ? [] : [{ href: "/grimorio", label: `Incantesimi · ${spellCount}` }]),
     ...(out.includes("bestiario") ? [] : [{ href: "/bestiario", label: `Bestiario · ${monsterCount}` }]),

@@ -24,7 +24,7 @@ export const EDITION_BAND: Record<AdminEdition, { background: string; text: stri
 };
 
 /** Pages shared by the two editions: «Comune alle due edizioni» instead of the band. */
-const COMMON = ["/admin/segnalazioni", "/admin/notifiche", "/admin/statistiche", "/admin/sezioni"];
+const COMMON = ["/admin/segnalazioni", "/admin/notifiche", "/admin/statistiche", "/admin/sezioni", "/admin/proposte"];
 
 export function isCommonAdminPath(pathname: string): boolean {
   return COMMON.some(path => pathname === path || pathname.startsWith(`${path}/`));

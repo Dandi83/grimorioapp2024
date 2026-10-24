@@ -11,16 +11,25 @@ import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
 import { cardHidden, cardsOut, editionCard, linksOut, partState } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
-import { isSrdAnimal } from "@/lib/monsters-types";
+import { collectionOf } from "@/lib/monsters-types";
+import { HomebrewLabel, HomebrewNote } from "@/components/homebrew/homebrew-sheet";
+import { authorLine } from "@/lib/homebrew-types";
 
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
 import { ReportLink } from "@/components/feedback/report-link";
 
 /** A creature of a hidden collection (Mostri, Animali) is not found; true when the administrator sees it hidden. */
-async function collectionCard(collection: "mostri" | "animali"): Promise<boolean> {
+async function collectionCard(collection: "mostri" | "animali" | "homebrew"): Promise<boolean> {
   const state = await partState("bestiario", collection);
   if (!state.shown) notFound();
   return state.hidden;
+}
+
+/** Both editions of a homebrew «Entrambe»: not found only when both are hidden; the hidden ones for the administrator. */
+async function bothEditionsCard(): Promise<string[]> {
+  const states = await Promise.all((["2024", "2014"] as const).map(async edition => ({ edition, ...await partState("bestiario", edition) })));
+  if (states.every(state => !state.shown)) notFound();
+  return states.filter(state => state.hidden && states.every(other => other.hidden)).map(state => partId("bestiario", state.edition));
 }
 
 export const revalidate = 300;
@@ -65,10 +74,14 @@ export default async function MonsterDetailPage({
   const legacy = usesLegacyMonsterRules(monster);
   // A creature of an edition or a collection hidden from /admin/sezioni is not found (the administrator sees it, labelled).
   const edition = monster.edizione === "2014" || (!monster.edizione && legacy) ? "2014" : "2024";
-  const collection = isSrdAnimal(monster) ? "animali" : "mostri";
+  const collection = collectionOf({ id: monster.id, homebrew: monster.homebrew_edizione });
+  // A homebrew for both editions is not found only when both are hidden.
+  const both = monster.homebrew_edizione === "entrambe";
   // A card hidden with the eye of the admin area: not found for the public, labelled for the administrator.
   const hiddenCard = await cardHidden("mostro", monster.id);
-  const hiddenParts = [...(await editionCard("bestiario", edition) ? [partId("bestiario", edition)] : []), ...(await collectionCard(collection) ? [partId("bestiario", collection)] : [])];
+  const editionHidden = both ? await bothEditionsCard() : await editionCard("bestiario", edition) ? [partId("bestiario", edition)] : [];
+  const hiddenParts = [...editionHidden, ...(await collectionCard(collection) ? [partId("bestiario", collection)] : [])];
+  const homebrew = monster.homebrew_edizione !== undefined;
 
   return (
     <article className="monster-sheet relative pb-2 pt-4">
@@ -85,7 +98,9 @@ export default async function MonsterDetailPage({
             </div>
           </div>
         }
-        label={<MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
+        // Homebrew: the amber pill next to the edition label, where the sheets show their labels.
+        label={homebrew ? <HomebrewLabel edizione={monster.homebrew_edizione!} /> : <MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
+        byline={homebrew ? authorLine(monster.homebrew_autore, "card") : undefined}
       />
       <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} />
       {source && (
@@ -98,6 +113,8 @@ export default async function MonsterDetailPage({
           <Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
         </aside>
       )}
+
+      {homebrew && <HomebrewNote />}
 
       <ReportLink edition={monster.edizione ?? (legacy ? "2014" : "2024")} />
     </article>
