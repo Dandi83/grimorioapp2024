@@ -1358,6 +1358,8 @@ test("admin lists the same in both editions: manual names, source labels, Elimin
     await page.goto("/admin/incantesimi");
     await editions.getByRole("button", { name: edition }).click();
     await expect(page.getByText(`Stai modificando il ${edition}`)).toBeVisible();
+    // The control changes at once; the rows of the edition come with the page data.
+    await expect(page.getByText(new RegExp(`^Edizione ${edition}: \\d+ incantesimi`))).toBeVisible();
     await expect(page.getByText(/dai file/)).toHaveCount(0);
     const names = await rows.locator("p.font-medium").allTextContents();
     expect(names.length).toBeGreaterThan(20);
