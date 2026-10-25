@@ -175,6 +175,18 @@ export function castingTimeLabel(tempo: string | null | undefined): string {
   return text ? text.charAt(0).toUpperCase() + text.slice(1) : "";
 }
 
+/**
+ * The casting time of the list rows: the card keeps the whole sentence (castingTimeLabel). A reaction or a
+ * bonus action with its trigger («Reazione, che l'incantatore effettua quando…», «Azione bonus, subito dopo…»,
+ * «Azione bonus che l'incantatore effettua…») becomes «Reazione» / «Azione bonus»; everything else, «o rituale»
+ * and «Azione o 8 ore» included, is the same as on the card.
+ */
+export function castingTimeShort(tempo: string | null | undefined): string {
+  const label = castingTimeLabel(tempo);
+  const trigger = label.match(/^(Reazione|Azione bonus)\s*(?:,|\bche\b|\bsubito\b)/i);
+  return trigger ? trigger[1].charAt(0).toUpperCase() + trigger[1].slice(1).toLowerCase() : label;
+}
+
 /** Options of the "Tempo di lancio" filter. */
 export const CASTING_TIMES = ["azione", "azione-bonus", "reazione", "lungo"] as const;
 export type CastingTime = (typeof CASTING_TIMES)[number];
