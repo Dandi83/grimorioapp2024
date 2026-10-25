@@ -38,11 +38,16 @@ interface RawRow {
 /** The cards of the project files (SRD 2024 and 2014, original summaries): the others were added in the reserved area. */
 const FILE_SPELL_IDS = new Set([...srdSpellIndex.map(spell => spell.id), ...legacySpellIndex.spells.map(spell => spell.id), ...originalIds]);
 
-/** The label of a card: its verified source, «Aggiunta da te» for a card made here, none for an SRD card edited. */
+const ORIGINAL_IDS = new Set<string>(originalIds);
+
+/**
+ * The label of a card: its verified source, «Aggiunta da te» for a card made here, none for an SRD card edited.
+ * An original summary stays «Sintesi originale» (NO SRD) also once edited: its spell is not in the SRD.
+ */
 export function spellCardSource(spell: Pick<Spell, "id" | "descrizione"> & Partial<Spell>): CardSource | undefined {
   if (getLegacySpellSource(spell)) return "SRD 5.1";
   if (getSrdSource(spell.id, spell.descrizione)) return "SRD 5.2.1";
-  if (getOriginalSource(spell.id, spell.descrizione)) return "Sintesi originale";
+  if (getOriginalSource(spell.id, spell.descrizione) || ORIGINAL_IDS.has(spell.id)) return "Sintesi originale";
   return FILE_SPELL_IDS.has(spell.id) || spellFileRow(spell.id) ? undefined : "Aggiunta da te";
 }
 
@@ -87,7 +92,7 @@ export async function getAdminSpells(): Promise<Spell[]> {
     .map(row => {
       const spell = toSpell(row, false);
       const fonte = getLegacySpellSource(spell) ? "SRD 5.1" as const : getSrdSource(spell.id, spell.descrizione) ? "SRD 5.2.1" as const : undefined;
-      const origine = fonte ?? (getOriginalSource(spell.id, spell.descrizione) ? "Sintesi originale" as const : "Aggiunta da te" as const);
+      const origine = fonte ?? (getOriginalSource(spell.id, spell.descrizione) || ORIGINAL_IDS.has(spell.id) ? "Sintesi originale" as const : "Aggiunta da te" as const);
       return {
         ...spell, edizione: editions.get(row.id) ?? spell.edizione, ...(fonte ? { fonte } : {}), origine,
         nome_mostrato: spellName(repairCatalogSpell(row).nome_italiano, editions.get(row.id) ?? spell.edizione),

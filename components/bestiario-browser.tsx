@@ -7,6 +7,7 @@ import { FlaskConical, Skull, Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
 import { HiddenTag } from "@/components/sections/hidden-tag";
+import { NoSrdMark, useNoSrdIds } from "@/components/admin-edit/no-srd-mark";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useUserEdition } from "@/components/edition/edition-provider";
@@ -98,6 +99,8 @@ export function BestiarioBrowser({
   const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
+  // The administrator only: «*» after the NO SRD cards, asked after the session check (never in the page).
+  const noSrd = useNoSrdIds("mostri");
 
   const editionMonsters = useMemo(() => monsters.filter(monster => (monster.edizione === edizione || monster.entrambe)
     && collectionShown(monster)), [monsters, edizione, animalsPart.shown, monstersPart.shown, homebrewPart.shown]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -222,8 +225,8 @@ export function BestiarioBrowser({
             {visible.map(monster => (
               <li key={monster.id} className="catalog-row border-b border-divider">
                 {pane
-                  ? <PaneRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} selected={pane.selectedId === monster.id} />
-                  : <BestiaryRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} />}
+                  ? <PaneRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} selected={pane.selectedId === monster.id} noSrd={noSrd?.has(monster.id) ?? false} />
+                  : <BestiaryRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} noSrd={noSrd?.has(monster.id) ?? false} />}
               </li>
             ))}
           </ul>
@@ -245,7 +248,8 @@ export function BestiarioBrowser({
 }
 
 // Memoized: toggling one star re-renders only that row.
-const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void }) {
+/** noSrd: the administrator sees «*» after the name of a NO SRD card (components/admin-edit/no-srd-mark.tsx). */
+const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle, noSrd = false }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void; noSrd?: boolean }) {
   const favId = `mostro:${monster.id}`;
   const href = `/mostro/${monster.id}`;
   const prefetch = useIntentPrefetch(href);
@@ -259,7 +263,7 @@ const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle }: { mons
         className="col-span-3 grid min-w-0 grid-cols-subgrid items-center py-2.5"
       >
         <span className="min-w-0">
-          <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{monster.nome}{monster.nascosta && <> <HiddenTag /></>}</span>
+          <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{monster.nome}{noSrd && <NoSrdMark />}{monster.nascosta && <> <HiddenTag /></>}</span>
           <span className="block truncate text-[15px] text-muted">{monster.taglia}</span>
           {monster.homebrew && <HomebrewLine monster={monster} />}
         </span>
@@ -280,7 +284,7 @@ const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle }: { mons
 });
 
 // The list column of the computer (320 px): GS badge on the left, name, type.
-const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void; selected: boolean }) {
+const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected, noSrd = false }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void; selected: boolean; noSrd?: boolean }) {
   const favId = `mostro:${monster.id}`;
   const href = `/mostro/${monster.id}`;
   const prefetch = useIntentPrefetch(href);
@@ -289,7 +293,7 @@ const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected }: { mo
       <Link href={href} prefetch={false} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="flex min-w-0 flex-1 items-center gap-3 py-2">
         <span className="grid h-9 min-w-10 shrink-0 place-items-center rounded-[8px] bg-primary px-1.5 font-serif text-[15px] font-bold tabular-nums text-primary-foreground">{monster.grado_sfida || "—"}</span>
         <span className="min-w-0">
-          <span className="block truncate font-serif text-[19px] font-bold leading-tight text-foreground">{monster.nome}</span>
+          <span className="block truncate font-serif text-[19px] font-bold leading-tight text-foreground">{monster.nome}{noSrd && <NoSrdMark />}</span>
           <span className="block truncate text-[14px] text-muted">{typeCategory(monster.tipo)}</span>
           {monster.homebrew && <HomebrewLine monster={monster} />}
           {monster.nascosta && <HiddenTag />}
