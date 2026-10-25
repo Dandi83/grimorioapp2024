@@ -164,7 +164,8 @@ function FeaturesTab({ card, id, edition, spellsLink, parts }: { card: ClassData
  */
 function TableCards({ table, amber }: { table: ClassData["tabella"]; amber: Set<number> }) {
   const group = table.gruppo;
-  const grouped = (i: number) => !!group && i >= group.da - 1 && i <= group.a - 1;
+  // «da» and «a» are the first and last index of the grouped columns (the table header spans them the same way).
+  const grouped = (i: number) => !!group && i >= group.da && i <= group.a;
   const groupTitle = group?.testo.replace(/^[—–-]+|[—–-]+$/g, "").trim();
   // The features column («Privilegi di classe», «Privilegi»): plain text under the head, the others with their name.
   const features = table.colonne.findIndex((column, i) => i > 1 && /^privilegi/i.test(column));
