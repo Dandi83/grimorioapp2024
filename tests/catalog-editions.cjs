@@ -128,6 +128,10 @@ function load(relative) {
   // The label of the source: the same rule in both editions.
   assert.deepEqual([...new Set(admin.map(card => card.origine))].sort(), ['Aggiunta da te', 'SRD 5.1', 'SRD 5.2.1']);
   assert.ok(admin.every(card => (card.origine === 'SRD 5.1' || card.origine === 'SRD 5.2.1') === !!card.fonte));
+  // An original summary edited by the administrator stays NO SRD (its spell is not in the SRD); an SRD card edited has no label.
+  assert.equal(spells.spellCardSource({ id: 'interdizione-alle-lame', descrizione: 'Testo riscritto dall’amministratore.' }), 'Sintesi originale');
+  assert.equal(spells.spellCardSource({ id: 'palla-di-fuoco', descrizione: 'Testo riscritto dall’amministratore.' }), undefined);
+  assert.equal(spells.spellCardSource({ id: 'nebbia-antica', descrizione: 'Creato dal master.' }), 'Aggiunta da te');
 
   await pg.close();
   console.log(`Catalog editions: ${admin.length} spells (${srd51} SRD 5.1, ${srd521} SRD 5.2.1, ${own} created here) and ${monsters.length} creatures keep their public edition; saving every spell without changes writes nothing.`);
