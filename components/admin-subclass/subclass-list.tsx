@@ -33,7 +33,7 @@ export function AdminSubclassList({ classe, className, edition, items, hidden }:
               <li key={item.id} className="flex items-center gap-1 py-1.5" data-subclass-row="">
                 <Link href={`/admin/contenuti/classi/${classe}/sottoclassi/${item.id}`} className="flex min-h-11 min-w-0 flex-1 flex-wrap items-center gap-2 text-[16px] font-semibold">
                   <span className="min-w-0 break-words underline-offset-4 hover:underline">{item.nome}</span>
-                  <NoSrdTag />{isHidden && <HiddenTag />}
+                  <NoSrdTag link={false} />{isHidden && <HiddenTag />}
                 </Link>
                 <EyeButton hidden={isHidden} nome={item.nome} onToggle={() => visibility.toggle(item.id, item.nome)} />
                 <AdminDeleteButton id={item.id} nome={item.nome} action={deleteSubclassAction} />

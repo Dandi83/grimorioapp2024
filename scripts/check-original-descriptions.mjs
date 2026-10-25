@@ -35,7 +35,6 @@ assert.deepEqual(data.spells.map(s => s.id).sort(), [...expected].sort());
 assert.deepEqual(JSON.parse(readFileSync(new URL('lib/data/original-description-ids.json',root),'utf8')).sort(), [...expected].sort());
 const { applyOriginalDescription, getOriginalSource } = loadTs('lib/original-descriptions.ts');
 const { hasUnverifiedDescription, isOriginalDescription } = loadTs('lib/spells-types.ts');
-const { SpellProvenanceMarker } = loadTs('components/spell-provenance-marker.tsx');
 const { HtmlText } = loadTs('components/html-text.tsx');
 for (const spell of data.spells) {
   assert.ok(spell.descrizione.length > 70, spell.id);
@@ -55,9 +54,6 @@ for (const spell of data.spells) {
   assert.equal(applyOriginalDescription(edit), edit);
   assert.deepEqual(getOriginalSource(spell.id, result.descrizione), spell);
   assert.equal(getOriginalSource(spell.id, edit.descrizione), undefined);
-  const marker = renderToStaticMarkup(createElement(SpellProvenanceMarker, { id: spell.id }));
-  assert.match(marker, /<sup\b[^>]*>\*<\/sup>/);
-  assert.ok(!marker.includes('autorizzazione al riutilizzo non verificate'));
   const html = renderToStaticMarkup(createElement(HtmlText, { html: spell.descrizione }));
   assert.ok(!/<script|javascript:|onerror=/.test(html));
   if (spell.descrizione.includes('Utilizzo di uno slot incantesimo di livello superiore')) assert.match(html, /<h3[^>]*text-primary/);
@@ -96,4 +92,4 @@ assert.match(byId['cordone-di-frecce'].descrizione, /2d4/);
 assert.match(byId['armatura-di-agathys'].descrizione, /punti ferita temporanei/);
 assert.equal(byId['armatura-di-agathys'].tempo_di_lancio, 'Azione bonus');
 assert.match(byId['corona-di-follia'].descrizione, /azione di Magia/);
-console.log('[originals] 49 original 2024 descriptions and markers; ten hash-guarded replacements, source references and preservation verified.');
+console.log('[originals] 49 original 2024 descriptions (marked NO SRD on the sheet); ten hash-guarded replacements, source references and preservation verified.');

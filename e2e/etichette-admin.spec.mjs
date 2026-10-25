@@ -62,7 +62,7 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder");
   const beholder = await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
 
-  // Visitor: not on the page, not in the HTML or the data served; the other labels and the asterisk stay.
+  // Visitor: not on the page, not in the HTML or the data served; «NO SRD» instead.
   for (const [path, edition, name] of [[amicizia, "2014", "amicizia-2014"], [beholder, "2024", "beholder"]]) {
     const guest = await visitor(browser, edition);
     await guest.goto(path);
@@ -70,19 +70,32 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
     await guest.waitForTimeout(800);
     await expect(guest.locator("main")).not.toContainText(ADMIN_ONLY);
     await expect(guest.locator("[data-card-source]")).toHaveCount(0);
+    // «NO SRD» for everyone, the same pill as the added subclasses.
+    await expect(guest.locator("[data-card-labels] [data-no-srd]")).toHaveText("NO SRD");
     expect(await guest.content(), path).not.toMatch(ADMIN_ONLY);
     if (SHOTS) await guest.screenshot({ path: `${SHOTS}/${name}-visitatore-390.png`, fullPage: true });
     await guest.context().close();
     expect(await served(request, path), path).not.toMatch(ADMIN_ONLY);
   }
   const guest = await visitor(browser, "2014");
-  // An original summary: asterisk and note for the visitor, no «Sintesi originale» pill; SRD cards keep theirs.
+  // An original summary: «NO SRD», no asterisk and no note any more, no «Sintesi originale» pill; SRD cards keep theirs.
   await guest.goto("/spell/amicizia");
-  await expect(guest.locator("h1 sup")).toHaveText("*");
+  await expect(guest.locator("h1 sup")).toHaveCount(0);
+  await expect(guest.locator("main")).not.toContainText("Sintesi originale delle regole 2024");
+  // A tap on «NO SRD» opens «Fonti e licenze» at its section; the SRD attributions are still there.
+  await guest.locator("[data-card-labels] [data-no-srd]").click();
+  await expect(guest).toHaveURL(/\/fonti#no-srd$/);
+  await expect(guest.getByRole("heading", { name: "Schede NO SRD" })).toBeInViewport();
+  await expect(guest.locator("#no-srd")).toContainText("Le schede con l’etichetta NO SRD sono state inserite dal Grimorio e non fanno parte del System Reference Document: non sono coperte dalla sua licenza CC-BY.");
+  await expect(guest.getByText("Significato dell’asterisco")).toHaveCount(0);
+  await expect(guest.locator("main")).toContainText("L’SRD 5.1 è concesso in licenza sotto l’Attribuzione 4.0 Internazionale di Creative Commons");
+  await guest.goto("/spell/amicizia");
   await expect(guest.locator("[data-card-source]")).toHaveCount(0);
+  await expect(guest.locator("[data-card-labels] [data-no-srd]")).toHaveText("NO SRD");
   expect(await served(request, "/spell/amicizia")).not.toMatch(/data-card-source/);
   await guest.goto("/spell/palla-di-fuoco");
   await expect(guest.locator("[data-card-source]")).toHaveText("SRD 5.2.1");
+  await expect(guest.locator("[data-no-srd]")).toHaveCount(0);
   // Lists, search, favorites: never a source label.
   await guest.evaluate(ids => localStorage.setItem("grimorio.favorites.v1", JSON.stringify(ids)), [amicizia.split("/").pop(), `mostro:${beholder.split("/").pop()}`]);
   for (const path of ["/grimorio", "/bestiario", "/preferiti", "/?cerca=amicizia", "/?cerca=beholder"]) {
@@ -90,6 +103,8 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
     await guest.waitForTimeout(800);
     await expect(guest.locator("body"), path).not.toContainText(ADMIN_ONLY);
     await expect(guest.locator("[data-card-source]"), path).toHaveCount(0);
+    // Lists and search: no label, «NO SRD» included (only in the sheets).
+    await expect(guest.locator("[data-no-srd]"), path).toHaveCount(0);
   }
   await guest.context().close();
   // The desktop column.
@@ -104,6 +119,7 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await page.evaluate(() => localStorage.setItem("grimorio.edizione", "2014"));
   await page.goto(amicizia);
   await expect(page.locator("[data-card-source]")).toHaveText("Aggiunta da te");
+  await expect(page.locator("[data-card-labels] [data-no-srd]")).toHaveText("NO SRD");
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/amicizia-2014-admin-390.png`, fullPage: true });
   await page.goto(beholder);
   await expect(page.locator("[data-card-source]")).toHaveText("Aggiunta da te");

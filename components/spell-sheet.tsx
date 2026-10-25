@@ -1,9 +1,8 @@
 import { AdminCardSource } from "./admin-edit/admin-card-source";
-import { adminOnlySource, LABEL_PILL, SourcePill } from "./card-source-pill";
+import { adminOnlySource, LABEL_PILL, NoSrdTag, SourcePill } from "./card-source-pill";
 import { HtmlText } from "./html-text";
 import { MetaCell } from "./meta-cell";
 import { RulesEditionBadge } from "./rules-edition-badge";
-import { SpellProvenanceMarker } from "./spell-provenance-marker";
 import { prepareSpellDisplay, type CardDisplayContext, type CardSource } from "../lib/card-display";
 import { capitalizeWords, type Spell } from "../lib/spells-types";
 
@@ -14,18 +13,18 @@ import { capitalizeWords, type Spell } from "../lib/spells-types";
 type SheetSpell = Pick<Spell, "id" | "nome_italiano" | "edizione" | "livello_num" | "scuola" | "tempo_di_lancio" | "gittata" | "componenti" | "durata" | "livello" | "descrizione" | "classi"> & { fonte_scheda?: CardSource };
 
 /**
- * «Rituale» and where the card comes from («SRD 5.2.1», «SRD 5.1»). «Aggiunta da te» and «Sintesi originale»
- * are for the administrator only (AdminCardSource): the visitor has the asterisk. Concentration has no label:
- * the «Concentrazione» of the Durata box links to its rule (lib/card-display.ts).
+ * «Rituale» and where the card comes from («SRD 5.2.1», «SRD 5.1»). A card not from the SRD (added in the reserved
+ * area, original summary) shows «NO SRD» to everyone, the same pill as the added subclasses; «Aggiunta da te» and
+ * «Sintesi originale» are for the administrator only (AdminCardSource). Concentration has no label: the
+ * «Concentrazione» of the Durata box links to its rule (lib/card-display.ts).
  */
 export function CardLabels({ rituale, source }: { rituale?: boolean; source?: CardSource }) {
   const adminOnly = adminOnlySource(source);
   if (!rituale && !source) return null;
-  if (!rituale && adminOnly) return <AdminCardSource code={adminOnly} alone />;
   return (
     <p className="mt-2 flex flex-wrap gap-1.5" data-card-labels="">
       {rituale && <span className={`${LABEL_PILL} border-primary/30 bg-primary/10 text-primary`}>Rituale</span>}
-      {adminOnly ? <AdminCardSource code={adminOnly} /> : source && <SourcePill source={source} />}
+      {adminOnly ? <><NoSrdTag /><AdminCardSource code={adminOnly} /></> : source && <SourcePill source={source} />}
     </p>
   );
 }
@@ -41,7 +40,6 @@ export function SpellSheetHeading({ spell, context, heading: Heading = "h1" }: {
       </span>
       <Heading className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
         {view.title}
-        <SpellProvenanceMarker id={spell.id} />
       </Heading>
       <RulesEditionBadge edition={spell.edizione} />
       <CardLabels rituale={view.rituale} source={view.source} />
