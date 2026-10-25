@@ -76,7 +76,8 @@ function load(relative, deps = {}) {
     assert.ok(html.includes('regole 2014'));
     // Initiative is not printed in 2014 sheets: the Dexterity modifier, marked as calculated.
     const mod = Math.floor((monster.destrezza - 10) / 2);
-    assert.ok(html.includes(`>Iniziativa</p><p class="font-serif text-[28px] font-bold leading-8 text-foreground">${mod >= 0 ? '+' + mod : mod}</p><p class="text-[13px] leading-4 text-muted font-serif italic">dalla Destrezza</p>`), monster.id + ': calculated initiative');
+    // In the ink strip of phones and tablets.
+    assert.ok(html.includes(`>Iniziativa</dt><dd class="font-serif text-[23px] font-bold leading-7">${mod >= 0 ? '+' + mod : mod}</dd><dd class="text-[12px] leading-4 text-card/80 font-serif italic">dalla Destrezza</dd>`), monster.id + ': calculated initiative');
     // Proficiency bonus is not printed in 2014 sheets: calculated from the challenge rating on the challenge line.
     const pb = monster.gs_num < 5 ? 2 : Math.ceil(monster.gs_num / 4) + 1;
     const plainText = html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ');
