@@ -150,7 +150,7 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
             const score = monster[key] ?? 10;
             return (
               <div key={key} className="flex min-w-0 flex-col items-center rounded-[8px] border border-border bg-card py-2">
-                <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-muted">{label}</span>
+                <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">{label}</span>
                 <span className="font-serif text-[24px] font-bold leading-7 text-foreground">{score}</span>
                 <span className="text-[13px] font-semibold text-muted">{abilityMod(score)}</span>
               </div>

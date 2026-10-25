@@ -49,7 +49,7 @@ export function FavoritesList({ spells, monsters = [], unavailable = false }: { 
         <>
           {favSpells.length > 0 && (
             <section className="px-6 py-2" aria-label="Incantesimi preferiti">
-              <h2 className="py-3 text-[11px] font-bold uppercase tracking-wider text-primary">Incantesimi</h2>
+              <h2 className="py-3 text-[12px] font-bold uppercase tracking-wider text-primary">Incantesimi</h2>
               <ul>{favSpells.map((spell, i) => (
                 <li key={spell.id}>
                   {i > 0 && <div className="ml-[15px] h-px bg-divider" />}
@@ -60,7 +60,7 @@ export function FavoritesList({ spells, monsters = [], unavailable = false }: { 
           )}
           {favMonsters.length > 0 && (
             <section className="px-6 py-2" aria-label="Mostri preferiti">
-              <h2 className="py-3 text-[11px] font-bold uppercase tracking-wider text-primary">Mostri</h2>
+              <h2 className="py-3 text-[12px] font-bold uppercase tracking-wider text-primary">Mostri</h2>
               <ul>{favMonsters.map((monster, i) => (
                 <li key={monster.id}>
                   {i > 0 && <div className="ml-[15px] h-px bg-divider" />}

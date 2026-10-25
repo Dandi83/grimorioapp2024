@@ -82,3 +82,7 @@ android-sdk/
 # Browser tests
 /test-results/
 /playwright-report/
+
+# Impeccable design skill: the engine binary is downloaded by its launcher; the hooks file is per machine.
+.claude/skills/impeccable/scripts/bin/
+.claude/settings.local.json

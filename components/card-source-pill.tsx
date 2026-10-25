@@ -6,7 +6,7 @@ import type { CardSource } from "../lib/card-display";
 export const NO_SRD_HREF = "/fonti#no-srd";
 
 /** The pill of a card label («Concentrazione», «Rituale», the source). */
-export const LABEL_PILL = "inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-4";
+export const LABEL_PILL = "inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[12px] font-semibold leading-4";
 
 /**
  * The sources shown only to the administrator (and in the reserved area): the public pages, their cached HTML
@@ -33,7 +33,7 @@ export function SourcePill({ source }: { source: CardSource }) {
  * administrator, an original summary of the 2024 rules). Next to it the administrator also sees where it comes from.
  */
 export function NoSrdTag({ link = true }: { link?: boolean }) {
-  const pill = "inline-flex shrink-0 items-center rounded-full bg-[#2B2118] px-2.5 py-1 align-middle text-[11px] font-bold leading-4 tracking-[0.04em] text-[#FFFBF0]";
+  const pill = "inline-flex shrink-0 items-center rounded-full bg-[#2B2118] px-2.5 py-1 align-middle text-[12px] font-bold leading-4 tracking-[0.04em] text-[#FFFBF0]";
   // A tap opens «Fonti e licenze» at «Schede NO SRD»; inside another link (admin lists) it is only the pill.
   if (!link) return <span data-no-srd="" className={pill}>NO SRD</span>;
   return (

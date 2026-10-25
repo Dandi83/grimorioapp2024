@@ -77,7 +77,8 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDraft
             badge={
               <span
                 className="flex h-9 min-w-9 shrink-0 items-center justify-center rounded-lg px-1.5 text-xs font-semibold"
-                style={{ backgroundColor: `${monsterColor(m.tipo)}22`, color: monsterColor(m.tipo) }}
+                // The colour of the type darkened towards the ink: at least 4.5:1 on its tint.
+                style={{ backgroundColor: `${monsterColor(m.tipo)}22`, color: `color-mix(in srgb, ${monsterColor(m.tipo)} 45%, #2B2118)` }}
               >
                 {m.grado_sfida || "?"}
               </span>

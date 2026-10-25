@@ -119,12 +119,12 @@ export default async function SpellDetailPage({
       )}
       {/* An original summary is marked «NO SRD» next to its name (no asterisk and note any more); the spirit keeps its link. */}
       {original?.statBlockUrl && (
-        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
+        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p><a className="underline underline-offset-4" href={original.statBlockUrl} target="_blank" rel="noreferrer">Scheda completa dello spirito 2024</a></p>
         </aside>
       )}
       {legacySource && (
-        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
+        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: {legacySource.document} italiano — {legacySource.sourceName}.</p>
           <p>
             <a className="underline underline-offset-4" href={`${legacySource.sourceUrl}#page=${legacySource.page}`} target="_blank" rel="noreferrer">
@@ -135,7 +135,7 @@ export default async function SpellDetailPage({
         </aside>
       )}
       {source && (
-        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-xs leading-5 text-muted">
+        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>
           <p>
             <a className="underline underline-offset-4" href={`${srdSourceUrl}#page=${source.pages[0]}`} target="_blank" rel="noreferrer">

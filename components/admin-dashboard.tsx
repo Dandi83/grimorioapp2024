@@ -85,7 +85,7 @@ export function AdminDashboard({
         <form action={logoutAction}>
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="flex min-h-11 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <LogOut className="h-4 w-4" aria-hidden="true" />
             Esci
@@ -110,7 +110,7 @@ export function AdminDashboard({
             role="tab"
             aria-selected={tab === key}
             onClick={() => setTab(key)}
-            className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+            className={`flex min-h-11 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
               tab === key
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
@@ -159,7 +159,7 @@ export function AdminDashboard({
               badge={
                 <span
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-semibold"
-                  style={{ backgroundColor: `${schoolColor(s.scuola)}22`, color: schoolColor(s.scuola) }}
+                  style={{ backgroundColor: `${schoolColor(s.scuola)}22`, color: `color-mix(in srgb, ${schoolColor(s.scuola)} 45%, #2B2118)` }}
                 >
                   {s.livello_num < 0 ? "?" : s.livello_num}
                 </span>
