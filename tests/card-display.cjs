@@ -120,3 +120,16 @@ for (const file of ["app/spell/[id]/page.tsx", "app/mostro/[id]/page.tsx", "comp
 assert.match(fs.readFileSync("app/actions/admin.ts", "utf8"), /revalidatePath\("\/mostro\/\[id\]", "page"\)/);
 
 console.log("Card display: plain text of the reserved area linked like the SRD cards (conditions, damage icons, spells of the database with their edition, highlighted block, Rituale/source labels, Concentrazione linked to its rule), hidden cards plain, previews on the same components.");
+
+// One NO SRD rule for the pill of the sheets and the admin asterisk of the lists.
+const { isNoSrdSource, NO_SRD_SOURCES } = require("../lib/card-display.ts");
+const { ADMIN_ONLY_SOURCES } = require("../components/card-source-pill.tsx");
+assert.deepEqual([...NO_SRD_SOURCES].sort(), Object.values(ADMIN_ONLY_SOURCES).sort());
+assert.equal(isNoSrdSource("Aggiunta da te"), true);
+assert.equal(isNoSrdSource("Sintesi originale"), true);
+for (const source of ["SRD 5.2.1", "SRD 5.1", "Homebrew", undefined]) assert.equal(isNoSrdSource(source), false, String(source));
+// The ids reach the browser only from the admin endpoint: no public module imports the server list.
+const fs2 = require("node:fs");
+for (const file of ["components/grimorio-browser.tsx", "components/bestiario-browser.tsx", "components/admin-edit/no-srd-mark.tsx"]) assert.doesNotMatch(fs2.readFileSync(file, "utf8"), /lib\/no-srd/, file);
+const route = fs2.readFileSync("app/api/admin/no-srd/route.ts", "utf8");
+for (const part of [/await requireAdmin\(\)/, /status: 401/, /"Cache-Control": "private, no-store"/]) assert.match(route, part);

@@ -15,6 +15,13 @@ import { castingTimeLabel, spellListFlags, type Spell } from "./spells-types";
 /** Where a card comes from, as its label says. No label for an SRD card edited (its text is no longer the SRD one). */
 export type CardSource = "SRD 5.2.1" | "SRD 5.1" | "Sintesi originale" | "Aggiunta da te" | "Homebrew";
 
+/**
+ * NO SRD: a card not transcribed from the SRD, added in the reserved area or an original summary of the 2024 rules
+ * (the «NO SRD» pill of the sheets, the admin asterisk of the lists). Homebrew cards have their own label.
+ */
+export const NO_SRD_SOURCES: readonly CardSource[] = ["Aggiunta da te", "Sintesi originale"];
+export const isNoSrdSource = (source: CardSource | undefined) => !!source && NO_SRD_SOURCES.includes(source);
+
 /** catalog: the spell names to link (lib/spell-reference-catalog.ts); hidden: what the links may not lead to (linksOut). */
 export interface CardDisplayContext { catalog?: SpellReferenceCatalog; hidden?: readonly string[] }
 

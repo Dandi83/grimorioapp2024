@@ -8,6 +8,7 @@ import { useFavorites } from "@/components/favorites-provider";
 import { spellName } from "@/lib/spell-name";
 import { saveListState } from "@/components/navigation-memory";
 import { HiddenTag } from "@/components/sections/hidden-tag";
+import { NoSrdMark, useNoSrdIds } from "@/components/admin-edit/no-srd-mark";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useUserEdition } from "@/components/edition/edition-provider";
@@ -81,6 +82,8 @@ export function GrimorioBrowser({
   const [limit, setLimit] = useState(initialLimit);
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
+  // The administrator only: «*» after the NO SRD cards, asked after the session check (never in the page).
+  const noSrd = useNoSrdIds("incantesimi");
 
   const sorted = useMemo(() => {
     const rank = (n: number) => (n < 0 ? Number.POSITIVE_INFINITY : n);
@@ -214,7 +217,7 @@ export function GrimorioBrowser({
                     <span className="text-[15px] text-muted">{count} {count === 1 ? "incantesimo" : "incantesimi"}</span>
                   </div>
                 )}
-                <GrimorioRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggleFavorite} selected={pane?.selectedId === spell.id} />
+                <GrimorioRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggleFavorite} selected={pane?.selectedId === spell.id} noSrd={noSrd?.has(spell.id) ?? false} />
               </li>
             );
           })}
@@ -236,14 +239,15 @@ export function GrimorioBrowser({
 }
 
 // Memoized: toggling one star re-renders only that row.
-const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean }) {
+/** noSrd: the administrator sees «*» after the name of a NO SRD card (components/admin-edit/no-srd-mark.tsx). */
+const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false, noSrd = false }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean; noSrd?: boolean }) {
   const href = `/spell/${spell.id}`;
   const prefetch = useIntentPrefetch(href);
   const details = [spell.scuola, castingTimeShort(spell.tempo_di_lancio)].filter(Boolean).join(" · ");
   return (
     <div className={`flex min-h-[62px] items-center gap-2 border-b border-divider${selected ? " -mx-3 rounded-[10px] bg-primary-faint px-3 shadow-[inset_3px_0_0_var(--color-primary)]" : ""}`}>
       <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="min-w-0 flex-1 py-2.5">
-        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{spellName(spell.nome_italiano, spell.edizione)}{spell.nascosta && <> <HiddenTag /></>}</span>
+        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{spellName(spell.nome_italiano, spell.edizione)}{noSrd && <NoSrdMark />}{spell.nascosta && <> <HiddenTag /></>}</span>
         {details && <span className="block text-[15px] text-muted">{details}</span>}
         {(spell.concentrazione || spell.rituale) && (
           <span className="mt-1 flex flex-wrap gap-1.5">
