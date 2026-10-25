@@ -51,7 +51,7 @@ function load(relative){
   const preview=renderToStaticMarkup(React.createElement(AdminMonsterPreview,{monster:selected,legacy}));
   const publicHtml=renderToStaticMarkup(await page({params:Promise.resolve({id:selected.id})}));
   // Same sheet component: the editor preview shows exactly the public sheet body.
-  const body=html=>html.slice(html.indexOf('<div class="grid grid-cols-3'),html.lastIndexOf('</section>'));
+  const body=html=>html.slice(html.indexOf('<dl class="sticky top-0'),html.lastIndexOf('</section>'));
   assert.ok(body(preview).length>1000);assert.equal(body(preview),body(publicHtml),'preview and public sheet are identical');
   for(const output of [preview,publicHtml]){
    for(const id of ids)assert.equal(output.includes(`href="/spell/${id}"`),!legacy,'preview/public edition parity');

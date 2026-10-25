@@ -61,6 +61,17 @@ function Box({ label, value, note, noteItalic = false, small = false }: { label:
   );
 }
 
+/** One number of the ink strip of the phone: name, value and the note of the source (dice, armour, passive). */
+function StripCell({ label, value, note, noteItalic = false }: { label: string; value: string; note?: string; noteItalic?: boolean }) {
+  return (
+    <div className="flex min-w-0 flex-col items-center border-l border-card/15 px-1 py-2 text-center first:border-l-0">
+      <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-amber">{label}</dt>
+      <dd className="font-serif text-[23px] font-bold leading-7">{value}</dd>
+      {note && <dd className={`text-[12px] leading-4 text-card/80${noteItalic ? " font-serif italic" : ""}`}>{note}</dd>}
+    </div>
+  );
+}
+
 function Line({ label, value, legacy, hidden, damageIcons = false }: { label: string; value?: string; legacy: boolean; hidden: readonly string[]; damageIcons?: boolean }) {
   if (!value) return null;
   return (
@@ -129,13 +140,16 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
   // right; the page width decides, so the phone and the editor preview keep one column.
   return (
     <div className="@container">
+    {/* Phone: CA, PF, initiative and challenge in an ink strip that stays at the top while the sheet scrolls
+        (proposal B), so the numbers needed at the table are always in sight. */}
+    <dl className="sticky top-0 z-20 mx-4 mt-4 grid grid-cols-4 overflow-hidden rounded-[12px] bg-foreground pt-[env(safe-area-inset-top,0px)] text-card shadow-[0_6px_16px_rgb(43_33_24_/_22%)] @[820px]:hidden" data-monster-strip="">
+      <StripCell label="CA" value={ca.value} note={ca.note} />
+      <StripCell label="PF" value={pf.value} note={pf.note} />
+      {ini ? <StripCell label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} /> : <StripCell label="Iniziativa" value="—" />}
+      <StripCell label="GS" value={gs || "—"} />
+    </dl>
     <div className="@[820px]:grid @[820px]:grid-cols-2 @[820px]:items-start">
     <div>
-      <div className="grid grid-cols-3 gap-2.5 px-6 pt-5 @[820px]:hidden">
-        <Box label="CA" value={ca.value} note={ca.note} />
-        <Box label="PF" value={pf.value} note={pf.note} />
-        {ini && <Box label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} />}
-      </div>
       {monster.velocita && <p className="px-6 pt-3 text-[16px] leading-6 text-foreground @[820px]:hidden"><span className="font-bold">Velocità</span> {monster.velocita}</p>}
       <div className="hidden grid-cols-3 gap-2.5 px-6 pt-5 @[820px]:grid">
         <Box label="CA" value={ca.value} note={[ca.note, ini && `Iniziativa ${ini.value}${ini.note ? ` ${ini.note}` : ""}`].filter(Boolean).join(" · ")} />
@@ -149,7 +163,7 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
           {([["FOR", "forza"], ["DES", "destrezza"], ["COS", "costituzione"], ["INT", "intelligenza"], ["SAG", "saggezza"], ["CAR", "carisma"]] as const).map(([label, key]) => {
             const score = monster[key] ?? 10;
             return (
-              <div key={key} className="flex min-w-0 flex-col items-center rounded-[8px] border border-border bg-card py-2">
+              <div key={key} className="flex min-w-0 flex-col items-center overflow-hidden rounded-[8px] border border-border bg-card pb-2" data-ability="">
                 <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">{label}</span>
                 <span className="font-serif text-[24px] font-bold leading-7 text-foreground">{score}</span>
                 <span className="text-[13px] font-semibold text-muted">{abilityMod(score)}</span>
