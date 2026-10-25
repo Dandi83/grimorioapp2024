@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { CatalogSplit } from "@/components/layout/catalog-split";
+import { isHomePath } from "@/components/nav-items";
 
 /** Long reading pages (rules, terms): about 75 characters per line on a computer. */
 const READING = /^\/(?:manuale\/|fonti$|privacy$|segnala$)/;
@@ -17,6 +18,6 @@ export function ContentFrame({ children }: { children: ReactNode }) {
   if (/^\/(?:grimorio$|spell\/)/.test(pathname)) return <CatalogSplit kind="incantesimi">{children}</CatalogSplit>;
   if (/^\/(?:bestiario$|mostro\/)/.test(pathname)) return <CatalogSplit kind="bestiario">{children}</CatalogSplit>;
   // The character sheets keep their print layout (globals.css: main>div), the Home and the admin area their width.
-  if (pathname === "/" || pathname.startsWith("/admin") || pathname.startsWith("/personaggi")) return <>{children}</>;
+  if (isHomePath(pathname) || pathname.startsWith("/admin") || pathname.startsWith("/personaggi")) return <>{children}</>;
   return <div className={READING.test(pathname) ? "lg:mx-auto lg:max-w-[760px]" : "lg:mx-auto lg:max-w-[1040px]"}>{children}</div>;
 }

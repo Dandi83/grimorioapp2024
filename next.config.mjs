@@ -24,6 +24,10 @@ const nextConfig = {
       ...Object.entries(mergedSpellIds).map(([id, kept]) => ({ source: `/spell/${id}`, destination: `/spell/${kept}`, permanent: true })),
     ];
   },
+  // Browsers ask for /favicon.ico on their own: the icon of the app instead of a 404 page.
+  async rewrites() {
+    return [{ source: "/favicon.ico", destination: "/icon.png" }];
+  },
   async headers() {
     return [
       {

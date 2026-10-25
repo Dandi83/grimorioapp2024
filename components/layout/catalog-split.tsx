@@ -1,15 +1,21 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { BestiarioWithFilters, GrimorioWithFilters } from "@/components/catalog-browsers";
 import { useDesktop } from "@/components/layout/use-desktop";
 import type { MonsterListItem } from "@/lib/monsters-types";
 import type { SpellListItem, SpellsMeta } from "@/lib/spells-types";
 
 type Kind = "incantesimi" | "bestiario";
 type Data = { spells: SpellListItem[]; meta: SpellsMeta } | { monsters: MonsterListItem[] };
+
+// The lists of the computer column, downloaded only there: this component is in the root layout, so a static
+// import would put both catalog browsers in the code of every page (the Home and the phone included).
+const Loading = () => <p className="px-6 py-10 text-center text-sm text-muted">Carico l’elenco…</p>;
+const GrimorioWithFilters = dynamic(() => import("@/components/catalog-browsers").then(m => m.GrimorioWithFilters), { ssr: false, loading: Loading });
+const BestiarioWithFilters = dynamic(() => import("@/components/catalog-browsers").then(m => m.BestiarioWithFilters), { ssr: false, loading: Loading });
 
 // One download per visit: the list then stays in memory while moving between list and cards.
 const loaded: Partial<Record<Kind, Promise<Data | null>>> = {};
@@ -51,7 +57,7 @@ export function CatalogSplit({ kind, children }: { kind: Kind; children: ReactNo
     <div className={`lg:grid lg:h-dvh ${kind === "incantesimi" ? "lg:grid-cols-[400px_minmax(0,1fr)]" : "lg:grid-cols-[320px_minmax(0,1fr)]"}`}>
       <aside aria-label={kind === "incantesimi" ? "Elenco degli incantesimi" : "Elenco del bestiario"}
         className="hidden overscroll-contain border-r border-border lg:block lg:h-dvh lg:overflow-y-auto">
-        {list || (desktop && <p className="px-6 py-10 text-center text-sm text-muted">Carico l’elenco…</p>)}
+        {list || (desktop && <Loading />)}
       </aside>
       <div ref={detail} className="min-w-0 lg:h-dvh lg:overflow-y-auto">{children}</div>
     </div>

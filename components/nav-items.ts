@@ -16,8 +16,14 @@ export interface NavItem {
   section?: PublicSectionKey;
 }
 
+/**
+ * The Home: «/» in the browser, «/index» while Vercel prerenders it. Both must give the same markup, or React
+ * throws away the server HTML of the Home and draws it again (hydration error #418).
+ */
+export const isHomePath = (path: string) => path === "/" || path === "/index";
+
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Home", Icon: Home, match: (p) => p === "/" },
+  { href: "/", label: "Home", Icon: Home, match: isHomePath },
   {
     href: "/grimorio",
     label: "Incantesimi",

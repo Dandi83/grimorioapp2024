@@ -46,7 +46,8 @@ export default async function HomePage() {
           Il Grimorio<span>.App</span>
         </div>
         <nav className={styles.headerLinks} aria-label="Area riservata">
-          <Link href="/admin"><Lock size={16} strokeWidth={2} aria-hidden="true" />Area riservata</Link>
+          {/* No prefetch: visitors almost never open the reserved area, and its page is never cached. */}
+          <Link href="/admin" prefetch={false}><Lock size={16} strokeWidth={2} aria-hidden="true" />Area riservata</Link>
         </nav>
       </header>
 

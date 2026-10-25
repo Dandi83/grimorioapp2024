@@ -55,6 +55,9 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  assert.deepEqual(links.map(a=>a.textContent),['Home','Incantesimi','Bestiario','Compendio','Preferiti']);
  assert.equal(document.querySelector('a[aria-current="page"]').textContent,'Incantesimi','a spell sheet highlights Incantesimi');
  assert.deepEqual(calls,['prefetch:/','prefetch:/grimorio','prefetch:/bestiario','prefetch:/compendio','prefetch:/preferiti']);
+ // The Home prerendered by Vercel has the path «/index»: same markup as «/» in the browser (no hydration error #418).
+ for(const home of ['/','/index']){pathname=home;await render(React.createElement(BottomNav,{key:home}));assert.equal(document.querySelector('a[aria-current="page"]').textContent,'Home',`${home} highlights Home`);}
+ assert.match(fs.readFileSync('components/layout/content-frame.tsx','utf8'),/isHomePath\(pathname\)/,'the content frame treats «/index» as the Home');
  pathname='/admin';calls.length=0;
  await render(React.createElement(BottomNav,{key:'admin'}));
  assert.equal(document.querySelector('nav'),null,'the admin area has no public navigation');
