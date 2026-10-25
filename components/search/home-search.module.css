@@ -47,3 +47,12 @@
     border-radius: 30px;
   }
 }
+
+/* Proposal A (sober), phones and tablets: a defined edge in the bordeaux of the brand, a calmer shadow. */
+@media (max-width: 1023px) {
+  .field {
+    min-height: 56px;
+    border-color: rgb(122 31 43 / 38%);
+    box-shadow: 0 2px 8px rgb(43 33 24 / 10%);
+  }
+}

@@ -254,3 +254,28 @@
     display: none;
   }
 }
+
+/*
+ * Proposal A (sober), phones and tablets: the same picture and layout, a quieter rhythm. The sentence is a
+ * little smaller, a short amber rule closes it, the search field has a bordeaux edge and a softer shadow.
+ */
+@media (max-width: 1023px) {
+  .quote {
+    font-size: clamp(33px, 9.6vw, 48px);
+    letter-spacing: -0.5px;
+  }
+
+  .quote::after {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 2px;
+    margin: 16px auto 0;
+    border-radius: 1px;
+    background: var(--color-amber);
+  }
+
+  .header {
+    border-bottom-color: rgb(122 31 43 / 22%);
+  }
+}
