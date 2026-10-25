@@ -16,7 +16,7 @@ export function FavoriteButton({ id, inline = false }: { id: string; inline?: bo
       aria-pressed={fav}
       className={inline
         ? "flex size-11 items-center justify-center text-primary transition-transform active:scale-90"
-        : `absolute right-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-full border transition-transform active:scale-90 ${
+        : `absolute right-4 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border transition-transform active:scale-90 ${
           fav
             ? "border-primary bg-primary text-primary-foreground"
             : "border-border bg-elevated text-foreground"

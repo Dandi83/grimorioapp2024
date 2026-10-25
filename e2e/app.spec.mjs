@@ -1466,10 +1466,20 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await body.getByText("Mostra i livelli 6–20").filter({ visible: true }).click();
   await expect(body.getByRole("list", { name: "Livelli 6–20" }).locator(":scope > li")).toHaveCount(15);
   await body.getByRole("tab", { name: "Tabella" }).click();
+  // Phone: one card per level, the subclass levels in amber, no sideways scrolling.
+  const levelCards = body.getByRole("tabpanel").getByRole("list", { name: "Privilegi del guerriero" }).locator(":scope > li");
+  await expect(levelCards).toHaveCount(20);
+  await expect(levelCards.nth(2)).toHaveClass(/FBEFCF/);
+  await expect(levelCards.nth(2)).toContainText("Livello 3");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  // From 768 px: the table, its first column fixed while it scrolls.
+  const viewport = page.viewportSize();
+  await page.setViewportSize({ width: 800, height: 900 });
   const table = body.getByRole("tabpanel").getByRole("table");
   await expect(table.locator("tbody tr")).toHaveCount(20);
   await expect(table.locator("tbody tr").nth(2)).toHaveClass(/FBEFCF/);
   expect(await table.locator("tbody th").first().evaluate(cell => getComputedStyle(cell).position)).toBe("sticky");
+  await page.setViewportSize(viewport);
   await body.getByRole("tab", { name: "Sottoclasse" }).click();
   await expect(body.getByRole("tabpanel")).toContainText("Sottoclasse · dal 3º livello");
   await expect(body.getByRole("tabpanel").getByRole("heading", { level: 2 })).toHaveText("Campione");

@@ -75,7 +75,7 @@ function LevelCard({ row, subclass }: { row: LevelRow; subclass: string }) {
   const amber = row.sottoclasse.length > 0;
   const badge = (
     <span className={`grid size-10 shrink-0 place-items-center rounded-[10px] text-center leading-none ${amber ? "bg-amber text-[#2B2118]" : "bg-primary text-primary-foreground"}`}>
-      <span><span className="block text-[10px] font-bold tracking-[0.06em]">LIV</span><span className="block text-[17px] font-bold tabular-nums">{row.livello}</span></span>
+      <span><span className="block text-[11px] font-bold tracking-[0.06em]">LIV</span><span className="block text-[17px] font-bold tabular-nums">{row.livello}</span></span>
     </span>
   );
   const names = <span className="min-w-0 py-2 text-[15px] font-semibold leading-snug">{row.nomi}</span>;
@@ -158,6 +158,54 @@ function FeaturesTab({ card, id, edition, spellsLink, parts }: { card: ClassData
   );
 }
 
+/**
+ * The class table as cards for the phone: level and proficiency bonus in the head, the features below, then
+ * the other columns as name and value; the grouped columns (spell slots) in one row under their heading.
+ */
+function TableCards({ table, amber }: { table: ClassData["tabella"]; amber: Set<number> }) {
+  const group = table.gruppo;
+  // «da» and «a» are the first and last index of the grouped columns (the table header spans them the same way).
+  const grouped = (i: number) => !!group && i >= group.da && i <= group.a;
+  const groupTitle = group?.testo.replace(/^[—–-]+|[—–-]+$/g, "").trim();
+  // The features column («Privilegi di classe», «Privilegi»): plain text under the head, the others with their name.
+  const features = table.colonne.findIndex((column, i) => i > 1 && /^privilegi/i.test(column));
+  return (
+    <ol className="mt-2 flex flex-col gap-2 md:hidden" aria-label={table.titolo}>
+      {table.righe.map(row => {
+        const sub = amber.has(Number.parseInt(row[0], 10));
+        const others = row.map((cell, i) => ({ cell, i })).filter(({ i }) => i > 1 && i !== features && !grouped(i));
+        const slots = row.map((cell, i) => ({ cell, i })).filter(({ i }) => grouped(i));
+        return (
+          <li key={row[0]} className={`rounded-[14px] border px-3.5 py-3 ${sub ? "border-amber bg-[#FBEFCF]" : "border-border bg-card"}`}>
+            <p className="flex items-baseline justify-between gap-3">
+              <span className="font-serif text-[19px] font-bold text-primary">{table.colonne[0]} {row[0]}</span>
+              <span className="text-[14px] text-muted">{table.colonne[1]} <strong className="font-bold tabular-nums text-foreground">{row[1]}</strong></span>
+            </p>
+            {features > 0 && row[features] && <p className="mt-1 text-[15px] leading-6">{row[features]}</p>}
+            {others.length > 0 && (
+              <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[14px]">
+                {others.map(({ cell, i }) => (
+                  <div key={i} className="flex gap-1.5"><dt className="text-muted">{table.colonne[i]}</dt><dd className="font-bold tabular-nums">{cell}</dd></div>
+                ))}
+              </dl>
+            )}
+            {slots.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[12px] font-bold uppercase tracking-[0.06em] text-muted">{groupTitle}</p>
+                <dl className="mt-1 grid gap-1 text-center text-[14px]" style={{ gridTemplateColumns: `repeat(${slots.length}, minmax(0, 1fr))` }}>
+                  {slots.map(({ cell, i }) => (
+                    <div key={i} className="rounded-[6px] bg-background/70 py-0.5"><dt className="text-[12px] text-muted">{table.colonne[i].replace(/°$/, "")}°</dt><dd className="font-bold tabular-nums">{cell}</dd></div>
+                  ))}
+                </dl>
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function TableTab({ card }: { card: ClassData }) {
   const table = card.tabella;
   const amber = new Set(card.livelliSottoclasse);
@@ -166,9 +214,11 @@ function TableTab({ card }: { card: ClassData }) {
     <div>
       <div className="flex items-baseline justify-between gap-3">
         <h3 className="font-serif text-[22px] font-bold text-primary">{table.titolo}</h3>
-        <span className="text-[13px] font-semibold text-muted">scorri ⟷</span>
+        <span className="hidden text-[13px] font-semibold text-muted md:inline">scorri ⟷</span>
       </div>
-      <div className="mt-2 max-w-full overflow-x-auto rounded-[14px] border border-border bg-card" role="region" tabIndex={0} aria-label={`${table.titolo}, scorribile orizzontalmente`}>
+      {/* Phones: one card per level, the same cells with their column names; no sideways scrolling. */}
+      <TableCards table={table} amber={amber} />
+      <div className="mt-2 hidden max-w-full overflow-x-auto rounded-[14px] border border-border bg-card md:block" role="region" tabIndex={0} aria-label={`${table.titolo}, scorribile orizzontalmente`}>
         <table className="min-w-max border-collapse text-[14px] leading-5">
           <thead className="text-left text-[12px] font-bold text-muted">
             {table.gruppo && (

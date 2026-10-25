@@ -215,3 +215,10 @@ a.ref-pill:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+
+/* Source and licence links in the small print of the sheets: a tap area of about 44px on the phone without
+   moving the text (vertical padding of an inline link does not change the line). */
+aside a.underline {
+  padding-block: 12px;
+  text-decoration-thickness: 1px;
+}

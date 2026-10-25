@@ -34,14 +34,14 @@ export function SpellSheetHeading({ spell, context, heading: Heading = "h1" }: {
   const view = prepareSpellDisplay(spell, context);
   return (
     <>
-      <span className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-foreground" style={{ borderColor: view.color }}>
+      <span className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-foreground" style={{ borderColor: view.color }}>
         <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: view.color }} />
         {view.badge}
       </span>
       <Heading className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
         {view.title}
       </Heading>
-      <RulesEditionBadge edition={spell.edizione} />
+      <RulesEditionBadge edition={spell.edizione} variant="dark" />
       <CardLabels rituale={view.rituale} source={view.source} />
     </>
   );
@@ -60,16 +60,16 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
       </div>
       {spell.classi.length > 0 && (
         <section className="mb-4 px-6">
-          <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">Classi</h2>
+          <h2 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-primary">Classi</h2>
           <div className="flex flex-wrap gap-2">
             {spell.classi.map(c => (
-              <span key={c} className="rounded-full border border-primary-dim bg-primary-faint px-3 py-1.5 text-xs font-semibold text-primary">{capitalizeWords(c)}</span>
+              <span key={c} className="rounded-full border border-primary-dim bg-primary-faint px-3 py-1.5 text-[13px] font-semibold text-primary">{capitalizeWords(c)}</span>
             ))}
           </div>
         </section>
       )}
       <section className="px-6 pb-4" data-card-description="">
-        <h2 className="mb-3 text-[11px] font-bold uppercase tracking-wider text-primary">Descrizione</h2>
+        <h2 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-primary">Descrizione</h2>
         {view.html ? (
           <HtmlText html={view.html} damageIcons references={view.conditionLinks} spellReferences={view.spellLinks} />
         ) : (

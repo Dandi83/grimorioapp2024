@@ -46,7 +46,7 @@ export function ShareButton({ path, title, inline = false }: { path: string; tit
   return <>
     <button ref={button} type="button" onClick={share} disabled={busy}
       aria-label={`Condividi ${title}`} title="Condividi scheda"
-      className={inline ? "flex size-11 items-center justify-center text-primary transition-transform focus-visible:outline-2 focus-visible:outline-primary active:scale-90 disabled:opacity-50" : "absolute right-16 top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition-transform hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary active:scale-90 disabled:opacity-50"}>
+      className={inline ? "flex size-11 items-center justify-center text-primary transition-transform focus-visible:outline-2 focus-visible:outline-primary active:scale-90 disabled:opacity-50" : "absolute right-[68px] top-4 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-elevated text-foreground transition-transform hover:border-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary active:scale-90 disabled:opacity-50"}>
       <Share2 size={20} aria-hidden="true" />
     </button>
     <p role="status" aria-live="polite" className={message ? "absolute right-4 top-16 z-40 max-w-[calc(100%-2rem)] rounded-xl border border-primary/30 bg-card px-3 py-2 text-sm text-primary shadow-lg" : "sr-only"}>{message}</p>
