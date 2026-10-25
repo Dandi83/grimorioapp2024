@@ -34,12 +34,6 @@ const nextConfig = {
         source: "/:path*",
         headers: securityHeaders(),
       },
-      // The icon of the app (its address carries a version): browsers asked for it again, whole, at every change of
-      // address in the page (opening the search). One day of validity; a new icon still arrives the next day at most.
-      {
-        source: "/icon.png",
-        headers: [{ key: "Cache-Control", value: "public, max-age=86400" }],
-      },
     ];
   },
 };

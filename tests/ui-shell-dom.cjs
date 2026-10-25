@@ -62,8 +62,14 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  await hover('/preferiti','touch');
  assert.deepEqual(calls,[],'a finger does not start a prefetch');
  for(const href of ['/compendio','/preferiti','/compendio','/grimorio'])await hover(href,'mouse');
- await act(async()=>document.querySelector('nav a[href="/"]').focus());
- assert.deepEqual(calls,['prefetch:/compendio','prefetch:/preferiti','prefetch:/'],'mouse and keyboard prepare a place once; the lists are already prepared');
+ // Focus from a tap (not :focus-visible) prepares nothing; the keyboard focus does.
+ const home=document.querySelector('nav a[href="/"]');
+ home.matches=sel=>sel===':focus-visible'?false:Element.prototype.matches.call(home,sel);
+ await act(async()=>home.focus());await act(async()=>home.blur());
+ assert.deepEqual(calls,['prefetch:/compendio','prefetch:/preferiti'],'mouse prepares a place once; a tap focus does not');
+ home.matches=sel=>sel===':focus-visible'?true:Element.prototype.matches.call(home,sel);
+ await act(async()=>home.focus());
+ assert.deepEqual(calls,['prefetch:/compendio','prefetch:/preferiti','prefetch:/'],'the keyboard focus prepares it; the lists are already prepared');
  // The Home prerendered by Vercel has the path «/index»: same markup as «/» in the browser (no hydration error #418).
  for(const home of ['/','/index']){pathname=home;await render(React.createElement(BottomNav,{key:home}));assert.equal(document.querySelector('a[aria-current="page"]').textContent,'Home',`${home} highlights Home`);}
  assert.match(fs.readFileSync('components/layout/content-frame.tsx','utf8'),/isHomePath\(pathname\)/,'the content frame treats «/index» as the Home');
