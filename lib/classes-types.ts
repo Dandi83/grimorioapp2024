@@ -2,6 +2,9 @@
 
 export type ClassEdition = "2024" | "2014";
 
+export const CLASS_IDS = ["barbaro", "bardo", "chierico", "druido", "guerriero", "ladro", "mago", "monaco", "paladino", "ranger", "stregone", "warlock"] as const;
+export type ClassId = (typeof CLASS_IDS)[number];
+
 /** A paragraph as printed; `etichetta` is its bold-italic run-in label (part of `testo`). */
 export interface ClassParagraph { tipo: "p"; testo: string; etichetta?: string; pagina?: number }
 export interface ClassInnerTable { tipo: "tabella"; titolo: string; colonne: string[]; righe: string[][]; pagina?: number }

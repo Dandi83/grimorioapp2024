@@ -282,6 +282,27 @@ export const homebrewLog = pgTable("grimorio_homebrew_log", {
   creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Subclasses added by the administrator (lib/subclasses.ts): the plain-text draft, its class and edition. */
+export const subclasses = pgTable("grimorio_subclasses", {
+  id: text("id").primaryKey(),
+  classe: text("classe").notNull(),
+  edizione: text("edizione").notNull(),
+  scheda: jsonb("scheda").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+  aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Created, corrected, deleted (shown in /admin/registro). */
+export const subclassLog = pgTable("grimorio_subclass_log", {
+  id: uuid("id").primaryKey(),
+  sottoclasse_id: text("sottoclasse_id").notNull(),
+  nome: text("nome").notNull(),
+  classe: text("classe").notNull(),
+  edizione: text("edizione").notNull(),
+  azione: text("azione").notNull(),
+  creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
 /**
  * VAPID key pair of the admin push notifications (lib/push.ts), only when the server variables
  * VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY are not set: generated once, never sent to the browser.

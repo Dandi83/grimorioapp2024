@@ -4,10 +4,13 @@ import type { ReactNode } from "react";
 
 import { ClassBlocks } from "@/components/classes/class-blocks";
 import { ClassIcon } from "@/components/classes/class-icon";
-import { ClassTabs } from "@/components/classes/class-editions";
+import { ClassTabs, SubclassPicker } from "@/components/classes/class-editions";
+import { AddedSubclassCard, SubclassCard, type AddedTextContext } from "@/components/classes/subclass-card";
+import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { HiddenTag } from "@/components/sections/hidden-tag";
 import { castsSpells, CLASS_COLORS, hitDie, levelRows, ofClass, trait, type ClassId, type LevelRow } from "@/lib/classes";
 import type { ClassData, ClassEdition, ClassFeature } from "@/lib/classes-types";
+import type { SubclassDraft } from "@/lib/subclass-types";
 
 export const CLASS_SOURCES: Record<ClassEdition, string> = { "2024": "SRD 5.2.1", "2014": "SRD 5.1" };
 
@@ -203,31 +206,29 @@ function TableTab({ card }: { card: ClassData }) {
   );
 }
 
-function SubclassTab({ card }: { card: ClassData }) {
+/** A subclass added by the administrator, as the page gets it: hidden ones only for the administrator (labelled). */
+export interface AddedSubclass { id: string; draft: SubclassDraft; hidden: boolean }
+
+/**
+ * The SRD subclass first, then the ones added by the administrator (NO SRD), chosen with the selector above
+ * the card; with the SRD one only, the tab is as it was.
+ */
+function SubclassTab({ card, id, edition, added = [], context }: { card: ClassData; id: ClassId; edition: ClassEdition; added?: AddedSubclass[]; context?: AddedTextContext }) {
   const sub = card.sottoclasse;
+  const srd = (
+    <SubclassCard name={sub.nome} from={card.livelloSottoclasse} motto={sub.motto?.testo} intro={<ClassBlocks blocks={sub.descrizione} />}
+      features={sub.privilegi.map(feature => ({ livello: feature.livello, titolo: feature.titolo, content: <ClassBlocks blocks={feature.contenuto} /> }))} />
+  );
+  if (!added.length) return srd;
   return (
-    <article className="space-y-4 rounded-[14px] border-2 border-amber bg-card p-4">
-      <div>
-        <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">Sottoclasse · dal {card.livelloSottoclasse}º livello</p>
-        <h2 className="mt-1 font-serif text-[26px] font-bold leading-tight text-primary">{sub.nome}</h2>
-        {sub.motto && <p className="mt-1 text-[16px] italic">{sub.motto.testo}</p>}
-      </div>
-      <ClassBlocks blocks={sub.descrizione} />
-      <ul className="flex flex-wrap gap-2" aria-label="Privilegi della sottoclasse">
-        {sub.privilegi.map((feature, i) => (
-          <li key={i} className="rounded-full border border-amber bg-[#FBEFCF] px-3 py-1 text-[13px] font-semibold">{feature.livello} · {feature.titolo}</li>
-        ))}
-      </ul>
-      <div className="space-y-5">
-        {sub.privilegi.map((feature, i) => (
-          <section key={i} className="space-y-2">
-            <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">Livello {feature.livello}</p>
-            <h3 className="font-serif text-[20px] font-bold leading-tight text-primary">{feature.titolo}</h3>
-            <ClassBlocks blocks={feature.contenuto} />
-          </section>
-        ))}
-      </div>
-    </article>
+    <SubclassPicker label={`Sottoclassi ${ofClass(card.nome)}`} idPrefix={`${id}-${edition}-sottoclassi`} options={[
+      { key: "srd", label: sub.nome, content: srd },
+      ...added.map(item => ({
+        key: item.id, label: item.draft.nome, hidden: item.hidden,
+        content: <AddedSubclassCard draft={item.draft} from={card.livelloSottoclasse} context={context} hiddenTag={item.hidden ? <HiddenTag /> : undefined}
+          edit={<AdminEditPencil target={{ kind: "sottoclasse", id: item.id, edition }} name={item.draft.nome} />} />,
+      })),
+    ]} />
   );
 }
 
@@ -239,7 +240,8 @@ const OPENING_ROWS = [
 
 /** The body of a class sheet for one edition: key data, skills and equipment, the three tabs. */
 /** spellsLink: false while the Incantesimi section is hidden; parts: what /admin/sezioni hides in the sheet. */
-export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SHOWN }: { card: ClassData; id: ClassId; edition: ClassEdition; spellsLink?: boolean; parts?: ClassParts }) {
+/** added: the subclasses added by the administrator for this edition; context: what their links may lead to. */
+export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SHOWN, added, context }: { card: ClassData; id: ClassId; edition: ClassEdition; spellsLink?: boolean; parts?: ClassParts; added?: AddedSubclass[]; context?: AddedTextContext }) {
   const die = hitDie(card);
   const dieRest = trait(card, "dado")?.slice(die?.length ?? 0).trim();
   const primary = trait(card, "primarie");
@@ -283,7 +285,7 @@ export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SH
       <ClassTabs label={`Contenuto ${ofClass(card.nome)}`} idPrefix={`${id}-${edition}`} tabs={[
         { key: "privilegi", label: "Privilegi", content: <FeaturesTab card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} /> },
         ...(parts["tab-tabella"].shown ? [{ key: "tabella", label: "Tabella", content: <TableTab card={card} />, part: "classi:tab-tabella", hidden: parts["tab-tabella"].hidden }] : []),
-        ...(parts["tab-sottoclasse"].shown ? [{ key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} />, part: "classi:tab-sottoclasse", hidden: parts["tab-sottoclasse"].hidden }] : []),
+        ...(parts["tab-sottoclasse"].shown ? [{ key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} id={id} edition={edition} added={added} context={context} />, part: "classi:tab-sottoclasse", hidden: parts["tab-sottoclasse"].hidden }] : []),
       ]} />
     </div>
   );
