@@ -157,7 +157,7 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
             );
           })}
         </div>
-        <div className="mt-4 space-y-1">
+        <div className="mt-4 space-y-1" data-monster-lines="">
           <Line label="Tiri salvezza" value={monster.tiri_salvezza} legacy={legacy} hidden={hidden} />
           <Line label="Abilità" value={monster.abilita} legacy={legacy} hidden={hidden} />
           <Line label="Vulnerabilità" value={monster.vulnerabilita} legacy={legacy} hidden={hidden} damageIcons />

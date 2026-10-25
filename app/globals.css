@@ -222,3 +222,32 @@ aside a.underline {
   padding-block: 12px;
   text-decoration-thickness: 1px;
 }
+
+/*
+ * Proposal A for the creature sheet (sober): same order and layout, calmer details. The property lines are a
+ * ruled list, the spell lists sit in a quiet panel instead of a thick bordeaux bar, entries breathe evenly.
+ */
+.monster-sheet [data-monster-section] {
+  margin-top: 24px;
+}
+
+.monster-sheet [data-monster-section] > h2 {
+  font-size: 24px;
+}
+
+.monster-sheet [data-monster-lines] > p {
+  margin: 0;
+  border-bottom: 1px solid var(--color-divider);
+  padding: 7px 0;
+}
+
+.monster-sheet [data-monster-lines] > p:last-child {
+  border-bottom: 0;
+}
+
+.monster-sheet [data-spell-frequency] {
+  border: 1px solid var(--color-divider);
+  border-radius: 10px;
+  background: var(--color-card);
+  padding: 10px 12px;
+}
