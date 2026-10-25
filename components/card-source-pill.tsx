@@ -24,3 +24,11 @@ export function SourcePill({ source }: { source: CardSource }) {
     </span>
   );
 }
+
+/**
+ * «NO SRD», for everyone to see: a card not transcribed from the SRD (a subclass, spell or creature added by the
+ * administrator, an original summary of the 2024 rules). Next to it the administrator also sees where it comes from.
+ */
+export function NoSrdTag() {
+  return <span data-no-srd="" className="inline-flex shrink-0 items-center rounded-full bg-[#2B2118] px-2.5 py-1 align-middle text-[11px] font-bold leading-4 tracking-[0.04em] text-[#FFFBF0]">NO SRD</span>;
+}

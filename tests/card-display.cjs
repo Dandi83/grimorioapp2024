@@ -60,17 +60,21 @@ assert.match(instant, />Istantanea</);
 assert.match(sheet, />Rituale<\/span>/);
 // «Aggiunta da te» only for the administrator, drawn in the browser: never in the server markup.
 assert.doesNotMatch(sheet, /Aggiunta da te/);
+assert.match(sheet, /<span data-no-srd=""[^>]*>NO SRD<\/span>/);
 assert.match(sheet, />Azione o rituale</);
 // The SRD sources stay for everyone; «Sintesi originale» is for the administrator (the visitor has the asterisk).
 const heading = fonte_scheda => renderToStaticMarkup(React.createElement(SpellSheetHeading, { spell: { ...added, fonte_scheda }, context: { catalog } }));
 assert.match(heading("SRD 5.2.1"), /data-card-source="SRD 5.2.1"/);
+assert.doesNotMatch(heading("SRD 5.2.1"), /NO SRD/);
+assert.doesNotMatch(heading(undefined), /NO SRD/, "an SRD card edited: no label at all");
+assert.match(heading("Sintesi originale"), /<span data-no-srd=""[^>]*>NO SRD<\/span>/);
 assert.doesNotMatch(heading("Sintesi originale"), /Sintesi originale/);
 // The previews of the reserved area keep both.
 const { PathnameContext } = require("next/dist/shared/lib/hooks-client-context.shared-runtime");
 const inReserved = element => renderToStaticMarkup(React.createElement(PathnameContext.Provider, { value: "/admin/incantesimi" }, element));
 assert.match(inReserved(React.createElement(SpellSheetHeading, { spell: added, context: { catalog } })), /data-card-source="Aggiunta da te"/);
 assert.match(inReserved(React.createElement(SpellSheetHeading, { spell: { ...added, fonte_scheda: "Sintesi originale" }, context: { catalog } })), /data-card-source="Sintesi originale"/);
-assert.match(inReserved(React.createElement(MonsterSheetTitle, { monster: { nome: "Guardiano", fonte_scheda: "Aggiunta da te" } })), /<p class="mt-2 flex flex-wrap gap-1.5" data-card-labels=""><span[^>]*data-card-source="Aggiunta da te"/);
+assert.match(inReserved(React.createElement(MonsterSheetTitle, { monster: { nome: "Guardiano", fonte_scheda: "Aggiunta da te" } })), /<p class="mt-2 flex flex-wrap gap-1.5" data-card-labels=""><span data-no-srd=""[^>]*>NO SRD<\/span><span[^>]*data-card-source="Aggiunta da te"/);
 // Hidden with the eye: plain text for the public.
 const hidden = renderToStaticMarkup(React.createElement(SpellSheetBody, { spell: added, context: { catalog, hidden: ["/spell/palla-di-fuoco"] } }));
 assert.doesNotMatch(hidden, /href="\/spell\/palla-di-fuoco"/);
@@ -93,7 +97,8 @@ assert.match(creature, /href="\/spell\/fiamma-del-grimorio" class="ref-pill">Fia
 assert.match(creature, /href="\/manuale\/condizioni-prono" class="ref-pill">prono<\/a>/);
 assert.match(creature, /data-damage-type="fire"/);
 assert.doesNotMatch(creature, /Aggiunta da te/);
-assert.doesNotMatch(creature, /data-card-labels/);
+// «NO SRD» for everyone on a card made in the reserved area (the same pill as the added subclasses).
+assert.match(creature, /<span data-no-srd=""[^>]*>NO SRD<\/span>/);
 assert.match(creature, /Habitat<\/span> Sottosuolo/);
 assert.match(creature, /GS 3 · 700 PE/);
 const creatureHidden = renderToStaticMarkup(React.createElement(MonsterSheetBody, { monster, legacy: false, catalog, hidden: ["/spell/fiamma-del-grimorio"] }));

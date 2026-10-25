@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { NoSrdTag } from "@/components/card-source-pill";
 import { ReferenceText } from "@/components/html-text";
 import { conditionLinks } from "@/lib/card-display";
 import { inlineSpellReferences, markSpellNames, fileSpellCatalog, type SpellReferenceCatalog } from "@/lib/spell-references";
@@ -11,11 +12,6 @@ import { paragraphs, type SubclassDraft } from "@/lib/subclass-types";
  * the editor, in the browser): the SRD card passes its printed blocks, an added one its plain texts.
  */
 export interface SubclassCardFeature { livello: number; titolo: string; content: ReactNode }
-
-/** «NO SRD»: a subclass written by the administrator, for everyone to see. */
-export function NoSrdTag() {
-  return <span data-no-srd="" className="inline-flex shrink-0 items-center rounded-full bg-[#2B2118] px-2.5 py-1 align-middle text-[11px] font-bold leading-4 tracking-[0.04em] text-[#FFFBF0]">NO SRD</span>;
-}
 
 export function SubclassCard({ name, from, motto, intro, features, tags, edit }: {
   name: string; from: number; motto?: string; intro: ReactNode; features: SubclassCardFeature[]; tags?: ReactNode; edit?: ReactNode;
@@ -46,6 +42,8 @@ export function SubclassCard({ name, from, motto, intro, features, tags, edit }:
     </article>
   );
 }
+
+export { NoSrdTag };
 
 export interface AddedTextContext { catalog?: SpellReferenceCatalog; hidden?: readonly string[] }
 

@@ -70,6 +70,8 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
     await guest.waitForTimeout(800);
     await expect(guest.locator("main")).not.toContainText(ADMIN_ONLY);
     await expect(guest.locator("[data-card-source]")).toHaveCount(0);
+    // «NO SRD» for everyone, the same pill as the added subclasses.
+    await expect(guest.locator("[data-card-labels] [data-no-srd]")).toHaveText("NO SRD");
     expect(await guest.content(), path).not.toMatch(ADMIN_ONLY);
     if (SHOTS) await guest.screenshot({ path: `${SHOTS}/${name}-visitatore-390.png`, fullPage: true });
     await guest.context().close();
@@ -80,9 +82,11 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await guest.goto("/spell/amicizia");
   await expect(guest.locator("h1 sup")).toHaveText("*");
   await expect(guest.locator("[data-card-source]")).toHaveCount(0);
+  await expect(guest.locator("[data-card-labels] [data-no-srd]")).toHaveText("NO SRD");
   expect(await served(request, "/spell/amicizia")).not.toMatch(/data-card-source/);
   await guest.goto("/spell/palla-di-fuoco");
   await expect(guest.locator("[data-card-source]")).toHaveText("SRD 5.2.1");
+  await expect(guest.locator("[data-no-srd]")).toHaveCount(0);
   // Lists, search, favorites: never a source label.
   await guest.evaluate(ids => localStorage.setItem("grimorio.favorites.v1", JSON.stringify(ids)), [amicizia.split("/").pop(), `mostro:${beholder.split("/").pop()}`]);
   for (const path of ["/grimorio", "/bestiario", "/preferiti", "/?cerca=amicizia", "/?cerca=beholder"]) {
@@ -90,6 +94,8 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
     await guest.waitForTimeout(800);
     await expect(guest.locator("body"), path).not.toContainText(ADMIN_ONLY);
     await expect(guest.locator("[data-card-source]"), path).toHaveCount(0);
+    // Lists and search: no label, «NO SRD» included (only in the sheets).
+    await expect(guest.locator("[data-no-srd]"), path).toHaveCount(0);
   }
   await guest.context().close();
   // The desktop column.
@@ -104,6 +110,7 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await page.evaluate(() => localStorage.setItem("grimorio.edizione", "2014"));
   await page.goto(amicizia);
   await expect(page.locator("[data-card-source]")).toHaveText("Aggiunta da te");
+  await expect(page.locator("[data-card-labels] [data-no-srd]")).toHaveText("NO SRD");
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/amicizia-2014-admin-390.png`, fullPage: true });
   await page.goto(beholder);
   await expect(page.locator("[data-card-source]")).toHaveText("Aggiunta da te");
