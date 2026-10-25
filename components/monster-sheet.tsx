@@ -140,9 +140,9 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
   // right; the page width decides, so the phone and the editor preview keep one column.
   return (
     <div className="@container">
-    {/* Phone: CA, PF, initiative and challenge in an ink strip that stays at the top while the sheet scrolls
-        (proposal B), so the numbers needed at the table are always in sight. */}
-    <dl className="sticky top-0 z-20 mx-4 mt-4 grid grid-cols-4 overflow-hidden rounded-[12px] bg-foreground pt-[env(safe-area-inset-top,0px)] text-card shadow-[0_6px_16px_rgb(43_33_24_/_22%)] @[820px]:hidden" data-monster-strip="">
+    {/* Phone and tablet: CA, PF, initiative and challenge in an ink strip that stays at the top while the sheet
+        scrolls, so the numbers needed at the table are always in sight. Computers keep their boxes. */}
+    <dl className="sticky top-0 z-20 mx-4 mt-4 grid grid-cols-4 overflow-hidden rounded-[12px] bg-foreground pt-[env(safe-area-inset-top,0px)] text-card shadow-[0_6px_16px_rgb(43_33_24_/_22%)] @[820px]:hidden lg:hidden" data-monster-strip="">
       <StripCell label="CA" value={ca.value} note={ca.note} />
       <StripCell label="PF" value={pf.value} note={pf.note} />
       {ini ? <StripCell label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} /> : <StripCell label="Iniziativa" value="—" />}
@@ -150,6 +150,13 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
     </dl>
     <div className="@[820px]:grid @[820px]:grid-cols-2 @[820px]:items-start">
     <div>
+      <div className="hidden lg:block">
+        <div className="grid grid-cols-3 gap-2.5 px-6 pt-5 @[820px]:hidden">
+          <Box label="CA" value={ca.value} note={ca.note} />
+          <Box label="PF" value={pf.value} note={pf.note} />
+          {ini && <Box label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} />}
+        </div>
+      </div>
       {monster.velocita && <p className="px-6 pt-3 text-[16px] leading-6 text-foreground @[820px]:hidden"><span className="font-bold">Velocità</span> {monster.velocita}</p>}
       <div className="hidden grid-cols-3 gap-2.5 px-6 pt-5 @[820px]:grid">
         <Box label="CA" value={ca.value} note={[ca.note, ini && `Iniziativa ${ini.value}${ini.note ? ` ${ini.note}` : ""}`].filter(Boolean).join(" · ")} />
