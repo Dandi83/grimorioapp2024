@@ -1,0 +1,111 @@
+[
+ {
+  "id": "concentrazione",
+  "title": "Concentrazione",
+  "edizione": "2024",
+  "document": "SRD 5.2.1 italiano",
+  "chapter": "Glossario delle regole",
+  "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf",
+  "sourceSha256": "a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718",
+  "page": 206,
+  "pages": [
+   206
+  ],
+  "blocks": [
+   {
+    "kind": "prose",
+    "text": "Per rimanere attivi, alcuni incantesimi e altri effetti richiedono concentrazione, come specificato nelle rispettive descrizioni. Se il creatore dell'effetto perde la concentrazione, l'effetto termina.",
+    "page": 206,
+    "sourceHash": "a107e98754f1e33c963a7e035eca8610587d9efb8d00fe1d9389f027158da621"
+   },
+   {
+    "kind": "prose",
+    "text": "Se l'effetto ha una durata massima, la descrizione dell'effetto specifica quanto a lungo il creatore può concentrarsi su di esso: fino a 1 minuto, 1 ora o un'altra durata. Il creatore può terminare la concentrazione in qualsiasi momento (nessuna azione richiesta). La concentrazione viene interrotta dai fattori descritti di seguito.",
+    "page": 206,
+    "sourceHash": "32af0562363eb55dd94bcbf8ddd6045371a488985742cb305faa7923889ea963"
+   },
+   {
+    "kind": "prose",
+    "text": "Un altro effetto di concentrazione. Il personaggio perde la concentrazione su un effetto nel momento in cui inizia a lanciare un incantesimo che richiede concentrazione, o se attiva un altro effetto che richiede concentrazione.",
+    "page": 206,
+    "label": "Un altro effetto di concentrazione.",
+    "sourceHash": "8646a6d577b8b74b7cecda2983a4ca849d1abfb371eaafaf21de381411499d2e"
+   },
+   {
+    "kind": "prose",
+    "text": "Danni. Se il personaggio subisce danni, deve effettuare un tiro salvezza su Costituzione per mantenere la concentrazione. La CD è pari a 10 o alla metà dei danni subiti (arrotondata per difetto): si sceglie il numero più alto tra i due valori, fino a una CD di massimo 30.",
+    "page": 206,
+    "label": "Danni.",
+    "sourceHash": "e06fc65a68f822cb73a8aad9ec7ffe3f272663d36f4d471c0ea2bc2eeedad3b1"
+   },
+   {
+    "kind": "prose",
+    "text": "Incapacitato o morto. Se il personaggio è incapacitato o muore, la sua concentrazione termina.",
+    "page": 206,
+    "label": "Incapacitato o morto.",
+    "sourceHash": "ea3a59c7f767a3cf693045c54179bbe8212042fccb557e8e442b3caeae1f6075"
+   }
+  ]
+ },
+ {
+  "id": "concentrazione-2014",
+  "title": "Concentrazione",
+  "edizione": "2014",
+  "document": "SRD 5.1 italiano",
+  "chapter": "Lanciare incantesimi",
+  "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf",
+  "sourceSha256": "2ef143b8abeae9558d30b405ea48e2ee9b5d700dd11cd955e6117e61cbddd3f7",
+  "page": 116,
+  "pages": [
+   116,
+   117
+  ],
+  "blocks": [
+   {
+    "kind": "prose",
+    "text": "Alcuni incantesimi richiedono all'incantatore di mantenere la concentrazione al fine di mantenere attiva la loro magia. Se l'incantatore perde la concentrazione, un incantesimo di questo tipo termina.",
+    "page": 116,
+    "sourceHash": "f4742dfbced6f17d39195aca987cb33ea478b991602be3a3ca3253c65dd8ad9b"
+   },
+   {
+    "kind": "prose",
+    "text": "Se un incantesimo deve essere mantenuto tramite concentrazione, questo requisito è indicato alla voce Durata, dove viene anche specificato quanto a lungo l'incantatore può concentrarsi. Si può terminare la concentrazione in qualsiasi momento (nessuna azione richiesta).",
+    "page": 116,
+    "sourceHash": "63aaa205d6ce06628312bd3dda360ca2383bad6a7d4f4db8dc6608a7a76d1366"
+   },
+   {
+    "kind": "prose",
+    "text": "Normali attività come muoversi e attaccare non interferiscono con la concentrazione. I fattori seguenti possono invece interromperla:",
+    "page": 116,
+    "sourceHash": "977dbadff4abf1fc068897e724e263c9f48c4186a85704788b11340b4fa00bc5"
+   },
+   {
+    "kind": "prose",
+    "text": "• Lanciare un altro incantesimo che richiede concentrazione. L'incantatore perde la concentrazione su un incantesimo se lancia un altro incantesimo che richiede concentrazione. Un incantatore non può concentrarsi su due incantesimi alla volta.",
+    "page": 117,
+    "label": "Lanciare un altro incantesimo che richiede concentrazione.",
+    "sourceHash": "4dc74a02525edd669f20b619f6cfa43702f9995e321501b08410206d2e72b85c"
+   },
+   {
+    "kind": "prose",
+    "text": "• Subire danni. Ogni volta che l'incantatore subisce danni mentre si concentra su un incantesimo, deve effettuare un tiro salvezza su Costituzione per mantenere la concentrazione. La CD è pari a 10 o alla metà dei danni subiti (si sceglie il valore più alto). Se l'incantatore subisce danni da più fonti, come per esempio una freccia e il soffio di un drago, effettua un tiro salvezza separato per ogni fonte di danno.",
+    "page": 117,
+    "label": "Subire danni.",
+    "sourceHash": "7e4763a866a00ac561246e281fc30e14ecd0f3bcb1afb1c0e8e07476c391e605"
+   },
+   {
+    "kind": "prose",
+    "text": "• Essere incapacitato o ucciso. L'incantatore perde la concentrazione su un incantesimo se è incapacitato o muore.",
+    "page": 117,
+    "label": "Essere incapacitato o ucciso.",
+    "sourceHash": "2eec962900275eb655bbee768c45c72f2896c64498167714680310a762539c4c"
+   },
+   {
+    "kind": "prose",
+    "text": "Nel caso di particolari fenomeni ambientali, come un'onda che investe l'incantatore sul ponte di una nave nel bel mezzo di una tempesta, il GM potrebbe richiedere all'incantatore di superare un tiro salvezza su Costituzione con CD 10 per mantenere la concentrazione su un incantesimo.",
+    "page": 117,
+    "sourceHash": "948b09b03a775bf6af690b7f3dbe636a7fdb28ce11271871b965d8521e942a87"
+   }
+  ]
+ }
+]

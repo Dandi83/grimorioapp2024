@@ -14,16 +14,16 @@ import { capitalizeWords, type Spell } from "../lib/spells-types";
 type SheetSpell = Pick<Spell, "id" | "nome_italiano" | "edizione" | "livello_num" | "scuola" | "tempo_di_lancio" | "gittata" | "componenti" | "durata" | "livello" | "descrizione" | "classi"> & { fonte_scheda?: CardSource };
 
 /**
- * «Concentrazione», «Rituale» and where the card comes from («SRD 5.2.1», «SRD 5.1»). «Aggiunta da te» and
- * «Sintesi originale» are for the administrator only (AdminCardSource): the visitor has the asterisk.
+ * «Rituale» and where the card comes from («SRD 5.2.1», «SRD 5.1»). «Aggiunta da te» and «Sintesi originale»
+ * are for the administrator only (AdminCardSource): the visitor has the asterisk. Concentration has no label:
+ * the «Concentrazione» of the Durata box links to its rule (lib/card-display.ts).
  */
-export function CardLabels({ concentrazione, rituale, source }: { concentrazione?: boolean; rituale?: boolean; source?: CardSource }) {
+export function CardLabels({ rituale, source }: { rituale?: boolean; source?: CardSource }) {
   const adminOnly = adminOnlySource(source);
-  if (!concentrazione && !rituale && !source) return null;
-  if (!concentrazione && !rituale && adminOnly) return <AdminCardSource code={adminOnly} alone />;
+  if (!rituale && !source) return null;
+  if (!rituale && adminOnly) return <AdminCardSource code={adminOnly} alone />;
   return (
     <p className="mt-2 flex flex-wrap gap-1.5" data-card-labels="">
-      {concentrazione && <span className={`${LABEL_PILL} border-primary/30 bg-primary/10 text-primary`}>Concentrazione</span>}
       {rituale && <span className={`${LABEL_PILL} border-primary/30 bg-primary/10 text-primary`}>Rituale</span>}
       {adminOnly ? <AdminCardSource code={adminOnly} /> : source && <SourcePill source={source} />}
     </p>
@@ -44,7 +44,7 @@ export function SpellSheetHeading({ spell, context, heading: Heading = "h1" }: {
         <SpellProvenanceMarker id={spell.id} />
       </Heading>
       <RulesEditionBadge edition={spell.edizione} />
-      <CardLabels concentrazione={view.concentrazione} rituale={view.rituale} source={view.source} />
+      <CardLabels rituale={view.rituale} source={view.source} />
     </>
   );
 }
@@ -58,7 +58,7 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
         <MetaCell label="Tempo di lancio" value={view.castingTime} />
         <MetaCell label="Gittata" value={spell.gittata} />
         <MetaCell label="Componenti" value={spell.componenti} />
-        <MetaCell label="Durata" value={spell.durata} />
+        <MetaCell label="Durata" value={view.concentration ? <><a href={view.concentration.href} className="ref-pill">{view.concentration.word}</a>{view.concentration.rest}</> : spell.durata} />
       </div>
       {spell.classi.length > 0 && (
         <section className="mb-4 px-6">

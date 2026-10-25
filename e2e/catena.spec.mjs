@@ -85,7 +85,8 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await expect(description.getByRole("link", { name: "palla di fuoco" })).toHaveAttribute("href", "/spell/palla-di-fuoco");
   await expect(description.getByRole("heading", { level: 3, name: "Utilizzo di uno slot incantesimo di livello superiore." })).toBeVisible();
   const labels = visitor.locator("[data-card-labels]");
-  await expect(labels).toContainText("Concentrazione");
+  await expect(labels).not.toContainText("Concentrazione");
+  await expect(visitor.getByRole("link", { name: /^concentrazione$/i })).toHaveAttribute("href", "/regole/concentrazione");
   await expect(labels).toContainText("Rituale");
   // «Aggiunta da te» is for the administrator only (e2e/etichette-admin.spec.mjs): in the preview, not for the visitor.
   await expect(labels).not.toContainText("Aggiunta da te");
