@@ -52,18 +52,19 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
   const view = prepareSpellDisplay(spell, context);
   return (
     <>
-      <div className="flex flex-wrap gap-3 p-6">
-        <MetaCell label="Tempo di lancio" value={view.castingTime} />
-        <MetaCell label="Gittata" value={spell.gittata} />
-        <MetaCell label="Componenti" value={spell.componenti} />
-        <MetaCell label="Durata" value={view.concentration ? <><a href={view.concentration.href} className="ref-pill">{view.concentration.word}</a>{view.concentration.rest}</> : spell.durata} />
+      {/* Proposal A (sober): the four values in one ruled panel instead of four cards. */}
+      <div className="mx-6 my-5 grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-card [&>*:nth-child(-n+2)]:border-b [&>*:nth-child(even)]:border-l [&>*]:border-divider">
+        <MetaCell plain label="Tempo di lancio" value={view.castingTime} />
+        <MetaCell plain label="Gittata" value={spell.gittata} />
+        <MetaCell plain label="Componenti" value={spell.componenti} />
+        <MetaCell plain label="Durata" value={view.concentration ? <><a href={view.concentration.href} className="ref-pill">{view.concentration.word}</a>{view.concentration.rest}</> : spell.durata} />
       </div>
       {spell.classi.length > 0 && (
         <section className="mb-4 px-6">
           <h2 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-primary">Classi</h2>
           <div className="flex flex-wrap gap-2">
             {spell.classi.map(c => (
-              <span key={c} className="rounded-full border border-primary-dim bg-primary-faint px-3 py-1.5 text-[13px] font-semibold text-primary">{capitalizeWords(c)}</span>
+              <span key={c} className="rounded-full border border-chip-border bg-primary-faint px-3 py-1 text-[13px] font-semibold text-primary">{capitalizeWords(c)}</span>
             ))}
           </div>
         </section>
