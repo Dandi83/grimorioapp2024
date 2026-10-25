@@ -45,7 +45,7 @@ assert.equal(checked.draft.privilegi.length, 3, "empty features stay in the draf
 
 // The card: NO SRD, links to conditions and spells of the edition, damage icons, empty features left out.
 const html = renderToStaticMarkup(React.createElement(AddedSubclassCard, { draft: checked.draft, from: 3 }));
-assert.match(html, /<span data-no-srd=""[^>]*>NO SRD<\/span>/);
+assert.match(html, /<a data-no-srd=""[^>]*href="\/fonti#no-srd">NO SRD<\/a>/);
 assert.match(html, /<h2[^>]*>Guerriero di prova<\/h2>/);
 assert.match(html, /href="\/manuale\/condizioni-prono" class="ref-pill">prono<\/a>/);
 assert.match(html, /href="\/manuale\/condizioni-spaventato" class="ref-pill">spaventato<\/a>/);

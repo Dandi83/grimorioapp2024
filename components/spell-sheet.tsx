@@ -3,7 +3,6 @@ import { adminOnlySource, LABEL_PILL, NoSrdTag, SourcePill } from "./card-source
 import { HtmlText } from "./html-text";
 import { MetaCell } from "./meta-cell";
 import { RulesEditionBadge } from "./rules-edition-badge";
-import { SpellProvenanceMarker } from "./spell-provenance-marker";
 import { prepareSpellDisplay, type CardDisplayContext, type CardSource } from "../lib/card-display";
 import { capitalizeWords, type Spell } from "../lib/spells-types";
 
@@ -41,7 +40,6 @@ export function SpellSheetHeading({ spell, context, heading: Heading = "h1" }: {
       </span>
       <Heading className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
         {view.title}
-        <SpellProvenanceMarker id={spell.id} />
       </Heading>
       <RulesEditionBadge edition={spell.edizione} />
       <CardLabels rituale={view.rituale} source={view.source} />

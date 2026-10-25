@@ -91,20 +91,9 @@ export default function SourcesPage() {
         <p>Esempio di attribuzione: «“Granchio-lanterna” di Gildor_DM, da Il Grimorio.App, CC BY-NC-SA 4.0».</p>
         <p><a className="text-primary underline underline-offset-4" href={HOMEBREW_LICENSE_URL} target="_blank" rel="noopener noreferrer">Licenza Creative Commons Attribuzione – Non commerciale – Condividi allo stesso modo 4.0 Internazionale</a></p>
       </section>
-      <section className="space-y-3 text-sm leading-6 text-muted">
-        <h2 className="font-serif text-xl font-bold text-foreground">Significato dell’asterisco *</h2>
-        <p>
-          L’asterisco identifica le descrizioni non trascritte dal SRD. Le 49 schede
-          indicate come “Sintesi originale delle regole 2024” contengono riepiloghi
-          redazionali delle meccaniche 2024: non sono traduzioni ufficiali
-          né testi integrali SRD. Le schede degli spiriti richiamati sono riepilogate
-          e collegate per la consultazione completa.
-        </p>
-        <p>
-          Anche le dieci descrizioni preesistenti fuori SRD sono state sostituite
-          con sintesi originali. L’asterisco non indica che l’incantesimo sia inventato
-          o non ufficiale, né attribuisce ai riepiloghi la licenza del documento SRD.
-        </p>
+      <section id="no-srd" aria-labelledby="no-srd-titolo" className="scroll-mt-4 space-y-3 text-sm leading-6 text-muted">
+        <h2 id="no-srd-titolo" className="font-serif text-xl font-bold text-foreground">Schede NO SRD</h2>
+        <p>Le schede con l’etichetta NO SRD sono state inserite dal Grimorio e non fanno parte del System Reference Document: non sono coperte dalla sua licenza CC-BY.</p>
       </section>
       <section className="space-y-3 text-sm leading-6 text-muted">
         <h2 className="font-serif text-xl font-bold text-foreground">Icone dei tipi di danno</h2>

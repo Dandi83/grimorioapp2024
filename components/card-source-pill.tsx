@@ -1,6 +1,10 @@
+import Link from "next/link";
 import { BookOpen } from "lucide-react";
 
 import type { CardSource } from "../lib/card-display";
+
+/** «Fonti e licenze», section «Schede NO SRD» (app/fonti/page.tsx). */
+export const NO_SRD_HREF = "/fonti#no-srd";
 
 /** The pill of a card label («Concentrazione», «Rituale», the source). */
 export const LABEL_PILL = "inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-4";
@@ -29,6 +33,12 @@ export function SourcePill({ source }: { source: CardSource }) {
  * «NO SRD», for everyone to see: a card not transcribed from the SRD (a subclass, spell or creature added by the
  * administrator, an original summary of the 2024 rules). Next to it the administrator also sees where it comes from.
  */
-export function NoSrdTag() {
-  return <span data-no-srd="" className="inline-flex shrink-0 items-center rounded-full bg-[#2B2118] px-2.5 py-1 align-middle text-[11px] font-bold leading-4 tracking-[0.04em] text-[#FFFBF0]">NO SRD</span>;
+export function NoSrdTag({ link = true }: { link?: boolean }) {
+  const pill = "inline-flex shrink-0 items-center rounded-full bg-[#2B2118] px-2.5 py-1 align-middle text-[11px] font-bold leading-4 tracking-[0.04em] text-[#FFFBF0]";
+  // A tap opens «Fonti e licenze» at «Schede NO SRD»; inside another link (admin lists) it is only the pill.
+  if (!link) return <span data-no-srd="" className={pill}>NO SRD</span>;
+  return (
+    <Link href={NO_SRD_HREF} data-no-srd="" prefetch={false} title="Che cosa vuol dire: Fonti e licenze" aria-label="NO SRD: che cosa vuol dire, in Fonti e licenze"
+      className={`${pill} min-h-6 underline-offset-2 hover:underline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber`}>NO SRD</Link>
+  );
 }

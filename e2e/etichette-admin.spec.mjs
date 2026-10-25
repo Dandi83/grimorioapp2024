@@ -62,7 +62,7 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder");
   const beholder = await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
 
-  // Visitor: not on the page, not in the HTML or the data served; the other labels and the asterisk stay.
+  // Visitor: not on the page, not in the HTML or the data served; «NO SRD» instead.
   for (const [path, edition, name] of [[amicizia, "2014", "amicizia-2014"], [beholder, "2024", "beholder"]]) {
     const guest = await visitor(browser, edition);
     await guest.goto(path);
@@ -78,9 +78,18 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
     expect(await served(request, path), path).not.toMatch(ADMIN_ONLY);
   }
   const guest = await visitor(browser, "2014");
-  // An original summary: asterisk and note for the visitor, no «Sintesi originale» pill; SRD cards keep theirs.
+  // An original summary: «NO SRD», no asterisk and no note any more, no «Sintesi originale» pill; SRD cards keep theirs.
   await guest.goto("/spell/amicizia");
-  await expect(guest.locator("h1 sup")).toHaveText("*");
+  await expect(guest.locator("h1 sup")).toHaveCount(0);
+  await expect(guest.locator("main")).not.toContainText("Sintesi originale delle regole 2024");
+  // A tap on «NO SRD» opens «Fonti e licenze» at its section; the SRD attributions are still there.
+  await guest.locator("[data-card-labels] [data-no-srd]").click();
+  await expect(guest).toHaveURL(/\/fonti#no-srd$/);
+  await expect(guest.getByRole("heading", { name: "Schede NO SRD" })).toBeInViewport();
+  await expect(guest.locator("#no-srd")).toContainText("Le schede con l’etichetta NO SRD sono state inserite dal Grimorio e non fanno parte del System Reference Document: non sono coperte dalla sua licenza CC-BY.");
+  await expect(guest.getByText("Significato dell’asterisco")).toHaveCount(0);
+  await expect(guest.locator("main")).toContainText("L’SRD 5.1 è concesso in licenza sotto l’Attribuzione 4.0 Internazionale di Creative Commons");
+  await guest.goto("/spell/amicizia");
   await expect(guest.locator("[data-card-source]")).toHaveCount(0);
   await expect(guest.locator("[data-card-labels] [data-no-srd]")).toHaveText("NO SRD");
   expect(await served(request, "/spell/amicizia")).not.toMatch(/data-card-source/);

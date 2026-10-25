@@ -18,20 +18,13 @@ function loadTs(url) {
 }
 const { applySrdDescription, getSrdSource } = loadTs(helperUrl);
 const provenance=loadTs(new URL('../lib/spells-types.ts',import.meta.url));
-assert.equal(typeof provenance.hasUnverifiedDescription,'function','Ten unverified legacy descriptions need a provenance marker');
+assert.equal(typeof provenance.hasUnverifiedDescription,'function','Ten unverified legacy descriptions are marked as not SRD');
 for(const spell of review.excluded) assert.equal(provenance.hasUnverifiedDescription(spell.id),true,`${spell.id}: missing marker`);
 for(const spell of data.spells) assert.equal(provenance.hasUnverifiedDescription(spell.id),false,`${spell.id}: official SRD must not be marked`);
-assert.equal(provenance.hasUnverifiedDescription('dardo-stregato'),true,'Original non-SRD summaries also need an asterisk');
+assert.equal(provenance.hasUnverifiedDescription('dardo-stregato'),true,'Original non-SRD summaries are marked NO SRD too');
 assert.equal(provenance.hasUnverifiedDescription('unknown'),false);
-const markerUrl=new URL('../components/spell-provenance-marker.tsx',import.meta.url);
-assert.ok(existsSync(markerUrl),'Spell names need a small accessible asterisk');
-const {SpellProvenanceMarker}=loadTs(markerUrl);
-for(const spell of review.excluded){
-  const marker=renderToStaticMarkup(createElement(SpellProvenanceMarker,{id:spell.id}));
-  assert.match(marker,/<sup\b[^>]*>\*<\/sup>/);
-  assert.match(marker,/aria-label="Descrizione originale non tratta dal SRD"/);
-}
-assert.equal(renderToStaticMarkup(createElement(SpellProvenanceMarker,{id:'palla-di-fuoco'})),'');
+// The asterisk gave way to «NO SRD» next to the name (components/spell-sheet.tsx, tests/card-display.cjs).
+assert.ok(!existsSync(new URL('../components/spell-provenance-marker.tsx',import.meta.url)),'No asterisk any more: the original summaries are marked NO SRD');
 const legacy=JSON.parse(readFileSync(new URL('../tests/fixtures/legacy-eldritch-blast.json',import.meta.url),'utf8'));
 assert.ok(legacy.descrizione.trim(), 'The legacy regression fixture must contain the original nonempty database text');
 const canonical=data.spells.find(s=>s.id==='deflagrazione-occulta');
