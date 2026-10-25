@@ -25,7 +25,9 @@ export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?
     notePathChange(pathname);
   }, [pathname]);
 
-  // The other places are prepared when the finger touches them (or the pointer reaches them), before the tap ends.
+  // The other places: prepared when the mouse reaches them or they get the focus (keyboard), well before the
+  // click. Not on touch: the page is fetched by the tap itself (a prefetch started by the finger cannot finish
+  // in time and the page would be downloaded twice).
   const prepared = useRef(new Set<string>());
   const prepare = useCallback((href: string) => {
     if (prepared.current.has(href)) return;
@@ -61,8 +63,7 @@ export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?
               <Link
                 href={href}
                 prefetch={false}
-                onTouchStart={() => prepare(href)}
-                onPointerEnter={() => prepare(href)}
+                onPointerEnter={event => { if (event.pointerType === "mouse") prepare(href); }}
                 onFocus={() => prepare(href)}
                 aria-current={active ? "page" : undefined}
                 className="relative flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"

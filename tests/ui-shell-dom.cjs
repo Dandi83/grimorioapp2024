@@ -54,11 +54,16 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  const links=[...document.querySelectorAll('nav a')];
  assert.deepEqual(links.map(a=>a.textContent),['Home','Incantesimi','Bestiario','Compendio','Preferiti']);
  assert.equal(document.querySelector('a[aria-current="page"]').textContent,'Incantesimi','a spell sheet highlights Incantesimi');
- // While idle only the two lists are prepared; the other places when the finger touches them (once).
+ // While idle only the two lists are prepared; the other places when the mouse reaches them or they get the focus
+ // (once), never at a touch (the tap fetches the page itself: no double download).
  assert.deepEqual(calls,['prefetch:/grimorio','prefetch:/bestiario']);
  calls.length=0;
- for(const href of ['/compendio','/preferiti','/compendio','/grimorio'])await act(async()=>document.querySelector(`nav a[href="${href}"]`).dispatchEvent(new window.TouchEvent('touchstart',{bubbles:true})));
- assert.deepEqual(calls,['prefetch:/compendio','prefetch:/preferiti'],'touching a place prepares it once; the lists are already prepared');
+ const hover=(href,pointerType)=>act(async()=>{const e=new window.Event('pointerover',{bubbles:true});e.pointerType=pointerType;document.querySelector(`nav a[href="${href}"]`).dispatchEvent(e);});
+ await hover('/preferiti','touch');
+ assert.deepEqual(calls,[],'a finger does not start a prefetch');
+ for(const href of ['/compendio','/preferiti','/compendio','/grimorio'])await hover(href,'mouse');
+ await act(async()=>document.querySelector('nav a[href="/"]').focus());
+ assert.deepEqual(calls,['prefetch:/compendio','prefetch:/preferiti','prefetch:/'],'mouse and keyboard prepare a place once; the lists are already prepared');
  // The Home prerendered by Vercel has the path «/index»: same markup as «/» in the browser (no hydration error #418).
  for(const home of ['/','/index']){pathname=home;await render(React.createElement(BottomNav,{key:home}));assert.equal(document.querySelector('a[aria-current="page"]').textContent,'Home',`${home} highlights Home`);}
  assert.match(fs.readFileSync('components/layout/content-frame.tsx','utf8'),/isHomePath\(pathname\)/,'the content frame treats «/index» as the Home');
