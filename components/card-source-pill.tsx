@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { BookOpen } from "lucide-react";
 
 import type { CardSource } from "../lib/card-display";
@@ -38,7 +37,7 @@ export function NoSrdTag({ link = true }: { link?: boolean }) {
   // A tap opens «Fonti e licenze» at «Schede NO SRD»; inside another link (admin lists) it is only the pill.
   if (!link) return <span data-no-srd="" className={pill}>NO SRD</span>;
   return (
-    <Link href={NO_SRD_HREF} data-no-srd="" prefetch={false} title="Che cosa vuol dire: Fonti e licenze" aria-label="NO SRD: che cosa vuol dire, in Fonti e licenze"
-      className={`${pill} min-h-6 underline-offset-2 hover:underline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber`}>NO SRD</Link>
+    <a href={NO_SRD_HREF} data-no-srd="" title="Che cosa vuol dire: Fonti e licenze" aria-label="NO SRD: che cosa vuol dire, in Fonti e licenze"
+      className={`${pill} min-h-6 underline-offset-2 hover:underline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber`}>NO SRD</a>
   );
 }
