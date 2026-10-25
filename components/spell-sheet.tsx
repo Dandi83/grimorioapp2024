@@ -13,13 +13,15 @@ import { capitalizeWords, type Spell } from "../lib/spells-types";
  */
 type SheetSpell = Pick<Spell, "id" | "nome_italiano" | "edizione" | "livello_num" | "scuola" | "tempo_di_lancio" | "gittata" | "componenti" | "durata" | "livello" | "descrizione" | "classi"> & { fonte_scheda?: CardSource };
 
-/** «Concentrazione», «Rituale» and where the card comes from («SRD 5.2.1», «Aggiunta da te»…). */
-export function CardLabels({ concentrazione, rituale, source }: { concentrazione?: boolean; rituale?: boolean; source?: CardSource }) {
-  if (!concentrazione && !rituale && !source) return null;
+/**
+ * «Rituale» and where the card comes from («SRD 5.2.1», «Aggiunta da te»…). Concentration has no label: the
+ * «Concentrazione» of the Durata box links to its rule (lib/card-display.ts).
+ */
+export function CardLabels({ rituale, source }: { rituale?: boolean; source?: CardSource }) {
+  if (!rituale && !source) return null;
   const pill = "inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-4";
   return (
     <p className="mt-2 flex flex-wrap gap-1.5" data-card-labels="">
-      {concentrazione && <span className={`${pill} border-primary/30 bg-primary/10 text-primary`}>Concentrazione</span>}
       {rituale && <span className={`${pill} border-primary/30 bg-primary/10 text-primary`}>Rituale</span>}
       {source && (
         <span className={`${pill} gap-1 border-border bg-card text-muted`} data-card-source={source}>
@@ -44,7 +46,7 @@ export function SpellSheetHeading({ spell, context, heading: Heading = "h1" }: {
         <SpellProvenanceMarker id={spell.id} />
       </Heading>
       <RulesEditionBadge edition={spell.edizione} />
-      <CardLabels concentrazione={view.concentrazione} rituale={view.rituale} source={view.source} />
+      <CardLabels rituale={view.rituale} source={view.source} />
     </>
   );
 }
@@ -58,7 +60,7 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
         <MetaCell label="Tempo di lancio" value={view.castingTime} />
         <MetaCell label="Gittata" value={spell.gittata} />
         <MetaCell label="Componenti" value={spell.componenti} />
-        <MetaCell label="Durata" value={spell.durata} />
+        <MetaCell label="Durata" value={view.concentration ? <><a href={view.concentration.href} className="ref-pill">{view.concentration.word}</a>{view.concentration.rest}</> : spell.durata} />
       </div>
       {spell.classi.length > 0 && (
         <section className="mb-4 px-6">

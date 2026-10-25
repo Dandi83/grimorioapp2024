@@ -84,7 +84,8 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await expect(description.getByRole("link", { name: "palla di fuoco" })).toHaveAttribute("href", "/spell/palla-di-fuoco");
   await expect(description.getByRole("heading", { level: 3, name: "Utilizzo di uno slot incantesimo di livello superiore." })).toBeVisible();
   const labels = visitor.locator("[data-card-labels]");
-  await expect(labels).toContainText("Concentrazione");
+  await expect(labels).not.toContainText("Concentrazione");
+  await expect(visitor.getByRole("link", { name: "Concentrazione", exact: true })).toHaveAttribute("href", "/regole/concentrazione");
   await expect(labels).toContainText("Rituale");
   await expect(labels).toContainText("Aggiunta da te");
   await expect(visitor.getByText("Azione o rituale", { exact: true })).toBeVisible();

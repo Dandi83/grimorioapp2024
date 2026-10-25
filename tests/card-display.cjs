@@ -49,7 +49,14 @@ assert.match(sheet, /href="\/manuale\/condizioni-accecato" class="ref-pill">acce
 assert.match(sheet, /data-damage-type="fire"/);
 assert.match(sheet, /href="\/spell\/palla-di-fuoco" class="ref-pill">palla di fuoco<\/a>/);
 assert.match(sheet, /<h3[^>]*>Utilizzo di uno slot incantesimo di livello superiore\.<\/h3>/);
-assert.match(sheet, />Concentrazione<\/span>/);
+// No «Concentrazione» label under the name: the word of the Durata box links to the rule of the edition, like a condition.
+assert.doesNotMatch(sheet, />Concentrazione<\/span>/);
+assert.match(sheet, /<a href="\/regole\/concentrazione" class="ref-pill">Concentrazione<\/a>, fino a 1 minuto</);
+const legacySheet = renderToStaticMarkup(React.createElement(SpellSheetBody, { spell: { ...added, edizione: "2014", durata: "concentrazione, fino a 1 ora" }, context: { catalog } }));
+assert.match(legacySheet, /<a href="\/regole\/concentrazione-2014" class="ref-pill">concentrazione<\/a>, fino a 1 ora</);
+const instant = renderToStaticMarkup(React.createElement(SpellSheetBody, { spell: { ...added, durata: "Istantanea" }, context: { catalog } }));
+assert.doesNotMatch(instant, /\/regole\//);
+assert.match(instant, />Istantanea</);
 assert.match(sheet, />Rituale<\/span>/);
 assert.match(sheet, /data-card-source="Aggiunta da te"/);
 assert.match(sheet, />Azione o rituale</);
@@ -95,4 +102,4 @@ for (const file of ["app/spell/[id]/page.tsx", "app/mostro/[id]/page.tsx", "comp
 // A save refreshes the cards that may name the spell.
 assert.match(fs.readFileSync("app/actions/admin.ts", "utf8"), /revalidatePath\("\/mostro\/\[id\]", "page"\)/);
 
-console.log("Card display: plain text of the reserved area linked like the SRD cards (conditions, damage icons, spells of the database with their edition, highlighted block, Concentrazione/Rituale/source labels), hidden cards plain, previews on the same components.");
+console.log("Card display: plain text of the reserved area linked like the SRD cards (conditions, damage icons, spells of the database with their edition, highlighted block, Rituale/source labels, Concentrazione linked to its rule), hidden cards plain, previews on the same components.");

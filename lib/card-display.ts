@@ -3,6 +3,7 @@
 // homebrew — and for the previews of the editor and of the proposals. The stored text is plain; everything
 // the page adds (layout, condition and spell links, labels) comes from here. Pure, safe in client code.
 
+import { concentrationRuleHref, splitConcentration } from "./concentration-link";
 import { inlineConditionReferences, legacyInlineConditionReferences } from "./conditions";
 import { normalizeLayout } from "./display-layout";
 import { visibleLinks } from "./public-sections";
@@ -25,6 +26,12 @@ export function conditionLinks(legacy: boolean, hidden: readonly string[] = []) 
   return visibleLinks(legacy ? legacyInlineConditionReferences : inlineConditionReferences, hidden);
 }
 
+/** «Concentrazione, fino a 1 minuto» → the word linked to the concentration rule of the edition, the rest as it is. */
+export function concentrationLink(durata: string | null | undefined, legacy: boolean) {
+  const parts = splitConcentration(durata);
+  return parts ? { ...parts, href: concentrationRuleHref(legacy) } : undefined;
+}
+
 /** A spell card ready for the page or the preview: name, casting time, labels, text and its links. */
 export function prepareSpellDisplay(spell: Pick<Spell, "id" | "nome_italiano" | "edizione" | "livello_num" | "scuola" | "tempo_di_lancio" | "durata" | "livello" | "descrizione"> & { fonte_scheda?: CardSource }, context: CardDisplayContext = {}) {
   const legacy = spell.edizione === "2014";
@@ -37,6 +44,8 @@ export function prepareSpellDisplay(spell: Pick<Spell, "id" | "nome_italiano" | 
     badge: spell.livello_num === 0 ? `Trucchetto · ${spell.scuola}` : `${spell.livello_num}° Livello · ${spell.scuola}`,
     color: schoolColor(spell.scuola),
     castingTime: castingTimeLabel(spell.tempo_di_lancio),
+    // «Concentrazione» of the Durata box, linked to the rule of the edition of the card like a condition.
+    concentration: concentrationLink(spell.durata, legacy),
     ...spellListFlags(spell),
     source: spell.fonte_scheda,
     html,
