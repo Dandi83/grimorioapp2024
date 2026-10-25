@@ -64,7 +64,23 @@ for(const [id,value] of [...legacy,...srd,...original,...seed,...repaired]){
  assert.doesNotMatch(shown,/^1 (azione|reazione)/i);
  if(/^[a-z]/i.test(shown))assert.equal(shown[0],shown[0].toUpperCase(),shown);
 }
-for(const file of ['components/grimorio-browser.tsx','lib/card-display.ts'])assert.match(fs.readFileSync(file,'utf8'),/castingTimeLabel\(/,file);
+// The list rows: the short form (castingTimeShort), the trigger only on the card.
+const {castingTimeShort}=types;
+for(const [value,shown] of [["1 reazione, che l'incantatore effettua quando è colpito da un attacco o bersagliato dall'incantesimo dardo incantato",'Reazione'],
+ ["reazione, che l'incantatore effettua quando subisce danni",'Reazione'],["Reazione, che l'incantatore può effettuare quando vede una creatura",'Reazione'],
+ ["azione bonus che l'incantatore effettua subito dopo aver colpito",'Azione bonus'],["Azione bonus, subito dopo aver colpito una creatura con un’arma a distanza",'Azione bonus'],
+ ["Azione bonus che l'incantatore effettua subito dopo aver colpito una creatura con un'arma",'Azione bonus'],
+ ['1 azione bonus','Azione bonus'],['Azione Bonus','Azione bonus'],['1 azione','Azione'],['1 azione o rituale','Azione o rituale'],['1 minuto o rituale','1 minuto o rituale'],
+ ['1 azione o 8 ore','Azione o 8 ore'],['Azione (Groviglio) o 8 ore (Fertilità)','Azione (Groviglio) o 8 ore (Fertilità)'],['10 minuti','10 minuti'],['',''],[undefined,'']])
+ assert.equal(castingTimeShort(value),shown,String(value));
+for(const [id,value] of [...legacy,...srd,...original,...seed,...repaired]){
+ const short=castingTimeShort(value);
+ assert.equal(castingTimeGroup(short),castingTimeGroup(value),`${id}: "${value}" → "${short}"`);
+ // Readable values (the PDF-broken ones are fixed by the approved repairs before the list shows them).
+ if(/^(Azione|Reazione)\b/.test(short))assert.ok(short.length<=40,`${id}: "${short}" fits one line`);
+}
+assert.match(fs.readFileSync('components/grimorio-browser.tsx','utf8'),/castingTimeShort\(spell\.tempo_di_lancio\)/,'list rows use the short form');
+assert.match(fs.readFileSync('lib/card-display.ts','utf8'),/castingTime: castingTimeLabel\(/,'the card keeps the whole sentence');
 
 (async()=>{
  // Filter panel: "o" inside the group, "e" with the other groups, live counter, 2014 list too.

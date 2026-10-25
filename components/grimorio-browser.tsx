@@ -14,7 +14,7 @@ import { useUserEdition } from "@/components/edition/edition-provider";
 import { useFollowEdition } from "@/components/edition/use-follow-edition";
 import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
-import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, castingTimeLabel, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
+import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, castingTimeShort, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
 
 const PAGE_SIZE = 40;
 export type SpellEdition = "2024" | "2014";
@@ -239,7 +239,7 @@ export function GrimorioBrowser({
 const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean }) {
   const href = `/spell/${spell.id}`;
   const prefetch = useIntentPrefetch(href);
-  const details = [spell.scuola, castingTimeLabel(spell.tempo_di_lancio)].filter(Boolean).join(" · ");
+  const details = [spell.scuola, castingTimeShort(spell.tempo_di_lancio)].filter(Boolean).join(" · ");
   return (
     <div className={`flex min-h-[62px] items-center gap-2 border-b border-divider${selected ? " -mx-3 rounded-[10px] bg-primary-faint px-3 shadow-[inset_3px_0_0_var(--color-primary)]" : ""}`}>
       <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="min-w-0 flex-1 py-2.5">
