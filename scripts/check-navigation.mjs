@@ -62,7 +62,7 @@ assert.ok(!home.includes('href="/fonti"'));
 assert.ok(!home.includes('Termini e condizioni'));
 assert.ok(!home.includes('Segnala un errore'));
 assert.ok(home.includes('<Lock size={16}'));
-assert.ok(home.includes('<Link href="/info">Info e note legali</Link>'));
+assert.ok(home.includes('<Link href="/info" prefetch={false}>Info e note legali</Link>'),'«Info e note legali» at the bottom of the Home, without prefetch at the start');
 const info=readFileSync(new URL('../app/info/page.tsx',import.meta.url),'utf8');
 for(const href of ['/fonti','/privacy','/segnala'])assert.ok(info.includes(`href: "${href}"`),href);
 assert.ok(info.includes('Compatibile con la quinta edizione. Le attribuzioni complete sono in'));
