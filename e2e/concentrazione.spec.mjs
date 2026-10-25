@@ -17,8 +17,9 @@ const durata = page => page.locator("p", { hasText: /^Durata$/ }).locator("xpath
 async function checkCard(page, path, { word, href, source }) {
   await page.goto(path);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  // No «Concentrazione» label (a card with no public label has no row of labels at all).
   const labels = page.locator("[data-card-labels]");
-  await expect(labels).not.toContainText("Concentrazione");
+  await expect(page.locator("[data-card-labels]", { hasText: "Concentrazione" })).toHaveCount(0);
   // The source label takes the place of the old one: first of the row, on the left.
   if (source) await expect(labels.locator("> span").first()).toHaveAttribute("data-card-source", source);
   const link = durata(page).getByRole("link", { name: word, exact: true });
@@ -35,7 +36,7 @@ test("concentration: no label, the Durata word links to the rule of the edition;
   await page.goto("/spell/colpo-accurato");
   await expect(durata(page)).toContainText(/istantanea/i);
   await expect(page.locator('a[href^="/regole/"]')).toHaveCount(0);
-  await expect(page.locator("[data-card-labels]")).not.toContainText("Concentrazione");
+  await expect(page.locator("[data-card-labels]", { hasText: "Concentrazione" })).toHaveCount(0);
   await expect(page.locator("[data-card-labels] > span").first()).toHaveAttribute("data-card-source", "SRD 5.2.1");
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/colpo-accurato-2024-390.png`, fullPage: true });
   // A 2024 card with «concentrazione, fino a 1 ora»: the link to the 2024 rule.
