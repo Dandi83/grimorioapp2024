@@ -77,7 +77,7 @@ export default async function HomePage() {
         </div>
       </section>
       {/* Phones and tablets: the legal pages, one small link above the bar (computers: in the side column). */}
-      <p className={styles.info}><Link href="/info">Info e note legali</Link></p>
+      <p className={styles.info}><Link href="/info" prefetch={false}>Info e note legali</Link></p>
       <FirstLaunch />
     </div>
   );

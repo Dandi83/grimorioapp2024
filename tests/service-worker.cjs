@@ -123,10 +123,12 @@ const text=r=>r.text();
  assert.equal(await text(response),'contenuto /_next/static/chunks/app.js');
  // Files of the first page are saved on request, only same-site program files.
  sw.network.online=true;
- await sw.message({type:'cache-files',urls:[ORIGIN+'/_next/static/css/a.css','https://example.com/x.js',ORIGIN+'/api/analytics']});
+ await sw.message({type:'cache-files',urls:[ORIGIN+'/_next/static/css/a.css','https://example.com/x.js',ORIGIN+'/api/analytics',ORIGIN+'/_next/image?url=%2Fhero-atmosfera.webp&w=1200&q=75']});
  const statics=[...sw.store.get('grimorio-static').keys()];
  assert.ok(statics.includes(ORIGIN+'/_next/static/css/a.css'));
  assert.ok(!statics.some(u=>u.includes('example.com')||u.includes('/api/')));
+ // Resized images vary with the Accept header of the browser: never fetched from here (a larger JPEG the page never used).
+ assert.ok(!statics.some(u=>u.includes('/_next/image')),'resized images are saved at their next use, not by cache-files');
 
  // Hidden sections (/admin/sezioni): their saved copies are deleted and never shown, also after a restart.
  sw.network.online=true;

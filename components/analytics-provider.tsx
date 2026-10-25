@@ -185,6 +185,7 @@ export function AnalyticsProvider() {
       </p>
       <Link
         href="/privacy"
+        prefetch={false}
         className="mt-2 inline-flex min-h-11 items-center text-sm text-primary underline underline-offset-4"
       >
         Come usiamo i dati

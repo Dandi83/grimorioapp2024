@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { notePathChange } from "@/components/navigation-memory";
 import { visibleNavItems } from "@/components/nav-items";
 
 const NONE: readonly string[] = [];
+/** Prepared while the phone is idle after the start: the two lists, the most opened sections. */
+const WARM = ["/grimorio", "/bestiario"];
 
 /** hidden: sections hidden from /admin/sezioni; admin: the administrator still sees them, labelled «Nascosta». */
 export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?: readonly string[]; admin?: boolean }) {
@@ -23,16 +25,24 @@ export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?
     notePathChange(pathname);
   }, [pathname]);
 
+  // The other places are prepared when the finger touches them (or the pointer reaches them), before the tap ends.
+  const prepared = useRef(new Set<string>());
+  const prepare = useCallback((href: string) => {
+    if (prepared.current.has(href)) return;
+    prepared.current.add(href);
+    router.prefetch(href);
+  }, [router]);
+
   useEffect(() => {
     if (admin) return;
-    const warm = () => { for (const { href } of items) router.prefetch(href); };
+    const warm = () => { for (const { href } of items) if (WARM.includes(href)) prepare(href); };
     if (typeof window.requestIdleCallback === "function") {
       const handle = window.requestIdleCallback(warm);
       return () => window.cancelIdleCallback(handle);
     }
     const handle = window.setTimeout(warm, 300);
     return () => window.clearTimeout(handle);
-  }, [router, admin, items]);
+  }, [prepare, admin, items]);
 
   // L'area riservata non fa parte della navigazione pubblica.
   if (admin) return null;
@@ -51,6 +61,9 @@ export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?
               <Link
                 href={href}
                 prefetch={false}
+                onTouchStart={() => prepare(href)}
+                onPointerEnter={() => prepare(href)}
+                onFocus={() => prepare(href)}
                 aria-current={active ? "page" : undefined}
                 className="relative flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"
               >

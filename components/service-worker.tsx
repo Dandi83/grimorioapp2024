@@ -32,7 +32,11 @@ export function ServiceWorker({ enabled, hiddenPaths = [], partPaths = [] }: { e
       return;
     }
     let cancelled = false;
-    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+    // After the page has loaded: the worker saves the main sections for offline use, and those downloads must
+    // not compete with the page itself on a slow connection.
+    const register = () => { navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {}); };
+    if (document.readyState === "complete") register();
+    else window.addEventListener("load", register, { once: true });
     void navigator.serviceWorker.ready.then(registration => {
       // Files this page loaded before the service worker could save them.
       const urls = performance.getEntriesByType("resource").map(entry => entry.name);
@@ -49,7 +53,7 @@ export function ServiceWorker({ enabled, hiddenPaths = [], partPaths = [] }: { e
       channel.port1.onmessage = event => { if (!cancelled && event.data?.savedAt) setSavedAt(event.data.savedAt); };
       controller.postMessage({ type: "saved-copy?", path: window.location.pathname }, [channel.port2]);
     }
-    return () => { cancelled = true; };
+    return () => { cancelled = true; window.removeEventListener("load", register); };
   }, [enabled]);
 
   if (!savedAt) return null;
