@@ -76,3 +76,24 @@ export function ClassTabs({ tabs, label, idPrefix }: { tabs: { key: string; labe
     </div>
   );
 }
+
+/**
+ * The subclasses of a class in the «Sottoclasse» tab: the SRD one first, then the ones added by the administrator
+ * (hidden ones only for them, labelled). One card at a time; every card is in the page, the choice is only here.
+ */
+export function SubclassPicker({ options, label, idPrefix }: { options: { key: string; label: string; content: ReactNode; hidden?: boolean }[]; label: string; idPrefix: string }) {
+  const [active, setActive] = useState(options[0].key);
+  return (
+    <div className="space-y-3">
+      <div role="group" aria-label={label} className="flex flex-wrap gap-2">
+        {options.map(option => (
+          <button key={option.key} type="button" aria-pressed={active === option.key} aria-controls={`${idPrefix}-${option.key}`} onClick={() => setActive(option.key)}
+            className={`inline-flex min-h-11 items-center gap-1.5 rounded-[22px] border-[1.5px] px-3.5 text-left text-sm font-semibold ${active === option.key ? "border-primary bg-primary text-primary-foreground" : "border-chip-border bg-card text-primary"}`}>
+            {option.label}{option.hidden && <HiddenTag />}
+          </button>
+        ))}
+      </div>
+      {options.map(option => <div key={option.key} id={`${idPrefix}-${option.key}`} hidden={active !== option.key}>{option.content}</div>)}
+    </div>
+  );
+}

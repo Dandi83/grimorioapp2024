@@ -1,6 +1,6 @@
 import data2014 from "./data/srd-classes-5.1-it.json";
 import data2024 from "./data/srd-classes-5.2.1-it.json";
-import type { ClassData, ClassEdition, ClassFeature } from "./classes-types";
+import { CLASS_IDS, type ClassData, type ClassEdition, type ClassFeature, type ClassId } from "./classes-types";
 
 /**
  * The twelve classes of the Compendio (/classi), one entry per class with its editions. The 2024
@@ -11,8 +11,7 @@ import type { ClassData, ClassEdition, ClassFeature } from "./classes-types";
  * render the texts, the browser never loads this module.
  */
 
-export const CLASS_IDS = ["barbaro", "bardo", "chierico", "druido", "guerriero", "ladro", "mago", "monaco", "paladino", "ranger", "stregone", "warlock"] as const;
-export type ClassId = (typeof CLASS_IDS)[number];
+export { CLASS_IDS, type ClassId } from "./classes-types";
 
 /** Colour of each class (cards, header of the sheet), approved by Daniele. */
 export const CLASS_COLORS: Record<ClassId, string> = {

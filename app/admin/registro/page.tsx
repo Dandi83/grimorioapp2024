@@ -19,6 +19,8 @@ const spellNameOf = (spell: { nome_italiano: string; edizione?: string } | undef
 import { isPublicSectionKey, publicSection, sectionParts } from "@/lib/public-sections";
 import { allCardLog, allSectionLog } from "@/lib/section-visibility";
 import { allHomebrewLog } from "@/lib/homebrew";
+import { allSubclassLog } from "@/lib/subclasses";
+import { subclassClass } from "@/lib/subclass-types";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Registro modifiche — Il Grimorio.App", robots: { index: false, follow: false } };
@@ -38,6 +40,7 @@ interface LogItem {
   fixed?: string;
 }
 
+const SUBCLASS_ACTIONS: Record<string, string> = { creata: "Creata (nascosta)", corretta: "Corretta", eliminata: "Eliminata" };
 const HOMEBREW_ACTIONS: Record<string, string> = { pubblicata: "Pubblicata", creata: "Creata dal Grimorio", corretta: "Corretta", eliminata: "Eliminata", rifiutata: "Proposta rifiutata" };
 
 const short = (text: string) => (text.length > 280 ? `${text.slice(0, 280).trimEnd()}…` : text);
@@ -52,8 +55,8 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
   const edition = await adminEdition();
   const allEditions = query.edizioni === "tutte";
 
-  const [overrides, editorRows, sectionRows, cardRows, homebrewRows, spells, monsters] = await Promise.all([
-    allOverrides(), allEditorLog(), allSectionLog(), allCardLog(), allHomebrewLog().catch(() => []), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
+  const [overrides, editorRows, sectionRows, cardRows, homebrewRows, subclassRows, spells, monsters] = await Promise.all([
+    allOverrides(), allEditorLog(), allSectionLog(), allCardLog(), allHomebrewLog().catch(() => []), allSubclassLog().catch(() => []), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
   ]);
   const inForce = new Set([...activeOverrideMap(overrides).values()].map(row => row.id));
   const items: LogItem[] = [
@@ -97,16 +100,25 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
     })),
     // Single cards shown or hidden with the eye: name and edition as they were at the switch.
     ...cardRows.map(row => {
-      const sezione = row.tipo === "incantesimo" ? "incantesimi" : "mostri";
+      const subclass = row.tipo === "sottoclasse";
+      const sezione = row.tipo === "incantesimo" ? "incantesimi" : subclass ? "classi" : "mostri";
       const cardEdition = isAdminEdition(row.edizione) ? row.edizione : null;
       return {
         id: row.id, editor: false, sezione, when: new Date(row.creata_il), undoneAt: null, inForce: true,
-        title: `${EDITOR_TITLES[sezione]}${cardEdition ? ` ${cardEdition}` : ""} · visibilità`, edition: cardEdition,
-        card: row.nome, href: row.tipo === "incantesimo" ? `/spell/${row.scheda}` : `/mostro/${row.scheda}`,
+        title: `${subclass ? "Classi" : EDITOR_TITLES[sezione as EditorSection]}${cardEdition ? ` ${cardEdition}` : ""} · ${subclass ? "sottoclasse · " : ""}visibilità`, edition: cardEdition,
+        card: row.nome, href: row.tipo === "incantesimo" ? `/spell/${row.scheda}` : subclass ? `/classi/${subclassClass(row.scheda)}#sottoclasse` : `/mostro/${row.scheda}`,
         field: "visibilità", before: row.nascosta ? "Visibile" : "Nascosta", after: row.nascosta ? "Nascosta" : "Visibile",
         motivo: row.nascosta ? "Nascosta dal sito: la scheda e i suoi dati restano com’erano." : "Di nuovo visibile sul sito.", fixed: "cambio di stato",
       };
     }),
+    // Subclasses added by the administrator: created (hidden), corrected, deleted.
+    ...subclassRows.map(row => ({
+      id: row.id, editor: false, sezione: "classi", when: new Date(row.creata_il), undoneAt: null, inForce: true,
+      title: `Classi ${row.edizione} · sottoclasse aggiunta`, edition: isAdminEdition(row.edizione) ? row.edizione : null,
+      card: row.nome, href: row.azione === "eliminata" ? undefined : `/admin/contenuti/classi/${row.classe}/sottoclassi/${row.sottoclasse_id}`,
+      field: "sottoclasse", before: "—", after: SUBCLASS_ACTIONS[row.azione] ?? row.azione,
+      motivo: "Sottoclasse scritta dall’amministratore, non SRD.", fixed: "sottoclasse",
+    })),
     // Homebrew creatures: published from a proposal, created, corrected, deleted, or a proposal refused.
     ...homebrewRows.map(row => {
       const both = row.edizione === "entrambe";

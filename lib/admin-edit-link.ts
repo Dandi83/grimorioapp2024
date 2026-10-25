@@ -12,12 +12,13 @@ export const ADMIN_HINT_COOKIE = "grimorio_admin_ui";
 
 /**
  * The card a «Modifica» button opens: a spell or a creature (/admin/incantesimi/<id>, /admin/mostri/<id>,
- * with the edition of the card when it has one), or a card of /admin/contenuti.
+ * with the edition of the card when it has one), a card of /admin/contenuti or an added subclass.
  */
 export type AdminEditTarget =
   | { kind: "incantesimo"; id: string; edition?: Edition }
   | { kind: "mostro"; id: string; edition?: Edition }
-  | { kind: "contenuto"; section: string; id: string; edition: Edition };
+  | { kind: "contenuto"; section: string; id: string; edition: Edition }
+  | { kind: "sottoclasse"; id: string; edition: Edition };
 
 /**
  * A path of this site to come back to, or undefined: only "/…" addresses (never "//host", "/\host",
@@ -44,6 +45,9 @@ export function adminEditHref(target: AdminEditTarget, ritorno?: string): string
   if (target.kind === "contenuto") {
     path = `/admin/contenuti/${encodeURIComponent(target.section)}/${encodeURIComponent(target.id)}`;
     params.set("edizione", target.edition);
+  } else if (target.kind === "sottoclasse") {
+    // An added subclass ("<class>--<name>"): its editor in the admin page of its class.
+    path = `/admin/contenuti/classi/${encodeURIComponent(target.id.split("--")[0])}/sottoclassi/${encodeURIComponent(target.id)}`;
   } else {
     // The editor as its own page: drawn by the server at once, never the list of the admin area first.
     path = `${target.kind === "incantesimo" ? "/admin/incantesimi" : "/admin/mostri"}/${encodeURIComponent(target.id)}`;
@@ -53,7 +57,7 @@ export function adminEditHref(target: AdminEditTarget, ritorno?: string): string
   const query = params.toString();
   const editor = query ? `${path}?${query}` : path;
   // With the card's edition: the admin area moves to it on the way (a redirect, no page in between).
-  return target.kind !== "contenuto" && target.edition
+  return (target.kind === "incantesimo" || target.kind === "mostro") && target.edition
     ? `/admin/edizione?${new URLSearchParams({ valore: target.edition, poi: editor })}`
     : editor;
 }

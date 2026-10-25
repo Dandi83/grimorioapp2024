@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/admin-action-helpers";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { SECTIONS_TAG, setCardHidden, type CardKind } from "@/lib/section-visibility";
 import { getSpellIndex } from "@/lib/spell-index";
+import { getSubclass } from "@/lib/subclasses";
 import { spellName } from "@/lib/spell-name";
 
 export type CardSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
@@ -17,18 +18,22 @@ async function catalogCard(kind: CardKind, id: string) {
     const spell = (await getSpellIndex()).find(item => item.id === id);
     return spell && { nome: spellName(spell.nome_italiano, spell.edizione), edizione: spell.edizione === "2014" ? "2014" : "2024" };
   }
+  if (kind === "sottoclasse") {
+    const subclass = await getSubclass(id);
+    return subclass && { nome: subclass.scheda.nome, edizione: subclass.edizione };
+  }
   const monster = (await getMonsterListIndex()).find(item => item.id === id);
   return monster && { nome: monster.nome, edizione: monster.edizione };
 }
 
 /**
- * The eye of /admin/incantesimi, /admin/mostri and of the editors: hides one card from the public
+ * The eye of /admin/incantesimi, /admin/mostri, of the added subclasses and of the editors: hides one card from the public
  * (lists, search, links, its address) or shows it again. Only the state is saved, never the card;
  * the cards still in the SRD files get no database row. Every switch is a row of /admin/registro.
  */
 export async function setCardVisibilityAction(kind: string, id: string, hidden: boolean): Promise<CardSwitchResult> {
   await requireAdmin();
-  if ((kind !== "incantesimo" && kind !== "mostro") || typeof id !== "string" || typeof hidden !== "boolean") return { ok: false, error: "Scheda sconosciuta." };
+  if ((kind !== "incantesimo" && kind !== "mostro" && kind !== "sottoclasse") || typeof id !== "string" || typeof hidden !== "boolean") return { ok: false, error: "Scheda sconosciuta." };
   const card = await catalogCard(kind, id).catch(() => undefined);
   if (!card) return { ok: false, error: "Scheda sconosciuta." };
   try {

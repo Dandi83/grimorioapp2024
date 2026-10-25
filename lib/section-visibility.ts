@@ -16,14 +16,15 @@ export const SECTIONS_TAG = "section-visibility";
 
 export interface SectionLogRow { id: string; sezione: string; parte?: string | null; nascosta: boolean; creata_il: Date | string }
 
-export type CardKind = "incantesimo" | "mostro";
+export type CardKind = "incantesimo" | "mostro" | "sottoclasse";
 export interface CardLogRow { id: string; tipo: CardKind; scheda: string; nome: string; edizione: string; nascosta: boolean; autore: string; creata_il: Date | string }
 
-/** Hidden sections, parts ("<section>:<part>") and cards (their addresses: "/spell/<id>", "/mostro/<id>"). */
+/** Hidden sections, parts ("<section>:<part>") and cards (their addresses: "/spell/<id>", "/mostro/<id>", "/sottoclassi/<id>"). */
 export interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards: string[] }
 
 /** The address of a card, which is also how a hidden card is named in the lists of hidden things. */
-export const cardPath = (kind: CardKind, id: string) => `${kind === "incantesimo" ? "/spell" : "/mostro"}/${id}`;
+// An added subclass has no page of its own (it is shown in the sheet of its class): "/sottoclassi/<id>" only names it.
+export const cardPath = (kind: CardKind, id: string) => `${kind === "incantesimo" ? "/spell" : kind === "mostro" ? "/mostro" : "/sottoclassi"}/${id}`;
 
 let tablesReady: Promise<void> | undefined;
 /** Additive migration: the tables are created by the first switch (never by a public page). */
@@ -95,7 +96,7 @@ async function readState(): Promise<VisibilityState> {
   return {
     sections,
     parts: parts.map(row => `${row.sezione}:${row.parte}`).filter(isPartId).sort(),
-    cards: cards.filter(row => row.tipo === "incantesimo" || row.tipo === "mostro").map(row => cardPath(row.tipo as CardKind, row.scheda)).sort(),
+    cards: cards.filter(row => row.tipo === "incantesimo" || row.tipo === "mostro" || row.tipo === "sottoclasse").map(row => cardPath(row.tipo as CardKind, row.scheda)).sort(),
   };
 }
 

@@ -5,7 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 import { setCardVisibilityAction } from "@/app/actions/admin-cards";
 
-export type CardKind = "incantesimo" | "mostro";
+export type CardKind = "incantesimo" | "mostro" | "sottoclasse";
 export type VisibilityFilter = "tutte" | "visibili" | "nascoste";
 
 interface Toast { at: number; text: string; label?: string; undo?: () => void }
