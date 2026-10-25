@@ -25,10 +25,11 @@ async function login(page) {
  * An admin page right after a switch that refreshes every page: the local test database (PGlite behind one
  * socket) can mix up the queries of the pages rebuilt in the background with this one and answer 500 once
  * («unnamed prepared statement does not exist»); a second load is served normally. Real Postgres has no such limit.
+ * The same mix-up in the session check shows the passcode form (lib/admin-auth.ts: a failed query is no session).
  */
 async function openAdmin(page, path) {
   const response = await page.goto(path);
-  if (response && response.status() >= 500) await page.goto(path);
+  if ((response && response.status() >= 500) || await page.getByLabel("Passcode").isVisible()) await page.goto(path);
 }
 
 /** The public card as a visitor sees it (a separate context, no admin session). */
@@ -69,7 +70,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   const preview = editor.locator("[data-card-description]");
   await expect(preview.getByRole("link", { name: "accecato" })).toHaveAttribute("href", "/manuale/condizioni-accecato");
   const previewSpell = await markup(preview);
-  const previewLabels = await editor.locator("[data-card-labels]").innerText();
+  const previewLabels = await editor.locator("[data-card-labels] > span").allInnerTexts();
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("fiamma del grimorio");
@@ -86,11 +87,13 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   const labels = visitor.locator("[data-card-labels]");
   await expect(labels).toContainText("Concentrazione");
   await expect(labels).toContainText("Rituale");
-  await expect(labels).toContainText("Aggiunta da te");
+  // «Aggiunta da te» is for the administrator only (e2e/etichette-admin.spec.mjs): in the preview, not for the visitor.
+  await expect(labels).not.toContainText("Aggiunta da te");
   await expect(visitor.getByText("Azione o rituale", { exact: true })).toBeVisible();
   // The editor preview is the public card.
   expect(await markup(description)).toBe(previewSpell);
-  expect(await labels.innerText()).toBe(previewLabels);
+  expect(await labels.locator("> span").allInnerTexts()).toEqual(previewLabels.filter(label => label !== "Aggiunta da te"));
+  expect(previewLabels).toContain("Aggiunta da te");
   if (SHOTS) await visitor.screenshot({ path: `${SHOTS}/incantesimo-aggiunto-390.png`, fullPage: true });
   await visitor.context().close();
   // Search and filters: the index of the Home and the list data of the filters.
@@ -134,7 +137,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await expect(visitor.locator("main")).toContainText("700 PE");
   await expect(visitor.locator("main")).toContainText("Costrutto");
   await expect(visitor.locator("main")).toContainText("Habitat Sottosuolo");
-  await expect(visitor.locator("[data-card-source]")).toHaveText("Aggiunta da te");
+  await expect(visitor.locator("[data-card-source]")).toHaveCount(0);
   expect(await markup(actions)).toBe(previewMonster);
   await visitor.context().close();
   const creature = (await (await request.get("/api/catalogo/bestiario")).json()).monsters.find(row => `/mostro/${row.id}` === monsterPath);

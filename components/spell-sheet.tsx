@@ -1,5 +1,5 @@
-import { BookOpen } from "lucide-react";
-
+import { AdminCardSource } from "./admin-edit/admin-card-source";
+import { adminOnlySource, LABEL_PILL, SourcePill } from "./card-source-pill";
 import { HtmlText } from "./html-text";
 import { MetaCell } from "./meta-cell";
 import { RulesEditionBadge } from "./rules-edition-badge";
@@ -13,19 +13,19 @@ import { capitalizeWords, type Spell } from "../lib/spells-types";
  */
 type SheetSpell = Pick<Spell, "id" | "nome_italiano" | "edizione" | "livello_num" | "scuola" | "tempo_di_lancio" | "gittata" | "componenti" | "durata" | "livello" | "descrizione" | "classi"> & { fonte_scheda?: CardSource };
 
-/** «Concentrazione», «Rituale» and where the card comes from («SRD 5.2.1», «Aggiunta da te»…). */
+/**
+ * «Concentrazione», «Rituale» and where the card comes from («SRD 5.2.1», «SRD 5.1»). «Aggiunta da te» and
+ * «Sintesi originale» are for the administrator only (AdminCardSource): the visitor has the asterisk.
+ */
 export function CardLabels({ concentrazione, rituale, source }: { concentrazione?: boolean; rituale?: boolean; source?: CardSource }) {
+  const adminOnly = adminOnlySource(source);
   if (!concentrazione && !rituale && !source) return null;
-  const pill = "inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-4";
+  if (!concentrazione && !rituale && adminOnly) return <AdminCardSource code={adminOnly} alone />;
   return (
     <p className="mt-2 flex flex-wrap gap-1.5" data-card-labels="">
-      {concentrazione && <span className={`${pill} border-primary/30 bg-primary/10 text-primary`}>Concentrazione</span>}
-      {rituale && <span className={`${pill} border-primary/30 bg-primary/10 text-primary`}>Rituale</span>}
-      {source && (
-        <span className={`${pill} gap-1 border-border bg-card text-muted`} data-card-source={source}>
-          <BookOpen size={11} className="shrink-0" aria-hidden="true" />{source}
-        </span>
-      )}
+      {concentrazione && <span className={`${LABEL_PILL} border-primary/30 bg-primary/10 text-primary`}>Concentrazione</span>}
+      {rituale && <span className={`${LABEL_PILL} border-primary/30 bg-primary/10 text-primary`}>Rituale</span>}
+      {adminOnly ? <AdminCardSource code={adminOnly} /> : source && <SourcePill source={source} />}
     </p>
   );
 }
