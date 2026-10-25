@@ -222,3 +222,15 @@ aside a.underline {
   padding-block: 12px;
   text-decoration-thickness: 1px;
 }
+
+/* Proposal B of the spell sheet (bolder): the description opens with a drop cap in EB Garamond, bordeaux. */
+[data-drop-cap] > div > p:first-child::first-letter,
+[data-drop-cap] > div > div:first-child > p:first-child::first-letter {
+  float: left;
+  margin: 4px 8px 0 0;
+  color: var(--color-primary);
+  font-family: var(--font-serif);
+  font-size: 3.4em;
+  font-weight: 700;
+  line-height: 0.8;
+}

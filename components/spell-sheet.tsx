@@ -1,3 +1,5 @@
+import { Clock, FlaskConical, Hourglass, Target } from "lucide-react";
+
 import { AdminCardSource } from "./admin-edit/admin-card-source";
 import { adminOnlySource, LABEL_PILL, NoSrdTag, SourcePill } from "./card-source-pill";
 import { HtmlText } from "./html-text";
@@ -34,11 +36,13 @@ export function SpellSheetHeading({ spell, context, heading: Heading = "h1" }: {
   const view = prepareSpellDisplay(spell, context);
   return (
     <>
-      <span className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-foreground" style={{ borderColor: view.color }}>
-        <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: view.color }} />
+      {/* Proposal B (bolder): level and school on a band in the colour of the school, darkened towards the ink
+          so the parchment text keeps at least 4.5:1. */}
+      <span className="mb-3 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-[12px] font-bold uppercase tracking-wider text-card shadow-[0_2px_8px_rgb(43_33_24_/_25%)]" style={{ backgroundColor: `color-mix(in srgb, ${view.color} 55%, #2B2118)` }}>
+        <span className="h-2 w-2 rounded-full bg-amber" />
         {view.badge}
       </span>
-      <Heading className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
+      <Heading className="font-serif text-[44px] font-bold leading-[1.05] tracking-tight text-foreground text-balance">
         {view.title}
       </Heading>
       <RulesEditionBadge edition={spell.edizione} variant="dark" />
@@ -53,10 +57,10 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
   return (
     <>
       <div className="flex flex-wrap gap-3 p-6">
-        <MetaCell label="Tempo di lancio" value={view.castingTime} />
-        <MetaCell label="Gittata" value={spell.gittata} />
-        <MetaCell label="Componenti" value={spell.componenti} />
-        <MetaCell label="Durata" value={view.concentration ? <><a href={view.concentration.href} className="ref-pill">{view.concentration.word}</a>{view.concentration.rest}</> : spell.durata} />
+        <MetaCell icon={<Clock size={14} strokeWidth={2.2} className="text-primary" aria-hidden="true" />} label="Tempo di lancio" value={view.castingTime} />
+        <MetaCell icon={<Target size={14} strokeWidth={2.2} className="text-primary" aria-hidden="true" />} label="Gittata" value={spell.gittata} />
+        <MetaCell icon={<FlaskConical size={14} strokeWidth={2.2} className="text-primary" aria-hidden="true" />} label="Componenti" value={spell.componenti} />
+        <MetaCell icon={<Hourglass size={14} strokeWidth={2.2} className="text-primary" aria-hidden="true" />} label="Durata" value={view.concentration ? <><a href={view.concentration.href} className="ref-pill">{view.concentration.word}</a>{view.concentration.rest}</> : spell.durata} />
       </div>
       {spell.classi.length > 0 && (
         <section className="mb-4 px-6">
@@ -68,7 +72,7 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
           </div>
         </section>
       )}
-      <section className="px-6 pb-4" data-card-description="">
+      <section className="px-6 pb-4" data-card-description="" data-drop-cap="">
         <h2 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-primary">Descrizione</h2>
         {view.html ? (
           <HtmlText html={view.html} damageIcons references={view.conditionLinks} spellReferences={view.spellLinks} />

@@ -92,8 +92,9 @@ export default async function SpellDetailPage({
         <div
           className="absolute inset-0"
           style={{
+            // Proposal B: a warmer, deeper veil (ink at the top, parchment under the heading).
             background:
-              "linear-gradient(to bottom, rgba(246,239,223,0.2), rgba(246,239,223,0.7), rgba(246,239,223,1))",
+              "linear-gradient(to bottom, rgba(43,33,24,0.45), rgba(43,33,24,0.12) 34%, rgba(246,239,223,0.82) 66%, rgba(246,239,223,1))",
           }}
         />
         <BackButton fallback="/grimorio" />
