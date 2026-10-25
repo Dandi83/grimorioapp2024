@@ -25,10 +25,11 @@ async function login(page) {
  * An admin page right after a switch that refreshes every page: the local test database (PGlite behind one
  * socket) can mix up the queries of the pages rebuilt in the background with this one and answer 500 once
  * («unnamed prepared statement does not exist»); a second load is served normally. Real Postgres has no such limit.
+ * The same mix-up in the session check shows the passcode form (lib/admin-auth.ts: a failed query is no session).
  */
 async function openAdmin(page, path) {
   const response = await page.goto(path);
-  if (response && response.status() >= 500) await page.goto(path);
+  if ((response && response.status() >= 500) || await page.getByLabel("Passcode").isVisible()) await page.goto(path);
 }
 
 /** The public card as a visitor sees it (a separate context, no admin session). */
@@ -85,7 +86,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await expect(description.getByRole("heading", { level: 3, name: "Utilizzo di uno slot incantesimo di livello superiore." })).toBeVisible();
   const labels = visitor.locator("[data-card-labels]");
   await expect(labels).not.toContainText("Concentrazione");
-  await expect(visitor.getByRole("link", { name: "Concentrazione", exact: true })).toHaveAttribute("href", "/regole/concentrazione");
+  await expect(visitor.getByRole("link", { name: /^concentrazione$/i })).toHaveAttribute("href", "/regole/concentrazione");
   await expect(labels).toContainText("Rituale");
   await expect(labels).toContainText("Aggiunta da te");
   await expect(visitor.getByText("Azione o rituale", { exact: true })).toBeVisible();
