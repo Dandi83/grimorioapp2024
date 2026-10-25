@@ -47,3 +47,19 @@
     border-radius: 30px;
   }
 }
+
+/* Proposal B (bolder), phones and tablets: on the ink veil the field is lit by an amber edge. */
+@media (max-width: 1023px) {
+  .field {
+    min-height: 58px;
+    border: 2px solid var(--color-amber);
+    border-radius: 29px;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+    color: #5E4E3E;
+    font-size: 18px;
+  }
+
+  .field:focus-visible {
+    outline-color: var(--color-amber);
+  }
+}
