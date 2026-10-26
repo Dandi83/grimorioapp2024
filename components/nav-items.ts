@@ -58,7 +58,10 @@ export const FOOT_LINKS: { href: string; label: string; lock?: true }[] = [
   { href: "/admin", label: "Area riservata", lock: true },
 ];
 
-/** The items the visitor sees: hidden sections out, unless the administrator is looking. */
-export function visibleNavItems(hidden: readonly string[], admin: boolean): NavItem[] {
-  return NAV_ITEMS.filter(item => admin || !item.section || !hidden.includes(item.section));
+/**
+ * The items the visitor sees: hidden sections out, unless the administrator is looking; a section «In arrivo»
+ * (soon) stays, attenuated, and its page says it is coming.
+ */
+export function visibleNavItems(hidden: readonly string[], admin: boolean, soon: readonly string[] = []): NavItem[] {
+  return NAV_ITEMS.filter(item => admin || !item.section || !hidden.includes(item.section) || soon.includes(item.section));
 }

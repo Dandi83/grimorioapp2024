@@ -8,6 +8,7 @@ import { ChevronRight, Search } from "lucide-react";
 import { ParentLink } from "@/components/section-tiles";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
 import { HiddenTag } from "@/components/sections/hidden-tag";
+import { SoonBlock } from "@/components/sections/soon-block";
 import { usePart } from "@/components/sections/parts-context";
 import { SectionEditionPill } from "@/components/edition/edition-pill";
 import type { GearListRow } from "@/lib/adventuring-gear-editions";
@@ -94,6 +95,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
           className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
       </label>
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "oggetto trovato" : "oggetti trovati"}`}</p>
+      {packs.length > 0 && !packsPart.shown && packsPart.soon && <SoonBlock id="avventura:dotazioni" title="Dotazioni" className="mt-6" />}
       {packs.length > 0 && packsPart.shown && (
         <section aria-labelledby="dotazioni" data-part="avventura:dotazioni" className="mt-3">
           <div className="rounded-t-[14px] border-2 border-b-0 border-amber bg-[#FBEBC2] px-3.5 pb-1.5 pt-2">

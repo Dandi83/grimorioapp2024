@@ -13,6 +13,11 @@ interface SectionView {
   hiddenParts: string[];
   /** Single cards hidden from the public, by address ("/spell/<id>", "/mostro/<id>"). */
   hiddenCards: string[];
+  /**
+   * Sections and parts «In arrivo» (among the hidden ones): their entries stay for the public, attenuated, and lead
+   * to the «in costruzione» page; their content stays out like the hidden one.
+   */
+  soon: string[];
   /** The viewer is the administrator: hidden sections and parts stay visible, with the «Nascosta» label. */
   admin: boolean;
 }
@@ -25,7 +30,9 @@ interface SectionView {
 export const sectionView = cache(async (): Promise<SectionView> => {
   const state = await visibilityState();
   const hidden = effectiveHidden(state.sections, state.parts);
-  const view = { hidden, hiddenParts: state.parts, hiddenCards: state.cards };
+  // A section whose parts of a set are all «In arrivo» (both editions, all the blocks) is «In arrivo» as a whole.
+  const soon = [...new Set([...state.soon, ...effectiveHidden(state.soon, state.soon)])];
+  const view = { hidden, hiddenParts: state.parts, hiddenCards: state.cards, soon };
   if ((!hidden.length && !state.parts.length && !state.cards.length) || !(await draftMode()).isEnabled) return { ...view, admin: false };
   return { ...view, admin: await isAdmin() };
 });
@@ -97,11 +104,11 @@ export async function editionCard(section: PublicSectionKey, edition: Edition): 
   return state.hidden;
 }
 
-/** A part: drawn (for everyone, or only for the administrator) and labelled «Nascosta». */
-export async function partState(section: PublicSectionKey, part: string): Promise<{ shown: boolean; hidden: boolean }> {
+/** A part: drawn (for everyone, or only for the administrator) and labelled «Nascosta»; soon: «In arrivo». */
+export async function partState(section: PublicSectionKey, part: string): Promise<{ shown: boolean; hidden: boolean; soon: boolean }> {
   const view = await sectionView();
   const hidden = view.hiddenParts.includes(partId(section, part));
-  return { shown: !hidden || view.admin, hidden };
+  return { shown: !hidden || view.admin, hidden, soon: view.soon.includes(partId(section, part)) };
 }
 
 /** The editions of a section drawn on this page (both for the administrator). */

@@ -9,8 +9,8 @@ export const metadata = { title: "Pagina non disponibile — Il Grimorio.App", r
  * (a section with such a part hidden), say they will come back (lib/public-sections.ts).
  */
 export default async function NotFound() {
-  const { hidden, hiddenParts } = await sectionView();
+  const { hidden, hiddenParts, soon } = await sectionView();
   const withHiddenCards = [...new Set(hiddenParts.map(id => id.split(":")[0]))]
     .filter(section => sectionParts(section).some(part => part.set && part.set !== "blocchi" && hiddenParts.includes(`${section}:${part.key}`)));
-  return <NotFoundView hidden={[...hidden, ...withHiddenCards]} />;
+  return <NotFoundView hidden={[...hidden, ...withHiddenCards]} soon={soon} />;
 }

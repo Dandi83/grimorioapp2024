@@ -174,3 +174,33 @@ export function effectiveHidden(sections: readonly string[], parts: readonly str
 export function shownEditions(section: string, hiddenParts: readonly string[]): Edition[] {
   return EDITIONS.filter(edition => !hiddenParts.includes(partId(section, edition)));
 }
+
+/**
+ * «In arrivo»: the section or part of an address the public sees as coming (soon: section keys and part ids,
+ * lib/section-visibility.ts), with the title of its pill «<title> · In arrivo»; undefined otherwise.
+ */
+export function soonOfPath(href: string, soon: readonly string[]): string | undefined {
+  if (!soon.length) return undefined;
+  const key = sectionOfPath(href);
+  if (key === undefined) return undefined;
+  if (soon.includes(key)) return publicSection(key).title;
+  const edition = editionOfPath(href);
+  const part = edition !== undefined && soon.includes(partId(key, edition)) ? sectionParts(key).find(item => item.key === edition) : undefined;
+  if (part) return `${publicSection(key).title} ${edition}`;
+  // A page whose parts of a set are all «In arrivo» (both editions, all the blocks).
+  const sets = sectionParts(key).filter(item => item.set);
+  return sets.length && sets.every(item => soon.includes(partId(key, item.key))) ? publicSection(key).title : undefined;
+}
+
+/** The address of the «in costruzione» page of a section or part «In arrivo» (app/in-arrivo/[id]/page.tsx). */
+export const soonHref = (id: string) => `/in-arrivo/${encodeURIComponent(id)}`;
+
+/** The title of a section key or part id, for the pill of /in-arrivo; undefined when unknown. */
+export function soonTitle(id: string): string | undefined {
+  const [key, part] = id.split(":");
+  if (!isPublicSectionKey(key)) return undefined;
+  if (part === undefined) return publicSection(key).title;
+  const item = sectionParts(key).find(entry => entry.key === part);
+  if (!item) return undefined;
+  return item.group === "edizioni" ? `${publicSection(key).title} ${part}` : item.title;
+}

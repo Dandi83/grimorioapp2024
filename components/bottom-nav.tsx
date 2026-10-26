@@ -5,15 +5,19 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { notePathChange } from "@/components/navigation-memory";
 import { visibleNavItems } from "@/components/nav-items";
+import { soonHref } from "@/lib/public-sections";
 
 const NONE: readonly string[] = [];
 /** Prepared while the phone is idle after the start: the two lists, the most opened sections. */
 const WARM = ["/grimorio", "/bestiario"];
 
-/** hidden: sections hidden from /admin/sezioni; admin: the administrator still sees them, labelled «Nascosta». */
-export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?: readonly string[]; admin?: boolean }) {
+/**
+ * hidden: sections hidden from /admin/sezioni; admin: the administrator still sees them, labelled «Nascosta»;
+ * soon: sections «In arrivo», attenuated with their pill for everyone.
+ */
+export function BottomNav({ hidden = NONE, admin: adminView = false, soon = NONE }: { hidden?: readonly string[]; admin?: boolean; soon?: readonly string[] }) {
   const pathname = usePathname();
-  const items = useMemo(() => visibleNavItems(hidden, adminView), [hidden, adminView]);
+  const items = useMemo(() => visibleNavItems(hidden, adminView, soon), [hidden, adminView, soon]);
   const router = useRouter();
   const admin = pathname.startsWith("/admin");
 
@@ -57,11 +61,12 @@ export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?
       <ul className="flex h-[80px] items-stretch">
         {items.map(({ href, label, Icon, match, section }) => {
           const active = match(pathname);
-          const off = section !== undefined && hidden.includes(section);
+          const coming = section !== undefined && soon.includes(section);
+          const off = section !== undefined && hidden.includes(section) && !coming;
           return (
-            <li key={href} className="flex-1">
+            <li key={href} className={`flex-1 ${coming ? "opacity-60" : ""}`} data-soon={coming ? "" : undefined}>
               <Link
-                href={href}
+                href={coming && !adminView && section ? soonHref(section) : href}
                 prefetch={false}
                 onPointerEnter={event => { if (event.pointerType === "mouse") prepare(href); }}
                 onFocus={event => { if (event.currentTarget.matches(":focus-visible")) prepare(href); }}
@@ -69,6 +74,7 @@ export function BottomNav({ hidden = NONE, admin: adminView = false }: { hidden?
                 className="relative flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"
               >
                 {off && <span className="absolute left-1/2 top-1 -translate-x-1/2 rounded-[6px] bg-[#2B2118] px-1.5 text-[10px] font-bold leading-4 text-amber">Nascosta</span>}
+                {coming && <span className="absolute left-1/2 top-1 -translate-x-1/2 whitespace-nowrap rounded-[6px] bg-[#E0A21A] px-1.5 text-[10px] font-bold leading-4 text-[#2B2118]">In arrivo</span>}
                 <Icon
                   size={26}
                   strokeWidth={1.75}

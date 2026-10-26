@@ -1,6 +1,6 @@
 import { Backpack, Gem, Shield, ShieldAlert, TrendingUp } from "lucide-react";
 import { SectionTiles, type SectionTile } from "@/components/section-tiles";
-import { EQUIPMENT_SECTIONS, type PublicSectionKey } from "@/lib/public-sections";
+import { EQUIPMENT_SECTIONS, soonHref, type PublicSectionKey } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
 
 export const metadata = { title: "Compendio — Il Grimorio.App" };
@@ -25,10 +25,15 @@ function GroupLabel({ children }: { children: string }) {
 
 export default async function CompendiumPage() {
   // Hidden sections (/admin/sezioni): a tile goes when all its sections are hidden, a group when it is empty.
-  const { hidden, admin } = await sectionView();
+  // «In arrivo»: the tile stays, attenuated, to the «in costruzione» page (Equipaggiamento: its hub shows which ones).
+  const { hidden, soon, admin } = await sectionView();
   const shown = (tiles: Tile[]) => tiles.flatMap(({ sections, ...tile }) => {
     const off = sections.every(key => hidden.includes(key));
-    return !off ? [tile] : admin ? [{ ...tile, hidden: true }] : [];
+    const coming = sections.filter(key => soon.includes(key));
+    if (!off) return [tile];
+    if (admin) return [{ ...tile, hidden: true, soon: coming.length > 0 }];
+    if (!coming.length) return [];
+    return [{ ...tile, soon: true, href: sections.length > 1 ? tile.href : soonHref(coming[0]) }];
   });
   const groups = [{ label: "Personaggi", tiles: shown(CHARACTERS) }, { label: "Regole e oggetti", tiles: shown(TILES) }].filter(group => group.tiles.length);
   return (

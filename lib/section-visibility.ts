@@ -14,13 +14,27 @@ import { PUBLIC_SECTIONS, isPartId, type PublicSectionKey } from "./public-secti
 
 export const SECTIONS_TAG = "section-visibility";
 
-interface SectionLogRow { id: string; sezione: string; parte?: string | null; nascosta: boolean; creata_il: Date | string }
+interface SectionLogRow { id: string; sezione: string; parte?: string | null; nascosta: boolean; in_arrivo: boolean; creata_il: Date | string }
+
+/**
+ * The three states of a section or a part (/admin/sezioni). «In arrivo» is stored as hidden (nascosta) with the
+ * in_arrivo flag: every rule that keeps hidden content away from the public applies to it as it is; only the
+ * entries (menus, tiles, bar, Home) stay, attenuated, and lead to the «in costruzione» page.
+ */
+export type SectionState = "visibile" | "in-arrivo" | "nascosta";
+export const SECTION_STATES: readonly SectionState[] = ["visibile", "in-arrivo", "nascosta"];
+export const isSectionState = (value: unknown): value is SectionState => SECTION_STATES.includes(value as SectionState);
+const stateOf = (row: { nascosta: boolean; in_arrivo?: boolean | null } | undefined): SectionState =>
+  !row?.nascosta ? "visibile" : row.in_arrivo ? "in-arrivo" : "nascosta";
 
 export type CardKind = "incantesimo" | "mostro" | "sottoclasse";
 interface CardLogRow { id: string; tipo: CardKind; scheda: string; nome: string; edizione: string; nascosta: boolean; autore: string; creata_il: Date | string }
 
-/** Hidden sections, parts ("<section>:<part>") and cards (their addresses: "/spell/<id>", "/mostro/<id>", "/sottoclassi/<id>"). */
-interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards: string[] }
+/**
+ * Hidden sections, parts ("<section>:<part>") and cards (their addresses: "/spell/<id>", "/mostro/<id>", "/sottoclassi/<id>");
+ * soon: the sections and parts among them that are «In arrivo».
+ */
+interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards: string[]; soon: string[] }
 
 /** The address of a card, which is also how a hidden card is named in the lists of hidden things. */
 // An added subclass has no page of its own (it is shown in the sheet of its class): "/sottoclassi/<id>" only names it.
@@ -66,7 +80,12 @@ export function ensureSectionTables() {
     nascosta boolean NOT NULL,
     autore text NOT NULL DEFAULT 'amministratore',
     creata_il timestamptz NOT NULL DEFAULT now()
-  )`)).then(() => undefined).catch(error => { tablesReady = undefined; throw error; });
+  )`)).then(() => pool.query(`ALTER TABLE grimorio_section_visibility ADD COLUMN IF NOT EXISTS in_arrivo boolean NOT NULL DEFAULT false`))
+    // «In arrivo» (third state): the rows saved before keep their meaning, Visibile or Nascosta (false by default).
+    .then(() => pool.query(`ALTER TABLE grimorio_section_visibility_log ADD COLUMN IF NOT EXISTS in_arrivo boolean NOT NULL DEFAULT false`))
+    .then(() => pool.query(`ALTER TABLE grimorio_section_parts ADD COLUMN IF NOT EXISTS in_arrivo boolean NOT NULL DEFAULT false`))
+    .then(() => pool.query(`ALTER TABLE grimorio_section_parts_log ADD COLUMN IF NOT EXISTS in_arrivo boolean NOT NULL DEFAULT false`))
+    .then(() => undefined).catch(error => { tablesReady = undefined; throw error; });
   return tablesReady;
 }
 
@@ -82,21 +101,31 @@ async function hiddenRows<T>(sql: string): Promise<T[]> {
   }
 }
 
+// The in_arrivo column comes with the first switch of this version: read through to_jsonb, a table without it
+// still answers (every hidden row then reads as «Nascosta», as before).
+const SOON = "COALESCE((to_jsonb(t)->>'in_arrivo')::boolean, false) AS in_arrivo";
+
+async function readHiddenRows(): Promise<{ sezione: PublicSectionKey; in_arrivo: boolean }[]> {
+  const rows = await hiddenRows<{ sezione: string; in_arrivo: boolean }>(`SELECT sezione, ${SOON} FROM grimorio_section_visibility t WHERE nascosta`);
+  return rows.filter((row): row is { sezione: PublicSectionKey; in_arrivo: boolean } => known.has(row.sezione)).sort((a, b) => a.sezione.localeCompare(b.sezione));
+}
+
 async function readHidden(): Promise<PublicSectionKey[]> {
-  const rows = await hiddenRows<{ sezione: string }>("SELECT sezione FROM grimorio_section_visibility WHERE nascosta");
-  return rows.map(row => row.sezione).filter((key): key is PublicSectionKey => known.has(key)).sort();
+  return (await readHiddenRows()).map(row => row.sezione);
 }
 
 async function readState(): Promise<VisibilityState> {
   const [sections, parts, cards] = await Promise.all([
-    readHidden(),
-    hiddenRows<{ sezione: string; parte: string }>("SELECT sezione, parte FROM grimorio_section_parts WHERE nascosta"),
+    readHiddenRows(),
+    hiddenRows<{ sezione: string; parte: string; in_arrivo: boolean }>(`SELECT sezione, parte, ${SOON} FROM grimorio_section_parts t WHERE nascosta`),
     hiddenRows<{ tipo: string; scheda: string }>("SELECT tipo, scheda FROM grimorio_card_visibility WHERE nascosta"),
   ]);
+  const partRows = parts.map(row => ({ id: `${row.sezione}:${row.parte}`, soon: row.in_arrivo })).filter(row => isPartId(row.id));
   return {
-    sections,
-    parts: parts.map(row => `${row.sezione}:${row.parte}`).filter(isPartId).sort(),
+    sections: sections.map(row => row.sezione),
+    parts: partRows.map(row => row.id).sort(),
     cards: cards.filter(row => row.tipo === "incantesimo" || row.tipo === "mostro" || row.tipo === "sottoclasse").map(row => cardPath(row.tipo as CardKind, row.scheda)).sort(),
+    soon: [...sections.filter(row => row.in_arrivo).map(row => row.sezione), ...partRows.filter(row => row.soon).map(row => row.id)].sort(),
   };
 }
 
@@ -111,7 +140,7 @@ export async function visibilityState(): Promise<VisibilityState> {
     return await cachedState();
   } catch {
     console.warn("[sezioni] Database non leggibile: tutte le sezioni restano visibili.");
-    return { sections: [], parts: [], cards: [] };
+    return { sections: [], parts: [], cards: [], soon: [] };
   }
 }
 
@@ -120,33 +149,47 @@ export async function hiddenSections(): Promise<PublicSectionKey[]> {
   return (await visibilityState()).sections;
 }
 
-/** Current state of every section for the admin page (not cached). */
+/** Current state of every section for the admin page (not cached): true when the public does not see it (also «In arrivo»). */
 export async function sectionStates(): Promise<Record<PublicSectionKey, boolean>> {
   await ensureSectionTables();
   const hidden = new Set(await readHidden());
   return Object.fromEntries(PUBLIC_SECTIONS.map(section => [section.key, hidden.has(section.key)])) as Record<PublicSectionKey, boolean>;
 }
 
-/** Hidden parts for the admin page (not cached). */
+/** Hidden parts for the admin page (not cached), «In arrivo» ones included. */
 export async function hiddenPartIds(): Promise<string[]> {
   await ensureSectionTables();
   return (await readState()).parts;
 }
 
+/** The three states of every section and part, for /admin/sezioni (not cached): section keys and part ids. */
+export async function allSectionStates(): Promise<Record<string, SectionState>> {
+  await ensureSectionTables();
+  const [sections, parts] = await Promise.all([
+    pool.query<{ sezione: string; nascosta: boolean; in_arrivo: boolean }>("SELECT sezione, nascosta, in_arrivo FROM grimorio_section_visibility"),
+    pool.query<{ sezione: string; parte: string; nascosta: boolean; in_arrivo: boolean }>("SELECT sezione, parte, nascosta, in_arrivo FROM grimorio_section_parts"),
+  ]);
+  return Object.fromEntries([
+    ...sections.rows.map(row => [row.sezione, stateOf(row)] as const),
+    ...parts.rows.map(row => [`${row.sezione}:${row.parte}`, stateOf(row)] as const),
+  ]);
+}
+
 /** Saves the new state and its log row in one transaction; false when the state was already that. */
-export async function setSectionHidden(key: PublicSectionKey, nascosta: boolean): Promise<boolean> {
+export async function setSectionState(key: PublicSectionKey, state: SectionState): Promise<boolean> {
   await ensureSectionTables();
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    const { rows } = await client.query<{ nascosta: boolean }>("SELECT nascosta FROM grimorio_section_visibility WHERE sezione = $1 FOR UPDATE", [key]);
-    if ((rows[0]?.nascosta ?? false) === nascosta) {
+    const { rows } = await client.query<{ nascosta: boolean; in_arrivo: boolean }>("SELECT nascosta, in_arrivo FROM grimorio_section_visibility WHERE sezione = $1 FOR UPDATE", [key]);
+    if (stateOf(rows[0]) === state) {
       await client.query("ROLLBACK");
       return false;
     }
-    await client.query(`INSERT INTO grimorio_section_visibility (sezione, nascosta, aggiornata_il) VALUES ($1, $2, now())
-      ON CONFLICT (sezione) DO UPDATE SET nascosta = EXCLUDED.nascosta, aggiornata_il = now()`, [key, nascosta]);
-    await client.query("INSERT INTO grimorio_section_visibility_log (id, sezione, nascosta) VALUES ($1, $2, $3)", [randomUUID(), key, nascosta]);
+    const [nascosta, inArrivo] = [state !== "visibile", state === "in-arrivo"];
+    await client.query(`INSERT INTO grimorio_section_visibility (sezione, nascosta, in_arrivo, aggiornata_il) VALUES ($1, $2, $3, now())
+      ON CONFLICT (sezione) DO UPDATE SET nascosta = EXCLUDED.nascosta, in_arrivo = EXCLUDED.in_arrivo, aggiornata_il = now()`, [key, nascosta, inArrivo]);
+    await client.query("INSERT INTO grimorio_section_visibility_log (id, sezione, nascosta, in_arrivo) VALUES ($1, $2, $3, $4)", [randomUUID(), key, nascosta, inArrivo]);
     await client.query("COMMIT");
     return true;
   } catch (error) {
@@ -157,20 +200,26 @@ export async function setSectionHidden(key: PublicSectionKey, nascosta: boolean)
   }
 }
 
+/** Shown or hidden (the «Mostra» links): the two states of before. */
+export function setSectionHidden(key: PublicSectionKey, nascosta: boolean): Promise<boolean> {
+  return setSectionState(key, nascosta ? "nascosta" : "visibile");
+}
+
 /** Saves the new state of one part and its log row; false when the state was already that. */
-export async function setPartHidden(sezione: PublicSectionKey, parte: string, nascosta: boolean): Promise<boolean> {
+export async function setPartState(sezione: PublicSectionKey, parte: string, state: SectionState): Promise<boolean> {
   await ensureSectionTables();
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    const { rows } = await client.query<{ nascosta: boolean }>("SELECT nascosta FROM grimorio_section_parts WHERE sezione = $1 AND parte = $2 FOR UPDATE", [sezione, parte]);
-    if ((rows[0]?.nascosta ?? false) === nascosta) {
+    const { rows } = await client.query<{ nascosta: boolean; in_arrivo: boolean }>("SELECT nascosta, in_arrivo FROM grimorio_section_parts WHERE sezione = $1 AND parte = $2 FOR UPDATE", [sezione, parte]);
+    if (stateOf(rows[0]) === state) {
       await client.query("ROLLBACK");
       return false;
     }
-    await client.query(`INSERT INTO grimorio_section_parts (sezione, parte, nascosta, aggiornata_il) VALUES ($1, $2, $3, now())
-      ON CONFLICT (sezione, parte) DO UPDATE SET nascosta = EXCLUDED.nascosta, aggiornata_il = now()`, [sezione, parte, nascosta]);
-    await client.query("INSERT INTO grimorio_section_parts_log (id, sezione, parte, nascosta) VALUES ($1, $2, $3, $4)", [randomUUID(), sezione, parte, nascosta]);
+    const [nascosta, inArrivo] = [state !== "visibile", state === "in-arrivo"];
+    await client.query(`INSERT INTO grimorio_section_parts (sezione, parte, nascosta, in_arrivo, aggiornata_il) VALUES ($1, $2, $3, $4, now())
+      ON CONFLICT (sezione, parte) DO UPDATE SET nascosta = EXCLUDED.nascosta, in_arrivo = EXCLUDED.in_arrivo, aggiornata_il = now()`, [sezione, parte, nascosta, inArrivo]);
+    await client.query("INSERT INTO grimorio_section_parts_log (id, sezione, parte, nascosta, in_arrivo) VALUES ($1, $2, $3, $4, $5)", [randomUUID(), sezione, parte, nascosta, inArrivo]);
     await client.query("COMMIT");
     return true;
   } catch (error) {
@@ -179,6 +228,11 @@ export async function setPartHidden(sezione: PublicSectionKey, parte: string, na
   } finally {
     client.release();
   }
+}
+
+/** Shown or hidden (the «Mostra» links): the two states of before. */
+export function setPartHidden(sezione: PublicSectionKey, parte: string, nascosta: boolean): Promise<boolean> {
+  return setPartState(sezione, parte, nascosta ? "nascosta" : "visibile");
 }
 
 /** Hidden cards for the admin lists (not cached), as addresses. Only reads: the tables come with the first switch. */
@@ -223,7 +277,7 @@ export async function allCardLog(): Promise<CardLogRow[]> {
 /** Every switch of sections and parts, newest first, for /admin/registro and its export. */
 export async function allSectionLog(): Promise<SectionLogRow[]> {
   await ensureSectionTables();
-  const { rows } = await pool.query<SectionLogRow>(`SELECT id, sezione, NULL AS parte, nascosta, creata_il FROM grimorio_section_visibility_log
-    UNION ALL SELECT id, sezione, parte, nascosta, creata_il FROM grimorio_section_parts_log ORDER BY creata_il DESC, id`);
+  const { rows } = await pool.query<SectionLogRow>(`SELECT id, sezione, NULL AS parte, nascosta, in_arrivo, creata_il FROM grimorio_section_visibility_log
+    UNION ALL SELECT id, sezione, parte, nascosta, in_arrivo, creata_il FROM grimorio_section_parts_log ORDER BY creata_il DESC, id`);
   return rows;
 }

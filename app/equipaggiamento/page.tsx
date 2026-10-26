@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ParentLink, SectionTiles, type SectionTile } from "@/components/section-tiles";
 import { armors } from "@/lib/armor";
 import { weapons } from "@/lib/equipment";
-import type { PublicSectionKey } from "@/lib/public-sections";
+import { soonHref, type PublicSectionKey } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
 
 export const metadata = { title: "Equipaggiamento — Il Grimorio.App" };
@@ -17,8 +17,13 @@ export default async function EquipmentPage() {
     { href: "/equipaggiamento/strumenti", title: "Strumenti", text: "Da artigiano, giochi e strumenti musicali, 2014 e 2024", Icon: Hammer, section: "strumenti" },
   ];
   // Hidden sections (/admin/sezioni) leave the hub; with all four hidden the hub is unavailable too.
-  const { hidden, admin } = await sectionView();
-  const shown = tiles.flatMap(({ section, ...tile }) => (!hidden.includes(section) ? [tile] : admin ? [{ ...tile, hidden: true }] : []));
+  // «In arrivo»: the tile stays, attenuated, to the «in costruzione» page.
+  const { hidden, soon, admin } = await sectionView();
+  const shown = tiles.flatMap(({ section, ...tile }) => {
+    if (!hidden.includes(section)) return [tile];
+    if (admin) return [{ ...tile, hidden: true, soon: soon.includes(section) }];
+    return soon.includes(section) ? [{ ...tile, soon: true, href: soonHref(section) }] : [];
+  });
   if (!shown.length) notFound();
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
 import { FOOT_LINKS, visibleNavItems } from "@/components/nav-items";
+import { soonHref } from "@/lib/public-sections";
 import { EditionPill } from "@/components/edition/edition-pill";
 import { Lock } from "lucide-react";
 
@@ -14,9 +15,9 @@ const NONE: readonly string[] = [];
  * Computer (≥1024 px): the five places in a fixed column on the left, instead of the bottom bar
  * (components/bottom-nav.tsx, same items). Not in the admin area, like the bar.
  */
-export function SideNav({ hidden = NONE, admin: adminView = false }: { hidden?: readonly string[]; admin?: boolean }) {
+export function SideNav({ hidden = NONE, admin: adminView = false, soon = NONE }: { hidden?: readonly string[]; admin?: boolean; soon?: readonly string[] }) {
   const pathname = usePathname();
-  const items = useMemo(() => visibleNavItems(hidden, adminView), [hidden, adminView]);
+  const items = useMemo(() => visibleNavItems(hidden, adminView, soon), [hidden, adminView, soon]);
   if (pathname.startsWith("/admin")) return null;
   return (
     <nav
@@ -32,11 +33,12 @@ export function SideNav({ hidden = NONE, admin: adminView = false }: { hidden?: 
       <ul className="flex flex-col gap-1 px-3">
         {items.map(({ href, label, Icon, match, section }) => {
           const active = match(pathname);
-          const off = section !== undefined && hidden.includes(section);
+          const coming = section !== undefined && soon.includes(section);
+          const off = section !== undefined && hidden.includes(section) && !coming;
           return (
-            <li key={href}>
+            <li key={href} className={coming ? "opacity-60" : undefined} data-soon={coming ? "" : undefined}>
               <Link
-                href={href}
+                href={coming && !adminView && section ? soonHref(section) : href}
                 prefetch={false}
                 aria-current={active ? "page" : undefined}
                 className={`flex h-[46px] items-center gap-3 rounded-[10px] px-3 text-base font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${active ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-elevated"}`}
@@ -44,6 +46,7 @@ export function SideNav({ hidden = NONE, admin: adminView = false }: { hidden?: 
                 <Icon size={20} strokeWidth={1.75} aria-hidden />
                 <span className="min-w-0 flex-1">{label}</span>
                 {off && <span className="rounded-[6px] bg-[#2B2118] px-1.5 text-[10px] font-bold leading-4 text-amber">Nascosta</span>}
+                {coming && <span className="rounded-[6px] bg-[#E0A21A] px-1.5 text-[10px] font-bold leading-4 text-[#2B2118]">In arrivo</span>}
               </Link>
             </li>
           );

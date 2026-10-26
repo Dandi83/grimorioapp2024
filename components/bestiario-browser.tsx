@@ -14,7 +14,7 @@ import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useUserEdition } from "@/components/edition/edition-provider";
 import { useFollowEdition } from "@/components/edition/use-follow-edition";
-import { useEditions, usePart } from "@/components/sections/parts-context";
+import { SoonEntry, useEditions, usePart } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { collectionOf, computeMonstersMeta, isSrdAnimal, typeCategory, type MonsterListItem } from "@/lib/monsters-types";
 import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
@@ -95,7 +95,9 @@ export function BestiarioBrowser({
   const monstersPart = usePart("bestiario", "mostri"), animalsPart = usePart("bestiario", "animali"), homebrewPart = usePart("bestiario", "homebrew");
   const parts = { mostri: monstersPart, animali: animalsPart, homebrew: homebrewPart };
   const categories = CATEGORIES.filter(c => c === "tutti" || parts[c].shown);
-  const categoryLabel = (c: Category) => `${CATEGORY_LABEL[c]}${c !== "tutti" && parts[c].hidden ? " · Nascosta" : ""}`;
+  const categoryLabel = (c: Category) => `${CATEGORY_LABEL[c]}${c !== "tutti" && parts[c].hidden ? (parts[c].soon ? " · In arrivo" : " · Nascosta") : ""}`;
+  // Collections «In arrivo» for the public: an entry to the «in costruzione» page, never their creatures.
+  const soonCollections = CATEGORIES.filter(c => c !== "tutti" && !parts[c].shown && parts[c].soon);
   // A homebrew «Entrambe» is in both editions.
   const collectionShown = (monster: MonsterListItem) => parts[collectionOf(monster)].shown;
   const [limit, setLimit] = useState(initialLimit);
@@ -201,6 +203,9 @@ export function BestiarioBrowser({
         {draft && <>
           {categories.length > 2 && <div data-part="bestiario:mostri"><div data-part="bestiario:animali"><div data-part="bestiario:homebrew"><FilterGroup title="Categoria" segmented options={categories} selected={[draft.categoria]} label={categoryLabel}
             onToggle={categoria => setDraft({ ...draft, categoria })} /></div></div></div>}
+          {soonCollections.length > 0 && <div className="mb-5 flex flex-wrap gap-2">
+            {soonCollections.map(c => <SoonEntry key={c} id={`bestiario:${c}`} className="inline-flex min-h-11 items-center rounded-full border border-dashed border-[#C9B48A] bg-[#FBF6EA] px-4 text-[15px] font-semibold text-muted">{CATEGORY_LABEL[c]}</SoonEntry>)}
+          </div>}
           <FilterGroup title="Grado sfida" options={GS_BANDS} selected={draft.gs} label={band => BAND_LABEL[band]}
             onToggle={band => setDraft({ ...draft, gs: toggle(draft.gs, band, GS_BANDS) })} />
           <FilterGroup title="Tipo" options={meta.tipi} selected={draft.tipo}

@@ -51,10 +51,10 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await page.getByRole("link", { name: "Sezioni dell’app" }).click();
   await expect(page).toHaveURL(/\/admin\/sezioni$/);
   await expect(page.getByRole("heading", { level: 1, name: "Sezioni dell’app" })).toBeVisible();
-  await expect(page.getByText("Tocca l’occhio per mostrare o nascondere una sezione al pubblico. L’effetto è immediato e non cancella niente.")).toBeVisible();
+  await expect(page.getByText(/^Scegli per ogni sezione e parte: Visibile, In arrivo/)).toBeVisible();
   await expect(page.getByText("10 visibili")).toBeVisible();
   await expect(page.getByText("0 nascoste")).toBeVisible();
-  await expect(page.getByText("Ogni cambio finisce nel Registro modifiche. Le sezioni nascoste restano visibili a te, con l’etichetta «Nascosta».")).toBeVisible();
+  await expect(page.getByText("Ogni cambio finisce nel Registro modifiche. Le sezioni nascoste o in arrivo restano visibili a te, con la loro etichetta.")).toBeVisible();
   const rows = page.getByRole("list", { name: "Sezioni" }).locator(":scope > li");
   await expect(rows).toHaveCount(10);
   await expect(rows.nth(2)).toContainText("Classi");
@@ -62,20 +62,21 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin ${width}`).toBeLessThanOrEqual(width);
-    for (const box of await rows.locator("button[aria-pressed]").evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().toJSON()))) {
-      expect(Math.round(box.width)).toBe(52);
-      expect(Math.round(box.height)).toBe(44);
+    // «Visibile · In arrivo · Nascosta»: three buttons at least 44 px high, all inside the screen.
+    for (const box of await rows.getByRole("radio").evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().toJSON()))) {
+      expect(Math.round(box.height)).toBeGreaterThanOrEqual(44);
+      expect(box.right).toBeLessThanOrEqual(width);
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
 
   const toggle = async (title, hide) => {
     if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
-    const button = page.getByRole("button", { name: `${hide ? "Nascondi" : "Mostra"} ${title}`, exact: true });
-    await expect(button).toHaveAttribute("aria-pressed", hide ? "true" : "false");
+    const button = stateRadio(page, title, hide ? "Nascosta" : "Visibile");
+    await expect(button).toHaveAttribute("aria-checked", "false");
     await button.click();
     await expect(page.getByRole("status")).toHaveText(`${title} ora è ${hide ? "nascosta" : "visibile"}`);
-    await expect(page.getByRole("button", { name: `${hide ? "Mostra" : "Nascondi"} ${title}`, exact: true })).toHaveAttribute("aria-pressed", hide ? "false" : "true");
+    await expect(button).toHaveAttribute("aria-checked", "true");
   };
   const unavailable = async path => {
     const response = await pub.goto(path);
@@ -286,8 +287,9 @@ test("parts of the sections: every part in its page, editions, collections, clas
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin parts ${width}`).toBeLessThanOrEqual(width);
-    for (const box of await page.locator("#parti-classi button").evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().toJSON()))) {
-      expect([Math.round(box.width), Math.round(box.height)]).toEqual([52, 44]);
+    for (const box of await page.locator("#parti-classi").getByRole("radio").evaluateAll(buttons => buttons.map(b => b.getBoundingClientRect().toJSON()))) {
+      expect(Math.round(box.height)).toBeGreaterThanOrEqual(44);
+      expect(box.right).toBeLessThanOrEqual(width);
     }
     expect((await opener("classi").boundingBox()).height).toBeGreaterThanOrEqual(44);
   }
@@ -297,19 +299,18 @@ test("parts of the sections: every part in its page, editions, collections, clas
     if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
     if ((await opener(key).getAttribute("aria-expanded")) !== "true") await opener(key).click();
     const box = page.locator(`#parti-${key}`);
-    const button = box.getByRole("button", { name: `${hide ? "Nascondi" : "Mostra"} ${title}`, exact: true });
-    await expect(button).toHaveAttribute("aria-pressed", hide ? "true" : "false");
+    const button = stateRadio(box, title, hide ? "Nascosta" : "Visibile");
+    await expect(button).toHaveAttribute("aria-checked", "false");
     await button.click();
-    const after = box.getByRole("button", { name: `${hide ? "Mostra" : "Nascondi"} ${title}`, exact: true });
-    await expect(after).toHaveAttribute("aria-pressed", hide ? "false" : "true");
-    await expect(after).toBeEnabled();
+    await expect(button).toHaveAttribute("aria-checked", "true");
+    await expect(button).toBeEnabled();
     await expect(page.getByRole("status")).toHaveText(`${title} ora è ${hide ? "nascosta" : "visibile"}`);
   };
   const toggleSection = async (title, hide) => {
     if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
-    const button = page.getByRole("button", { name: `${hide ? "Nascondi" : "Mostra"} ${title}`, exact: true });
+    const button = stateRadio(page, title, hide ? "Nascosta" : "Visibile");
     await button.click();
-    await expect(page.getByRole("button", { name: `${hide ? "Mostra" : "Nascondi"} ${title}`, exact: true })).toBeEnabled();
+    await expect(button).toBeEnabled();
     await expect(page.getByRole("status")).toHaveText(`${title} ora è ${hide ? "nascosta" : "visibile"}`);
   };
   const unavailable = async path => {
@@ -491,8 +492,8 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
     if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
     if ((await opener(key).getAttribute("aria-expanded")) !== "true") await opener(key).click();
     const box = page.locator(`#parti-${key}`);
-    await box.getByRole("button", { name: `${hide ? "Nascondi" : "Mostra"} Edizione 2014`, exact: true }).click();
-    await expect(box.getByRole("button", { name: `${hide ? "Mostra" : "Nascondi"} Edizione 2014`, exact: true })).toBeEnabled();
+    await stateRadio(box, "Edizione 2014", hide ? "Nascosta" : "Visibile").click();
+    await expect(stateRadio(box, "Edizione 2014", hide ? "Nascosta" : "Visibile")).toBeEnabled();
     await expect(page.getByRole("status")).toHaveText(`Edizione 2014 ora è ${hide ? "nascosta" : "visibile"}`);
   };
   for (const key of sections) await toggle2014(key, true);
