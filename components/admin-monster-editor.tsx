@@ -8,6 +8,7 @@ import { AdminMonsterField } from "./admin-monster-field";
 import { MonsterContentEditor } from "./admin-monster-content";
 import { AdminMonsterPreview } from "./admin-monster-preview";
 import { AdminEditionField, confirmEditionMove } from "./admin-edition-field";
+import { AdminSummaryField, previewSource, summaryFieldState } from "./admin-summary-field";
 import type { AdminEdition } from "@/lib/admin-edition";
 import { AdminHabitatField } from "./admin-habitat-field";
 import { EyeButton } from "./admin-card-eye";
@@ -129,8 +130,8 @@ export function MonsterEditor({
       ...entries,
       habitat: new FormData(form.current).getAll("habitat"),
       id: monster?.id || "unsaved-monster",
-      // The label of the sheet: a new sheet is «Aggiunta da te», the others keep theirs.
-      fonte_scheda: monster ? monster.fonte_scheda : "Aggiunta da te",
+      // The label of the sheet: the «Sintesi originale» switch of a sheet added here, else the label it has.
+      fonte_scheda: previewSource(entries as Record<string, string>, monster ? monster.fonte_scheda : "Aggiunta da te"),
       edizione: entries.edition || edition,
     };
     for (const field of ABILITIES) snapshot[field.name] = Number(entries[field.name]) || 10;
@@ -209,6 +210,7 @@ export function MonsterEditor({
         <fieldset disabled={saving} className="min-w-0 p-4 sm:p-6">
           <div hidden={preview !== null} className="space-y-5">
             <AdminEditionField edition={edition} source={monster?.provenienza?.document} />
+            <AdminSummaryField state={summaryFieldState(monster)} initial={monster?.fonte_scheda === "Sintesi originale"} />
             <details open className="rounded-xl border border-border p-4">
               <summary className="mb-3 min-h-11 cursor-pointer font-serif text-xl text-primary">
                 Identità

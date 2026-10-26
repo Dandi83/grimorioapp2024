@@ -63,6 +63,11 @@ export async function deleteContentWithEdition(kind: ContentKind, id: string): P
     if (exists.rows[0]?.table_name) {
       await client.query("DELETE FROM grimorio_content_editions WHERE content_kind = $1 AND content_id = $2", [kind, id]);
     }
+    // Its «Sintesi originale» switch too (writeOriginalSummary below).
+    const summaries = await client.query("SELECT to_regclass('grimorio_original_summaries') AS table_name");
+    if (summaries.rows[0]?.table_name) {
+      await client.query("DELETE FROM grimorio_original_summaries WHERE content_kind = $1 AND content_id = $2", [kind, id]);
+    }
     await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
@@ -70,4 +75,48 @@ export async function deleteContentWithEdition(kind: ContentKind, id: string): P
   } finally {
     client.release();
   }
+}
+
+/**
+ * «Sintesi originale» switched on in the editor for a NO SRD card added in the reserved area: one row per card
+ * (no row = switched off, the default). The 49 original summaries of the project files are summaries anyway
+ * (lib/original-descriptions.ts). The table is created at the first save that needs it, like the other runtime
+ * tables (lib/db/schema.ts, tests/schema-runtime-tables.cjs).
+ */
+export const ORIGINAL_SUMMARIES_TABLE = `CREATE TABLE IF NOT EXISTS grimorio_original_summaries (
+  content_kind text NOT NULL CHECK (content_kind IN ('monster', 'spell')),
+  content_id text NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (content_kind, content_id)
+)`;
+
+/** The cards with the switch on; reading an older database without the table is safe (none). */
+export async function getOriginalSummaries(kind: ContentKind, id?: string): Promise<Set<string>> {
+  try {
+    const result = await pool.query<{ content_id: string }>(
+      `SELECT content_id FROM grimorio_original_summaries WHERE content_kind = $1${id === undefined ? "" : " AND content_id = $2"}`,
+      id === undefined ? [kind] : [kind, id],
+    );
+    return new Set(result.rows.map(row => row.content_id));
+  } catch (error) {
+    if ((error as { code?: string }).code === "42P01") return new Set();
+    throw error;
+  }
+}
+
+/** Inside the transaction of the save of the card. */
+export async function writeOriginalSummary(client: PoolClient, kind: ContentKind, id: string, on: boolean): Promise<void> {
+  if (on) {
+    await client.query(ORIGINAL_SUMMARIES_TABLE);
+    await client.query(`INSERT INTO grimorio_original_summaries (content_kind, content_id) VALUES ($1, $2)
+      ON CONFLICT (content_kind, content_id) DO UPDATE SET updated_at = now()`, [kind, id]);
+    return;
+  }
+  const exists = await client.query("SELECT to_regclass('grimorio_original_summaries') AS table_name");
+  if (exists.rows[0]?.table_name) await client.query("DELETE FROM grimorio_original_summaries WHERE content_kind = $1 AND content_id = $2", [kind, id]);
+}
+
+/** The switch as the form of the editor sends it: undefined when the form has no switch (nothing changes). */
+export function summaryFromForm(form: FormData): boolean | undefined {
+  return form.has("sintesi-campo") ? form.get("sintesi") === "on" : undefined;
 }

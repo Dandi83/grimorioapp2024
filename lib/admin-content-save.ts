@@ -1,9 +1,9 @@
 import "server-only";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "./db/schema";
-import { saveContentEdition, type ContentKind } from "./content-editions";
+import { saveContentEdition, summaryFromForm, writeOriginalSummary, type ContentKind } from "./content-editions";
 
-/** Content and its selected label either both save or both roll back. */
+/** Content, its selected label and its «Sintesi originale» switch either all save or all roll back. */
 export async function saveAdminContent(
   kind: ContentKind, id: string, form: FormData, sourceEdition: string | undefined,
   write: (database: NodePgDatabase<typeof schema>) => Promise<unknown>,
@@ -17,7 +17,11 @@ export async function saveAdminContent(
   }
   try {
     // Older open forms without the field preserve any existing manual label.
-    await saveContentEdition(kind, id, edition === null ? null : edition || undefined, client => write(drizzle(client, { schema })));
+    const summary = summaryFromForm(form);
+    await saveContentEdition(kind, id, edition === null ? null : edition || undefined, async client => {
+      await write(drizzle(client, { schema }));
+      if (summary !== undefined) await writeOriginalSummary(client, kind, id, summary);
+    });
     return { ok: true };
   } catch {
     return { ok: false, error: "Scheda ed etichetta non salvate. I dati sono conservati nel modulo: riprova." };

@@ -13,14 +13,14 @@ import {
 import { clean, requireAdmin, uniqueId, type DeleteResult } from "@/lib/admin-action-helpers";
 import { addressKey, clientAddress, clearLoginFailures, loginBlocked, recordLoginFailure } from "@/lib/admin-login-limit";
 import { slugify } from "@/lib/spells-types";
-import { deleteContentWithEdition, getContentEditions } from "@/lib/content-editions";
+import { deleteContentWithEdition, getContentEditions, getOriginalSummaries, summaryFromForm } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { getSrdSource } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
 import { editorLogReady, logEditorSave } from "@/lib/editor-log";
 import { changedSpellFields, SPELL_EDITOR_FIELDS } from "@/lib/spell-update";
 import { db } from "@/lib/db";
-import { getSpellById, spellFileRow } from "@/lib/spells";
+import { getSpellById, spellCardSource, spellFileRow } from "@/lib/spells";
 import { getLegacySpellSource, isLegacySpellId } from "@/lib/srd-spells-2014";
 
 interface SpellInput {
@@ -127,7 +127,11 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   // The edition the public list gives the card: its label, else 2014 for the SRD 5.1 cards, else 2024.
   const current = label ?? (isLegacySpellId(id) ? "2014" : "2024");
   const sameEdition = edition === null || (edition === "" ? !label : edition === current);
-  if (!Object.keys(changes).length && sameEdition) return { ok: true as const, error: null, id };
+  // «Sintesi originale»: only for a card added here (an SRD card or one of the project summaries has its own origin).
+  if (fileRow || spellCardSource({ id, descrizione: description }) !== "Aggiunta da te") formData.delete("sintesi-campo");
+  const summary = summaryFromForm(formData);
+  const sameSummary = summary === undefined || summary === (await getOriginalSummaries("spell", id)).has(id);
+  if (!Object.keys(changes).length && sameEdition && sameSummary) return { ok: true as const, error: null, id };
   // The edition the card already has is not stored again as a manual label.
   if (sameEdition) formData.delete("edition");
   const logged = await editorLogReady();

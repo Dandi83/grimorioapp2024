@@ -14,6 +14,8 @@ export interface Spell {
   origine?: "SRD 5.1" | "SRD 5.2.1" | "Sintesi originale" | "Aggiunta da te";
   /** Admin list only: the name as the site shows it (lib/spell-name.ts, after the display repairs). */
   nome_mostrato?: string;
+  /** Admin list only: one of the 49 original summaries of the project files (always «Sintesi originale»). */
+  sintesi_progetto?: true;
   /** Admin list only: a card read from the project files (SRD), not yet a database row. */
   da_file?: true;
   /** The label of the card (lib/spells.ts spellCardSource): none for an SRD card edited in the reserved area. */

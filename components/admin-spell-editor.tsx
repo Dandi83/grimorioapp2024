@@ -9,6 +9,8 @@ import { AdminChoiceField } from "./admin-choice-field";
 import { AdminVisualText } from "./admin-visual-text";
 import { SpellClassification, SpellComponents } from "./admin-spell-fields";
 import { AdminEditionField, confirmEditionMove } from "./admin-edition-field";
+import { CardOriginBox } from "./card-origin-box";
+import { AdminSummaryField, previewSource, summaryFieldState } from "./admin-summary-field";
 import type { AdminEdition } from "@/lib/admin-edition";
 import { SpellSheetBody, SpellSheetHeading } from "./spell-sheet";
 import { useCardDisplay } from "./card-display-context";
@@ -87,6 +89,7 @@ function SpellPreview({ spell }: { spell: Spell }) {
         <SpellSheetHeading spell={spell} context={context} heading="h2" />
       </div>
       <SpellSheetBody spell={spell} context={context} />
+      <CardOriginBox source={spell.fonte_scheda} />
     </article>
   );
 }
@@ -120,8 +123,8 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
       id: spell?.id || "unsaved-spell",
       edizione: values.edition || edition,
       ...parseLivello(values.livello),
-      // The label of the card: a new card is «Aggiunta da te», the others keep theirs.
-      fonte_scheda: spell ? spell.fonte_scheda : "Aggiunta da te",
+      // The label of the card: the «Sintesi originale» switch of a card added here, else the label it has.
+      fonte_scheda: previewSource(values, spell ? spell.fonte_scheda : "Aggiunta da te"),
     } as Spell);
     toTop();
   }
@@ -186,6 +189,7 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
         <fieldset disabled={saving} className="min-w-0 p-4 sm:p-6">
           <div hidden={preview !== null} className="space-y-5">
             <AdminEditionField edition={edition} source={spell?.fonte} />
+            <AdminSummaryField state={summaryFieldState(spell)} initial={spell?.fonte_scheda === "Sintesi originale"} />
             <div>
               <label htmlFor="nome_italiano" className="mb-1.5 block text-sm text-muted-foreground">
                 Nome *

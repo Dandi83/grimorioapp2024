@@ -66,6 +66,13 @@ export const contentEditions = pgTable("grimorio_content_editions", {
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 }, table => [primaryKey({ columns: [table.content_kind, table.content_id] })]);
 
+/** «Sintesi originale» switched on in the editor for a NO SRD card added here (lib/content-editions.ts). */
+export const originalSummaries = pgTable("grimorio_original_summaries", {
+  content_kind: text("content_kind").notNull(),
+  content_id: text("content_id").notNull(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, table => [primaryKey({ columns: [table.content_kind, table.content_id] })]);
+
 /** Optional creature fields saved from the admin editor (lib/monster-extra-storage.ts). */
 export const monsterDetails = pgTable("grimorio_monster_details", {
   monster_id: text("monster_id").primaryKey().references(() => monsters.id, { onDelete: "cascade" }),

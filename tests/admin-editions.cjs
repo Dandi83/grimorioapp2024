@@ -115,7 +115,7 @@ function load(relative, deps = {}) {
   ]) {
     const autoReader=load('lib/spells.ts',{
       'server-only':{},'./db':{db:database({...record,nome_italiano:record.appName||record.sourceName||'Personalizzato'})},
-      './db/schema':{spells:{}},'./content-editions':{getContentEditions:async()=>new Map()},
+      './db/schema':{spells:{}},'./content-editions':{getContentEditions:async()=>new Map(),getOriginalSummaries:async()=>new Set()},
       './spells-types':load('lib/spells-types.ts'),'./srd-descriptions':load('lib/srd-descriptions.ts'),
       './original-descriptions':load('lib/original-descriptions.ts'),'./srd-additions':load('lib/srd-additions.ts'),
       './srd-spells-2014':load('lib/srd-spells-2014.ts'),'./spell-catalog-repairs':load('lib/spell-catalog-repairs.ts',{'./spells-types':load('lib/spells-types.ts')}),

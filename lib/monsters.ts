@@ -4,7 +4,7 @@ import { cache } from "react";
 import { asc, eq } from "drizzle-orm";
 
 import { db } from "./db";
-import { getContentEditions } from "./content-editions";
+import { getContentEditions, getOriginalSummaries } from "./content-editions";
 import { monsters as monstersTable } from "./db/schema";
 import { parseGs, type Monster } from "./monsters-types";
 import { previewMonsters, previewMonsterById, getSrdMonsterSource, isSrdMonsterId } from "./srd-monsters";
@@ -25,8 +25,10 @@ function monsterCardSource(monster: Monster): CardSource | undefined {
   if (source) return source.document === "SRD 5.2.1" ? "SRD 5.2.1" : "SRD 5.1";
   return isSrdMonsterId(monster.id) ? undefined : "Aggiunta da te";
 }
-const withSource = (monster: Monster): Monster => {
-  const fonte_scheda = monsterCardSource(monster);
+/** summaries: the sheets added here with «Sintesi originale» switched on (lib/content-editions.ts). */
+const withSource = (monster: Monster, summaries: ReadonlySet<string> = new Set()): Monster => {
+  const source = monsterCardSource(monster);
+  const fonte_scheda = source === "Aggiunta da te" && summaries.has(monster.id) ? "Sintesi originale" : source;
   return fonte_scheda ? { ...monster, fonte_scheda } : monster;
 };
 
@@ -66,10 +68,10 @@ function toMonster(r: RawRow): Monster {
 }
 
 export async function getAllMonsters(): Promise<Monster[]> {
-  const [rows, editions, extraFields, habitats] = await Promise.all([db
+  const [rows, editions, extraFields, habitats, summaries] = await Promise.all([db
     .select()
     .from(monstersTable)
-    .orderBy(asc(monstersTable.sort_key)), getContentEditions("monster"), getMonsterExtraFields(), getMonsterHabitatOverrides()]);
+    .orderBy(asc(monstersTable.sort_key)), getContentEditions("monster"), getMonsterExtraFields(), getMonsterHabitatOverrides(), getOriginalSummaries("monster")]);
   const inDatabase = new Set(rows.map(row => row.id));
   return previewMonsters(rows.map(toMonster), process.env.VERCEL_ENV).map(record => {
     const monster = { ...record, ...extraFields.get(record.id) };
@@ -85,7 +87,7 @@ export async function getAllMonsters(): Promise<Monster[]> {
         sourceUrl: source.sourceUrl,
         page: source.page,
       } : undefined,
-    });
+    }, summaries);
   });
 }
 
@@ -97,15 +99,15 @@ export const getMonsterById = cache(async (id: string): Promise<Monster | undefi
     const row = await getHomebrew(id);
     return row ? homebrewMonster(row) : undefined;
   }
-  const [rows, editions, extraFields, habitats] = await Promise.all([db
+  const [rows, editions, extraFields, habitats, summaries] = await Promise.all([db
     .select()
     .from(monstersTable)
     .where(eq(monstersTable.id, id))
-    .limit(1), getContentEditions("monster", id), getMonsterExtraFields(id), getMonsterHabitatOverrides()]);
+    .limit(1), getContentEditions("monster", id), getMonsterExtraFields(id), getMonsterHabitatOverrides(), getOriginalSummaries("monster", id)]);
   const monster = rows[0] ? toMonster(rows[0]) : previewMonsterById(id, process.env.VERCEL_ENV);
   if (!monster) return undefined;
   return withSource({
     ...monster, ...extraFields.get(id), edizione: editions.get(id), habitat: resolveHabitats(id, habitats),
     solo_progetto: rows[0] ? undefined : true,
-  });
+  }, summaries);
 });
