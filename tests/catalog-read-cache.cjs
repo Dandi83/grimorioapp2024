@@ -39,7 +39,7 @@ async function render(check) {
     const deps = {
       'server-only':{}, './db':{db}, './db/schema':{monsters:{id:{}}, spells:{id:{}}},
       'drizzle-orm':{eq:() => ({}), asc:() => ({})},
-      './content-editions':{getContentEditions:async () => {editionReads++; return new Map([['manual', revision === 1 ? '2014' : '2024']]);}},
+      './content-editions':{getContentEditions:async () => {editionReads++; return new Map([['manual', revision === 1 ? '2014' : '2024']]);}, getOriginalSummaries:async () => new Set()},
       './monster-extra-storage':{getMonsterExtraFields:async () => {extraReads++; return new Map([['manual', {iniziativa:`+${revision}`}]]);}},
       './monster-habitats':{getMonsterHabitatOverrides:async () => new Map(), resolveHabitats:() => []},
       './homebrew':{getHomebrew:async () => undefined, homebrewMonster:row => row}, './homebrew-types':{isHomebrewId:id => id.startsWith('homebrew-')},

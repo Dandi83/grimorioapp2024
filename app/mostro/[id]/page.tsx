@@ -18,6 +18,7 @@ import { HomebrewByline, HomebrewLabel, HomebrewNote } from "@/components/homebr
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { ReportLink } from "@/components/feedback/report-link";
+import { CardOriginBox } from "@/components/card-origin-box";
 
 /** A creature of a hidden collection (Mostri, Animali) is not found; true when the administrator sees it hidden. */
 async function collectionCard(collection: "mostri" | "animali" | "homebrew"): Promise<boolean> {
@@ -116,6 +117,8 @@ export default async function MonsterDetailPage({
           <Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
         </aside>
       )}
+      {/* NO SRD: where the sheet comes from, in the place of the SRD source (homebrew keeps its licence box). */}
+      <CardOriginBox source={monster.fonte_scheda} className="mx-6 mb-8" />
 
       {homebrew && <HomebrewNote />}
 

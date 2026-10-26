@@ -10,7 +10,7 @@ import { deleteContentWithEdition, getContentEditions } from "@/lib/content-edit
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { db } from "@/lib/db";
 import { getMonsterById } from "@/lib/monsters";
-import { getSrdMonsterSource, previewMonsterById, usesLegacyMonsterRules } from "@/lib/srd-monsters";
+import { getSrdMonsterSource, isSrdMonsterId, previewMonsterById, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import { MONSTER_EXTRA_FIELDS, monsterExtraFieldsFromForm, type MonsterExtraFields } from "@/lib/monster-extra-fields";
 import { getMonsterExtraFields, saveMonsterExtraFields } from "@/lib/monster-extra-storage";
 import { changedEditorFields } from "@/lib/editor-changes";
@@ -97,6 +97,8 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
   }
   const habitats = habitatsFromForm(formData);
+  // «Sintesi originale»: only for a sheet added here, never for an SRD sheet (edited or not).
+  if (isSrdMonsterId(id)) formData.delete("sintesi-campo");
   // The edition the card already has (its label, else the one of its rules) is not stored again as a label.
   const label = (await getContentEditions("monster", id)).get(id);
   if (formData.get("edition") === (label ?? (usesLegacyMonsterRules({ id }) ? "2014" : "2024"))) formData.delete("edition");

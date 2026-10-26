@@ -13,6 +13,7 @@ import { BackButton } from "@/components/back-button";
 import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";
 import { HtmlText } from "@/components/html-text";
+import { CardOriginBox } from "@/components/card-origin-box";
 import { SpellSheetBody, SpellSheetHeading } from "@/components/spell-sheet";
 import { getSpellById } from "@/lib/spells";
 import { spellName } from "@/lib/spell-name";
@@ -148,6 +149,8 @@ export default async function SpellDetailPage({
           </p>
         </aside>
       )}
+      {/* NO SRD: where the card comes from, in the place of the SRD source. */}
+      <CardOriginBox source={spell.fonte_scheda} />
 
       <ReportLink edition={spell.edizione === "2014" ? "2014" : "2024"} />
     </article>

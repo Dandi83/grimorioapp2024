@@ -172,6 +172,8 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(visitor.getByText("Proposta da Master Ombra")).toBeVisible();
   // The licence, small, under the author, with its link.
   await expect(visitor.locator("[data-homebrew-license]")).toHaveText("Licenza CC BY-NC-SA 4.0");
+  // Homebrew keeps its own box: no NO SRD origin box (components/card-origin-box.tsx).
+  await expect(visitor.locator("[data-card-origin]")).toHaveCount(0);
   await expect(visitor.locator("[data-homebrew-license] a")).toHaveAttribute("href", LICENSE);
   if (SHOTS) await visitor.screenshot({ path: `${SHOTS}/scheda-homebrew-390.png` });
   await expect(visitor.getByText("12 m, volo 24 m").first()).toBeVisible();

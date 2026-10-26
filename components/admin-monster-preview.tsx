@@ -1,5 +1,6 @@
 import type { Monster } from "@/lib/monsters-types";
 import { MonsterSheetBody, MonsterSheetTitle } from "./monster-sheet";
+import { CardOriginBox } from "./card-origin-box";
 import { MonsterProvenanceBadge } from "./monster-provenance-badge";
 import { useCardDisplay } from "./card-display-context";
 
@@ -25,6 +26,7 @@ export function AdminMonsterPreview({
         label={edition ? <MonsterProvenanceBadge edition={edition} variant="dark" /> : undefined}
       />
       <MonsterSheetBody monster={monster} legacy={legacy} catalog={display.catalog} hidden={display.hidden} />
+      <CardOriginBox source={monster.fonte_scheda} className="mx-6 mt-6" />
     </article>
   );
 }

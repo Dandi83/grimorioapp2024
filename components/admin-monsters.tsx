@@ -85,7 +85,7 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDraft
             }
             name={m.nome}
             meta={`${gsLabel(m.grado_sfida)} · ${typeCategory(m.tipo) || "—"}${m.taglia ? ` · ${m.taglia}` : ""}`}
-            origine={m.homebrew_edizione ? `Homebrew${m.homebrew_edizione === "entrambe" ? " · 2014 e 2024" : ""}` : m.provenienza?.document ?? "Aggiunta da te"}
+            origine={m.homebrew_edizione ? `Homebrew${m.homebrew_edizione === "entrambe" ? " · 2014 e 2024" : ""}` : m.provenienza?.document ?? (m.fonte_scheda === "Sintesi originale" ? "Sintesi originale" : "Aggiunta da te")}
             href={`/mostro/${m.id}`}
             hidden={visibility.isHidden(m.id)}
             onToggleHidden={() => visibility.toggle(m.id, m.nome)}

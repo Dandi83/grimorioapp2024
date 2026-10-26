@@ -4,7 +4,7 @@ import { cache } from "react";
 import { asc, eq } from "drizzle-orm";
 
 import { db } from "./db";
-import { getContentEditions } from "./content-editions";
+import { getContentEditions, getOriginalSummaries } from "./content-editions";
 import { spells as spellsTable } from "./db/schema";
 import { parseLivello, type Spell } from "./spells-types";
 import { applySrdDescription, getSrdSource } from "./srd-descriptions";
@@ -51,6 +51,11 @@ export function spellCardSource(spell: Pick<Spell, "id" | "descrizione"> & Parti
   return FILE_SPELL_IDS.has(spell.id) || spellFileRow(spell.id) ? undefined : "Aggiunta da te";
 }
 
+/** A card added here with «Sintesi originale» switched on in the editor (lib/content-editions.ts). */
+function withSummary(spell: Spell, summaries: ReadonlySet<string>): Spell {
+  return spell.fonte_scheda === "Aggiunta da te" && summaries.has(spell.id) ? { ...spell, fonte_scheda: "Sintesi originale" } : spell;
+}
+
 function toSpell(r: RawRow, repair = true): Spell {
   // The reserved area edits the stored values, so it never sees the display-only repairs.
   r = applyOriginalDescription(applySrdDescription(repair ? repairCatalogSpell(r) : r));
@@ -85,16 +90,19 @@ export function spellFileRow(id: string, environment = process.env.VERCEL_ENV): 
  * display-only repairs. Cards still only in the files are marked: their first real save creates the row.
  */
 export async function getAdminSpells(): Promise<Spell[]> {
-  const [rows, editions] = await Promise.all([db.select().from(spellsTable).orderBy(asc(spellsTable.sort_key)), getContentEditions("spell")]);
+  const [rows, editions, summaries] = await Promise.all([db.select().from(spellsTable).orderBy(asc(spellsTable.sort_key)), getContentEditions("spell"), getOriginalSummaries("spell")]);
   const stored = new Set(rows.map(row => row.id));
   const environment = process.env.VERCEL_ENV;
   return withLegacySpells(previewSpellRows(rows.filter(row => !(row.id in MERGED_SPELL_IDS)), environment), environment)
     .map(row => {
       const spell = toSpell(row, false);
       const fonte = getLegacySpellSource(spell) ? "SRD 5.1" as const : getSrdSource(spell.id, spell.descrizione) ? "SRD 5.2.1" as const : undefined;
-      const origine = fonte ?? (getOriginalSource(spell.id, spell.descrizione) || ORIGINAL_IDS.has(spell.id) ? "Sintesi originale" as const : "Aggiunta da te" as const);
+      const project = !fonte && (!!getOriginalSource(spell.id, spell.descrizione) || ORIGINAL_IDS.has(spell.id));
+      const origine = fonte ?? (project || summaries.has(spell.id) ? "Sintesi originale" as const : "Aggiunta da te" as const);
       return {
-        ...spell, edizione: editions.get(row.id) ?? spell.edizione, ...(fonte ? { fonte } : {}), origine,
+        ...withSummary(spell, summaries), edizione: editions.get(row.id) ?? spell.edizione, ...(fonte ? { fonte } : {}), origine,
+        // The editor: one of the 49 summaries of the project (always a summary), or the switch of a card added here.
+        ...(project ? { sintesi_progetto: true as const } : {}),
         nome_mostrato: spellName(repairCatalogSpell(row).nome_italiano, editions.get(row.id) ?? spell.edizione),
         ...(stored.has(row.id) ? {} : { da_file: true as const }),
       };
@@ -119,27 +127,27 @@ export async function dropSpellRowLikeFile(database: Pick<typeof db, "select" | 
 }
 
 export async function getAllSpells(): Promise<Spell[]> {
-  const [rows, editions] = await Promise.all([db
+  const [rows, editions, summaries] = await Promise.all([db
     .select()
     .from(spellsTable)
-    .orderBy(asc(spellsTable.sort_key)), getContentEditions("spell")]);
+    .orderBy(asc(spellsTable.sort_key)), getContentEditions("spell"), getOriginalSummaries("spell")]);
   const environment = process.env.VERCEL_ENV;
   return withLegacySpells(previewSpellRows(rows, environment), environment)
     .map(row => {
-      const spell = toSpell(row);
+      const spell = withSummary(toSpell(row), summaries);
       return { ...spell, edizione: editions.get(row.id) ?? spell.edizione };
     });
 }
 
 // Deduplicate metadata/page reads without retaining stale administrative edits.
 export const getSpellById = cache(async (id: string): Promise<Spell | undefined> => {
-  const [rows, editions] = await Promise.all([db
+  const [rows, editions, summaries] = await Promise.all([db
     .select()
     .from(spellsTable)
     .where(eq(spellsTable.id, id))
-    .limit(1), getContentEditions("spell", id)]);
+    .limit(1), getContentEditions("spell", id), getOriginalSummaries("spell", id)]);
   const row = rows[0] ?? previewSpellById(id, process.env.VERCEL_ENV) ?? legacySpellById(id, process.env.VERCEL_ENV);
   if (!row) return undefined;
-  const spell = toSpell(row);
+  const spell = withSummary(toSpell(row), summaries);
   return { ...spell, edizione: editions.get(id) ?? spell.edizione };
 });
