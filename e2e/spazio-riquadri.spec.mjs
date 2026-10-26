@@ -76,23 +76,28 @@ test("the same space before the box under the text of every card", async ({ brow
   const paths = await catalogPaths(request);
   expect(paths.filter(([path]) => path.startsWith("/spell/")).length).toBeGreaterThan(600);
   const results = [];
-  for (const width of WIDTHS) {
-    for (const edition of ["2014", "2024"]) {
-      const context = await browser.newContext({ viewport: { width, height: 900 } });
-      await context.addInitScript(value => { try { localStorage.setItem("grimorio.edizione", value); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } }, edition);
-      const queue = paths.filter(([, e]) => e === edition);
-      await Promise.all(Array.from({ length: PARALLEL }, async () => {
-        const page = await context.newPage();
-        for (let item = queue.shift(); item; item = queue.shift()) {
-          await page.goto(item[0], { waitUntil: "load" });
-          await page.evaluate(() => document.fonts.ready);
+  // One load per card: measured on the phone, then on the computer after a resize (the layout is CSS only).
+  for (const edition of ["2014", "2024"]) {
+    const context = await browser.newContext({ viewport: { width: WIDTHS[0], height: 900 } });
+    await context.addInitScript(value => { try { localStorage.setItem("grimorio.edizione", value); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } }, edition);
+    // Pictures, fonts of other pages and analytics are not needed to measure a page.
+    await context.route(/\.(?:webp|png|jpg|avif|woff2?)(?:\?|$)/, route => route.request().url().includes("/damage-icons/") || route.request().resourceType() === "font" ? route.continue() : route.abort());
+    const queue = paths.filter(([, e]) => e === edition);
+    await Promise.all(Array.from({ length: PARALLEL }, async () => {
+      const page = await context.newPage();
+      for (let item = queue.shift(); item; item = queue.shift()) {
+        await page.goto(item[0], { waitUntil: "domcontentloaded" });
+        await page.evaluate(() => document.fonts.ready);
+        for (const width of WIDTHS) {
+          await page.setViewportSize({ width, height: 900 });
           const result = await page.evaluate(measure);
           if (result) results.push({ path: item[0], edition, width, ...result });
         }
-        await page.close();
-      }));
-      await context.close();
-    }
+        await page.setViewportSize({ width: WIDTHS[0], height: 900 });
+      }
+      await page.close();
+    }));
+    await context.close();
   }
   if (REPORT) writeFileSync(REPORT, JSON.stringify(results, null, 1));
   const wrong = results.filter(result => Math.abs(result.gap - STANDARD) > TOLERANCE);
