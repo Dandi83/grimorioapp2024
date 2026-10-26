@@ -1,6 +1,18 @@
 import { test, expect, devices } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
+// «Sezione momentaneamente in costruzione»: one of these under the title (components/sections/section-unavailable.tsx).
+const SENTENCES = [
+  "I nani della forgia ci stanno ancora lavorando. Tira iniziativa più tardi!",
+  "Il mago ha lanciato Costruzione, ma l'incantesimo richiede concentrazione… e qualcuno l'ha disturbato.",
+  "Pagina in fase di riposo lungo. Torna tra 8 ore (o forse prima).",
+  "Il master sta ancora preparando questa sessione. Prendete pure gli snack.",
+  "Un mimic ha preso il posto di questa pagina. La stiamo scacciando.",
+  "Hai tirato 1 su Indagare: qui non c'è ancora niente… per ora!",
+  "Gli gnomi artefici giurano che sarà pronta presto. Gli gnomi giurano molte cose.",
+];
+const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 // Tests that hide and show sections and parts (/admin/sezioni). They run last (this file sorts after
 // offline.spec.mjs): the test server keeps in memory only which of the pages it rewrote on disk are out
 // of date, so a later server could find pages built while something was hidden (on Vercel the cache
@@ -68,8 +80,9 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   const unavailable = async path => {
     const response = await pub.goto(path);
     expect(response.status(), path).toBe(404);
-    await expect(pub.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente non disponibile");
-    await expect(pub.getByText("Ci stiamo lavorando. Torna a trovarci tra un po': il link che hai aperto funzionerà di nuovo.")).toBeVisible();
+    await expect(pub.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente in costruzione");
+    await expect(pub.locator("[data-under-construction]")).toHaveText(new RegExp(`^(?:${SENTENCES.map(escape).join("|")})$`));
+    await expect(pub.locator("svg.lucide-hammer")).toBeVisible();
     await expect(pub.getByRole("link", { name: "Torna alla Home" })).toHaveAttribute("href", "/");
     expect((await pub.locator('meta[name="robots"]').evaluateAll(metas => metas.map(m => m.content))).join(" "), path).toContain("noindex");
   };
@@ -127,6 +140,20 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   const publicTiles = pub.getByRole("list", { name: "Regole e oggetti" }).getByRole("link");
   expect(await publicTiles.evaluateAll(links => links.map(a => a.getAttribute("href")))).toEqual(["/avanzamento", "/oggetti-magici"]);
   await unavailable("/equipaggiamento");
+  // The 404 page is drawn in the browser: its first render has the first sentence (the same on the server, no
+  // hydration mismatch), then one picked at random at every load, without errors in the console.
+  const consoleErrors = [];
+  const listen = message => { if (message.type() === "error" && !/status of 404/.test(message.text())) consoleErrors.push(message.text()); };
+  pub.on("console", listen);
+  const seen = new Set();
+  for (let load = 0; load < 12 && seen.size < 2; load++) {
+    await pub.reload();
+    seen.add(await pub.locator("[data-under-construction]").innerText());
+  }
+  expect(seen.size, [...seen].join(" | ")).toBeGreaterThan(1);
+  pub.off("console", listen);
+  // No hydration or other error in the console (page errors are checked at the end of the test).
+  expect(consoleErrors).toEqual([]);
   // The bottom bar without Incantesimi and Bestiario.
   const nav = pub.getByRole("navigation", { name: "Navigazione principale" });
   expect(await nav.getByRole("link").allTextContents()).toEqual(["Home", "Compendio", "Preferiti"]);
@@ -288,7 +315,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
   const unavailable = async path => {
     const response = await pub.goto(path);
     expect(response.status(), path).toBe(404);
-    await expect(pub.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente non disponibile");
+    await expect(pub.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente in costruzione");
     expect((await pub.locator('meta[name="robots"]').evaluateAll(metas => metas.map(m => m.content))).join(" "), path).toContain("noindex");
   };
   // Lists: the edition pill; the sheets of Equipaggiamento keep their 2024 · 2014 buttons.

@@ -8,7 +8,7 @@ import { sectionView } from "@/lib/section-view";
 
 /**
  * Layout of the pages of one public section (list and cards). Hidden: the public gets the
- * «Sezione momentaneamente non disponibile» page (404, app/not-found.tsx); the administrator
+ * «Sezione momentaneamente in costruzione» page (404, app/not-found.tsx); the administrator
  * sees the pages with a dark band on top and the «Mostra» link.
  */
 export async function SectionGate({ section, children }: { section: PublicSectionKey; children: ReactNode }) {
