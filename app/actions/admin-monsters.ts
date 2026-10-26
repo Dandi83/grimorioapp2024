@@ -11,6 +11,7 @@ import { saveAdminContent } from "@/lib/admin-content-save";
 import { db } from "@/lib/db";
 import { getMonsterById } from "@/lib/monsters";
 import { getSrdMonsterSource, isSrdMonsterId, previewMonsterById, usesLegacyMonsterRules } from "@/lib/srd-monsters";
+import { monsterSrdDifferences } from "@/lib/srd-modified";
 import { MONSTER_EXTRA_FIELDS, monsterExtraFieldsFromForm, type MonsterExtraFields } from "@/lib/monster-extra-fields";
 import { getMonsterExtraFields, saveMonsterExtraFields } from "@/lib/monster-extra-storage";
 import { changedEditorFields } from "@/lib/editor-changes";
@@ -119,6 +120,13 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
   const extraFields = changedEditorFields(MONSTER_EXTRA_FIELDS, ["azioni_bonus"], storedExtras, monsterExtraFieldsFromForm(formData)) as MonsterExtraFields;
   const current = { ...stored, ...storedExtras, ...changes, ...extraFields };
   const sourceEdition = getSrdMonsterSource({ ...current, id, gs_num: parseGs(current.grado_sfida) })?.edition;
+  // A change that would take the SRD box away is saved only after «Salva comunque» (the editor sends «perdi-srd»):
+  // the same comparison as the box and as «Schede SRD modificate» (lib/srd-modified.ts).
+  const matchesSrd = (sheet: typeof current) => {
+    const card = { ...sheet, id, gs_num: parseGs(sheet.grado_sfida) };
+    return monsterSrdDifferences(card)?.length === 0;
+  };
+  if (!formData.has("perdi-srd") && matchesSrd({ ...stored, ...storedExtras }) && !matchesSrd(current)) return { ok: false as const, error: "", srdWarning: true as const };
   const logged = await editorLogReady();
   const result = await saveAdminContent("monster", id, formData, sourceEdition, async database => {
     // Every changed field of the sheet goes to the Registro modifiche, where it can be undone.

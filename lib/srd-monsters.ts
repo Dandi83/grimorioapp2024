@@ -34,8 +34,16 @@ export function isSrdMonsterId(id: string): boolean {
   return recordsById.has(id);
 }
 
-/** Optional content fields must also match: an edited record never receives exact-source attribution. */
-export function getSrdMonsterSource(monster: Monster) {
+/** The edition of the SRD record with this id (2014: SRD 5.1; 2024: SRD 5.2.1 and its animals), else undefined. */
+export function srdMonsterRecordEdition(id: string): "2014" | "2024" | undefined {
+  return recordsById.has(id) ? (legacyIds.has(id) ? "2014" : "2024") : undefined;
+}
+
+/**
+ * The fields of a creature that differ from its SRD record (undefined: no record with that id), with the exact SRD
+ * value. Optional content fields count too. The rule of the source label (getSrdMonsterSource): never apart.
+ */
+export function srdMonsterDifferences(monster: { id: string }): { field: string; srd: string | number }[] | undefined {
   const record = recordsById.get(monster.id);
   if (!record) return undefined;
   const actual = monster as unknown as Record<string, unknown>;
@@ -45,7 +53,15 @@ export function getSrdMonsterSource(monster: Monster) {
   // 2014 sheets saved before the printed subtitle was stored keep their attribution.
   const matches = (key: string) => (actual[key] ?? "") === (expected[key] ?? "")
     || (isLegacy && key === "sottotitolo_fonte" && !actual[key]);
-  return [...fields].every(matches)
+  return [...fields].filter(key => !matches(key)).map(key => ({ field: key, srd: (expected[key] ?? "") as string | number }));
+}
+
+/** Optional content fields must also match: an edited record never receives exact-source attribution. */
+export function getSrdMonsterSource(monster: Monster) {
+  const record = recordsById.get(monster.id);
+  if (!record) return undefined;
+  const isLegacy = legacyIds.has(monster.id);
+  return srdMonsterDifferences(monster)?.length === 0
     ? {
       document: isLegacy ? legacy.document : "SRD 5.2.1",
       edition: isLegacy ? legacy.edition : "2024",

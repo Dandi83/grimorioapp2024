@@ -3,6 +3,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createSpellAction, updateSpellAction } from "@/app/actions/admin";
+import { SrdLossWarning, isSrdWarning } from "@/components/admin-srd-warning";
 import { parseLivello, type Spell } from "@/lib/spells-types";
 import { spellName } from "@/lib/spell-name";
 import { AdminChoiceField } from "./admin-choice-field";
@@ -112,6 +113,8 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
   const [preview, setPreview] = useState<Spell | null>(null);
   const [saving, setSaving] = useState(false),
     [error, setError] = useState("");
+  // A save that would take the SRD box away waits for «Salva comunque» (components/admin-srd-warning.tsx).
+  const [srdLoss, setSrdLoss] = useState<FormData | null>(null);
   function showPreview() {
     if (!form.current?.reportValidity()) return;
     const values = Object.fromEntries(new FormData(form.current).entries()) as Record<
@@ -136,6 +139,7 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
         ? await updateSpellAction(null, data)
         : await createSpellAction(null, data);
       if (result?.ok) onClose(true);
+      else if (isSrdWarning(result)) setSrdLoss(data);
       else setError(result?.error || "Salvataggio non riuscito. I campi sono conservati: riprova.");
     } catch {
       setError("Salvataggio non riuscito. I campi sono conservati: riprova.");
@@ -255,6 +259,12 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
           )}
         </fieldset>
         <footer className="sticky bottom-0 z-10 border-t border-border bg-card px-4 py-4 sm:px-6">
+          {srdLoss && (
+            <SrdLossWarning
+              onConfirm={() => { const data = srdLoss; data.set("perdi-srd", "1"); setSrdLoss(null); void save(data); }}
+              onCancel={() => setSrdLoss(null)}
+            />
+          )}
           {error && (
             <p role="alert" className="mb-3 text-sm text-destructive">
               {error}

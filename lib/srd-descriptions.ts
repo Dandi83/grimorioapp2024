@@ -29,11 +29,20 @@ export function applySrdDescription<T extends { id: string; descrizione: string 
   };
 }
 
+/**
+ * The description of a 2024 spell when it differs from its SRD 5.2.1 record (undefined: no record with that id;
+ * empty: the same text). The rule of the source label (getSrdSource), so the two can never disagree.
+ */
+export function srdDescriptionDifferences(id: string, description: string): { field: "descrizione"; srd: string }[] | undefined {
+  const source = descriptions.get(id);
+  if (!source) return undefined;
+  // An approved display repair of the same text keeps the source label.
+  return source.descrizione === description || repairSpellText(id, source.descrizione) === description ? [] : [{ field: "descrizione", srd: source.descrizione }];
+}
+
 /** Only an exact source transcription receives the SRD source label. */
 export function getSrdSource(id: string, description: string) {
-  const source = descriptions.get(id);
-  // An approved display repair of the same text keeps the source label.
-  return source && (source.descrizione === description || repairSpellText(id, source.descrizione) === description) ? source : undefined;
+  return srdDescriptionDifferences(id, description)?.length === 0 ? descriptions.get(id) : undefined;
 }
 
 export const srdAttribution = data.attribution;

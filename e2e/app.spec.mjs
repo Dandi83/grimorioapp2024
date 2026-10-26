@@ -1317,6 +1317,8 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   editor = await open();
   await editor.getByLabel("Gittata", { exact: true }).selectOption("18 metri");
   await editor.getByRole("button", { name: "Salva modifiche" }).click();
+  // The SRD 5.1 card would lose its source box: the editor asks first (components/admin-srd-warning.tsx).
+  await editor.locator("[data-srd-warning]").getByRole("button", { name: "Salva comunque" }).click();
   await expect(editor).toHaveCount(0);
   await page.goto("/admin/registro?sezione=incantesimi");
   await expect(log.getByRole("listitem")).toHaveCount(1);

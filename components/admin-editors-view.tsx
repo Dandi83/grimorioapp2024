@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/admin-auth";
 import { getAdminSpells } from "@/lib/spells";
 import { getAllMonsters } from "@/lib/monsters";
+import { getSrdModifiedCards } from "@/lib/srd-modified-server";
 import { AdminLogin } from "@/components/admin-login";
 import { AdminDashboard } from "@/components/admin-dashboard";
 import { spellEdition } from "@/lib/admin-edition";
@@ -29,7 +30,7 @@ export async function AdminEditorsView({ tab, searchParams }: { tab: "spells" | 
     const ritorno = safeReturnPath(params.ritorno);
     redirect(`/admin/${tab === "spells" ? "incantesimi" : "mostri"}/${encodeURIComponent(params.modifica)}${ritorno ? `?${new URLSearchParams({ ritorno })}` : ""}`);
   }
-  const [spells, monsters, edition, hidden, homebrew] = await Promise.all([getAdminSpells(), getAllMonsters(), adminEdition(), hiddenCardPaths().catch(() => []), publishedHomebrew().catch(() => [])]);
+  const [spells, monsters, edition, hidden, homebrew, modified] = await Promise.all([getAdminSpells(), getAllMonsters(), adminEdition(), hiddenCardPaths().catch(() => []), publishedHomebrew().catch(() => []), getSrdModifiedCards()]);
   // After the lists (one more read, cached): the spells the previews link and the pages hidden from the public.
   const catalog = await getSpellReferenceCatalog();
   const out = await publicLinksOut();
@@ -40,6 +41,8 @@ export async function AdminEditorsView({ tab, searchParams }: { tab: "spells" | 
   // Only the chosen edition (same rule as the public lists): no card changes, it is only a filter.
   // The previews of the editors link as the public cards (lib/card-display.ts).
   return <CardDisplayProvider value={{ catalog, hidden: out }}><AdminDashboard edition={edition} hiddenSpells={hiddenOf("/spell/")} hiddenMonsters={hiddenOf("/mostro/")} initialTab={tab}
+    modifiedSpells={modified.filter(card => card.kind === "incantesimo").map(card => card.id)}
+    modifiedMonsters={modified.filter(card => card.kind === "mostro").map(card => card.id)}
     spells={spells.filter(spell => spellEdition(spell) === edition)}
     monsters={[...monsters.filter(monster => (usesLegacyMonsterRules(monster) ? "2014" : "2024") === edition), ...homebrewHere.map(homebrewMonster)]}
     homebrewDrafts={Object.fromEntries(homebrewHere.map(row => [row.id, row.scheda]))} /></CardDisplayProvider>;
