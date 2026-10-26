@@ -1671,7 +1671,7 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
     await page.getByPlaceholder(card.search).fill("");
     await page.getByRole("button", { name: "Nascoste · 1" }).click();
     await expect(page.locator("main ul li[data-card-row]")).toHaveCount(1);
-    await page.getByRole("button", { name: "Tutte" }).click();
+    await page.getByRole("group", { name: "Visibilità sul sito" }).getByRole("button", { name: "Tutte" }).click();
   }
   // The same eye at the top of the editor.
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("aboleth");
