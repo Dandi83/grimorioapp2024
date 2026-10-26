@@ -13,6 +13,8 @@ import type { Monster } from "@/lib/monsters-types";
 import { AdminMonsters } from "@/components/admin-monsters";
 import { AdminCardRow } from "./admin-card-row";
 import { VisibilityFilterBar, useCardVisibility, useVisibilityFilter, type VisibilityFilter } from "./admin-card-eye";
+import { ProvenanceGroup, useProvenanceFilter } from "./admin-edit/provenance-filter";
+import { matchesProvenance, provenanceIds } from "@/lib/provenance";
 import { spellName } from "@/lib/spell-name";
 import { SpellEditor } from "./admin-spell-editor";
 import { AdminDeleteButton } from "./admin-delete-button";
@@ -70,7 +72,10 @@ export function AdminDashboard({
         s.scuola.toLowerCase().includes(q),
     );
   }, [query, spells]);
-  const filtered = useVisibilityFilter(searched, shown, visibility.isHidden);
+  const visibleRows = useVisibilityFilter(searched, shown, visibility.isHidden);
+  // «Provenienza»: the same rule as the «NO SRD» pill, from the labels of the cards (lib/provenance.ts).
+  const origin = useProvenanceFilter(useMemo(() => provenanceIds(spells), [spells]));
+  const filtered = useMemo(() => visibleRows.filter(x => matchesProvenance(x, origin.value, origin.ids!)), [visibleRows, origin.value, origin.ids]);
 
   return (
     <main className="mx-auto max-w-3xl px-5 pb-24 pt-8 lg:max-w-[1200px]">
@@ -150,6 +155,10 @@ export function AdminDashboard({
       </div>
 
       <VisibilityFilterBar value={shown} onChange={setShown} hiddenCount={hiddenCount} />
+      <div className="-mt-3 mb-4">
+        <ProvenanceGroup value={origin.value} onChange={origin.setValue} />
+        <p aria-live="polite" className="mt-2 text-sm text-muted-foreground" data-provenance-count="">{filtered.length} {filtered.length === 1 ? "risultato" : "risultati"}</p>
+      </div>
       <ul className="flex flex-col gap-2">
         {filtered.map((s) => {
           const nome = s.nome_mostrato ?? spellName(s.nome_italiano, s.edizione);

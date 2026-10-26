@@ -15,6 +15,8 @@ import { Plus, Search } from "lucide-react";
 import { MonsterEditor } from "./admin-monster-editor";
 import { AdminCardRow } from "./admin-card-row";
 import { VisibilityFilterBar, useCardVisibility, useVisibilityFilter, type VisibilityFilter } from "./admin-card-eye";
+import { ProvenanceGroup, useProvenanceFilter } from "./admin-edit/provenance-filter";
+import { matchesProvenance, provenanceIds } from "@/lib/provenance";
 import type { AdminEdition } from "@/lib/admin-edition";
 
 type Editing =
@@ -41,7 +43,10 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDraft
         m.nome.toLowerCase().includes(q) || m.tipo.toLowerCase().includes(q),
     );
   }, [query, monsters]);
-  const filtered = useVisibilityFilter(searched, shown, visibility.isHidden);
+  const visibleRows = useVisibilityFilter(searched, shown, visibility.isHidden);
+  // «Provenienza»: the same rule as the «NO SRD» pill, from the labels of the cards (lib/provenance.ts).
+  const origin = useProvenanceFilter(useMemo(() => provenanceIds(monsters), [monsters]));
+  const filtered = useMemo(() => visibleRows.filter(x => matchesProvenance({ id: x.id, homebrew: !!x.homebrew_edizione }, origin.value, origin.ids!)), [visibleRows, origin.value, origin.ids]);
 
   return (
     <>
@@ -70,6 +75,10 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDraft
       </div>
 
       <VisibilityFilterBar value={shown} onChange={setShown} hiddenCount={hiddenCount} />
+      <div className="-mt-3 mb-4">
+        <ProvenanceGroup value={origin.value} onChange={origin.setValue} />
+        <p aria-live="polite" className="mt-2 text-sm text-muted-foreground" data-provenance-count="">{filtered.length} {filtered.length === 1 ? "risultato" : "risultati"}</p>
+      </div>
       <ul className="flex flex-col gap-2">
         {filtered.map((m) => (
           <AdminCardRow

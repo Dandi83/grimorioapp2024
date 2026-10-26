@@ -8,7 +8,9 @@ import { useFavorites } from "@/components/favorites-provider";
 import { spellName } from "@/lib/spell-name";
 import { saveListState } from "@/components/navigation-memory";
 import { HiddenTag } from "@/components/sections/hidden-tag";
-import { NoSrdMark, useNoSrdIds } from "@/components/admin-edit/no-srd-mark";
+import { NoSrdMark, useNoSrd } from "@/components/admin-edit/no-srd-mark";
+import { ProvenanceGroup, useProvenanceFilter } from "@/components/admin-edit/provenance-filter";
+import { PROVENANCE_LABEL, matchesProvenance } from "@/lib/provenance";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useUserEdition } from "@/components/edition/edition-provider";
@@ -83,7 +85,10 @@ export function GrimorioBrowser({
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
   // The administrator only: «*» after the NO SRD cards, asked after the session check (never in the page).
-  const noSrd = useNoSrdIds("incantesimi");
+  const noSrdView = useNoSrd("incantesimi");
+  const noSrd = noSrdView?.ids ?? null;
+  // The administrator only: «Provenienza» in the filters, from the same data as the «*».
+  const origin = useProvenanceFilter(noSrdView?.provenance ?? null);
 
   const sorted = useMemo(() => {
     const rank = (n: number) => (n < 0 ? Number.POSITIVE_INFINITY : n);
@@ -95,8 +100,9 @@ export function GrimorioBrowser({
     const needle = deferredQ.trim().toLowerCase();
     return needle ? sorted.filter(s => s.nome_italiano.toLowerCase().includes(needle)) : sorted;
   }, [sorted, deferredQ]);
-  const results = useMemo(() => searched.filter(s => matchesSpellFilters(s, filters)), [searched, filters]);
-  const draftCount = useMemo(() => draft ? searched.filter(s => matchesSpellFilters(s, draft)).length : 0, [searched, draft]);
+  const { ids: originIds, value: originValue, draft: originDraft } = origin;
+  const results = useMemo(() => searched.filter(s => matchesSpellFilters(s, filters) && (!originIds || matchesProvenance(s, originValue, originIds))), [searched, filters, originIds, originValue]);
+  const draftCount = useMemo(() => draft ? searched.filter(s => matchesSpellFilters(s, draft) && (!originIds || matchesProvenance(s, originDraft, originIds))).length : 0, [searched, draft, originIds, originDraft]);
   const perLevel = useMemo(() => {
     const counts = new Map<number, number>();
     for (const spell of results) counts.set(spell.livello_num, (counts.get(spell.livello_num) ?? 0) + 1);
@@ -104,7 +110,7 @@ export function GrimorioBrowser({
   }, [results]);
 
   // A new edition, search or filter starts again from the first page.
-  const key = JSON.stringify([edizione, q, filters]);
+  const key = JSON.stringify([edizione, q, filters, originValue]);
   const lastKey = useRef(key);
   useEffect(() => {
     if (lastKey.current === key) return;
@@ -162,21 +168,22 @@ export function GrimorioBrowser({
     ...filters.tempo.map(t => ({ key: `tempo:${t}`, label: CASTING_TIME_LABEL[t], remove: () => setFilters(f => ({ ...f, tempo: f.tempo.filter(x => x !== t) })) })),
     ...(filters.concentrazione ? [{ key: "concentrazione", label: "Concentrazione", remove: () => setFilters(f => ({ ...f, concentrazione: false })) }] : []),
     ...(filters.rituale ? [{ key: "rituale", label: "Rituale", remove: () => setFilters(f => ({ ...f, rituale: false })) }] : []),
+    ...(originValue !== "tutte" ? [{ key: "provenienza", label: PROVENANCE_LABEL[originValue], remove: () => origin.setValue("tutte") }] : []),
   ];
 
   return (
     <div ref={root}>
       <div className="px-6 pb-2 pt-8">
         <CatalogTitle section="incantesimi" title="Incantesimi" edition={edizione} onEdition={hasLegacy ? chooseEdition : undefined} />
-        <SearchAndFilters query={q} onQuery={setQ} label="Cerca un incantesimo" active={active.length} onOpen={() => setDraft(filters)} />
+        <SearchAndFilters query={q} onQuery={setQ} label="Cerca un incantesimo" active={active.length} onOpen={() => { setDraft(filters); origin.setDraft(originValue); }} />
         <ActiveFilters filters={active} />
       </div>
 
       <FilterSheet
         open={draft !== null}
         onClose={() => setDraft(null)}
-        onReset={() => setDraft(NO_SPELL_FILTERS)}
-        onApply={() => { if (draft) setFilters(draft); setDraft(null); }}
+        onReset={() => { setDraft(NO_SPELL_FILTERS); origin.setDraft("tutte"); }}
+        onApply={() => { if (draft) setFilters(draft); origin.setValue(originDraft); setDraft(null); }}
         count={draftCount}
       >
         {draft && <>
@@ -191,6 +198,7 @@ export function GrimorioBrowser({
           <FilterGroup title="Caratteristiche" options={["Concentrazione", "Rituale"] as const}
             selected={[...(draft.concentrazione ? ["Concentrazione" as const] : []), ...(draft.rituale ? ["Rituale" as const] : [])]}
             onToggle={value => setDraft(value === "Concentrazione" ? { ...draft, concentrazione: !draft.concentrazione } : { ...draft, rituale: !draft.rituale })} />
+          {originIds && <ProvenanceGroup value={originDraft} onChange={origin.setDraft} />}
         </>}
       </FilterSheet>
 

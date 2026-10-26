@@ -7,7 +7,9 @@ import { FlaskConical, Skull, Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
 import { HiddenTag } from "@/components/sections/hidden-tag";
-import { NoSrdMark, useNoSrdIds } from "@/components/admin-edit/no-srd-mark";
+import { NoSrdMark, useNoSrd } from "@/components/admin-edit/no-srd-mark";
+import { ProvenanceGroup, useProvenanceFilter } from "@/components/admin-edit/provenance-filter";
+import { PROVENANCE_LABEL, matchesProvenance } from "@/lib/provenance";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useUserEdition } from "@/components/edition/edition-provider";
@@ -100,7 +102,11 @@ export function BestiarioBrowser({
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
   // The administrator only: «*» after the NO SRD cards, asked after the session check (never in the page).
-  const noSrd = useNoSrdIds("mostri");
+  const noSrdView = useNoSrd("mostri");
+  const noSrd = noSrdView?.ids ?? null;
+  // The administrator only: «Provenienza» in the filters, from the same data as the «*».
+  const origin = useProvenanceFilter(noSrdView?.provenance ?? null);
+  const { ids: originIds, value: originValue, draft: originDraft } = origin;
 
   const editionMonsters = useMemo(() => monsters.filter(monster => (monster.edizione === edizione || monster.entrambe)
     && collectionShown(monster)), [monsters, edizione, animalsPart.shown, monstersPart.shown, homebrewPart.shown]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -110,13 +116,13 @@ export function BestiarioBrowser({
     return needle ? editionMonsters.filter(m => m.nome.toLowerCase().includes(needle)) : editionMonsters;
   }, [editionMonsters, deferredQ]);
 
-  const results = useMemo(() => searched.filter(m => matchesFilters(m, filters))
+  const results = useMemo(() => searched.filter(m => matchesFilters(m, filters) && (!originIds || matchesProvenance(m, originValue, originIds)))
     // By challenge rating, then by name.
-    .sort((a, b) => a.gs_num - b.gs_num || a.nome.localeCompare(b.nome, "it")), [searched, filters]);
-  const draftCount = useMemo(() => draft ? searched.filter(m => matchesFilters(m, draft)).length : 0, [searched, draft]);
+    .sort((a, b) => a.gs_num - b.gs_num || a.nome.localeCompare(b.nome, "it")), [searched, filters, originIds, originValue]);
+  const draftCount = useMemo(() => draft ? searched.filter(m => matchesFilters(m, draft) && (!originIds || matchesProvenance(m, originDraft, originIds))).length : 0, [searched, draft, originIds, originDraft]);
 
   // A new edition, search or filter starts again from the first page.
-  const key = JSON.stringify([edizione, q, filters]);
+  const key = JSON.stringify([edizione, q, filters, originValue]);
   const lastKey = useRef(key);
   useEffect(() => {
     if (lastKey.current === key) return;
@@ -173,6 +179,7 @@ export function BestiarioBrowser({
     ...filters.tipo.map(tipo => ({ key: `tipo:${tipo}`, label: tipo, remove: () => setFilters(f => ({ ...f, tipo: f.tipo.filter(x => x !== tipo) })) })),
     ...filters.taglia.map(taglia => ({ key: `taglia:${taglia}`, label: taglia, remove: () => setFilters(f => ({ ...f, taglia: f.taglia.filter(x => x !== taglia) })) })),
     ...filters.habitat.map(habitat => ({ key: `habitat:${habitat}`, label: habitat, remove: () => setFilters(f => ({ ...f, habitat: f.habitat.filter(x => x !== habitat) })) })),
+    ...(originValue !== "tutte" ? [{ key: "provenienza", label: PROVENANCE_LABEL[originValue], remove: () => origin.setValue("tutte") }] : []),
   ];
 
   return (
@@ -180,15 +187,15 @@ export function BestiarioBrowser({
       <div className="px-6 pb-2 pt-8">
         <CatalogTitle section="bestiario" title="Bestiario" edition={edizione} onEdition={chooseEdition} />
         <SearchAndFilters query={q} onQuery={setQ} label="Cerca una creatura"
-          placeholder={pane ? "Cerca…" : undefined} active={active.length} onOpen={() => setDraft(filters)} />
+          placeholder={pane ? "Cerca…" : undefined} active={active.length} onOpen={() => { setDraft(filters); origin.setDraft(originValue); }} />
         <ActiveFilters filters={active} />
       </div>
 
       <FilterSheet
         open={draft !== null}
         onClose={() => setDraft(null)}
-        onReset={() => setDraft(NO_FILTERS)}
-        onApply={() => { if (draft) setFilters(draft); setDraft(null); }}
+        onReset={() => { setDraft(NO_FILTERS); origin.setDraft("tutte"); }}
+        onApply={() => { if (draft) setFilters(draft); origin.setValue(originDraft); setDraft(null); }}
         count={draftCount}
       >
         {draft && <>
@@ -202,6 +209,7 @@ export function BestiarioBrowser({
             onToggle={taglia => setDraft({ ...draft, taglia: toggle(draft.taglia, taglia, meta.taglie) })} />
           <FilterGroup title="Habitat" options={HABITATS} selected={draft.habitat}
             onToggle={habitat => setDraft({ ...draft, habitat: toggle(draft.habitat, habitat, HABITATS) })} />
+          {originIds && <ProvenanceGroup value={originDraft} onChange={origin.setDraft} />}
         </>}
       </FilterSheet>
 
