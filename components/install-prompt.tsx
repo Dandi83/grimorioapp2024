@@ -1,129 +1,89 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Download, Share, Plus, X } from "lucide-react";
+import { Copy, Download, X } from "lucide-react";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
+import { copyLink, dismissInvite, promptInstall, useDeviceAdvice, useInstallEvent } from "@/components/install/install-events";
 
-const DISMISS_KEY = "grimorio-install-dismissed";
-
+/**
+ * The invite to install the app, small, above the bottom bar: the «Installa» button where the browser offers it
+ * (Chromium on Android and computer), else the steps of the browser's own menu (iPhone, Firefox, Samsung,
+ * Huawei, Mi Browser…), or «open the link in the browser» inside WhatsApp, Instagram and the other apps.
+ * Never when the app is already installed; «Chiudi» hides it for 7 days. All browsers: /installa.
+ */
 export function InstallPrompt() {
-  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
-  const [visible, setVisible] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
+  const pathname = usePathname();
+  const event = useInstallEvent();
+  const advice = useDeviceAdvice();
+  const [late, setLate] = useState(false);
+  const [closed, setClosed] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const guide = advice && !advice.installed && !advice.dismissed && advice.guide.kind !== "none" ? advice.guide : null;
+  const wait = guide ? (guide.promptFirst ? 4000 : 1200) : 0;
 
   useEffect(() => {
-    // Già installata (standalone)? Non mostrare nulla.
-    const standalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      // iOS Safari
-      (window.navigator as unknown as { standalone?: boolean }).standalone ===
-        true;
-    if (standalone) return;
+    if (!wait) return;
+    // A moment after the page opens; Chromium on Android waits for its own install event a little longer.
+    const timer = setTimeout(() => setLate(true), wait);
+    return () => clearTimeout(timer);
+  }, [wait]);
 
-    // Chiuso di recente? Rispetta la scelta per 7 giorni.
-    try {
-      const until = Number(localStorage.getItem(DISMISS_KEY) || 0);
-      if (until && Date.now() < until) return;
-    } catch {
-      // localStorage non disponibile: mostra comunque
-    }
-
-    const ua = window.navigator.userAgent.toLowerCase();
-    const ios = /iphone|ipad|ipod/.test(ua);
-    const safari = ios && !/crios|fxios|edgios/.test(ua);
-
-    if (ios) {
-      // iOS non espone beforeinstallprompt: mostriamo le istruzioni manuali
-      // (solo su Safari, dove "Aggiungi a Home" è disponibile).
-      if (safari) {
-        setIsIOS(true);
-        const t = setTimeout(() => setVisible(true), 1200);
-        return () => clearTimeout(t);
-      }
-      return;
-    }
-
-    // Android/desktop Chromium: catturiamo l'evento di installazione.
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferred(e as BeforeInstallPromptEvent);
-      setVisible(true);
-    };
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+  if (!guide || closed || pathname === "/installa") return null;
+  const button = guide.promptFirst && event !== null;
+  if (!button && (guide.kind === "button" || !late)) return null;
 
   const close = () => {
-    setVisible(false);
-    try {
-      // Non richiedere di nuovo per 7 giorni.
-      localStorage.setItem(DISMISS_KEY, String(Date.now() + 7 * 864e5));
-    } catch {
-      // ignora
-    }
+    setClosed(true);
+    dismissInvite();
   };
-
-  const install = async () => {
-    if (!deferred) return;
-    await deferred.prompt();
-    await deferred.userChoice;
-    setDeferred(null);
-    setVisible(false);
-  };
-
-  if (!visible) return null;
+  const copy = async () => setCopied(await copyLink());
+  const linkOnly = guide.kind === "inapp" || guide.kind === "open-safari";
+  const line = button ? "Installala per aprirla a schermo intero, come una vera app."
+    : guide.kind === "inapp" ? "Per installare l’app apri il link nel browser."
+    : guide.kind === "open-safari" ? "Su questo iPhone l’app si installa da Safari."
+    : `${guide.label}:`;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-      <div className="animate-dice-in w-full max-w-md rounded-2xl border border-primary-dim/40 bg-elevated/95 p-4 shadow-2xl shadow-black/60 backdrop-blur">
+    <div
+      data-install-prompt={button ? "button" : guide.kind}
+      className={`fixed inset-x-0 z-50 flex justify-center px-4 pb-3 ${pathname.startsWith("/admin") ? "bottom-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]" : "bottom-[calc(80px+env(safe-area-inset-bottom,0px))] lg:bottom-0 lg:pb-4"}`}
+    >
+      <div role="region" aria-label="Installa l’app" className="animate-dice-in w-full max-w-md rounded-2xl border border-primary-dim/40 bg-elevated/95 p-4 shadow-2xl shadow-black/30 backdrop-blur">
         <div className="flex items-start gap-3">
-          <img
-            src="/icon-install.webp"
-            alt=""
-            className="h-12 w-12 flex-shrink-0 rounded-xl border border-primary-dim/40"
-          />
+          <img src="/icon-install.webp" alt="" className="h-11 w-11 flex-shrink-0 rounded-xl border border-primary-dim/40" />
           <div className="min-w-0 flex-1">
-            <p className="font-serif text-base font-bold text-foreground">
-              Aggiungi Il Grimorio.App
-            </p>
-            <p className="mt-0.5 text-[13px] leading-snug text-muted">
-              {isIOS
-                ? "Installalo sul telefono per aprirlo come un'app."
-                : "Installalo per aprirlo a schermo intero, come una vera app."}
-            </p>
+            <p className="font-serif text-base font-bold text-foreground">Aggiungi Il Grimorio.App</p>
+            <p className="mt-0.5 text-[13px] leading-snug text-muted">{line}</p>
           </div>
-          <button
-            type="button"
-            onClick={close}
-            aria-label="Chiudi"
-            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-card"
-          >
+          <button type="button" onClick={close} aria-label="Chiudi"
+            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-muted transition-colors active:bg-card">
             <X size={18} />
           </button>
         </div>
 
-        {isIOS ? (
-          <div className="mt-3 flex items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2.5 text-[13px] text-card-foreground">
-            <span>Tocca</span>
-            <Share size={16} className="text-primary" />
-            <span>poi</span>
-            <span className="inline-flex items-center gap-1 font-semibold text-foreground">
-              <Plus size={14} className="text-primary" /> Aggiungi a Home
-            </span>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={install}
-            className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground transition-opacity active:opacity-80"
-          >
+        {button ? (
+          <button type="button" onClick={() => void promptInstall()}
+            className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground transition-opacity active:opacity-80">
             <Download size={18} />
             Installa l&apos;app
           </button>
+        ) : linkOnly ? (
+          <button type="button" onClick={copy}
+            className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-card text-sm font-bold text-primary transition-opacity active:opacity-80">
+            <Copy size={16} />
+            <span aria-live="polite">{copied ? "Link copiato" : "Copia il link"}</span>
+          </button>
+        ) : (
+          <ol className="mt-2.5 list-decimal space-y-1 rounded-xl border border-border bg-card py-2.5 pl-8 pr-3 text-[13px] leading-snug text-card-foreground">
+            {guide.steps.map(step => <li key={step}>{step}</li>)}
+          </ol>
+        )}
+        {!button && (
+          <Link href="/installa" prefetch={false} onClick={() => setClosed(true)} className="mt-2 inline-flex min-h-8 items-center text-[13px] font-semibold text-primary underline underline-offset-4">
+            Istruzioni per tutti i browser
+          </Link>
         )}
       </div>
     </div>
