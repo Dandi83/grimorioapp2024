@@ -91,14 +91,18 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'a recent dismissal is respected');
  window.localStorage.removeItem('grimorio-install-dismissed');
  await render(React.createElement(InstallPrompt,{key:'iphone'}));await wait(1300);
- assert.ok(document.body.textContent.includes('Aggiungi a Home'),'iPhone Safari shows the manual steps');
+ assert.ok(document.body.textContent.includes('Tocca Condividi (il quadrato con la freccia), poi «Aggiungi alla schermata Home».'),'iPhone Safari shows the manual steps');
+ assert.ok(document.querySelector('a[href="/installa"]'),'with the link to every step');
  await act(async()=>document.querySelector('button[aria-label="Chiudi"]').dispatchEvent(new MouseEvent('click',{bubbles:true})));
  assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false);
  assert.ok(Number(window.localStorage.getItem('grimorio-install-dismissed'))>Date.now()+6*86400000,'closing hides it for seven days');
  setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/130.0 Mobile/15E148 Safari/604.1');
  window.localStorage.removeItem('grimorio-install-dismissed');
  await render(React.createElement(InstallPrompt,{key:'chrome-ios'}));await wait(1300);
- assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'other iPhone browsers cannot add to Home: no prompt');
+ assert.ok(document.body.textContent.includes('Tocca Condividi in alto a destra'),'since iOS 16.4 Chrome adds to Home too: its own steps');
+ setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 16_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/108.0 Mobile/15E148 Safari/604.1');
+ await render(React.createElement(InstallPrompt,{key:'chrome-ios-16'}));await wait(1300);
+ assert.ok(document.body.textContent.includes('Su questo iPhone l’app si installa da Safari.'),'before iOS 16.4 only Safari: open the link there');
 
  // Admin delete button: confirmation first, then a clear message if the deletion fails.
  const {AdminDeleteButton}=load('components/admin-delete-button.tsx');
@@ -112,5 +116,5 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  assert.deepEqual(deleted,['scudo']);
  assert.match(document.querySelector('[role="alert"]').textContent,/Eliminazione non riuscita/,'the failure is shown next to the button');
  await act(async()=>root.unmount());
- console.log('UI shell: admin delete confirmation and error, back button (shared links go to the list, in-site back otherwise), bottom navigation (active section, idle prefetch, hidden in admin), install prompt (installed, dismissed, iPhone Safari, other iPhone browsers).');
+ console.log('UI shell: admin delete confirmation and error, back button (shared links go to the list, in-site back otherwise), bottom navigation (active section, idle prefetch, hidden in admin), install prompt (installed, dismissed, iPhone Safari, Chrome on iOS 18 and 16.1).');
 })().catch(error=>{console.error(error);process.exit(1);});

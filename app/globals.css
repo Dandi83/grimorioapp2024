@@ -296,3 +296,29 @@ aside a.underline {
   background: var(--color-card);
   padding: 10px 12px;
 }
+
+/*
+ * Older browsers (the app aims at the last two years: package.json «browserslist»). Recent Chrome, Safari,
+ * Firefox and Samsung Internet never read these rules.
+ * - Before dvh (2022): the classic viewport height for the classes that use it.
+ * - Before :has() (Firefox before 121): the frame of the pages makes room for the side column on the computer,
+ *   marked by components/side-nav.tsx.
+ * Container queries: only a container is declared (monster sheet), no rule depends on them.
+ */
+@supports not (height: 100dvh) {
+  .min-h-dvh { min-height: 100vh; }
+  .min-h-\[70dvh\] { min-height: 70vh; }
+  .max-h-\[80dvh\] { max-height: 80vh; }
+  .max-h-\[85dvh\] { max-height: 85vh; }
+  .max-h-\[88dvh\] { max-height: 88vh; }
+  .max-h-\[90dvh\] { max-height: 90vh; }
+  @media (min-width: 64rem) {
+    .lg\:h-dvh { height: 100vh; }
+  }
+}
+
+@supports not selector(:has(*)) {
+  @media (min-width: 64rem) {
+    [data-with-side-nav] { margin-left: 240px; margin-right: 0; width: auto; max-width: none; border-inline-width: 0; }
+  }
+}

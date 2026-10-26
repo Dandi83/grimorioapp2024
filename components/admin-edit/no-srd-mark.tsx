@@ -6,7 +6,7 @@ import { useAdminSession } from "@/components/admin-edit/admin-session";
 import type { ProvenanceIds } from "@/lib/provenance";
 
 type NoSrdKind = "incantesimi" | "mostri";
-type NoSrdData = Record<NoSrdKind, string[]> & { sintesi?: Record<NoSrdKind, string[]> };
+type NoSrdData = Record<NoSrdKind, string[]> & { sintesi?: Record<NoSrdKind, string[]>; modificate?: Record<NoSrdKind, string[]> };
 
 /**
  * The NO SRD cards of a list, for the administrator only: like «Modifica», asked after the session check
@@ -38,7 +38,7 @@ export function useNoSrd(kind: NoSrdKind): NoSrdView | null {
     if (!data) return null;
     const ids = new Set(data[kind]);
     const sintesi = new Set(data.sintesi?.[kind] ?? []);
-    return { ids, provenance: { sintesi, aggiunte: new Set([...ids].filter(id => !sintesi.has(id))) } };
+    return { ids, provenance: { sintesi, aggiunte: new Set([...ids].filter(id => !sintesi.has(id))), modificate: new Set(data.modificate?.[kind] ?? []) } };
   }, [data, kind]);
 }
 

@@ -102,21 +102,27 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
   await page.locator("main [data-provenance-filter]").getByRole("button", { name: "Solo NO SRD", exact: true }).click();
   await expect(page.locator("[data-provenance-count]")).toHaveText(`${base2024Monsters + 1} ${base2024Monsters ? "risultati" : "risultato"}`);
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fincantesimi");
+  // «SRD modificate»: SRD cards that no longer match their record (the test database has some), NO SRD too.
+  await page.locator("main [data-provenance-filter]").getByRole("button", { name: "SRD modificate", exact: true }).click();
+  const modifiedAdmin = Number((await page.locator("[data-provenance-count]").innerText()).match(/\d+/)[0]);
   await page.locator("main [data-provenance-filter]").getByRole("button", { name: "Solo NO SRD", exact: true }).click();
-  await expect(page.locator("[data-provenance-count]")).toHaveText("49 risultati");
+  await expect(page.locator("[data-provenance-count]")).toHaveText(`${49 + modifiedAdmin} risultati`);
 
   // Lists of the site, 2024: the 49 original summaries; SRD = the rest.
   await edition(page, "2024");
   await openFilters(page, "/grimorio");
   const all2024 = await shownCount(page);
-  expect(await pick(page, "Solo NO SRD")).toBe(49);
+  // «SRD modificate» (SRD cards that no longer match their record) count as NO SRD too.
+  const modified2024 = await pick(page, "SRD modificate");
+  expect(modified2024, "the same SRD modificate in the site and in the reserved area").toBe(modifiedAdmin);
+  expect(await pick(page, "Solo NO SRD")).toBe(49 + modified2024);
   expect(await pick(page, "Sintesi originali")).toBe(49);
   expect(await pick(page, "Aggiunte da me")).toBe(0);
-  expect(await pick(page, "Solo SRD")).toBe(all2024 - 49);
+  expect(await pick(page, "Solo SRD")).toBe(all2024 - 49 - modified2024);
   // Applied: the chip, the rows, then removed with the chip.
   await pick(page, "Solo NO SRD");
   await page.getByRole("button", { name: /^Mostra \d+ risultat/ }).click();
-  await expect(page.getByRole("status").filter({ hasText: /risultat/ }).first()).toHaveText("49 risultati");
+  await expect(page.getByRole("status").filter({ hasText: /risultat/ }).first()).toHaveText(`${49 + modified2024} risultati`);
   await expect(page.getByRole("button", { name: /Solo NO SRD/ })).toBeVisible();
   // 2014: two NO SRD cards; with a class filter (the cards made here have no class) NO SRD gives none.
   await edition(page, "2014");
@@ -141,7 +147,7 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/spell/amicizia");
   await page.getByRole("button", { name: /^Filtri/ }).click();
-  expect(await pick(page, "Solo NO SRD")).toBe(49);
+  expect(await pick(page, "Solo NO SRD")).toBe(49 + modified2024);
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 390, height: 844 });
 

@@ -3,6 +3,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import { Eye, Pencil, X } from "lucide-react";
 import { createMonsterAction, updateMonsterAction } from "@/app/actions/admin-monsters";
+import { SrdLossWarning, isSrdWarning } from "@/components/admin-srd-warning";
 import { abilityMod, type Monster } from "@/lib/monsters-types";
 import { AdminMonsterField } from "./admin-monster-field";
 import { MonsterContentEditor } from "./admin-monster-content";
@@ -139,6 +140,9 @@ export function MonsterEditor({
     toTop();
   }
 
+  // A save that would take the SRD box away waits for «Salva comunque» (components/admin-srd-warning.tsx).
+  const [srdLoss, setSrdLoss] = useState<FormData | null>(null);
+
   async function action(data: FormData) {
     setError("");
     setSaving(true);
@@ -147,6 +151,7 @@ export function MonsterEditor({
         ? await updateMonsterAction(null, data)
         : await createMonsterAction(null, data);
       if (result?.ok) onClose(true);
+      else if (isSrdWarning(result)) setSrdLoss(data);
       else
         setError(
           result?.error || "Salvataggio non riuscito. I dati inseriti sono ancora nel modulo.",
@@ -301,6 +306,12 @@ export function MonsterEditor({
           )}
         </fieldset>
         <footer className="sticky bottom-0 z-10 border-t border-border bg-card px-4 py-4 sm:px-6">
+          {srdLoss && (
+            <SrdLossWarning
+              onConfirm={() => { const data = srdLoss; data.set("perdi-srd", "1"); setSrdLoss(null); void action(data); }}
+              onCancel={() => setSrdLoss(null)}
+            />
+          )}
           {error && (
             <p role="alert" className="mb-3 text-sm text-destructive">
               {error}

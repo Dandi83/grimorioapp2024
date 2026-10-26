@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import { FOOT_LINKS, visibleNavItems } from "@/components/nav-items";
 import { soonHref } from "@/lib/public-sections";
@@ -18,9 +18,17 @@ const NONE: readonly string[] = [];
 export function SideNav({ hidden = NONE, admin: adminView = false, soon = NONE }: { hidden?: readonly string[]; admin?: boolean; soon?: readonly string[] }) {
   const pathname = usePathname();
   const items = useMemo(() => visibleNavItems(hidden, adminView, soon), [hidden, adminView, soon]);
+  // Browsers without :has() (app/globals.css): the frame of the pages is marked while the column is there.
+  const markFrame = useCallback((nav: HTMLElement | null) => {
+    const frame = nav?.parentElement;
+    if (!frame) return;
+    frame.setAttribute("data-with-side-nav", "");
+    return () => frame.removeAttribute("data-with-side-nav");
+  }, []);
   if (pathname.startsWith("/admin")) return null;
   return (
     <nav
+      ref={markFrame}
       aria-label="Navigazione laterale"
       data-side-nav=""
       className="fixed inset-y-0 left-0 z-40 hidden w-[240px] flex-col border-r border-border bg-[#EDE3CC] pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pt-[env(safe-area-inset-top,0px)] lg:flex"
