@@ -90,9 +90,19 @@ export const ORIGINAL_SUMMARIES_TABLE = `CREATE TABLE IF NOT EXISTS grimorio_ori
   PRIMARY KEY (content_kind, content_id)
 )`;
 
-/** The cards with the switch on; reading an older database without the table is safe (none). */
+let summariesTable = false;
+
+/**
+ * The cards with the switch on. Until the first switch is saved the table does not exist: a query that cannot
+ * fail asks for it first (every card read would otherwise send a failing query); once found, it stays.
+ */
 export async function getOriginalSummaries(kind: ContentKind, id?: string): Promise<Set<string>> {
   try {
+    if (!summariesTable) {
+      const exists = await pool.query<{ table_name: string | null }>("SELECT to_regclass('grimorio_original_summaries') AS table_name");
+      if (!exists.rows[0]?.table_name) return new Set();
+      summariesTable = true;
+    }
     const result = await pool.query<{ content_id: string }>(
       `SELECT content_id FROM grimorio_original_summaries WHERE content_kind = $1${id === undefined ? "" : " AND content_id = $2"}`,
       id === undefined ? [kind] : [kind, id],
