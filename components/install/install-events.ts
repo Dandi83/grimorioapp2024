@@ -27,7 +27,6 @@ export function startInstallCapture() {
   });
   window.addEventListener("appinstalled", () => {
     deferred = null;
-    device = undefined;
     emit();
   });
 }
@@ -51,20 +50,23 @@ export interface DeviceAdvice {
   guide: InstallGuide;
 }
 
-let device: DeviceAdvice | undefined;
+let device: { key: string; advice: DeviceAdvice } | undefined;
 
+/** Read again at every look, the same object while nothing changed (useSyncExternalStore needs a stable snapshot). */
 function readDevice(): DeviceAdvice {
-  if (!device) {
-    let dismissed = false;
-    try {
-      const until = Number(localStorage.getItem(DISMISS_KEY) || 0);
-      dismissed = until > 0 && Date.now() < until;
-    } catch {
-      // No storage: the invite shows anyway.
-    }
-    device = { installed: isInstalled(), dismissed, guide: installGuide(detectDevice(navigator.userAgent, navigator.maxTouchPoints || 0)) };
+  let until = "";
+  try {
+    until = localStorage.getItem(DISMISS_KEY) ?? "";
+  } catch {
+    // No storage: the invite shows anyway.
   }
-  return device;
+  const installed = isInstalled();
+  const key = `${navigator.userAgent}|${navigator.maxTouchPoints || 0}|${until}|${installed}`;
+  if (device?.key !== key) {
+    const dismissed = Number(until) > 0 && Date.now() < Number(until);
+    device = { key, advice: { installed, dismissed, guide: installGuide(detectDevice(navigator.userAgent, navigator.maxTouchPoints || 0)) } };
+  }
+  return device.advice;
 }
 
 /** This browser and what it can do (null while the server draws the page). */
