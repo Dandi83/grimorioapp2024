@@ -1,7 +1,7 @@
-export const BRAND = "#D4AF37";
+const BRAND = "#D4AF37";
 
 // School-of-magic accent colors (subtle tints within the brand palette).
-export const schoolColors: Record<string, string> = {
+const schoolColors: Record<string, string> = {
   Abiurazione: "#4C6B8A",
   Ammaliamento: "#B85C8A",
   Divinazione: "#7A6BA8",

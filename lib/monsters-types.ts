@@ -142,7 +142,7 @@ export function monsterSlugify(name: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-export interface MonstersMeta {
+interface MonstersMeta {
   taglie: string[];
   tipi: string[];
   gradi: string[];
@@ -191,7 +191,7 @@ export function gsLabel(gs: string): string {
 }
 
 // Colori accento per categoria di tipo (coerenti con la palette del brand).
-export const typeColors: Record<string, string> = {
+const typeColors: Record<string, string> = {
   Aberrazione: "#8E5EA8",
   Bestia: "#6BA85E",
   Celestiale: "#D4AF37",

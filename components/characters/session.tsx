@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Character } from "@/lib/characters";
-export type Snapshot = { id: string; time: string; sheet: Character };
+type Snapshot = { id: string; time: string; sheet: Character };
 type Session = {
   characters: Character[];
   setCharacters: Dispatch<SetStateAction<Character[]>>;

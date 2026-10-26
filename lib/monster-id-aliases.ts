@@ -5,7 +5,7 @@ import mergedSpells from "./data/merged-spell-ids.json";
  * Addresses used by the 2014 sheets before the "-2014" suffix. Shared links are
  * redirected in next.config.mjs (same list); saved favorites are renamed here.
  */
-export const RENAMED_MONSTER_IDS: Readonly<Record<string, string>> = Object.fromEntries(renamed.map(id => [id, `${id}-2014`]));
+const RENAMED_MONSTER_IDS: Readonly<Record<string, string>> = Object.fromEntries(renamed.map(id => [id, `${id}-2014`]));
 
 /**
  * Duplicate spell rows shown as one card (approved 20/10/2026): the hidden address opens the kept one.

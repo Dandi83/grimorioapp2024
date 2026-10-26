@@ -48,7 +48,7 @@ export function applyOverrides<T extends object>(record: T, sezione: string, id:
   return { record: out as T, applied };
 }
 
-export type OverrideHealth = "ok" | "orphan" | "original-changed";
+type OverrideHealth = "ok" | "orphan" | "original-changed";
 
 /**
  * Orphan: the card, edition or field no longer exists in the project files (the correction is kept

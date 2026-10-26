@@ -15,9 +15,9 @@ import {
  */
 
 /** 5 reports an hour and 20 a day from one device; 60 an hour from everyone together. */
-export const FEEDBACK_LIMITS = { perHour: 5, perDay: 20, overallPerHour: 60 } as const;
+const FEEDBACK_LIMITS = { perHour: 5, perDay: 20, overallPerHour: 60 } as const;
 
-export interface FeedbackReport {
+interface FeedbackReport {
   id: string;
   creato_il: Date;
   tipo: FeedbackType;
@@ -68,7 +68,7 @@ export function issueFormToken(now = Date.now()): string {
   return `f1.${now}.${hmac(`grimorio-feedback-form:${now}`)}`;
 }
 
-export type TokenCheck = "ok" | "invalid" | "too-fast" | "expired";
+type TokenCheck = "ok" | "invalid" | "too-fast" | "expired";
 
 export function checkFormToken(token: string, now = Date.now()): TokenCheck {
   const [version, issued, signed, ...rest] = token.split(".");
@@ -189,7 +189,7 @@ export async function deleteFeedback(id: string): Promise<boolean> {
 /** Test sender of Resend, used when FEEDBACK_FROM_EMAIL is not set (it delivers only to the Resend account owner). */
 export const RESEND_TEST_SENDER = "Il Grimorio <onboarding@resend.dev>";
 
-export type EmailResult = "sent" | "not-configured" | "failed";
+type EmailResult = "sent" | "not-configured" | "failed";
 
 /**
  * Notifies the owner through Resend. Server only: the key and the recipient never reach the browser.

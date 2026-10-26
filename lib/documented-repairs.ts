@@ -9,7 +9,7 @@ import toolRepairs from "./data/tools-repairs-20261021.json";
  * The display corrections approved before the admin log existed: they live in the
  * *-repairs-*.json files (unchanged) and are listed read-only in /admin/registro.
  */
-export interface DocumentedRepair { sezione: string; scheda: string; prima: string; dopo: string; nota: string; file: string }
+interface DocumentedRepair { sezione: string; scheda: string; prima: string; dopo: string; nota: string; file: string }
 
 const entries = <T,>(record: Record<string, T>) => Object.entries(record).filter(([key]) => !key.startsWith("_"));
 const short = (text: string) => text.replace(/\s+/g, " ").trim().slice(0, 160);

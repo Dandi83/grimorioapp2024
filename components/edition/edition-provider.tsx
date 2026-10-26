@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Edition } from "@/lib/public-sections";
 import { USER_EDITION_KEY, isEdition, storedEdition } from "@/lib/user-edition";
 
-export interface UserEdition {
+interface UserEdition {
   /** The edition every public section starts from: 2024 until the device is read (server rendering, first paint). */
   edition: Edition;
   /** Chosen on this device (or adopted from the old per-section choices). */

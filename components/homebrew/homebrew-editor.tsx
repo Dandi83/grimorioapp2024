@@ -20,7 +20,7 @@ const inputClass = "w-full min-w-0 rounded-lg border border-border bg-card px-3 
 const labelClass = "mb-1.5 block text-sm font-semibold text-foreground";
 
 /** One line under the edition buttons: what changes on the sheet. */
-export const EDITION_HINT: Record<HomebrewEdition, string> = {
+const EDITION_HINT: Record<HomebrewEdition, string> = {
   "2024": "Formato 2024: Iniziativa in scheda, tiri salvezza di tutte e sei le caratteristiche, effetti con «Fallimento» e «Successo».",
   "2014": "Formato 2014: tiri salvezza su una riga a parte, solo dove la creatura è competente; attacchi «Attacco con arma da mischia»; nessuna Iniziativa scritta (la scheda la ricava dalla Destrezza, come per le creature 2014).",
   entrambe: "Compare nel Bestiario 2014 e 2024, con la scheda nel formato 2024.",

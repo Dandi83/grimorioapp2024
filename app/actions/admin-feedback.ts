@@ -6,7 +6,7 @@ import { clean, requireAdmin } from "@/lib/admin-action-helpers";
 import { deleteFeedback, setFeedbackNote, setFeedbackState } from "@/lib/feedback";
 import { FEEDBACK_STATES, NOTE_MAX, cleanText, type FeedbackState } from "@/lib/feedback-input";
 
-export type FeedbackActionResult = { ok: true; message?: string } | { ok: false; error: string };
+type FeedbackActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
 function refresh(id: string) {
   revalidatePath("/admin/segnalazioni");

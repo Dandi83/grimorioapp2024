@@ -7,7 +7,7 @@ import type { EquipmentEdition, WeaponGroup, WeaponListEdition, WeaponListItem }
  * Rule texts are quoted word for word: 2014 from srd-weapons-it.json, 2024 from the 2024 manual.
  */
 
-export type RawWeapon = NonNullable<(typeof weaponsData.armi)[number]["2014" | "2024"]>;
+type RawWeapon = NonNullable<(typeof weaponsData.armi)[number]["2014" | "2024"]>;
 
 export interface WeaponProperty {
   key: string;
@@ -33,7 +33,7 @@ export interface WeaponEditionView {
   page: number;
 }
 
-export interface RuleCard { label: string; detail?: string; text: string }
+interface RuleCard { label: string; detail?: string; text: string }
 
 export interface CompareRow { label: string; before: string; after: string; changed: boolean }
 
@@ -41,7 +41,7 @@ const slug = (text: string) => text.toLowerCase().normalize("NFD").replace(/[̀-
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** "Accurata, lancio (gittata 6/18), leggera" → three properties; commas inside brackets do not split. */
-export function parseProperties(printed: string): WeaponProperty[] {
+function parseProperties(printed: string): WeaponProperty[] {
   if (!printed || printed === "—") return [];
   return printed.split(/,\s*(?![^()]*\))/).map(part => {
     const match = /^(.*?)\s*\(([^)]*)\)\s*$/.exec(part.trim());
@@ -122,7 +122,7 @@ export interface Weapon {
 
 /** Fields of a weapon row that a manual correction may change (lib/content-sections.ts). */
 export const WEAPON_EDITABLE_FIELDS = ["nome", "costo", "danni", "tipoDanno", "peso", "proprieta", "padronanza"] as const;
-export type WeaponField = (typeof WEAPON_EDITABLE_FIELDS)[number];
+type WeaponField = (typeof WEAPON_EDITABLE_FIELDS)[number];
 
 /** The printed values of one weapon in one edition, as in srd-weapons-it.json (never changed). */
 export function weaponOriginal(id: string, edition: EquipmentEdition): Partial<Record<WeaponField, string>> | undefined {

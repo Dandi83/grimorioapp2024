@@ -33,9 +33,9 @@ import { toolEntries, toolHref } from "./tools-editions";
 
 export type ContentEdition = EquipmentEdition;
 
-export interface SectionItem { id: string; nome: string; etichetta: string }
+interface SectionItem { id: string; nome: string; etichetta: string }
 
-export interface SectionSpec {
+interface SectionSpec {
   key: string;
   title: string;
   /** Line under the tile title in /admin. */

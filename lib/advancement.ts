@@ -2,7 +2,7 @@
 // Pure data and functions, safe in client components. The values match the SRD 5.1 and 5.2.1
 // tables "Avanzamento dei personaggi" and "Punti ferita fissi per classe" (checked by the tests).
 
-export interface AdvancementLevel { livello: number; pe: number; bonus: number }
+interface AdvancementLevel { livello: number; pe: number; bonus: number }
 
 export const LEVELS: AdvancementLevel[] = [
   [0, 2], [300, 2], [900, 2], [2700, 2], [6500, 3], [14000, 3], [23000, 3], [34000, 3], [48000, 4], [64000, 4],
@@ -10,9 +10,9 @@ export const LEVELS: AdvancementLevel[] = [
 ].map(([pe, bonus], i) => ({ livello: i + 1, pe, bonus }));
 
 /** Rule 2024: one bonus feat for every 30,000 XP beyond 355,000. */
-export const BONUS_FEAT_XP = 30000;
+const BONUS_FEAT_XP = 30000;
 
-export interface ClassHitPoints { classi: string[]; dado: string; fisso: number }
+interface ClassHitPoints { classi: string[]; dado: string; fisso: number }
 
 export const CLASS_HIT_POINTS: ClassHitPoints[] = [
   { classi: ["Barbaro"], dado: "d12", fisso: 7 },
@@ -31,7 +31,7 @@ export function bonusRises(level: AdvancementLevel): boolean {
   return level.livello > 1 && LEVELS[level.livello - 2].bonus < level.bonus;
 }
 
-export interface LevelForXp {
+interface LevelForXp {
   livello: number;
   bonus: number;
   /** XP of the next level; undefined at level 20. */

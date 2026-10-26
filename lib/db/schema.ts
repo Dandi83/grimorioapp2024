@@ -15,7 +15,6 @@ export const spells = pgTable("spells", {
 });
 
 export type SpellRow = typeof spells.$inferSelect;
-export type NewSpellRow = typeof spells.$inferInsert;
 
 export const monsters = pgTable("monsters", {
   id: text("id").primaryKey(),
@@ -53,7 +52,6 @@ export const monsters = pgTable("monsters", {
 });
 
 export type MonsterRow = typeof monsters.$inferSelect;
-export type NewMonsterRow = typeof monsters.$inferInsert;
 
 // The tables below are created at runtime by the code that uses them
 // (CREATE TABLE IF NOT EXISTS). They are described here only for types and

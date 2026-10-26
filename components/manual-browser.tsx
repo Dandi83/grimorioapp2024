@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, ArrowRight, BookOpen } from "lucide-react";
 import { MANUAL_CATEGORIES, type ManualCategory } from "@/lib/manual-types";
-export interface ManualIndexEntry {
+interface ManualIndexEntry {
   id: string;
   title: string;
   category: ManualCategory;

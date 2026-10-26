@@ -15,13 +15,13 @@ export interface SearchIndex {
 
 export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "manuale";
 
-export interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014" }
+interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014" }
 
 export interface SearchMatch extends SearchRow { start: number }
 
 export interface SearchGroup { section: SearchSectionKey; title: string; total: number; rows: SearchMatch[] }
 
-export const GROUP_LIMIT = 8;
+const GROUP_LIMIT = 8;
 
 /** Case, accents and apostrophes ignored: "Dell’Aria" → "dell aria". */
 export function fold(text: string): string {

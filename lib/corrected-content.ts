@@ -22,9 +22,9 @@ import type { EquipmentEdition } from "./equipment-types";
  */
 
 /** Corrections applied to a card, by edition: shown at the bottom of the card. */
-export type CardCorrections = Partial<Record<EquipmentEdition, ContentOverride[]>>;
+type CardCorrections = Partial<Record<EquipmentEdition, ContentOverride[]>>;
 
-export interface CorrectedWeapons {
+interface CorrectedWeapons {
   weapons: Weapon[];
   corrections: Map<string, CardCorrections>;
 }

@@ -8,7 +8,7 @@ import { rarityCategories, type MagicItemEdition, type MagicItemListRow } from "
  * ("Piuma magica" → "Piuma di Quaal"). The 2024 item keeps its address; a 2014 item with a different
  * name has its own address from the 2014 name, which opens the 2014 edition.
  */
-export interface MagicItemEntry {
+interface MagicItemEntry {
   id: string;
   /** Own address of the 2014 item when its name differs from the 2024 one ("piuma-magica"). */
   id2014?: string;
@@ -16,7 +16,7 @@ export interface MagicItemEntry {
 }
 
 const pairs = repairs.abbinamenti2014 as Record<string, string>;
-export const magicItemKey = (name: string) => name.toLowerCase().replace(/\([^)]*\)/g, "").replace(/’/g, "'").replace(/\s+/g, " ").trim();
+const magicItemKey = (name: string) => name.toLowerCase().replace(/\([^)]*\)/g, "").replace(/’/g, "'").replace(/\s+/g, " ").trim();
 
 function counterpart(item: MagicItem): MagicItem | undefined {
   const target = pairs[item.nomeStampato ?? item.nome] ?? pairs[item.nome];

@@ -6,7 +6,7 @@ import { isAdmin } from "./admin-auth";
 import { effectiveHidden, partId, shownEditions, type Edition, type PublicSectionKey } from "./public-sections";
 import { cardPath, visibilityState, type CardKind } from "./section-visibility";
 
-export interface SectionView {
+interface SectionView {
   /** Sections the public does not see: hidden, or with all the parts of a set hidden. */
   hidden: PublicSectionKey[];
   /** Parts hidden from the public ("<section>:<part>"). */

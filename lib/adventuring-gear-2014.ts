@@ -29,7 +29,7 @@ export const gear2014Source = data.fonte;
 
 /** Name for matching: lower case, no brackets, no asterisk. */
 export const gearKey = (name: string) => name.toLowerCase().replace(/\([^)]*\)/g, " ").replace(/\*/g, "").replace(/\s+/g, " ").trim();
-export const gearSlug = (name: string) => gearKey(name).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+const gearSlug = (name: string) => gearKey(name).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const fix = (text: string) => repairs.testi2014.reduce((value, item) => value.split(item.da).join(item.a), text);
 
 /** The description of a row: same name, else the longest description name the row starts with ("Corda" → "Corda di Seta"). */

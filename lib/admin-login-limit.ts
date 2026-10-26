@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { pool } from "./db";
 
 /** At most 5 wrong passcodes per address in 15 minutes, and 100 overall in an hour. */
-export const LOGIN_LIMITS = { perAddress: 5, addressWindowMinutes: 15, overall: 100, overallWindowMinutes: 60 } as const;
+const LOGIN_LIMITS = { perAddress: 5, addressWindowMinutes: 15, overall: 100, overallWindowMinutes: 60 } as const;
 
 let tableReady: Promise<void> | undefined;
 function ensureTable() {

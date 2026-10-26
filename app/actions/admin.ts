@@ -23,7 +23,7 @@ import { db } from "@/lib/db";
 import { getSpellById, spellFileRow } from "@/lib/spells";
 import { getLegacySpellSource, isLegacySpellId } from "@/lib/srd-spells-2014";
 
-export interface SpellInput {
+interface SpellInput {
   nome_italiano: string;
   livello: string;
   tempo_di_lancio: string;

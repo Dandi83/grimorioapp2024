@@ -16,7 +16,7 @@ type Support = "checking" | "ok" | "ios-browser" | "unsupported" | "worker-off";
 const dateFormat = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "long", year: "numeric" });
 
 /** «iPhone · Safari», «Mac · Chrome»: a name for the list, from the browser's own description. */
-export function deviceName(ua: string, touch = 0): string {
+function deviceName(ua: string, touch = 0): string {
   const system = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) || (/Macintosh/.test(ua) && touch > 1) ? "iPad" : /Android/.test(ua) ? "Android"
     : /Macintosh/.test(ua) ? "Mac" : /Windows/.test(ua) ? "Windows" : /Linux/.test(ua) ? "Linux" : "Dispositivo";
   const browser = /Edg\//.test(ua) ? "Edge" : /(?:CriOS|Chrome)\//.test(ua) ? "Chrome" : /(?:FxiOS|Firefox)\//.test(ua) ? "Firefox" : /Safari\//.test(ua) ? "Safari" : "Browser";

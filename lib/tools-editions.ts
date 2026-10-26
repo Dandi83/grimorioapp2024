@@ -9,7 +9,7 @@ import type { EquipmentEdition } from "./equipment-types";
  * "Strumento musicale": a 2014 row is linked to a variant only when the variant has the same name,
  * or when Daniele's list says so ("Mazzo di carte" → "carte da gioco").
  */
-export interface ToolEntry {
+interface ToolEntry {
   id: string;
   editions: { "2014"?: Tool2014; "2024"?: Tool2024 };
   /** 2014 game or instrument that is a variant of a 2024 tool. */
@@ -36,7 +36,7 @@ export const toolEntries: ToolEntry[] = build();
 export const getToolEntry = (id: string, list: ToolEntry[] = toolEntries) => list.find(entry => entry.id === id);
 export const toolHref = (id: string) => `/equipaggiamento/strumenti/${id}`;
 
-export interface ToolCompareRow { label: string; before: string; after: string }
+interface ToolCompareRow { label: string; before: string; after: string }
 const norm = (value: string) => value.toLowerCase().replace(/\s+/g, " ").trim();
 
 /** "2014 → 2024": only rows that change; for a 2014 instrument or game, its 2024 variant. */

@@ -3,7 +3,7 @@ import { pool } from "./db";
 import type { PoolClient } from "pg";
 
 export type ContentKind = "monster" | "spell";
-export type RulesEdition = "2014" | "2024";
+type RulesEdition = "2014" | "2024";
 
 /** Reading an older database is safe: only an explicit admin save initializes metadata. */
 export async function getContentEditions(kind: ContentKind, id?: string): Promise<Map<string, RulesEdition>> {

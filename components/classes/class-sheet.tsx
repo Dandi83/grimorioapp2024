@@ -257,7 +257,7 @@ function TableTab({ card }: { card: ClassData }) {
 }
 
 /** A subclass added by the administrator, as the page gets it: hidden ones only for the administrator (labelled). */
-export interface AddedSubclass { id: string; draft: SubclassDraft; hidden: boolean }
+interface AddedSubclass { id: string; draft: SubclassDraft; hidden: boolean }
 
 /**
  * The SRD subclass first, then the ones added by the administrator (NO SRD), chosen with the selector above

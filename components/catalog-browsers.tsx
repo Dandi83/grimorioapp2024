@@ -31,7 +31,7 @@ function useCatalogSearch(listPath?: string) {
 }
 
 /** The list column of the computer layout (components/layout/catalog-split.tsx): the open card is highlighted. */
-export interface ListPane { selectedId?: string }
+interface ListPane { selectedId?: string }
 
 // After "back" from a card, restore the list exactly as it was left
 // (search, filters, pages shown, scroll). Other arrivals start fresh.
@@ -52,7 +52,7 @@ function useRestoredList<T extends { url: string }>(key: string, search: string,
   return restored && restored.url === search ? restored : null;
 }
 /** Spell filters from the address: older single values (?livello=3&scuola=…&classe=…) keep working. */
-export function spellFiltersFromParams(params: URLSearchParams): SpellFilters {
+function spellFiltersFromParams(params: URLSearchParams): SpellFilters {
   const list = (name: string) => (params.get(name) || "").split(",").map(value => value.trim()).filter(Boolean);
   return {
     livello: list("livello").map(value => parseInt(value, 10)).filter(value => !Number.isNaN(value)),
@@ -83,7 +83,7 @@ export function GrimorioWithFilters({ spells, meta, pane }: { spells: SpellListI
 }
 
 /** Filters from the address: old single values (?gs=1/2, ?raccolta=animali, ?tipo=Drago) and old type names (?tipo=Fata) keep working. */
-export function filtersFromParams(params: URLSearchParams): MonsterFilters {
+function filtersFromParams(params: URLSearchParams): MonsterFilters {
   const list = (name: string) => (params.get(name) || "").split(",").map(value => value.trim()).filter(Boolean);
   const collection = params.get("raccolta") || params.get("categoria");
   const gs = list("gs").map(value => (GS_BANDS as readonly string[]).includes(value) ? value as GsBand : gsBand(parseGs(value)))

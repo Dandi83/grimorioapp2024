@@ -7,7 +7,7 @@ import { requireAdmin } from "@/lib/admin-action-helpers";
 import { approveProposal, createHomebrew, deleteHomebrew, getHomebrew, refuseProposal, sendPublishedEmail, updateHomebrew, updateProposal } from "@/lib/homebrew";
 import { HOMEBREW_LICENSE, LIMITS, parseDraft, plainText } from "@/lib/homebrew-types";
 
-export type HomebrewResult = { ok: true; id?: string; email?: "sent" | "not-configured" | "failed" | "none" } | { ok: false; error: string };
+type HomebrewResult = { ok: true; id?: string; email?: "sent" | "not-configured" | "failed" | "none" } | { ok: false; error: string };
 
 /** A published homebrew changes lists, search, counts and its card: the same refresh as an admin save of a creature. */
 function refresh() {

@@ -42,7 +42,7 @@ export function HomebrewSectionEye({ hidden: initial }: { hidden: boolean }) {
  * The guided editor in a dialog: «Correggi» of a proposal, «+ Nuova homebrew», «Modifica» of a published
  * homebrew. page: the editor is the page («Modifica» on the public card), not a dialog over the list.
  */
-export function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false }: {
+function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false }: {
   title: string;
   initial: HomebrewDraft;
   onSave: (draft: HomebrewDraft) => Promise<{ ok: true } | { ok: false; error: string }>;
