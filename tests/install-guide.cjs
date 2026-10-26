@@ -1,7 +1,7 @@
 // The invite to install the app, browser by browser (lib/install-guide.ts): button where Chromium offers it,
 // the steps of the browser's menu elsewhere, «open in the browser» inside WhatsApp, Instagram and the others.
 const assert = require('node:assert/strict');
-const {detectDevice, installGuide, STEPS, OPEN_BROWSER, OPEN_SAFARI} = require('../lib/install-guide.ts');
+const {detectDevice, installGuide, STEPS, SHORT, OPEN_BROWSER, OPEN_SAFARI} = require('../lib/install-guide.ts');
 
 const UA = {
   iphoneSafari: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1',
@@ -69,6 +69,12 @@ assert.equal(guide(UA.desktopFirefox).kind, 'none');
 assert.deepEqual([guide(UA.macSafari).kind, guide(UA.macSafari).steps], ['steps', STEPS.desktop.safari]);
 assert.match(STEPS.desktop.safari[0], /Archivio → «Aggiungi al Dock»/);
 assert.equal(guide(UA.macSafari16).kind, 'none', 'Safari 16 cannot add to the Dock');
+
+// The small invite says it in one line; the steps are on /installa.
+assert.equal(guide(UA.iphoneSafari).short, SHORT.ios.safari);
+assert.equal(guide(UA.huawei).short, SHORT.android.huawei);
+assert.equal(guide(UA.instagram).short, 'Per installare l’app apri il link nel browser.');
+for (const line of [...Object.values(SHORT.ios), ...Object.values(SHORT.android), ...Object.values(SHORT.desktop)]) assert.ok(line.length <= 90 && line.endsWith('.'), line);
 
 // Every step ends with a full stop and is short enough for the small invite.
 for (const list of [...Object.values(STEPS.ios), ...Object.values(STEPS.android), ...Object.values(STEPS.desktop), OPEN_BROWSER, OPEN_SAFARI]) {

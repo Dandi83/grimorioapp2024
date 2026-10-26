@@ -36,6 +36,8 @@ export interface InstallGuide {
   /** The name shown: «Safari su iPhone», «Chrome su Android»… */
   label: string;
   steps: readonly string[];
+  /** One line for the small invite (the steps are on /installa). */
+  short: string;
   /** Android: the «Installa» button replaces the steps when «beforeinstallprompt» arrives. */
   promptFirst: boolean;
 }
@@ -112,6 +114,34 @@ export const STEPS = {
   },
 } as const;
 
+const HOME = "poi «Aggiungi alla schermata Home»";
+/** One line per browser, for the invite. */
+export const SHORT = {
+  ios: {
+    safari: `Tocca Condividi (il quadrato con la freccia), ${HOME}.`,
+    chrome: `Tocca Condividi in alto a destra, ${HOME}.`,
+    edge: `Tocca ⋯ in basso, poi Condividi e «Aggiungi alla schermata Home».`,
+    firefox: `Tocca ☰ in basso, poi Condividi e «Aggiungi alla schermata Home».`,
+    opera: `Dal menu tocca Condividi, ${HOME}.`,
+    other: `Dal menu tocca Condividi, ${HOME}.`,
+  },
+  android: {
+    chrome: "Tocca ⋮ in alto a destra, poi «Installa app».",
+    edge: "Tocca ≡ in basso, poi «Aggiungi al telefono».",
+    samsung: "Tocca ≡ in basso, poi «Aggiungi pagina a» → «Schermata Home».",
+    firefox: "Tocca ⋮, poi «Aggiungi alla schermata Home».",
+    huawei: "Tocca ≡ in basso, poi «Aggiungi a» → «Schermata Home».",
+    mi: "Tocca ≡ in basso, poi «Aggiungi a schermata Home».",
+    opera: "Tocca ⋮, poi «Aggiungi a…» → «Schermata Home».",
+    other: "Dal menu del browser scegli «Aggiungi a schermata Home».",
+  },
+  desktop: {
+    chrome: "Clicca l’icona Installa nella barra dell’indirizzo.",
+    edge: "Clicca l’icona Installa nella barra dell’indirizzo.",
+    safari: "Nel menu Archivio scegli «Aggiungi al Dock».",
+  },
+} as const;
+
 export const OPEN_SAFARI = ["Copia il link con il pulsante qui sotto.", "Apri Safari e incolla il link nella barra dell’indirizzo.", "Poi segui i passi per Safari: Condividi → «Aggiungi alla schermata Home»."];
 export const OPEN_BROWSER = ["Tocca ⋯ (o i tre puntini) in alto e scegli «Apri nel browser» o «Apri in Safari».", "Oppure copia il link e incollalo nel browser.", "Dal browser segui i passi per installare l’app."];
 
@@ -122,17 +152,19 @@ function where(device: InstallDevice): string {
 /** What the invite and /installa say on this device. */
 export function installGuide(device: InstallDevice): InstallGuide {
   const label = `${NAME[device.browser]} su ${where(device)}`;
-  if (device.inApp) return { kind: "inapp", label: `Browser di ${device.inApp}`, steps: OPEN_BROWSER, promptFirst: false };
+  if (device.inApp) return { kind: "inapp", label: `Browser di ${device.inApp}`, steps: OPEN_BROWSER, short: "Per installare l’app apri il link nel browser.", promptFirst: false };
   if (device.platform === "ios") {
     // Since iOS 16.4 every browser can add to the Home screen; before, only Safari.
-    if (device.browser !== "safari" && (device.iosVersion ?? 0) < 16.4) return { kind: "open-safari", label, steps: OPEN_SAFARI, promptFirst: false };
-    return { kind: "steps", label, steps: STEPS.ios[device.browser as keyof typeof STEPS.ios] ?? STEPS.ios.other, promptFirst: false };
+    if (device.browser !== "safari" && (device.iosVersion ?? 0) < 16.4) return { kind: "open-safari", label, steps: OPEN_SAFARI, short: "Su questo iPhone l’app si installa da Safari.", promptFirst: false };
+    const browser = device.browser in STEPS.ios ? device.browser as keyof typeof STEPS.ios : "other";
+    return { kind: "steps", label, steps: STEPS.ios[browser], short: SHORT.ios[browser], promptFirst: false };
   }
   if (device.platform === "android") {
     const chromium = ["chrome", "edge", "samsung", "opera"].includes(device.browser);
-    return { kind: "steps", label, steps: STEPS.android[device.browser as keyof typeof STEPS.android] ?? STEPS.android.other, promptFirst: chromium };
+    const browser = device.browser in STEPS.android ? device.browser as keyof typeof STEPS.android : "other";
+    return { kind: "steps", label, steps: STEPS.android[browser], short: SHORT.android[browser], promptFirst: chromium };
   }
-  if (device.browser === "chrome" || device.browser === "edge") return { kind: "button", label, steps: STEPS.desktop[device.browser], promptFirst: true };
-  if (device.browser === "safari" && (device.safariVersion ?? 0) >= 17) return { kind: "steps", label: "Safari su Mac", steps: STEPS.desktop.safari, promptFirst: false };
-  return { kind: "none", label, steps: [], promptFirst: false };
+  if (device.browser === "chrome" || device.browser === "edge") return { kind: "button", label, steps: STEPS.desktop[device.browser], short: SHORT.desktop[device.browser], promptFirst: true };
+  if (device.browser === "safari" && (device.safariVersion ?? 0) >= 17) return { kind: "steps", label: "Safari su Mac", steps: STEPS.desktop.safari, short: SHORT.desktop.safari, promptFirst: false };
+  return { kind: "none", label, steps: [], short: "", promptFirst: false };
 }

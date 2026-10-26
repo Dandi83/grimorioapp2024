@@ -29,8 +29,9 @@ jobs:
         run: npm test
       - name: Test prestazioni catalogo ed editor creature
         run: npm run test:catalog-performance && npm run test:creature-editor
+      # WebKit and Firefox: the compatibility test of every engine (e2e/compatibilita-*.spec.mjs).
       - name: Browser per le prove
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit firefox
       # Production build and browser tests on an in-memory test database: never the real one.
       - name: Build e prove nel browser
         run: npm run test:e2e
