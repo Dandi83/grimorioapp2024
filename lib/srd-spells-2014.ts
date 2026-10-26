@@ -23,8 +23,14 @@ export function legacySpellById(id: string, environment?: string): LegacySpellRo
   return record ? { ...record.spell } : undefined;
 }
 
-/** Exact transcriptions only: a later edit loses the source label. */
-export function getLegacySpellSource(spell: Partial<Record<keyof LegacySpellRow, string>> & { id: string }) {
+/** A field of an SRD card that no longer matches its record, with the exact SRD value. */
+export interface SrdDifference { field: string; srd: string }
+
+/**
+ * The fields of a 2014 spell that differ from its SRD 5.1 record (undefined: no record with that id). The rule
+ * of the source label: an empty list keeps it (getLegacySpellSource), so the two can never disagree.
+ */
+export function legacySpellDifferences(spell: Partial<Record<keyof LegacySpellRow, string>> & { id: string }): SrdDifference[] | undefined {
   const record = recordsById.get(spell.id);
   if (!record) return undefined;
   const expected = record.spell as Record<keyof LegacySpellRow, string>;
@@ -32,7 +38,13 @@ export function getLegacySpellSource(spell: Partial<Record<keyof LegacySpellRow,
   // An approved display repair of the description keeps the source label.
   const same = (key: keyof LegacySpellRow) => (spell[key] ?? "") === expected[key]
     || (key === "descrizione" && spell[key] === repairSpellText(spell.id, expected[key]));
-  if (!fields.every(same)) return undefined;
+  return fields.filter(key => !same(key)).map(key => ({ field: key, srd: expected[key] }));
+}
+
+/** Exact transcriptions only: a later edit loses the source label. */
+export function getLegacySpellSource(spell: Partial<Record<keyof LegacySpellRow, string>> & { id: string }) {
+  const record = recordsById.get(spell.id);
+  if (!record || legacySpellDifferences(spell)?.length !== 0) return undefined;
   return {
     document: data.document,
     sourceUrl: data.sourceUrl,

@@ -79,6 +79,11 @@ function toSpell(r: RawRow, repair = true): Spell {
   return fonte_scheda ? { ...spell, fonte_scheda } : spell;
 }
 
+/** A database or file row as the public card shows it (display repairs included): the SRD box is decided on it. */
+export function publicSpellOfRow(row: RawRow): Spell {
+  return toSpell(row);
+}
+
 /** A spell card read from the project files (2014 SRD 5.1, SRD 2024 additions) where the site shows them. */
 export function spellFileRow(id: string, environment = process.env.VERCEL_ENV): RawRow | undefined {
   return legacySpellById(id, environment) ?? previewSpellById(id, environment);

@@ -3,6 +3,7 @@
 import { AdminDeleteButton } from "./admin-delete-button";
 
 import { useMemo, useState } from "react";
+import { useNoSrd } from "@/components/admin-edit/no-srd-mark";
 import {
   deleteMonsterAction,
 } from "@/app/actions/admin-monsters";
@@ -44,8 +45,10 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDraft
     );
   }, [query, monsters]);
   const visibleRows = useVisibilityFilter(searched, shown, visibility.isHidden);
-  // «Provenienza»: the same rule as the «NO SRD» pill, from the labels of the cards (lib/provenance.ts).
-  const origin = useProvenanceFilter(useMemo(() => provenanceIds(monsters), [monsters]));
+  // «Provenienza»: the same rule as the «NO SRD» pill, from the labels of the cards (lib/provenance.ts); the modified
+  // SRD cards («SRD modificate», lib/srd-modified.ts) from the administrator's endpoint.
+  const modified = useNoSrd("mostri")?.provenance.modificate;
+  const origin = useProvenanceFilter(useMemo(() => provenanceIds(monsters, modified), [monsters, modified]));
   const filtered = useMemo(() => visibleRows.filter(x => matchesProvenance({ id: x.id, homebrew: !!x.homebrew_edizione }, origin.value, origin.ids!)), [visibleRows, origin.value, origin.ids]);
 
   return (

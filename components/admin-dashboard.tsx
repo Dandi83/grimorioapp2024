@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useNoSrd } from "@/components/admin-edit/no-srd-mark";
 import Link from "next/link";
 import {
   deleteSpellAction,
@@ -73,8 +74,10 @@ export function AdminDashboard({
     );
   }, [query, spells]);
   const visibleRows = useVisibilityFilter(searched, shown, visibility.isHidden);
-  // «Provenienza»: the same rule as the «NO SRD» pill, from the labels of the cards (lib/provenance.ts).
-  const origin = useProvenanceFilter(useMemo(() => provenanceIds(spells), [spells]));
+  // «Provenienza»: the same rule as the «NO SRD» pill, from the labels of the cards (lib/provenance.ts); the modified
+  // SRD cards («SRD modificate», lib/srd-modified.ts) from the administrator's endpoint.
+  const modified = useNoSrd("incantesimi")?.provenance.modificate;
+  const origin = useProvenanceFilter(useMemo(() => provenanceIds(spells, modified), [spells, modified]));
   const filtered = useMemo(() => visibleRows.filter(x => matchesProvenance(x, origin.value, origin.ids!)), [visibleRows, origin.value, origin.ids]);
 
   return (

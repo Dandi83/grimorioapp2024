@@ -107,7 +107,11 @@ function load(relative) {
   const official=JSON.parse(fs.readFileSync('lib/data/srd-italiano-5.2.1.json','utf8')).spells[0];
   await pg.query('INSERT INTO spells (id,nome_italiano,descrizione) VALUES ($1,$2,$3)',[official.id,'Fonte verificata',official.descrizione]);
   assert.equal((await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Fonte verificata',descrizione:official.descrizione,edition:'2014'}))).ok,false,'source safeguard also applies inside editor');
-  assert.equal((await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Versione personale',descrizione:'Regole adattate al 2014',edition:'2014'}))).ok,true,'an edited unverified sheet can select 2014');
+  // Losing the SRD box asks first (components/admin-srd-warning.tsx): nothing saved until «Salva comunque».
+  const asked=await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Versione personale',descrizione:'Regole adattate al 2014',edition:'2014'}));
+  assert.deepEqual([asked.ok,asked.srdWarning],[false,true],'a save that takes the SRD box away is not done without confirmation');
+  assert.equal((await pg.query('SELECT descrizione FROM spells WHERE id=$1',[official.id])).rows[0].descrizione,official.descrizione,'nothing written');
+  assert.equal((await spells.updateSpellAction(null,form({id:official.id,nome_italiano:'Versione personale',descrizione:'Regole adattate al 2014',edition:'2014','perdi-srd':'1'}))).ok,true,'an edited unverified sheet can select 2014');
   assert.equal((await storage.getContentEditions('spell',official.id)).get(official.id),'2014');
   // Deleting a spell removes the row and its manual label, refreshes caches, and requires an admin.
   admin=false;
