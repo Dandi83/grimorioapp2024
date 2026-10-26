@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { ToolEditionPanels } from "@/components/equipment/tool-edition-panels";
 import { PartBlock } from "@/components/sections/part-block";
-import { pageEditions } from "@/lib/section-view";
+import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { tools2014Source, type Tool2014 } from "@/lib/tools-2014";
 import { toolsSection, type Tool2024 } from "@/lib/tools";
 import { compareTool, getToolEntry, toolEntries, toolHref, toolKey } from "@/lib/tools-editions";
@@ -28,6 +28,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  // Hidden or «In arrivo»: no name or description of the card in the answer.
+  if (await sectionClosed("strumenti")) return CLOSED_METADATA;
   const entry = getToolEntry((await params).id, (await getCorrectedTools()).list);
   const tool = entry && (entry.editions["2024"] ?? entry.editions["2014"]);
   return { title: tool ? `${tool.nome} — Strumenti — Il Grimorio.App` : "Strumento non trovato" };
@@ -133,6 +135,8 @@ function Sheet2014({ tool }: { tool: Tool2014 }) {
 }
 
 export default async function ToolPage({ params }: { params: Promise<{ id: string }> }) {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("strumenti");
   const corrected = await getCorrectedTools();
   const entry = getToolEntry((await params).id, corrected.list);
   if (!entry) notFound();

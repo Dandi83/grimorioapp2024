@@ -9,7 +9,7 @@ import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 import { getCorrectedClasses } from "@/lib/corrected-content";
 import { CLASS_IDS, isClassId } from "@/lib/classes";
 import type { ClassEdition } from "@/lib/classes-types";
-import { linksOut, pageEditions, partState, sectionsOut, sectionView } from "@/lib/section-view";
+import { linksOut, pageEditions, partState, sectionsOut, sectionView, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { cardPath } from "@/lib/section-visibility";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { listSubclasses } from "@/lib/subclasses";
@@ -23,12 +23,16 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  // Hidden or «In arrivo»: no name or description of the card in the answer.
+  if (await sectionClosed("classi")) return CLOSED_METADATA;
   const { id } = await params;
   const entry = (await getCorrectedClasses()).list.find(item => item.id === id);
   return { title: entry ? `${entry.editions["2024"]!.nome} — Classi — Il Grimorio.App` : "Classe non trovata" };
 }
 
 export default async function ClassPage({ params }: { params: Promise<{ id: string }> }) {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("classi");
   const { id } = await params;
   if (!isClassId(id)) notFound();
   const corrected = await getCorrectedClasses();

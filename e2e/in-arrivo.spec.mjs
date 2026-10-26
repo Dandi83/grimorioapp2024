@@ -60,12 +60,10 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await expect(page.getByRole("radiogroup")).toHaveCount(10);
   await expect(page.getByRole("radio", { name: "Visibile", checked: true })).toHaveCount(10);
   // Colors of the chosen state: green, amber, dark grey.
-  const colors = {};
-  for (const label of ["In arrivo", "Nascosta", "Visibile"]) {
+  for (const [label, color] of [["In arrivo", "rgb(224, 162, 26)"], ["Nascosta", "rgb(74, 64, 56)"], ["Visibile", "rgb(46, 107, 63)"]]) {
     await setSection(page, "Classi", label);
-    colors[label] = await stateRadio(page, "Classi", label).evaluate(el => getComputedStyle(el).backgroundColor);
+    await expect(stateRadio(page, "Classi", label)).toHaveCSS("background-color", color);
   }
-  expect(colors).toEqual({ Visibile: "rgb(46, 107, 63)", "In arrivo": "rgb(224, 162, 26)", Nascosta: "rgb(74, 64, 56)" });
 
   // Sections: Incantesimi and Classi «In arrivo», Oggetti magici «Nascosta», the others «Visibile».
   await setSection(page, "Incantesimi", "In arrivo");
@@ -102,7 +100,8 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
     expect(response.status(), path).toBe(404);
     await underConstruction(pub, pill);
     const html = await response.text();
-    expect(html, path).not.toMatch(/Dado Vita|Sfera di fuoco luminosa|Tempo di lancio/);
+    // Nothing of the card, also in the data of the page and in its title.
+    expect(html, path).not.toMatch(/Testo integrale|data-source-box|Dado Vita|Palla di fuoco|Mago — Classi/i);
   }
   // Hidden (not «In arrivo»): the same page, without the pill; no entry anywhere.
   await pub.goto("/oggetti-magici");

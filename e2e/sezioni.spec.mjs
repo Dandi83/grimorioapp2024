@@ -1,6 +1,9 @@
 import { test, expect, devices } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
+/** The «Visibile · In arrivo · Nascosta» choice of a section or part in /admin/sezioni. */
+const stateRadio = (scope, title, label) => scope.getByRole("radiogroup", { name: `Stato di ${title}`, exact: true }).getByRole("radio", { name: label, exact: true });
+
 // «Sezione momentaneamente in costruzione»: one of these under the title (components/sections/section-unavailable.tsx).
 const SENTENCES = [
   "I nani della forgia ci stanno ancora lavorando. Tira iniziativa più tardi!",
@@ -48,6 +51,12 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
+  // Rows of the log already there (other tests of the run, e2e/in-arrivo.spec.mjs among them, use the same database).
+  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
+  await expect(page.getByRole("heading", { level: 1, name: "Registro modifiche" })).toBeVisible();
+  const logBefore = await page.getByRole("list", { name: "Modifiche" }).locator(":scope > li").filter({ hasNotText: "Raccolta Homebrew" }).count();
+  await page.goto("/admin");
   await page.getByRole("link", { name: "Sezioni dell’app" }).click();
   await expect(page).toHaveURL(/\/admin\/sezioni$/);
   await expect(page.getByRole("heading", { level: 1, name: "Sezioni dell’app" })).toBeVisible();
@@ -225,8 +234,8 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await expect(log.first()).toContainText("Classi · visibilità");
   await expect(log.first()).toContainText("Visibile");
   // 10 sections hidden and shown again, 8 hidden together, Classi shown from the band (the Homebrew collection,
-  // hidden and shown by e2e/homebrew.spec.mjs on the same database, has its own rows).
-  await expect(log.filter({ hasNotText: "Raccolta Homebrew" })).toHaveCount(29);
+  // hidden and shown by e2e/homebrew.spec.mjs on the same database, has its own rows), after the rows of before.
+  await expect(log.filter({ hasNotText: "Raccolta Homebrew" })).toHaveCount(logBefore + 29);
 
   // Back to the start: every section visible.
   for (const title of ["Incantesimi", "Condizioni", "Armi", "Armature", "Equipaggiamento d’avventura", "Strumenti", "Bestiario"]) await toggle(title, false);

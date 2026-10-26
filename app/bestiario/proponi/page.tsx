@@ -5,7 +5,7 @@ import { ProposalForm } from "@/components/homebrew/proposal-form";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { turnstileConfigured } from "@/lib/feedback";
 import { partId } from "@/lib/public-sections";
-import { partState, publicLinksOut } from "@/lib/section-view";
+import { partState, publicLinksOut, sectionPage } from "@/lib/section-view";
 import { CardDisplayProvider } from "@/components/card-display-context";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 
@@ -16,6 +16,8 @@ export const metadata = {
 
 /** The form of the Homebrew collection: not found while the collection is hidden (the administrator sees it, labelled). */
 export default async function ProposePage() {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("bestiario");
   const state = await partState("bestiario", "homebrew");
   if (!state.shown) notFound();
   return (

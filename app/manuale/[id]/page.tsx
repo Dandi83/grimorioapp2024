@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
-import { editionCard } from "@/lib/section-view";
+import { editionCard, CLOSED_METADATA, sectionClosed, sectionPage } from "@/lib/section-view";
 import { notFound } from "next/navigation";
 import { manualAvailable, manualEntries } from "@/lib/manual";
 import { legacyConditions } from "@/lib/conditions";
@@ -26,12 +26,16 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  // Hidden or «In arrivo»: no name of the condition in the answer.
+  if (id.startsWith("condizioni-") && await sectionClosed("condizioni")) return CLOSED_METADATA;
   const entry = (await getCorrectedManualEntry(id))?.entry;
   return { title: `${entry?.title || "Voce non trovata"} — ${entry?.category === "condizioni" ? "Condizioni" : "Manuale"} · Il Grimorio.App` };
 }
 
 export default async function ManualEntryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  if (id.startsWith("condizioni-")) await sectionPage("condizioni");
   const corrected = await getCorrectedManualEntry(id);
   if (!corrected) notFound();
   const { entry } = corrected;

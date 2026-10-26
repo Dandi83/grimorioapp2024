@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { isAdmin } from "./admin-auth";
 import { effectiveHidden, partId, shownEditions, type Edition, type PublicSectionKey } from "./public-sections";
 import { cardPath, visibilityState, type CardKind } from "./section-visibility";
+import { collectionOf } from "./monsters-types";
 
 interface SectionView {
   /** Sections the public does not see: hidden, or with all the parts of a set hidden. */
@@ -36,6 +37,24 @@ export const sectionView = cache(async (): Promise<SectionView> => {
   if ((!hidden.length && !state.parts.length && !state.cards.length) || !(await draftMode()).isEnabled) return { ...view, admin: false };
   return { ...view, admin: await isAdmin() };
 });
+
+/**
+ * At the top of every page of a section (lists and cards): not found for the public while the section is hidden
+ * or «In arrivo». The gate of the layout (components/sections/section-gate.tsx) renders in parallel with the page,
+ * so without this the 404 answer could still carry what the page had already streamed.
+ */
+export async function sectionPage(section: PublicSectionKey): Promise<void> {
+  if (await sectionClosed(section)) notFound();
+}
+
+/** True when the public may not see this section (hidden or «In arrivo»); never for the administrator. */
+export async function sectionClosed(section: PublicSectionKey): Promise<boolean> {
+  const view = await sectionView();
+  return view.hidden.includes(section) && !view.admin;
+}
+
+/** The title of a card page while its section is closed to the public: nothing of the card (name, description). */
+export const CLOSED_METADATA = { title: "Sezione momentaneamente in costruzione — Il Grimorio.App", robots: { index: false, follow: false } };
 
 /** Sections to leave out of this page: none for the administrator. */
 export async function sectionsOut(): Promise<PublicSectionKey[]> {
@@ -117,9 +136,10 @@ export async function pageEditions(section: PublicSectionKey): Promise<Edition[]
 }
 
 /**
- * The creature list of a page: without the homebrew creatures while their collection is hidden from the public
- * (the other collections are left out by the browser, which knows the hidden parts). Same list otherwise.
+ * The creature list of a page: without the creatures of a collection hidden from the public or «In arrivo»
+ * (mostri, animali, homebrew). Same list for the administrator.
  */
-export async function bestiaryList<T extends { homebrew?: true }>(list: T[]): Promise<T[]> {
-  return (await partsOut()).includes(partId("bestiario", "homebrew")) ? list.filter(item => !item.homebrew) : list;
+export async function bestiaryList<T extends { id: string; homebrew?: true }>(list: T[]): Promise<T[]> {
+  const out = await partsOut();
+  return out.length ? list.filter(item => !out.includes(partId("bestiario", collectionOf(item)))) : list;
 }

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { ArmorBadge } from "@/components/equipment/armor-badge";
 import { EditionPanels } from "@/components/equipment/edition-panels";
-import { pageEditions } from "@/lib/section-view";
+import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { armorBadge, armorClassRest, armorDescription, armorRuleCards, armorSources, armors, getArmor, type ArmorEditionView } from "@/lib/armor";
 import { ARMOR_CATEGORY_NAMES, type ArmorCategory } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
@@ -20,6 +20,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  // Hidden or «In arrivo»: no name or description of the card in the answer.
+  if (await sectionClosed("armature")) return CLOSED_METADATA;
   const armor = getArmor((await params).id, (await getCorrectedArmors()).list);
   return { title: armor ? `${armor.editions["2024"].nome} — Armature — Il Grimorio.App` : "Armatura non trovata" };
 }
@@ -74,6 +76,8 @@ function Sheet({ armor, category }: { armor: ArmorEditionView; category: ArmorCa
 }
 
 export default async function ArmorSheetPage({ params }: { params: Promise<{ id: string }> }) {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("armature");
   const { id } = await params;
   const corrected = await getCorrectedArmors();
   const armor = getArmor(id, corrected.list);

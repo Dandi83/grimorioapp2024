@@ -4,7 +4,7 @@ import { ClassIcon } from "@/components/classes/class-icon";
 import { ClassListEditions } from "@/components/classes/class-editions";
 import { ParentLink } from "@/components/section-tiles";
 import { getCorrectedClasses } from "@/lib/corrected-content";
-import { pageEditions } from "@/lib/section-view";
+import { pageEditions, sectionPage } from "@/lib/section-view";
 import { CLASS_COLORS, classHref, hitDie, primaryAbilities, type ClassEntry } from "@/lib/classes";
 import type { ClassEdition } from "@/lib/classes-types";
 
@@ -41,6 +41,8 @@ function ClassGrid({ entries, edition }: { entries: ClassEntry[]; edition: Class
 }
 
 export default async function ClassesPage() {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("classi");
   const { list } = await getCorrectedClasses();
   // An edition hidden from /admin/sezioni is not in the page.
   const shown = await pageEditions("classi");

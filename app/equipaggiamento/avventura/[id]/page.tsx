@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
 import { PartBlock } from "@/components/sections/part-block";
-import { pageEditions } from "@/lib/section-view";
+import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import type { GearItem, GearTable } from "@/lib/adventuring-gear";
 import { gear2014Source, type Gear2014Item } from "@/lib/adventuring-gear-2014";
 import { compareGear, findGearEntry, gearEntries, gearHref } from "@/lib/adventuring-gear-editions";
@@ -25,6 +25,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  // Hidden or «In arrivo»: no name or description of the card in the answer.
+  if (await sectionClosed("avventura")) return CLOSED_METADATA;
   const found = findGearEntry((await params).id, (await getCorrectedGear()).list);
   const item = found && (found.entry.editions[found.edition ?? "2024"] ?? found.entry.editions["2014"]);
   return { title: item ? `${item.nome} — Equipaggiamento d’avventura — Il Grimorio.App` : "Oggetto non trovato" };
@@ -124,6 +126,8 @@ function Sheet2014({ item }: { item: Gear2014Item }) {
 }
 
 export default async function GearItemPage({ params }: { params: Promise<{ id: string }> }) {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("avventura");
   const corrected = await getCorrectedGear();
   const found = findGearEntry((await params).id, corrected.list);
   if (!found) notFound();
