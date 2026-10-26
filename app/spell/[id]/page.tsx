@@ -80,10 +80,9 @@ export default async function SpellDetailPage({
       {hiddenEdition && <div className="px-6 pt-2"><HiddenPartBar id={partId("incantesimi", edition)} /></div>}
       {hiddenCard && <div className="px-6 pt-2"><HiddenCardBar kind="incantesimo" id={spell.id} /></div>}
       {/* Hero */}
-      {/* Phones and tablets: the picture is a lower band and the heading flows inside it, so a long name or
-          several labels push the band down instead of overflowing; the description starts higher. Computers
-          (from 1024 px) keep the 360 px picture with the heading at its foot. */}
-      <header className="relative min-h-[250px] overflow-hidden lg:h-[360px]">
+      {/* The picture is a lower band and the heading flows inside it, so a long name or several labels push the
+          band down instead of overflowing; the description starts higher. */}
+      <header className="relative min-h-[250px] overflow-hidden">
         <Image
           src="/hero-libro.webp"
           alt=""
@@ -102,7 +101,7 @@ export default async function SpellDetailPage({
         <BackButton fallback="/grimorio" />
         <ShareButton path={`/spell/${encodeURIComponent(spell.id)}`} title={titolo} />
         <FavoriteButton id={spell.id} />
-        <div className="relative px-6 pb-2 pt-[92px] lg:absolute lg:inset-x-0 lg:bottom-0 lg:p-6">
+        <div className="relative px-6 pb-2 pt-[92px]">
           {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
           <AdminEditButton target={{ kind: "incantesimo", id: spell.id, edition }} />
           <SpellSheetHeading spell={spell} context={context} />
