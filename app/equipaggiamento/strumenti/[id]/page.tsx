@@ -53,7 +53,7 @@ function Heading({ nome, kind, edition }: { nome: string; kind: string; edition:
 
 function Source({ document, url, page }: { document: string; url: string; page: number }) {
   return (
-    <aside aria-label="Fonte" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+    <aside aria-label="Fonte" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
       <p>Testo integrale: {document} italiano — «Strumenti».</p>
       <a className="underline underline-offset-4" href={`${url}#page=${page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {page}</a>
       {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>

@@ -81,7 +81,7 @@ function Sheet2024({ item }: { item: GearItem }) {
         {item.paragraphs.map((paragraph, i) => <p key={i} className="font-serif text-[1.05rem] leading-7">{paragraph}</p>)}
       </div>
       {item.tables.map(table => <TableCards key={table.title} table={table} />)}
-      <aside aria-label="Fonte" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+      <aside aria-label="Fonte" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
         <p>Testo integrale: SRD 5.2.1 italiano — «Equipaggiamento d’avventura».</p>
         <a className="underline underline-offset-4" href={`${SRD_521}#page=${item.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {item.page}</a>
         {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
@@ -114,7 +114,7 @@ function Sheet2014({ item }: { item: Gear2014Item }) {
         {item.paragraphs.map((paragraph, i) => <p key={i} className="font-serif text-[1.05rem] leading-7">{paragraph}</p>)}
       </div>
       {item.righe && <TableCards table={{ title: "", columns: ["Oggetto", "Costo", "Peso"], rows: item.righe.map(row => [row.nome, row.costo, row.peso]) }} />}
-      <aside aria-label="Fonte" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+      <aside aria-label="Fonte" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
         <p>Testo integrale: SRD 5.1 italiano — «Equipaggiamento d’avventura»{item.dotazione ? ", «Dotazioni»" : ""}.</p>
         <a className="underline underline-offset-4" href={`${gear2014Source.sourceUrl}#page=${item.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {item.page}</a>
         {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>

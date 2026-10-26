@@ -108,7 +108,7 @@ export default async function MonsterDetailPage({
       />
       <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} catalog={await getSpellReferenceCatalog()} />
       {source && (
-        <aside aria-label="Fonte della scheda" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+        <aside aria-label="Fonte della scheda" data-source-box="" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: {source.document} italiano — {source.sourceName}.</p>
           {source.adaptation && <p>{source.adaptation}</p>}
           {source.pages.length > 1 && <p>Pagine della fonte: {source.pages.join(", ")}.</p>}

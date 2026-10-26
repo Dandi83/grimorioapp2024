@@ -64,7 +64,7 @@ function Sheet({ armor, category }: { armor: ArmorEditionView; category: ArmorCa
           </div>
         ))}
       </section>
-      <aside aria-label="Fonte" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+      <aside aria-label="Fonte" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
         <p>Testo integrale: {source.document} italiano — tabella Armature{armor.edition === "2014" ? " e regole delle armature" : " e voce «Armature» del Manuale"}.</p>
         <a className="underline underline-offset-4" href={`${source.sourceUrl}#page=${armor.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, pagina {armor.page}</a>
         {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
