@@ -221,6 +221,19 @@ a.ref-pill:focus-visible {
   outline-offset: 2px;
 }
 
+/* The box under the text of a card (SRD source, «Scheda completa dello spirito», NO SRD origin, homebrew, rule and
+   entry sources: [data-source-box]): always 16 px after the last line of the text, whatever the text ends with and
+   whatever spacing the container gives (space-y, the padding of the description). A box after a box keeps its own. */
+[data-source-box] {
+  margin-top: 1rem;
+}
+:not([data-source-box]):has(+ [data-source-box]) {
+  margin-bottom: 0;
+}
+:is([data-card-description], [data-spirit-summary]):has(+ [data-source-box]) {
+  padding-bottom: 0;
+}
+
 /* Source and licence links in the small print of the sheets: a tap area of about 44px on the phone without
    moving the text (vertical padding of an inline link does not change the line). */
 aside a.underline {

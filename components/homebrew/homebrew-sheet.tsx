@@ -35,7 +35,7 @@ export function HomebrewByline({ autore, licenza }: { autore: string | null | un
 /** The closing note of a homebrew sheet, in place of the SRD source. */
 export function HomebrewNote() {
   return (
-    <aside aria-label="Fonte della scheda" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+    <aside aria-label="Fonte della scheda" data-source-box="" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
       <p>Creatura homebrew, non ufficiale. Non fa parte dell’SRD e non è materiale Wizards of the Coast.</p>
     </aside>
   );

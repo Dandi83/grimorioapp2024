@@ -112,7 +112,7 @@ export default async function SpellDetailPage({
 
       <SpellSheetBody spell={spell} context={context} />
       {original?.statBlockSummary && (
-        <section className="px-6 pb-6">
+        <section className="px-6 pb-6" data-spirit-summary="">
           <h2 className="mb-3 font-serif text-lg font-semibold text-primary">Spirito richiamato — riepilogo</h2>
           <HtmlText html={original.statBlockSummary} damageIcons references={visibleLinks(inlineConditionReferences, out)} rules={damageRuleLinks(false, out)} spellReferences={visibleLinks(inlineSpellReferences(original.statBlockSummary, false, context.catalog), out)} />
           <p className="mt-3 text-xs leading-5 text-muted">
@@ -123,12 +123,12 @@ export default async function SpellDetailPage({
       )}
       {/* An original summary is marked «NO SRD» next to its name (no asterisk and note any more); the spirit keeps its link. */}
       {original?.statBlockUrl && (
-        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+        <aside data-source-box="" className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p><a className="underline underline-offset-4" href={original.statBlockUrl} target="_blank" rel="noreferrer">Scheda completa dello spirito 2024</a></p>
         </aside>
       )}
       {legacySource && (
-        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+        <aside data-source-box="" className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: {legacySource.document} italiano — {legacySource.sourceName}.</p>
           <p>
             <a className="underline underline-offset-4" href={`${legacySource.sourceUrl}#page=${legacySource.page}`} target="_blank" rel="noreferrer">
@@ -139,7 +139,7 @@ export default async function SpellDetailPage({
         </aside>
       )}
       {source && (
-        <aside className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+        <aside data-source-box="" className="mx-6 mb-6 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: SRD 5.2.1 italiano — {source.sourceName}.</p>
           <p>
             <a className="underline underline-offset-4" href={`${srdSourceUrl}#page=${source.pages[0]}`} target="_blank" rel="noreferrer">

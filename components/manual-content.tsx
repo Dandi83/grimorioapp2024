@@ -33,7 +33,7 @@ export function ManualContent({ entry }: { entry: ManualEntry }) {
     ) : (
       <p key={i} className="font-serif text-[1.05rem] leading-7 text-card-foreground">{block.text}</p>
     ))}
-    <aside aria-label="Fonte della voce" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+    <aside aria-label="Fonte della voce" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
       <p>Testo integrale: {entry.edizione === "2014" ? "SRD 5.1 italiano, Appendice A del Manuale del Giocatore" : "SRD 5.2.1 italiano"} — {entry.title}.</p>
       <a className="underline underline-offset-4" href={`${entry.edizione === "2014" ? LEGACY_MANUAL_SOURCE_URL : MANUAL_SOURCE_URL}#page=${entry.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, {entry.pages.length === 1 ? "pagina" : "pagine"} {entry.pages.join(", ")}</a>
       {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>

@@ -35,7 +35,7 @@ export function MagicItemSheet({ item, edition, hidden = [] }: { item: MagicItem
         <Chips item={item} />
       </div>
       <MagicItemText blocks={item.blocchi} rules={damageRuleLinks(edition === "2014", hidden)} />
-      <aside aria-label="Fonte" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+      <aside aria-label="Fonte" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
         <p>Testo integrale: {source.srd} italiano — «Oggetti magici A–Z».</p>
         <a className="underline underline-offset-4" href={`${source.url}#page=${item.pagina}`} target="_blank" rel="noreferrer">Fonte ufficiale, {pages}</a>
         {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>

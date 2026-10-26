@@ -30,7 +30,7 @@ export function RuleContent({ rule }: { rule: RuleEntry }) {
   return (
     <div className="condition-sheet min-w-0 space-y-5">
       {items}
-      <aside aria-label="Fonte della regola" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+      <aside aria-label="Fonte della regola" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
         <p>Testo integrale: {rule.document}, {rule.chapter} — {rule.title}.</p>
         <a className="underline underline-offset-4" href={`${rule.sourceUrl}#page=${rule.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, {rule.pages.length === 1 ? "pagina" : "pagine"} {rule.pages.join(", ")}</a>
         {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
