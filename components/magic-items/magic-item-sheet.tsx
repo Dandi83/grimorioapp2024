@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { MagicItemText } from "@/components/magic-items/magic-item-text";
+import { damageRuleLinks } from "@/lib/damage-rule-link";
 import { RarityChip } from "@/components/magic-items/rarity-chip";
 import { MAGIC_ITEM_SOURCES, attunementText, magicItemsRulesHref, type MagicItem } from "@/lib/magic-items";
 import { rarityCategories, type MagicItemEdition } from "@/lib/magic-items-types";
@@ -22,7 +23,8 @@ function Chips({ item }: { item: MagicItem }) {
 }
 
 /** Sheet of a magic item: name, chips from the type line, full printed text and source. */
-export function MagicItemSheet({ item, edition }: { item: MagicItem; edition: MagicItemEdition }) {
+/** hidden: what the links of the text may not lead to (linksOut). */
+export function MagicItemSheet({ item, edition, hidden = [] }: { item: MagicItem; edition: MagicItemEdition; hidden?: readonly string[] }) {
   const source = MAGIC_ITEM_SOURCES[edition];
   const rules = magicItemsRulesHref();
   const pages = item.pagine.length > 1 ? `pagine ${item.pagine[0]}–${item.pagine[item.pagine.length - 1]}` : `pagina ${item.pagina}`;
@@ -32,7 +34,7 @@ export function MagicItemSheet({ item, edition }: { item: MagicItem; edition: Ma
         <h1 className="font-serif text-4xl font-bold leading-tight">{item.nome}</h1>
         <Chips item={item} />
       </div>
-      <MagicItemText blocks={item.blocchi} />
+      <MagicItemText blocks={item.blocchi} rules={damageRuleLinks(edition === "2014", hidden)} />
       <aside aria-label="Fonte" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
         <p>Testo integrale: {source.srd} italiano — «Oggetti magici A–Z».</p>
         <a className="underline underline-offset-4" href={`${source.url}#page=${item.pagina}`} target="_blank" rel="noreferrer">Fonte ufficiale, {pages}</a>

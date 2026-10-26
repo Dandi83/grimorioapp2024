@@ -44,7 +44,8 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
   const view = await sectionView();
   const added = (await listSubclasses(id).catch(() => [])).map(row => ({ id: row.id, edition: row.edizione, draft: row.scheda, hidden: view.hiddenCards.includes(cardPath("sottoclasse", row.id)) }))
     .filter(item => !item.hidden || view.admin);
-  const context = added.length ? { catalog: await getSpellReferenceCatalog(), hidden: await linksOut() } : undefined;
+  const hidden = await linksOut();
+  const context = added.length ? { catalog: await getSpellReferenceCatalog(), hidden } : undefined;
   const headers: Partial<Record<ClassEdition, React.ReactNode>> = {};
   const bodies: Partial<Record<ClassEdition, React.ReactNode>> = {};
   for (const edition of shown) {
@@ -59,7 +60,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
     );
     bodies[edition] = card ? (
       <div className="space-y-5 px-4 pt-4 sm:px-6">
-        <ClassBody card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} added={added.filter(item => item.edition === edition)} context={context} />
+        <ClassBody card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} added={added.filter(item => item.edition === edition)} context={context} hidden={hidden} />
         <SectionCorrectionNote section="classi" id={id} edition={edition} corrections={corrections?.[edition]} />
         <p className="text-center text-[13px] text-muted">Fonte: <Link href="/fonti" className="underline underline-offset-4">{CLASS_SOURCES[edition]} (CC-BY-4.0)</Link></p>
       </div>

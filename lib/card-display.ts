@@ -5,6 +5,7 @@
 
 import { concentrationRuleHref, splitConcentration } from "./concentration-link";
 import { inlineConditionReferences, legacyInlineConditionReferences } from "./conditions";
+import { damageRuleLinks } from "./damage-rule-link";
 import { normalizeLayout } from "./display-layout";
 import { visibleLinks } from "./public-sections";
 import { schoolColor } from "./school-colors";
@@ -57,6 +58,8 @@ export function prepareSpellDisplay(spell: Pick<Spell, "id" | "nome_italiano" | 
     source: spell.fonte_scheda,
     html,
     conditionLinks: conditionLinks(legacy, hidden),
+    // «Resistenza», «immunità», «vulnerabilità» linked to the rules of the edition (lib/damage-rule-link.ts).
+    ruleLinks: damageRuleLinks(legacy, hidden),
     spellLinks: visibleLinks(inlineSpellReferences(html, legacy, catalog), hidden),
   };
 }
@@ -69,6 +72,7 @@ export function prepareMonsterText(html: string, legacy: boolean, source: CardSo
   return {
     html: formatMonsterSpellLists(text, legacy, catalog),
     references: conditionLinks(legacy, hidden),
+    rules: damageRuleLinks(legacy, hidden),
     spellReferences: visibleLinks(inlineSpellReferences(text, legacy, catalog), hidden),
   };
 }

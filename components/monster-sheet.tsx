@@ -3,6 +3,7 @@ import { ReferenceText, MonsterText } from "@/components/html-text";
 import { CardLabels } from "@/components/spell-sheet";
 import { abilityMod, type Monster } from "@/lib/monsters-types";
 import { conditionLinks, prepareMonsterText, type CardSource } from "@/lib/card-display";
+import { damageLineHref, damageRuleLinks } from "@/lib/damage-rule-link";
 import type { SpellReferenceCatalog } from "@/lib/spell-references";
 
 /**
@@ -64,9 +65,11 @@ function StripCell({ label, value, note, noteItalic = false }: { label: string; 
 
 function Line({ label, value, legacy, hidden, damageIcons = false }: { label: string; value?: string; legacy: boolean; hidden: readonly string[]; damageIcons?: boolean }) {
   if (!value) return null;
+  // «Resistenze», «Immunità ai danni»…: the label leads to the rule of the edition, «Immunità alle condizioni» to the conditions.
+  const href = damageLineHref(label, damageRuleLinks(legacy, hidden));
   return (
     <p className="text-[16px] leading-6 text-foreground">
-      <span className="font-bold">{label}</span>{" "}
+      {href ? <a href={href} className="ref-pill" data-rule-term="">{label}</a> : <span className="font-bold">{label}</span>}{" "}
       <ReferenceText text={value} damageIcons={damageIcons} damageContext={label} references={conditionLinks(legacy, hidden)} />
     </p>
   );
@@ -80,7 +83,7 @@ function Section({ title, html, context }: { title: string; html?: string; conte
   return (
     <section data-monster-section>
       <h2>{title}</h2>
-      <MonsterText html={text.html} damageIcons references={text.references} spellReferences={text.spellReferences} />
+      <MonsterText html={text.html} damageIcons references={text.references} spellReferences={text.spellReferences} rules={text.rules} />
     </section>
   );
 }

@@ -1,0 +1,125 @@
+[
+ {
+  "id": "immunita",
+  "title": "Immunità",
+  "edizione": "2024",
+  "document": "SRD 5.2.1 italiano",
+  "chapter": "Glossario delle regole",
+  "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf",
+  "sourceSha256": "a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718",
+  "page": 208,
+  "pages": [
+   208
+  ],
+  "blocks": [
+   {
+    "kind": "prose",
+    "text": "Se il personaggio è immune a un tipo di danno o a una condizione, significa che non ne subisce gli effetti in alcun modo.",
+    "page": 208,
+    "sourceHash": "b52f45fd09ec59085f66cc9bcce7ecfe4ff52fbe9829413b1e4abb2d78dad1f3"
+   }
+  ]
+ },
+ {
+  "id": "resistenza",
+  "title": "Resistenza",
+  "edizione": "2024",
+  "document": "SRD 5.2.1 italiano",
+  "chapter": "Glossario delle regole",
+  "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf",
+  "sourceSha256": "a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718",
+  "page": 212,
+  "pages": [
+   212
+  ],
+  "blocks": [
+   {
+    "kind": "prose",
+    "text": "Se un personaggio è dotato di resistenza a un tipo di danno, i danni di quel tipo che subisce sono dimezzati (arrotondando per difetto). La resistenza si applica una sola volta per ogni istanza di danno ricevuta. Vedi anche \"Come si gioca\" (\"Danni e guarigione\").",
+    "page": 212,
+    "sourceHash": "fc80d739580639c5dc77ba57081b1bd04d15d7853a15520faa356cc8447a4f81"
+   }
+  ]
+ },
+ {
+  "id": "vulnerabilita",
+  "title": "Vulnerabilità",
+  "edizione": "2024",
+  "document": "SRD 5.2.1 italiano",
+  "chapter": "Glossario delle regole",
+  "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf",
+  "sourceSha256": "a7b88b0cd4f6424624cf5046c96755652985a27a2d405e30948e44b1f5e1f718",
+  "page": 219,
+  "pages": [
+   219
+  ],
+  "blocks": [
+   {
+    "kind": "prose",
+    "text": "Se un personaggio è vulnerabile a un tipo di danno, i danni di quel tipo che subisce sono raddoppiati. La vulnerabilità si applica una sola volta per ogni istanza di danno ricevuta. Vedi anche \"Come si gioca\" (\"Danni e guarigione\").",
+    "page": 219,
+    "sourceHash": "8d418be720efd6f6558837bf77765c9e5dbc1b8cf9ea9b2380f631c9f01f456d"
+   }
+  ]
+ },
+ {
+  "id": "resistenza-vulnerabilita-2014",
+  "title": "Resistenza e vulnerabilità ai danni",
+  "edizione": "2014",
+  "document": "SRD 5.1 italiano",
+  "chapter": "Combattimento",
+  "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf",
+  "sourceSha256": "2ef143b8abeae9558d30b405ea48e2ee9b5d700dd11cd955e6117e61cbddd3f7",
+  "page": 111,
+  "pages": [
+   111
+  ],
+  "blocks": [
+   {
+    "kind": "prose",
+    "text": "Alcune creature e oggetti sono straordinariamente difficili o insolitamente facili da danneggiare con certi tipi di danno.",
+    "page": 111,
+    "sourceHash": "c24f0ba353a93129363f20dd4cb3af235c52ecf1d69651c5046cf69513d46513"
+   },
+   {
+    "kind": "prose",
+    "text": "Se una creatura o un oggetto è dotato di resistenza a un tipo di danno, i danni di quel tipo che subisce sono dimezzati. Se una creatura o un oggetto è dotato di vulnerabilità a un tipo di danno, i danni di quel tipo che subisce sono raddoppiati.",
+    "page": 111,
+    "sourceHash": "4ab26185934d5560a363fe235cd330ccbfcf17ab5a8412a568bff11561d4f5db"
+   },
+   {
+    "kind": "prose",
+    "text": "La resistenza e la vulnerabilità si applicano dopo tutti gli altri modificatori ai danni. Si prenda l'esempio di una creatura dotata di resistenza ai danni contundenti che viene colpita da un attacco che infligge 25 danni contundenti. La creatura si trova anche entro un'aura magica che riduce di 5 tutti i danni. I 25 danni vengono prima ridotti di 5 e poi dimezzati, quindi la creatura subisce 10 danni.",
+    "page": 111,
+    "sourceHash": "0ae386c4b4b0e118c6c1aac38b9fa30c4cc78430313b3f99612ce5ee6d65a162"
+   },
+   {
+    "kind": "prose",
+    "text": "Più istanze di resistenza o vulnerabilità che influenzano lo stesso tipo di danno contano sempre come una sola istanza. Per esempio, se una creatura è dotata di resistenza ai danni da fuoco e di resistenza a tutti i danni non magici, i danni di un fuoco non magico contro di essa vengono ridotti della metà, non di tre quarti.",
+    "page": 111,
+    "sourceHash": "0c2d199d73d8de7a24a2b87eddac2b3b35cd2a6ed387f75992369f9ee7243a84"
+   }
+  ]
+ },
+ {
+  "id": "immunita-2014",
+  "title": "Vulnerabilità, resistenze e immunità",
+  "edizione": "2014",
+  "document": "SRD 5.1 italiano",
+  "chapter": "Mostri",
+  "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf",
+  "sourceSha256": "2ef143b8abeae9558d30b405ea48e2ee9b5d700dd11cd955e6117e61cbddd3f7",
+  "page": 295,
+  "pages": [
+   295
+  ],
+  "blocks": [
+   {
+    "kind": "prose",
+    "text": "Alcune creature sono dotate di vulnerabilità, resistenza o immunità a certi tipi di danno. Alcune particolari creature possono perfino essere resistenti o immuni ai danni degli attacchi non magici (un attacco magico è un attacco sferrato tramite un incantesimo, un oggetto magico o un'altra fonte magica). Inoltre, alcune creature sono immuni a certe condizioni.",
+    "page": 295,
+    "sourceHash": "a46a1ccf3c5a61c6de4b7d145238e4621d00534c7c98ba9f26fa647a377f6a32"
+   }
+  ]
+ }
+]

@@ -207,6 +207,11 @@ a.ref-pill::first-letter {
   text-transform: lowercase;
 }
 
+/* Resistenza, immunità, vulnerabilità: the word as printed, capital letter included. */
+a.ref-pill[data-rule-term]::first-letter {
+  text-transform: none;
+}
+
 a.ref-pill:hover {
   border-color: var(--color-primary);
 }

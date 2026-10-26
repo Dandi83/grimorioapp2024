@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { NoSrdTag } from "@/components/card-source-pill";
 import { ReferenceText } from "@/components/html-text";
 import { conditionLinks } from "@/lib/card-display";
+import { damageRuleLinks, findRuleTerms, type RuleTermLinks } from "@/lib/damage-rule-link";
 import { inlineSpellReferences, markSpellNames, fileSpellCatalog, type SpellReferenceCatalog } from "@/lib/spell-references";
 import { paragraphs, type SubclassDraft } from "@/lib/subclass-types";
 
@@ -60,14 +61,15 @@ function referencesFor(texts: string[], legacy: boolean, context: AddedTextConte
 function AddedBlocks({ text, entries = [], legacy, context }: { text: string; entries?: SubclassDraft["privilegi"][number]["voci"]; legacy: boolean; context: AddedTextContext }) {
   const parts = paragraphs(text);
   const references = referencesFor([...parts, ...entries.flatMap(entry => [entry.nome, entry.testo])], legacy, context);
+  const rules: RuleTermLinks = damageRuleLinks(legacy, context.hidden);
   if (!parts.length && !entries.length) return null;
   return (
     <div className="space-y-3 text-[15px] leading-6 text-foreground">
-      {parts.map((part, i) => <p key={i}><ReferenceText text={part} references={references} damageIcons /></p>)}
+      {parts.map((part, i) => <p key={i}><ReferenceText text={part} references={references} ruleLinks={findRuleTerms(part, rules)} damageIcons /></p>)}
       {entries.map((entry, i) => (
         <p key={`v${i}`}>
           {entry.nome && <strong className="font-bold italic">{entry.nome.replace(/\.\s*$/, "")}. </strong>}
-          {paragraphs(entry.testo).map((part, j) => <span key={j}>{j > 0 && <><br /><br /></>}<ReferenceText text={part} references={references} damageIcons /></span>)}
+          {paragraphs(entry.testo).map((part, j) => <span key={j}>{j > 0 && <><br /><br /></>}<ReferenceText text={part} references={references} ruleLinks={findRuleTerms(part, rules)} damageIcons /></span>)}
         </p>
       ))}
     </div>
