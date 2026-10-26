@@ -10,7 +10,7 @@ export const SPELL_EDITOR_FIELDS = [
   "durata",
   "descrizione",
 ] as const;
-export type SpellEditorField = (typeof SPELL_EDITOR_FIELDS)[number];
+type SpellEditorField = (typeof SPELL_EDITOR_FIELDS)[number];
 
 /** Only the fields the person really changed; the description comes from the visual editor. */
 export function changedSpellFields(stored: Record<string, unknown>, sent: Partial<Record<SpellEditorField, string>>) {

@@ -37,9 +37,9 @@ function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
 }
 
 /** parte: the part of its section the row belongs to (a collection, a tab), hidden with it from /admin/sezioni. */
-export interface SourceRow { nome: string; label: string; href: string; edizione?: EquipmentEdition; parte?: string }
+interface SourceRow { nome: string; label: string; href: string; edizione?: EquipmentEdition; parte?: string }
 
-export interface SearchSource {
+interface SearchSource {
   section: SearchSectionKey;
   title: string;
   rows: (environment: string | undefined) => SourceRow[] | Promise<SourceRow[]>;
@@ -124,13 +124,13 @@ export const SEARCH_SOURCES: SearchSource[] = [
 ];
 
 /** A result of the index: solo, the only edition it exists in (none when in both, or edition-free). */
-export interface MergedRow { nome: string; label: string; href: string; href2014?: string; solo?: EquipmentEdition }
+interface MergedRow { nome: string; label: string; href: string; href2014?: string; solo?: EquipmentEdition }
 
 /**
  * One result per name and source: a 2024 row and a 2014 row with the same name become one row with
  * both addresses (one when the page is the same); an unpaired 2014 row says "· 2014".
  */
-export function mergeEditions(rows: SourceRow[]): MergedRow[] {
+function mergeEditions(rows: SourceRow[]): MergedRow[] {
   const out: MergedRow[] = [];
   const open2024 = new Map<string, MergedRow[]>();
   for (const row of rows.filter(r => r.edizione !== "2014")) {

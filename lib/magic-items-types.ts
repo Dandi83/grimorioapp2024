@@ -50,7 +50,7 @@ export interface MagicItemFilters { rarita: MagicItemRarity[]; tipo: MagicItemTy
 export const NO_MAGIC_ITEM_FILTERS: MagicItemFilters = { rarita: [], tipo: [], sintonia: [] };
 
 /** "o" inside the same filter, "e" between different filters. */
-export function matchesMagicItem(row: MagicItemListRow, filters: MagicItemFilters): boolean {
+function matchesMagicItem(row: MagicItemListRow, filters: MagicItemFilters): boolean {
   if (filters.rarita.length && !row.rarita_categorie.some(rarity => (filters.rarita as string[]).includes(rarity))) return false;
   if (filters.tipo.length && !filters.tipo.includes(row.tipo)) return false;
   if (filters.sintonia.length && !filters.sintonia.includes(row.sintonia ? "Richiesta" : "Non richiesta")) return false;

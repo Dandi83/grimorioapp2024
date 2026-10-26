@@ -25,7 +25,7 @@ export interface ArmorEditionView {
   page: number;
 }
 
-export interface ArmorRuleCard { title: string; detail?: string; text: string; page: number }
+interface ArmorRuleCard { title: string; detail?: string; text: string; page: number }
 
 export interface Armor {
   id: string;

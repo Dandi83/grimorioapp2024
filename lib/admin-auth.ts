@@ -42,7 +42,7 @@ function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(ba, bb);
 }
 
-export function passcodeConfigured(): boolean {
+function passcodeConfigured(): boolean {
   return getSecret().length > 0;
 }
 

@@ -99,7 +99,7 @@ function intIn(value: unknown, min: number, max: number): number | null {
   return Number.isInteger(n) && n >= min && n <= max ? n : null;
 }
 
-export type DraftCheck = { ok: true; draft: HomebrewDraft } | { ok: false; error: string };
+type DraftCheck = { ok: true; draft: HomebrewDraft } | { ok: false; error: string };
 
 /** The server check of a draft: lengths, numbers, choices, plain text. The first problem found is returned. */
 export function parseDraft(input: unknown): DraftCheck {
@@ -186,7 +186,7 @@ const XP: Record<string, string> = {
   "25": "75.000", "26": "90.000", "27": "105.000", "28": "120.000", "29": "135.000", "30": "155.000",
 };
 /** Experience of a challenge rating, as printed on the SRD sheets. */
-export const experienceOf = (gs: string) => XP[gs] ?? "";
+const experienceOf = (gs: string) => XP[gs] ?? "";
 
 const FEMININE_TYPES = new Set(["Aberrazione", "Bestia", "Melma", "Mostruosità"]);
 /** «Mostruosità Grande», «Drago Medio»: the size agrees with the type, as on the SRD subtitle line. */
@@ -306,8 +306,8 @@ export const modifier = abilityMod;
 export const HOMEBREW_LICENSE = "CC BY-NC-SA 4.0";
 export const HOMEBREW_LICENSE_URL = "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.it";
 
-export interface ProposalInput { draft: HomebrewDraft; nickname: string; email: string | null; licenza: string }
-export type ProposalParse = { ok: true; value: ProposalInput; spam: boolean; token: string } | { ok: false; error: string };
+interface ProposalInput { draft: HomebrewDraft; nickname: string; email: string | null; licenza: string }
+type ProposalParse = { ok: true; value: ProposalInput; spam: boolean; token: string } | { ok: false; error: string };
 
 // Practical email check, the same as the reports form (lib/feedback-input.ts).
 const EMAIL = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:"]{2,}$/;

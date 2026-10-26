@@ -27,7 +27,7 @@ export function emptySubclass(classe: ClassId, edizione: ClassEdition, levels: r
   return { classe, edizione, nome: "", descrizione: "", privilegi: levels.map(livello => ({ livello, nome: "", testo: "", voci: [] })) };
 }
 
-export type SubclassCheck = { ok: true; draft: SubclassDraft } | { ok: false; error: string };
+type SubclassCheck = { ok: true; draft: SubclassDraft } | { ok: false; error: string };
 
 /** The server check of a draft: class, edition, lengths, plain text, levels 1–20. The first problem found is returned. */
 export function parseSubclassDraft(input: unknown): SubclassCheck {

@@ -56,7 +56,7 @@ export function fieldError(field: FieldSpec, value: string): string | null {
   return null;
 }
 
-export const REASON_MIN = 5;
+const REASON_MIN = 5;
 export const REASON_MAX = 500;
 
 export function reasonError(reason: string): string | null {

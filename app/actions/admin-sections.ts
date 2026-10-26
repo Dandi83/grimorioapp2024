@@ -7,7 +7,7 @@ import { requireAdmin } from "@/lib/admin-action-helpers";
 import { isPartId, isPublicSectionKey, sectionParts, type PublicSectionKey } from "@/lib/public-sections";
 import { SECTIONS_TAG, hiddenPartIds, setPartHidden, setSectionHidden } from "@/lib/section-visibility";
 
-export type SectionSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
+type SectionSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
 
 /**
  * Shows or hides a public section (/admin/sezioni and the «Mostra» link of the dark band).

@@ -1,11 +1,11 @@
 /** Guided editing uses the existing HTML columns; untouched source stays exact. */
-export type MonsterContentBlock = {
+type MonsterContentBlock = {
   id: string;
   title: string;
   body: string;
   original?: { title: string; body: string; html: string };
 };
-export type MonsterContentState = { original: string; originalIds: string[]; blocks: MonsterContentBlock[] };
+type MonsterContentState = { original: string; originalIds: string[]; blocks: MonsterContentBlock[] };
 
 export function escapeEditorText(text: string): string {
   return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

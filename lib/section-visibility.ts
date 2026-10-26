@@ -14,13 +14,13 @@ import { PUBLIC_SECTIONS, isPartId, type PublicSectionKey } from "./public-secti
 
 export const SECTIONS_TAG = "section-visibility";
 
-export interface SectionLogRow { id: string; sezione: string; parte?: string | null; nascosta: boolean; creata_il: Date | string }
+interface SectionLogRow { id: string; sezione: string; parte?: string | null; nascosta: boolean; creata_il: Date | string }
 
 export type CardKind = "incantesimo" | "mostro" | "sottoclasse";
-export interface CardLogRow { id: string; tipo: CardKind; scheda: string; nome: string; edizione: string; nascosta: boolean; autore: string; creata_il: Date | string }
+interface CardLogRow { id: string; tipo: CardKind; scheda: string; nome: string; edizione: string; nascosta: boolean; autore: string; creata_il: Date | string }
 
 /** Hidden sections, parts ("<section>:<part>") and cards (their addresses: "/spell/<id>", "/mostro/<id>", "/sottoclassi/<id>"). */
-export interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards: string[] }
+interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards: string[] }
 
 /** The address of a card, which is also how a hidden card is named in the lists of hidden things. */
 // An added subclass has no page of its own (it is shown in the sheet of its class): "/sottoclassi/<id>" only names it.

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { ComponentType } from "react";
 
+import { IntentLink } from "@/components/intent-link";
+
 export interface SectionTile {
   href: string;
   title: string;
@@ -13,13 +15,13 @@ export interface SectionTile {
   hidden?: boolean;
 }
 
-/** Large tiles of a hub page (Compendio, Equipaggiamento): one per available section, none "coming soon". */
+/** Large tiles of a hub page (Compendio, Equipaggiamento): one per available section, none "coming soon"; each page is prepared on touch or hover. */
 export function SectionTiles({ tiles, label, className = "mt-5" }: { tiles: SectionTile[]; label?: string; className?: string }) {
   return (
     <ul className={`${className} grid gap-3 md:grid-cols-3 md:gap-4`} aria-label={label}>
       {tiles.map(({ href, title, text, Icon, square, hidden }) => (
         <li key={href}>
-          <Link href={href} className="flex min-h-24 items-center gap-4 rounded-[14px] border border-border bg-card p-4 shadow-[0_1px_0_var(--color-divider)] md:h-full md:min-h-[150px] md:flex-col md:items-start md:gap-3 md:rounded-2xl md:p-5 md:focus-visible:outline-2 md:focus-visible:outline-offset-2 md:focus-visible:outline-primary">
+          <IntentLink href={href} className="flex min-h-24 items-center gap-4 rounded-[14px] border border-border bg-card p-4 shadow-[0_1px_0_var(--color-divider)] md:h-full md:min-h-[150px] md:flex-col md:items-start md:gap-3 md:rounded-2xl md:p-5 md:focus-visible:outline-2 md:focus-visible:outline-offset-2 md:focus-visible:outline-primary">
             {square ? (
               <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-primary text-white">
                 <Icon size={20} aria-hidden={true} />
@@ -35,7 +37,7 @@ export function SectionTiles({ tiles, label, className = "mt-5" }: { tiles: Sect
               <span className="block text-[15px] text-muted">{text}</span>
             </span>
             <ArrowRight size={20} className="shrink-0 text-primary md:self-end" aria-hidden="true" />
-          </Link>
+          </IntentLink>
         </li>
       ))}
     </ul>

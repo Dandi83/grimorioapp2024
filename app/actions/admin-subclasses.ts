@@ -8,7 +8,7 @@ import { SECTIONS_TAG, setCardHidden } from "@/lib/section-visibility";
 import { parseSubclassDraft } from "@/lib/subclass-types";
 import { createSubclass, deleteSubclass, getSubclass, updateSubclass } from "@/lib/subclasses";
 
-export type SubclassResult = { ok: true; id: string } | { ok: false; error: string };
+type SubclassResult = { ok: true; id: string } | { ok: false; error: string };
 
 /** The sheet of the class and the admin page of the class: the selector and the list change. */
 async function refresh(classe: string) {

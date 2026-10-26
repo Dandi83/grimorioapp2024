@@ -11,7 +11,7 @@ import {
  * request can subscribe a device or send a notification.
  */
 
-export type PushResult = { ok: true } | { ok: false; error: string };
+type PushResult = { ok: true } | { ok: false; error: string };
 
 /** The public key the browser needs to subscribe (the private one never leaves the server). */
 export async function pushPublicKeyAction(): Promise<string> {

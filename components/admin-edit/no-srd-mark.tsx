@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useAdminSession } from "@/components/admin-edit/admin-session";
 
-export type NoSrdKind = "incantesimi" | "mostri";
+type NoSrdKind = "incantesimi" | "mostri";
 
 /**
  * The NO SRD cards of a list, for the administrator only: like «Modifica», asked after the session check

@@ -43,7 +43,7 @@ const CELL: Record<string, string> = {
  * of its column; the first column takes the rest. A line that does not match continues the row
  * above: its first column ("pergamene", "ferrato)") or, far to the right, the weight ("(pieno)").
  */
-export function parseTable(text: string): GearTable {
+function parseTable(text: string): GearTable {
   const lines = text.split("\n").filter(line => line.trim());
   const title = /\s{2,}/.test(lines[0]) ? "" : lines.shift()!.trim();
   const header = lines.shift()!.trim();
@@ -115,7 +115,7 @@ export function getGearItem(id: string) {
 }
 
 /** Light rows for the list and its search: no descriptions. */
-export interface GearListItem { id: string; nome: string; prezzo: string; peso?: string; dotazione: boolean }
+interface GearListItem { id: string; nome: string; prezzo: string; peso?: string; dotazione: boolean }
 export function gearListItems(): GearListItem[] {
   return gearItems.map(({ id, nome, prezzo, peso, dotazione }) => ({ id, nome, prezzo, ...(peso ? { peso } : {}), dotazione }));
 }

@@ -10,7 +10,7 @@ import { getSpellIndex } from "@/lib/spell-index";
 import { getSubclass } from "@/lib/subclasses";
 import { spellName } from "@/lib/spell-name";
 
-export type CardSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
+type CardSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
 
 /** The card as the public catalog has it (database rows and SRD files): no invented ids. */
 async function catalogCard(kind: CardKind, id: string) {

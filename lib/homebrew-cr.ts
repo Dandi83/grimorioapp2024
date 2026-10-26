@@ -14,8 +14,8 @@
 export interface CrReferenceRow { gs: string; n: number; pf: number; ca: number; attacco: number | null; cd: number | null; danni: number }
 export interface CrReference { metodo: string; righe: CrReferenceRow[] }
 
-export interface CrInput { pf: number; ca: number; azioni: string; gs: string }
-export interface CrResult {
+interface CrInput { pf: number; ca: number; azioni: string; gs: string }
+interface CrResult {
   difesa: string;
   attacco: string;
   stimato: string;
@@ -29,12 +29,12 @@ export interface CrResult {
 const NUMBERS: Record<string, number> = { un: 1, uno: 1, una: 1, due: 2, tre: 3, quattro: 4, cinque: 5, sei: 6, sette: 7, otto: 8 };
 
 /** Plain text of an HTML block (the stored sheets) or of the form entries. */
-export function plainOf(html: string): string {
+function plainOf(html: string): string {
   return html.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&#39;|&rsquo;/g, "’");
 }
 
 /** Paragraphs «Nome. testo» of a block. */
-export function entriesOf(text: string): { nome: string; testo: string }[] {
+function entriesOf(text: string): { nome: string; testo: string }[] {
   return text.split(/\n\s*\n+/).map(part => part.trim()).filter(Boolean).map(part => {
     const match = /^([^.\n]{1,80})\.\s*([\s\S]*)$/.exec(part);
     return match ? { nome: match[1].trim(), testo: match[2] } : { nome: "", testo: part };
@@ -42,7 +42,7 @@ export function entriesOf(text: string): { nome: string; testo: string }[] {
 }
 
 /** Average damage of one action: every «N (XdY…)» amount of its first effect (hit or failed save), «più» included. */
-export function averageDamage(text: string): number {
+function averageDamage(text: string): number {
   const effect = text.split(/\bSuccesso\s*:|\bMancato\s*:/i)[0];
   return [...effect.matchAll(/(\d+)\s*\(\s*\d+d\d+[^)]*\)\s*danni/gi)].reduce((sum, match) => sum + Number(match[1]), 0);
 }

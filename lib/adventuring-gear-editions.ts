@@ -9,7 +9,7 @@ import type { EquipmentEdition } from "./equipment-types";
  * ("Canestro" → "Cesto"). The 2024 item keeps its address; a 2014 item with a different name gets
  * its own address from the 2014 name, which opens the 2014 edition.
  */
-export interface GearEntry {
+interface GearEntry {
   /** Address of the entry: the 2024 id when the object exists in 2024, else the 2014 one. */
   id: string;
   /** Own address of the 2014 item when its name differs from the 2024 one ("canestro"). */

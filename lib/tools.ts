@@ -29,10 +29,10 @@ export interface Tool2024 {
 export const toolSlug = (name: string) => name.toLowerCase().replace(/\([^)]*\)/g, " ").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 const fix = (text: string) => repairs.testi2024.reduce((value, item) => value.split(item.da).join(item.a), text);
 /** Commas outside brackets: "Arma da mischia (eccetto randello, …), armatura media". */
-export const splitList = (text: string) => text.split(/,\s*(?![^()]*\))/).map(part => part.trim()).filter(Boolean);
+const splitList = (text: string) => text.split(/,\s*(?![^()]*\))/).map(part => part.trim()).filter(Boolean);
 
 /** "Caratteristica: Forza   Peso: 4 kg\nUtilizzo: forzare … conteni-\n tore (CD 20)\nCreazione: …" */
-export function parseToolCard(text: string) {
+function parseToolCard(text: string) {
   const flat = fix(text.replace(/-\n\s*/g, "").replace(/\s+/g, " ").trim());
   const fields: Record<string, string> = {};
   const parts = flat.split(/\b(Caratteristica|Peso|Utilizzo|Creazione|Varianti):\s*/);

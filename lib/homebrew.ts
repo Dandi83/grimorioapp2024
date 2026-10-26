@@ -19,15 +19,15 @@ import { toMonsterListItem, type Monster, type MonsterListItem } from "./monster
 export const PROPOSAL_STATES = ["da-vedere", "approvata", "rifiutata"] as const;
 export type ProposalState = (typeof PROPOSAL_STATES)[number];
 /** 3 proposals an hour and 10 a day from one device; 30 an hour from everyone together. */
-export const PROPOSAL_LIMITS = { perHour: 3, perDay: 10, overallPerHour: 30 } as const;
+const PROPOSAL_LIMITS = { perHour: 3, perDay: 10, overallPerHour: 30 } as const;
 
 /** licenza: the licence the author accepted (HOMEBREW_LICENSE); null on what came before it (column added later). */
-export interface HomebrewRow { id: string; scheda: HomebrewDraft; edizione: HomebrewEdition; autore: string | null; licenza?: string | null; pubblicata_il: Date | string; aggiornata_il: Date | string }
-export interface ProposalRow {
+interface HomebrewRow { id: string; scheda: HomebrewDraft; edizione: HomebrewEdition; autore: string | null; licenza?: string | null; pubblicata_il: Date | string; aggiornata_il: Date | string }
+interface ProposalRow {
   id: string; stato: ProposalState; scheda: HomebrewDraft; nickname: string; email: string | null; originale: boolean; autorizza: boolean; licenza?: string | null;
   creata_il: Date | string; decisa_il: Date | string | null; motivo: string | null; homebrew_id: string | null;
 }
-export interface HomebrewLogRow { id: string; homebrew_id: string; nome: string; edizione: string; azione: string; creata_il: Date | string }
+interface HomebrewLogRow { id: string; homebrew_id: string; nome: string; edizione: string; azione: string; creata_il: Date | string }
 
 let tablesReady: Promise<void> | undefined;
 export function ensureHomebrewTables() {

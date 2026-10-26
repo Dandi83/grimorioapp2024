@@ -35,7 +35,7 @@ export function gsBand(gsNum: number): GsBand {
 }
 
 export type MonsterFilters = { categoria: Category; gs: GsBand[]; tipo: string[]; taglia: string[]; habitat: string[] };
-export const NO_FILTERS: MonsterFilters = { categoria: "tutti", gs: [], tipo: [], taglia: [], habitat: [] };
+const NO_FILTERS: MonsterFilters = { categoria: "tutti", gs: [], tipo: [], taglia: [], habitat: [] };
 
 export type MonsterListState = MonsterFilters & { url: string; q: string; edizione: Edition; limit: number; scroll: number };
 
@@ -43,7 +43,7 @@ export type MonsterListState = MonsterFilters & { url: string; q: string; edizio
  * "o" inside the same filter, "e" between different filters. Homebrew creatures are only in their own
  * collection («Homebrew»): «Tutti», «Mostri» and «Animali» stay the SRD catalog.
  */
-export function matchesFilters(monster: MonsterListItem, filters: MonsterFilters): boolean {
+function matchesFilters(monster: MonsterListItem, filters: MonsterFilters): boolean {
   if ((filters.categoria === "homebrew") !== !!monster.homebrew) return false;
   if (filters.categoria !== "tutti" && filters.categoria !== "homebrew" && (filters.categoria === "animali") !== isSrdAnimal(monster)) return false;
   if (filters.gs.length && !filters.gs.includes(gsBand(monster.gs_num))) return false;

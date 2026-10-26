@@ -13,13 +13,13 @@ import type { SpellReferenceCatalog } from "@/lib/spell-references";
  */
 
 /** "17 (armatura naturale)" → value "17", note "armatura naturale". Anything else stays whole. */
-export function splitBoxValue(text: string | undefined): { value: string; note?: string } {
+function splitBoxValue(text: string | undefined): { value: string; note?: string } {
   const match = /^\s*([+-]?\d+)\s*\((.+)\)\s*$/.exec(text || "");
   return match ? { value: match[1], note: match[2] } : { value: text || "—" };
 }
 
 /** Proficiency bonus from the challenge rating (5e table): +2 up to GS 4, then +1 every 4. */
-export function proficiencyFromChallenge(gsNum: number): string | undefined {
+function proficiencyFromChallenge(gsNum: number): string | undefined {
   if (!(gsNum >= 0)) return undefined;
   return `+${2 + (Math.max(0, Math.ceil(gsNum) - 1) >> 2)}`;
 }
@@ -30,7 +30,7 @@ export function experience(px: string): string {
 }
 
 /** "13 (10.000 PE; bonus di competenza +5)": GS, experience and proficiency on one line. */
-export function challengeDetails(monster: Pick<Monster, "px" | "bonus_competenza" | "gs_num">, legacy: boolean): string {
+function challengeDetails(monster: Pick<Monster, "px" | "bonus_competenza" | "gs_num">, legacy: boolean): string {
   const px = (monster.px || "").trim();
   const xp = !px ? "" : experience(px);
   const bonus = monster.bonus_competenza || (legacy ? proficiencyFromChallenge(monster.gs_num) : undefined);
@@ -41,7 +41,7 @@ const PARAGRAPHS = /(?:<br\s*\/?>\s*){2,}/i;
 const SPELLCASTING = /^\s*<(?:strong|b)>\s*Incantesimi\b/i;
 
 /** 2014 sheets print spellcasting among the traits: shown after the other actions, as in 2024. */
-export function placeLegacySpellcasting(tratti: string, azioni: string): { tratti: string; azioni: string } {
+function placeLegacySpellcasting(tratti: string, azioni: string): { tratti: string; azioni: string } {
   const parts = (tratti || "").split(PARAGRAPHS);
   const casting = parts.filter(part => SPELLCASTING.test(part));
   if (!casting.length) return { tratti, azioni };

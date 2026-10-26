@@ -3,7 +3,7 @@ import { BookOpen } from "lucide-react";
 import type { CardSource } from "../lib/card-display";
 
 /** «Fonti e licenze», section «Schede NO SRD» (app/fonti/page.tsx). */
-export const NO_SRD_HREF = "/fonti#no-srd";
+const NO_SRD_HREF = "/fonti#no-srd";
 
 /** The pill of a card label («Concentrazione», «Rituale», the source). */
 export const LABEL_PILL = "inline-flex items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[12px] font-semibold leading-4";

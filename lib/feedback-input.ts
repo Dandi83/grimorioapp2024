@@ -12,7 +12,7 @@ export type FeedbackState = (typeof FEEDBACK_STATES)[number];
 export const TYPE_LABELS: Record<FeedbackType, string> = { errore: "Errore", mancanza: "Mancanza", consiglio: "Consiglio" };
 export const STATE_LABELS: Record<FeedbackState, string> = { nuova: "Nuova", letta: "Letta", risolta: "Risolta", archiviata: "Archiviata" };
 
-export const MESSAGE_MIN = 10;
+const MESSAGE_MIN = 10;
 export const MESSAGE_MAX = 2000;
 export const EMAIL_MAX = 254;
 export const NOTE_MAX = 2000;
@@ -30,7 +30,7 @@ export interface FeedbackInput {
   email: string | null;
 }
 
-export type FeedbackParse =
+type FeedbackParse =
   | { ok: true; value: FeedbackInput; spam: boolean; token: string }
   | { ok: false; error: string };
 

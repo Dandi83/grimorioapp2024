@@ -20,7 +20,7 @@ export const NOTIFICATION_TYPES = [
   { key: "proposte", title: "Nuova proposta homebrew", hint: "Una notifica per ogni creatura proposta da /bestiario/proponi.", default: true },
 ] as const;
 
-export type NotificationType = (typeof NOTIFICATION_TYPES)[number]["key"];
+type NotificationType = (typeof NOTIFICATION_TYPES)[number]["key"];
 
 export function isNotificationType(value: unknown): value is NotificationType {
   return NOTIFICATION_TYPES.some(type => type.key === value);
@@ -29,10 +29,10 @@ export function isNotificationType(value: unknown): value is NotificationType {
 /** Who the push services see as the sender (VAPID «subject»): the site, never a personal address. */
 const SUBJECT = "https://ilgrimorio.app";
 
-export interface PushDevice { id: string; endpoint: string; dispositivo: string; creata_il: Date | string }
+interface PushDevice { id: string; endpoint: string; dispositivo: string; creata_il: Date | string }
 export interface PushSubscriptionInput { endpoint: string; keys: { p256dh: string; auth: string } }
 /** badge: the number for the app icon (new reports and proposals to review), set by the service worker even with the app closed. */
-export interface PushPayload { title: string; body: string; url: string; tag?: string; badge?: number }
+interface PushPayload { title: string; body: string; url: string; tag?: string; badge?: number }
 
 let tablesReady: Promise<void> | undefined;
 /** Additive migration: created at the first use from the admin area or the first send. */
@@ -57,7 +57,7 @@ export function ensurePushTables() {
   return tablesReady;
 }
 
-export interface VapidKeys { publicKey: string; privateKey: string; source: "env" | "database" }
+interface VapidKeys { publicKey: string; privateKey: string; source: "env" | "database" }
 
 /** The VAPID key pair: from the server variables, else from the database, else generated once and saved. */
 export async function vapidKeys(env: Record<string, string | undefined> = process.env): Promise<VapidKeys> {
@@ -113,7 +113,7 @@ export async function setNotificationType(type: NotificationType, on: boolean): 
     ON CONFLICT (tipo) DO UPDATE SET attivo = EXCLUDED.attivo, aggiornata_il = now()`, [type, on]);
 }
 
-export interface SendResult { sent: number; removed: number; failed: number; skipped?: "type-off" | "no-devices" }
+interface SendResult { sent: number; removed: number; failed: number; skipped?: "type-off" | "no-devices" }
 
 type Sender = (sub: { endpoint: string; keys: { p256dh: string; auth: string } }, payload: string, options: object) => Promise<unknown>;
 

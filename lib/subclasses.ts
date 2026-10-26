@@ -12,8 +12,8 @@ import type { ClassEdition, ClassId } from "./classes-types";
  * - grimorio_subclass_log: created, corrected, deleted (shown in /admin/registro with the eye switches).
  */
 
-export interface SubclassRow { id: string; classe: ClassId; edizione: ClassEdition; scheda: SubclassDraft; creata_il: Date | string; aggiornata_il: Date | string }
-export interface SubclassLogRow { id: string; sottoclasse_id: string; nome: string; classe: string; edizione: string; azione: string; creata_il: Date | string }
+interface SubclassRow { id: string; classe: ClassId; edizione: ClassEdition; scheda: SubclassDraft; creata_il: Date | string; aggiornata_il: Date | string }
+interface SubclassLogRow { id: string; sottoclasse_id: string; nome: string; classe: string; edizione: string; azione: string; creata_il: Date | string }
 
 let tablesReady: Promise<void> | undefined;
 export function ensureSubclassTables() {

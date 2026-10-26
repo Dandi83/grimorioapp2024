@@ -30,7 +30,7 @@ export interface SectionPart {
   page: string;
 }
 
-export interface PublicSection {
+interface PublicSection {
   key: string;
   title: string;
   where: string;

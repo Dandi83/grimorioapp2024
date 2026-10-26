@@ -155,7 +155,7 @@ export async function exportAnalytics() {
     throw error;
   }
 }
-export type AnalyticsSummary = {
+type AnalyticsSummary = {
   visitors: number;
   views: number;
   opens: number;
@@ -166,7 +166,7 @@ export type AnalyticsSummary = {
   newVisitors: number;
   pending: number;
 };
-export type AnalyticsCardRow = {
+type AnalyticsCardRow = {
   path: string;
   title: string;
   kind: string;
@@ -175,7 +175,7 @@ export type AnalyticsCardRow = {
   readers: number;
   sharers: number;
 };
-export type AnalyticsDay = { day: string; visitors: number; views: number };
+type AnalyticsDay = { day: string; visitors: number; views: number };
 export async function readAnalytics(
   from: string,
   to: string,

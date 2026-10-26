@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import type { MagicItemBlock } from "@/lib/magic-items";
 
 /** Printed styles of a text: **bold**, *italic*, \* for an asterisk printed as such. */
-export function RichText({ text }: { text: string }) {
+function RichText({ text }: { text: string }) {
   const out: ReactNode[] = [];
   let buffer = "", bold = false, italic = false;
   const flush = () => {

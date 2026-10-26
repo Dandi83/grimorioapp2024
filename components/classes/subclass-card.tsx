@@ -11,7 +11,7 @@ import { paragraphs, type SubclassDraft } from "@/lib/subclass-types";
  * «Sottoclasse» tab and in the preview of the editor: same order and layout. No class data here (safe in
  * the editor, in the browser): the SRD card passes its printed blocks, an added one its plain texts.
  */
-export interface SubclassCardFeature { livello: number; titolo: string; content: ReactNode }
+interface SubclassCardFeature { livello: number; titolo: string; content: ReactNode }
 
 export function SubclassCard({ name, from, motto, intro, features, tags, edit }: {
   name: string; from: number; motto?: string; intro: ReactNode; features: SubclassCardFeature[]; tags?: ReactNode; edit?: ReactNode;
