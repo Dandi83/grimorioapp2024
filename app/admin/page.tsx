@@ -5,6 +5,7 @@ import { Backpack, BarChart3, Bell, BookOpen, ChevronLeft, ChevronRight, Crown, 
 import { logoutAction } from "@/app/actions/admin";
 import { AdminEditionSwitch } from "@/components/admin-edition/edition-bar";
 import { AdminLogin } from "@/components/admin-login";
+import { AdminSpellClasses } from "@/components/admin-spell-classes";
 import { isAdmin } from "@/lib/admin-auth";
 import { EDITION_BAND, spellEdition } from "@/lib/admin-edition";
 import { adminEdition } from "@/lib/admin-edition-server";
@@ -18,6 +19,8 @@ import { listDevices } from "@/lib/push";
 import { getAllMonsters } from "@/lib/monsters";
 import { getAdminSpells } from "@/lib/spells";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
+import { spellClassesPlan } from "@/lib/spell-classes-2014";
+import { RENAME_2014, planDone } from "@/lib/spell-classes-2014-plan";
 
 export const dynamic = "force-dynamic";
 
@@ -106,6 +109,8 @@ export default async function AdminPage() {
     getAllMonsters().catch(() => null),
     countProposalsToReview().catch(() => null),
   ]);
+  // One-off box «Classi incantesimi 2014»: gone once every spell has its classes and the name is right.
+  const classesPlan = await spellClassesPlan().catch(() => null);
   // Entries of the chosen edition: the same rule as the lists they open (and as the public site).
   const spellCount = spells?.filter(spell => spellEdition(spell) === edition).length ?? null;
   const monsterCount = monsters?.filter(monster => (usesLegacyMonsterRules(monster) ? "2014" : "2024") === edition).length ?? null;
@@ -144,6 +149,7 @@ export default async function AdminPage() {
       </div>
       <h1 className="mt-1 font-serif text-[36px] font-bold leading-tight text-primary">Amministrazione</h1>
       <AdminEditionSwitch key={edition} edition={edition} className="-mx-4 px-4" />
+      {classesPlan && !planDone(classesPlan) && <AdminSpellClasses plan={classesPlan} rename={RENAME_2014} />}
       {/* Phone and tablet: Da fare, Contenuti, Gestione. Computer: Contenuti on the left, the other two on the right. */}
       <div className="mt-2 grid gap-6 lg:grid-cols-2 lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-8">
         <Group id="gruppo-da-fare" label="Da fare" className="lg:col-start-2 lg:row-start-1">
