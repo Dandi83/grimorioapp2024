@@ -90,7 +90,10 @@ function load(relative) {
 
   // One field changed: the row is created with the file values, only that field is new and logged.
   const range = file.gittata === '18 metri' ? '27 metri' : '18 metri';
-  assert.equal((await updateSpellAction(null, form({id, ...file, gittata: range, edition: '2014'}))).ok, true);
+  // It would take the SRD box away: asked first, nothing written (components/admin-srd-warning.tsx); then «Salva comunque».
+  assert.deepEqual(await updateSpellAction(null, form({id, ...file, gittata: range, edition: '2014'})), {ok: false, error: '', srdWarning: true});
+  assert.equal((await rows()).length, 0, 'nothing saved without confirmation');
+  assert.equal((await updateSpellAction(null, form({id, ...file, gittata: range, edition: '2014', 'perdi-srd': '1'}))).ok, true);
   const [row] = await rows();
   for (const field of ['nome_italiano', 'livello', 'tempo_di_lancio', 'componenti', 'durata', 'descrizione']) assert.equal(row[field], file[field], `${field} as in the file`);
   assert.equal(row.gittata, range);
@@ -114,7 +117,7 @@ function load(relative) {
   assert.ok((await logRows())[0].annullata_il, 'the log line is marked undone');
 
   // A database card (not from the files) keeps its row after an undo.
-  await updateSpellAction(null, form({id: 'palla-di-fuoco', nome_italiano: 'Palla di fuoco', livello: 'Invocazione di 3° livello', descrizione: 'Testo.', durata: 'Istantanea'}));
+  await updateSpellAction(null, form({id: 'palla-di-fuoco', nome_italiano: 'Palla di fuoco', livello: 'Invocazione di 3° livello', descrizione: 'Testo.', durata: 'Istantanea', 'perdi-srd': '1'}));
   const [fire] = (await pg.query("SELECT id FROM grimorio_editor_log WHERE scheda_id = 'palla-di-fuoco'")).rows;
   assert.equal((await undoEditorAction(form({id: fire.id}))).ok, true);
   assert.equal((await pg.query("SELECT count(*)::int AS n FROM spells WHERE id = 'palla-di-fuoco'")).rows[0].n, 1);

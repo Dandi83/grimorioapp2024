@@ -194,10 +194,10 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   const tileIcon = adminTiles.first().locator("svg").first();
   expect(await tileIcon.evaluate(svg => [svg.getAttribute("width"), svg.getAttribute("stroke"), svg.getAttribute("stroke-width")])).toEqual(["22", "#7A1F2B", "1.8"]);
   const pills = page.getByRole("region", { name: "Gestione · tutte le edizioni" }).getByRole("link");
-  await expect(pills).toHaveCount(4);
-  expect(await pills.evaluateAll(links => links.map(a => a.getAttribute("aria-label").split(" · ")[0]))).toEqual(["Sezioni dell’app", "Notifiche", "Registro modifiche", "Statistiche"]);
+  await expect(pills).toHaveCount(5);
+  expect(await pills.evaluateAll(links => links.map(a => a.getAttribute("aria-label").split(" · ")[0]))).toEqual(["Sezioni dell’app", "Notifiche", "Registro modifiche", "Schede SRD modificate", "Statistiche"]);
   await expect(pills.first()).toHaveAttribute("aria-label", /^Sezioni dell’app · \d+ sezion[ei] nascost[ae]/);
-  expect(await pills.evaluateAll(links => links.map(a => a.querySelector('svg[aria-hidden="true"]')?.getAttribute("width")))).toEqual(["22", "22", "22", "22"]);
+  expect(await pills.evaluateAll(links => links.map(a => a.querySelector('svg[aria-hidden="true"]')?.getAttribute("width")))).toEqual(["22", "22", "22", "22", "22"]);
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin home ${width}`).toBeLessThanOrEqual(width);

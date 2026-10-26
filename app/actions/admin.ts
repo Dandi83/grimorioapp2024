@@ -20,7 +20,8 @@ import { getOriginalSource } from "@/lib/original-descriptions";
 import { editorLogReady, logEditorSave } from "@/lib/editor-log";
 import { changedSpellFields, SPELL_EDITOR_FIELDS } from "@/lib/spell-update";
 import { db } from "@/lib/db";
-import { getSpellById, spellCardSource, spellFileRow } from "@/lib/spells";
+import { getSpellById, publicSpellOfRow, spellCardSource, spellFileRow } from "@/lib/spells";
+import { spellSrdDifferences } from "@/lib/srd-modified";
 import { getLegacySpellSource, isLegacySpellId } from "@/lib/srd-spells-2014";
 
 interface SpellInput {
@@ -101,6 +102,18 @@ export async function createSpellAction(_prev: unknown, formData: FormData) {
   return { ok: true as const, error: null, id };
 }
 
+/** The editor asks before a save that takes the SRD box away (components/admin-srd-warning.tsx). */
+const SRD_WARNING = { ok: false as const, error: "", srdWarning: true as const };
+
+/**
+ * True when the card has the SRD box now and would lose it with these changes: the same comparison as the box
+ * and as «Schede SRD modificate» (lib/srd-modified.ts), on the card as the public sees it.
+ */
+function losesSrdBox(base: Parameters<typeof publicSpellOfRow>[0], changes: Partial<SpellInput>): boolean {
+  const matches = (row: Parameters<typeof publicSpellOfRow>[0]) => spellSrdDifferences(publicSpellOfRow(row) as unknown as Parameters<typeof spellSrdDifferences>[0])?.length === 0;
+  return matches(base) && !matches({ ...base, ...changes });
+}
+
 export async function updateSpellAction(_prev: unknown, formData: FormData) {
   await requireAdmin();
   const id = clean(formData.get("id"));
@@ -132,6 +145,8 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   const summary = summaryFromForm(formData);
   const sameSummary = summary === undefined || summary === (await getOriginalSummaries("spell", id)).has(id);
   if (!Object.keys(changes).length && sameEdition && sameSummary) return { ok: true as const, error: null, id };
+  // A change that would take the SRD box away is saved only after «Salva comunque» (the editor sends «perdi-srd»).
+  if (!formData.has("perdi-srd") && Object.keys(changes).length && losesSrdBox(base, changes)) return SRD_WARNING;
   // The edition the card already has is not stored again as a manual label.
   if (sameEdition) formData.delete("edition");
   const logged = await editorLogReady();
