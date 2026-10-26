@@ -51,16 +51,6 @@ function placeLegacySpellcasting(tratti: string, azioni: string): { tratti: stri
   };
 }
 
-function Box({ label, value, note, noteItalic = false, small = false }: { label: string; value: string; note?: string; noteItalic?: boolean; small?: boolean }) {
-  return (
-    <div className="min-w-0 rounded-[8px] border border-border bg-elevated px-3 py-2.5">
-      <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-muted">{label}</p>
-      <p className={small ? "font-serif text-[19px] font-bold leading-6 text-foreground" : "font-serif text-[28px] font-bold leading-8 text-foreground"}>{value}</p>
-      {note && <p className={`text-[13px] leading-4 text-muted${noteItalic ? " font-serif italic" : ""}`}>{note}</p>}
-    </div>
-  );
-}
-
 /** One number of the ink strip of the phone: name, value and the note of the source (dice, armour, passive). */
 function StripCell({ label, value, note, noteItalic = false }: { label: string; value: string; note?: string; noteItalic?: boolean }) {
   return (
@@ -140,9 +130,9 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
   // right; the page width decides, so the phone and the editor preview keep one column.
   return (
     <div className="@container">
-    {/* Phone and tablet: CA, PF, initiative and challenge in an ink strip that stays at the top while the sheet
-        scrolls, so the numbers needed at the table are always in sight. Computers keep their boxes. */}
-    <dl className="sticky top-0 z-20 mx-4 mt-4 grid grid-cols-4 overflow-hidden rounded-[12px] bg-foreground pt-[env(safe-area-inset-top,0px)] text-card shadow-[0_6px_16px_rgb(43_33_24_/_22%)] @[820px]:hidden lg:hidden" data-monster-strip="">
+    {/* CA, PF, initiative and challenge in an ink strip that stays at the top while the sheet scrolls (the page
+        on the phone, the card column next to the list on the computer): the numbers needed at the table in sight. */}
+    <dl className="sticky top-0 z-20 mx-4 mt-4 grid grid-cols-4 overflow-hidden rounded-[12px] bg-foreground pt-[env(safe-area-inset-top,0px)] text-card shadow-[0_6px_16px_rgb(43_33_24_/_22%)]" data-monster-strip="">
       <StripCell label="CA" value={ca.value} note={ca.note} />
       <StripCell label="PF" value={pf.value} note={pf.note} />
       {ini ? <StripCell label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} /> : <StripCell label="Iniziativa" value="—" />}
@@ -150,19 +140,7 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
     </dl>
     <div className="@[820px]:grid @[820px]:grid-cols-2 @[820px]:items-start">
     <div>
-      <div className="hidden lg:block">
-        <div className="grid grid-cols-3 gap-2.5 px-6 pt-5 @[820px]:hidden">
-          <Box label="CA" value={ca.value} note={ca.note} />
-          <Box label="PF" value={pf.value} note={pf.note} />
-          {ini && <Box label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} />}
-        </div>
-      </div>
-      {monster.velocita && <p className="px-6 pt-3 text-[16px] leading-6 text-foreground @[820px]:hidden"><span className="font-bold">Velocità</span> {monster.velocita}</p>}
-      <div className="hidden grid-cols-3 gap-2.5 px-6 pt-5 @[820px]:grid">
-        <Box label="CA" value={ca.value} note={[ca.note, ini && `Iniziativa ${ini.value}${ini.note ? ` ${ini.note}` : ""}`].filter(Boolean).join(" · ")} />
-        <Box label="PF" value={pf.value} note={pf.note} />
-        <Box label="Velocità" value={monster.velocita || "—"} small />
-      </div>
+      {monster.velocita && <p className="px-6 pt-3 text-[16px] leading-6 text-foreground"><span className="font-bold">Velocità</span> {monster.velocita}</p>}
 
       <section data-monster-section className="mt-6">
         <h2>Caratteristiche</h2>

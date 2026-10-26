@@ -52,8 +52,8 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
   const view = prepareSpellDisplay(spell, context);
   return (
     <>
-      {/* Phones and tablets: the four values in one ruled panel; computers keep the four cards. */}
-      <div className="mx-6 my-5 grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-card [&>*:nth-child(-n+2)]:border-b [&>*:nth-child(even)]:border-l [&>*]:border-divider lg:m-0 lg:flex lg:flex-wrap lg:gap-3 lg:overflow-visible lg:rounded-none lg:border-0 lg:bg-transparent lg:p-6">
+      {/* The four values in one ruled panel, as wide as the card column. */}
+      <div className="mx-6 my-5 grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-card [&>*:nth-child(-n+2)]:border-b [&>*:nth-child(even)]:border-l [&>*]:border-divider">
         <MetaCell plain label="Tempo di lancio" value={view.castingTime} />
         <MetaCell plain label="Gittata" value={spell.gittata} />
         <MetaCell plain label="Componenti" value={spell.componenti} />
@@ -64,7 +64,7 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
           <h2 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-primary">Classi</h2>
           <div className="flex flex-wrap gap-2">
             {spell.classi.map(c => (
-              <span key={c} className="rounded-full border border-chip-border bg-primary-faint px-3 py-1 text-[13px] lg:border-primary-dim lg:py-1.5 font-semibold text-primary">{capitalizeWords(c)}</span>
+              <span key={c} className="rounded-full border border-chip-border bg-primary-faint px-3 py-1 text-[13px] font-semibold text-primary">{capitalizeWords(c)}</span>
             ))}
           </div>
         </section>
