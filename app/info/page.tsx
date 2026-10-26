@@ -1,15 +1,17 @@
 import Link from "next/link";
-import { BookOpen, ChevronRight, FileText, MessageSquare, ShieldCheck, type LucideIcon } from "lucide-react";
+import { BookOpen, ChevronRight, Download, FileText, MessageSquare, ShieldCheck, type LucideIcon } from "lucide-react";
 
 export const metadata = { title: "Info e note legali — Il Grimorio.App" };
 
-/** The legal pages, one large tile each (the whole row is the link). */
+/** The legal pages and «Installa l’app», one large tile each (the whole row is the link). */
 const TILES: { href: string; title: string; line: string; Icon: LucideIcon }[] = [
   { href: "/termini", title: "Termini d’uso", line: "Come si usa l’app, creature proposte e segnalazioni", Icon: FileText },
   { href: "/fonti", title: "Fonti e licenze", line: "SRD 5.2.1 e 5.1, licenza CC-BY, crediti", Icon: BookOpen },
   { href: "/privacy", title: "Privacy", line: "Statistiche, cookie e dati dei moduli", Icon: ShieldCheck },
   // The report form without a card: a problem of the app or an idea.
   { href: "/segnala", title: "Scrivici", line: "Un problema dell’app o un’idea, fuori dalle schede", Icon: MessageSquare },
+  // How to add the app to the Home screen, browser by browser.
+  { href: "/installa", title: "Installa l’app", line: "Sulla schermata Home di iPhone, Android o computer", Icon: Download },
 ];
 
 /**

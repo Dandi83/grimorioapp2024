@@ -1,5 +1,7 @@
 .home {
   display: flex;
+  /* vh first: browsers before svh/dvh (2022) keep the line they understand. */
+  min-height: calc(100vh - 80px - env(safe-area-inset-bottom, 0px));
   min-height: calc(100svh - 80px - env(safe-area-inset-bottom, 0px));
   flex-direction: column;
   background: var(--color-background);
@@ -53,6 +55,7 @@
   position: relative;
   isolation: isolate;
   display: flex;
+  min-height: clamp(420px, calc(100vh - 14rem), 610px);
   min-height: clamp(420px, calc(100svh - 14rem), 610px);
   flex: 1;
   align-items: flex-end;
@@ -179,6 +182,7 @@
  */
 @media (min-width: 1024px) {
   .home {
+    min-height: 100vh;
     min-height: 100dvh;
   }
 
@@ -191,6 +195,7 @@
   }
 
   .library {
+    min-height: 100vh;
     min-height: 100dvh;
     align-items: center;
     justify-content: flex-start;
