@@ -3,7 +3,6 @@
 import { AdminDeleteButton } from "./admin-delete-button";
 
 import { useMemo, useState } from "react";
-import { useNoSrd } from "@/components/admin-edit/no-srd-mark";
 import {
   deleteMonsterAction,
 } from "@/app/actions/admin-monsters";
@@ -26,8 +25,12 @@ type Editing =
   | { mode: "edit"; monster: Monster };
 
 /** hiddenIds: the creatures hidden from the site with the eye. */
-export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDrafts = {} }: {
+const NO_IDS: string[] = [];
+
+export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDrafts = {}, modifiedIds = NO_IDS }: {
   monsters: Monster[]; edition: AdminEdition; hiddenIds?: string[]; homebrewDrafts?: Record<string, HomebrewDraft>;
+  /** «SRD modificate» (lib/srd-modified.ts), for the «Provenienza» filter. */
+  modifiedIds?: string[];
 }) {
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Editing>({ mode: "closed" });
@@ -46,9 +49,8 @@ export function AdminMonsters({ monsters, edition, hiddenIds = [], homebrewDraft
   }, [query, monsters]);
   const visibleRows = useVisibilityFilter(searched, shown, visibility.isHidden);
   // «Provenienza»: the same rule as the «NO SRD» pill, from the labels of the cards (lib/provenance.ts); the modified
-  // SRD cards («SRD modificate», lib/srd-modified.ts) from the administrator's endpoint.
-  const modified = useNoSrd("mostri")?.provenance.modificate;
-  const origin = useProvenanceFilter(useMemo(() => provenanceIds(monsters, modified), [monsters, modified]));
+  // SRD cards («SRD modificate», lib/srd-modified.ts) from the server.
+  const origin = useProvenanceFilter(useMemo(() => provenanceIds(monsters, modifiedIds), [monsters, modifiedIds]));
   const filtered = useMemo(() => visibleRows.filter(x => matchesProvenance({ id: x.id, homebrew: !!x.homebrew_edizione }, origin.value, origin.ids!)), [visibleRows, origin.value, origin.ids]);
 
   return (

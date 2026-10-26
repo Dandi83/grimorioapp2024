@@ -107,10 +107,12 @@ test("Schede SRD modificate: list, editor warning, filter option, restore; visit
   await expect(item.getByRole("heading", { level: 2 })).toHaveText(`${name} di prova`);
   await expect(item).toContainText("Incantesimo · 2014");
   await expect(item.getByRole("link", { name: "Apri la scheda pubblica" })).toHaveAttribute("href", "/spell/guida-2014");
-  await expect(item.locator("[data-srd-field]")).toHaveCount(1);
-  await expect(item.locator("[data-srd-field]")).toContainText("Nome");
-  await expect(item.locator("[data-srd-text]")).toHaveText(name);
-  await expect(item.locator("[data-current-text] ins")).toHaveText(" di prova");
+  // The fields of the card (the closed confirmation holds the same preview).
+  const fields = item.locator(":scope > [data-srd-field]");
+  await expect(fields).toHaveCount(1);
+  await expect(fields).toContainText("Nome");
+  await expect(fields.locator("[data-srd-text]")).toHaveText(name);
+  await expect(fields.locator("[data-current-text] ins")).toHaveText(" di prova");
   // The «SRD modificate» option of the filter (2014 list): the card, also in «Solo NO SRD», not in «Solo SRD».
   await openFilters(page, "/grimorio");
   const modified2014 = await provenanceCount(page, "SRD modificate");

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useNoSrd } from "@/components/admin-edit/no-srd-mark";
 import Link from "next/link";
 import {
   deleteSpellAction,
@@ -35,6 +34,8 @@ type Editing =
   | { mode: "edit"; spell: Spell };
 
 /** Editors of spells and creatures (database records), opened from the tiles of /admin. */
+const NO_IDS: string[] = [];
+
 export function AdminDashboard({
   spells,
   monsters,
@@ -43,12 +44,17 @@ export function AdminDashboard({
   hiddenSpells = [],
   hiddenMonsters = [],
   homebrewDrafts = {},
+  modifiedSpells = NO_IDS,
+  modifiedMonsters = NO_IDS,
 }: {
   spells: Spell[];
   monsters: Monster[];
   /** Ids of the cards hidden from the site with the eye. */
   hiddenSpells?: string[];
   hiddenMonsters?: string[];
+  /** «SRD modificate» (lib/srd-modified.ts), for the «Provenienza» filter. */
+  modifiedSpells?: string[];
+  modifiedMonsters?: string[];
   /** Plain drafts of the homebrew creatures of the list, for their guided editor. */
   homebrewDrafts?: Record<string, HomebrewDraft>;
   initialTab?: "spells" | "monsters";
@@ -75,9 +81,8 @@ export function AdminDashboard({
   }, [query, spells]);
   const visibleRows = useVisibilityFilter(searched, shown, visibility.isHidden);
   // «Provenienza»: the same rule as the «NO SRD» pill, from the labels of the cards (lib/provenance.ts); the modified
-  // SRD cards («SRD modificate», lib/srd-modified.ts) from the administrator's endpoint.
-  const modified = useNoSrd("incantesimi")?.provenance.modificate;
-  const origin = useProvenanceFilter(useMemo(() => provenanceIds(spells, modified), [spells, modified]));
+  // SRD cards («SRD modificate», lib/srd-modified.ts) from the server.
+  const origin = useProvenanceFilter(useMemo(() => provenanceIds(spells, modifiedSpells), [spells, modifiedSpells]));
   const filtered = useMemo(() => visibleRows.filter(x => matchesProvenance(x, origin.value, origin.ids!)), [visibleRows, origin.value, origin.ids]);
 
   return (
@@ -131,7 +136,7 @@ export function AdminDashboard({
       </div>
 
       {tab === "monsters" ? (
-        <AdminMonsters monsters={monsters} edition={edition} hiddenIds={hiddenMonsters} homebrewDrafts={homebrewDrafts} />
+        <AdminMonsters monsters={monsters} edition={edition} hiddenIds={hiddenMonsters} homebrewDrafts={homebrewDrafts} modifiedIds={modifiedMonsters} />
       ) : (
       <>
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
