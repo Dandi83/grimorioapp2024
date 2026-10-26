@@ -1,15 +1,16 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 
+import { ReferenceText } from "@/components/html-text";
+import { findRuleTerms, type RuleTermLinks } from "@/lib/damage-rule-link";
 import type { MagicItemBlock } from "@/lib/magic-items";
 
-/** Printed styles of a text: **bold**, *italic*, \* for an asterisk printed as such. */
-function RichText({ text }: { text: string }) {
-  const out: ReactNode[] = [];
-  let buffer = "", bold = false, italic = false;
+/** The runs of a text between its style marks: **bold**, *italic*, \* for an asterisk printed as such. */
+function styledRuns(text: string) {
+  const runs: { text: string; bold: boolean; italic: boolean; start: number }[] = [];
+  let buffer = "", bold = false, italic = false, plain = 0;
   const flush = () => {
-    if (!buffer) return;
-    const key = out.length;
-    out.push(bold ? <strong key={key}>{italic ? <em>{buffer}</em> : buffer}</strong> : italic ? <em key={key}>{buffer}</em> : buffer);
+    if (buffer) runs.push({ text: buffer, bold, italic, start: plain });
+    plain += buffer.length;
     buffer = "";
   };
   for (let i = 0; i < text.length; i++) {
@@ -19,7 +20,23 @@ function RichText({ text }: { text: string }) {
     buffer += text[i];
   }
   flush();
-  return <>{out}</>;
+  return runs;
+}
+
+/**
+ * Printed styles of a text. rules: «resistenza», «immunità», «vulnerabilità» linked to the rules of the edition
+ * (lib/damage-rule-link.ts), one per term, never in an italic run (the spell names).
+ */
+function RichText({ text, rules }: { text: string; rules?: RuleTermLinks }) {
+  const runs = styledRuns(text);
+  const spots = findRuleTerms(runs.map(run => run.text).join(""), rules,
+    (start, end) => !runs.some(run => !run.italic && run.start <= start && end <= run.start + run.text.length));
+  return <>{runs.map((run, key) => {
+    const ruleLinks = spots.filter(spot => spot.start >= run.start && spot.end <= run.start + run.text.length)
+      .map(spot => ({ start: spot.start - run.start, end: spot.end - run.start, href: spot.href }));
+    const content = ruleLinks.length ? <ReferenceText text={run.text} ruleLinks={ruleLinks} /> : run.text;
+    return run.bold ? <strong key={key}>{run.italic ? <em>{content}</em> : content}</strong> : run.italic ? <em key={key}>{content}</em> : <Fragment key={key}>{content}</Fragment>;
+  })}</>;
 }
 
 /** A table with long texts in more than two columns becomes one card per row on the phone. */
@@ -73,11 +90,11 @@ function Table({ block }: { block: Extract<MagicItemBlock, { kind: "table" }> })
   );
 }
 
-function StatBlock({ block }: { block: Extract<MagicItemBlock, { kind: "statblock" }> }) {
+function StatBlock({ block, rules }: { block: Extract<MagicItemBlock, { kind: "statblock" }>; rules?: RuleTermLinks }) {
   return (
     <section className="rounded-[14px] border-2 border-primary/40 bg-card px-4 py-3 text-[15px] leading-6" aria-label="Scheda delle statistiche">
       {block.lines.map((line, i) => (
-        <p key={i} className={i === 0 ? "font-serif text-[22px] leading-tight text-primary" : ""}><RichText text={line} /></p>
+        <p key={i} className={i === 0 ? "font-serif text-[22px] leading-tight text-primary" : ""}><RichText text={line} rules={i === 0 ? undefined : rules} /></p>
       ))}
     </section>
   );
@@ -86,7 +103,7 @@ function StatBlock({ block }: { block: Extract<MagicItemBlock, { kind: "statbloc
 /** The full printed text of a magic item: paragraphs, run-in labels, bullet lists, tables and stat blocks. */
 type Prose = Extract<MagicItemBlock, { text: string }>;
 
-export function MagicItemText({ blocks }: { blocks: MagicItemBlock[] }) {
+export function MagicItemText({ blocks, rules }: { blocks: MagicItemBlock[]; rules?: RuleTermLinks }) {
   const out: ReactNode[] = [];
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i];
@@ -100,20 +117,20 @@ export function MagicItemText({ blocks }: { blocks: MagicItemBlock[] }) {
       i--;
       out.push(
         <ul key={out.length} className="list-disc space-y-1 pl-6 font-serif text-[1.05rem] leading-7 marker:text-primary">
-          {items.map((text, n) => <li key={n}><RichText text={text} /></li>)}
+          {items.map((text, n) => <li key={n}><RichText text={text} rules={rules} /></li>)}
         </ul>,
       );
     } else if (block.kind === "p") {
       out.push(
         <p key={out.length} className="font-serif text-[1.05rem] leading-7">
           {block.label && <strong className="italic">{block.label} </strong>}
-          <RichText text={block.text} />
+          <RichText text={block.text} rules={rules} />
         </p>,
       );
     } else if (block.kind === "table") {
       out.push(<Table key={out.length} block={block} />);
     } else if (block.kind === "statblock") {
-      out.push(<StatBlock key={out.length} block={block} />);
+      out.push(<StatBlock key={out.length} block={block} rules={rules} />);
     }
   }
   return <div className="space-y-3">{out}</div>;

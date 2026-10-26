@@ -1,20 +1,28 @@
+import { ReferenceText } from "@/components/html-text";
 import type { ClassBlock } from "@/lib/classes-types";
+import { findRuleTerms, type RuleTermLinks } from "@/lib/damage-rule-link";
 
-/** A paragraph as printed, its bold-italic run-in label in bold. */
-function Labelled({ text, label }: { text: string; label?: string }) {
-  if (!label || !text.startsWith(label)) return <>{text}</>;
-  return <><strong className="font-bold italic">{label}</strong>{text.slice(label.length)}</>;
+/** A text with «resistenza», «immunità», «vulnerabilità» linked to the rules of the edition (lib/damage-rule-link.ts). */
+function RuleText({ text, rules }: { text: string; rules?: RuleTermLinks }) {
+  const ruleLinks = findRuleTerms(text, rules);
+  return ruleLinks.length ? <ReferenceText text={text} ruleLinks={ruleLinks} /> : <>{text}</>;
+}
+
+/** A paragraph as printed, its bold-italic run-in label in bold (a name: never linked). */
+function Labelled({ text, label, rules }: { text: string; label?: string; rules?: RuleTermLinks }) {
+  if (!label || !text.startsWith(label)) return <RuleText text={text} rules={rules} />;
+  return <><strong className="font-bold italic">{label}</strong><RuleText text={text.slice(label.length)} rules={rules} /></>;
 }
 
 /** «• Ottiene … • Ottiene …»: the bullets of the manual as a list, the text before them as a paragraph. */
-function Paragraph({ text, label }: { text: string; label?: string }) {
+function Paragraph({ text, label, rules }: { text: string; label?: string; rules?: RuleTermLinks }) {
   const [lead, ...items] = text.split(/\s*•\s+/);
   return (
     <>
-      {lead && <p><Labelled text={lead} label={label} /></p>}
+      {lead && <p><Labelled text={lead} label={label} rules={rules} /></p>}
       {items.length > 0 && (
         <ul className="list-disc space-y-1 pl-5">
-          {items.map((item, i) => <li key={i}>{item}</li>)}
+          {items.map((item, i) => <li key={i}><RuleText text={item} rules={rules} /></li>)}
         </ul>
       )}
     </>
@@ -46,12 +54,15 @@ export function ClassInnerTable({ title, columns, rows }: { title: string; colum
   );
 }
 
-/** Paragraphs, tables and boxed sidebars of a feature, as printed. Server only: no text reaches the browser code. */
-export function ClassBlocks({ blocks }: { blocks: ClassBlock[] }) {
+/**
+ * Paragraphs, tables and boxed sidebars of a feature, as printed. Server only: no text reaches the browser code.
+ * rules: where the rule terms of the paragraphs lead (damageRuleLinks of the edition of the class).
+ */
+export function ClassBlocks({ blocks, rules }: { blocks: ClassBlock[]; rules?: RuleTermLinks }) {
   return (
     <div className="space-y-3 text-[15px] leading-6 text-foreground">
       {blocks.map((block, i) => block.tipo === "p" ? (
-        <Paragraph key={i} text={block.testo} label={block.etichetta} />
+        <Paragraph key={i} text={block.testo} label={block.etichetta} rules={rules} />
       ) : block.tipo === "h" ? (
         <h4 key={i} className="pt-1 font-serif text-[18px] font-bold leading-tight text-primary">{block.testo}</h4>
       ) : block.tipo === "tabella" ? (
@@ -59,7 +70,7 @@ export function ClassBlocks({ blocks }: { blocks: ClassBlock[] }) {
       ) : (
         <aside key={i} className="space-y-2 rounded-[12px] border border-border bg-[#F3EAD6] p-3.5">
           <h4 className="font-serif text-[18px] font-bold text-primary">{block.titolo}</h4>
-          {block.paragrafi.map((paragraph, j) => <p key={j}><Labelled text={paragraph.testo} label={paragraph.etichetta} /></p>)}
+          {block.paragrafi.map((paragraph, j) => <p key={j}><Labelled text={paragraph.testo} label={paragraph.etichetta} rules={rules} /></p>)}
         </aside>
       ))}
     </div>

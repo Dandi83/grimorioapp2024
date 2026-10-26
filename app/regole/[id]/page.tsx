@@ -3,13 +3,13 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { RuleContent } from "@/components/rule-content";
 import { RulesEditionBadge } from "@/components/rules-edition-badge";
-import { concentrationRules, getRule } from "@/lib/concentration";
+import { getRule, rulePages } from "@/lib/concentration";
 
-// A rule opened from a spell card (the «Concentrazione» of its Durata), like a condition: text of the SRD only.
+// A rule opened from a card (the «Concentrazione» of a Durata, a «resistenza» or «immunità»…), like a condition: text of the SRD only.
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return concentrationRules.map(rule => ({ id: rule.id }));
+  return rulePages.map(rule => ({ id: rule.id }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {

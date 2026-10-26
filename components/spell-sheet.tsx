@@ -72,7 +72,7 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
       <section className="px-6 pb-4" data-card-description="">
         <h2 className="mb-3 text-[12px] font-bold uppercase tracking-wider text-primary">Descrizione</h2>
         {view.html ? (
-          <HtmlText html={view.html} damageIcons references={view.conditionLinks} spellReferences={view.spellLinks} />
+          <HtmlText html={view.html} damageIcons references={view.conditionLinks} spellReferences={view.spellLinks} rules={view.ruleLinks} />
         ) : (
           <p className="font-serif text-[15px] italic leading-6 text-muted">Descrizione non disponibile per questo incantesimo.</p>
         )}

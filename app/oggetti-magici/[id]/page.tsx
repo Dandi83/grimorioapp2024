@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
 import { PartBlock } from "@/components/sections/part-block";
-import { pageEditions } from "@/lib/section-view";
+import { linksOut, pageEditions } from "@/lib/section-view";
 import { MagicItemSheet } from "@/components/magic-items/magic-item-sheet";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { getCorrectedMagicItems } from "@/lib/corrected-content";
@@ -61,6 +61,7 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
   const shown = await pageEditions("oggetti-magici");
   if ((edition && !shown.includes(edition)) || !shown.some(value => entry.editions[value])) notFound();
   const changes = shown.length === 2 ? compareMagicItem(entry) : [];
+  const hidden = await linksOut();
   const also = seeAlso(entry, corrected.list);
   const corrections = corrected.corrections.get(entry.id);
   const hrefs: Partial<Record<MagicItemEdition, string>> = {};
@@ -73,7 +74,7 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
       <div className="space-y-5">
         {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
         <AdminEditButton target={{ kind: "contenuto", section: "oggetti-magici", id: entry.id, edition: value }} />
-        <MagicItemSheet item={item} edition={value} />
+        <MagicItemSheet item={item} edition={value} hidden={hidden} />
         <SectionCorrectionNote section="oggetti-magici" id={entry.id} edition={value} corrections={corrections?.[value]} />
         {changes.length > 0 && <PartBlock section="oggetti-magici" part="confronto"><Changes changes={changes} /></PartBlock>}
       </div>

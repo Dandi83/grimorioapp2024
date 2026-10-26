@@ -1,5 +1,6 @@
 import { inlineSpellReferences } from "@/lib/spell-references";
 import { inlineConditionReferences } from "@/lib/conditions";
+import { damageRuleLinks } from "@/lib/damage-rule-link";
 import Image from "next/image";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
@@ -112,7 +113,7 @@ export default async function SpellDetailPage({
       {original?.statBlockSummary && (
         <section className="px-6 pb-6">
           <h2 className="mb-3 font-serif text-lg font-semibold text-primary">Spirito richiamato — riepilogo</h2>
-          <HtmlText html={original.statBlockSummary} damageIcons references={visibleLinks(inlineConditionReferences, out)} spellReferences={visibleLinks(inlineSpellReferences(original.statBlockSummary, false, context.catalog), out)} />
+          <HtmlText html={original.statBlockSummary} damageIcons references={visibleLinks(inlineConditionReferences, out)} rules={damageRuleLinks(false, out)} spellReferences={visibleLinks(inlineSpellReferences(original.statBlockSummary, false, context.catalog), out)} />
           <p className="mt-3 text-xs leading-5 text-muted">
             Riepilogo operativo: per tutti i dettagli della creatura consulta la scheda 2024 collegata qui sotto.
             Il bonus di competenza dello spirito è il tuo; le CD indicate usano la tua CD degli incantesimi.

@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from "react";
 // Relative path: the test harnesses load this file without the "@/" alias.
 import spellIndex from "../lib/data/spell-reference-index.json";
+import { findRuleTerms, type RuleTermLinks } from "../lib/damage-rule-link";
 import { normalizeLayout } from "../lib/display-layout";
 
 /**
@@ -111,39 +112,78 @@ function normalizeEmphasis(html: string, known: ReadonlySet<string> = new Set())
 }
 
 type InlineReference = { label: string; href: string };
-type HtmlTextProps = { html: string; damageIcons?: boolean; references?: readonly InlineReference[]; spellReferences?: readonly InlineReference[] };
+/** A place of the text linked to a rule (lib/damage-rule-link.ts): offsets in the text, destination. */
+type RuleLink = { start: number; end: number; href: string };
+/** rules: where «resistenza», «immunità» and «vulnerabilità» lead for the edition of the card (lib/damage-rule-link.ts). */
+type HtmlTextProps = { html: string; damageIcons?: boolean; references?: readonly InlineReference[]; spellReferences?: readonly InlineReference[]; rules?: RuleTermLinks };
 
 
-/** Preserve source text while adding accessible inline links and damage icons. */
-export function ReferenceText({ text, damageIcons = false, precedingText = "", references = [], damageContext = "", softLineBreaks = false }: {
-  text: string; damageIcons?: boolean; precedingText?: string; references?: readonly InlineReference[]; damageContext?: string; softLineBreaks?: boolean;
+/** Preserve source text while adding accessible inline links and damage icons. ruleLinks: rule terms found in the paragraph. */
+export function ReferenceText({ text, damageIcons = false, precedingText = "", references = [], damageContext = "", softLineBreaks = false, ruleLinks = [] }: {
+  text: string; damageIcons?: boolean; precedingText?: string; references?: readonly InlineReference[]; damageContext?: string; softLineBreaks?: boolean; ruleLinks?: readonly RuleLink[];
 }) {
   const renderText = (part: string, offset: number) => damageIcons
     ? <DamageText text={part} precedingText={precedingText + text.slice(0, offset)} context={damageContext} softLineBreaks={softLineBreaks} />
     : part;
-  if (!references.length) return <>{renderText(text, 0)}</>;
-  const escape = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const labels = [...references].sort((a, b) => b.label.length - a.label.length).map(reference => reference.label.split(/\s+/).map(word => [...word].map(escape).join("(?:-\\s*\\n\\s*)?")).join("\\s+"));
-  const matcher = new RegExp(`(?<![\\p{L}\\p{N}_])(${labels.join("|")})(?![\\p{L}\\p{N}_])`, "giu");
+  if (!references.length && !ruleLinks.length) return <>{renderText(text, 0)}</>;
+  const links: (RuleLink & { rule?: boolean })[] = [];
+  if (references.length) {
+    const escape = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const labels = [...references].sort((a, b) => b.label.length - a.label.length).map(reference => reference.label.split(/\s+/).map(word => [...word].map(escape).join("(?:-\\s*\\n\\s*)?")).join("\\s+"));
+    const matcher = new RegExp(`(?<![\\p{L}\\p{N}_])(${labels.join("|")})(?![\\p{L}\\p{N}_])`, "giu");
+    for (const match of text.matchAll(matcher)) {
+      const label = match[0].replace(/-\s*\n\s*/g, "").replace(/\s+/g, " ").toLowerCase();
+      links.push({ start: match.index, end: match.index + match[0].length, href: references.find(item => item.label.toLowerCase() === label)!.href });
+    }
+  }
+  // A rule term never sits inside a condition or spell name; if it did, the name wins.
+  for (const link of ruleLinks) if (!links.some(other => link.start < other.end && other.start < link.end)) links.push({ ...link, rule: true });
+  links.sort((a, b) => a.start - b.start);
   const nodes: ReactNode[] = [];
   let end = 0;
-  for (const match of text.matchAll(matcher)) {
-    nodes.push(<Fragment key={`text-${match.index}`}>{renderText(text.slice(end, match.index), end)}</Fragment>);
-    const label = match[0].replace(/-\s*\n\s*/g, "").replace(/\s+/g, " ").toLowerCase();
-    const reference = references.find(item => item.label.toLowerCase() === label)!;
-    nodes.push(<a key={`link-${match.index}`} href={reference.href} className="ref-pill">{match[0]}</a>);
-    end = match.index + match[0].length;
+  for (const link of links) {
+    nodes.push(<Fragment key={`text-${link.start}`}>{renderText(text.slice(end, link.start), end)}</Fragment>);
+    nodes.push(<a key={`link-${link.start}`} href={link.href} className="ref-pill" data-rule-term={link.rule ? "" : undefined}>{text.slice(link.start, link.end)}</a>);
+    end = link.end;
   }
   nodes.push(<Fragment key="tail">{renderText(text.slice(end), end)}</Fragment>);
   return <>{nodes}</>;
 }
 
-function InlineHtmlText({ html, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
+/** The text runs of a paragraph between its tags, as plain text, and whether each is a spell name. */
+function textRuns(source: string) {
+  const runs: { start: number; end: number; spell: boolean }[] = [];
+  const stack: string[] = [];
+  let plain = "";
+  let last = 0;
+  const add = (text: string) => {
+    const decoded = decodeEntities(text);
+    runs.push({ start: plain.length, end: plain.length + decoded.length, spell: stack.includes("spellname") });
+    plain += decoded;
+  };
+  for (const m of source.matchAll(TAG_RE)) {
+    if (m.index > last) add(source.slice(last, m.index));
+    const tag = m[2].toLowerCase();
+    if (m[3] || tag === "br") { if (tag === "br") plain += "\n"; }
+    else if (m[1]) { const idx = stack.lastIndexOf(tag); if (idx >= 0) stack.splice(idx, 1); }
+    else stack.push(tag);
+    last = m.index + m[0].length;
+  }
+  if (last < source.length) add(source.slice(last));
+  return { plain, runs };
+}
+
+function InlineHtmlText({ html, damageIcons = false, references = [], spellReferences = [], rules }: HtmlTextProps) {
   const nodes: ReactNode[] = [];
   const stack: string[] = [];
   let key = 0;
   let last = 0;
   let plainEmitted = "";
+
+  const source = normalizeEmphasis(html || "", new Set(spellReferences.map(reference => normalizeName(reference.label))));
+  // Rule terms of the whole paragraph (one per term), each inside one run of text that is not a spell name.
+  const { plain, runs } = textRuns(source);
+  const ruleSpots = findRuleTerms(plain, rules, (start, end) => !runs.some(run => !run.spell && run.start <= start && end <= run.end));
 
   const emit = (text: string) => {
     const decoded = decodeEntities(text);
@@ -151,7 +191,10 @@ function InlineHtmlText({ html, damageIcons = false, references = [], spellRefer
     const bold = stack.includes("b") || stack.includes("strong");
     const italic = stack.includes("spellname");
     const rule = stack.includes("rulelabel");
-    const content = <ReferenceText text={decoded} damageIcons={damageIcons} precedingText={plainEmitted} references={italic ? [...references, ...spellReferences] : references} />;
+    const from = plainEmitted.length;
+    const ruleLinks = ruleSpots.filter(spot => spot.start >= from && spot.end <= from + decoded.length)
+      .map(spot => ({ start: spot.start - from, end: spot.end - from, href: spot.href }));
+    const content = <ReferenceText text={decoded} damageIcons={damageIcons} precedingText={plainEmitted} references={italic ? [...references, ...spellReferences] : references} ruleLinks={ruleLinks} />;
     plainEmitted += decoded;
     const className = [
       bold ? "font-semibold text-primary" : "",
@@ -171,7 +214,6 @@ function InlineHtmlText({ html, damageIcons = false, references = [], spellRefer
     );
   };
 
-  const source = normalizeEmphasis(html || "", new Set(spellReferences.map(reference => normalizeName(reference.label))));
   let m: RegExpExecArray | null;
   TAG_RE.lastIndex = 0;
   while ((m = TAG_RE.exec(source)) !== null) {
@@ -198,16 +240,16 @@ function InlineHtmlText({ html, damageIcons = false, references = [], spellRefer
   );
 }
 
-function SpellProse({ html, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
+function SpellProse({ html, damageIcons = false, references = [], spellReferences = [], rules }: HtmlTextProps) {
   const matches = [...html.matchAll(SLOT_HEADING_RE)];
-  if (matches.length === 0) return <InlineHtmlText html={html} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />;
+  if (matches.length === 0) return <InlineHtmlText html={html} damageIcons={damageIcons} references={references} spellReferences={spellReferences} rules={rules} />;
 
   const sections: ReactNode[] = [];
   let last = 0;
   const addProse = (part: string) => {
     const text = part.replace(/^(?:\s|<br\s*\/?>)+|(?:\s|<br\s*\/?>)+$/gi, "");
     if (text.replace(/<[^>]+>/g, "").trim()) {
-      sections.push(<InlineHtmlText key={sections.length} html={text} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />);
+      sections.push(<InlineHtmlText key={sections.length} html={text} damageIcons={damageIcons} references={references} spellReferences={spellReferences} rules={rules} />);
     }
   };
   for (const match of matches) {
@@ -228,9 +270,9 @@ function SpellProse({ html, damageIcons = false, references = [], spellReference
 }
 
 /** Preserve the source tables without allowing attributes or executable markup. The layout of the PDF is repaired first (lib/display-layout.ts). */
-export function HtmlText({ html: source, damageIcons = false, references = [], spellReferences = [] }: HtmlTextProps) {
+export function HtmlText({ html: source, damageIcons = false, references = [], spellReferences = [], rules }: HtmlTextProps) {
   const html = normalizeLayout(source || "");
-  if (!html.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} spellReferences={spellReferences} />;
+  if (!html.includes("<pre>")) return <SpellProse html={html || ""} damageIcons={damageIcons} references={references} spellReferences={spellReferences} rules={rules} />;
   const parts = html.split(/(<pre>[\s\S]*?<\/pre>)/g);
   return (
     <div className="min-w-0 max-w-full space-y-5">
@@ -248,7 +290,7 @@ export function HtmlText({ html: source, damageIcons = false, references = [], s
           );
         }
         const text = part.replace(/^(?:<br>)+|(?:<br>)+$/g, "");
-        return text ? <SpellProse key={index} html={text} damageIcons={damageIcons} references={references} spellReferences={spellReferences} /> : null;
+        return text ? <SpellProse key={index} html={text} damageIcons={damageIcons} references={references} spellReferences={spellReferences} rules={rules} /> : null;
       })}
     </div>
   );
