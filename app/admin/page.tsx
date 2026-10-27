@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Backpack, BarChart3, Bell, BookOpen, ChevronLeft, ChevronRight, Crown, Eye, FileDiff, Flag, FlaskConical, Gem, Hammer, HeartPulse, History, LogOut, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
+import { Backpack, BarChart3, Bell, BookOpen, ChevronLeft, ChevronRight, Crown, Eye, FileDiff, FileSearch, Flag, FlaskConical, Gem, Hammer, HeartPulse, History, LogOut, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/admin";
 import { AdminEditionSwitch } from "@/components/admin-edition/edition-bar";
@@ -19,6 +19,7 @@ import { getAllMonsters } from "@/lib/monsters";
 import { getAdminSpells } from "@/lib/spells";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import { getSrdModifiedCards } from "@/lib/srd-modified-server";
+import { getReviewNameCards } from "@/lib/review-names-server";
 
 export const dynamic = "force-dynamic";
 
@@ -109,6 +110,8 @@ export default async function AdminPage() {
   ]);
   // «Schede SRD modificate»: both editions, the cards as the public sees them (lib/srd-modified.ts).
   const modified = await getSrdModifiedCards().then(cards => cards.length).catch(() => null);
+  // «Nomi da rivedere»: NO SRD cards holding a name of lib/data/nomi-da-rivedere.json.
+  const reviewNames = await getReviewNameCards().then(cards => cards.length).catch(() => null);
   // Entries of the chosen edition: the same rule as the lists they open (and as the public site).
   const spellCount = spells?.filter(spell => spellEdition(spell) === edition).length ?? null;
   const monsterCount = monsters?.filter(monster => (usesLegacyMonsterRules(monster) ? "2014" : "2024") === edition).length ?? null;
@@ -163,6 +166,7 @@ export default async function AdminPage() {
           <Row href="/admin/notifiche" name="Notifiche" Icon={Bell} status={devices === null ? undefined : many(devices, "dispositivo", "dispositivi")} />
           <Row href="/admin/registro" name="Registro modifiche" Icon={History} status={overrides ? many(active.length, "manuale", "manuali") : undefined} />
           <Row href="/admin/srd-modificate" name="Schede SRD modificate" Icon={FileDiff} status={modified === null ? undefined : modified ? many(modified, "scheda", "schede") : "tutte coincidono"} />
+          <Row href="/admin/nomi-da-rivedere" name="Nomi da rivedere" Icon={FileSearch} status={reviewNames === null ? undefined : reviewNames ? many(reviewNames, "scheda", "schede") : "nessuna"} />
           <Row href="/admin/statistiche" name="Statistiche" Icon={BarChart3} />
         </Group>
       </div>

@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Segnalazioni — Il Grimorio.App", robots: { index: false, follow: false } };
 
 const TYPE_FILTERS: { value?: FeedbackType; label: string }[] = [
-  { label: "Tutte" }, { value: "errore", label: "Errori" }, { value: "mancanza", label: "Mancanze" }, { value: "consiglio", label: "Consigli" },
+  { label: "Tutte" }, { value: "diritti", label: "Diritti" }, { value: "errore", label: "Errori" }, { value: "mancanza", label: "Mancanze" }, { value: "consiglio", label: "Consigli" },
 ];
 const STATE_FILTERS: { value: FeedbackState; label: string }[] = [
   { value: "nuova", label: "Nuove" }, { value: "letta", label: "Lette" }, { value: "risolta", label: "Risolte" }, { value: "archiviata", label: "Archiviate" },
@@ -73,8 +73,12 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
         <p className="rounded-[14px] border-[1.5px] border-border bg-card px-4 py-6 text-center text-[15px] text-muted">Nessuna segnalazione{filter.tipo || filter.stato ? " con questi filtri" : ""}.</p>
       ) : (
         <ul className="overflow-hidden rounded-[14px] border-[1.5px] border-border bg-card">
-          {reports.map((report, i) => (
-            <li key={report.id} className="border-t border-elevated first:border-t-0">
+          {reports.map((report, i) => {
+            // Open rights requests come first (lib/feedback.ts), marked, with the contested page one tap away.
+            const rights = report.tipo === "diritti" && (report.stato === "nuova" || report.stato === "letta");
+            return (
+            <li key={report.id} data-rights-request={rights ? "" : undefined}
+              className={`border-t border-elevated first:border-t-0 ${rights ? "border-l-4 border-l-primary bg-[#F3D3D3]/45" : ""}`}>
               <Link href={`/admin/segnalazioni/${report.id}`} prefetch={false} className="flex flex-col gap-1 px-3.5 py-3">
                 <span className="flex items-center gap-2">
                   <TypePill tipo={report.tipo} />
@@ -87,8 +91,15 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
                 <span className="line-clamp-2 break-words text-[15px] leading-[1.3]">{report.messaggio}</span>
                 {!report.email_inviata && <span className="text-xs font-bold text-primary">Email di avviso non inviata</span>}
               </Link>
+              {rights && report.percorso && (
+                <Link href={report.percorso} prefetch={false} data-contested-link=""
+                  className="-mt-1 mb-2 ml-3.5 inline-flex min-h-11 items-center text-[14px] font-bold text-primary underline underline-offset-4">
+                  Apri la pagina contestata: {report.percorso}
+                </Link>
+              )}
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>

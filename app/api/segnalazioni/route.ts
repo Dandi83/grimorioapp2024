@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
   } catch {
     return reply({ error: "Richiesta non valida." }, 400);
   }
-  const parsed = parseFeedback(body);
+  // The host of this request: a contested page may be written with it (previews, tests).
+  const parsed = parseFeedback(body, new URL(origin).host);
   if (!parsed.ok) return reply({ error: parsed.error }, 400);
   // Filled honeypot: the sender sees the usual answer, nothing is saved or sent.
   if (parsed.spam) return reply({ ok: true });

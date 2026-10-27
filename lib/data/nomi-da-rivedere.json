@@ -1,0 +1,12 @@
+{
+  "_nota": "Nomi propri e marchi da rivedere nelle schede NON SRD (/admin/nomi-da-rivedere). Si cercano come parole intere, senza distinguere maiuscole e minuscole; con \"maiuscola\": true solo con l'iniziale maiuscola (parole che sono anche parole comuni italiane, come «otto»).",
+  "nomi": [
+    { "nome": "Hadar" }, { "nome": "Tasha" }, { "nome": "Agathys" }, { "nome": "Yolande" }, { "nome": "Bigby" },
+    { "nome": "Melf" }, { "nome": "Mordenkainen" }, { "nome": "Otiluke" }, { "nome": "Otto", "maiuscola": true }, { "nome": "Leomund" },
+    { "nome": "Nystul" }, { "nome": "Rary" }, { "nome": "Tenser" }, { "nome": "Evard" }, { "nome": "Drawmij" },
+    { "nome": "Snilloc" }, { "nome": "Maximilian" }, { "nome": "Aganazzar" }, { "nome": "Abi-Dalzim" }, { "nome": "Zephyra" },
+    { "nome": "Beholder" }, { "nome": "Mind Flayer" }, { "nome": "Illithid" }, { "nome": "Githyanki" }, { "nome": "Githzerai" },
+    { "nome": "Vecna" }, { "nome": "Strahd" }, { "nome": "Drizzt" }, { "nome": "Elminster" }, { "nome": "Bahamut" },
+    { "nome": "Tiamat" }, { "nome": "Asmodeus" }, { "nome": "Lolth" }
+  ]
+}
