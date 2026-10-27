@@ -56,6 +56,24 @@ assert.equal(input.feedbackSubject('mancanza','/bestiario'),'[Grimorio] Mancanza
 assert.equal(input.feedbackSubject('consiglio',null),'[Grimorio] Consiglio · nessuna pagina');
 assert.equal(input.aboutLabel('Palla di fuoco','/spell/palla-di-fuoco','2024'),'Palla di fuoco (2024)');
 
+// Rights requests («Diritti»): contested page of this site and email both required, «[Diritti]» in the subject.
+const rights={...valid,tipo:'diritti',percorso:'https://ilgrimorio.app/spell/palla-di-fuoco',email:'avvocato@esempio.it'};
+r=input.parseFeedback(rights);
+assert.equal(r.ok,true);assert.equal(r.value.tipo,'diritti');assert.equal(r.value.percorso,'/spell/palla-di-fuoco');assert.equal(r.value.email,'avvocato@esempio.it');
+assert.equal(input.parseFeedback({...rights,email:''}).error,input.RIGHTS_EMAIL_ERROR,'email required for this category only');
+assert.equal(input.parseFeedback({...rights,percorso:''}).error,input.CONTESTED_PAGE_ERROR,'contested page required');
+assert.equal(input.parseFeedback({...rights,percorso:'https://altro-sito.example/spell/x'}).error,input.CONTESTED_PAGE_ERROR,'another site is refused');
+assert.equal(input.parseFeedback({...valid,percorso:null,email:''}).ok,true,'the other categories still need neither');
+for(const [written,path] of [['https://www.ilgrimorio.app/mostro/lich-2014/','/mostro/lich-2014'],['ilgrimorio.app/Spell/Luce','/spell/luce'],['/manuale/condizioni-prono-2014','/manuale/condizioni-prono-2014'],['https://ilgrimorio.app/spell/luce?x=1#y','/spell/luce']])
+ assert.equal(input.cleanContestedPage(written),path,written);
+for(const bad of ['','https://ilgrimorio.app/','https://ilgrimorio.app/admin/segnalazioni','javascript:alert(1)','https://ilgrimorio.app.evil.example/spell/x','http://localhost:3000/spell/x',42])
+ assert.equal(input.cleanContestedPage(bad),null,String(bad));
+assert.equal(input.cleanContestedPage('http://localhost:3000/spell/x','localhost:3000'),'/spell/x','the host the form was sent to is accepted');
+assert.equal(input.parseFeedback({...rights,percorso:'http://localhost:3000/spell/x'},'localhost:3000').value.percorso,'/spell/x');
+assert.equal(input.feedbackSubject('diritti','/spell/palla-di-fuoco'),'[Diritti] [Grimorio] Richiesta di rimozione · /spell/palla-di-fuoco');
+assert.equal(input.FORM_TYPE_LABELS.diritti,'Diritti d’autore o marchi (richiesta di rimozione)');
+r=input.parseFeedback(valid);
+
 // Dates in the admin list.
 const now=new Date('2026-10-21T13:00:00Z');
 assert.equal(input.formatWhen(new Date('2026-10-21T13:12:00Z'),now),'oggi 15:12');
@@ -174,6 +192,32 @@ assert.equal(input.formatWhen(new Date('2026-10-19T10:00:00Z'),now),'19 ott');
  assert.equal(await fb.deleteFeedback(report.id),true);
  assert.equal(await fb.getFeedback(report.id),null);
 
+ // Rights requests: allowed by the table, open ones first in the list whatever their date, then the others newest first.
+ const older=await fb.saveFeedback({tipo:'diritti',messaggio:'Questa pagina riproduce un mio testo protetto.',percorso:'/spell/palla-di-fuoco',edizione:null,email:'autore@esempio.it'});
+ await pg.query("UPDATE grimorio_feedback_reports SET creato_il = now() - interval '3 days' WHERE id = $1",[older.id]);
+ const newer=await fb.saveFeedback({...r.value,tipo:'errore'});
+ list=await fb.listFeedback();
+ assert.equal(list.reports[0].id,older.id,'open rights request on top');assert.equal(list.reports[1].id,newer.id);
+ await fb.setFeedbackState(older.id,'risolta');
+ assert.equal((await fb.listFeedback()).reports.at(-1).id,older.id,'a resolved request goes back to its date');
+ assert.equal((await fb.listFeedback({tipo:'diritti'})).reports.length,1);
+ await assert.rejects(pg.query("INSERT INTO grimorio_feedback_reports (id,tipo,messaggio) VALUES ('22222222-2222-4222-8222-222222222222','altro','x')"),'other types still refused');
+
+ // A table created before the rights requests: its type check is widened once, the reports kept.
+ const old=new PGlite();
+ await old.query(`CREATE TABLE grimorio_feedback_reports (id uuid PRIMARY KEY, creato_il timestamptz NOT NULL DEFAULT now(),
+  tipo text NOT NULL CHECK (tipo IN ('errore', 'mancanza', 'consiglio')), messaggio text NOT NULL, percorso text,
+  edizione text CHECK (edizione IN ('2014', '2024')), email_risposta text,
+  stato text NOT NULL DEFAULT 'nuova' CHECK (stato IN ('nuova', 'letta', 'risolta', 'archiviata')), email_inviata boolean NOT NULL DEFAULT false, nota_admin text)`);
+ await old.query("INSERT INTO grimorio_feedback_reports (id,tipo,messaggio) VALUES ('33333333-3333-4333-8333-333333333333','errore','Segnalazione di prima')");
+ deps['./db']={pool:{query:(sql,params)=>old.query(sql,params).then(res=>({...res,rowCount:res.affectedRows??res.rows.length}))}};
+ const migrated=load('lib/feedback.ts');
+ await migrated.saveFeedback({...rights,percorso:'/spell/palla-di-fuoco',messaggio:'Richiesta dopo la migrazione.',edizione:null});
+ assert.equal((await migrated.listFeedback()).reports.length,2,'old report kept, rights request saved');
+ const checks=(await old.query("SELECT pg_get_constraintdef(oid) AS def FROM pg_constraint WHERE conrelid='grimorio_feedback_reports'::regclass AND contype='c' AND pg_get_constraintdef(oid) LIKE '%tipo%'")).rows;
+ assert.equal(checks.length,1);assert.match(checks[0].def,/diritti/);
+ await old.close();
+
  // Turnstile: off without keys; with keys the token is checked by Cloudflare (simulated).
  assert.equal(fb.turnstileConfigured(),false);assert.equal(await fb.turnstilePassed(undefined),true);
  process.env.TURNSTILE_SITE_KEY='site';process.env.TURNSTILE_SECRET_KEY='secret';
@@ -181,5 +225,5 @@ assert.equal(input.formatWhen(new Date('2026-10-19T10:00:00Z'),now),'19 ott');
  assert.equal(await fb.turnstilePassed('tok',async()=>({json:async()=>({success:true})})),true);
  assert.equal(await fb.turnstilePassed('tok',async()=>({json:async()=>({success:false})})),false);
  await pg.close();
- console.log('Segnalazioni: validation, honeypot, minimum time, send limits, cleaning, storage without IP, email via Resend (simulated) and without key, admin states.');
+ console.log('Segnalazioni: validation, honeypot, minimum time, send limits, cleaning, storage without IP, email via Resend (simulated) and without key, admin states, rights requests (page and email required, on top, «[Diritti]», table widened).');
 })().catch(error=>{console.error(error);process.exit(1);});
