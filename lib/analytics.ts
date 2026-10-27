@@ -4,9 +4,18 @@ import { pool } from "./db";
 import type { AnalyticsInput } from "./analytics-events";
 import type { AnalyticsEventRow } from "./db/schema";
 export const POSTHOG_DASHBOARD = "https://eu.posthog.com/project/295280/dashboard/1034015";
-/** Separate from the admin passcode; the passcode remains the fallback until ANALYTICS_SECRET is set. */
+let warned = false;
+/**
+ * Key of the visitor cookie: ANALYTICS_SECRET only, never the admin passcode (a visitor reads their own cookie and
+ * could guess it offline). Empty when missing: the statistics do not start (analyticsConfigured).
+ */
 export function analyticsSecret() {
-  return process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSCODE || "";
+  const secret = process.env.ANALYTICS_SECRET || "";
+  if (!secret && !warned) {
+    warned = true;
+    console.warn("[statistiche] Variabile mancante: ANALYTICS_SECRET. Statistiche non attive.");
+  }
+  return secret;
 }
 export function analyticsConfigured() {
   return !!(

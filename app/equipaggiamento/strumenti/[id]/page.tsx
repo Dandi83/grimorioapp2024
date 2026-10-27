@@ -31,8 +31,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // Hidden or «In arrivo»: no name or description of the card in the answer.
   if (await sectionClosed("strumenti")) return CLOSED_METADATA;
   const entry = getToolEntry((await params).id, (await getCorrectedTools()).list);
-  const tool = entry && (entry.editions["2024"] ?? entry.editions["2014"]);
-  return { title: tool ? `${tool.nome} — Strumenti — Il Grimorio.App` : "Strumento non trovato" };
+  // Not found as in the page (missing, or only in hidden editions): the generic metadata of the site's 404.
+  const shown = await pageEditions("strumenti");
+  const tool = entry && (["2024", "2014"] as const).filter(edition => shown.includes(edition)).map(edition => entry.editions[edition]).find(Boolean);
+  if (!tool) notFound();
+  return { title: `${tool.nome} — Strumenti — Il Grimorio.App` };
 }
 
 function Cell({ label, value }: { label: string; value: string }) {

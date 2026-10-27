@@ -2,6 +2,7 @@ import "server-only";
 import { createHmac, randomUUID } from "node:crypto";
 import { pool } from "./db";
 import { clientAddress } from "./admin-login-limit";
+import { feedbackSecret } from "./feedback";
 import { HOMEBREW_LICENSE, draftToMonster, homebrewId, isHomebrewId, type HomebrewDraft, type HomebrewEdition } from "./homebrew-types";
 import { toMonsterListItem, type Monster, type MonsterListItem } from "./monsters-types";
 
@@ -159,13 +160,11 @@ export async function deleteHomebrew(id: string): Promise<boolean> {
 
 // Proposals.
 
-function secret(): string {
-  return process.env.FEEDBACK_SECRET || process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSCODE || "";
-}
-/** Salted hash of the sender's address: never the address itself. Without a server secret only the overall limit applies. */
+/** Salted hash of the sender's address: never the address itself. FEEDBACK_SECRET only (lib/feedback.ts); null without it. */
 export function proposalDeviceKey(headers: Headers): string | null {
-  if (!secret()) return null;
-  return createHmac("sha256", secret()).update(`grimorio-homebrew-device:${clientAddress(headers) || "unknown"}`).digest("hex");
+  const secret = feedbackSecret();
+  if (!secret) return null;
+  return createHmac("sha256", secret).update(`grimorio-homebrew-device:${clientAddress(headers) || "unknown"}`).digest("hex");
 }
 
 export async function proposalLimited(key: string | null): Promise<boolean> {

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId, visibleLinks } from "@/lib/public-sections";
-import { cardHidden, cardsOut, editionCard, linksOut, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { cardHidden, editionCard, linksOut, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { notFound } from "next/navigation";
 
@@ -41,7 +41,11 @@ export async function generateMetadata({
   if (await sectionClosed("incantesimi")) return CLOSED_METADATA;
   const { id } = await params;
   const spell = await getSpellById(id);
-  if (!spell || (await cardsOut()).includes(`/spell/${spell.id}`)) return { title: "Incantesimo non trovato" };
+  // The same checks as the page: a missing card, a card of a hidden edition or hidden with the eye is not found,
+  // and its answer has the generic metadata of the site's 404 (nothing of the card).
+  if (!spell) notFound();
+  await editionCard("incantesimi", spell.edizione === "2014" ? "2014" : "2024");
+  await cardHidden("incantesimo", spell.id);
   const titolo = spellName(spell.nome_italiano, spell.edizione);
   const description = spell.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
     `${titolo}, incantesimo di ${spell.scuola}.`;

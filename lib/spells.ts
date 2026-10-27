@@ -7,11 +7,12 @@ import { db } from "./db";
 import { getContentEditions, getOriginalSummaries } from "./content-editions";
 import { spells as spellsTable } from "./db/schema";
 import { parseLivello, type Spell } from "./spells-types";
-import { applySrdDescription, getSrdSource } from "./srd-descriptions";
-import { applyOriginalDescription, getOriginalSource } from "./original-descriptions";
+import { getSrdSource } from "./srd-descriptions";
+import { getOriginalSource } from "./original-descriptions";
 import { previewSpellRows, previewSpellById } from "./srd-additions";
 import { getLegacySpellSource, isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
 import { repairCatalogSpell } from "./spell-catalog-repairs";
+import { displaySpellRow } from "./spell-display-row";
 import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { spellName } from "./spell-name";
 import { repairSpellText } from "./spell-text-repairs";
@@ -58,7 +59,7 @@ function withSummary(spell: Spell, summaries: ReadonlySet<string>): Spell {
 
 function toSpell(r: RawRow, repair = true): Spell {
   // The reserved area edits the stored values, so it never sees the display-only repairs.
-  r = applyOriginalDescription(applySrdDescription(repair ? repairCatalogSpell(r) : r));
+  r = displaySpellRow(r, repair);
   if (repair) r = { ...r, descrizione: repairSpellText(r.id, r.descrizione) };
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
   const spell: Spell = {
