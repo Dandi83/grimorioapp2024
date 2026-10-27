@@ -1297,6 +1297,8 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   for (const edition of ["2024", "2014"]) {
     await page.goto("/admin/incantesimi");
     await editions.getByRole("button", { name: edition }).click();
+    // The page data of the new edition are on screen once the switch is enabled again.
+    await expect(editions.getByRole("button", { name: edition })).toBeEnabled();
     await expect(page.getByText(`Stai modificando il ${edition}`)).toBeVisible();
     await expect(page.getByText(`Edizione ${edition}: ${spells[edition]} incantesimi · ${creatures[edition]} mostri`), edition).toBeVisible();
     await page.goto("/admin");
@@ -1383,6 +1385,8 @@ test("admin lists the same in both editions: manual names, source labels, Elimin
   for (const edition of ["2024", "2014"]) {
     await page.goto("/admin/incantesimi");
     await editions.getByRole("button", { name: edition }).click();
+    // The page data of the new edition are on screen once the switch is enabled again.
+    await expect(editions.getByRole("button", { name: edition })).toBeEnabled();
     await expect(page.getByText(`Stai modificando il ${edition}`)).toBeVisible();
     // The control changes at once; the rows of the edition come with the page data.
     await expect(page.getByText(new RegExp(`^Edizione ${edition}: \\d+ incantesimi`))).toBeVisible();
@@ -1670,6 +1674,8 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
   for (const [i, card] of cards.entries()) {
     await page.goto(card.list);
     await editions.getByRole("button", { name: card.edition }).click();
+    // The page data of the new edition are on screen once the switch is enabled again.
+    await expect(editions.getByRole("button", { name: card.edition })).toBeEnabled();
     await expect(page.getByText(`Stai modificando il ${card.edition}`)).toBeVisible();
     await page.getByPlaceholder(card.search).fill(card.query);
     const row = rowOf(card.name);
@@ -1758,6 +1764,8 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
   for (const card of cards.slice(1)) {
     await page.goto(card.list);
     await editions.getByRole("button", { name: card.edition }).click();
+    // The page data of the new edition are on screen once the switch is enabled again.
+    await expect(editions.getByRole("button", { name: card.edition })).toBeEnabled();
     await page.getByPlaceholder(card.search).fill(card.query);
     await rowOf(card.name).getByRole("button", { name: `Mostra sul sito: ${card.name}` }).click();
     await expect(rowOf(card.name).getByText("Nascosta", { exact: true })).toHaveCount(0);
