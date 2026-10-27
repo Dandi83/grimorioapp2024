@@ -144,7 +144,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await page.getByRole("link", { name: "Approvate" }).click();
   await expect(page.getByRole("link", { name: "Apri la scheda pubblicata" })).toHaveAttribute("href", CARD);
   await page.goto("/admin/registro?edizioni=tutte&sezione=mostri");
-  await expect(page.getByText("Pubblicata", { exact: true })).toBeVisible();
+  await expect(page.locator("[data-log-entry]").filter({ hasText: "homebrew → Pubblicata" }).first()).toBeVisible();
 
   // A proposal sent before the licence (the column empty, as on the proposals already in the database):
   // «Licenza non indicata», the amber pill, «Approva» unavailable; then refused, nothing published.
@@ -239,7 +239,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2014" }).click();
   await expect(page.getByTestId("admin-edition-band")).toHaveText("2014");
-  await expect(page.getByText(/Edizione 2014: \d+ incantesimi/)).toBeVisible();
+  await expect(page.locator("main[data-admin-list]")).toHaveAttribute("data-edition", "2014");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
   await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Homebrew", exact: true }).click();
   const editor = page.getByRole("dialog");

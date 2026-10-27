@@ -109,7 +109,7 @@ test("concentration on a spell added by the administrator (Amicizia 2014)", asyn
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
   const row = page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first();
-  const path = await row.locator('a[href^="/spell/"]').first().getAttribute("href");
+  const path = await row.getAttribute("data-public-href");
 
   const visitor = await page.context().browser().newContext({ viewport: { width: 390, height: 844 } });
   await visitor.addInitScript(() => { try { localStorage.setItem("grimorio.edizione", "2014"); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } });

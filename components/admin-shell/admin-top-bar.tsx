@@ -9,7 +9,8 @@ import { ADMIN_EDITIONS, EDITION_BAND, isCommonAdminPath, type AdminEdition } fr
 
 /**
  * The 2024 | 2014 pill of the reserved area: the active half full in the colour of its edition (bordeaux 2024,
- * blue 2014), the other light. Saved for the whole area; the page data reload at once.
+ * blue 2014), the other light. Saved for the whole area; the page data reload at once. The band marker follows
+ * the edition of the data on screen: it changes only once the page has reloaded (the pill is keyed by edition).
  */
 export function AdminEditionPill({ edition: initial }: { edition: AdminEdition }) {
   const { edition, choose, pending } = useAdminEditionSwitch(initial);
@@ -20,7 +21,7 @@ export function AdminEditionPill({ edition: initial }: { edition: AdminEdition }
         return (
           <button key={value} type="button" aria-pressed={active} disabled={pending} onClick={() => choose(value)}
             aria-label={active ? EDITION_BAND[value].label : `Passa al ${value}`}
-            data-testid={active ? "admin-edition-band" : undefined}
+            data-testid={value === initial && !pending ? "admin-edition-band" : undefined}
             style={active ? { background: EDITION_BAND[value].background, color: EDITION_BAND[value].text } : undefined}
             className={`min-h-11 min-w-[64px] rounded-full px-4 text-[15px] font-bold tabular-nums focus-visible:outline-[3px] focus-visible:outline-offset-1 focus-visible:outline-[#E0A21A] ${active ? "" : "text-[#5E4E3E]"}`}>
             {value}

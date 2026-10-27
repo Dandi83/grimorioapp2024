@@ -112,7 +112,7 @@ test("Diritti: contested page and email required; on top in the admin list, card
 
     // «Nomi da rivedere»: the card with «Hadar», hidden now, links to the card and the editor.
     await page.goto("/admin");
-    await page.getByRole("link", { name: /^Nomi da rivedere/ }).click();
+    await page.locator('a[data-due="nomi-da-rivedere"]').click();
     await expect(page.getByRole("heading", { level: 1, name: "Nomi da rivedere" })).toBeVisible();
     const listed = page.locator("[data-review-name]");
     console.log(`[nomi-da-rivedere] test database: ${await listed.count()} cards (the test card included)`);

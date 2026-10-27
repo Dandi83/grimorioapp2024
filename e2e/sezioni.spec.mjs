@@ -32,6 +32,12 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+/** The editions of a section are under «Avanzate: scelta diversa per 2014 e 2024» (closed until one differs). */
+async function openAdvanced(box) {
+  const advanced = box.locator("[data-advanced]");
+  if ((await advanced.count()) && (await advanced.getAttribute("open")) === null) await advanced.locator("summary").click();
+}
+
 test("sections of the app: admin hides and shows every section; public 404 page, Compendio, bar, search and links; dark band with Mostra", async ({ page, browser }) => {
   test.setTimeout(600_000);
   // The public: a second phone without the admin session.
@@ -55,7 +61,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
   await expect(page.getByRole("heading", { level: 1, name: "Registro" })).toBeVisible();
-  const logBefore = await page.getByRole("list", { name: "Modifiche" }).locator(":scope > li").filter({ hasNotText: "Raccolta Homebrew" }).count();
+  const logBefore = await page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]").filter({ hasNotText: "Raccolta Homebrew" }).count();
   await page.goto("/admin");
   await page.getByRole("link", { name: /^Sezioni\s*Cosa vedono gli utenti/ }).click();
   await expect(page).toHaveURL(/\/admin\/sezioni$/);
@@ -196,7 +202,8 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   expect(await adminTiles.evaluateAll(links => links.map(a => a.querySelectorAll('svg[aria-hidden="true"]').length))).toEqual(Array(10).fill(2));
   const labelled = await adminTiles.evaluateAll(links => links.filter(a => /Nascosta agli utenti/.test(a.textContent)).map(a => a.getAttribute("href")));
   expect(labelled.sort()).toEqual(["/admin/contenuti/armature", "/admin/contenuti/armi", "/admin/contenuti/avventura", "/admin/contenuti/classi", "/admin/contenuti/condizioni", "/admin/contenuti/strumenti", "/admin/incantesimi", "/admin/mostri"]);
-  await expect(page.getByRole("main").getByRole("button")).toHaveCount(0);
+  // No buttons in the list itself (the edition pill above is the reserved area's).
+  await expect(page.locator("main main").getByRole("button")).toHaveCount(0);
   const tileIcon = adminTiles.first().locator("svg").first();
   expect(await tileIcon.evaluate(svg => [svg.getAttribute("width"), svg.getAttribute("stroke"), svg.getAttribute("stroke-width")])).toEqual(["22", "#7A1F2B", "1.8"]);
   // The Home: four tiles, Sezioni says what the visitors see.
@@ -229,7 +236,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
 
   // The log: every switch, with section and new state.
   await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
-  const log = page.getByRole("list", { name: "Modifiche" }).locator(":scope > li");
+  const log = page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]");
   await expect(log.first()).toContainText("Classi · visibilità");
   await expect(log.first()).toContainText("Visibile");
   // 10 sections hidden and shown again, 8 hidden together, Classi shown from the band (the Homebrew collection,
@@ -307,6 +314,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
     if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
     if ((await opener(key).getAttribute("aria-expanded")) !== "true") await opener(key).click();
     const box = page.locator(`#parti-${key}`);
+    await openAdvanced(box);
     const button = stateRadio(box, title, hide ? "Nascosta" : "Visibile");
     await expect(button).toHaveAttribute("aria-checked", "false");
     await button.click();
@@ -474,7 +482,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
 
   // The log: section, part, new state.
   await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
-  const log = page.getByRole("list", { name: "Modifiche" }).locator(":scope > li");
+  const log = page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]");
   await expect(log.filter({ hasText: "Classi · Tab Tabella · visibilità" })).toHaveCount(2);
   await expect(log.filter({ hasText: "Avanzamento · Calcolatore di PE · visibilità" }).first()).toContainText("Visibile");
 
@@ -502,6 +510,7 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
     if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
     if ((await opener(key).getAttribute("aria-expanded")) !== "true") await opener(key).click();
     const box = page.locator(`#parti-${key}`);
+    await openAdvanced(box);
     await stateRadio(box, "Edizione 2014", hide ? "Nascosta" : "Visibile").click();
     await expect(stateRadio(box, "Edizione 2014", hide ? "Nascosta" : "Visibile")).toBeEnabled();
     await expect(page.getByRole("status")).toHaveText(`Edizione 2014 ora è ${hide ? "nascosta" : "visibile"}`);

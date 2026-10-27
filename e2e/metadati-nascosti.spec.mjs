@@ -47,6 +47,8 @@ test("hidden card and hidden edition: the 404 has generic title and metadata, no
   const opener = page.locator('button[aria-controls="parti-incantesimi"]');
   if ((await opener.getAttribute("aria-expanded")) !== "true") await opener.click();
   const box = page.locator("#parti-incantesimi");
+  // The editions are under «Avanzate: scelta diversa per 2014 e 2024».
+  if ((await box.locator("[data-advanced]").getAttribute("open")) === null) await box.locator("[data-advanced] summary").click();
   await stateRadio(box, "Edizione 2014", "Nascosta").click();
   await expect(stateRadio(box, "Edizione 2014", "Nascosta")).toHaveAttribute("aria-checked", "true");
   await expect.poll(async () => (await request.get("/spell/allarme-2014")).status()).toBe(404);

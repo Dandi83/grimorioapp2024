@@ -199,7 +199,7 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
                           <p className={`text-[15px] font-semibold leading-snug ${item.inForce ? "" : "text-[#5E4E3E]"}`}>{item.text}</p>
                           <time dateTime={item.when.toISOString()} className="shrink-0 text-[13px] tabular-nums text-[#5E4E3E]">{timeOf(item.when)}</time>
                         </div>
-                        <p className="mt-0.5 text-[14px] text-[#2B2118]">{item.href ? <Link href={item.href} className="underline underline-offset-4">{item.card}</Link> : item.card} · {item.field}</p>
+                        <p className="mt-0.5 text-[14px] text-[#2B2118]">{item.href ? <Link href={item.href} className="underline underline-offset-4">{item.card}</Link> : item.card} · {item.field}{item.diff ? "" : ` → ${item.after}`}</p>
                         <p className="mt-0.5 text-[13px] text-[#5E4E3E]">{item.title}{!item.inForce && !item.fixed ? ` · ${item.undoneAt ? `annullata ${formatWhen(item.undoneAt, now)}` : "sostituita"}` : ""}</p>
                         <p className="mt-0.5 break-words text-[13px] text-[#5E4E3E]">{item.motivo}</p>
                         {item.warning && <p className="mt-1 text-[13px] font-semibold text-[#7A1F2B]">{item.warning}</p>}

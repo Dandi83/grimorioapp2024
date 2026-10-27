@@ -983,6 +983,7 @@ test("admin corrections: tiles, weapons list per edition, edit with reason, publ
   await page.getByRole("searchbox", { name: "Cerca in Armi" }).fill("");
   await adminEdition.getByRole("button", { name: "2024" }).click();
   await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
+  await expect(page.locator("main[data-admin-list]")).toHaveAttribute("data-edition", "2024");
   await page.getByRole("link", { name: /^Tridente/ }).click();
   await expect(page.getByRole("heading", { name: "Tridente (2024)" })).toBeVisible();
   // Edit: invalid values and missing reason are refused before saving.
@@ -1317,7 +1318,7 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   // Allarme 2014, from the file: opened in the editor; a save without changes writes nothing.
   const open = async () => {
     await page.getByPlaceholder("Cerca per nome o scuola…").fill("allarme");
-    const row = page.locator("main ul li").filter({ hasText: "SRD 5.1" }).filter({ hasText: "Allarme" }).first();
+    const row = page.locator("main ul li[data-card-row]").filter({ has: page.getByRole("link", { name: "Allarme", exact: true }) }).first();
     await expect(row).toBeVisible();
     await expect(row.getByRole("button", { name: /^Elimina/ })).toHaveCount(0);
     await row.getByRole("link").first().click();
@@ -1358,7 +1359,7 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   // Still in the 2014 list, read from the file again.
   await page.goto("/admin/incantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("allarme");
-  await expect(page.locator("main ul li").filter({ hasText: "SRD 5.1" }).filter({ hasText: "Allarme" })).toHaveCount(1);
+  await expect(page.locator("main ul li[data-card-row]").filter({ has: page.getByRole("link", { name: "Allarme", exact: true }) })).toHaveCount(1);
   expect(errors).toEqual([]);
 });
 
@@ -1407,8 +1408,10 @@ test("admin lists the same in both editions: manual names, source labels, Elimin
     const srdRow = rows.filter({ hasNot: page.locator("[data-row-pill]") }).first();
     if (await srdRow.count()) {
       await srdRow.dispatchEvent("contextmenu");
+      await expect(page.locator("[data-row-menu]")).toBeVisible();
       await expect(page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" })).toHaveCount(0);
       await page.keyboard.press("Escape");
+      await expect(page.locator("[data-row-menu]")).toHaveCount(0);
     }
     for (const width of [360, 375, 390]) {
       await page.setViewportSize({ width, height: 800 });
@@ -1423,8 +1426,10 @@ test("admin lists the same in both editions: manual names, source labels, Elimin
   const aboleth = rows.filter({ hasText: "Aboleth" }).first();
   await expect(aboleth.locator("[data-row-pill]")).toHaveCount(0);
   await aboleth.dispatchEvent("contextmenu");
+  await expect(page.locator("[data-row-menu]")).toBeVisible();
   await expect(page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" })).toHaveCount(0);
   await page.keyboard.press("Escape");
+  await expect(page.locator("[data-row-menu]")).toHaveCount(0);
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
   await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   const editor = page.getByRole("dialog");
@@ -1692,6 +1697,9 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
     await expect(row).toHaveAttribute("data-hidden", "");
     await expect(row.getByRole("switch", { name: `Visibile sul sito: ${card.name}` })).toHaveAttribute("aria-checked", "false");
     if (i === 0) {
+      // The hide has reached the site before «Annulla» (the toast stays 6 seconds). A page rebuilt by a visitor in the
+      // very instant of «Annulla» can keep the hidden state in the cache of the site for up to 5 minutes.
+      await expect.poll(async () => (await request.get(card.href)).status()).toBe(404);
       await page.getByRole("button", { name: "Annulla" }).click();
       await expect(row.getByRole("switch", { name: `Visibile sul sito: ${card.name}` })).toHaveAttribute("aria-checked", "true");
       await expect(row).not.toHaveAttribute("data-hidden", "");
@@ -1772,6 +1780,7 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
   for (const card of cards.slice(1)) {
     await page.goto(card.list);
     await editions.getByRole("button", { name: card.edition }).click();
+    await expect(page.getByTestId("admin-edition-band")).toHaveText(card.edition);
     await page.getByPlaceholder(card.search).fill(card.query);
     await rowOf(card.name).getByRole("switch", { name: `Visibile sul sito: ${card.name}` }).click();
     await expect(rowOf(card.name)).not.toHaveAttribute("data-hidden", "");

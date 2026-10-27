@@ -82,7 +82,7 @@ test("«Modifica» from the public pages: the editor at once, never the list, fo
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
-  const amicizia = await page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().locator('a[href^="/spell/"]').first().getAttribute("href");
+  const amicizia = await page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().getAttribute("data-public-href");
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin");
 
   const seen = await watchLists(page);

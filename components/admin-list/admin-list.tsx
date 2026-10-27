@@ -29,7 +29,12 @@ const SOURCE_PILL = "inline-flex items-center rounded-full border border-[#DDCFA
  * visible/hidden switch, the menu of a row (long press, or ⋯ on a computer), the selection and the «+» button.
  * On a computer the filters stay open on the left and the rows are a table.
  */
-export function AdminList({ data, create }: { data: AdminListData; create?: "spell" | "monster" }) {
+export function AdminList(props: { data: AdminListData; create?: "spell" | "monster" }) {
+  // A new edition (or list) starts afresh: the switches, the filters and the selection belong to the rows on screen.
+  return <AdminListView key={`${props.data.section}-${props.data.edition}`} {...props} />;
+}
+
+function AdminListView({ data, create }: { data: AdminListData; create?: "spell" | "monster" }) {
   const router = useRouter();
   const hideable = data.kind !== "contenuto";
   const initiallyHidden = useMemo(() => data.rows.filter(row => row.hidden).map(row => row.id), [data.rows]);
@@ -86,7 +91,7 @@ export function AdminList({ data, create }: { data: AdminListData; create?: "spe
   ];
 
   return (
-    <main className="mx-auto max-w-[1200px] px-4 pb-32 pt-2" data-admin-list={data.section}>
+    <main className="mx-auto max-w-[1200px] px-4 pb-32 pt-2" data-admin-list={data.section} data-edition={data.edition}>
       {selecting ? (
         <div className="sticky top-[61px] z-20 -mx-4 flex min-h-14 items-center gap-2 bg-[#2B2118] px-4 text-[#FFFBF0]" data-selection-bar="">
           <button type="button" onClick={endSelection} className="min-h-11 px-2 text-[15px] font-bold">Annulla</button>
@@ -300,7 +305,7 @@ function PhoneRow({ row, hidden, selecting, selected, onSelect, onToggle, onMenu
 }) {
   const press = useLongPress(onMenu);
   return (
-    <li data-card-row={row.id} data-hidden={hidden ? "" : undefined} className={`flex min-h-[60px] items-center gap-1 pl-2 pr-1 [-webkit-touch-callout:none] ${hidden ? "bg-[#F1EBDD]" : ""}`} {...press}>
+    <li data-card-row={row.id} data-public-href={row.publicHref} data-hidden={hidden ? "" : undefined} className={`flex min-h-[60px] items-center gap-1 pl-2 pr-1 [-webkit-touch-callout:none] ${hidden ? "bg-[#F1EBDD]" : ""}`} {...press}>
       {selecting && (row.hidden !== null ? <Checkbox checked={selected} name={row.name} onChange={onSelect} /> : <span className="w-11 shrink-0" />)}
       <div className={`min-w-0 flex-1 py-1.5 pl-2 ${hidden ? "opacity-55" : ""}`}>
         {selecting ? <span className="block break-words text-[16px] font-semibold leading-snug">{row.name}</span>
@@ -317,7 +322,7 @@ function TableRow({ row, hidden, hideable, selecting, selected, onSelect, onTogg
 }) {
   const cell = "border-t border-[#DDCFAE]/70 px-3 py-2 align-middle";
   return (
-    <tr data-card-row={row.id} data-hidden={hidden ? "" : undefined} className={hidden ? "bg-[#F1EBDD] text-[#2B2118]/60" : ""}>
+    <tr data-card-row={row.id} data-public-href={row.publicHref} data-hidden={hidden ? "" : undefined} className={hidden ? "bg-[#F1EBDD] text-[#2B2118]/60" : ""}>
       {selecting && <td className={cell}>{row.hidden !== null && <Checkbox checked={selected} name={row.name} onChange={onSelect} />}</td>}
       <td className={`${cell} font-serif text-[16px] font-bold tabular-nums text-[#7A1F2B]`}>{row.lead}</td>
       <td className={cell}><Link href={row.editHref} prefetch={false} className="text-[15px] font-semibold text-[#2B2118] hover:underline">{row.name}</Link></td>

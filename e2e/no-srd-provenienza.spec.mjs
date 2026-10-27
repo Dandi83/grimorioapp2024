@@ -78,11 +78,11 @@ test("NO SRD origin box and the «Sintesi originale» switch", async ({ page, br
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("lampo di prova");
   let row = page.locator("main ul li[data-card-row]").filter({ hasText: "Lampo di prova" }).first();
   await expect(row.locator("[data-row-pill]")).toHaveText("Aggiunta da te");
-  const spell = await row.locator('a[href^="/spell/"]').first().getAttribute("href");
+  const spell = await row.getAttribute("data-public-href");
   expect(await originBox(browser, spell, "2014", "aggiunta-spento-2014")).toBe(`${ADDED} Schede NO SRD`);
 
   // Switch on: summary box, admin label «Sintesi originale», «NO SRD» still public.
-  await row.getByRole("button", { name: /Modifica/ }).first().click();
+  await row.getByRole("link").first().click();
   editor = page.getByRole("dialog");
   await expect(editor.getByRole("switch", { name: "Sintesi originale" })).not.toBeChecked();
   await editor.getByText("Sintesi originale", { exact: true }).click();
@@ -99,14 +99,14 @@ test("NO SRD origin box and the «Sintesi originale» switch", async ({ page, br
   // The editor reopened keeps the switch on.
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("lampo di prova");
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Lampo di prova" }).first().getByRole("button", { name: /Modifica/ }).first().click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Lampo di prova" }).first().getByRole("link").first().click();
   await expect(page.getByRole("dialog").getByRole("switch", { name: "Sintesi originale" })).toBeChecked();
   await page.getByRole("button", { name: "Chiudi editor" }).click();
 
   // The 49 summaries: fixed in the editor, no switch.
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
-  await page.locator("main ul li[data-card-row]").filter({ hasText: /^.*Amicizia(?! con)/ }).first().getByRole("button", { name: /Modifica/ }).first().click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: /^.*Amicizia(?! con)/ }).first().getByRole("link").first().click();
   await expect(page.getByRole("dialog").getByTestId("summary-fixed")).toBeVisible();
   await expect(page.getByRole("dialog").getByRole("switch")).toHaveCount(0);
   await page.getByRole("button", { name: "Chiudi editor" }).click();
@@ -121,10 +121,10 @@ test("NO SRD origin box and the «Sintesi originale» switch", async ({ page, br
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder");
-  const beholder = await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
+  const beholder = await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).first().getAttribute("data-public-href");
   expect(await originBox(browser, beholder, "2024", "beholder-2024")).toBe(`${ADDED} Schede NO SRD`);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("lich");
-  await page.locator("main ul li[data-card-row]").filter({ hasText: /^.*Lich/ }).first().getByRole("button", { name: /Modifica/ }).first().click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: /^.*Lich/ }).first().getByRole("link").first().click();
   await expect(page.getByRole("dialog").getByRole("switch")).toHaveCount(0);
   await page.getByRole("button", { name: "Chiudi editor" }).click();
 

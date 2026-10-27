@@ -52,7 +52,7 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
   const row = page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first();
   await expect(row.locator("[data-row-pill]")).toHaveText("Aggiunta da te");
-  const amicizia = await row.locator('a[href^="/spell/"]').first().getAttribute("href");
+  const amicizia = await row.getAttribute("data-public-href");
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
   await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
@@ -61,7 +61,7 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder");
-  const beholder = await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
+  const beholder = await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).first().getAttribute("data-public-href");
 
   // Visitor: not on the page, not in the HTML or the data served; «NO SRD» instead.
   for (const [path, edition, name] of [[amicizia, "2014", "amicizia-2014"], [beholder, "2024", "beholder"]]) {
@@ -137,6 +137,7 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).dispatchEvent("contextmenu");
   await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" })).toHaveCount(0);
+  await page.goto("/admin");
   await page.getByRole("button", { name: "Esci", exact: true }).click();
   await expect(page.getByLabel("Passcode")).toBeVisible();
   await page.goto(amicizia);

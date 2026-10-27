@@ -59,7 +59,7 @@ test("administrator: «Modifica» opens the editor of the card and comes back; a
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("scheda di prova modifica");
-  const added = await page.locator("main ul li[data-card-row]").filter({ hasText: "Scheda di prova Modifica" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
+  const added = await page.locator("main ul li[data-card-row]").filter({ hasText: "Scheda di prova Modifica" }).first().getAttribute("data-public-href");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
   await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Homebrew", exact: true }).click();
   editor = page.getByRole("dialog");
@@ -191,7 +191,7 @@ test("administrator: «Modifica» opens the editor of the card and comes back; a
   }
 
   // «Esci»: no button any more.
-  await page.goto("/admin/incantesimi");
+  await page.goto("/admin");
   await page.getByRole("button", { name: "Esci", exact: true }).click();
   await expect(page.getByLabel("Passcode")).toBeVisible();
   await page.goto("/spell/palla-di-fuoco");

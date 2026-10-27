@@ -126,6 +126,7 @@ test("NO SRD asterisk: visitors never get it nor the ids; the administrator sees
   await page.locator("main ul li[data-card-row]").filter({ hasText: NAME }).dispatchEvent("contextmenu");
   await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: NAME })).toHaveCount(0);
+  await page.goto("/admin");
   await page.getByRole("button", { name: "Esci", exact: true }).click();
   await expect(page.getByLabel("Passcode")).toBeVisible();
   await edition(page, "2024");

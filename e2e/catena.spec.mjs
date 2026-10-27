@@ -74,7 +74,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("fiamma del grimorio");
-  const spellPath = await page.locator("main ul li[data-card-row]").filter({ hasText: "Fiamma del grimorio" }).first().locator('a[href^="/spell/"]').first().getAttribute("href");
+  const spellPath = await page.locator("main ul li[data-card-row]").filter({ hasText: "Fiamma del grimorio" }).first().getAttribute("data-public-href");
 
   // The public card: condition link, fire icon, link to the other spell, highlighted block, labels.
   let visitor = await publicPage(browser, spellPath);
@@ -129,7 +129,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("guardiano di cenere");
-  const monsterPath = await page.locator("main ul li[data-card-row]").filter({ hasText: "Guardiano di cenere" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
+  const monsterPath = await page.locator("main ul li[data-card-row]").filter({ hasText: "Guardiano di cenere" }).first().getAttribute("data-public-href");
   visitor = await publicPage(browser, monsterPath);
   const actions = visitor.locator("section[data-monster-section]").filter({ has: visitor.getByRole("heading", { name: "Azioni", exact: true }) });
   await expect(actions.getByRole("link", { name: "Fiamma del Grimorio" })).toHaveAttribute("href", spellPath);

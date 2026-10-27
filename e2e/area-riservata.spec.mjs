@@ -64,7 +64,7 @@ test("Home: Da fare shows a check only while it has something, tiles, search; ph
     await expect(page.locator("[data-admin-bell]")).toHaveAttribute("aria-label", /^Notifiche · \d+ non lett[ae]$/);
     // The search finds any card of the edition and opens its editor.
     await page.getByPlaceholder(SEARCH).fill("palla di fuo");
-    await expect(page.locator("[data-admin-search-results] a").first()).toHaveAttribute("href", "/admin/incantesimi/palla-di-fuoco");
+    await expect(page.locator("[data-admin-search-results] a").first()).toHaveAttribute("href", /^\/admin\/incantesimi\/palla-di-fuoco(\?|$)/);
     await page.getByPlaceholder(SEARCH).fill("");
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/area-home-390.png`, fullPage: true });
     for (const width of [360, 390]) {

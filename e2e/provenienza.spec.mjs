@@ -105,6 +105,8 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
   await page.getByRole("searchbox", { name: "Cerca in Incantesimi" }).fill("");
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
   const base2024Monsters = await adminNoSrd(page);
+  // In the reserved area the published homebrew creatures are NO SRD too; the site lists them under «Homebrew».
+  const homebrew2024 = await page.locator('main ul li[data-card-row]:has([data-row-pill="Homebrew"])').count();
   await page.locator("[data-create-button]").click();
   await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   await page.getByRole("dialog").locator("#nome").fill(CREATURE);
@@ -150,7 +152,7 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
   // Bestiario 2024 and the computer list next to a card.
   await edition(page, "2024");
   await openFilters(page, "/bestiario");
-  expect(await pick(page, "Solo NO SRD")).toBe(base2024Monsters + 1);
+  expect(await pick(page, "Solo NO SRD")).toBe(base2024Monsters - homebrew2024 + 1);
   await page.keyboard.press("Escape");
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/spell/amicizia");
