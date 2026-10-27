@@ -33,6 +33,7 @@ test("hidden card and hidden edition: the 404 has generic title and metadata, no
   // A creature hidden with the eye.
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("aboleth");
   const row = page.locator("main ul li[data-card-row]").filter({ hasText: "Aboleth" }).first();
   await row.getByRole("switch", { name: "Visibile sul sito: Aboleth" }).click();

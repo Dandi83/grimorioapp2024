@@ -1422,6 +1422,7 @@ test("admin lists the same in both editions: manual names, source labels, Elimin
   // Creatures: SRD sheets without Elimina; a creature made here has it (and can be deleted).
   await page.goto("/admin/mostri");
   await editions.getByRole("button", { name: "2024" }).click();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("aboleth");
   const aboleth = rows.filter({ hasText: "Aboleth" }).first();
   await expect(aboleth.locator("[data-row-pill]")).toHaveCount(0);
@@ -1763,6 +1764,7 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
   // Rows of the admin lists at 360–390 px with a hidden card and the longest labels: nothing cut with dots.
   await page.goto("/admin/incantesimi");
   await editions.getByRole("button", { name: "2024" }).click();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `${width}`).toBeLessThanOrEqual(width);
