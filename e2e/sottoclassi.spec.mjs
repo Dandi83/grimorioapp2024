@@ -141,7 +141,7 @@ test("added subclass: empty features at the SRD levels, hidden with NO SRD, show
   const log = page.getByRole("list", { name: "Modifiche" });
   await expect(log.getByText("Creata (nascosta)")).toBeVisible();
   await expect(log.getByText("Corretta")).toBeVisible();
-  await expect(log.locator("li").filter({ hasText: NAME }).filter({ hasText: "visibilità" }).first()).toBeVisible();
+  await expect(log.locator("[data-log-entry]").filter({ hasText: NAME }).filter({ hasText: "visibilità" }).first()).toBeVisible();
 
   // Bin: gone from the site; the log says so.
   await page.goto("/admin/contenuti/classi/guerriero?edizione=2024");

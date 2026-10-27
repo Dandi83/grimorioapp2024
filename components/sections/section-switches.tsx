@@ -68,6 +68,8 @@ function PartList({ row, group, pending, busy, change }: {
 export function SectionSwitches({ sections }: { sections: Row[] }) {
   const [rows, setRows] = useState(sections);
   const [open, setOpen] = useState<string[]>([]);
+  // «Avanzate» starts open where an edition already differs, then stays as the administrator leaves it.
+  const [advanced, setAdvanced] = useState<string[]>(() => sections.filter(row => row.parts.some(part => part.group === "edizioni" && part.state !== "visibile")).map(row => row.key));
   const [toast, setToast] = useState<{ text: string; error?: boolean; at: number } | null>(null);
   const [pending, startTransition] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
@@ -149,7 +151,8 @@ export function SectionSwitches({ sections }: { sections: Row[] }) {
                     <div id={`parti-${row.key}`} className="border-t border-[#DDCFAE]/70 bg-[#F6EFDF]/60 pb-2 pl-5 pr-3.5">
                       {groups.map(group => <PartList key={group} row={row} group={group} pending={pending} busy={busy} change={change} />)}
                       {editionParts && (
-                        <details className="mt-2" data-advanced="" open={changedEditions.length > 0 || undefined}>
+                        <details className="mt-2" data-advanced="" open={advanced.includes(row.key)}
+                          onToggle={event => { const isOpen = event.currentTarget.open; setAdvanced(current => isOpen ? [...new Set([...current, row.key])] : current.filter(key => key !== row.key)); }}>
                           <summary className="flex min-h-11 cursor-pointer items-center text-[14px] font-bold text-[#7A1F2B]">Avanzate: scelta diversa per 2014 e 2024</summary>
                           <PartList row={row} group="edizioni" pending={pending} busy={busy} change={change} />
                         </details>

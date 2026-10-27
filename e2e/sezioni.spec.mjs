@@ -292,13 +292,16 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await page.getByPlaceholder("Cerca qualsiasi scheda da modificare").click();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
+  await page.goto("/admin/sezioni");
   const opener = key => page.locator(`button[aria-controls="parti-${key}"]`);
   await expect(opener("incantesimi")).toHaveText(/^2 parti/);
   await expect(opener("classi")).toHaveText(/^8 parti/);
   await expect(opener("avanzamento")).toHaveText(/^4 parti/);
   await opener("classi").click();
-  await expect(page.locator("#parti-classi").getByRole("heading", { level: 3 })).toHaveText(["Edizioni", "Raccolte e schede"]);
+  // The editions come last, under «Avanzate: scelta diversa per 2014 e 2024».
+  await openAdvanced(page.locator("#parti-classi"));
+  await expect(page.locator("#parti-classi").getByRole("heading", { level: 3 })).toHaveText(["Raccolte e schede", "Edizioni"]);
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin parts ${width}`).toBeLessThanOrEqual(width);
@@ -384,7 +387,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await expect(pub.getByRole("heading", { name: "2014 → 2024" })).toHaveCount(0);
   await page.goto("/admin/contenuti");
   const armiTile = page.locator('[data-content-row="armi"]');
-  await expect(armiTile).toContainText(/parti? nascost[ae] per gli utenti/);
+  await expect(armiTile).toContainText(/(?:parte|parti) nascost[ae] per gli utenti/);
   await expect(armiTile).not.toContainText("Nascosta agli utenti");
   await togglePart("armi", "Edizione 2014", false);
   // The 2014 → 2024 box alone; Dotazioni.
@@ -489,7 +492,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
   // Everything visible again; the pages built meanwhile are built again for the next server (see the sections test).
   await page.goto("/admin/sezioni");
   await expect(page.getByText("10 visibili")).toBeVisible();
-  await expect(page.getByText(/parti? nascost/)).toHaveCount(0);
+  await expect(page.getByText(/part[ei] nascost/)).toHaveCount(0);
   for (const path of ["/", "/grimorio", "/spell/palla-di-fuoco", "/spell/palla-di-fuoco-2014", "/bestiario", "/mostro/alce", "/classi", "/classi/mago", "/compendio", "/compendio/condizioni",
     "/manuale/condizioni-accecato", "/equipaggiamento/armi", "/equipaggiamento/armi/tridente", "/equipaggiamento/avventura", "/avanzamento", "/preferiti", "/ricerca-indice.json"]) {
     expect((await pub.request.get(path)).status(), path).toBe(200);
@@ -538,7 +541,7 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
   // Everything visible again; the pages built meanwhile are built again for the next server.
   for (const key of sections) await toggle2014(key, false);
   await page.goto("/admin/sezioni");
-  await expect(page.getByText(/parti? nascost/)).toHaveCount(0);
+  await expect(page.getByText(/part[ei] nascost/)).toHaveCount(0);
   for (const path of ["/", "/grimorio", "/bestiario", "/classi", "/classi/mago", "/oggetti-magici", "/compendio/condizioni", "/equipaggiamento/armi", "/equipaggiamento/armature",
     "/equipaggiamento/avventura", "/equipaggiamento/strumenti", "/ricerca-indice.json"]) {
     expect((await page.request.get(path)).status(), path).toBe(200);
