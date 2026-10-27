@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import type { AnalyticsEvent, AnalyticsInput } from "@/lib/analytics-events";
+import { deviceOf, originOf, type Origin } from "@/lib/analytics-stats";
 
 type Status = { enabled: boolean; excluded: boolean; consent: "accepted" | "rejected" | null };
 const SESSION = "grimorio_statistics_session";
@@ -46,25 +47,31 @@ export function AnalyticsProvider() {
       return;
     const view = crypto.randomUUID();
     let session: string,
-      isTest = false;
+      isTest = false,
+      origin: Origin = "diretto";
+    // Where the session started from: only the category (lib/analytics-stats.ts), never the referrer.
+    const arrival = () => originOf(document.referrer, window.location.search, window.location.hostname);
     try {
       const old = JSON.parse(sessionStorage.getItem(SESSION) || "null") as {
         id?: string;
         last?: number;
         test?: boolean;
+        origin?: Origin;
       } | null;
       const recent = old?.id && old.last && Date.now() - old.last < 30 * 60 * 1000;
       session = recent ? old.id! : crypto.randomUUID();
+      origin = recent && old?.origin ? old.origin : arrival();
       isTest =
         new URLSearchParams(window.location.search).get("analytics_test") === "1" ||
         !!(recent && old?.test);
       sessionStorage.setItem(
         SESSION,
-        JSON.stringify({ id: session, last: Date.now(), test: isTest }),
+        JSON.stringify({ id: session, last: Date.now(), test: isTest, origin }),
       );
     } catch {
       session = crypto.randomUUID();
       isTest = new URLSearchParams(window.location.search).get("analytics_test") === "1";
+      origin = arrival();
     }
     const source =
       new URLSearchParams(window.location.search).get("ref") === "share"
@@ -77,7 +84,10 @@ export function AnalyticsProvider() {
       lastInteraction = Date.now(),
       lastTick = Date.now(),
       live = true;
-    function send(event: AnalyticsEvent) {
+    // Kind of device and app opened from the Home screen: categories only, never the user agent.
+    const device = deviceOf(navigator.userAgent, navigator.maxTouchPoints);
+    const installed = window.matchMedia?.("(display-mode: standalone)").matches === true || (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    function send(event: AnalyticsEvent, extra: Partial<AnalyticsInput> = {}) {
       if (!enabled.current || !live) return;
       const body: AnalyticsInput = {
         event,
@@ -89,6 +99,8 @@ export function AnalyticsProvider() {
         source,
         activeSeconds: Math.floor(seconds),
         scrollPercent: Math.floor(scroll),
+        ...(event === "page_view" ? { origin, device, installed } : {}),
+        ...extra,
       };
       void fetch("/api/analytics", {
         method: "POST",
@@ -115,8 +127,11 @@ export function AnalyticsProvider() {
       if (document.visibilityState === "visible") lastInteraction = Date.now();
     };
     const share = (event: Event) => {
-      const name = (event as CustomEvent).detail?.event as AnalyticsEvent;
+      const detail = (event as CustomEvent).detail;
+      const name = detail?.event as AnalyticsEvent;
       if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) send(name);
+      // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
+      else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") send("search", { query: detail.query, results: detail.results });
     };
     send("page_view");
     if (card) send("card_open");
@@ -180,8 +195,8 @@ export function AnalyticsProvider() {
     >
       <h2 className="font-serif text-xl text-foreground">Statistiche facoltative</h2>
       <p className="mt-2 text-sm leading-5 text-muted">
-        Ci aiuti a migliorare il Grimorio? Con il tuo consenso misuriamo visite, schede consultate e
-        condivisioni tramite PostHog in UE. Puoi cambiare scelta in qualsiasi momento.
+        Ci aiuti a migliorare il Grimorio? Con il tuo consenso misuriamo visite, provenienza, tipo di dispositivo, ricerche, schede
+        consultate e condivisioni, anche tramite PostHog in UE. Puoi cambiare scelta in qualsiasi momento.
       </p>
       <Link
         href="/privacy"

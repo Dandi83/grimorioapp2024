@@ -20,6 +20,7 @@ import { collectionOf, computeMonstersMeta, isSrdAnimal, typeCategory, type Mons
 import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
 import { authorLine } from "@/lib/homebrew-types";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
+import { useReportSearch } from "@/components/statistics/use-report-search";
 
 export type Edition = "2024" | "2014";
 const PAGE_SIZE = 40;
@@ -119,6 +120,8 @@ export function BestiarioBrowser({
     const needle = deferredQ.trim().toLowerCase();
     return needle ? editionMonsters.filter(m => m.nome.toLowerCase().includes(needle)) : editionMonsters;
   }, [editionMonsters, deferredQ]);
+  // The searched name and how many creatures of the edition have it (statistics, only with the consent).
+  useReportSearch(deferredQ, searched.length);
 
   const results = useMemo(() => searched.filter(m => matchesFilters(m, filters) && (!originIds || matchesProvenance(m, originValue, originIds)))
     // By challenge rating, then by name.

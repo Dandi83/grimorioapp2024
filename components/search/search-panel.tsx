@@ -8,6 +8,7 @@ import { ChevronRight, Search } from "lucide-react";
 import { useUserEdition } from "@/components/edition/edition-provider";
 import { HOMEBREW_LABEL, rowHref, rowsOf, search, splitByEdition, type SearchGroup, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
 import { otherEdition } from "@/lib/user-edition";
+import { useReportSearch } from "@/components/statistics/use-report-search";
 
 export interface SearchPanelProps {
   initialQuery: string;
@@ -115,6 +116,8 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
   const otherTotal = otherGroups.reduce((sum, group) => sum + group.total, 0);
   const total = ownTotal + (alsoOther ? otherTotal : 0);
   const typed = query.trim().length;
+  // Counted only with the consent to the statistics: the word and the results of the site (both editions).
+  useReportSearch(query, ownTotal + otherTotal, !!index);
   const choose = (value: string) => { setQuery(value); setExpanded([]); input.current?.focus(); };
 
   return (

@@ -1,0 +1,26 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { clean, requireAdmin } from "@/lib/admin-action-helpers";
+import { addMarker, deleteMarker } from "@/lib/analytics";
+
+export type MarkerResult = { ok: true } | { ok: false; error: string };
+
+/** «+ Segna un evento»: a day and a short text on the statistics chart. Administrator only. */
+export async function addMarkerAction(_: MarkerResult | null, form: FormData): Promise<MarkerResult> {
+  await requireAdmin();
+  const giorno = clean(form.get("giorno"));
+  const etichetta = clean(form.get("etichetta")).replace(/\s+/g, " ");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(giorno) || new Date(`${giorno}T12:00:00Z`).toISOString().slice(0, 10) !== giorno) return { ok: false, error: "Data non valida." };
+  if (etichetta.length < 2 || etichetta.length > 60) return { ok: false, error: "Scrivi un testo breve (da 2 a 60 caratteri)." };
+  await addMarker(giorno, etichetta);
+  revalidatePath("/admin/statistiche");
+  return { ok: true };
+}
+
+export async function deleteMarkerAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  const id = clean(form.get("id"));
+  if (/^[0-9a-f-]{36}$/i.test(id)) await deleteMarker(id);
+  revalidatePath("/admin/statistiche");
+}
