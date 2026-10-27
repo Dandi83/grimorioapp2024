@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
+import { TRADEMARK_NOTE } from "@/lib/trademark";
 
 export const metadata = { title: "Termini d’uso — Il Grimorio.App" };
 
 /** Last update of the text below: change it with every change of the terms. */
-const UPDATED = "24 ottobre 2026";
+const UPDATED = "27 ottobre 2026";
 
 /** A short section of the terms. */
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -32,6 +33,7 @@ export default function TermsPage() {
           compatibili con la quinta edizione. Non è affiliata a Wizards of the Coast, né
           approvata o sponsorizzata da Wizards of the Coast. Usandola accetti questi termini.
         </p>
+        <p data-trademark-note="">{TRADEMARK_NOTE}</p>
       </Section>
 
       <Section title="Uso consentito e contenuti SRD">
@@ -74,6 +76,18 @@ export default function TermsPage() {
           Le segnalazioni sono anonime; l’email è facoltativa e serve solo per risponderti. Come trattiamo questi dati è spiegato
           nella pagina <Link href="/privacy" className="font-semibold text-primary underline underline-offset-4">Privacy</Link>. Per qualsiasi domanda usa{" "}
           <Link href="/segnala" className="font-semibold text-primary underline underline-offset-4">Scrivici</Link>.
+        </p>
+      </Section>
+
+      <Section title="Segnalazioni di violazione dei diritti">
+        <p>
+          Se ritieni che una pagina dell’app violi un tuo diritto d’autore o un tuo marchio, segnalalo da{" "}
+          <Link href="/segnala" className="font-semibold text-primary underline underline-offset-4">Segnala</Link>, scegliendo
+          «Diritti d’autore o marchi (richiesta di rimozione)». Indica l’indirizzo della pagina contestata, spiega quali diritti
+          ritieni violati e lascia un’email: per queste richieste è obbligatoria.
+        </p>
+        <p>
+          Il contenuto segnalato viene nascosto in attesa di verifica. Ogni richiesta riceve una risposta all’email indicata.
         </p>
       </Section>
 

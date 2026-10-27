@@ -37,7 +37,7 @@ export function ensureFeedbackTables() {
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_feedback_reports (
       id uuid PRIMARY KEY,
       creato_il timestamptz NOT NULL DEFAULT now(),
-      tipo text NOT NULL CHECK (tipo IN ('errore', 'mancanza', 'consiglio')),
+      tipo text NOT NULL CHECK (tipo IN ('errore', 'mancanza', 'consiglio', 'diritti')),
       messaggio text NOT NULL,
       percorso text,
       edizione text CHECK (edizione IN ('2014', '2024')),
@@ -46,6 +46,16 @@ export function ensureFeedbackTables() {
       email_inviata boolean NOT NULL DEFAULT false,
       nota_admin text
     )`);
+    // Tables created before the rights requests: the type check is widened once, only when it lacks 'diritti'.
+    const { rows } = await pool.query<{ name: string }>(
+      `SELECT conname AS name FROM pg_constraint
+       WHERE conrelid = 'grimorio_feedback_reports'::regclass AND contype = 'c'
+         AND pg_get_constraintdef(oid) LIKE '%tipo%' AND pg_get_constraintdef(oid) NOT LIKE '%diritti%'`,
+    );
+    for (const { name } of rows) {
+      await pool.query(`ALTER TABLE grimorio_feedback_reports DROP CONSTRAINT "${name.replace(/"/g, "")}"`);
+      await pool.query(`ALTER TABLE grimorio_feedback_reports ADD CONSTRAINT grimorio_feedback_reports_tipo_check CHECK (tipo IN ('errore', 'mancanza', 'consiglio', 'diritti'))`);
+    }
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_feedback_limits (
       device_hash text NOT NULL,
       sent_at timestamptz NOT NULL DEFAULT now()
@@ -136,7 +146,7 @@ export async function listFeedback(filter: FeedbackFilter = {}): Promise<{ repor
     pool.query<FeedbackReport>(
       `SELECT * FROM grimorio_feedback_reports
        WHERE ($1::text IS NULL OR tipo = $1) AND ($2::text IS NULL OR stato = $2)
-       ORDER BY creato_il DESC LIMIT 500`,
+       ORDER BY (tipo = 'diritti' AND stato IN ('nuova', 'letta')) DESC, creato_il DESC LIMIT 500`,
       [filter.tipo ?? null, filter.stato ?? null],
     ),
     pool.query<{ n: number }>("SELECT count(*)::int AS n FROM grimorio_feedback_reports WHERE stato = 'nuova'"),

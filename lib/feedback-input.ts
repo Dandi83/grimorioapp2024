@@ -3,13 +3,17 @@
  * No database, no secrets: tests/feedback.cjs loads this file directly.
  */
 
-export const FEEDBACK_TYPES = ["errore", "mancanza", "consiglio"] as const;
+export const FEEDBACK_TYPES = ["errore", "mancanza", "consiglio", "diritti"] as const;
 export type FeedbackType = (typeof FEEDBACK_TYPES)[number];
 
 export const FEEDBACK_STATES = ["nuova", "letta", "risolta", "archiviata"] as const;
 export type FeedbackState = (typeof FEEDBACK_STATES)[number];
 
-export const TYPE_LABELS: Record<FeedbackType, string> = { errore: "Errore", mancanza: "Mancanza", consiglio: "Consiglio" };
+export const TYPE_LABELS: Record<FeedbackType, string> = { errore: "Errore", mancanza: "Mancanza", consiglio: "Consiglio", diritti: "Diritti" };
+/** The choice of the form: the rights request says what it is for. */
+export const FORM_TYPE_LABELS: Record<FeedbackType, string> = { ...TYPE_LABELS, diritti: "Diritti d’autore o marchi (richiesta di rimozione)" };
+/** Rights requests: the contested page and an email for the answer are required, they come first in the admin list. */
+export const RIGHTS_TYPE = "diritti" as const satisfies FeedbackType;
 export const STATE_LABELS: Record<FeedbackState, string> = { nuova: "Nuova", letta: "Letta", risolta: "Risolta", archiviata: "Archiviata" };
 
 const MESSAGE_MIN = 10;
@@ -67,6 +71,30 @@ export function cleanPath(value: unknown): string | null {
   return path.length > 1 ? path.replace(/\/$/, "") : path;
 }
 
+/** The addresses of the site a contested page may be written with, besides the host the form was sent to. */
+export const SITE_HOSTS = ["ilgrimorio.app", "www.ilgrimorio.app"];
+
+/**
+ * The contested page of a rights request as written by the person: a full address of this site
+ * («https://ilgrimorio.app/spell/palla-di-fuoco») or a path («/spell/palla-di-fuoco»). Returns the checked
+ * path (cleanPath), or null for another site, the home, the admin area or a malformed address.
+ */
+export function cleanContestedPage(value: unknown, host?: string | null): string | null {
+  if (typeof value !== "string") return null;
+  const written = value.trim();
+  if (!written || written.length > 300) return null;
+  let url: URL;
+  try {
+    url = new URL(/^[a-z][a-z0-9+.-]*:/i.test(written) || written.startsWith("/") ? written : `https://${written}`, "https://ilgrimorio.app");
+  } catch {
+    return null;
+  }
+  const hosts = host ? [...SITE_HOSTS, host.toLowerCase()] : SITE_HOSTS;
+  if (!/^https?:$/.test(url.protocol) || !hosts.includes(url.host.toLowerCase())) return null;
+  const path = cleanPath(url.pathname.toLowerCase());
+  return path && path !== "/" ? path : null;
+}
+
 export function cleanEdition(value: unknown): "2014" | "2024" | null {
   return value === "2014" || value === "2024" ? value : null;
 }
@@ -78,8 +106,14 @@ export function messageError(message: string): string | null {
   return null;
 }
 
-/** Reads the JSON sent by the form. The honeypot field «sito» is invisible to people. */
-export function parseFeedback(body: unknown): FeedbackParse {
+export const CONTESTED_PAGE_ERROR = "Indica l’indirizzo della pagina contestata, per esempio https://ilgrimorio.app/spell/palla-di-fuoco.";
+export const RIGHTS_EMAIL_ERROR = "Per una richiesta di rimozione serve un’email: ti rispondiamo lì.";
+
+/**
+ * Reads the JSON sent by the form. The honeypot field «sito» is invisible to people. host: the host the form
+ * was sent to, also accepted in the address of a contested page.
+ */
+export function parseFeedback(body: unknown, host?: string | null): FeedbackParse {
   if (!body || typeof body !== "object") return { ok: false, error: "Richiesta non valida." };
   const data = body as Record<string, unknown>;
   const tipo = data.tipo;
@@ -97,18 +131,25 @@ export function parseFeedback(body: unknown): FeedbackParse {
       email = written;
     }
   }
+  let percorso = cleanPath(data.percorso);
+  if (tipo === RIGHTS_TYPE) {
+    percorso = cleanContestedPage(data.percorso, host);
+    if (!percorso) return { ok: false, error: CONTESTED_PAGE_ERROR };
+    if (!email) return { ok: false, error: RIGHTS_EMAIL_ERROR };
+  }
   const token = typeof data.token === "string" ? data.token : "";
   const spam = typeof data.sito === "string" && data.sito.trim() !== "";
   return {
     ok: true,
     spam,
     token,
-    value: { tipo: tipo as FeedbackType, messaggio, percorso: cleanPath(data.percorso), edizione: cleanEdition(data.edizione), email },
+    value: { tipo: tipo as FeedbackType, messaggio, percorso, edizione: cleanEdition(data.edizione), email },
   };
 }
 
-/** Email subject: only the type label and the checked page address, never the visitor's text. */
+/** Email subject: only the type label and the checked page address, never the visitor's text. Rights requests start with «[Diritti]». */
 export function feedbackSubject(tipo: FeedbackType, percorso: string | null): string {
+  if (tipo === RIGHTS_TYPE) return `[Diritti] [Grimorio] Richiesta di rimozione · ${percorso ?? "nessuna pagina"}`;
   return `[Grimorio] ${TYPE_LABELS[tipo]} · ${percorso ?? "nessuna pagina"}`;
 }
 
@@ -117,7 +158,7 @@ export function feedbackEmailText(input: FeedbackInput & { id: string; createdAt
   return [
     `Nuova segnalazione su Il Grimorio.App`,
     ``,
-    `Tipo: ${TYPE_LABELS[input.tipo]}`,
+    `Tipo: ${FORM_TYPE_LABELS[input.tipo]}`,
     `Riguarda: ${input.riguarda}`,
     `Data e ora: ${when}`,
     `Email per la risposta: ${input.email ?? "non indicata"}`,

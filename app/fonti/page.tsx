@@ -4,6 +4,7 @@ import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
 import legacyMonsters from "@/lib/data/srd-monsters-5.1-it.json";
 import legacySpells from "@/lib/data/spell-reference-index-2014.json";
 import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
+import { TRADEMARK_NOTE } from "@/lib/trademark";
 
 export const metadata = { title: "Fonti e licenze — Il Grimorio.App" };
 
@@ -22,6 +23,7 @@ export default function SourcesPage() {
           marchi registrati appartengono ai rispettivi proprietari.
         </p>
         <p>Il Grimorio.App è un contenuto fan non ufficiale. Non approvato o sponsorizzato da Wizards of the Coast. Parti dei materiali utilizzati sono proprietà di Wizards of the Coast.</p>
+        <p data-trademark-note="">{TRADEMARK_NOTE}</p>
         <p><a href="https://company.wizards.com/en/legal/fancontentpolicy" target="_blank" rel="noreferrer" className="text-primary underline underline-offset-4">Fan Content Policy</a></p>
       </section>
       <section className="space-y-4 font-serif text-[1.05rem] leading-7">

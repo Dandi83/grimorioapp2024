@@ -49,6 +49,21 @@ export async function setCardVisibilityAction(kind: string, id: string, hidden: 
   return { ok: true, hidden };
 }
 
+/** The card of a contested page (/spell/<id>, /mostro/<id>), or undefined for any other page. */
+export async function contestedCard(path: string | null): Promise<{ kind: "incantesimo" | "mostro"; id: string } | undefined> {
+  const match = /^\/(spell|mostro)\/([a-z0-9-]+)$/.exec(path ?? "");
+  return match ? { kind: match[1] === "spell" ? "incantesimo" : "mostro", id: match[2] } : undefined;
+}
+
+/** «Nascondi in attesa di verifica» on a rights request: the eye of the contested card, from the request itself. */
+export async function hideContestedCardAction(formData: FormData): Promise<void> {
+  const report = formData.get("segnalazione"), path = formData.get("pagina");
+  const card = await contestedCard(typeof path === "string" ? path : null);
+  if (!card) return;
+  const result = await setCardVisibilityAction(card.kind, card.id, true);
+  if (result.ok && typeof report === "string" && /^[0-9a-f-]{36}$/i.test(report)) revalidatePath(`/admin/segnalazioni/${report}`);
+}
+
 /** «Mostra» on the page of a hidden card, seen by the administrator. */
 export async function showCardAction(formData: FormData): Promise<void> {
   const kind = formData.get("tipo"), id = formData.get("scheda");

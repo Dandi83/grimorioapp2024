@@ -160,7 +160,7 @@ export function feedbackPayload(report: { id: string; tipo: string; messaggio: s
   const text = report.messaggio.replace(/\s+/g, " ").trim();
   const start = text.length > 80 ? `${text.slice(0, 79).trimEnd()}…` : text;
   return {
-    title: "Nuova segnalazione",
+    title: report.tipo === "diritti" ? "[Diritti] Richiesta di rimozione" : "Nuova segnalazione",
     body: `${typeLabel} · ${pageTitle || "Generale"}\n${start}`,
     url: `/admin/segnalazioni/${report.id}`,
     tag: `segnalazione-${report.id}`,

@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 
 import {
-  EMAIL_MAX, FEEDBACK_TYPES, MESSAGE_MAX, MIN_FILL_MS, TYPE_LABELS,
-  cleanEdition, cleanPath, cleanText, messageError, textLength, validEmail, type FeedbackType,
+  CONTESTED_PAGE_ERROR, EMAIL_MAX, FEEDBACK_TYPES, FORM_TYPE_LABELS, MESSAGE_MAX, MIN_FILL_MS, RIGHTS_EMAIL_ERROR, RIGHTS_TYPE,
+  cleanContestedPage, cleanEdition, cleanPath, cleanText, messageError, textLength, validEmail, type FeedbackType,
 } from "@/lib/feedback-input";
 
 declare global {
@@ -35,16 +35,26 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
   const [tipo, setTipo] = useState<FeedbackType>("errore");
   const [about, setAbout] = useState<About | null>(null);
   const [messaggio, setMessaggio] = useState("");
+  /** Rights requests only: the address of the contested page, as the person writes it. */
+  const [pagina, setPagina] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [fieldError, setFieldError] = useState<{ messaggio?: string; email?: string }>({});
+  const [fieldError, setFieldError] = useState<{ pagina?: string; messaggio?: string; email?: string }>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const token = useRef<{ value: string; at: number } | null>(null);
   const honeypot = useRef<HTMLInputElement>(null);
   const turnstile = useRef<{ token: string; id?: string }>({ token: "" });
   const turnstileBox = useRef<HTMLDivElement>(null);
-  const ids = { messaggio: useId(), email: useId(), count: useId(), emailNote: useId() };
+  const ids = { pagina: useId(), messaggio: useId(), email: useId(), count: useId(), emailNote: useId() };
+  const rights = tipo === RIGHTS_TYPE;
+
+  function choose(value: FeedbackType) {
+    setTipo(value);
+    setFieldError({});
+    // The page the person came from is the likely contested one: written out in full, still editable.
+    if (value === RIGHTS_TYPE && !pagina && about) setPagina(`${window.location.origin}${about.percorso}`);
+  }
 
   async function fetchToken() {
     const response = await fetch("/api/segnalazioni", { cache: "no-store" });
@@ -87,12 +97,16 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
     setError("");
     const text = cleanText(messaggio);
     const address = email.trim();
+    const contested = rights ? cleanContestedPage(pagina, window.location.host) : null;
     const problems = {
+      pagina: rights && !contested ? CONTESTED_PAGE_ERROR : undefined,
       messaggio: messageError(text) ?? undefined,
-      email: address && !validEmail(address) ? "Email non valida: controllala o lasciala vuota." : undefined,
+      email: address && !validEmail(address)
+        ? (rights ? "Email non valida: controllala." : "Email non valida: controllala o lasciala vuota.")
+        : rights && !address ? RIGHTS_EMAIL_ERROR : undefined,
     };
     setFieldError(problems);
-    if (problems.messaggio || problems.email) return;
+    if (problems.pagina || problems.messaggio || problems.email) return;
     setSending(true);
     try {
       if (!token.current) await fetchToken();
@@ -104,7 +118,8 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tipo, messaggio: text, email: address || null,
-          percorso: about?.percorso ?? null, edizione: about?.edizione ?? null,
+          percorso: rights ? contested : about?.percorso ?? null,
+          edizione: !rights || contested === about?.percorso ? about?.edizione ?? null : null,
           token: token.current!.value, sito: honeypot.current?.value ?? "", turnstile: turnstile.current.token,
         }),
       });
@@ -137,7 +152,9 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
           <Check size={42} strokeWidth={2.4} className="text-primary" aria-hidden="true" />
         </div>
         <h1 className="font-serif text-[32px] font-bold text-primary">Grazie!</h1>
-        <p className="max-w-[280px] text-base text-muted">Ho ricevuto la tua segnalazione. La leggerò appena possibile.</p>
+        <p className="max-w-[280px] text-base text-muted">
+          {rights ? "Ho ricevuto la tua richiesta di rimozione. Ti risponderò all’email che hai indicato." : "Ho ricevuto la tua segnalazione. La leggerò appena possibile."}
+        </p>
         <Link href="/" className="mt-3 inline-flex min-h-12 items-center rounded-3xl border-[1.5px] border-primary px-7 font-bold text-primary">Torna alla Home</Link>
       </div>
     );
@@ -155,15 +172,29 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
         <legend className="mb-1.5 text-sm font-bold">Di cosa si tratta?</legend>
         <div className="flex flex-wrap gap-2">
           {FEEDBACK_TYPES.map(value => (
-            <button key={value} type="button" aria-pressed={tipo === value} onClick={() => setTipo(value)}
+            <button key={value} type="button" aria-pressed={tipo === value} onClick={() => choose(value)}
               className={`inline-flex min-h-11 items-center rounded-[22px] border-[1.5px] px-4 text-[15px] font-semibold ${tipo === value ? "border-primary bg-primary text-primary-foreground" : "border-chip-border bg-card text-primary"}`}>
-              {TYPE_LABELS[value]}
+              {FORM_TYPE_LABELS[value]}
             </button>
           ))}
         </div>
       </fieldset>
 
-      {about && (
+      {rights && (
+        <div data-rights-form="">
+          <p className="mb-3 text-[15px] leading-6 text-muted">
+            Indica la pagina e spiega quali diritti ritieni violati. Il contenuto viene nascosto in attesa di verifica e ricevi una risposta all’email che indichi.
+          </p>
+          <label htmlFor={ids.pagina} className="mb-1.5 block text-sm font-bold">Indirizzo della pagina contestata</label>
+          <input id={ids.pagina} type="text" inputMode="url" autoComplete="off" autoCapitalize="none" spellCheck={false} value={pagina}
+            onChange={event => setPagina(event.target.value)} required aria-required="true" maxLength={300}
+            placeholder="https://ilgrimorio.app/spell/…" aria-invalid={!!fieldError.pagina} aria-describedby={fieldError.pagina ? `${ids.pagina}-e` : undefined}
+            className="block min-h-12 w-full rounded-[14px] border-[1.5px] border-border bg-card px-3.5 text-base text-foreground outline-none placeholder:text-[#8a7a66] focus:border-primary" />
+          {fieldError.pagina && <p id={`${ids.pagina}-e`} role="alert" className="mt-1 text-[13px] text-primary">{fieldError.pagina}</p>}
+        </div>
+      )}
+
+      {about && !rights && (
         <div className="flex items-center gap-2 rounded-xl bg-elevated py-1 pl-3 pr-1 text-sm text-muted">
           <span className="min-w-0 flex-1 break-words">Riguarda: <b className="text-foreground">{about.titolo}{about.edizione ? ` (${about.edizione})` : ""}</b></span>
           <button type="button" onClick={() => setAbout(null)} className="min-h-11 shrink-0 px-2 font-bold text-primary">Rimuovi</button>
@@ -182,12 +213,12 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
       </div>
 
       <div>
-        <label htmlFor={ids.email} className="mb-1.5 block text-sm font-bold">Email per ricevere risposta (facoltativa)</label>
+        <label htmlFor={ids.email} className="mb-1.5 block text-sm font-bold">{rights ? "Email per la risposta (obbligatoria)" : "Email per ricevere risposta (facoltativa)"}</label>
         <input id={ids.email} type="email" inputMode="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)}
-          maxLength={EMAIL_MAX} placeholder="nome@esempio.it" aria-invalid={!!fieldError.email} aria-describedby={`${ids.emailNote}${fieldError.email ? ` ${ids.email}-e` : ""}`}
+          maxLength={EMAIL_MAX} placeholder="nome@esempio.it" required={rights} aria-required={rights} aria-invalid={!!fieldError.email} aria-describedby={`${ids.emailNote}${fieldError.email ? ` ${ids.email}-e` : ""}`}
           className="block min-h-12 w-full rounded-[14px] border-[1.5px] border-border bg-card px-3.5 text-base text-foreground outline-none placeholder:text-[#8a7a66] focus:border-primary" />
         {fieldError.email && <p id={`${ids.email}-e`} role="alert" className="mt-1 text-[13px] text-primary">{fieldError.email}</p>}
-        <p id={ids.emailNote} className="mt-1 text-[13px] text-muted">Solo se vuoi una risposta. Non verrà mostrata a nessuno.</p>
+        <p id={ids.emailNote} className="mt-1 text-[13px] text-muted">{rights ? "Serve per risponderti. Non verrà mostrata a nessuno." : "Solo se vuoi una risposta. Non verrà mostrata a nessuno."}</p>
       </div>
 
       {/* Invisible to people: only automatic programs fill it. */}
@@ -201,7 +232,7 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
       <div className="mt-2 flex flex-col gap-2">
         <button type="submit" disabled={sending}
           className="min-h-[52px] rounded-[26px] bg-primary text-[17px] font-bold text-primary-foreground disabled:opacity-60">
-          {sending ? "Invio in corso…" : "Invia segnalazione"}
+          {sending ? "Invio in corso…" : rights ? "Invia la richiesta" : "Invia segnalazione"}
         </button>
         <p className="text-center text-xs text-muted">Nessun account, nessun IP salvato. Protetto da antispam.</p>
       </div>
