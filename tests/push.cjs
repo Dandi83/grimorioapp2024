@@ -119,6 +119,7 @@ function load(relative) {
   deps['next/server'] = {after: fn => later.push(fn), NextResponse: {json: (value, init) => ({value, status: init?.status ?? 200})}};
   deps['@/lib/feedback-input'] = {BODY_MAX_BYTES: 8192, TYPE_LABELS: {errore: 'Errore'}, parseFeedback: () => ({ok: true, value: {tipo: 'errore'}, token: 't'})};
   deps['@/lib/feedback'] = {
+    FORM_UNAVAILABLE: 'Modulo temporaneamente non disponibile.', feedbackAvailable: () => true,
     checkFormToken: () => 'ok', deviceKey: () => null, feedbackLimited: async () => false, issueFormToken: () => 't', turnstilePassed: async () => true,
     saveFeedback: async () => report, recordFeedbackSend: async () => {}, markEmailSent: async () => {}, countNewFeedback: async () => 7,
     sendFeedbackEmail: async () => { emails++; return 'sent'; },
@@ -139,6 +140,14 @@ function load(relative) {
   assert.equal(pushes, 1); assert.equal(emails, 1, 'the email is still sent');
   assert.equal(pushed.badge, 7, 'the push carries the number for the badge');
   assert.deepEqual(warnings, ['[notifiche] Invio della notifica non riuscito.'], 'only a short warning: no key, address or text in the logs');
+
+  // Without FEEDBACK_SECRET the form is closed: no token, nothing saved, «Modulo temporaneamente non disponibile».
+  let saved = 0;
+  Object.assign(deps['@/lib/feedback'], {feedbackAvailable: () => false, issueFormToken: () => null, saveFeedback: async () => { saved++; return report; }});
+  const closed = load('app/api/segnalazioni/route.ts');
+  assert.deepEqual(closed.GET(), {value: {error: 'Modulo temporaneamente non disponibile.', unavailable: true}, status: 503});
+  assert.deepEqual(await closed.POST({headers: {get: name => headers.get(name) ?? null}, text: async () => '{}'}), {value: {error: 'Modulo temporaneamente non disponibile.', unavailable: true}, status: 503});
+  assert.equal(saved, 0, 'nothing saved without the secret');
 
   await pg.close();
   console.log('Push: keys from the variables or generated once, admin-only subscriptions, one notification per device, 404/410 removed, kinds with their switch, no reply address, report saved and answered before the push.');

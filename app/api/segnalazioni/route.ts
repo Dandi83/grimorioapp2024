@@ -2,7 +2,7 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { BODY_MAX_BYTES, TYPE_LABELS, parseFeedback } from "@/lib/feedback-input";
 import { feedbackPayload, sendPush } from "@/lib/push";
 import {
-  checkFormToken, deviceKey, feedbackLimited, issueFormToken, markEmailSent,
+  FORM_UNAVAILABLE, checkFormToken, deviceKey, feedbackAvailable, feedbackLimited, issueFormToken, markEmailSent,
   recordFeedbackSend, saveFeedback, sendFeedbackEmail, turnstilePassed,
 } from "@/lib/feedback";
 import { pageName } from "@/lib/feedback-names";
@@ -15,9 +15,11 @@ function reply(value: object, status = 200) {
   return NextResponse.json(value, { status, headers: { "Cache-Control": "no-store" } });
 }
 
-/** A signed time stamp: the report is accepted only a few seconds after the form was opened. */
+/** A signed time stamp: the report is accepted only a few seconds after the form was opened. Closed without FEEDBACK_SECRET. */
 export function GET() {
-  return reply({ token: issueFormToken() });
+  const token = issueFormToken();
+  if (!token) return reply({ error: FORM_UNAVAILABLE, unavailable: true }, 503);
+  return reply({ token });
 }
 
 /** The page that sends must be this site (same host as the request): other sites cannot post reports. */
@@ -32,6 +34,7 @@ function sameSiteOrigin(request: NextRequest): string | null {
 }
 
 export async function POST(request: NextRequest) {
+  if (!feedbackAvailable()) return reply({ error: FORM_UNAVAILABLE, unavailable: true }, 503);
   const origin = sameSiteOrigin(request);
   if (!origin) return reply({ error: "Origine non valida." }, 403);
   if (!request.headers.get("content-type")?.startsWith("application/json")) return reply({ error: "Richiesta non valida." }, 415);

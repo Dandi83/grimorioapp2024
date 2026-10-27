@@ -83,9 +83,22 @@ assert.equal(input.formatWhen(new Date('2026-10-19T10:00:00Z'),now),'19 ott');
 (async()=>{
  const pg=new PGlite();
  deps['./db']={pool:{query:(sql,params)=>pg.query(sql,params).then(res=>({...res,rowCount:res.affectedRows??res.rows.length}))}};
- process.env.ADMIN_PASSCODE='segreto-di-prova';
- delete process.env.FEEDBACK_SECRET;delete process.env.ANALYTICS_SECRET;
+ // Only FEEDBACK_SECRET signs: with the admin passcode (or the statistics secret) alone the form is closed.
+ process.env.ADMIN_PASSCODE='passcode-admin-di-prova';process.env.ANALYTICS_SECRET='segreto-statistiche';
+ delete process.env.FEEDBACK_SECRET;
+ const secretWarnings=[],keepWarn=console.warn;console.warn=message=>secretWarnings.push(String(message));
  const fb=load('lib/feedback.ts');
+ assert.equal(fb.feedbackAvailable(),false);
+ assert.equal(fb.issueFormToken(1_800_000_000_000),null,'no token without FEEDBACK_SECRET');
+ assert.equal(fb.deviceKey(new Headers({'x-real-ip':'203.0.113.7'})),null);
+ const {createHmac}=require('node:crypto');
+ const byPasscode=`f1.1800000000000.${createHmac('sha256','passcode-admin-di-prova').update('grimorio-feedback-form:1800000000000').digest('hex')}`;
+ assert.equal(fb.checkFormToken(byPasscode,1_800_000_005_000),'invalid','closed: nothing is accepted');
+ console.warn=keepWarn;
+ assert.deepEqual(secretWarnings,['[segnalazioni] Variabile mancante: FEEDBACK_SECRET. Modulo Segnala e proposte homebrew non disponibili.'],'one warning with the name only');
+ process.env.FEEDBACK_SECRET='segreto-di-prova';
+ assert.equal(fb.checkFormToken(byPasscode,1_800_000_005_000),'invalid','a token signed with the admin passcode is refused');
+ delete process.env.ADMIN_PASSCODE;delete process.env.ANALYTICS_SECRET;
 
  // Minimum time: the signed token is refused in the first 3 seconds, forged or expired tokens always.
  const t0=1_800_000_000_000,token=fb.issueFormToken(t0);

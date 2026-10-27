@@ -400,7 +400,9 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await togglePart("bestiario", "Raccolta Animali", true);
   await pub.goto("/bestiario");
   await pub.getByRole("button", { name: "Filtri" }).click();
-  await expect(pub.getByRole("group", { name: "Categoria" }).getByRole("button")).toHaveText(["Tutti", "Mostri", "Homebrew"]);
+  // Animali hidden and no homebrew creature published (no empty «Homebrew»): one category only, no group.
+  await expect(pub.getByRole("dialog").getByRole("button", { name: /^Mostra \d+ risultat/ })).toBeVisible();
+  await expect(pub.getByRole("group", { name: "Categoria" })).toHaveCount(0);
   await pub.keyboard.press("Escape");
   await unavailable("/mostro/alce");
   index = await searchIndex();

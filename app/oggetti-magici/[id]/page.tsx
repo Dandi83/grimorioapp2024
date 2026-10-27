@@ -27,8 +27,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // Hidden or «In arrivo»: no name or description of the card in the answer.
   if (await sectionClosed("oggetti-magici")) return CLOSED_METADATA;
   const found = findMagicItemEntry((await params).id, (await getCorrectedMagicItems()).list);
-  const item = found && (found.entry.editions[found.edition ?? "2024"] ?? found.entry.editions["2014"]);
-  return { title: item ? `${item.nome} — Oggetti magici — Il Grimorio.App` : "Oggetto non trovato" };
+  // Not found as in the page (missing, or of a hidden edition): the generic metadata of the site's 404.
+  const shown = await pageEditions("oggetti-magici");
+  if (!found || (found.edition && !shown.includes(found.edition))) notFound();
+  const item = (found.edition ? [found.edition] : (["2024", "2014"] as const).filter(value => shown.includes(value))).map(value => found.entry.editions[value]).find(Boolean);
+  if (!item) notFound();
+  return { title: `${item.nome} — Oggetti magici — Il Grimorio.App` };
 }
 
 /** "2014 → 2024": name, rarity and attunement when they change (the edition is chosen with the pill only). */

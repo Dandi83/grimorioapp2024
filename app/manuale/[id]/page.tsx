@@ -29,7 +29,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // Hidden or «In arrivo»: no name of the condition in the answer.
   if (id.startsWith("condizioni-") && await sectionClosed("condizioni")) return CLOSED_METADATA;
   const entry = (await getCorrectedManualEntry(id))?.entry;
-  return { title: `${entry?.title || "Voce non trovata"} — ${entry?.category === "condizioni" ? "Condizioni" : "Manuale"} · Il Grimorio.App` };
+  // Not found as in the page (missing, a preview-only entry, a condition of a hidden edition): the generic 404 metadata.
+  if (!entry) notFound();
+  if (entry.category === "condizioni") await editionCard("condizioni", entry.edizione === "2014" ? "2014" : "2024");
+  else if (!manualAvailable(process.env.VERCEL_ENV)) notFound();
+  return { title: `${entry.title} — ${entry.category === "condizioni" ? "Condizioni" : "Manuale"} · Il Grimorio.App` };
 }
 
 export default async function ManualEntryPage({ params }: { params: Promise<{ id: string }> }) {

@@ -9,6 +9,8 @@ export const E2E_ENV = {
   // Same catalog rules as production: SRD records visible, preview-only pages hidden.
   VERCEL_ENV: "production",
   ADMIN_PASSCODE: "passcode-di-prova-e2e",
+  // The reports and homebrew proposals are signed with their own secret, never the passcode.
+  FEEDBACK_SECRET: "segreto-moduli-di-prova-e2e",
   NEXT_TELEMETRY_DISABLED: "1",
 };
 

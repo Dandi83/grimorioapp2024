@@ -64,23 +64,45 @@ export function ensureFeedbackTables() {
   return tablesReady;
 }
 
-/** Server secret for the form token and the address hash; empty when none is configured. */
-function feedbackSecret(): string {
-  return process.env.FEEDBACK_SECRET || process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSCODE || "";
+let warned = false;
+
+/**
+ * Server secret of the form token and the address hash (reports and homebrew proposals): FEEDBACK_SECRET only,
+ * never the admin passcode, which a downloaded token would otherwise let anyone guess offline. Empty when missing:
+ * the forms are then closed (feedbackAvailable) and nothing is ever signed with an empty key.
+ */
+export function feedbackSecret(): string {
+  const secret = process.env.FEEDBACK_SECRET || "";
+  if (!secret && !warned) {
+    warned = true;
+    console.warn("[segnalazioni] Variabile mancante: FEEDBACK_SECRET. Modulo Segnala e proposte homebrew non disponibili.");
+  }
+  return secret;
 }
+
+/** False while FEEDBACK_SECRET is missing: «Modulo temporaneamente non disponibile», nothing is sent. */
+export function feedbackAvailable(): boolean {
+  return !!feedbackSecret();
+}
+
+export const FORM_UNAVAILABLE = "Modulo temporaneamente non disponibile.";
 
 function hmac(text: string): string {
-  return createHmac("sha256", feedbackSecret()).update(text).digest("hex");
+  const secret = feedbackSecret();
+  if (!secret) throw new Error("FEEDBACK_SECRET missing");
+  return createHmac("sha256", secret).update(text).digest("hex");
 }
 
-/** Proof that the form was opened at a given time: the minimum-time check cannot be faked by the client. */
-export function issueFormToken(now = Date.now()): string {
+/** Proof that the form was opened at a given time: the minimum-time check cannot be faked by the client. Null without the secret. */
+export function issueFormToken(now = Date.now()): string | null {
+  if (!feedbackAvailable()) return null;
   return `f1.${now}.${hmac(`grimorio-feedback-form:${now}`)}`;
 }
 
 type TokenCheck = "ok" | "invalid" | "too-fast" | "expired";
 
 export function checkFormToken(token: string, now = Date.now()): TokenCheck {
+  if (!feedbackAvailable()) return "invalid";
   const [version, issued, signed, ...rest] = token.split(".");
   if (version !== "f1" || !signed || rest.length || !/^\d{1,15}$/.test(issued ?? "")) return "invalid";
   const expected = Buffer.from(hmac(`grimorio-feedback-form:${issued}`));
@@ -94,11 +116,10 @@ export function checkFormToken(token: string, now = Date.now()): TokenCheck {
 
 /**
  * The visitor's address as Vercel reports it (x-real-ip, else the first x-forwarded-for
- * entry), turned at once into a salted hash. Without a server secret every device
- * shares one key and only the overall limit protects the form.
+ * entry), turned at once into a salted hash. Null without the server secret (the form is closed then).
  */
 export function deviceKey(headers: Headers): string | null {
-  if (!feedbackSecret()) return null;
+  if (!feedbackAvailable()) return null;
   const address = clientAddress(headers) || "unknown";
   return hmac(`grimorio-feedback-device:${address}`);
 }

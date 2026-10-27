@@ -7,7 +7,8 @@ import { db } from "./db";
 import { spells } from "./db/schema";
 import { previewSpellRows } from "./srd-additions";
 import { isLegacySpellId, withLegacySpells } from "./srd-spells-2014";
-import { catalogRepairs, repairCatalogSpell } from "./spell-catalog-repairs";
+import { catalogRepairs } from "./spell-catalog-repairs";
+import { displaySpellRow } from "./spell-display-row";
 import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { parseLivello, spellListFlags, type SpellListItem } from "./spells-types";
 import { getContentEditions } from "./content-editions";
@@ -33,11 +34,14 @@ export const getSpellIndex = unstable_cache(
       livello: spells.livello,
       tempo_di_lancio: spells.tempo_di_lancio,
       durata: spells.durata,
+      // Read only to know whether the SRD record or the original summary still applies (the same values as the card).
+      descrizione: spells.descrizione,
     }).from(spells).orderBy(asc(spells.sort_key)), getContentEditions("spell")]);
 
     // A duplicate row merged into another card is not listed (its address redirects).
-    const listed = rows.filter(row => !(row.id in MERGED_SPELL_IDS)).map(repairCatalogSpell);
-    return withLegacySpells(previewSpellRows(listed, process.env.VERCEL_ENV), process.env.VERCEL_ENV).map(row => {
+    const listed = rows.filter(row => !(row.id in MERGED_SPELL_IDS));
+    return withLegacySpells(previewSpellRows(listed, process.env.VERCEL_ENV), process.env.VERCEL_ENV).map(stored => {
+      const row = displaySpellRow(stored);
       const { livello_num, scuola, classi } = parseLivello(row.livello || "");
       return {
         id: row.id, nome_italiano: row.nome_italiano, livello_num, scuola, classi,

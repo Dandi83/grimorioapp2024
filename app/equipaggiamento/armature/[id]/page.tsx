@@ -23,7 +23,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   // Hidden or «In arrivo»: no name or description of the card in the answer.
   if (await sectionClosed("armature")) return CLOSED_METADATA;
   const armor = getArmor((await params).id, (await getCorrectedArmors()).list);
-  return { title: armor ? `${armor.editions["2024"].nome} — Armature — Il Grimorio.App` : "Armatura non trovata" };
+  // Not found as in the page (missing, or only in hidden editions): the generic metadata of the site's 404.
+  const shown = await pageEditions("armature");
+  const name = armor && (["2024", "2014"] as const).filter(edition => shown.includes(edition)).map(edition => armor.editions[edition]).find(Boolean)?.nome;
+  if (!name) notFound();
+  return { title: `${name} — Armature — Il Grimorio.App` };
 }
 
 function Cell({ label, value }: { label: string; value: string }) {

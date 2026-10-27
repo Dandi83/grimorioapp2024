@@ -74,9 +74,10 @@ function load(relative, deps={}) {
     'server-only':{},
     'next/cache':{unstable_cache:(fn,key,options)=>{assert.deepEqual(key.slice(0,2),['spell-index',environment??'local']);assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');spellKeys.add(key[2]);assert.deepEqual(options,{tags:['spells'],revalidate:3600});configured=true;return fn;}},
     'drizzle-orm':{asc:column=>{assert.equal(column,'sort_key');return column;}},
-    './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',tempo_di_lancio:'tempo_di_lancio',durata:'durata',sort_key:'sort_key'}},
+    './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',tempo_di_lancio:'tempo_di_lancio',durata:'durata',descrizione:'descrizione',sort_key:'sort_key'}},
     './content-editions':{getContentEditions:async kind=>{assert.equal(kind,'spell');return new Map([['manual-index','2014']]);}},
-    './db':{db:{select:columns=>{assert.deepEqual(Object.keys(columns).sort(),['id','nome_italiano','livello','tempo_di_lancio','durata'].sort(),'SQL selects no descriptions');return {from:()=>({orderBy:async()=>sourceRows})};}}},
+    './db':{db:{select:columns=>{// The description is read only to know whether the SRD record or the summary applies (the card's values); it never reaches the list.
+    assert.deepEqual(Object.keys(columns).sort(),['id','nome_italiano','livello','tempo_di_lancio','durata','descrizione'].sort(),'SQL columns of the list');return {from:()=>({orderBy:async()=>sourceRows})};}}},
     './srd-additions':additions,'./srd-spells-2014':legacySpells,'./spell-catalog-repairs':repairs,'./monster-id-aliases':aliases,'./spells-types':st,
    });
    const values=await reader.getSpellIndex();
