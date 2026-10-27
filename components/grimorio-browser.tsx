@@ -18,6 +18,7 @@ import { useFollowEdition } from "@/components/edition/use-follow-edition";
 import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, castingTimeShort, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
+import { useReportSearch } from "@/components/statistics/use-report-search";
 
 const PAGE_SIZE = 40;
 export type SpellEdition = "2024" | "2014";
@@ -101,6 +102,8 @@ export function GrimorioBrowser({
     return needle ? sorted.filter(s => s.nome_italiano.toLowerCase().includes(needle)) : sorted;
   }, [sorted, deferredQ]);
   const { ids: originIds, value: originValue, draft: originDraft } = origin;
+  // The searched name and how many spells of the edition have it (statistics, only with the consent).
+  useReportSearch(deferredQ, searched.length);
   const results = useMemo(() => searched.filter(s => matchesSpellFilters(s, filters) && (!originIds || matchesProvenance(s, originValue, originIds))), [searched, filters, originIds, originValue]);
   const draftCount = useMemo(() => draft ? searched.filter(s => matchesSpellFilters(s, draft) && (!originIds || matchesProvenance(s, originDraft, originIds))).length : 0, [searched, draft, originIds, originDraft]);
   const perLevel = useMemo(() => {
