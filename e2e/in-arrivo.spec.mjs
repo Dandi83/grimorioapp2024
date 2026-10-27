@@ -195,4 +195,11 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await setPart(page, "avanzamento", "Calcolatore di PE", "Visibile");
   await setPart(page, "avanzamento", "Talenti bonus oltre il 20º livello", "Visibile");
   await expect(page.getByText("10 visibili")).toBeVisible();
+  // The pages built while the sections were closed are built again now, so the next server finds them current
+  // (same as e2e/sezioni.spec.mjs).
+  const after = await visitor(browser);
+  for (const path of ["/", "/grimorio", "/spell/palla-di-fuoco", "/classi", "/classi/mago", "/oggetti-magici", "/bestiario", "/mostro/alce", "/avanzamento", "/compendio", "/equipaggiamento", "/preferiti", "/ricerca-indice.json"]) {
+    expect((await after.page.request.get(path)).status(), path).toBe(200);
+  }
+  await after.close();
 });

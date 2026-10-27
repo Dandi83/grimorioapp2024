@@ -17,7 +17,7 @@ function load(file){
  new Function('require','module','exports',code)(id=>{
   if(id==='@/components/favorites-provider')return state;
   if(id==='@/lib/spell-index')return {getSpellIndex:async()=>[spell]};
-  if(id==='@/lib/section-view')return {sectionsOut:async()=>out,partsOut:async()=>parts,markedCards:async(k,l)=>l,sectionView:async()=>({admin:false,hidden:[],hiddenParts:[],hiddenCards:[]})};
+  if(id==='@/lib/section-view')return {sectionPage:async()=>{},sectionClosed:async()=>false,CLOSED_METADATA:{},sectionsOut:async()=>out,partsOut:async()=>parts,markedCards:async(k,l)=>l,sectionView:async()=>({admin:false,hidden:[],hiddenParts:[],hiddenCards:[]})};
   if(id==='@/lib/monster-index')return {getMonsterListIndex:async()=>[monster]};
   if(id==='next/navigation')return {useRouter:()=>({prefetch:()=>{}})};
   if(id==='next/link')return {__esModule:true,default:({children,prefetch,...p})=>createElement('a',p,children)};

@@ -25,7 +25,7 @@ function load(relative, deps={}) {
  assert.notEqual(changedKey[2],monsterKey[2]);
  const monsterList=await monsterIndex.getMonsterListIndex();
  assert.deepEqual((await monsterIndex.getMonsterIdIndex()).map(m=>m.id),all.map(m=>m.id),'static generation keeps every creature ID');
- const page=load('app/bestiario/page.tsx',{'@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l},'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/components/layout/catalog-split':{EmptyCard:'empty-card'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList}}).default;
+ const page=load('app/bestiario/page.tsx',{'@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l,sectionPage:async()=>{},sectionClosed:async()=>false,CLOSED_METADATA:{}},'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/components/layout/catalog-split':{EmptyCard:'empty-card'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList}}).default;
  // Phone: the list itself (in a block hidden only on a computer, where it is in the left column); then the empty card of the computer.
  const listOf=fragment=>{const [phone,empty]=fragment.props.children;assert.equal(phone.props.className,'lg:hidden');assert.equal(empty.type,'empty-card');return phone.props.children;};
  const element=listOf(await page());
@@ -43,7 +43,7 @@ function load(relative, deps={}) {
  const spell={id:'custom-admin-spell',nome_italiano:'Incantesimo di prova',livello:'Evocazione di 3° livello (mago)',livello_num:3,scuola:'Evocazione',classi:['mago'],descrizione:'FULL_BODY_NOT_FOR_LIST '.repeat(1000),tempo_di_lancio:'azione',gittata:'18 m',componenti:'V',durata:'1 minuto'};
  const spellBefore=JSON.stringify(spell);
  const index=[{id:spell.id,nome_italiano:spell.nome_italiano,livello_num:spell.livello_num,scuola:spell.scuola,classi:spell.classi}];
- const sp=load('app/grimorio/page.tsx',{'@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l},'@/components/catalog-browsers':{GrimorioWithFilters:'test-browser'},'@/components/layout/catalog-split':{EmptyCard:'empty-card'},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/spells-types':st}).default;
+ const sp=load('app/grimorio/page.tsx',{'@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l,sectionPage:async()=>{},sectionClosed:async()=>false,CLOSED_METADATA:{}},'@/components/catalog-browsers':{GrimorioWithFilters:'test-browser'},'@/components/layout/catalog-split':{EmptyCard:'empty-card'},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/spells-types':st}).default;
  const se=listOf(await sp());
  assert.equal(se.type,'test-browser','The static page renders spell names directly');
  assert.ok(!('descrizione' in se.props.spells[0]),'Spell lists must not ship complete descriptions');
@@ -52,7 +52,7 @@ function load(relative, deps={}) {
  assert.equal(se.props.spells[0].id,spell.id);assert.equal(se.props.spells[0].nome_italiano,spell.nome_italiano);
  assert.deepEqual(se.props.spells[0].classi,['mago']);assert.deepEqual(se.props.meta,st.computeMeta([spell]));
  assert.equal(JSON.stringify(spell),spellBefore);
- const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l,markedCards:async(k,l)=>l,cardHidden:async()=>false,cardsOut:async()=>[],sectionView:async()=>({admin:false,hidden:[],hiddenParts:[],hiddenCards:[]}),sectionsOut:async()=>[],partsOut:async()=>[],linksOut:async()=>[],partState:async()=>({shown:true,hidden:false}),editionCard:async()=>false,pageEditions:async()=>['2024','2014']},'@/lib/monsters-types':{isSrdAnimal:()=>false}}).default;
+ const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l,sectionPage:async()=>{},markedCards:async(k,l)=>l,cardHidden:async()=>false,cardsOut:async()=>[],sectionView:async()=>({admin:false,hidden:[],hiddenParts:[],hiddenCards:[]}),sectionsOut:async()=>[],partsOut:async()=>[],linksOut:async()=>[],partState:async()=>({shown:true,hidden:false}),editionCard:async()=>false,pageEditions:async()=>['2024','2014']},'@/lib/monsters-types':{isSrdAnimal:()=>false}}).default;
  const fe=await favorites();
  assert.strictEqual(fe.props.spells,index);
  assert.ok(!fe.props.monsters.some(m=>'azioni' in m||'descrizione' in m));
