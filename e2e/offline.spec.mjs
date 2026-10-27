@@ -115,10 +115,11 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avanzamento di livello");
   await page.getByRole("button", { name: "Aggiungi riga" }).click();
   await expect(page.getByLabel("Riga 2: grado sfida")).toBeVisible();
-  // Conditions list, after a reload (2014 chosen on the weapon sheet: 11 conditions).
+  // Conditions list, after a reload (2014 chosen on the weapon sheet: 15 conditions, the 2014 pages).
   await page.goto(base + "/compendio/condizioni");
   await page.reload();
-  await expect(page.locator('main ul a[href^="/manuale/condizioni-"]')).toHaveCount(11);
+  await expect(page.locator('main ul a[href^="/manuale/condizioni-"]')).toHaveCount(15);
+  await expect(page.locator('main ul a[href="/manuale/condizioni-prono-2014"]')).toHaveCount(1);
   // Magic items: the list and a sheet with its table, after a reload.
   await page.goto(base + "/oggetti-magici");
   await page.reload();

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LEGACY_MANUAL_SOURCE_URL, MANUAL_SOURCE_URL, type ManualEntry } from "@/lib/manual-types";
+import { CC_BY_40_URL, LEGACY_MANUAL_SOURCE_URL, MANUAL_SOURCE_URL, type ManualEntry } from "@/lib/manual-types";
 import { ConditionContent, LegacyConditionContent } from "@/components/condition-content";
 
 /**
@@ -33,10 +33,21 @@ export function ManualContent({ entry }: { entry: ManualEntry }) {
     ) : (
       <p key={i} className="font-serif text-[1.05rem] leading-7 text-card-foreground">{block.text}</p>
     ))}
-    <aside aria-label="Fonte della voce" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+    {entry.fonte === "traduzione-nostra" && entry.fonteInglese ? (
+      <aside aria-label="Fonte della voce" data-source-box="" data-translation="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+        <p>
+          {"Traduzione nostra dall'SRD 5.1 (inglese)."}{" "}Questa condizione manca nella versione italiana ufficiale del documento.
+          Testo originale: System Reference Document 5.1 di Wizards of the Coast LLC, disponibile su{" "}
+          <a className="underline underline-offset-4" href={`${entry.fonteInglese.url}#page=${entry.fonteInglese.pagina}`} target="_blank" rel="noreferrer">SRD_CC_v5.1.pdf, pagina {entry.fonteInglese.pagina} ({entry.fonteInglese.titolo})</a>,
+          rilasciato con licenza{" "}
+          <a className="underline underline-offset-4" href={CC_BY_40_URL} target="_blank" rel="noreferrer">Creative Commons Attribution 4.0 International (CC-BY-4.0)</a>.
+          Traduzione in italiano a cura de Il Grimorio.App.
+        </p>
+      </aside>
+    ) : <aside aria-label="Fonte della voce" data-source-box="" className="rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
       <p>Testo integrale: {entry.edizione === "2014" ? "SRD 5.1 italiano, Appendice A del Manuale del Giocatore" : "SRD 5.2.1 italiano"} — {entry.title}.</p>
       <a className="underline underline-offset-4" href={`${entry.edizione === "2014" ? LEGACY_MANUAL_SOURCE_URL : MANUAL_SOURCE_URL}#page=${entry.page}`} target="_blank" rel="noreferrer">Fonte ufficiale, {entry.pages.length === 1 ? "pagina" : "pagine"} {entry.pages.join(", ")}</a>
       {" · "}<Link className="underline underline-offset-4" href="/fonti">Attribuzione e licenza</Link>
-    </aside>
+    </aside>}
   </div>;
 }
