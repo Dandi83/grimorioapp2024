@@ -11,7 +11,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 async function setSection(page, title, label) {
@@ -59,8 +59,8 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   // Every row has the three states, «Visibile» chosen (the rows of before: Visibile or Nascosta).
   await expect(page.getByRole("radiogroup")).toHaveCount(10);
   await expect(page.getByRole("radio", { name: "Visibile", checked: true })).toHaveCount(10);
-  // Colors of the chosen state: green, amber, dark grey.
-  for (const [label, color] of [["In arrivo", "rgb(224, 162, 26)"], ["Nascosta", "rgb(74, 64, 56)"], ["Visibile", "rgb(46, 107, 63)"]]) {
+  // Colors of the chosen state: green, amber, black (#1F6B45, #E0A21A, #2B2118).
+  for (const [label, color] of [["In arrivo", "rgb(224, 162, 26)"], ["Nascosta", "rgb(43, 33, 24)"], ["Visibile", "rgb(31, 107, 69)"]]) {
     await setSection(page, "Classi", label);
     await expect(stateRadio(page, "Classi", label)).toHaveCSS("background-color", color);
   }
@@ -185,9 +185,9 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await expect(page.locator('[data-part="avanzamento:calcolatore"] [data-soon-tag]')).toBeVisible();
   // The log keeps the three states.
   await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
-  const log = page.getByRole("list", { name: "Modifiche" }).locator(":scope > li");
-  await expect(log.filter({ hasText: "Incantesimi · visibilità" }).first()).toContainText("In arrivo");
-  await expect(log.filter({ hasText: "Oggetti magici · visibilità" }).first()).toContainText("Nascosta");
+  const log = page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]");
+  await expect(log.filter({ hasText: "Incantesimi · visibilità → In arrivo" }).first()).toBeVisible();
+  await expect(log.filter({ hasText: "Oggetti magici · visibilità → Nascosta" }).first()).toBeVisible();
 
   // Back to the start.
   for (const title of ["Incantesimi", "Classi", "Oggetti magici"]) await setSection(page, title, "Visibile");

@@ -18,7 +18,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 /**
@@ -74,7 +74,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("fiamma del grimorio");
-  const spellPath = await page.locator("main ul li[data-card-row]").filter({ hasText: "Fiamma del grimorio" }).first().locator('a[href^="/spell/"]').first().getAttribute("href");
+  const spellPath = await page.locator("main ul li[data-card-row]").filter({ hasText: "Fiamma del grimorio" }).first().getAttribute("data-public-href");
 
   // The public card: condition link, fire icon, link to the other spell, highlighted block, labels.
   let visitor = await publicPage(browser, spellPath);
@@ -109,6 +109,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   // A new creature: the new spell named in its text, a condition, damage, GS, PE, type, habitat.
   await page.goto("/admin/mostri");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   editor = page.getByRole("dialog");
   await editor.locator("#nome").fill("Guardiano di cenere");
   await editor.locator("#tipo").selectOption({ label: "Costrutto" });
@@ -128,7 +129,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("guardiano di cenere");
-  const monsterPath = await page.locator("main ul li[data-card-row]").filter({ hasText: "Guardiano di cenere" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
+  const monsterPath = await page.locator("main ul li[data-card-row]").filter({ hasText: "Guardiano di cenere" }).first().getAttribute("data-public-href");
   visitor = await publicPage(browser, monsterPath);
   const actions = visitor.locator("section[data-monster-section]").filter({ has: visitor.getByRole("heading", { name: "Azioni", exact: true }) });
   await expect(actions.getByRole("link", { name: "Fiamma del Grimorio" })).toHaveAttribute("href", spellPath);
@@ -147,18 +148,19 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   // The spell hidden with the eye: plain text on the creature for the public; shown again, a link again.
   await page.goto("/admin/incantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("fiamma del grimorio");
-  await page.getByRole("button", { name: "Nascondi dal sito: Fiamma del grimorio" }).click();
-  await expect(page.getByRole("button", { name: "Mostra sul sito: Fiamma del grimorio" })).toBeVisible();
+  await page.getByRole("switch", { name: "Visibile sul sito: Fiamma del grimorio" }).click();
+  await expect(page.getByRole("switch", { name: "Visibile sul sito: Fiamma del grimorio" })).toHaveAttribute("aria-checked", "false");
   visitor = await publicPage(browser, monsterPath);
   await expect(visitor.locator("main")).toContainText("Fiamma del Grimorio");
   await expect(visitor.locator(`a[href="${spellPath}"]`)).toHaveCount(0);
   await visitor.context().close();
-  await page.getByRole("button", { name: "Mostra sul sito: Fiamma del grimorio" }).click();
-  await expect(page.getByRole("button", { name: "Nascondi dal sito: Fiamma del grimorio" })).toBeVisible();
+  await page.getByRole("switch", { name: "Visibile sul sito: Fiamma del grimorio" }).click();
+  await expect(page.getByRole("switch", { name: "Visibile sul sito: Fiamma del grimorio" })).toHaveAttribute("aria-checked", "true");
 
   // A homebrew of the Grimorio (published as an approved proposal): the same chain.
   await openAdmin(page, "/admin/mostri");
-  await page.getByRole("button", { name: "+ Nuova homebrew" }).click();
+  await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Homebrew", exact: true }).click();
   editor = page.getByRole("dialog");
   await editor.locator("#admin-hb-nome").fill("Spirito di cenere");
   await editor.locator("#admin-hb-azioni-0-nome").fill("Vampa");
@@ -178,13 +180,15 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   for (const name of ["Spirito di cenere", "Guardiano di cenere"]) {
     await page.getByPlaceholder("Cerca per nome o tipo…").fill(name.toLowerCase());
     page.once("dialog", dialog => dialog.accept());
-    await page.locator("main ul li[data-card-row]").filter({ hasText: name }).getByRole("button", { name: "Elimina" }).click();
+    await page.locator("main ul li[data-card-row]").filter({ hasText: name }).dispatchEvent("contextmenu");
+    await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
     await expect(page.locator("main ul li[data-card-row]").filter({ hasText: name })).toHaveCount(0);
   }
   await page.goto("/admin/incantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("fiamma del grimorio");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Fiamma del grimorio" }).getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Fiamma del grimorio" }).dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: "Fiamma del grimorio" })).toHaveCount(0);
 });
 

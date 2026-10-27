@@ -11,7 +11,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 /** Consented events of four people over the last days: origins, devices, the installed app, cards and searches. */

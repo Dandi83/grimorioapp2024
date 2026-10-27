@@ -16,7 +16,11 @@ export function useEditorFrame(page = false) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     if (!page) dialog.current?.showModal();
-    heading.current?.focus({ preventScroll: true, focusVisible: false } as FocusOptions);
+    // «Rinomina» of the lists (?campo=nome): the name field, ready to type; otherwise the title.
+    const field = page && new URLSearchParams(window.location.search).get("campo") === "nome"
+      ? (document.getElementById("nome_italiano") ?? document.getElementById("nome")) as HTMLInputElement | null : null;
+    if (field) { field.focus(); field.select?.(); }
+    else heading.current?.focus({ preventScroll: true, focusVisible: false } as FocusOptions);
   }, [page]);
   return {
     dialog,

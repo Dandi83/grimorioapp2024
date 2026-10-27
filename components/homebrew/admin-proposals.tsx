@@ -203,6 +203,13 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
   );
 }
 
+/** «+» of /admin/mostri, «Homebrew»: the guided editor of a new homebrew creature, already open. */
+export function NewHomebrewDialog({ edition, onClose }: { edition: "2014" | "2024"; onClose: () => void }) {
+  const router = useRouter();
+  return <HomebrewEditorDialog title="Nuova homebrew" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
+    onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />;
+}
+
 /** «Modifica» of a published homebrew in /admin/mostri. */
 export function EditHomebrewDialog({ id, nome, draft, onClose, page }: { id: string; nome: string; draft: HomebrewDraft; onClose: (saved?: boolean) => void; page?: boolean }) {
   const router = useRouter();

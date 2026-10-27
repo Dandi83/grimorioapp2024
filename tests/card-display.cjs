@@ -113,7 +113,7 @@ assert.match(editor, /<SpellSheetHeading spell=\{spell\} context=\{context\} hea
 assert.match(editor, /<SpellSheetBody spell=\{spell\} context=\{context\} \/>/);
 assert.match(fs.readFileSync("components/admin-monster-preview.tsx", "utf8"), /<MonsterSheetBody monster=\{monster\} legacy=\{legacy\} catalog=\{display\.catalog\} hidden=\{display\.hidden\} \/>/);
 assert.match(fs.readFileSync("components/homebrew/homebrew-editor.tsx", "utf8"), /catalog=\{display\.catalog\} hidden=\{display\.hidden\}/);
-for (const file of ["app/spell/[id]/page.tsx", "app/mostro/[id]/page.tsx", "components/admin-editors-view.tsx", "components/admin-card-editor-view.tsx", "app/admin/proposte/page.tsx", "app/admin/proposte/[id]/page.tsx", "app/bestiario/proponi/page.tsx"]) {
+for (const file of ["app/spell/[id]/page.tsx", "app/mostro/[id]/page.tsx", "components/admin-list/admin-list-page.tsx", "components/admin-card-editor-view.tsx", "app/admin/proposte/page.tsx", "app/admin/proposte/[id]/page.tsx", "app/bestiario/proponi/page.tsx"]) {
   assert.match(fs.readFileSync(file, "utf8"), /getSpellReferenceCatalog\(\)/, file);
 }
 // A save refreshes the cards that may name the spell.

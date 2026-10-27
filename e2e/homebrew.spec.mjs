@@ -103,8 +103,8 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Proposte homebrew · 3 da vedere" })).toBeVisible();
-  await page.getByRole("link", { name: /Proposte/ }).click();
+  await expect(page.locator('[data-due="proposte"]')).toHaveText("Valuta 3 proposte homebrew");
+  await page.goto("/admin/proposte");
   await expect(page.getByText("Comune alle due edizioni")).toBeVisible();
   await expect(page.locator("[data-homebrew-section]")).toContainText("Visibile al pubblico");
   await expect(page.getByRole("link", { name: "Da vedere · 3" })).toBeVisible();
@@ -144,7 +144,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await page.getByRole("link", { name: "Approvate" }).click();
   await expect(page.getByRole("link", { name: "Apri la scheda pubblicata" })).toHaveAttribute("href", CARD);
   await page.goto("/admin/registro?edizioni=tutte&sezione=mostri");
-  await expect(page.getByText("Pubblicata", { exact: true })).toBeVisible();
+  await expect(page.locator("[data-log-entry]").filter({ hasText: "homebrew → Pubblicata" }).first()).toBeVisible();
 
   // A proposal sent before the licence (the column empty, as on the proposals already in the database):
   // «Licenza non indicata», the amber pill, «Approva» unavailable; then refused, nothing published.
@@ -209,13 +209,13 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   // The eye of the single card (#72) on a homebrew.
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
-  await expect(page.getByText("Stai modificando il 2024")).toBeVisible();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("drago di nebbia");
   const adminRow = page.locator("main ul li[data-card-row]").filter({ hasText: "Drago di nebbia" });
-  await expect(adminRow.locator("[data-source-label]")).toHaveText("Homebrew · 2014 e 2024");
-  await adminRow.getByRole("button", { name: "Nascondi dal sito: Drago di nebbia" }).click();
+  await expect(adminRow.locator("[data-row-pill]")).toHaveText("Homebrew");
+  await adminRow.getByRole("switch", { name: "Visibile sul sito: Drago di nebbia" }).click();
   await expect.poll(async () => (await request.get(CARD)).status()).toBe(404);
-  await adminRow.getByRole("button", { name: "Mostra sul sito: Drago di nebbia" }).click();
+  await adminRow.getByRole("switch", { name: "Visibile sul sito: Drago di nebbia" }).click();
   await expect.poll(async () => (await request.get(CARD)).status()).toBe(200);
 
   // The section eye of /admin/proposte: the whole collection away from the public, then back.
@@ -238,9 +238,10 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   // «+ Nuova homebrew» of the administrator: «del Grimorio», 2014 only; the bin removes it.
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2014" }).click();
-  await expect(page.getByText("Stai modificando il 2014")).toBeVisible();
-  await expect(page.getByText(/Edizione 2014: \d+ incantesimi/)).toBeVisible();
-  await page.getByRole("button", { name: "+ Nuova homebrew" }).click();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2014");
+  await expect(page.locator("main[data-admin-list]")).toHaveAttribute("data-edition", "2014");
+  await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Homebrew", exact: true }).click();
   const editor = page.getByRole("dialog");
   await expect(editor.getByRole("group", { name: "Edizione della scheda" }).getByRole("button", { name: "2014", exact: true })).toHaveAttribute("aria-pressed", "true");
   await editor.locator("#admin-hb-nome").fill("Guardiano di sale");
@@ -256,15 +257,17 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(visitor.getByText("dalla Destrezza").first()).toBeVisible();
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("guardiano di sale");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Guardiano di sale" }).getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Guardiano di sale" }).dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect.poll(async () => (await request.get("/mostro/homebrew-guardiano-di-sale")).status()).toBe(404);
 
   // Clean up the published card: lists, index and API as before.
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
-  await expect(page.getByText("Stai modificando il 2024")).toBeVisible();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("drago di nebbia");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Drago di nebbia" }).getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Drago di nebbia" }).dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect.poll(async () => (await request.get("/api/catalogo/bestiario")).text()).toBe(before.api);
   await expect.poll(async () => (await request.get("/ricerca-indice.json")).text()).toBe(before.index);
   await visitor.context().close();

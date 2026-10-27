@@ -175,6 +175,20 @@ export async function listFeedback(filter: FeedbackFilter = {}): Promise<{ repor
   return { reports: list.rows, nuove: count.rows[0].n };
 }
 
+/** Rights requests not handled yet (new or read): they stay on top until resolved or archived. */
+export async function countOpenRightsRequests(): Promise<number> {
+  await ensureFeedbackTables();
+  const { rows } = await pool.query<{ n: number }>("SELECT count(*)::int AS n FROM grimorio_feedback_reports WHERE tipo = 'diritti' AND stato IN ('nuova', 'letta')");
+  return rows[0].n;
+}
+
+/** «Segna tutte lette» of the notifications: every new report becomes read. Returns how many changed. */
+export async function markAllFeedbackRead(): Promise<number> {
+  await ensureFeedbackTables();
+  const result = await pool.query("UPDATE grimorio_feedback_reports SET stato = 'letta' WHERE stato = 'nuova'");
+  return result.rowCount ?? 0;
+}
+
 export async function countNewFeedback(): Promise<number> {
   await ensureFeedbackTables();
   const { rows } = await pool.query<{ n: number }>("SELECT count(*)::int AS n FROM grimorio_feedback_reports WHERE stato = 'nuova'");

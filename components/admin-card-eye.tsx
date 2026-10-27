@@ -20,6 +20,13 @@ export function useCardVisibility(kind: CardKind, hidden: readonly string[]) {
   const [toast, setToast] = useState<Toast | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
+  // The saves go one after the other, in the order of the taps: a quick «Annulla» never overtakes the hide it undoes.
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+  const save = useCallback((id: string, hide: boolean) => {
+    const next = queue.current.then(() => setCardVisibilityAction(kind, id, hide));
+    queue.current = next.catch(() => undefined);
+    return next;
+  }, [kind]);
   const show = useCallback((next: Toast) => {
     clearTimeout(timer.current);
     setToast(next);
@@ -38,14 +45,46 @@ export function useCardVisibility(kind: CardKind, hidden: readonly string[]) {
     const undo = withUndo ? () => void setRef.current?.(id, nome, !hide, false) : undefined;
     show({ at: Date.now(), text: hide ? "Nascosta dal sito" : "Di nuovo visibile sul sito", label: nome, undo });
     try {
-      const result = await setCardVisibilityAction(kind, id, hide);
+      const result = await save(id, hide);
       if (!result.ok) throw new Error(result.error);
     } catch {
       apply(!hide);
       show({ at: Date.now(), text: "Salvataggio non riuscito: la scheda è rimasta com’era." });
     }
-  }, [kind, show]);
+  }, [save, show]);
   useEffect(() => { setRef.current = set; }, [set]);
+
+  /**
+   * Selection of the lists: several cards hidden or shown at once, one save (and one row of the Registro) per card;
+   * a card whose save fails goes back as it was.
+   */
+  const setMany = useCallback(async (cards: { id: string; nome: string }[], hide: boolean) => {
+    if (!cards.length) return;
+    setIds(current => {
+      const next = new Set(current);
+      for (const card of cards) { if (hide) next.add(card.id); else next.delete(card.id); }
+      return next;
+    });
+    const count = `${cards.length} ${cards.length === 1 ? "scheda" : "schede"}`;
+    show({ at: Date.now(), text: hide ? `Nascoste dal sito: ${count}` : `Di nuovo visibili sul sito: ${count}` });
+    const failed: string[] = [];
+    for (const card of cards) {
+      try {
+        const result = await save(card.id, hide);
+        if (!result.ok) failed.push(card.id);
+      } catch {
+        failed.push(card.id);
+      }
+    }
+    if (failed.length) {
+      setIds(current => {
+        const next = new Set(current);
+        for (const id of failed) { if (hide) next.delete(id); else next.add(id); }
+        return next;
+      });
+      show({ at: Date.now(), text: `Salvataggio non riuscito per ${failed.length} ${failed.length === 1 ? "scheda" : "schede"}: sono rimaste com’erano.` });
+    }
+  }, [save, show]);
 
   const isHidden = useCallback((id: string) => ids.has(id), [ids]);
   const toggle = useCallback((id: string, nome: string) => void set(id, nome, !ids.has(id)), [ids, set]);
@@ -57,7 +96,7 @@ export function useCardVisibility(kind: CardKind, hidden: readonly string[]) {
       )}
     </div>
   );
-  return { isHidden, toggle, notice, count: ids.size };
+  return { isHidden, toggle, setMany, notice, count: ids.size };
 }
 
 /** Open eye: visible on the site; crossed out: hidden. At least 44 px to tap. */

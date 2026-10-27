@@ -94,7 +94,7 @@ test("concentration on a spell added by the administrator (Amicizia 2014)", asyn
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
   const editor = page.getByRole("dialog");
@@ -109,7 +109,7 @@ test("concentration on a spell added by the administrator (Amicizia 2014)", asyn
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
   const row = page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first();
-  const path = await row.locator('a[href^="/spell/"]').first().getAttribute("href");
+  const path = await row.getAttribute("data-public-href");
 
   const visitor = await page.context().browser().newContext({ viewport: { width: 390, height: 844 } });
   await visitor.addInitScript(() => { try { localStorage.setItem("grimorio.edizione", "2014"); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } });
@@ -120,7 +120,8 @@ test("concentration on a spell added by the administrator (Amicizia 2014)", asyn
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ })).toHaveCount(0);
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin");
 });

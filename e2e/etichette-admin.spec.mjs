@@ -17,7 +17,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 /** A visitor: separate context, no admin session, the edition of the card chosen. */
@@ -51,16 +51,17 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
   const row = page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first();
-  await expect(row.locator("[data-source-label]")).toHaveText("Aggiunta da te");
-  const amicizia = await row.locator('a[href^="/spell/"]').first().getAttribute("href");
+  await expect(row.locator("[data-row-pill]")).toHaveText("Aggiunta da te");
+  const amicizia = await row.getAttribute("data-public-href");
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   editor = page.getByRole("dialog");
   await editor.locator("#nome").fill("Beholder");
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder");
-  const beholder = await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
+  const beholder = await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).first().getAttribute("data-public-href");
 
   // Visitor: not on the page, not in the HTML or the data served; «NO SRD» instead.
   for (const [path, edition, name] of [[amicizia, "2014", "amicizia-2014"], [beholder, "2024", "beholder"]]) {
@@ -129,12 +130,14 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   // Clean up, then «Esci»: the label goes with the session.
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
-  await expect(page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().locator("[data-source-label]")).toHaveText("Aggiunta da te");
+  await expect(page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().locator("[data-row-pill]")).toHaveText("Aggiunta da te");
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" })).toHaveCount(0);
+  await page.goto("/admin");
   await page.getByRole("button", { name: "Esci", exact: true }).click();
   await expect(page.getByLabel("Passcode")).toBeVisible();
   await page.goto(amicizia);
@@ -149,7 +152,8 @@ test("admin-only labels: visitors never get «Aggiunta da te» or «Sintesi orig
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ })).toHaveCount(0);
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin");
 });

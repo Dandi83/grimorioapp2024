@@ -57,7 +57,7 @@ test("NO SRD asterisk: visitors never get it nor the ids; the administrator sees
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
   const editor = page.getByRole("dialog");
@@ -123,8 +123,10 @@ test("NO SRD asterisk: visitors never get it nor the ids; the administrator sees
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("asterisco");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: NAME }).getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: NAME }).dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: NAME })).toHaveCount(0);
+  await page.goto("/admin");
   await page.getByRole("button", { name: "Esci", exact: true }).click();
   await expect(page.getByLabel("Passcode")).toBeVisible();
   await edition(page, "2024");

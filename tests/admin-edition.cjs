@@ -85,11 +85,11 @@ function load(relative) {
   assert.doesNotMatch(list, /aria-label="Edizione"/, 'the internal edition links are gone');
   assert.match(list, /await adminEdition\(\)/);
   assert.match(read('app/admin/contenuti/[sezione]/[id]/page.tsx'), /edition !== chosen && <OtherEditionNotice/);
-  for (const page of ['app/admin/incantesimi/page.tsx', 'app/admin/mostri/page.tsx']) assert.match(read(page), /<AdminEditorsView tab=/, page);
-  assert.match(read('components/admin-editors-view.tsx'), /spells\.filter\(spell => spellEdition\(spell\) === edition\)[\s\S]*usesLegacyMonsterRules/);
+  for (const page of ['app/admin/incantesimi/page.tsx', 'app/admin/mostri/page.tsx']) assert.match(read(page), /<AdminListPage tab=/, page);
+  assert.match(read('lib/admin-lists.ts'), /spells\.filter\(spell => spellEdition\(spell\) === edition\)[\s\S]*usesLegacyMonsterRules/);
   assert.match(read('components/admin-edition-field.tsx'), /confirm\(`Spostare questa scheda nell’edizione \$\{chosen\}\?`\)/);
   // The rows of the lists have no edition dropdown any more: the switch at the top decides.
-  for (const file of ['components/admin-dashboard.tsx', 'components/admin-monsters.tsx']) assert.doesNotMatch(read(file), /AdminEditionPicker|Salva etichetta/, file);
+  for (const file of ['components/admin-list/admin-list.tsx', 'lib/admin-lists.ts']) assert.doesNotMatch(read(file), /AdminEditionPicker|Salva etichetta/, file);
   for (const file of ['components/admin-spell-editor.tsx', 'components/admin-monster-editor.tsx']) assert.match(read(file), /confirmEditionMove\(data, edition\)/, file);
   assert.match(read('app/admin/registro/page.tsx'), /Tutte le edizioni/);
   assert.match(read('app/admin/layout.tsx'), /if \(!\(await isAdmin\(\)\)\) return children;/, 'no switch on the login page');

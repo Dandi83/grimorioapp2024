@@ -28,18 +28,19 @@ test("hidden card and hidden edition: the 404 has generic title and metadata, no
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 
   // A creature hidden with the eye.
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("aboleth");
   const row = page.locator("main ul li[data-card-row]").filter({ hasText: "Aboleth" }).first();
-  await row.getByRole("button", { name: "Nascondi dal sito: Aboleth" }).click();
-  await expect(row.getByText("Nascosta", { exact: true })).toBeVisible();
+  await row.getByRole("switch", { name: "Visibile sul sito: Aboleth" }).click();
+  await expect(row).toHaveAttribute("data-hidden", "");
   await expect.poll(async () => (await request.get("/mostro/aboleth")).status()).toBe(404);
   await generic(request, "/mostro/aboleth", "Aboleth");
-  await row.getByRole("button", { name: "Mostra sul sito: Aboleth" }).click();
+  await row.getByRole("switch", { name: "Visibile sul sito: Aboleth" }).click();
   await expect.poll(async () => (await request.get("/mostro/aboleth")).status()).toBe(200);
 
   // The 2014 edition of the spells hidden from /admin/sezioni.
@@ -47,6 +48,8 @@ test("hidden card and hidden edition: the 404 has generic title and metadata, no
   const opener = page.locator('button[aria-controls="parti-incantesimi"]');
   if ((await opener.getAttribute("aria-expanded")) !== "true") await opener.click();
   const box = page.locator("#parti-incantesimi");
+  // The editions are under «Avanzate: scelta diversa per 2014 e 2024».
+  if ((await box.locator("[data-advanced]").getAttribute("open")) === null) await box.locator("[data-advanced] summary").click();
   await stateRadio(box, "Edizione 2014", "Nascosta").click();
   await expect(stateRadio(box, "Edizione 2014", "Nascosta")).toHaveAttribute("aria-checked", "true");
   await expect.poll(async () => (await request.get("/spell/allarme-2014")).status()).toBe(404);
