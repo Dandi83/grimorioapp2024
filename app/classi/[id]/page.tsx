@@ -27,7 +27,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (await sectionClosed("classi")) return CLOSED_METADATA;
   const { id } = await params;
   const entry = (await getCorrectedClasses()).list.find(item => item.id === id);
-  return { title: entry ? `${entry.editions["2024"]!.nome} — Classi — Il Grimorio.App` : "Classe non trovata" };
+  // Not found as in the page (missing, or only in hidden editions): the generic metadata of the site's 404.
+  const shown = await pageEditions("classi");
+  const view = entry && shown.map(edition => entry.editions[edition]).find(Boolean);
+  if (!view) notFound();
+  return { title: `${view.nome} — Classi — Il Grimorio.App` };
 }
 
 export default async function ClassPage({ params }: { params: Promise<{ id: string }> }) {

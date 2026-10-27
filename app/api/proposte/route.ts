@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse, after } from "next/server";
 
 import { adminBadgeCount } from "@/lib/admin-badge";
-import { checkFormToken, issueFormToken, turnstilePassed } from "@/lib/feedback";
+import { FORM_UNAVAILABLE, checkFormToken, feedbackAvailable, issueFormToken, turnstilePassed } from "@/lib/feedback";
 import { PROPOSAL_MAX_BYTES, parseProposal } from "@/lib/homebrew-types";
 import { proposalDeviceKey, proposalLimited, recordProposalSend, saveProposal } from "@/lib/homebrew";
 import { partId } from "@/lib/public-sections";
@@ -26,7 +26,9 @@ async function closed(): Promise<boolean> {
 
 export async function GET() {
   if (await closed()) return reply({ error: "Non disponibile." }, 404);
-  return reply({ token: issueFormToken() });
+  const token = issueFormToken();
+  if (!token) return reply({ error: FORM_UNAVAILABLE, unavailable: true }, 503);
+  return reply({ token });
 }
 
 function sameSite(request: NextRequest): string | null {
@@ -40,6 +42,7 @@ function sameSite(request: NextRequest): string | null {
 }
 
 export async function POST(request: NextRequest) {
+  if (!feedbackAvailable()) return reply({ error: FORM_UNAVAILABLE, unavailable: true }, 503);
   if (!sameSite(request)) return reply({ error: "Origine non valida." }, 403);
   if (!request.headers.get("content-type")?.startsWith("application/json")) return reply({ error: "Richiesta non valida." }, 415);
   if (Number(request.headers.get("content-length") || 0) > PROPOSAL_MAX_BYTES) return reply({ error: "Scheda troppo lunga." }, 413);

@@ -51,6 +51,7 @@ async function render(check) {
       './srd-additions':{previewSpellById:() => undefined},
       './srd-spells-2014':{legacySpellById:() => undefined, isLegacySpellId:() => false, getLegacySpellSource:() => undefined},
       './spell-catalog-repairs':{repairCatalogSpell:row => row},
+      './spell-display-row':{displaySpellRow:row => row},
       './spell-text-repairs':{repairSpellText:(_id, text) => text},
       './monster-id-aliases':{MERGED_SPELL_IDS:{}},
       './spell-name':{spellName:name => name},

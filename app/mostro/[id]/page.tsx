@@ -10,7 +10,7 @@ import Link from "next/link";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
-import { cardHidden, cardsOut, editionCard, linksOut, partState, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { cardHidden, editionCard, linksOut, partState, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { collectionOf } from "@/lib/monsters-types";
 import { HomebrewByline, HomebrewLabel, HomebrewNote } from "@/components/homebrew/homebrew-sheet";
@@ -51,7 +51,13 @@ export async function generateMetadata({
   if (await sectionClosed("bestiario")) return CLOSED_METADATA;
   const { id } = await params;
   const monster = await getMonsterById(id);
-  if (!monster || (await cardsOut()).includes(`/mostro/${monster.id}`)) return { title: "Mostro non trovato" };
+  // The same checks as the page (missing, hidden with the eye, of a hidden edition or collection): not found,
+  // with the generic metadata of the site's 404.
+  if (!monster) notFound();
+  await cardHidden("mostro", monster.id);
+  if (monster.homebrew_edizione === "entrambe") await bothEditionsCard();
+  else await editionCard("bestiario", monster.edizione === "2014" || (!monster.edizione && usesLegacyMonsterRules(monster)) ? "2014" : "2024");
+  await collectionCard(collectionOf({ id: monster.id, homebrew: monster.homebrew_edizione }));
   const description = monster.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
     `${monster.nome}, ${monster.tipo}.`;
   const url = `https://ilgrimorio.app/mostro/${encodeURIComponent(monster.id)}`;

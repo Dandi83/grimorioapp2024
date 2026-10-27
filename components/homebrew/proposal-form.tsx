@@ -7,6 +7,7 @@ import { Check } from "lucide-react";
 import { MIN_FILL_MS } from "@/lib/feedback-input";
 import { EMPTY_DRAFT, HOMEBREW_LICENSE, HOMEBREW_LICENSE_URL, LIMITS, parseProposal, type HomebrewDraft } from "@/lib/homebrew-types";
 import { HomebrewEditor } from "./homebrew-editor";
+import { FormUnavailable } from "@/components/feedback/form-unavailable";
 
 const OFFLINE = "Invio non riuscito: sei offline o la connessione non risponde. La scheda è ancora qui: riprova quando torni online.";
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -25,6 +26,8 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  // The server answers 503 while its form secret is missing: no form, nothing sent.
+  const [unavailable, setUnavailable] = useState(false);
   const token = useRef<{ value: string; at: number } | null>(null);
   const honeypot = useRef<HTMLInputElement>(null);
   const turnstile = useRef<{ token: string; id?: string }>({ token: "" });
@@ -32,6 +35,7 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
 
   async function fetchToken() {
     const response = await fetch("/api/proposte", { cache: "no-store" });
+    if (response.status === 503) setUnavailable(true);
     if (!response.ok) throw new Error(String(response.status));
     token.current = { value: ((await response.json()) as { token: string }).token, at: Date.now() };
   }
@@ -90,6 +94,8 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
       if (response.ok && result.ok) {
         setSent(true);
         window.scrollTo(0, 0);
+      } else if (response.status === 503) {
+        setUnavailable(true);
       } else {
         setError(result.error ?? "Invio non riuscito. Riprova tra poco.");
         if (turnstile.current.id) { window.turnstile?.reset(turnstile.current.id); turnstile.current.token = ""; }
@@ -100,6 +106,8 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
       setSending(false);
     }
   }
+
+  if (unavailable) return <FormUnavailable back="/bestiario" backLabel="Torna al Bestiario" />;
 
   if (sent) {
     return (

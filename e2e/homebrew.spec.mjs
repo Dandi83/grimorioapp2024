@@ -50,13 +50,13 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   const before = { api: await (await request.get("/api/catalogo/bestiario")).text(), index: await (await request.get("/ricerca-indice.json")).text() };
   expect(JSON.parse(before.api).monsters.some(monster => monster.homebrew)).toBe(false);
 
-  // The Homebrew collection: the amber box with «Proponi una creatura».
+  // No homebrew creature published yet: no empty «Homebrew» filter, the way to propose one is under the list.
   await page.goto("/bestiario");
   await page.getByRole("button", { name: /^Filtri/ }).click();
-  await page.getByRole("button", { name: "Homebrew", exact: true }).click();
-  await page.getByRole("button", { name: /^Mostra \d+ risultat/ }).click();
-  await expect(page.getByText("Creature create dai master della community. Non sono ufficiali e non fanno parte dell’SRD.")).toBeVisible();
-  await page.getByRole("link", { name: "Proponi una creatura" }).click();
+  await expect(page.getByRole("dialog").getByRole("button", { name: /^Mostra \d+ risultat/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Homebrew", exact: true })).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await page.locator("[data-propose-homebrew]").getByRole("link", { name: "Proponila per la raccolta Homebrew" }).click();
   await expect(page).toHaveURL("/bestiario/proponi");
 
   // The form adapts to the edition and suggests the other format, never blocking.
@@ -188,6 +188,9 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
     await visitor.getByRole("button", { name: /^Filtri/ }).click();
     await visitor.getByRole("button", { name: "Homebrew", exact: true }).click();
     await visitor.getByRole("button", { name: /^Mostra \d+ risultat/ }).click();
+    // With a published creature the filter is back, with the amber box and «Proponi una creatura».
+    await expect(visitor.getByText("Creature create dai master della community. Non sono ufficiali e non fanno parte dell’SRD.")).toBeVisible();
+    await expect(visitor.getByRole("link", { name: "Proponi una creatura" })).toHaveAttribute("href", "/bestiario/proponi");
     const row = visitor.locator("li.catalog-row").filter({ has: visitor.locator(`a[href="${CARD}"]`) });
     await expect(row, `${edition}: «Entrambe» in both editions`).toHaveCount(1);
     await expect(row).toContainText("Homebrew");

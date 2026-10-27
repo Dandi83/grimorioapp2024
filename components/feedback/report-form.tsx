@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
 
+import { FormUnavailable } from "@/components/feedback/form-unavailable";
 import {
   EMAIL_MAX, FEEDBACK_TYPES, MESSAGE_MAX, MIN_FILL_MS, TYPE_LABELS,
   cleanEdition, cleanPath, cleanText, messageError, textLength, validEmail, type FeedbackType,
@@ -40,6 +41,8 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
   const [fieldError, setFieldError] = useState<{ messaggio?: string; email?: string }>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  // The server answers 503 while its form secret is missing: no form, nothing sent.
+  const [unavailable, setUnavailable] = useState(false);
   const token = useRef<{ value: string; at: number } | null>(null);
   const honeypot = useRef<HTMLInputElement>(null);
   const turnstile = useRef<{ token: string; id?: string }>({ token: "" });
@@ -48,6 +51,7 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
 
   async function fetchToken() {
     const response = await fetch("/api/segnalazioni", { cache: "no-store" });
+    if (response.status === 503) setUnavailable(true);
     if (!response.ok) throw new Error(String(response.status));
     const { token: value } = (await response.json()) as { token: string };
     token.current = { value, at: Date.now() };
@@ -119,6 +123,8 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
       if (response.ok && result.ok) {
         setSent(true);
         window.scrollTo(0, 0);
+      } else if (response.status === 503) {
+        setUnavailable(true);
       } else {
         setError(result.error ?? "Invio non riuscito. Riprova tra poco.");
         if (turnstile.current.id) { window.turnstile?.reset(turnstile.current.id); turnstile.current.token = ""; }
@@ -129,6 +135,8 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
       setSending(false);
     }
   }
+
+  if (unavailable) return <FormUnavailable back="/" backLabel="Torna alla Home" />;
 
   if (sent) {
     return (

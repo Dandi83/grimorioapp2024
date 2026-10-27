@@ -94,7 +94,6 @@ export function BestiarioBrowser({
   const edizione: Edition = allowed.includes(chosenEdizione) ? chosenEdizione : allowed[0];
   const monstersPart = usePart("bestiario", "mostri"), animalsPart = usePart("bestiario", "animali"), homebrewPart = usePart("bestiario", "homebrew");
   const parts = { mostri: monstersPart, animali: animalsPart, homebrew: homebrewPart };
-  const categories = CATEGORIES.filter(c => c === "tutti" || parts[c].shown);
   const categoryLabel = (c: Category) => `${CATEGORY_LABEL[c]}${c !== "tutti" && parts[c].hidden ? (parts[c].soon ? " · In arrivo" : " · Nascosta") : ""}`;
   // Collections «In arrivo» for the public: an entry to the «in costruzione» page, never their creatures.
   const soonCollections = CATEGORIES.filter(c => c !== "tutti" && !parts[c].shown && parts[c].soon);
@@ -112,6 +111,9 @@ export function BestiarioBrowser({
 
   const editionMonsters = useMemo(() => monsters.filter(monster => (monster.edizione === edizione || monster.entrambe)
     && collectionShown(monster)), [monsters, edizione, animalsPart.shown, monstersPart.shown, homebrewPart.shown]); // eslint-disable-line react-hooks/exhaustive-deps
+  // «Homebrew» only while the chosen edition has at least one published homebrew creature: never an empty filter.
+  const hasHomebrew = editionMonsters.some(monster => monster.homebrew);
+  const categories = CATEGORIES.filter(c => c === "tutti" || (parts[c].shown && (c !== "homebrew" || hasHomebrew)));
   const meta = useMemo(() => computeMonstersMeta(editionMonsters), [editionMonsters]);
   const searched = useMemo(() => {
     const needle = deferredQ.trim().toLowerCase();
@@ -255,6 +257,13 @@ export function BestiarioBrowser({
             Mostra altri ({results.length - visible.length})
           </button>
         </div>
+      )}
+      {/* No homebrew creature yet in this edition, so no «Homebrew» filter: the way to propose one stays here. */}
+      {homebrewPart.shown && !homebrewPart.hidden && !hasHomebrew && !pane && (
+        <p className="px-6 pb-6 pt-4 text-center text-[14px] text-muted" data-propose-homebrew="">
+          Hai creato una creatura?{" "}
+          <Link href="/bestiario/proponi" className="font-semibold text-primary underline underline-offset-4">Proponila per la raccolta Homebrew</Link>
+        </p>
       )}
     </div>
   );

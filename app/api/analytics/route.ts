@@ -23,8 +23,11 @@ const options = {
   path: "/",
   maxAge: 60 * 60 * 24 * 180,
 };
-// ANALYTICS_SECRET signs new visitor IDs; IDs signed earlier with the admin passcode stay valid and are re-signed.
-function sign(id: string, secret = analyticsSecret()) {
+// ANALYTICS_SECRET signs the visitor IDs. A cookie that does not verify (also one signed earlier with the admin
+// passcode) is simply a new visitor.
+function sign(id: string) {
+  const secret = analyticsSecret();
+  if (!secret) throw new Error("ANALYTICS_SECRET missing");
   return createHmac("sha256", secret).update(`statistics:${id}`).digest("hex");
 }
 function matches(signature: string, expected: string) {
@@ -32,13 +35,10 @@ function matches(signature: string, expected: string) {
     b = Buffer.from(expected);
   return a.length === b.length && timingSafeEqual(a, b);
 }
-function visitorFrom(request: NextRequest): { id: string; legacy: boolean } | undefined {
+function visitorFrom(request: NextRequest): string | undefined {
   const [id, signature] = request.cookies.get(VISITOR)?.value.split(".") ?? [];
-  if (!id || !signature || !/^[0-9a-f-]{36}$/i.test(id)) return;
-  if (matches(signature, sign(id))) return { id, legacy: false };
-  const legacy = process.env.ADMIN_PASSCODE;
-  if (legacy && legacy !== analyticsSecret() && matches(signature, sign(id, legacy)))
-    return { id, legacy: true };
+  if (!id || !signature || !/^[0-9a-f-]{36}$/i.test(id) || !analyticsSecret()) return;
+  if (matches(signature, sign(id))) return id;
 }
 function allowed(request: NextRequest) {
   return (
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     const result = response({ ok: true, consent: choice });
     result.cookies.set(CONSENT, choice, options);
     if (choice === "accepted") {
-      const id = visitorFrom(request)?.id || randomUUID();
+      const id = visitorFrom(request) || randomUUID();
       result.cookies.set(VISITOR, `${id}.${sign(id)}`, options);
     } else result.cookies.set(VISITOR, "", { ...options, maxAge: 0 });
     return result;
@@ -89,9 +89,8 @@ export async function POST(request: NextRequest) {
   if (await isAdmin()) return response({ ignored: true, reason: "admin" });
   if (request.cookies.get(CONSENT)?.value !== "accepted")
     return response({ ignored: true, reason: "consent" });
-  const verified = visitorFrom(request);
-  if (!verified) return response({ ignored: true, reason: "identity" });
-  const visitor = verified.id;
+  const visitor = visitorFrom(request);
+  if (!visitor) return response({ ignored: true, reason: "identity" });
   const input = parseAnalyticsInput(body);
   if (!input) return response({ error: "Evento non valido" }, 400);
   if (
@@ -130,9 +129,7 @@ export async function POST(request: NextRequest) {
         console.error("Analytics export pending; event retained for retry.");
       }
     });
-    const result = response({ ok: true, stored });
-    if (verified.legacy) result.cookies.set(VISITOR, `${visitor}.${sign(visitor)}`, options);
-    return result;
+    return response({ ok: true, stored });
   } catch {
     return response({ error: "Statistiche temporaneamente non disponibili" }, 503);
   }
