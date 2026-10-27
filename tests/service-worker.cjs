@@ -51,12 +51,14 @@ const text=r=>r.text();
 (async()=>{
  const sw=worker();
  // Install saves the five main sections; activate keeps only this version's pages.
- sw.store.set('grimorio-pages-v1',new Map());sw.store.set('grimorio-static',new Map([['https://ilgrimorio.app/_next/static/old.js',new Response('old')]]));
+ sw.store.set('grimorio-pages-v1',new Map());sw.store.set('grimorio-static',new Map([['https://ilgrimorio.app/_next/static/old.js',new Response('old')],...['/icon-512.png','/icon-install.webp','/manifest.webmanifest'].map(p=>[ORIGIN+p,new Response('vecchia')])]));
  await sw.lifecycle('install');
  assert.deepEqual([...sw.store.get('grimorio-pages-v2').keys()].sort(),['/','/bestiario','/compendio','/grimorio','/preferiti','/ricerca-indice.json'].map(p=>ORIGIN+p).sort());
  await sw.lifecycle('activate');
  assert.equal(sw.store.has('grimorio-pages-v1'),false,'pages of the previous version are deleted');
  assert.equal(sw.store.has('grimorio-static'),true,'program files survive a new version (older pages may still need them)');
+ // Icons and manifest keep their name in every version: saved again after it (a new logo reaches the installed app).
+ assert.deepEqual([...sw.store.get('grimorio-static').keys()],[ORIGIN+'/_next/static/old.js']);
 
  // Online: always the network, and the fresh page is saved.
  sw.network.pages['/spell/scudo']='Scudo versione nuova';
@@ -222,5 +224,5 @@ const text=r=>r.text();
  let done;listeners.activate({waitUntil:p=>{done=p;}});await done;
  assert.deepEqual([...store.keys()],['altro']);assert.ok(unregistered);assert.deepEqual(reloaded,['/grimorio']);
 
- console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, emergency switch, hidden sections never served from a saved copy, copies dropped when hidden parts change, admin notifications shown and opened on this site only, app icon badge set and cleared from the push.');
+ console.log('Service worker: network-first pages with saved copy offline or after 3 s, notice once, offline page, admin/API/RSC/actions untouched, program files cached, versioned cleanup, icons and manifest saved again after a new version, emergency switch, hidden sections never served from a saved copy, copies dropped when hidden parts change, admin notifications shown and opened on this site only, app icon badge set and cleared from the push.');
 })().catch(error=>{console.error(error);process.exit(1);});
