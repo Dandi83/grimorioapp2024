@@ -101,7 +101,8 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  assert.ok(rows.find(r=>r.nome==='Piuma magica'&&r.href==='/oggetti-magici/piuma-magica'&&/· 2014$/.test(r.label)));
  const poisoned=rows.find(r=>r.nome==='Avvelenato');
  assert.deepEqual([poisoned.label,poisoned.href,poisoned.href2014],['Condizione','/manuale/condizioni-avvelenato','/manuale/condizioni-avvelenato-2014']);
- assert.equal(rows.find(r=>r.nome==='Prono').href2014,undefined);
+ // The 4 translated 2014 conditions have their 2014 page too.
+ for(const key of ['prono','spaventato','stordito','trattenuto'])assert.equal(rows.find(r=>r.href===`/manuale/condizioni-${key}`).href2014,`/manuale/condizioni-${key}-2014`);
  // Counts per section match the data: every item of every edition is reachable by its name.
  const {magicItemEntries}=load('lib/magic-items-editions.ts');
  const magicNames=new Set(bySection('oggetti-magici').map(r=>s.fold(r.nome)));
@@ -123,7 +124,7 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  const {findGearEntry}=load('lib/adventuring-gear-editions.ts');const {getToolEntry}=load('lib/tools-editions.ts');
  const {findMagicItemEntry}=load('lib/magic-items-editions.ts');const {getWeapon}=load('lib/equipment.ts');const {getArmor}=load('lib/armor.ts');
  const classIds=new Set(load('lib/classes.ts').CLASS_IDS);
- const conditionIds=new Set([...data('srd-conditions-5.2.1-it.json'),...data('srd-conditions-5.1-it.json')].map(e=>e.id));
+ const conditionIds=new Set([...data('srd-conditions-5.2.1-it.json'),...data('srd-conditions-5.1-it.json'),...data('srd-conditions-5.1-traduzione.json')].map(e=>e.id));
  const exists=href=>{
   const [p]=href.split('?');const parts=p.split('/');const id=parts.at(-1);
   if(p.startsWith('/equipaggiamento/armi/'))return !!getWeapon(id);
