@@ -686,19 +686,36 @@ test("conditions: Compendio tile like the others, list per edition, note of the 
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `list ${width}`).toBeLessThanOrEqual(width);
   }
   await chooseEdition(page, "2014");
-  await expect(rows).toHaveCount(11);
+  // 15 in 2014 too: the 4 missing in the Italian SRD 5.1 in our translation of the English one, no note.
+  await expect(rows).toHaveCount(15);
   await expect(rows.first()).toHaveAttribute("href", "/manuale/condizioni-accecato-2014");
-  const note = page.getByText(/Nell’SRD 5\.1 italiano non sono stampate/);
-  await expect(note).toHaveText("Nell’SRD 5.1 italiano non sono stampate: Prono, Spaventato, Stordito, Trattenuto. Le trovi nell’edizione 2024.");
-  expect(await note.getByRole("link").evaluateAll(links => links.map(a => a.getAttribute("href")))).toEqual(["/manuale/condizioni-prono", "/manuale/condizioni-spaventato", "/manuale/condizioni-stordito", "/manuale/condizioni-trattenuto"]);
+  await expect(rows.filter({ hasText: "Prono" })).toHaveAttribute("href", "/manuale/condizioni-prono-2014");
+  await expect(page.getByText(/non sono stampate/)).toHaveCount(0);
   // The choice is remembered, as in the other Compendio sections.
   await page.reload();
-  await expect(rows).toHaveCount(11);
+  await expect(rows).toHaveCount(15);
   for (const href of await rows.evaluateAll(links => links.map(a => a.getAttribute("href")))) expect((await request.get(href)).status(), href).toBe(200);
   await chooseEdition(page, "2024");
   await expect(rows).toHaveCount(15);
   await expect(page.getByText(/non sono stampate/)).toHaveCount(0);
   for (const href of await rows.evaluateAll(links => links.map(a => a.getAttribute("href")))) expect((await request.get(href)).status(), href).toBe(200);
+  // The 4 translated pages: their own source box (English PDF and licence), never «SRD 5.1 italiano».
+  await page.goto("/manuale/condizioni-prono-2014");
+  const translation = page.locator("aside[data-translation]");
+  await expect(translation).toContainText("Traduzione nostra dall'SRD 5.1 (inglese). Questa condizione manca nella versione italiana ufficiale del documento.");
+  await expect(translation.getByRole("link", { name: "SRD_CC_v5.1.pdf, pagina 359 (Prone)" })).toHaveAttribute("href", "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1.pdf#page=359");
+  await expect(translation.getByRole("link", { name: "Creative Commons Attribution 4.0 International (CC-BY-4.0)" })).toHaveAttribute("href", "https://creativecommons.org/licenses/by/4.0/legalcode");
+  await expect(page.locator("main")).not.toContainText("SRD 5.1 italiano");
+  await expect(page.locator("main li")).toHaveCount(3);
+  await page.goto("/manuale/condizioni-accecato-2014");
+  await expect(page.locator("aside[data-source-box]")).toContainText("Testo integrale: SRD 5.1 italiano, Appendice A del Manuale del Giocatore");
+  await expect(page.locator("aside[data-translation]")).toHaveCount(0);
+  // A 2014 sheet with «prono» links the 2014 page; the 2024 sheet keeps the 2024 one.
+  await page.goto("/mostro/alce-2014");
+  await expect(page.locator("main").getByRole("link", { name: /^pron[oaie]$/ }).first()).toHaveAttribute("href", "/manuale/condizioni-prono-2014");
+  await page.goto("/mostro/alce");
+  await expect(page.locator("main").getByRole("link", { name: /^pron[oaie]$/ }).first()).toHaveAttribute("href", "/manuale/condizioni-prono");
+  await page.goto("/compendio/condizioni");
   await rows.filter({ hasText: "Avvelenato" }).click();
   await expect(page).toHaveURL(/\/manuale\/condizioni-avvelenato$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Avvelenato");

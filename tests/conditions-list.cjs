@@ -16,15 +16,14 @@ function load(relative){
 const {conditionRows,conditionsOnly2024}=load('lib/conditions-list.ts');
 const rows=conditionRows();
 const data2024=JSON.parse(fs.readFileSync('lib/data/srd-conditions-5.2.1-it.json','utf8'));
-const data2014=JSON.parse(fs.readFileSync('lib/data/srd-conditions-5.1-it.json','utf8'));
+const data2014=[...JSON.parse(fs.readFileSync('lib/data/srd-conditions-5.1-it.json','utf8')),...JSON.parse(fs.readFileSync('lib/data/srd-conditions-5.1-traduzione.json','utf8'))];
 // Names exactly as printed in the data, A–Z; every condition of each edition, none invented.
 assert.deepEqual(rows['2024'].map(r=>r.nome),['Accecato','Affascinato','Afferrato','Assordato','Avvelenato','Incapacitato','Indebolimento','Invisibile','Paralizzato','Pietrificato','Privo di sensi','Prono','Spaventato','Stordito','Trattenuto']);
 assert.deepEqual(rows['2024'].map(r=>r.nome).sort(),data2024.map(e=>e.title).sort());
 assert.deepEqual(rows['2014'].map(r=>r.nome).sort(),data2014.map(e=>e.title).sort());
-assert.equal(rows['2014'].length,11);
-for(const missing of ['Prono','Spaventato','Stordito','Trattenuto'])assert.ok(!rows['2014'].some(r=>r.nome===missing),missing);
-// The note under the 2014 list: the four 2024 conditions not printed in the SRD 5.1, linked to their 2024 pages.
-assert.deepEqual(conditionsOnly2024(),['prono','spaventato','stordito','trattenuto'].map(key=>({id:`condizioni-${key}`,nome:key[0].toUpperCase()+key.slice(1),href:`/manuale/condizioni-${key}`})));
+// 15 in 2014 too: the 4 missing in the Italian SRD 5.1 in our translation, so no note under the 2014 list.
+assert.deepEqual(rows['2014'].map(r=>r.nome),rows['2024'].map(r=>r.nome));
+assert.deepEqual(conditionsOnly2024(),[]);
 // Every row opens an existing condition page of its own edition (generated at build time).
 const ids2024=new Set(data2024.map(e=>e.id)),ids2014=new Set(data2014.map(e=>e.id));
 for(const r of rows['2024'])assert.ok(ids2024.has(r.href.replace('/manuale/','')),r.href);
@@ -43,4 +42,4 @@ const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
 const publicPage=new RegExp(sw.match(/const PUBLIC_PAGE = \/(.*)\/;/)[1]);
 for(const p of ['/compendio','/compendio/condizioni',...rows['2024'].map(r=>r.href),...rows['2014'].map(r=>r.href)])assert.ok(publicPage.test(p),p);
 assert.ok(!publicPage.test('/compendio/altro'));
-console.log('Conditions list: 15 conditions 2024 and 11 2014 from the data, links to existing pages, offline.');
+console.log('Conditions list: 15 conditions 2024 and 15 2014 from the data, links to existing pages, offline.');

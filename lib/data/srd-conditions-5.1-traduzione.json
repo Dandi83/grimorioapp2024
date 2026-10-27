@@ -1,0 +1,144 @@
+[
+  {
+    "id": "condizioni-prono-2014",
+    "title": "Prono",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 359,
+    "pages": [
+      359
+    ],
+    "fonte": "traduzione-nostra",
+    "fonteInglese": {
+      "titolo": "Prone",
+      "url": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1.pdf",
+      "pagina": 359
+    },
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• L'unica opzione di movimento di una creatura prona è strisciare, a meno che non si rialzi, ponendo così fine alla condizione.",
+        "page": 359,
+        "sourceHash": "762474f99b0f0657b80dfcf11e5a506a059573d1bbdf18f5fe8961fc9f49db24"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura subisce svantaggio ai tiri per colpire.",
+        "page": 359,
+        "sourceHash": "db6a6176b0693218fe758dbe39a9ca706d4c1d40745ddbd411bb8556ea75e3d9"
+      },
+      {
+        "kind": "prose",
+        "text": "• Un tiro per colpire contro la creatura ottiene vantaggio se l'attaccante è situato entro 1,5 metri dalla creatura. Altrimenti, il tiro per colpire subisce svantaggio.",
+        "page": 359,
+        "sourceHash": "c05ffeb232e2069e8f885ca3877bbf348bb444d65d8d02237fd9b450e0175b12"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-spaventato-2014",
+    "title": "Spaventato",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 358,
+    "pages": [
+      358
+    ],
+    "fonte": "traduzione-nostra",
+    "fonteInglese": {
+      "titolo": "Frightened",
+      "url": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1.pdf",
+      "pagina": 358
+    },
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura spaventata subisce svantaggio alle prove di caratteristica e ai tiri per colpire finché la fonte della sua paura si trova entro la sua linea di vista.",
+        "page": 358,
+        "sourceHash": "1dea1ccab360cd36813aedd126f2d00f12447d64570d1981fe9b5dbfe276fa28"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura non può avvicinarsi volontariamente alla fonte della sua paura.",
+        "page": 358,
+        "sourceHash": "8b735a43f4a4240d6061f7496b6b690838ec46b76d2a2ea0f5783fa2f7cd65e6"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-stordito-2014",
+    "title": "Stordito",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 359,
+    "pages": [
+      359
+    ],
+    "fonte": "traduzione-nostra",
+    "fonteInglese": {
+      "titolo": "Stunned",
+      "url": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1.pdf",
+      "pagina": 359
+    },
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• Una creatura stordita è incapacitata (vedi la relativa condizione), non può muoversi e può parlare solo in modo esitante.",
+        "page": 359,
+        "sourceHash": "5d43311e3f583c96738c3c576c3d2f55484e253aa61c48d6c11c6437f0d54514"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura fallisce automaticamente i tiri salvezza su Forza e Destrezza.",
+        "page": 359,
+        "sourceHash": "323be26b59bbd4b8515cbf8be5f4dc722c84d14cc9c885c7d26d1743bd288455"
+      },
+      {
+        "kind": "prose",
+        "text": "• I tiri per colpire contro la creatura ottengono vantaggio.",
+        "page": 359,
+        "sourceHash": "cd17604822cca694569929f44022e3917333de60bc8f333ee5a8d78a83b72bea"
+      }
+    ]
+  },
+  {
+    "id": "condizioni-trattenuto-2014",
+    "title": "Trattenuto",
+    "category": "condizioni",
+    "subgroup": "Condizioni · regole 2014",
+    "edizione": "2014",
+    "page": 359,
+    "pages": [
+      359
+    ],
+    "fonte": "traduzione-nostra",
+    "fonteInglese": {
+      "titolo": "Restrained",
+      "url": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1.pdf",
+      "pagina": 359
+    },
+    "blocks": [
+      {
+        "kind": "prose",
+        "text": "• La velocità di una creatura trattenuta diventa 0 e la creatura non può beneficiare di alcun bonus alla velocità.",
+        "page": 359,
+        "sourceHash": "6dd900562a81928904789c5772ecf04b10154614a7b1cc7c326e9b195eef44fc"
+      },
+      {
+        "kind": "prose",
+        "text": "• I tiri per colpire contro la creatura ottengono vantaggio e i tiri per colpire della creatura subiscono svantaggio.",
+        "page": 359,
+        "sourceHash": "1903b6c1f82c7596e280dd9ed1dcfdaf91a68314235c3f84ba2040df3dce19f8"
+      },
+      {
+        "kind": "prose",
+        "text": "• La creatura subisce svantaggio ai tiri salvezza su Destrezza.",
+        "page": 359,
+        "sourceHash": "ce3b1183b2c836c60a3a4de446d2f2d7b3f1087dc65d56c0da837f5e38ac0891"
+      }
+    ]
+  }
+]
