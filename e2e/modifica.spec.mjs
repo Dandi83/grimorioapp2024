@@ -20,7 +20,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 test("visitors: no «Modifica» anywhere, in the page or in its HTML, and the session is never asked", async ({ page, request }) => {
@@ -53,13 +53,15 @@ test("administrator: «Modifica» opens the editor of the card and comes back; a
   // A card added by the administrator and a homebrew, to remove at the end.
   await page.goto("/admin/mostri");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   let editor = page.getByRole("dialog");
   await editor.locator("#nome").fill("Scheda di prova Modifica");
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("scheda di prova modifica");
   const added = await page.locator("main ul li[data-card-row]").filter({ hasText: "Scheda di prova Modifica" }).first().locator('a[href^="/mostro/"]').first().getAttribute("href");
-  await page.getByRole("button", { name: "+ Nuova homebrew" }).click();
+  await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Homebrew", exact: true }).click();
   editor = page.getByRole("dialog");
   await editor.locator("#admin-hb-nome").fill("Lupo di cenere");
   await editor.locator("#admin-hb-azioni-0-nome").fill("Morso");
@@ -96,7 +98,7 @@ test("administrator: «Modifica» opens the editor of the card and comes back; a
     await expect(page, path).toHaveURL(new RegExp(`${path.replace(/[?]/g, "\\?")}$`));
     await expect(edit(page).first()).toBeVisible();
   };
-  const band = edition => expect(page.getByText(`Stai modificando il ${edition}`)).toBeVisible();
+  const band = edition => expect(page.getByTestId("admin-edition-band")).toHaveText(edition);
   const closeDialog = async () => page.getByRole("dialog").getByRole("button", { name: "Chiudi editor" }).click();
   await roundTrip("/spell/palla-di-fuoco", async () => {
     await expect(page).toHaveURL(/\/admin\/incantesimi\/palla-di-fuoco\?(impostata=1&)?ritorno=%2Fspell%2Fpalla-di-fuoco$/);
@@ -183,7 +185,8 @@ test("administrator: «Modifica» opens the editor of the card and comes back; a
   for (const name of ["Scheda di prova Modificata", "Lupo di cenere"]) {
     await page.getByPlaceholder("Cerca per nome o tipo…").fill(name.toLowerCase());
     page.once("dialog", dialog => dialog.accept());
-    await page.locator("main ul li[data-card-row]").filter({ hasText: name }).getByRole("button", { name: "Elimina" }).click();
+    await page.locator("main ul li[data-card-row]").filter({ hasText: name }).dispatchEvent("contextmenu");
+    await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
     await expect(page.locator("main ul li[data-card-row]").filter({ hasText: name })).toHaveCount(0);
   }
 

@@ -16,7 +16,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 const edit = page => page.locator("[data-admin-edit]").first();
 const back = page => page.getByRole("button", { name: "Torna indietro" });
@@ -125,7 +125,8 @@ test("leaving the editor, «indietro» on the card leads to the list, never to t
 
   // A homebrew of the Grimorio: its guided editor, closed with X.
   await page.goto("/admin/mostri");
-  await page.getByRole("button", { name: "+ Nuova homebrew" }).click();
+  await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Homebrew", exact: true }).click();
   const brew = page.getByRole("dialog");
   await brew.locator("#admin-hb-nome").fill("Ombra del ritorno");
   await brew.locator("#admin-hb-azioni-0-nome").fill("Tocco");
@@ -181,11 +182,13 @@ test("leaving the editor, «indietro» on the card leads to the list, never to t
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("prova del ritorno");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Prova del ritorno" }).getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Prova del ritorno" }).dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: "Prova del ritorno" })).toHaveCount(0);
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("ombra del ritorno");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Ombra del ritorno" }).getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Ombra del ritorno" }).dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: "Ombra del ritorno" })).toHaveCount(0);
 });

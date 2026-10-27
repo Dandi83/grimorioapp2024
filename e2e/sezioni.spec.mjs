@@ -52,18 +52,19 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
   // Rows of the log already there (other tests of the run, e2e/in-arrivo.spec.mjs among them, use the same database).
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
-  await expect(page.getByRole("heading", { level: 1, name: "Registro modifiche" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Registro" })).toBeVisible();
   const logBefore = await page.getByRole("list", { name: "Modifiche" }).locator(":scope > li").filter({ hasNotText: "Raccolta Homebrew" }).count();
   await page.goto("/admin");
-  await page.getByRole("link", { name: "Sezioni dell’app" }).click();
+  await page.getByRole("link", { name: /^Sezioni\s*Cosa vedono gli utenti/ }).click();
   await expect(page).toHaveURL(/\/admin\/sezioni$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Sezioni dell’app" })).toBeVisible();
-  await expect(page.getByText(/^Scegli per ogni sezione e parte: Visibile, In arrivo/)).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Sezioni" })).toBeVisible();
+  await expect(page.getByText(/^Per ogni sezione, in entrambe le edizioni: Visibile, In arrivo/)).toBeVisible();
   await expect(page.getByText("10 visibili")).toBeVisible();
   await expect(page.getByText("0 nascoste")).toBeVisible();
-  await expect(page.getByText("Ogni cambio finisce nel Registro modifiche. Le sezioni nascoste o in arrivo restano visibili a te, con la loro etichetta.")).toBeVisible();
+  await expect(page.getByText("Ogni cambio finisce nel Registro. Le sezioni nascoste o in arrivo restano visibili a te, con la loro etichetta.")).toBeVisible();
+  await expect(page.getByText("Le singole schede si nascondono dall’interruttore nella loro lista.")).toBeVisible();
   const rows = page.getByRole("list", { name: "Sezioni" }).locator(":scope > li");
   await expect(rows).toHaveCount(10);
   await expect(rows.nth(2)).toContainText("Classi");
@@ -188,30 +189,28 @@ test("sections of the app: admin hides and shows every section; public 404 page,
     expect((await band().getByRole("button", { name: "Mostra" }).boundingBox()).height).toBeGreaterThanOrEqual(44);
   }
 
-  // Admin home: an icon on every row, «Nascosta» under the name of the rows of the hidden sections (no switch there).
-  await page.goto("/admin");
-  const adminTiles = page.getByRole("region", { name: /^Contenuti 20\d\d$/ }).getByRole("link");
+  // Contenuti of the reserved area: an icon on every row, «Nascosta agli utenti» under the name of the hidden sections.
+  await page.goto("/admin/contenuti");
+  const adminTiles = page.locator("[data-content-row]");
   await expect(adminTiles).toHaveCount(10);
   expect(await adminTiles.evaluateAll(links => links.map(a => a.querySelectorAll('svg[aria-hidden="true"]').length))).toEqual(Array(10).fill(2));
-  const labelled = await adminTiles.evaluateAll(links => links.filter(a => /Nascosta/.test(a.textContent)).map(a => a.getAttribute("href")));
+  const labelled = await adminTiles.evaluateAll(links => links.filter(a => /Nascosta agli utenti/.test(a.textContent)).map(a => a.getAttribute("href")));
   expect(labelled.sort()).toEqual(["/admin/contenuti/armature", "/admin/contenuti/armi", "/admin/contenuti/avventura", "/admin/contenuti/classi", "/admin/contenuti/condizioni", "/admin/contenuti/strumenti", "/admin/incantesimi", "/admin/mostri"]);
-  await expect(page.getByRole("region", { name: /^Contenuti 20\d\d$/ }).getByRole("button")).toHaveCount(0);
-  const nascosta = adminTiles.first().getByText("Nascosta", { exact: true });
-  expect(await nascosta.evaluate(el => { const s = getComputedStyle(el); return [s.backgroundColor, s.color, s.fontSize, s.fontWeight]; })).toEqual(["rgb(43, 33, 24)", "rgb(224, 162, 26)", "11px", "700"]);
-  // The pill sits under the name, never over it.
-  const [nameBox, pillBox] = [await adminTiles.first().locator("span.font-serif").boundingBox(), await nascosta.boundingBox()];
-  expect(pillBox.y).toBeGreaterThanOrEqual(nameBox.y + nameBox.height - 1);
+  await expect(page.getByRole("main").getByRole("button")).toHaveCount(0);
   const tileIcon = adminTiles.first().locator("svg").first();
   expect(await tileIcon.evaluate(svg => [svg.getAttribute("width"), svg.getAttribute("stroke"), svg.getAttribute("stroke-width")])).toEqual(["22", "#7A1F2B", "1.8"]);
-  const pills = page.getByRole("region", { name: "Gestione · tutte le edizioni" }).getByRole("link");
-  await expect(pills).toHaveCount(6);
-  expect(await pills.evaluateAll(links => links.map(a => a.getAttribute("aria-label").split(" · ")[0]))).toEqual(["Sezioni dell’app", "Notifiche", "Registro modifiche", "Schede SRD modificate", "Nomi da rivedere", "Statistiche"]);
-  await expect(pills.first()).toHaveAttribute("aria-label", /^Sezioni dell’app · \d+ sezion[ei] nascost[ae]/);
-  expect(await pills.evaluateAll(links => links.map(a => a.querySelector('svg[aria-hidden="true"]')?.getAttribute("width")))).toEqual(["22", "22", "22", "22", "22", "22"]);
+  // The Home: four tiles, Sezioni says what the visitors see.
+  await page.goto("/admin");
+  const pills = page.getByRole("navigation", { name: "Sezioni dell’area riservata" }).getByRole("link");
+  await expect(pills).toHaveCount(4);
+  await expect(pills.nth(2)).toContainText("Cosa vedono gli utenti");
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin home ${width}`).toBeLessThanOrEqual(width);
-    for (const box of [...await adminTiles.evaluateAll(links => links.map(a => a.getBoundingClientRect().height)), ...await pills.evaluateAll(links => links.map(a => a.getBoundingClientRect().height))]) expect(box).toBeGreaterThanOrEqual(56);
+    for (const box of await pills.evaluateAll(links => links.map(a => a.getBoundingClientRect().height))) expect(box).toBeGreaterThanOrEqual(56);
+    await page.goto("/admin/contenuti");
+    for (const box of await adminTiles.evaluateAll(links => links.map(a => a.getBoundingClientRect().height))) expect(box).toBeGreaterThanOrEqual(56);
+    await page.goto("/admin");
   }
 
   // The administrator sees everything, labelled «Nascosta»: Compendio tiles and bottom bar.
@@ -286,7 +285,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await page.getByRole("link", { name: "Sezioni dell’app" }).click();
+  await page.getByPlaceholder("Cerca qualsiasi scheda da modificare").click();
   const opener = key => page.locator(`button[aria-controls="parti-${key}"]`);
   await expect(opener("incantesimi")).toHaveText(/^2 parti/);
   await expect(opener("classi")).toHaveText(/^8 parti/);
@@ -375,10 +374,10 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await pub.goto("/equipaggiamento/armi/tridente");
   await expect(selector(pub)).toHaveCount(0);
   await expect(pub.getByRole("heading", { name: "2014 → 2024" })).toHaveCount(0);
-  await page.goto("/admin");
-  const armiTile = page.getByRole("region", { name: /^Contenuti 20\d\d$/ }).getByRole("link").filter({ hasText: "Armi" });
-  await expect(armiTile.getByText("Parti nascoste", { exact: true })).toBeVisible();
-  await expect(armiTile.getByText("Nascosta", { exact: true })).toHaveCount(0);
+  await page.goto("/admin/contenuti");
+  const armiTile = page.locator('[data-content-row="armi"]');
+  await expect(armiTile).toContainText(/parti? nascost[ae] per gli utenti/);
+  await expect(armiTile).not.toContainText("Nascosta agli utenti");
   await togglePart("armi", "Edizione 2014", false);
   // The 2014 → 2024 box alone; Dotazioni.
   await togglePart("armi", "Riquadro «2014 → 2024»", true);
@@ -497,7 +496,7 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   const opener = key => page.locator(`button[aria-controls="parti-${key}"]`);
   const toggle2014 = async (key, hide) => {
     if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");

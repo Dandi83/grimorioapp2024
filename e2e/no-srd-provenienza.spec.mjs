@@ -16,7 +16,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 async function visitor(browser, edition, width = 390) {
@@ -77,7 +77,7 @@ test("NO SRD origin box and the «Sintesi originale» switch", async ({ page, br
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("lampo di prova");
   let row = page.locator("main ul li[data-card-row]").filter({ hasText: "Lampo di prova" }).first();
-  await expect(row.locator("[data-source-label]")).toHaveText("Aggiunta da te");
+  await expect(row.locator("[data-row-pill]")).toHaveText("Aggiunta da te");
   const spell = await row.locator('a[href^="/spell/"]').first().getAttribute("href");
   expect(await originBox(browser, spell, "2014", "aggiunta-spento-2014")).toBe(`${ADDED} Schede NO SRD`);
 
@@ -92,7 +92,7 @@ test("NO SRD origin box and the «Sintesi originale» switch", async ({ page, br
   await editor.getByRole("button", { name: /Salva/ }).click();
   await expect(editor).toHaveCount(0);
   row = page.locator("main ul li[data-card-row]").filter({ hasText: "Lampo di prova" }).first();
-  await expect(row.locator("[data-source-label]")).toHaveText("Sintesi originale");
+  await expect(row.locator("[data-row-pill]")).toHaveText("Sintesi");
   expect(await originBox(browser, spell, "2014", "aggiunta-acceso-2014")).toBe(`${SUMMARY} Schede NO SRD · Attribuzione e licenza`);
   await page.goto(spell);
   await expect(page.locator("[data-card-source]")).toHaveText("Sintesi originale");
@@ -114,6 +114,7 @@ test("NO SRD origin box and the «Sintesi originale» switch", async ({ page, br
   // Beholder, a creature added here: the added box; an SRD creature has no switch.
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   editor = page.getByRole("dialog");
   await expect(editor.getByRole("switch", { name: "Sintesi originale" })).not.toBeChecked();
   await editor.locator("#nome").fill("Beholder");
@@ -130,12 +131,14 @@ test("NO SRD origin box and the «Sintesi originale» switch", async ({ page, br
   // Clean up.
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" }).dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: "Beholder" })).toHaveCount(0);
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("lampo di prova");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: "Lampo di prova" }).first().getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: "Lampo di prova" }).first().dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: "Lampo di prova" })).toHaveCount(0);
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin");
 });

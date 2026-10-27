@@ -7,7 +7,7 @@ import { setAdminEditionAction } from "@/app/actions/admin-edition";
 import { ADMIN_EDITIONS, EDITION_BAND, isCommonAdminPath, type AdminEdition } from "@/lib/admin-edition";
 
 /** Hook shared by the switch and the «Passa all'edizione …» buttons: saves the choice and reloads the page data. */
-function useAdminEditionSwitch(initial: AdminEdition) {
+export function useAdminEditionSwitch(initial: AdminEdition) {
   const router = useRouter();
   const [edition, setEdition] = useState(initial);
   const [pending, startTransition] = useTransition();

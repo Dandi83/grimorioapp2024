@@ -18,7 +18,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 /** Opens the filters of the list and picks a provenance; returns the count of the «Mostra» button. */
@@ -28,6 +28,27 @@ async function pick(page, label) {
   await expect(sheet.locator("[data-provenance-filter]").getByRole("button", { name: label, exact: true })).toHaveAttribute("aria-pressed", "true");
   return shownCount(page);
 }
+/** The lists of the reserved area (components/admin-list/admin-list.tsx): counters, rows, «+», the menu of a row. */
+const adminRows = page => page.locator("main li[data-card-row]");
+const resultCount = async page => Number(await page.locator("[data-result-count]").getAttribute("data-result-count"));
+/** «NO SRD» counter on, the number of rows, counter off again. */
+async function adminNoSrd(page) {
+  await page.locator('[data-counter="nosrd"]').click();
+  const count = await resultCount(page);
+  await page.locator('[data-counter="nosrd"]').click();
+  return count;
+}
+const pillCount = (page, pill) => page.locator(`main li[data-card-row] [data-row-pill="${pill}"]`).count();
+/** Deletes a card added here from the menu of its row (a long press on a phone). */
+async function deleteFromList(page, list, name) {
+  await page.getByRole("searchbox", { name: `Cerca in ${list}` }).fill(name);
+  const row = adminRows(page).filter({ hasText: name });
+  await row.dispatchEvent("contextmenu");
+  page.once("dialog", dialog => dialog.accept());
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
+  await expect(row).toHaveCount(0);
+}
+
 async function openFilters(page, path) {
   await page.goto(path);
   await page.locator("li.catalog-row").first().waitFor();
@@ -64,15 +85,10 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
   await login(page);
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   // What the lists hold before (other tests of the run may have left cards): the checks are on the difference.
-  const adminList = page.locator("main [data-provenance-filter]");
-  const adminCount = async label => {
-    await adminList.getByRole("button", { name: label, exact: true }).click();
-    return Number((await page.locator("[data-provenance-count]").innerText()).match(/\d+/)[0]);
-  };
-  const base2014 = { nosrd: await adminCount("Solo NO SRD"), sintesi: await adminCount("Sintesi originali"), aggiunte: await adminCount("Aggiunte da me") };
-  await adminList.getByRole("button", { name: "Tutte", exact: true }).click();
+  // Summaries and added cards are told apart by the pill of their row.
+  const base2014 = { nosrd: await adminNoSrd(page), sintesi: await pillCount(page, "Sintesi"), aggiunte: await pillCount(page, "Aggiunta da te") };
   for (const [name, summary] of [[ADDED, false], [SUMMARY, true]]) {
-    await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+    await page.locator("[data-create-button]").click();
     const editor = page.getByRole("dialog");
     await editor.getByLabel("Nome *").fill(name);
     await editor.locator("#spell-level").selectOption("1");
@@ -81,32 +97,24 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
     await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
     await expect(editor).toHaveCount(0);
   }
-  // The list of the reserved area: the same filter, with the count.
-  await adminList.getByRole("button", { name: "Solo NO SRD", exact: true }).click();
-  await expect(page.locator("[data-provenance-count]")).toHaveText(`${base2014.nosrd + 2} risultati`);
-  await page.getByPlaceholder("Cerca per nome o scuola…").fill("prova provenienza");
-  await adminList.getByRole("button", { name: "Sintesi originali", exact: true }).click();
-  await expect(page.locator("main ul li[data-card-row]")).toHaveCount(1);
-  await expect(page.locator("main ul li[data-card-row]")).toContainText(SUMMARY);
-  await adminList.getByRole("button", { name: "Aggiunte da me", exact: true }).click();
-  await expect(page.locator("main ul li[data-card-row]")).toContainText(ADDED);
-  await adminList.getByRole("button", { name: "Tutte", exact: true }).click();
-  await page.getByPlaceholder("Cerca per nome o scuola…").fill("");
+  // The list of the reserved area: the NO SRD counter, the pills of the rows.
+  expect(await adminNoSrd(page)).toBe(base2014.nosrd + 2);
+  await page.getByRole("searchbox", { name: "Cerca in Incantesimi" }).fill("prova provenienza");
+  await expect(adminRows(page).filter({ hasText: SUMMARY }).locator('[data-row-pill="Sintesi"]')).toHaveCount(1);
+  await expect(adminRows(page).filter({ hasText: ADDED }).locator('[data-row-pill="Aggiunta da te"]')).toHaveCount(1);
+  await page.getByRole("searchbox", { name: "Cerca in Incantesimi" }).fill("");
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
-  const base2024Monsters = await adminCount("Solo NO SRD");
-  await adminList.getByRole("button", { name: "Tutte", exact: true }).click();
-  await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  const base2024Monsters = await adminNoSrd(page);
+  await page.locator("[data-create-button]").click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   await page.getByRole("dialog").locator("#nome").fill(CREATURE);
   await page.getByRole("dialog").getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.locator("main [data-provenance-filter]").getByRole("button", { name: "Solo NO SRD", exact: true }).click();
-  await expect(page.locator("[data-provenance-count]")).toHaveText(`${base2024Monsters + 1} ${base2024Monsters ? "risultati" : "risultato"}`);
+  expect(await adminNoSrd(page)).toBe(base2024Monsters + 1);
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fincantesimi");
   // «SRD modificate»: SRD cards that no longer match their record (the test database has some), NO SRD too.
-  await page.locator("main [data-provenance-filter]").getByRole("button", { name: "SRD modificate", exact: true }).click();
-  const modifiedAdmin = Number((await page.locator("[data-provenance-count]").innerText()).match(/\d+/)[0]);
-  await page.locator("main [data-provenance-filter]").getByRole("button", { name: "Solo NO SRD", exact: true }).click();
-  await expect(page.locator("[data-provenance-count]")).toHaveText(`${49 + modifiedAdmin} risultati`);
+  const modifiedAdmin = Number((await page.locator('[data-counter="modificate"]').innerText()).match(/\d+/)[0]);
+  expect(await adminNoSrd(page)).toBe(49 + modifiedAdmin);
 
   // Lists of the site, 2024: the 49 original summaries; SRD = the rest.
   await edition(page, "2024");
@@ -153,17 +161,10 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
 
   // Clean up, then «Esci»: the group is gone and the list is «Tutte» again.
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
-  await page.getByPlaceholder("Cerca per nome o tipo…").fill("prova provenienza");
-  page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: CREATURE }).getByRole("button", { name: "Elimina" }).click();
-  await expect(page.locator("main ul li[data-card-row]").filter({ hasText: CREATURE })).toHaveCount(0);
+  await deleteFromList(page, "Mostri", CREATURE);
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
-  for (const name of [ADDED, SUMMARY]) {
-    await page.getByPlaceholder("Cerca per nome o scuola…").fill(name);
-    page.once("dialog", dialog => dialog.accept());
-    await page.locator("main ul li[data-card-row]").filter({ hasText: name }).getByRole("button", { name: "Elimina" }).click();
-    await expect(page.locator("main ul li[data-card-row]").filter({ hasText: name })).toHaveCount(0);
-  }
+  for (const name of [ADDED, SUMMARY]) await deleteFromList(page, "Incantesimi", name);
+  await page.goto("/admin");
   await page.getByRole("button", { name: "Esci", exact: true }).click();
   await expect(page.getByLabel("Passcode")).toBeVisible();
   await edition(page, "2024");

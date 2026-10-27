@@ -10,7 +10,7 @@ import { restoreSrdAction } from "@/app/actions/admin-srd";
  * «Ripristina testo SRD»: first a confirmation with the preview of the differences (children), then the
  * restore, only when the administrator confirms. The only write of the page.
  */
-export function RestoreSrdButton({ kind, id, name, children }: { kind: string; id: string; name: string; children: ReactNode }) {
+export function RestoreSrdButton({ kind, id, name, children, triggerClassName }: { kind: string; id: string; name: string; children: ReactNode; triggerClassName?: string }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -30,7 +30,7 @@ export function RestoreSrdButton({ kind, id, name, children }: { kind: string; i
   return (
     <>
       <button type="button" onClick={() => dialog.current?.showModal()}
-        className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-primary bg-card px-4 text-[15px] font-bold text-primary">
+        className={triggerClassName ?? "mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-primary bg-card px-4 text-[15px] font-bold text-primary"}>
         <RotateCcw size={18} aria-hidden="true" /> Ripristina testo SRD
       </button>
       <dialog ref={dialog} aria-labelledby={`ripristina-${kind}-${id}`}

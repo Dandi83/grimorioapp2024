@@ -45,7 +45,7 @@ const inner = catalog.filter(name => /\s\p{Lu}|\p{L}'\p{Lu}/u.test(name));
 assert.ok(inner.every(name => /(Agathys|Bigby|Drawmij|Evard|Hadar|Leomund|Melf|Mordenkainen|Nystul|Otiluke|Otto|Rary|Tasha|Tenser|Yolande)$/.test(name)), inner.join(', '));
 if (process.argv.includes('--list')) console.log(inner.join('\n'));
 // The site uses it everywhere a spell name is shown; the stored names are never rewritten.
-for (const file of ['app/spell/[id]/page.tsx', 'components/grimorio-browser.tsx', 'components/spell-row.tsx', 'lib/search-index.ts', 'components/admin-spell-editor.tsx', 'components/admin-dashboard.tsx', 'app/admin/registro/page.tsx'])
+for (const file of ['app/spell/[id]/page.tsx', 'components/grimorio-browser.tsx', 'components/spell-row.tsx', 'lib/search-index.ts', 'components/admin-spell-editor.tsx', 'lib/admin-lists.ts', 'app/admin/registro/page.tsx'])
   assert.match(fs.readFileSync(file, 'utf8'), /spellName\(/, file);
 assert.doesNotMatch(fs.readFileSync('app/actions/admin.ts', 'utf8'), /spellName/, 'never used to save');
 console.log(`Spell names: manual spelling (first letter only, proper names kept) for ${catalog.length} names, 319 SRD 5.1 identical, ${compared} SRD 5.2.1 matching, ${inner.length} with proper names.`);

@@ -47,6 +47,38 @@ export function useCardVisibility(kind: CardKind, hidden: readonly string[]) {
   }, [kind, show]);
   useEffect(() => { setRef.current = set; }, [set]);
 
+  /**
+   * Selection of the lists: several cards hidden or shown at once, one save (and one row of the Registro) per card;
+   * a card whose save fails goes back as it was.
+   */
+  const setMany = useCallback(async (cards: { id: string; nome: string }[], hide: boolean) => {
+    if (!cards.length) return;
+    setIds(current => {
+      const next = new Set(current);
+      for (const card of cards) { if (hide) next.add(card.id); else next.delete(card.id); }
+      return next;
+    });
+    const count = `${cards.length} ${cards.length === 1 ? "scheda" : "schede"}`;
+    show({ at: Date.now(), text: hide ? `Nascoste dal sito: ${count}` : `Di nuovo visibili sul sito: ${count}` });
+    const failed: string[] = [];
+    for (const card of cards) {
+      try {
+        const result = await setCardVisibilityAction(kind, card.id, hide);
+        if (!result.ok) failed.push(card.id);
+      } catch {
+        failed.push(card.id);
+      }
+    }
+    if (failed.length) {
+      setIds(current => {
+        const next = new Set(current);
+        for (const id of failed) { if (hide) next.delete(id); else next.add(id); }
+        return next;
+      });
+      show({ at: Date.now(), text: `Salvataggio non riuscito per ${failed.length} ${failed.length === 1 ? "scheda" : "schede"}: sono rimaste com’erano.` });
+    }
+  }, [kind, show]);
+
   const isHidden = useCallback((id: string) => ids.has(id), [ids]);
   const toggle = useCallback((id: string, nome: string) => void set(id, nome, !ids.has(id)), [ids, set]);
   const notice: ReactNode = toast && (
@@ -57,7 +89,7 @@ export function useCardVisibility(kind: CardKind, hidden: readonly string[]) {
       )}
     </div>
   );
-  return { isHidden, toggle, notice, count: ids.size };
+  return { isHidden, toggle, setMany, notice, count: ids.size };
 }
 
 /** Open eye: visible on the site; crossed out: hidden. At least 44 px to tap. */

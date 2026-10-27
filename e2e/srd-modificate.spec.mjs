@@ -45,7 +45,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 const listed = page => page.locator("[data-srd-modified]");
@@ -79,7 +79,8 @@ test("Schede SRD modificate: list, editor warning, filter option, restore; visit
   console.log(`[srd-modificate] test database: ${baseline} modified SRD cards`);
   if (!baseline) await expect(page.getByText("Tutte le schede SRD coincidono con la fonte")).toBeVisible();
   await page.goto("/admin");
-  await expect(page.getByRole("link", { name: /^Schede SRD modificate · / })).toBeVisible();
+  // «Da fare» of the Home: the check only while there are modified cards.
+  await expect(page.locator('[data-due="srd-modificate"]')).toHaveCount(baseline ? 1 : 0);
 
   // The editor: a change that takes the SRD box away asks first; «Annulla» saves nothing.
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi%2Fguida-2014");

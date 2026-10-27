@@ -6,7 +6,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 // Frames of the screen every 100 ms (MODIFICA_FRAMES=<folder> keeps them). Local test database only.
 const FRAMES = process.env.MODIFICA_FRAMES;
 // What only the lists of the admin area draw: search, «Tutte · Visibili · Nascoste», the rows.
-const LIST = 'input[placeholder^="Cerca per nome"], [role="group"][aria-label="Visibilità sul sito"], li[data-card-row]';
+const LIST = '[data-admin-list], li[data-card-row], [data-card-switch]';
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -21,7 +21,7 @@ async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("link", { name: "Sezioni dell’app" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
 }
 
 /** Every document of the tab reports a list of the admin area as soon as the parser puts one in the page. */
@@ -106,7 +106,7 @@ test("«Modifica» from the public pages: the editor at once, never the list, fo
     if (title.startsWith("Modifica")) {
       await expect(page).toHaveURL(/\/admin\/(incantesimi|mostri)\/[^/?]+\?(impostata=1&)?ritorno=/);
       await expect(page.getByRole("link", { name: "‹ Torna alla scheda" })).toHaveAttribute("href", path);
-      await expect(page.getByText(/^Stai modificando il (2014|2024)$/)).toBeVisible();
+      await expect(page.getByTestId("admin-edition-band")).toHaveText(/^(2014|2024)$/);
       await expect.poll(() => page.evaluate(() => document.activeElement?.textContent)).toBe(title);
       expect(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle)).toBe("none");
       const eye = page.locator("[data-card-eye]");
@@ -118,22 +118,23 @@ test("«Modifica» from the public pages: the editor at once, never the list, fo
     }
   }
 
-  // The list opened as usual: the editor over it, the focus on its title, no ring on the eye.
+  // From the list: a tap on the name opens the editor, the focus on its title, no ring on the eye; «Chiudi» goes back to the list.
   await page.goto("/admin/incantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("palla di fuoco");
-  await page.locator("main ul li[data-card-row]").filter({ hasText: /palla di fuoco/i }).first().getByRole("button", { name: "Modifica", exact: true }).tap();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: /palla di fuoco/i }).first().getByRole("link").first().tap();
   editor = page.getByRole("dialog");
   await expect(editor.getByRole("heading", { name: "Modifica incantesimo" })).toBeFocused();
   await expect(editor.locator("[data-card-eye]")).not.toBeFocused();
   await editor.getByRole("button", { name: "Chiudi editor" }).tap();
-  await expect(editor).toHaveCount(0);
+  await expect(page).toHaveURL(/\/admin\/incantesimi$/);
   await expect(page.getByPlaceholder("Cerca per nome o scuola…")).toBeVisible();
 
   // Clean up: «Amicizia» 2014.
   await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("amicizia");
   page.once("dialog", dialog => dialog.accept());
-  await page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().getByRole("button", { name: "Elimina" }).click();
+  await page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ }).first().dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(page.locator("main ul li[data-card-row]").filter({ hasText: /Amicizia(?! con)/ })).toHaveCount(0);
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin");
 });

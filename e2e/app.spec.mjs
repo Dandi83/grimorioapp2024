@@ -162,7 +162,7 @@ test("admin: wrong passcode, login, logout", async ({ page }) => {
   await expect(page.getByRole("alert").filter({ hasText: "Passcode errata." })).toBeVisible();
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   const cookie = (await page.context().cookies()).find(c => c.name === "__Host-grimorio_admin");
   expect(cookie?.value).toMatch(/^v3\.\d+\.[0-9a-f]{36}\.[0-9a-f]{64}$/);
   expect(cookie?.httpOnly).toBe(true);
@@ -873,8 +873,8 @@ test("reports: Segnala from a card with its edition, without email, invalid emai
   await expect(page).toHaveURL(/\/admin\/segnalazioni$/);
   await expect(page.getByRole("heading", { name: "Segnalazioni" })).toBeVisible();
   await page.goto("/admin");
-  await expect(page.getByRole("link", { name: "Segnalazioni · 2 nuove" })).toBeVisible();
-  await page.getByRole("link", { name: "Segnalazioni · 2 nuove" }).click();
+  await expect(page.locator('[data-due="segnalazioni"]')).toHaveText("Leggi 2 segnalazioni nuove");
+  await page.goto("/admin/segnalazioni");
   await expect(page.getByText("2 nuove")).toBeVisible();
   const rows = page.locator("main ul li");
   await expect(rows).toHaveCount(2);
@@ -957,30 +957,32 @@ test("admin corrections: tiles, weapons list per edition, edit with reason, publ
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
   await expect(page.getByRole("heading", { name: "Armi", level: 1 })).toBeVisible();
-  // Home of the admin area: tiles and counters.
-  await page.goto("/admin");
-  const tiles = page.getByRole("region", { name: /^Contenuti 20\d\d$/ });
+  // Contenuti of the admin area: every list with its number.
+  await page.goto("/admin/contenuti");
+  const tiles = page.getByRole("main");
   for (const name of ["Incantesimi", "Mostri", "Armi", "Armature", "Equipaggiamento", "Strumenti", "Oggetti magici", "Condizioni", "Manuale"]) await expect(tiles.getByRole("link", { name: new RegExp(`^${name}`) })).toBeVisible();
   await expect(tiles.getByText("In arrivo")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Registro modifiche · 0 manuali" })).toBeVisible();
+  await page.goto("/admin");
+  await expect(page.getByRole("link", { name: /^Registro/ })).toBeVisible();
   for (const width of [360, 390]) {
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `admin ${width}`).toBeLessThanOrEqual(width);
   }
   // The spell and creature editors are still there.
+  await page.goto("/admin/contenuti");
   await tiles.getByRole("link", { name: /^Mostri/ }).click();
-  await expect(page.getByRole("tab", { name: "Mostri" })).toHaveAttribute("aria-selected", "true");
-  await page.goto("/admin");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Mostri");
+  await page.goto("/admin/contenuti");
   await tiles.getByRole("link", { name: /^Armi/ }).click();
   // Weapons list: the 2014 edition from the switch of the admin area, and search.
   const adminEdition = page.getByRole("group", { name: "Edizione dell’area riservata" });
   await adminEdition.getByRole("button", { name: "2014" }).click();
-  await expect(page.getByText("Stai modificando il 2014")).toBeVisible();
-  await page.getByRole("searchbox", { name: "Cerca una scheda" }).fill("trid");
-  await expect(page.locator("main ul li")).toHaveCount(1);
-  await page.getByRole("searchbox", { name: "Cerca una scheda" }).fill("");
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2014");
+  await page.getByRole("searchbox", { name: "Cerca in Armi" }).fill("trid");
+  await expect(page.locator("main li[data-card-row]")).toHaveCount(1);
+  await page.getByRole("searchbox", { name: "Cerca in Armi" }).fill("");
   await adminEdition.getByRole("button", { name: "2024" }).click();
-  await expect(page.getByText("Stai modificando il 2024")).toBeVisible();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   await page.getByRole("link", { name: /^Tridente/ }).click();
   await expect(page.getByRole("heading", { name: "Tridente (2024)" })).toBeVisible();
   // Edit: invalid values and missing reason are refused before saving.
@@ -1051,7 +1053,7 @@ test("admin corrections in every section: armor, magic item text, condition titl
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   const save = async (url, fill, reason) => {
     await page.goto(url);
     await fill();
@@ -1086,7 +1088,7 @@ test("admin corrections in every section: armor, magic item text, condition titl
   // Spell editor (database record): the change appears in the log and can be undone.
   await page.goto("/admin/incantesimi");
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("dardo incantato");
-  await page.getByRole("button", { name: "Modifica", exact: true }).first().click();
+  await page.locator("main li[data-card-row]").getByRole("link").first().click();
   const editor = page.getByRole("dialog");
   const range = editor.getByLabel("Gittata", { exact: true });
   const before = await range.inputValue();
@@ -1128,30 +1130,30 @@ test("admin area by edition: switch remembered, band, counts and lists of the ed
   await expect(page.getByRole("group", { name: "Edizione dell’area riservata" })).toHaveCount(0);
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   const editions = page.getByRole("group", { name: "Edizione dell’area riservata" });
   const band = page.getByTestId("admin-edition-band");
   // 2024 by default: bordeaux band.
   await expect(editions.getByRole("button", { name: "2024" })).toHaveAttribute("aria-pressed", "true");
-  await expect(band).toHaveText("Stai modificando il 2024");
+  await expect(band).toHaveText("2024");
   await expect(band).toHaveCSS("background-color", "rgb(122, 31, 43)");
   await expect(band).toHaveCSS("color", "rgb(255, 251, 240)");
-  const tiles = page.getByRole("region", { name: /^Contenuti 20\d\d$/ });
+  const tiles = page.getByRole("main");
   const tileCount = async name => Number((await tiles.getByRole("link", { name: new RegExp(`^${name} · \\d+`) }).getAttribute("aria-label")).match(new RegExp(`^${name} · (\\d+)`))[1]);
   // Each tile counts the entries of the edition and opens the list with the same number.
   const check = async (edition) => {
     for (const [name, key] of [["Armi", "armi"], ["Oggetti magici", "oggetti-magici"], ["Condizioni", "condizioni"]]) {
-      await page.goto("/admin");
+      await page.goto("/admin/contenuti");
       const n = await tileCount(name);
       await tiles.getByRole("link", { name: new RegExp(`^${name}`) }).click();
       await expect(page).toHaveURL(new RegExp(`/admin/contenuti/${key}$`));
-      await expect(band).toHaveText(`Stai modificando il ${edition}`);
-      await expect(page.locator("main ul li")).toHaveCount(n);
+      await expect(band).toHaveText(edition);
+      await expect(page.locator("main li[data-card-row]")).toHaveCount(n);
     }
-    await page.goto("/admin");
+    await page.goto("/admin/contenuti");
     const spells = await tileCount("Incantesimi");
     await page.goto("/admin/incantesimi");
-    await expect(page.getByText(new RegExp(`^Edizione ${edition}: ${spells} incantesimi · \\d+ mostri$`))).toBeVisible();
+    await expect(page.locator("[data-result-count]")).toHaveAttribute("data-result-count", String(spells));
     // No edition dropdown in the rows: the switch at the top decides.
     await expect(page.locator("main ul li select")).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Salva etichetta/ })).toHaveCount(0);
@@ -1160,13 +1162,14 @@ test("admin area by edition: switch remembered, band, counts and lists of the ed
   // 2014: blue band, other counts; remembered after a reload, in an admin-only cookie.
   await page.goto("/admin");
   await editions.getByRole("button", { name: "2014" }).click();
-  await expect(band).toHaveText("Stai modificando il 2014");
+  await expect(band).toHaveText("2014");
   await expect(band).toHaveCSS("background-color", "rgb(45, 76, 122)");
   await page.reload();
   await expect(editions.getByRole("button", { name: "2014" })).toHaveAttribute("aria-pressed", "true");
   const cookie = (await page.context().cookies()).find(c => c.name === "__Host-grimorio_admin_edizione");
   expect([cookie?.value, cookie?.httpOnly]).toEqual(["2014", true]);
   // 2014: no Manuale row (the section has only the 2024 edition).
+  await page.goto("/admin/contenuti");
   await expect(tiles.getByRole("link", { name: /^Manuale/ })).toHaveCount(0);
   await check("2014");
   await page.goto("/admin/contenuti/manuale");
@@ -1176,7 +1179,7 @@ test("admin area by edition: switch remembered, band, counts and lists of the ed
   await expect(page.getByTestId("edition-chip").first()).toHaveText("Edizione 2024");
   await expect(page.getByText("Questa voce è dell’edizione 2024, ma stai modificando l’edizione 2014.")).toBeVisible();
   await page.getByRole("button", { name: "Passa all’edizione 2024" }).click();
-  await expect(band).toHaveText("Stai modificando il 2024");
+  await expect(band).toHaveText("2024");
   await expect(page.getByText(/Questa voce è dell’edizione/)).toHaveCount(0);
   // Editor of a card without SRD source: the «Edizione» dropdown starts in the edition at the top;
   // moving the card to the other edition asks first, and «Annulla» saves nothing.
@@ -1206,7 +1209,7 @@ test("admin area by edition: switch remembered, band, counts and lists of the ed
   await expect(page.locator("main ul li").filter({ hasText: "Prova di spostamento" })).toHaveCount(0);
   // Editor of a card with a verified SRD source: its edition, fixed, no dropdown.
   await page.getByPlaceholder("Cerca per nome o scuola…").fill("bagliore lunare");
-  await page.locator("main ul li").filter({ hasText: /bagliore lunare/i }).first().getByRole("button", { name: "Modifica", exact: true }).click();
+  await page.locator("main ul li").filter({ hasText: /bagliore lunare/i }).first().getByRole("link").first().click();
   await expect(editor.getByTestId("card-edition")).toHaveText("Edizione 2024 · SRD 5.2.1");
   await expect(editor.getByLabel("Edizione", { exact: true })).toHaveCount(0);
   await editor.getByRole("button", { name: "Chiudi editor" }).click();
@@ -1223,7 +1226,7 @@ test("admin area by edition: switch remembered, band, counts and lists of the ed
   await save("/admin/contenuti/armature/cuoio?edizione=2014", () => page.getByLabel("Peso", { exact: true }).fill("4,5 kg"), "Prova edizioni 2014");
   const log = page.getByRole("list", { name: "Modifiche" });
   await page.goto("/admin/registro");
-  await expect(band).toHaveText("Stai modificando il 2024");
+  await expect(band).toHaveText("2024");
   await expect(log.getByText("Prova edizioni 2024")).toBeVisible();
   await expect(log.getByText("Prova edizioni 2014")).toHaveCount(0);
   await page.getByRole("link", { name: "Tutte le edizioni" }).click();
@@ -1292,15 +1295,17 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   const editions = page.getByRole("group", { name: "Edizione dell’area riservata" });
   for (const edition of ["2024", "2014"]) {
     await page.goto("/admin/incantesimi");
     await editions.getByRole("button", { name: edition }).click();
-    await expect(page.getByText(`Stai modificando il ${edition}`)).toBeVisible();
-    await expect(page.getByText(`Edizione ${edition}: ${spells[edition]} incantesimi · ${creatures[edition]} mostri`), edition).toBeVisible();
-    await page.goto("/admin");
-    await expect(page.getByRole("region", { name: /^Contenuti 20\d\d$/ }).getByRole("link", { name: new RegExp(`^Incantesimi · ${spells[edition]}`) })).toBeVisible();
+    await expect(page.getByTestId("admin-edition-band")).toHaveText(edition);
+    await expect(page.locator("[data-result-count]"), edition).toHaveAttribute("data-result-count", String(spells[edition]));
+    await page.goto("/admin/mostri");
+    await expect(page.locator("[data-result-count]"), edition).toHaveAttribute("data-result-count", String(creatures[edition]));
+    await page.goto("/admin/contenuti");
+    await expect(page.getByRole("main").getByRole("link", { name: new RegExp(`^Incantesimi · ${spells[edition]}`) })).toBeVisible();
   }
   // 2014 list on narrow phones: no horizontal scroll.
   await page.goto("/admin/incantesimi");
@@ -1315,7 +1320,7 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
     const row = page.locator("main ul li").filter({ hasText: "SRD 5.1" }).filter({ hasText: "Allarme" }).first();
     await expect(row).toBeVisible();
     await expect(row.getByRole("button", { name: /^Elimina/ })).toHaveCount(0);
-    await row.getByRole("button", { name: "Modifica", exact: true }).click();
+    await row.getByRole("link").first().click();
     const editor = page.getByRole("dialog");
     await expect(editor.getByTestId("card-edition")).toBeVisible();
     return editor;
@@ -1377,30 +1382,34 @@ test("admin lists the same in both editions: manual names, source labels, Elimin
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   const editions = page.getByRole("group", { name: "Edizione dell’area riservata" });
   const rows = page.locator("main ul li");
   for (const edition of ["2024", "2014"]) {
     await page.goto("/admin/incantesimi");
     await editions.getByRole("button", { name: edition }).click();
-    await expect(page.getByText(`Stai modificando il ${edition}`)).toBeVisible();
+    await expect(page.getByTestId("admin-edition-band")).toHaveText(edition);
     // The control changes at once; the rows of the edition come with the page data.
-    await expect(page.getByText(new RegExp(`^Edizione ${edition}: \\d+ incantesimi`))).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(`Incantesimi ${edition}`);
     await expect(page.getByText(/dai file/)).toHaveCount(0);
-    const names = await rows.locator("p.font-medium").allTextContents();
+    const names = await rows.getByRole("link").allTextContents();
     expect(names.length).toBeGreaterThan(20);
     expect(names.filter(name => (name.length > 3 && name === name.toUpperCase()) || /\s(?:Di|Del|Della|Dei|Degli) /.test(name)), edition).toEqual([]);
-    expect([...names].sort((a, b) => a.localeCompare(b, "it")), `${edition}: by name`).toEqual(names);
-    // Labels from the source; Elimina only where the card is not SRD.
-    for (const row of await rows.all()) {
-      const label = (await row.locator("[data-source-label]").textContent()).trim();
-      expect(["SRD 5.1", "SRD 5.2.1", "Sintesi originale", "Aggiunta da te"]).toContain(label);
-      await expect(row.getByRole("button", { name: "Elimina" })).toHaveCount(label.startsWith("SRD") ? 0 : 1);
-      if (label.startsWith("SRD")) break;
+    // By level, and by name inside each level.
+    for (const group of await page.locator("section[data-list-group]").all()) {
+      const inGroup = await group.locator("li[data-card-row]").getByRole("link").allTextContents();
+      expect([...inGroup].sort((a, b) => a.localeCompare(b, "it")), `${edition}: by name`).toEqual(inGroup);
     }
+    // Pills only on the NO SRD cards; Elimina (in the menu of the row) only where the card is not SRD.
+    const pills = await rows.locator("[data-row-pill]").allTextContents();
+    expect(pills.every(pill => ["Sintesi", "Aggiunta da te"].includes(pill)), pills.join(", ")).toBe(true);
     await page.getByPlaceholder("Cerca per nome o scuola…").fill(edition === "2024" ? "mano di bigby" : "palla di fuoco");
-    const srdRow = rows.filter({ has: page.locator("[data-source-label]", { hasText: /^SRD/ }) }).first();
-    if (await srdRow.count()) await expect(srdRow.getByRole("button", { name: "Elimina" })).toHaveCount(0);
+    const srdRow = rows.filter({ hasNot: page.locator("[data-row-pill]") }).first();
+    if (await srdRow.count()) {
+      await srdRow.dispatchEvent("contextmenu");
+      await expect(page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" })).toHaveCount(0);
+      await page.keyboard.press("Escape");
+    }
     for (const width of [360, 375, 390]) {
       await page.setViewportSize({ width, height: 800 });
       expect(await page.evaluate(() => document.documentElement.scrollWidth), `${edition} ${width}`).toBeLessThanOrEqual(width);
@@ -1412,18 +1421,22 @@ test("admin lists the same in both editions: manual names, source labels, Elimin
   await editions.getByRole("button", { name: "2024" }).click();
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("aboleth");
   const aboleth = rows.filter({ hasText: "Aboleth" }).first();
-  await expect(aboleth.locator("[data-source-label]")).toHaveText("SRD 5.2.1");
-  await expect(aboleth.getByRole("button", { name: "Elimina" })).toHaveCount(0);
+  await expect(aboleth.locator("[data-row-pill]")).toHaveCount(0);
+  await aboleth.dispatchEvent("contextmenu");
+  await expect(page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" })).toHaveCount(0);
+  await page.keyboard.press("Escape");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   const editor = page.getByRole("dialog");
   await editor.locator("#nome").fill("Beholder di prova");
   await editor.getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(editor).toHaveCount(0);
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("beholder di prova");
   const beholder = rows.filter({ hasText: "Beholder di prova" }).first();
-  await expect(beholder.locator("[data-source-label]")).toHaveText("Aggiunta da te");
+  await expect(beholder.locator("[data-row-pill]")).toHaveText("Aggiunta da te");
   page.once("dialog", dialog => dialog.accept());
-  await beholder.getByRole("button", { name: "Elimina" }).click();
+  await beholder.dispatchEvent("contextmenu");
+  await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect(rows.filter({ hasText: "Beholder di prova" })).toHaveCount(0);
   expect(errors).toEqual([]);
 });
@@ -1571,12 +1584,12 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  const tile = page.getByRole("link", { name: /Notifiche/ });
-  await expect(tile).toHaveAttribute("aria-label", "Notifiche · 0 dispositivi");
-  expect(await tile.locator("svg").first().getAttribute("width")).toBe("22");
-  await tile.click();
+  // The bell, then «Avvisi sul telefono» at the foot of the notifications.
+  await page.locator("[data-admin-bell]").click();
   await expect(page).toHaveURL(/\/admin\/notifiche$/);
   await expect(page.getByRole("heading", { level: 1, name: "Notifiche" })).toBeVisible();
+  await page.getByRole("link", { name: /^Avvisi sul telefono · nessun dispositivo/ }).click();
+  await expect(page).toHaveURL(/\/admin\/notifiche\/dispositivi$/);
   const device = page.getByRole("region", { name: "Questo dispositivo" });
   await expect(device.getByRole("status")).toHaveText("Non attive su questo dispositivo");
   await expect(device.getByRole("listitem")).toHaveText([/Tocca Condividi/, /Aggiungi alla schermata Home/, /Apri il Grimorio dall’icona/]);
@@ -1609,7 +1622,7 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
     Object.defineProperty(window.Notification, "permission", { configurable: true, get: () => "default" });
   });
   const computer = await desktop.newPage();
-  await computer.goto("/admin/notifiche");
+  await computer.goto("/admin/notifiche/dispositivi");
   const here = computer.getByRole("region", { name: "Questo dispositivo" });
   await expect(here, "the page shows the activation button").toContainText("Attiva notifiche su questo dispositivo");
   await expect(here.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toBeVisible();
@@ -1630,7 +1643,7 @@ test("admin notifications: Notifiche tile, iPhone in Safari asks for the Home sc
   await plain.addCookies(cookies);
   await plain.addInitScript(() => { delete window.PushManager; });
   const old = await plain.newPage();
-  await old.goto("/admin/notifiche");
+  await old.goto("/admin/notifiche/dispositivi");
   await expect(old.getByRole("region", { name: "Questo dispositivo" })).toContainText("Questo browser non supporta le notifiche push.");
   await expect(old.getByRole("button", { name: "Attiva notifiche su questo dispositivo" })).toHaveCount(0);
   await plain.close();
@@ -1664,37 +1677,38 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.getByRole("heading", { name: "Amministrazione" })).toBeVisible();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   const editions = page.getByRole("group", { name: "Edizione dell’area riservata" });
-  const rowOf = name => page.locator("main ul li[data-card-row]").filter({ has: page.locator("p.font-medium", { hasText: new RegExp(`^${name}(?: Nascosta)?$`) }) });
+  const rowOf = name => page.locator("main ul li[data-card-row]").filter({ has: page.getByRole("link", { name, exact: true }) });
   for (const [i, card] of cards.entries()) {
     await page.goto(card.list);
     await editions.getByRole("button", { name: card.edition }).click();
-    await expect(page.getByText(`Stai modificando il ${card.edition}`)).toBeVisible();
+    await expect(page.getByTestId("admin-edition-band")).toHaveText(card.edition);
     await page.getByPlaceholder(card.search).fill(card.query);
     const row = rowOf(card.name);
     await expect(row).toHaveCount(1);
-    await row.getByRole("button", { name: `Nascondi dal sito: ${card.name}` }).click();
+    await row.getByRole("switch", { name: `Visibile sul sito: ${card.name}` }).click();
     await expect(page.getByRole("status").filter({ hasText: "Nascosta dal sito" })).toBeVisible();
-    await expect(row.getByText("Nascosta", { exact: true })).toBeVisible();
-    await expect(row.getByRole("button", { name: `Mostra sul sito: ${card.name}` })).toHaveAttribute("aria-pressed", "true");
+    await expect(row).toHaveAttribute("data-hidden", "");
+    await expect(row.getByRole("switch", { name: `Visibile sul sito: ${card.name}` })).toHaveAttribute("aria-checked", "false");
     if (i === 0) {
       await page.getByRole("button", { name: "Annulla" }).click();
-      await expect(row.getByRole("button", { name: `Nascondi dal sito: ${card.name}` })).toBeVisible();
-      await expect(row.getByText("Nascosta", { exact: true })).toHaveCount(0);
+      await expect(row.getByRole("switch", { name: `Visibile sul sito: ${card.name}` })).toHaveAttribute("aria-checked", "true");
+      await expect(row).not.toHaveAttribute("data-hidden", "");
       await expect.poll(async () => (await request.get(card.href)).status()).toBe(200);
-      await row.getByRole("button", { name: `Nascondi dal sito: ${card.name}` }).click();
-      await expect(row.getByText("Nascosta", { exact: true })).toBeVisible();
+      await row.getByRole("switch", { name: `Visibile sul sito: ${card.name}` }).click();
+      await expect(row).toHaveAttribute("data-hidden", "");
     }
     // The filter counts the hidden cards of the edition and shows only them.
     await page.getByPlaceholder(card.search).fill("");
-    await page.getByRole("button", { name: "Nascoste · 1" }).click();
+    await expect(page.locator('[data-counter="nascoste"]')).toHaveText(/Nascoste\s*1$/);
+    await page.locator('[data-counter="nascoste"]').click();
     await expect(page.locator("main ul li[data-card-row]")).toHaveCount(1);
-    await page.getByRole("group", { name: "Visibilità sul sito" }).getByRole("button", { name: "Tutte" }).click();
+    await page.locator('[data-counter="nascoste"]').click();
   }
   // The same eye at the top of the editor.
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("aboleth");
-  await rowOf("Aboleth").getByRole("button", { name: "Modifica", exact: true }).click();
+  await rowOf("Aboleth").getByRole("link", { name: "Aboleth", exact: true }).click();
   await expect(page.getByRole("dialog").getByRole("button", { name: "Mostra sul sito: Aboleth" })).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("dialog").getByRole("button", { name: "Chiudi editor" }).click();
 
@@ -1759,8 +1773,8 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
     await page.goto(card.list);
     await editions.getByRole("button", { name: card.edition }).click();
     await page.getByPlaceholder(card.search).fill(card.query);
-    await rowOf(card.name).getByRole("button", { name: `Mostra sul sito: ${card.name}` }).click();
-    await expect(rowOf(card.name).getByText("Nascosta", { exact: true })).toHaveCount(0);
+    await rowOf(card.name).getByRole("switch", { name: `Visibile sul sito: ${card.name}` }).click();
+    await expect(rowOf(card.name)).not.toHaveAttribute("data-hidden", "");
   }
   for (const card of cards) await expect.poll(async () => (await request.get(card.href)).status(), card.href).toBe(200);
   await expect.poll(homeCounts).toEqual(before.counts);

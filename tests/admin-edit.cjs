@@ -88,7 +88,7 @@ const buttons=()=>[...document.querySelectorAll('[data-admin-edit]')];
   assert.match(view,/const ritorno = safeReturnPath\(params\.ritorno\);/);
   assert.match(view,/redirect\(`\/admin\/edizione\?/);
   assert.match(view,/back=\{ritorno \?\? publicPath\}/);
-  const lists=read('components/admin-editors-view.tsx');
+  const lists=read('components/admin-list/admin-list-page.tsx');
   assert.match(lists,/if \(!\(await isAdmin\(\)\)\) return <AdminLogin \/>;\n  const params = await searchParams;\n  if \(typeof params\.modifica === "string"/);
   for(const segment of ['incantesimi','mostri']){
     assert.match(read(`app/admin/${segment}/[id]/page.tsx`),/<AdminCardEditorView kind=/);
@@ -97,7 +97,10 @@ const buttons=()=>[...document.querySelectorAll('[data-admin-edit]')];
   }
   // The editor as the page: an open dialog in the server HTML, no modal, no list; focus on the title, not on the eye.
   const frame=read('components/admin-editor-frame.ts');
-  assert.match(frame,/if \(!page\) dialog\.current\?\.showModal\(\);\n    heading\.current\?\.focus\(/);
+  assert.match(frame,/if \(!page\) dialog\.current\?\.showModal\(\);/);
+  // Focus on the title, except «Rinomina» of the lists (?campo=nome): the name field.
+  assert.match(frame,/else heading\.current\?\.focus\(/);
+  assert.match(frame,/get\("campo"\) === "nome"/);
   for(const file of ['components/admin-spell-editor.tsx','components/admin-monster-editor.tsx','components/homebrew/admin-proposals.tsx']){
     const source=read(file);
     assert.match(source,/open=\{page \|\| undefined\}/,file);
