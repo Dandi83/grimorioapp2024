@@ -13,8 +13,9 @@ jobs:
   verifiche:
     name: Test, tipi, build e prove nel browser
     runs-on: ubuntu-latest
-    # Chromium, WebKit and Firefox (e2e/compatibilita-*.spec.mjs) take longer than 30 minutes together.
-    timeout-minutes: 50
+    # Chromium, WebKit and Firefox (e2e/compatibilita-*.spec.mjs) take longer than 30 minutes together;
+    # with the statistics and the rights tests the whole job passed 50 minutes (27 October 2026).
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
