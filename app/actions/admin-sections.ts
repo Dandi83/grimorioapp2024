@@ -5,9 +5,40 @@ import { draftMode } from "next/headers";
 
 import { requireAdmin } from "@/lib/admin-action-helpers";
 import { isPartId, isPublicSectionKey, sectionParts, type PublicSectionKey } from "@/lib/public-sections";
-import { SECTIONS_TAG, hiddenPartIds, setPartHidden, setSectionHidden } from "@/lib/section-visibility";
+import { SECTIONS_TAG, hiddenPartIds, isSectionState, setPartState, setSectionState, type SectionState } from "@/lib/section-visibility";
 
 type SectionSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
+type SectionStateResult = { ok: true; state: SectionState } | { ok: false; error: string };
+
+/**
+ * «Visibile · In arrivo · Nascosta» of a section (/admin/sezioni). Admin only. «In arrivo» keeps the content away
+ * from the public like «Nascosta», but its entries stay and lead to the «in costruzione» page.
+ */
+export async function setSectionStateAction(key: string, state: string): Promise<SectionStateResult> {
+  await requireAdmin();
+  if (!isPublicSectionKey(key) || !isSectionState(state)) return { ok: false, error: "Sezione sconosciuta." };
+  try {
+    await setSectionState(key, state);
+  } catch {
+    return { ok: false, error: "Salvataggio non riuscito. Riprova tra poco." };
+  }
+  await refreshPages();
+  return { ok: true, state };
+}
+
+/** The three states of one part ("<section>:<part>"). Admin only. */
+export async function setPartStateAction(id: string, state: string): Promise<SectionStateResult> {
+  await requireAdmin();
+  if (!isPartId(id) || !isSectionState(state)) return { ok: false, error: "Parte sconosciuta." };
+  const [section, part] = id.split(":");
+  try {
+    await setPartState(section as PublicSectionKey, part, state);
+  } catch {
+    return { ok: false, error: "Salvataggio non riuscito. Riprova tra poco." };
+  }
+  await refreshPages();
+  return { ok: true, state };
+}
 
 /**
  * Shows or hides a public section (/admin/sezioni and the «Mostra» link of the dark band).
@@ -18,7 +49,7 @@ export async function setSectionVisibilityAction(key: string, hidden: boolean): 
   await requireAdmin();
   if (!isPublicSectionKey(key) || typeof hidden !== "boolean") return { ok: false, error: "Sezione sconosciuta." };
   try {
-    await setSectionHidden(key, hidden);
+    await setSectionState(key, hidden ? "nascosta" : "visibile");
   } catch {
     return { ok: false, error: "Salvataggio non riuscito. Riprova tra poco." };
   }
@@ -32,7 +63,7 @@ export async function setPartVisibilityAction(id: string, hidden: boolean): Prom
   if (!isPartId(id) || typeof hidden !== "boolean") return { ok: false, error: "Parte sconosciuta." };
   const [section, part] = id.split(":");
   try {
-    await setPartHidden(section as PublicSectionKey, part, hidden);
+    await setPartState(section as PublicSectionKey, part, hidden ? "nascosta" : "visibile");
   } catch {
     return { ok: false, error: "Salvataggio non riuscito. Riprova tra poco." };
   }

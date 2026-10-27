@@ -93,8 +93,9 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       id: row.id, editor: false, sezione: "sezioni", when: new Date(row.creata_il), undoneAt: null, inForce: true,
       title: "Sezioni dell’app", href: "/admin/sezioni",
       card: [isPublicSectionKey(row.sezione) ? publicSection(row.sezione).title : row.sezione, ...(row.parte ? [sectionParts(row.sezione).find(part => part.key === row.parte)?.title ?? row.parte] : [])].join(" · "),
-      field: "visibilità", before: row.nascosta ? "Visibile" : "Nascosta", after: row.nascosta ? "Nascosta" : "Visibile",
-      motivo: row.nascosta ? "Nascosta al pubblico: dati e correzioni restano com’erano." : "Di nuovo visibile al pubblico.", fixed: "cambio di stato",
+      // Three states: the log keeps the new one («In arrivo» is hidden content with its entries kept).
+      field: "visibilità", before: "—", after: !row.nascosta ? "Visibile" : row.in_arrivo ? "In arrivo" : "Nascosta",
+      motivo: !row.nascosta ? "Visibile al pubblico." : row.in_arrivo ? "In arrivo: voce attenuata e pagina «in costruzione», contenuto non mostrato." : "Nascosta al pubblico: dati e correzioni restano com’erano.", fixed: "cambio di stato",
       // An edition hidden or shown belongs to that edition; everything else is shared.
       edition: isAdminEdition(row.parte) ? row.parte : null,
     })),

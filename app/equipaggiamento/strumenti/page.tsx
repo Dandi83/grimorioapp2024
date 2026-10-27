@@ -3,6 +3,7 @@ import { toolsSection } from "@/lib/tools";
 import { tools2014GroupText, tools2014Intro } from "@/lib/tools-2014";
 import { toolListRows } from "@/lib/tools-editions";
 import { getCorrectedTools } from "@/lib/corrected-content";
+import { sectionPage } from "@/lib/section-view";
 
 export const metadata = { title: "Strumenti — Equipaggiamento — Il Grimorio.App" };
 
@@ -21,6 +22,8 @@ const groupText = (text?: string) => text ? <p className="border-x border-border
 export const revalidate = 300;
 
 export default async function ToolsPage() {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("strumenti");
   const rows = toolListRows((await getCorrectedTools()).list);
   return (
     <ToolsBrowser

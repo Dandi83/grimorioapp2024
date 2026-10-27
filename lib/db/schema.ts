@@ -189,6 +189,8 @@ export const sectionVisibility = pgTable("grimorio_section_visibility", {
   sezione: text("sezione").primaryKey(),
   nascosta: boolean("nascosta").notNull().default(false),
   aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+  /** «In arrivo» (with nascosta): the entries stay for the public, the content does not (added column). */
+  in_arrivo: boolean("in_arrivo").notNull().default(false),
 });
 
 /** Every switch of a section (shown in /admin/registro). */
@@ -196,6 +198,7 @@ export const sectionVisibilityLog = pgTable("grimorio_section_visibility_log", {
   id: uuid("id").primaryKey(),
   sezione: text("sezione").notNull(),
   nascosta: boolean("nascosta").notNull(),
+  in_arrivo: boolean("in_arrivo").notNull().default(false),
   creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -205,6 +208,7 @@ export const sectionParts = pgTable("grimorio_section_parts", {
   parte: text("parte").notNull(),
   nascosta: boolean("nascosta").notNull().default(false),
   aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
+  in_arrivo: boolean("in_arrivo").notNull().default(false),
 }, table => [primaryKey({ columns: [table.sezione, table.parte] })]);
 
 /** Every switch of a part (shown in /admin/registro). */
@@ -213,6 +217,7 @@ export const sectionPartsLog = pgTable("grimorio_section_parts_log", {
   sezione: text("sezione").notNull(),
   parte: text("parte").notNull(),
   nascosta: boolean("nascosta").notNull(),
+  in_arrivo: boolean("in_arrivo").notNull().default(false),
   creata_il: timestamp("creata_il", { withTimezone: true }).notNull().defaultNow(),
 });
 

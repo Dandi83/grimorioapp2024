@@ -23,6 +23,6 @@ assert.ok(NAV_ITEMS.find(item => item.label === 'Incantesimi').match('/spell/dar
 for (const {href} of FOOT_LINKS) assert.ok(fs.existsSync(path.join('app', href.slice(1), 'page.tsx')), href);
 // Both navigations read the same list; the bar leaves the computer to the column, the column leaves the admin area.
 const bar = fs.readFileSync('components/bottom-nav.tsx', 'utf8'), side = fs.readFileSync('components/side-nav.tsx', 'utf8');
-assert.match(bar, /visibleNavItems\(hidden, adminView\)/); assert.match(side, /visibleNavItems\(hidden, adminView\)/);
+assert.match(bar, /visibleNavItems\(hidden, adminView, soon\)/); assert.match(side, /visibleNavItems\(hidden, adminView, soon\)/);
 assert.match(bar, /lg:hidden/); assert.match(side, /pathname\.startsWith\("\/admin"\)\) return null/);
 console.log('Navigation: one list for the bar and the side column, hidden sections out of both, admin sees them, foot links to existing pages.');

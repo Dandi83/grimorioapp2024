@@ -10,7 +10,7 @@ import { compareWeapon, getWeapon, masteryText, propertyCards, specialRule, weap
 import { WEAPON_GROUP_NAMES, type EquipmentEdition } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
 import { PartBlock } from "@/components/sections/part-block";
-import { pageEditions } from "@/lib/section-view";
+import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
@@ -21,6 +21,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  // Hidden or «In arrivo»: no name or description of the card in the answer.
+  if (await sectionClosed("armi")) return CLOSED_METADATA;
   const weapon = getWeapon((await params).id, (await getCorrectedWeapons()).weapons);
   const name = (weapon?.editions["2024"] ?? weapon?.editions["2014"])?.nome;
   return { title: name ? `${name} — Armi — Il Grimorio.App` : "Arma non trovata" };
@@ -99,6 +101,8 @@ function Sheet({ weapon, group, corrections }: { weapon: WeaponEditionView; grou
 }
 
 export default async function WeaponPage({ params }: { params: Promise<{ id: string }> }) {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("armi");
   const { id } = await params;
   const corrected = await getCorrectedWeapons();
   const weapon = getWeapon(id, corrected.weapons);

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
 import { PartBlock } from "@/components/sections/part-block";
-import { linksOut, pageEditions } from "@/lib/section-view";
+import { linksOut, pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { MagicItemSheet } from "@/components/magic-items/magic-item-sheet";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { getCorrectedMagicItems } from "@/lib/corrected-content";
@@ -24,6 +24,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  // Hidden or «In arrivo»: no name or description of the card in the answer.
+  if (await sectionClosed("oggetti-magici")) return CLOSED_METADATA;
   const found = findMagicItemEntry((await params).id, (await getCorrectedMagicItems()).list);
   const item = found && (found.entry.editions[found.edition ?? "2024"] ?? found.entry.editions["2014"]);
   return { title: item ? `${item.nome} — Oggetti magici — Il Grimorio.App` : "Oggetto non trovato" };
@@ -53,6 +55,8 @@ function Changes({ changes }: { changes: MagicItemChange[] }) {
 }
 
 export default async function MagicItemPage({ params }: { params: Promise<{ id: string }> }) {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("oggetti-magici");
   const corrected = await getCorrectedMagicItems();
   const found = findMagicItemEntry((await params).id, corrected.list);
   if (!found) notFound();

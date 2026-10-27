@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSyncExternalStore } from "react";
 import { BookOpen, Hammer } from "lucide-react";
 
-import { EQUIPMENT_SECTIONS, isHiddenPath } from "@/lib/public-sections";
+import { EQUIPMENT_SECTIONS, isHiddenPath, soonOfPath } from "@/lib/public-sections";
 
 /** One of these under «Sezione momentaneamente in costruzione», a different one at every visit. */
 export const UNDER_CONSTRUCTION = [
@@ -27,28 +27,47 @@ let picked: number | undefined;
 const pickSentence = () => (picked ??= Math.floor(Math.random() * UNDER_CONSTRUCTION.length));
 const noChanges = () => () => {};
 
-export function NotFoundView({ hidden }: { hidden: string[] }) {
+export function NotFoundView({ hidden, soon = [] }: { hidden: string[]; soon?: readonly string[] }) {
   const pathname = usePathname();
-  // The server and the hydration use the first sentence, then the one picked in this browser for this load.
-  const sentence = useSyncExternalStore(noChanges, pickSentence, () => 0);
   // The Equipaggiamento hub is unavailable when its four sections are all hidden.
   const unavailable = isHiddenPath(pathname, hidden) || (pathname === "/equipaggiamento" && EQUIPMENT_SECTIONS.every(key => hidden.includes(key)));
+  const coming = pathname === "/equipaggiamento" && EQUIPMENT_SECTIONS.every(key => soon.includes(key)) ? "Equipaggiamento" : soonOfPath(pathname, soon);
+  return unavailable ? <UnderConstruction soon={coming} /> : (
+    <div className="flex flex-col items-center px-6 pb-10 pt-16 text-center">
+      <span className="grid size-16 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
+        <BookOpen size={30} aria-hidden="true" />
+      </span>
+      <h1 className="mt-5 font-serif text-[30px] font-bold leading-tight">Pagina non trovata</h1>
+      <p className="mt-3 max-w-sm text-[16px] leading-6 text-muted">L’indirizzo che hai aperto non corrisponde a nessuna pagina del Grimorio.</p>
+      <HomeButton />
+    </div>
+  );
+}
+
+/**
+ * «Sezione momentaneamente in costruzione» with a sentence at random; soon: the name of the section or part
+ * «In arrivo», shown in the amber pill «<name> · In arrivo» above the title (also /in-arrivo/<id>).
+ */
+export function UnderConstruction({ soon }: { soon?: string }) {
+  // The server and the hydration use the first sentence, then the one picked in this browser for this load.
+  const sentence = useSyncExternalStore(noChanges, pickSentence, () => 0);
   return (
     <div className="flex flex-col items-center px-6 pb-10 pt-16 text-center">
       <span className="grid size-16 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
-        {unavailable ? <Hammer size={30} aria-hidden="true" /> : <BookOpen size={30} aria-hidden="true" />}
+        <Hammer size={30} aria-hidden="true" />
       </span>
-      <h1 className="mt-5 font-serif text-[30px] font-bold leading-tight">
-        {unavailable ? "Sezione momentaneamente in costruzione" : "Pagina non trovata"}
-      </h1>
-      <p className="mt-3 max-w-sm text-[16px] leading-6 text-muted" data-under-construction={unavailable ? sentence : undefined}>
-        {unavailable
-          ? UNDER_CONSTRUCTION[sentence]
-          : "L’indirizzo che hai aperto non corrisponde a nessuna pagina del Grimorio."}
-      </p>
-      <Link href="/" className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[14px] bg-primary px-6 text-[16px] font-bold text-primary-foreground">
-        Torna alla Home
-      </Link>
+      {soon && <p data-soon-pill="" className="mt-5 rounded-full bg-[#E0A21A] px-3 py-1 text-[14px] font-bold text-[#2B2118]">{soon} · In arrivo</p>}
+      <h1 className={`${soon ? "mt-3" : "mt-5"} font-serif text-[30px] font-bold leading-tight`}>Sezione momentaneamente in costruzione</h1>
+      <p className="mt-3 max-w-sm text-[16px] leading-6 text-muted" data-under-construction={sentence}>{UNDER_CONSTRUCTION[sentence]}</p>
+      <HomeButton />
     </div>
+  );
+}
+
+function HomeButton() {
+  return (
+    <Link href="/" className="mt-7 inline-flex min-h-12 items-center justify-center rounded-[14px] bg-primary px-6 text-[16px] font-bold text-primary-foreground">
+      Torna alla Home
+    </Link>
   );
 }

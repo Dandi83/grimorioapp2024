@@ -8,8 +8,8 @@ import { FirstLaunch } from "@/components/edition/first-launch";
 import { HomeShortcuts, type HomeShortcut } from "@/components/edition/home-shortcuts";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { collectionOf } from "@/lib/monsters-types";
-import { EDITIONS, partId, type Edition } from "@/lib/public-sections";
-import { partsOut, sectionsOut, visibleCards } from "@/lib/section-view";
+import { EDITIONS, partId, soonHref, type Edition } from "@/lib/public-sections";
+import { partsOut, sectionView, sectionsOut, visibleCards } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
 import styles from "./home.module.css";
 
@@ -30,9 +30,13 @@ async function shortcuts(): Promise<HomeShortcut[]> {
   // A homebrew «Entrambe» counts in both editions.
   const monsterCounts = perEdition(edition => monsters.filter(monster => (monster.edizione === edition || monster.entrambe)
     && !parts.includes(partId("bestiario", collectionOf(monster)))).length);
+  // «In arrivo»: the shortcut stays, attenuated, without the number, to the «in costruzione» page.
+  const { soon } = await sectionView();
+  const entry = (key: "incantesimi" | "bestiario", shortcut: HomeShortcut): HomeShortcut[] =>
+    !out.includes(key) ? [shortcut] : soon.includes(key) ? [{ href: soonHref(key), label: shortcut.label, soon: true }] : [];
   return [
-    ...(out.includes("incantesimi") ? [] : [{ href: "/grimorio", label: "Incantesimi", section: "incantesimi", counts: spellCounts }]),
-    ...(out.includes("bestiario") ? [] : [{ href: "/bestiario", label: "Bestiario", section: "bestiario", counts: monsterCounts }]),
+    ...entry("incantesimi", { href: "/grimorio", label: "Incantesimi", section: "incantesimi", counts: spellCounts }),
+    ...entry("bestiario", { href: "/bestiario", label: "Bestiario", section: "bestiario", counts: monsterCounts }),
     { href: "/compendio", label: "Compendio" },
   ];
 }

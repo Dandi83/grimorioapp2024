@@ -72,7 +72,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   // Hidden sections (/admin/sezioni): out of the bottom bar for the public, labelled for the administrator.
-  const { hidden, hiddenParts, hiddenCards, admin } = await sectionView();
+  const { hidden, hiddenParts, hiddenCards, soon, admin } = await sectionView();
   // Cards hidden with the eye of the admin area are addresses too: the phone deletes their saved copies.
   const hiddenPaths = [...PUBLIC_SECTIONS.filter(section => hidden.includes(section.key)).flatMap(section => section.paths), ...hiddenCards];
   // Pages of a section with hidden parts or cards: the phone drops the copies saved before the change (the signature changes).
@@ -99,11 +99,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <ServiceWorker enabled={serviceWorkerEnabled()} hiddenPaths={hiddenPaths} partPaths={partPaths} />
               <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))] lg:pb-0">
                 {/* AdminSessionProvider: the «Modifica» buttons, drawn in the browser after the server checks the session. */}
-                <PartsProvider hidden={hiddenParts} admin={admin}><AdminSessionProvider><CharacterSessionProvider><ContentFrame>{children}</ContentFrame></CharacterSessionProvider></AdminSessionProvider></PartsProvider>
+                <PartsProvider hidden={hiddenParts} admin={admin} soon={soon}><AdminSessionProvider><CharacterSessionProvider><ContentFrame>{children}</ContentFrame></CharacterSessionProvider></AdminSessionProvider></PartsProvider>
               </main>
-              <BottomNav hidden={hidden} admin={admin} />
+              <BottomNav hidden={hidden} admin={admin} soon={soon} />
               {/* After the content in the page order (it is fixed on the left): on phones the order stays the same. */}
-              <SideNav hidden={hidden} admin={admin} />
+              <SideNav hidden={hidden} admin={admin} soon={soon} />
             </div>
             <InstallPrompt />
             <AppBadgeSync />

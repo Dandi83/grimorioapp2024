@@ -8,6 +8,7 @@ import { ClassTabs, SubclassPicker } from "@/components/classes/class-editions";
 import { AddedSubclassCard, SubclassCard, type AddedTextContext } from "@/components/classes/subclass-card";
 import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { HiddenTag } from "@/components/sections/hidden-tag";
+import { SoonBlock } from "@/components/sections/soon-block";
 import { castsSpells, CLASS_COLORS, hitDie, levelRows, ofClass, trait, type ClassId, type LevelRow } from "@/lib/classes";
 import type { ClassData, ClassEdition, ClassFeature } from "@/lib/classes-types";
 import { damageRuleLinks, type RuleTermLinks } from "@/lib/damage-rule-link";
@@ -17,8 +18,16 @@ export const CLASS_SOURCES: Record<ClassEdition, string> = { "2024": "SRD 5.2.1"
 
 /** Parts of a class sheet that can be hidden from /admin/sezioni (lib/public-sections.ts). */
 export const CLASS_PARTS = ["tab-tabella", "tab-sottoclasse", "abilita", "diventare", "lista-incantesimi", "incantesimi-del"] as const;
-export type ClassParts = Record<(typeof CLASS_PARTS)[number], { shown: boolean; hidden: boolean }>;
+export type ClassParts = Record<(typeof CLASS_PARTS)[number], { shown: boolean; hidden: boolean; soon?: boolean }>;
 const ALL_SHOWN = Object.fromEntries(CLASS_PARTS.map(key => [key, { shown: true, hidden: false }])) as ClassParts;
+/** The titles of the parts of a class sheet, for their place while «In arrivo». */
+const PART_TITLE: Record<(typeof CLASS_PARTS)[number], string> = {
+  "tab-tabella": "Tabella", "tab-sottoclasse": "Sottoclasse", abilita: "Abilità ed equipaggiamento iniziale", diventare: "Diventare un…",
+  "lista-incantesimi": "Lista degli incantesimi", "incantesimi-del": "Incantesimi della classe",
+};
+/** A part «In arrivo» for the public: its place, attenuated, to the «in costruzione» page (never its content). */
+const soonPlace = (parts: ClassParts, key: (typeof CLASS_PARTS)[number]) =>
+  !parts[key].shown && parts[key].soon ? <SoonBlock key={key} id={`classi:${key}`} title={PART_TITLE[key]} /> : null;
 
 /** Full-width header in the colour of the class. */
 export function ClassHeader({ id, name, line }: { id: ClassId; name: string; line: string }) {
@@ -125,6 +134,7 @@ function FeaturesTab({ card, id, edition, spellsLink, parts, rules }: { card: Cl
           </div>
         </Opening>
       ))}
+      {card.incantesimi && soonPlace(parts, "lista-incantesimi")}
       {card.incantesimi && parts["lista-incantesimi"].shown && (
         <Opening part="classi:lista-incantesimi" summary={<span className="font-serif text-[19px] font-bold text-primary">{card.incantesimi.titolo}{parts["lista-incantesimi"].hidden && <HiddenTag className="ml-2" />}</span>}>
           <div className="space-y-4">
@@ -147,6 +157,7 @@ function FeaturesTab({ card, id, edition, spellsLink, parts, rules }: { card: Cl
           </div>
         </Opening>
       )}
+      {castsSpells(card) && spellsLink && soonPlace(parts, "incantesimi-del")}
       {castsSpells(card) && spellsLink && parts["incantesimi-del"].shown && (
         <div data-part="classi:incantesimi-del" className="space-y-1">
           {parts["incantesimi-del"].hidden && <HiddenTag />}
@@ -311,6 +322,7 @@ export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SH
         <KeyCard label="Armi">{trait(card, "armi")}</KeyCard>
         <KeyCard label="Armature" wide>{trait(card, "armature")}</KeyCard>
       </div>
+      {soonPlace(parts, "abilita")}
       {parts.abilita.shown && <Opening part="classi:abilita" summary={<span className="text-[16px] font-bold">Abilità ed equipaggiamento iniziale{parts.abilita.hidden && <HiddenTag className="ml-2" />}</span>}>
         <dl className="space-y-3 text-[15px] leading-6">
           {OPENING_ROWS.map(([label, key]) => {
@@ -324,6 +336,7 @@ export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SH
           })}
         </dl>
       </Opening>}
+      {card.diventare && soonPlace(parts, "diventare")}
       {card.diventare && parts.diventare.shown && (
         <Opening part="classi:diventare" summary={<span className="text-[16px] font-bold">{card.diventare.titolo}{parts.diventare.hidden && <HiddenTag className="ml-2" />}</span>}>
           <div className="space-y-4">
@@ -341,6 +354,9 @@ export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SH
         ...(parts["tab-tabella"].shown ? [{ key: "tabella", label: "Tabella", content: <TableTab card={card} />, part: "classi:tab-tabella", hidden: parts["tab-tabella"].hidden }] : []),
         ...(parts["tab-sottoclasse"].shown ? [{ key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} id={id} edition={edition} added={added} context={context} rules={rules} />, part: "classi:tab-sottoclasse", hidden: parts["tab-sottoclasse"].hidden }] : []),
       ]} />
+      {/* Tabs «In arrivo»: their place under the tabs, for the public. */}
+      {soonPlace(parts, "tab-tabella")}
+      {soonPlace(parts, "tab-sottoclasse")}
     </div>
   );
 }

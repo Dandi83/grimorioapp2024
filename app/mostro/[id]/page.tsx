@@ -10,7 +10,7 @@ import Link from "next/link";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
-import { cardHidden, cardsOut, editionCard, linksOut, partState } from "@/lib/section-view";
+import { cardHidden, cardsOut, editionCard, linksOut, partState, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { collectionOf } from "@/lib/monsters-types";
 import { HomebrewByline, HomebrewLabel, HomebrewNote } from "@/components/homebrew/homebrew-sheet";
@@ -47,6 +47,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // Hidden or «In arrivo»: no name or description of the card in the answer.
+  if (await sectionClosed("bestiario")) return CLOSED_METADATA;
   const { id } = await params;
   const monster = await getMonsterById(id);
   if (!monster || (await cardsOut()).includes(`/mostro/${monster.id}`)) return { title: "Mostro non trovato" };
@@ -69,6 +71,8 @@ export default async function MonsterDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("bestiario");
   const { id } = await params;
   const monster = await getMonsterById(id);
   if (!monster) notFound();

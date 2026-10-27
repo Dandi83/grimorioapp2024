@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId, visibleLinks } from "@/lib/public-sections";
-import { cardHidden, cardsOut, editionCard, linksOut } from "@/lib/section-view";
+import { cardHidden, cardsOut, editionCard, linksOut, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { notFound } from "next/navigation";
 
@@ -37,6 +37,8 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // Hidden or «In arrivo»: no name or description of the card in the answer.
+  if (await sectionClosed("incantesimi")) return CLOSED_METADATA;
   const { id } = await params;
   const spell = await getSpellById(id);
   if (!spell || (await cardsOut()).includes(`/spell/${spell.id}`)) return { title: "Incantesimo non trovato" };
@@ -60,6 +62,8 @@ export default async function SpellDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("incantesimi");
   const { id } = await params;
   const spell = await getSpellById(id);
   if (!spell) notFound();

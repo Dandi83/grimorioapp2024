@@ -96,7 +96,12 @@ async function open(browser, scenario, init) {
   }
   const page = await context.newPage();
   const errors = [];
-  page.on("pageerror", error => errors.push(String(error)));
+  page.on("pageerror", error => {
+    // WebKit with the route above: a link prefetch (?_rsc=) cut short by the next navigation is reported as an
+    // «access control» error of the routed fetch. Only there; any other error counts.
+    if (scenario.engine === "webkit" && /\?_rsc=\S* due to access control checks/.test(String(error))) return;
+    errors.push(String(error));
+  });
   return { context, page, errors };
 }
 

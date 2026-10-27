@@ -3,6 +3,7 @@ import { PartBlock } from "@/components/sections/part-block";
 import { XpCalculator } from "@/components/advancement/xp-calculator";
 import { bonusRises, CLASS_HIT_POINTS, formatNumber, LEVELS } from "@/lib/advancement";
 import { bonusFeatsRule, challengeOptions } from "@/lib/advancement-challenge";
+import { sectionPage } from "@/lib/section-view";
 
 export const metadata = { title: "Avanzamento di livello — Il Grimorio.App" };
 
@@ -13,7 +14,9 @@ function SectionTitle({ id, children }: { id: string; children: React.ReactNode 
 }
 
 /** Each block can be hidden from /admin/sezioni (lib/public-sections.ts); with all four hidden the page is unavailable. */
-export default function AdvancementPage() {
+export default async function AdvancementPage() {
+  // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
+  await sectionPage("avanzamento");
   const feats = bonusFeatsRule();
   return (
     <div className="space-y-8 px-4 pb-8 pt-4 sm:px-6">
