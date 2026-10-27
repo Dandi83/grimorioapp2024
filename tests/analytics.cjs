@@ -9,23 +9,43 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.ok(parseAnalyticsInput(event('card_read',{activeSeconds:20,scrollPercent:50})));
  const pg=new PGlite(),pool={query:(sql,params)=>pg.query(sql,params),connect:async()=>({query:(sql,params)=>sql.startsWith('SELECT pg_advisory_xact_lock')?pg.query('SELECT 1'):pg.query(sql,params),release(){}})};
  const analytics=load('lib/analytics.ts',{'server-only':{},'./db':{pool}});
- const before=(await pg.query("SELECT tablename FROM pg_tables WHERE schemaname='public'")).rows;
- assert.equal((await analytics.readAnalytics('2026-10-01','2026-10-31')).summary.visitors,0);
- assert.deepEqual((await pg.query("SELECT tablename FROM pg_tables WHERE schemaname='public'")).rows,before,'read-only empty dashboard never creates tables');
- const card={id:'gatto',kind:'animal',title:'Gatto'},a=randomUUID(),b=randomUUID(),view=randomUUID();
- const input=event('page_view',{view,source:'share'});
- assert.equal(await analytics.storeAnalyticsEvent(input,a,card),true);
- assert.equal(await analytics.storeAnalyticsEvent({...input,id:randomUUID()},a,card),false,'duplicate page view is ignored even with a new event ID');
- await analytics.storeAnalyticsEvent(event('page_view'),a,card);await analytics.storeAnalyticsEvent(event('page_view'),b,card);
+ // Reading the page creates the tables once, with the event of the Instagram opening; never again after a delete.
+ const range=day=>({from:day,to:day,prevFrom:'2000-01-01',prevTo:'2000-01-01'});
+ const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Rome'}).format(new Date());
+ const empty=await analytics.readStatistics(range(today));
+ assert.equal(empty.people,0);assert.deepEqual(empty.markers.map(m=>[m.giorno,m.etichetta]),[['2026-10-26','Apertura profilo Instagram']]);
+ const card={id:'gatto',kind:'animal',title:'Gatto'},a=randomUUID(),b=randomUUID(),c=randomUUID(),view=randomUUID(),session2=randomUUID();
+ const input=event('page_view',{view,source:'share',origin:'instagram',device:'iphone',installed:true});
+ assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(input),a,card),true);
+ assert.equal(await analytics.storeAnalyticsEvent({...parseAnalyticsInput(input),id:randomUUID()},a,card),false,'duplicate page view is ignored even with a new event ID');
+ // a: back in a second session; b: from Google on Android; c: no category (recorded before) on the Home.
+ await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('page_view',{session:session2,origin:'diretto',device:'iphone',installed:true,path:'/grimorio'})),a,card);
+ await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('page_view',{origin:'google',device:'android',installed:false,path:'/compendio/condizioni'})),b,card);
+ await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('page_view',{path:'/'})),c,card);
  await analytics.storeAnalyticsEvent(event('page_view',{test:true}),randomUUID(),card);
  for(const visitor of [a,a,b])await analytics.storeAnalyticsEvent(event('card_open'),visitor,card);
- await analytics.storeAnalyticsEvent(event('card_read',{activeSeconds:20,scrollPercent:50}),a,card);
- for(let i=0;i<2;i++)await analytics.storeAnalyticsEvent(event('share_click'),a,card);
- await analytics.storeAnalyticsEvent(event('share_copy'),a,card);
- const now=new Date(),from=new Date(now.getTime()-86400000).toISOString().slice(0,10),to=new Date(now.getTime()+86400000).toISOString().slice(0,10);
- const data=await analytics.readAnalytics(from,to);
- assert.equal(data.summary.visitors,2,'period unique visitors must not sum page views');assert.equal(data.summary.views,3);assert.equal(data.summary.sharers,1);assert.equal(data.summary.sharedArrivals,1);
- assert.equal(data.cards[0].visitors,2);assert.equal(data.cards[0].opens,3);assert.equal(data.cards[0].readers,1);assert.equal(data.cards[0].sharers,1);
+ await analytics.storeAnalyticsEvent(event('card_open',{path:'/spell/allarme-2014'}),b,{id:'allarme-2014',kind:'spell',title:'Allarme'});
+ // Searches: «drago rossa» twice with no result is listed, «mind» once is not, a search with results never.
+ for(const [visitor,query,results] of [[a,'Drago  Rossa',0],[b,'drago rossa',0],[a,'mind',0],[b,'lich',3],[c,'lich',3]])
+  await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('search',{path:'/',query,results})),visitor);
+ const data=await analytics.readStatistics(range(today));
+ assert.equal(data.people,3,'people are different visitors, not page views');
+ assert.equal(data.returning,1,'back at least a second time: two sessions');
+ assert.equal(data.installed,1);
+ assert.deepEqual(data.origins,{instagram:1,diretto:0,google:1,condiviso:0,altro:0},'first arrival of each person, unknown ones left out');
+ assert.deepEqual(data.devices,{iphone:1,android:1,computer:0,altro:0});
+ assert.deepEqual(data.areas,{incantesimi:1,bestiario:1,compendio:1});
+ assert.deepEqual(data.cards.map(row=>[row.id,row.opens]),[['gatto',3],['allarme-2014',1]]);
+ assert.deepEqual(data.notFound,[{query:'drago rossa',times:2}]);
+ assert.equal((await analytics.readStatistics({from:'2000-01-01',to:'2000-01-02',prevFrom:today,prevTo:today})).previousPeople,3,'the previous period is counted the same way');
+ await analytics.addMarker('2026-10-30','Post sul gruppo');
+ const marked=await analytics.readStatistics(range(today));
+ assert.deepEqual(marked.markers.map(m=>m.etichetta),['Apertura profilo Instagram','Post sul gruppo']);
+ for(const marker of marked.markers)await analytics.deleteMarker(marker.id);
+ assert.deepEqual((await analytics.readStatistics(range(today))).markers,[],'deleted events are not created again');
+ // The searched words and categories only: the row keeps no referrer, address or user agent.
+ const columns=(await pg.query("SELECT column_name FROM information_schema.columns WHERE table_name='grimorio_analytics_events'")).rows.map(r=>r.column_name);
+ assert.ok(!columns.some(name=>/referr|agent|ip|address|url/.test(name)),columns.join());
  let payload;
  process.env.POSTHOG_PROJECT_TOKEN='test-public-token';process.env.POSTHOG_INGEST_HOST='https://eu.i.posthog.com';process.env.ADMIN_PASSCODE='test-only-secret';
  // The admin passcode is never the statistics key: without ANALYTICS_SECRET the statistics do not start.
@@ -87,7 +107,7 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance'))).status,401);
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance',{headers:{authorization:'Bearer maintenance-test'}}))).status,200);
  const LoginForm=()=>null;
- const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readAnalytics:async()=>{throw new Error('private data leaked')}}});
+ const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readStatistics:async()=>{throw new Error('private data leaked')},VERCEL_ANALYTICS_URL:''},'@/app/actions/admin-statistics':{deleteMarkerAction(){}},'@/components/statistics/marker-form':{MarkerForm:()=>null},'@/components/statistics/period-select':{PeriodSelect:()=>null}});
  assert.equal((await statistics.default({searchParams:Promise.resolve({})})).type,LoginForm,'without login only the login form is shown');
  await pg.close();console.log('Analytics: consent enforcement, signed IDs, admin exclusion, validation, unique counts, duplicate events, PostgreSQL aggregates, outbox retry, privacy payload and retention passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

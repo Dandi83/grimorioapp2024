@@ -7,6 +7,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { SideNav } from "@/components/side-nav";
 import { ContentFrame } from "@/components/layout/content-frame";
 import { AnalyticsProvider } from "@/components/analytics-provider";
+import { VercelAnalytics } from "@/components/vercel-analytics";
 import { InstallPrompt } from "@/components/install-prompt";
 import { ServiceWorker } from "@/components/service-worker";
 import { AppBadgeSync } from "@/components/app-badge-sync";
@@ -108,6 +109,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <InstallPrompt />
             <AppBadgeSync />
             <AnalyticsProvider />
+            {/* Only where the site runs on Vercel (elsewhere /_vercel/insights does not exist). */}
+            {process.env.VERCEL === "1" && <VercelAnalytics />}
           </EditionProvider>
         </FavoritesProvider>
       </body>

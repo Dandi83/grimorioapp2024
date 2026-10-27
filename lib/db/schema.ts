@@ -109,9 +109,24 @@ export const analyticsEvents = pgTable("grimorio_analytics_events", {
   exported: boolean("exported").notNull().default(false),
   export_claim: uuid("export_claim"),
   export_claimed_at: timestamp("export_claimed_at", { withTimezone: true }),
+  // page_view: categories computed in the browser (never the referrer or the user agent).
+  origin: text("origin"),
+  device: text("device"),
+  installed: boolean("installed"),
+  // search: the cleaned word and how many results it gave.
+  search_query: text("search_query"),
+  search_results: integer("search_results"),
 });
 
 export type AnalyticsEventRow = typeof analyticsEvents.$inferSelect;
+
+/** Events marked on the statistics chart by the administrator (lib/analytics.ts): a day and a short text. */
+export const analyticsMarkers = pgTable("grimorio_analytics_markers", {
+  id: uuid("id").primaryKey(),
+  giorno: text("giorno").notNull(),
+  etichetta: text("etichetta").notNull(),
+  creato_il: timestamp("creato_il", { withTimezone: true }).notNull().defaultNow(),
+});
 
 /** Failed admin logins, stored as address hashes (lib/admin-login-limit.ts). */
 export const adminLoginFailures = pgTable("grimorio_admin_login_failures", {
