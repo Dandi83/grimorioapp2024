@@ -20,7 +20,7 @@ import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, castingTimeShort, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
 import { useReportSearch } from "@/components/statistics/use-report-search";
 import { searchList } from "@/lib/fuzzy-search";
-import { DidYouMean, SimilarResultsHeading, usePreparedNames } from "@/components/search/did-you-mean";
+import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 
 const PAGE_SIZE = 40;
 export type SpellEdition = "2024" | "2014";
@@ -101,7 +101,8 @@ export function GrimorioBrowser({
   }, [spells, edizione]);
   // Accents, capitals and typos ignored (lib/fuzzy-search.ts): exact matches by level, best first in each level;
   // the approximate ones after them, under «Risultati simili».
-  const found = useMemo(() => searchList(sorted, deferredQ, s => s.nome_italiano, { groupOf: s => s.livello_num }), [sorted, deferredQ]);
+  const settled = useSettledQuery(deferredQ);
+  const found = useMemo(() => searchList(sorted, deferredQ, s => s.nome_italiano, { groupOf: s => s.livello_num, settled }), [sorted, deferredQ, settled]);
   const searched = useMemo(() => [...found.exact, ...found.approximate], [found]);
   const { ids: originIds, value: originValue, draft: originDraft } = origin;
   // The searched name and how many spells of the edition have it exactly (statistics, only with the consent).

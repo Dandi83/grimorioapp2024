@@ -1,7 +1,25 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { prepareNames } from "@/lib/fuzzy-search";
+
+/**
+ * Whether the last word of a search is complete: after a pause of 400 ms or the «Cerca» key of the keyboard (Enter
+ * in a search field, lib/search-input.ts). Until then the last word only matches the start of a name (no typos),
+ * so the list does not fill with similar names at every letter.
+ */
+export function useSettledQuery(query: string): boolean {
+  const [settled, setSettled] = useState("");
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSettled(query), 400);
+    const enter = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && (event.target as HTMLElement | null)?.getAttribute?.("name") === "grimorio-search") setSettled(query);
+    };
+    document.addEventListener("keydown", enter, true);
+    return () => { window.clearTimeout(timer); document.removeEventListener("keydown", enter, true); };
+  }, [query]);
+  return settled === query;
+}
 
 /** Prepares the names of a searched list when the browser is idle, so the first keystroke is as quick as the next ones. */
 export function usePreparedNames(names: () => Iterable<string>, ready: unknown) {

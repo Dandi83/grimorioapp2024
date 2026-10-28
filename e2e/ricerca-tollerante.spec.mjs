@@ -75,6 +75,41 @@ test("Home: «palla di foco» in the search of the whole Grimorio, 2024 and 2014
   expect(errors).toEqual([]);
 });
 
+test("«palla»: only the right names, in the Home («Tutto») and in the lists, 2024 and 2014; no similar ones mixed in", async ({ page }) => {
+  test.setTimeout(120_000);
+  const wrong = /Allarme|Interdizione alla morte|Parlare con|^Pala$/;
+  for (const edition of ["2024", "2014"]) {
+    await page.addInitScript(value => { try { window.localStorage.setItem("grimorio.edizione", value); } catch { /* no storage */ } }, edition);
+    await page.goto("/?cerca=palla");
+    const dialog = page.getByRole("dialog", { name: "Cerca in tutto il Grimorio" });
+    await expect(dialog.getByRole("group", { name: "Sezioni" }).getByRole("button", { name: "Tutto" })).toHaveAttribute("aria-pressed", "true");
+    await expect(dialog.locator('a[href^="/spell/palla-di-fuoco"]').first()).toBeVisible();
+    await page.waitForTimeout(600);
+    const names = await dialog.locator("#search-results a").allInnerTexts();
+    expect(names.filter(name => wrong.test(name.split("\n")[0].trim())), `${edition}: ${names.join(" · ")}`).toEqual([]);
+    expect(names.some(name => /palle di fuoco/i.test(name)), "the plural counts as the right word").toBe(true);
+    await expect(page.locator("[data-similar-results]")).toHaveCount(0);
+    await expect(page.locator("[data-did-you-mean]")).toHaveCount(0);
+    // While «palla di f…» is being typed: no similar names; after the pause, «Forse cercavi» for a typo.
+    const field = dialog.getByRole("searchbox");
+    await field.fill("palla di foco");
+    await expect(page.locator("[data-did-you-mean]")).toHaveText("Forse cercavi: Palla di fuoco");
+    await expect(page.locator("[data-similar-results]").filter({ visible: true })).toHaveCount(1);
+    await page.goto("/grimorio");
+    await page.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("palla");
+    await expect(page.locator("main a[href^='/spell/palla-di-fuoco']").first()).toBeVisible();
+    await page.waitForTimeout(600);
+    const spells = await page.locator("main li[data-card-row] a, main ul li a").allInnerTexts();
+    expect(spells.filter(name => wrong.test(name.trim())), spells.join(" · ")).toEqual([]);
+    await expect(page.locator("[data-similar-results]")).toHaveCount(0);
+    await page.goto("/bestiario");
+    await page.getByRole("searchbox", { name: "Cerca una creatura" }).fill("gatto");
+    await expect(page.locator("main a[href^='/mostro/gatto']").first()).toBeVisible();
+    await page.waitForTimeout(600);
+    await expect(page.locator("[data-similar-results]")).toHaveCount(0);
+  }
+});
+
 test("time of one keystroke on the whole index, CPU slowed 4× (a phone): measured, not over 100 ms", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "CPU slow-down via Chrome DevTools only");
   test.setTimeout(120_000);

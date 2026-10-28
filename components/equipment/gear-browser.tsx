@@ -13,7 +13,7 @@ import { usePart } from "@/components/sections/parts-context";
 import { SectionEditionPill } from "@/components/edition/edition-pill";
 import type { GearListRow } from "@/lib/adventuring-gear-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
-import { DidYouMean } from "@/components/search/did-you-mean";
+import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
 import { searchList } from "@/lib/fuzzy-search";
 import { SEARCH_INPUT } from "@/lib/search-input";
 
@@ -77,7 +77,8 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
   }, []);
   const items = rows[edition];
   // A group (armi, munizioni…) is found by its own name or by one of its rows; typos are tolerated (lib/fuzzy-search.ts).
-  const result = useMemo(() => searchList(items, query, row => [row.nome, ...(row.righe?.map(item => item.nome) ?? [])]), [items, query]);
+  const settled = useSettledQuery(query);
+  const result = useMemo(() => searchList(items, query, row => [row.nome, ...(row.righe?.map(item => item.nome) ?? [])], { settled }), [items, query, settled]);
   const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
   const packs = found.filter(row => row.dotazione);
   const count = items.reduce((sum, row) => sum + (row.righe?.length ?? 1), 0);

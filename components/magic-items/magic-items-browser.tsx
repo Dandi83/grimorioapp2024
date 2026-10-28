@@ -14,7 +14,7 @@ import {
   findMagicItems, magicItemFiltersFromParams, magicItemSearch, searchMagicItems,
   type MagicItemEdition, type MagicItemFilters, type MagicItemListRow,
 } from "@/lib/magic-items-types";
-import { DidYouMean, SimilarResultsHeading } from "@/components/search/did-you-mean";
+import { DidYouMean, SimilarResultsHeading, useSettledQuery } from "@/components/search/did-you-mean";
 
 const SOURCE: Record<MagicItemEdition, string> = { "2024": "SRD 5.2.1", "2014": "SRD 5.1" };
 
@@ -79,7 +79,8 @@ export function MagicItemsBrowser({ rows: byEdition, title = "Oggetti magici", r
     if (search !== window.location.search) window.history.replaceState(window.history.state, "", window.location.pathname + search);
   };
 
-  const result = useMemo(() => findMagicItems(rows, query, filters), [rows, query, filters]);
+  const settled = useSettledQuery(query);
+  const result = useMemo(() => findMagicItems(rows, query, filters, settled), [rows, query, filters, settled]);
   const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
   const draftCount = useMemo(() => (draft ? searchMagicItems(rows, query, draft).length : 0), [rows, query, draft]);
   const active: ActiveFilter[] = [

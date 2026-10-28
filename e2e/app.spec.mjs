@@ -545,11 +545,12 @@ test("magic items 2024: Compendio tile, search, combined filters in the address,
   const search = page.getByRole("searchbox", { name: "Cerca un oggetto magico" });
   await search.fill("spada");
   await expect(rows.first()).toBeVisible();
-  // The names with «spada» first; the similar ones (typos: Spadone…) apart, under «Risultati simili».
+  // Only the names with «spada»: no similar names (Spadone…) next to the right ones.
   const exact = page.locator('main ul[data-exact-results] a[href^="/oggetti-magici/"]');
   expect(await exact.count()).toBeGreaterThanOrEqual(3);
   for (const text of await exact.allInnerTexts()) expect(text.toLowerCase()).toContain("spada");
-  await expect(page.locator("main ul[data-similar-list]").getByRole("link", { name: /^Spadone/ }).first()).toBeVisible();
+  await page.waitForTimeout(600);
+  await expect(page.locator("main ul[data-similar-list]")).toHaveCount(0);
   await expect(page.locator("[data-did-you-mean]")).toHaveCount(0);
   await search.fill("pozione");
   expect(await rows.count()).toBeGreaterThan(10);
