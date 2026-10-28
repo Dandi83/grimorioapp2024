@@ -6,6 +6,7 @@ import {
   analyticsConfigured,
   analyticsSecret,
   storeAnalyticsEvent,
+  storeRating,
   excludeVisitor,
   type CardInfo,
 } from "@/lib/analytics";
@@ -114,6 +115,17 @@ export async function POST(request: NextRequest) {
     )
   )
     return response({ ignored: true, reason: "bot" });
+  // «Come ti trovi con il Grimorio?»: only the vote, the day and the kind of device, in its own table.
+  if (input.event === "valutazione") {
+    try {
+      const stored = await storeRating(input.vote!, visitor, input.device ?? null, input.test);
+      const result = response({ ok: true, stored });
+      if (!known) result.cookies.set(VISITOR, `${visitor}.${sign(visitor)}`, options);
+      return result;
+    } catch {
+      return response({ error: "Statistiche temporaneamente non disponibili" }, 503);
+    }
+  }
   // A malformed escape (e.g. "%E0") is a bad request, not a server failure.
   let cardId: string | undefined;
   try {

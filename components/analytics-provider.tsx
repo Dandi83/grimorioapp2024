@@ -5,7 +5,9 @@ import Link from "next/link";
 import type { AnalyticsEvent, AnalyticsInput } from "@/lib/analytics-events";
 import { deviceOf, originOf, type Origin } from "@/lib/analytics-stats";
 import { useUserEdition } from "@/components/edition/edition-provider";
-import { setStatisticsNotice } from "@/components/statistics/notice";
+import { setStatisticsCounted, setStatisticsNotice } from "@/components/statistics/notice";
+import { recordVisitDay } from "@/components/home/rating-store";
+import { FRIEND_PARAM, FRIEND_VALUE } from "@/lib/share-app";
 
 type Consent = "accepted" | "rejected";
 type Status = { enabled: boolean; excluded: boolean; consent: Consent | null };
@@ -14,6 +16,14 @@ export const CHOICE_EVENT = "grimorio:analytics-choice";
 const SESSION = "grimorio_statistics_session";
 /** The first opening of the installed app was sent from this browser (the server keeps it once per visitor too). */
 const APP_OPENED = "grimorio_statistics_app_opened";
+
+/** «?da=amico» leaves the address once read: a link shared again, or saved in the favourites, does not carry it. */
+function dropFriendMark() {
+  const url = new URL(window.location.href);
+  if (url.searchParams.get(FRIEND_PARAM) !== FRIEND_VALUE) return;
+  url.searchParams.delete(FRIEND_PARAM);
+  window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+}
 /** Saves the choice («Ok» = "accepted", «No» = "rejected") and tells the provider. */
 export async function saveStatisticsChoice(consent: Consent): Promise<boolean> {
   try {
@@ -43,6 +53,8 @@ export function AnalyticsProvider() {
     [error, setError] = useState("");
   const enabled = useRef(false);
   useEffect(() => {
+    // The days the site was opened, on this browser only: the question of the Home comes from the 3rd.
+    recordVisitDay();
     const controller = new AbortController();
     fetch("/api/analytics", { cache: "no-store", signal: controller.signal })
       .then((r) => r.json())
@@ -68,6 +80,11 @@ export function AnalyticsProvider() {
   }, []);
   // Counted unless «No»: without waiting for an answer.
   const accepted = !!status?.enabled && !status.excluded && status.consent !== "rejected";
+  useEffect(() => {
+    setStatisticsCounted(status === null ? null : accepted);
+    // Not counted: the friend's mark goes away all the same, without being sent.
+    if (status !== null && !accepted) dropFriendMark();
+  }, [status, accepted]);
   useEffect(() => {
     enabled.current = accepted;
     return () => {
@@ -167,12 +184,22 @@ export function AnalyticsProvider() {
     const share = (event: Event) => {
       const detail = (event as CustomEvent).detail;
       const name = detail?.event as AnalyticsEvent;
-      if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) void send(name);
+      // The whole app shared (lib/share-app.ts): from the card of the Home or the invite after «Bene».
+      if ((name === "share_tap" || name === "share_sent" || name === "share_cancel") && (detail.from === "home" || detail.from === "valutazione"))
+        void send(name, { from: detail.from, device });
+      // The face tapped on the Home (components/home/rating-box.tsx): only the vote and the kind of device.
+      else if (name === "valutazione" && ["male", "cosi-cosi", "bene"].includes(detail.vote)) void send("valutazione", { vote: detail.vote, device });
+      else if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) void send(name);
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
       else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results });
     };
     void send("page_view");
     if (card) void send("card_open");
+    // Arrived from a friend's link (?da=amico): counted once per person by the server, then the mark goes away.
+    if (new URLSearchParams(window.location.search).get(FRIEND_PARAM) === FRIEND_VALUE) {
+      void send("arrivo_da_amico", { device });
+      dropFriendMark();
+    }
     // Installations: the browser says so (Android, Chrome and Edge on a computer); on iPhone, where Safari says
     // nothing, the first opening from the icon. Once per device here, once per visitor on the server.
     const appInstalled = () => void send("app_installed");

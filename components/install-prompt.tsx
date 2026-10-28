@@ -7,7 +7,7 @@ import { Copy, Download, X } from "lucide-react";
 
 import { copyLink, dismissInvite, promptInstall, useDeviceAdvice, useInstallEvent } from "@/components/install/install-events";
 import { useUserEdition } from "@/components/edition/edition-provider";
-import { useStatisticsNotice } from "@/components/statistics/notice";
+import { setInstallInvite, useRatingShown, useStatisticsNotice } from "@/components/statistics/notice";
 
 /**
  * The invite to install the app, small, above the bottom bar: the «Installa» button where the browser offers it
@@ -26,6 +26,8 @@ export function InstallPrompt() {
   const [copied, setCopied] = useState(false);
   const notice = useStatisticsNotice();
   const { firstLaunch } = useUserEdition();
+  // Nor together with the question of the Home: it waits until that is answered or closed.
+  const rating = useRatingShown();
   const free = notice === "closed" && !firstLaunch;
   const guide = advice && !advice.installed && !advice.dismissed && advice.guide.kind !== "none" ? advice.guide : null;
   const wait = guide && free ? (guide.promptFirst ? 4000 : 1200) : 0;
@@ -38,8 +40,14 @@ export function InstallPrompt() {
     return () => clearTimeout(timer);
   }, [wait]);
 
-  if (!guide || !free || closed || pathname === "/installa") return null;
-  const button = guide.promptFirst && event !== null;
+  const button = !!guide && guide.promptFirst && event !== null;
+  // Told to the question of the Home (components/statistics/notice.ts): it never shows while the invite is due.
+  const inviteState = advice === null ? "waiting"
+    : !guide || closed || pathname === "/installa" || (!button && guide.kind === "button") ? "none"
+      : free && (button || late) ? "shown" : "waiting";
+  useEffect(() => { setInstallInvite(inviteState); }, [inviteState]);
+
+  if (!guide || !free || rating || closed || pathname === "/installa") return null;
   if (!button && (guide.kind === "button" || !late)) return null;
 
   const close = () => {

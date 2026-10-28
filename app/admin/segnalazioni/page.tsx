@@ -24,6 +24,7 @@ function href(filter: FeedbackFilter) {
   const params = new URLSearchParams();
   if (filter.tipo) params.set("tipo", filter.tipo);
   if (filter.stato) params.set("stato", filter.stato);
+  if (filter.valutazione) params.set("etichetta", "valutazione");
   return `/admin/segnalazioni${params.size ? `?${params}` : ""}`;
 }
 
@@ -34,6 +35,7 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
   const filter: FeedbackFilter = {
     tipo: (FEEDBACK_TYPES as readonly unknown[]).includes(query.tipo) ? (query.tipo as FeedbackType) : undefined,
     stato: (FEEDBACK_STATES as readonly unknown[]).includes(query.stato) ? (query.stato as FeedbackState) : undefined,
+    valutazione: query.etichetta === "valutazione",
   };
   const { reports, nuove } = await listFeedback(filter);
   const names = await Promise.all(reports.map(report => pageName(report.percorso, report.edizione)));
@@ -58,6 +60,11 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
           );
         })}
       </nav>
+      {/* The comments written after the faces of the Home («Commenti arrivati con Scrivici» of the statistics). */}
+      <Link href={href({ ...filter, valutazione: !filter.valutazione })} aria-current={filter.valutazione ? "page" : undefined} data-filter-valutazione=""
+        className={`inline-flex min-h-11 items-center self-start rounded-[18px] px-3.5 text-sm ${filter.valutazione ? "bg-foreground font-semibold text-background" : "bg-elevated text-muted"}`}>
+        Dalla valutazione
+      </Link>
       <nav aria-label="Stato" className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
         {STATE_FILTERS.map(item => {
           const on = filter.stato === item.value;
@@ -70,7 +77,7 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
         })}
       </nav>
       {reports.length === 0 ? (
-        <p className="rounded-[14px] border-[1.5px] border-border bg-card px-4 py-6 text-center text-[15px] text-muted">Nessuna segnalazione{filter.tipo || filter.stato ? " con questi filtri" : ""}.</p>
+        <p className="rounded-[14px] border-[1.5px] border-border bg-card px-4 py-6 text-center text-[15px] text-muted">Nessuna segnalazione{filter.tipo || filter.stato || filter.valutazione ? " con questi filtri" : ""}.</p>
       ) : (
         <ul className="overflow-hidden rounded-[14px] border-[1.5px] border-border bg-card">
           {reports.map((report, i) => {
@@ -89,6 +96,7 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
                   {report.stato === "nuova" && <span className="shrink-0 rounded-[10px] bg-amber px-2 py-0.5 text-[11px] font-bold text-foreground">NUOVA</span>}
                 </span>
                 <span className="line-clamp-2 break-words text-[15px] leading-[1.3]">{report.messaggio}</span>
+                {report.etichetta && <span className="self-start rounded-[10px] bg-[#E6F0EA] px-2 py-0.5 text-[12px] font-semibold text-[#1F4D33]" data-etichetta="">{report.etichetta}</span>}
                 {!report.email_inviata && <span className="text-xs font-bold text-primary">Email di avviso non inviata</span>}
               </Link>
               {rights && report.percorso && (

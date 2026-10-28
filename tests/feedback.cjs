@@ -23,7 +23,12 @@ const valid={tipo:'errore',messaggio:'Il raggio dovrebbe essere di 6 metri.',per
 // Validation: type, message 10–2000 characters, optional email checked only when written.
 let r=input.parseFeedback(valid);
 assert.equal(r.ok,true);assert.equal(r.spam,false);
-assert.deepEqual(r.value,{tipo:'errore',messaggio:'Il raggio dovrebbe essere di 6 metri.',percorso:'/spell/palla-di-fuoco',edizione:'2024',email:null});
+assert.deepEqual(r.value,{tipo:'errore',messaggio:'Il raggio dovrebbe essere di 6 metri.',percorso:'/spell/palla-di-fuoco',edizione:'2024',email:null,etichetta:null});
+// From the faces of the Home: the vote becomes the inner label «dalla valutazione: …»; anything else is dropped.
+assert.equal(input.parseFeedback({...valid,tipo:'consiglio',valutazione:'cosi-cosi'}).value.etichetta,'dalla valutazione: così così');
+assert.equal(input.parseFeedback({...valid,tipo:'consiglio',valutazione:'bene'}).value.etichetta,'dalla valutazione: bene');
+assert.equal(input.parseFeedback({...valid,valutazione:'ottimo'}).value.etichetta,null,'only the three answers');
+assert.equal(input.parseFeedback({...valid,valutazione:'toString'}).value.etichetta,null,'no inherited keys');
 assert.equal(input.parseFeedback({...valid,tipo:'altro'}).ok,false,'unknown type');
 assert.equal(input.parseFeedback({...valid,messaggio:'   corto   '}).ok,false,'under 10 characters after trimming');
 assert.equal(input.parseFeedback({...valid,messaggio:'x'.repeat(2001)}).ok,false,'over 2000 characters');
@@ -134,7 +139,7 @@ assert.equal(input.formatWhen(new Date('2026-10-19T10:00:00Z'),now),'19 ott');
  // Saved columns: no address, no browser.
  const report=await fb.saveFeedback(r.value);
  const columns=(await pg.query("SELECT column_name FROM information_schema.columns WHERE table_name='grimorio_feedback_reports'")).rows.map(c=>c.column_name).sort();
- assert.deepEqual(columns,['creato_il','edizione','email_esito','email_inviata','email_risposta','id','messaggio','nota_admin','percorso','stato','tipo']);
+ assert.deepEqual(columns,['creato_il','edizione','email_esito','email_inviata','email_risposta','etichetta','id','messaggio','nota_admin','percorso','stato','tipo']);
  assert.equal(report.stato,'nuova');assert.equal(report.email_inviata,false);
 
  // Email without RESEND_API_KEY: nothing sent, a warning, the report stays saved.
