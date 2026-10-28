@@ -157,8 +157,9 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
 
       <section aria-labelledby="contano" className="px-1">
         <h2 id="contano" className="font-serif text-lg font-bold text-[#2B2118]">Come si contano</h2>
-        <p className={`${SOFT} mt-1`}>Dettagli solo di chi accetta le statistiche. Le tue visite da admin non contano.</p>
-        <p className={`${SOFT} mt-1`}>Le installazioni si contano solo per chi accetta le statistiche. Su iPhone si contano al primo avvio dall’icona.</p>
+        <p className={`${SOFT} mt-1`}>Dettagli di tutti i visitatori tranne chi rinuncia («No»). Le tue visite da admin non contano.</p>
+        <p className={`${SOFT} mt-1`}>Le installazioni si contano per chi non ha rinunciato alle statistiche. Su iPhone si contano al primo avvio dall’icona.</p>
+        <p className="mt-1 text-xs text-[#5E4E3E]" data-counting-since="">Dal 28 ottobre 2026 si contano tutti i visitatori tranne chi rinuncia (prima solo chi accettava).</p>
         <a href={VERCEL_ANALYTICS_URL} target="_blank" rel="noreferrer" className="mt-1 inline-flex min-h-11 items-center text-[15px] font-bold text-[#7A1F2B] underline underline-offset-4">
           Totale di tutti i visitatori su Vercel Analytics
         </a>

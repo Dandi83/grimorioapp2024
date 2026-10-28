@@ -2,7 +2,6 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { pool } from "./db";
 import type { AnalyticsInput } from "./analytics-events";
-import type { AnalyticsEventRow } from "./db/schema";
 import { INSTAGRAM_START, ORIGINS, DEVICES, type Origin, type Device } from "./analytics-stats";
 /** The panel of Vercel Analytics: every visitor, without the consent details. */
 export const VERCEL_ANALYTICS_URL = "https://vercel.com/grimorio-app/grimorioapp2024/analytics";
@@ -19,12 +18,12 @@ export function analyticsSecret() {
   }
   return secret;
 }
+/**
+ * The statistics of the site: first party only, in the site's own database (28 October 2026: the copy sent to
+ * PostHog was removed, so nothing reaches a third party). Running with ANALYTICS_SECRET.
+ */
 export function analyticsConfigured() {
-  return !!(
-    process.env.POSTHOG_PROJECT_TOKEN &&
-    process.env.POSTHOG_INGEST_HOST === "https://eu.i.posthog.com" &&
-    analyticsSecret()
-  );
+  return !!analyticsSecret();
 }
 let schemaReady: Promise<void> | undefined;
 async function ensureSchema() {
@@ -122,7 +121,7 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
 }
 /**
  * A device of the administrator (lib/analytics-exclusion.ts): its visitor ID never saves events again and the ones
- * already saved are deleted, here and before they reach PostHog.
+ * already saved are deleted.
  */
 export async function excludeVisitor(visitor: string) {
   await ensureSchema();
@@ -143,71 +142,6 @@ export async function purgeAnalytics() {
     );
   } catch (error) {
     if ((error as { code?: string }).code !== "42P01") throw error;
-  }
-}
-export async function exportAnalytics() {
-  if (!analyticsConfigured()) return;
-  await ensureSchema();
-  // Retention is enforced by the daily maintenance cron, not on every event.
-  const claim = randomUUID();
-  const { rows } = await pool.query<AnalyticsEventRow>(
-    `UPDATE grimorio_analytics_events SET export_claim=$1,export_claimed_at=now()
-    WHERE id IN (SELECT id FROM grimorio_analytics_events WHERE exported=false
-      AND (export_claimed_at IS NULL OR export_claimed_at<now()-interval '1 minute')
-      ORDER BY received_at LIMIT 25 FOR UPDATE SKIP LOCKED) RETURNING *`,
-    [claim],
-  );
-  if (!rows.length) return;
-  try {
-    const response = await fetch(`${process.env.POSTHOG_INGEST_HOST}/batch/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: AbortSignal.timeout(8000),
-      body: JSON.stringify({
-        api_key: process.env.POSTHOG_PROJECT_TOKEN,
-        batch: rows.map((r) => ({
-          uuid: r.id,
-          event: `grimorio_${r.event_name}`,
-          distinct_id: `grimorio:${r.visitor_id}`,
-          timestamp: new Date(r.received_at).toISOString(),
-          properties: {
-            app: "il_grimorio",
-            is_test: r.is_test,
-            card_kind: r.card_kind,
-            card_id: r.card_id,
-            card_title: r.title,
-            path: r.path,
-            source: r.source,
-            active_seconds: r.active_seconds,
-            scroll_percent: r.scroll_percent,
-            // Categories only; the searched words stay in the site's database.
-            origin: r.origin,
-            device: r.device,
-            installed: r.installed,
-            search_results: r.search_results,
-            $session_id: r.session_id,
-            $insert_id: r.id,
-            $current_url: `https://ilgrimorio.app${r.path}`,
-            $pathname: r.path,
-            $host: "ilgrimorio.app",
-            $process_person_profile: false,
-            $geoip_disable: true,
-            $ip: null,
-          },
-        })),
-      }),
-    });
-    if (!response.ok) throw new Error(`PostHog export failed (${response.status})`);
-    await pool.query(
-      "UPDATE grimorio_analytics_events SET exported=true,export_claim=NULL,export_claimed_at=NULL WHERE export_claim=$1",
-      [claim],
-    );
-  } catch (error) {
-    await pool.query(
-      "UPDATE grimorio_analytics_events SET export_claim=NULL,export_claimed_at=NULL WHERE export_claim=$1",
-      [claim],
-    );
-    throw error;
   }
 }
 export type StatisticsMarker = { id: string; giorno: string; etichetta: string };

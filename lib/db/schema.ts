@@ -90,7 +90,7 @@ export const monsterHabitats = pgTable("grimorio_monster_habitats", {
   updated_at: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-/** Consented statistics events and their PostHog export state (lib/analytics.ts). */
+/** Statistics events, first party only (lib/analytics.ts); the export columns are left from the old PostHog copy. */
 export const analyticsEvents = pgTable("grimorio_analytics_events", {
   id: uuid("id").primaryKey(),
   visitor_id: text("visitor_id").notNull(),
@@ -149,6 +149,7 @@ export const feedbackReports = pgTable("grimorio_feedback_reports", {
   stato: text("stato").notNull().default("nuova"),
   email_inviata: boolean("email_inviata").notNull().default(false),
   nota_admin: text("nota_admin"),
+  email_esito: text("email_esito"),
 });
 
 /** Send limit of the reports: salted device hashes, deleted after one day (lib/feedback.ts). */

@@ -134,7 +134,7 @@ assert.equal(input.formatWhen(new Date('2026-10-19T10:00:00Z'),now),'19 ott');
  // Saved columns: no address, no browser.
  const report=await fb.saveFeedback(r.value);
  const columns=(await pg.query("SELECT column_name FROM information_schema.columns WHERE table_name='grimorio_feedback_reports'")).rows.map(c=>c.column_name).sort();
- assert.deepEqual(columns,['creato_il','edizione','email_inviata','email_risposta','id','messaggio','nota_admin','percorso','stato','tipo']);
+ assert.deepEqual(columns,['creato_il','edizione','email_esito','email_inviata','email_risposta','id','messaggio','nota_admin','percorso','stato','tipo']);
  assert.equal(report.stato,'nuova');assert.equal(report.email_inviata,false);
 
  // Email without RESEND_API_KEY: nothing sent, a warning, the report stays saved.
@@ -169,6 +169,20 @@ assert.equal(input.formatWhen(new Date('2026-10-19T10:00:00Z'),now),'19 ott');
  assert.ok(!warnings.at(-1).includes('admin@example.com'),'the Resend message with the address is not logged');
  assert.equal(await fb.sendFeedbackEmail(report,{origin:'x',name:null},async()=>({ok:false,status:500,json:async()=>{throw new Error('not json');}})),'failed');
  assert.equal(await fb.sendFeedbackEmail(report,{origin:'x',name:null},async()=>{throw new Error('rete');}),'failed');
+ // The reason kept for the reserved area: the test sender explained, no address, no message text.
+ delete process.env.FEEDBACK_FROM_EMAIL;
+ const refused=await fb.sendFeedbackEmailWithReason(report,{origin:'x',name:null},async()=>({ok:false,status:403,json:async()=>({name:'validation_error',message:'You can only send testing emails to your own email address (admin@example.com)'})}));
+ assert.equal(refused.result,'failed');
+ assert.match(refused.reason,/403 \(validation_error\).+onboarding@resend\.dev.+FEEDBACK_FROM_EMAIL/);
+ assert.ok(!refused.reason.includes('admin@example.com'));
+ process.env.FEEDBACK_FROM_EMAIL='Grimorio <avvisi@ilgrimorio.app>';
+ assert.match((await fb.sendFeedbackEmailWithReason(report,{origin:'x',name:null},async()=>({ok:false,status:403,json:async()=>({name:'validation_error'})}))).reason,/dominio del mittente/);
+ assert.match((await fb.sendFeedbackEmailWithReason(report,{origin:'x',name:null},async()=>{throw new Error('rete');})).reason,/non raggiungibile/);
+ delete process.env.RESEND_API_KEY;
+ assert.deepEqual(await fb.sendFeedbackEmailWithReason(report,{origin:'x',name:null},fakeFetch),{result:'not-configured',reason:'Invio non configurato: manca RESEND_API_KEY su Vercel.'});
+ process.env.RESEND_API_KEY='re_prova';
+ await fb.markEmailFailed(report.id,refused.reason);
+ assert.equal((await fb.getFeedback(report.id)).email_esito,refused.reason);
  console.warn=warn;
 
  // Admin: list newest first, filters, open marks read, state, note, deletion.

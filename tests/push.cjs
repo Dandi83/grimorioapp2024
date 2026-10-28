@@ -122,7 +122,7 @@ function load(relative) {
     FORM_UNAVAILABLE: 'Modulo temporaneamente non disponibile.', feedbackAvailable: () => true,
     checkFormToken: () => 'ok', deviceKey: () => null, feedbackLimited: async () => false, issueFormToken: () => 't', turnstilePassed: async () => true,
     saveFeedback: async () => report, recordFeedbackSend: async () => {}, markEmailSent: async () => {}, countNewFeedback: async () => 7,
-    sendFeedbackEmail: async () => { emails++; return 'sent'; },
+    markEmailFailed: async () => {}, sendFeedbackEmailWithReason: async () => { emails++; return {result: 'sent', reason: null}; },
   };
   deps['@/lib/feedback-names'] = {pageName: async () => 'Palla di fuoco'};
   // The badge counts new reports and homebrew proposals to review (lib/admin-badge.ts).

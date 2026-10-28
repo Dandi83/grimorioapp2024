@@ -4,15 +4,41 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import type { AnalyticsEvent, AnalyticsInput } from "@/lib/analytics-events";
 import { deviceOf, originOf, type Origin } from "@/lib/analytics-stats";
+import { useUserEdition } from "@/components/edition/edition-provider";
+import { setStatisticsNotice } from "@/components/statistics/notice";
 
-type Status = { enabled: boolean; excluded: boolean; consent: "accepted" | "rejected" | null };
+type Consent = "accepted" | "rejected";
+type Status = { enabled: boolean; excluded: boolean; consent: Consent | null };
+/** A choice made elsewhere (the switch of /privacy): the provider follows it at once. */
+export const CHOICE_EVENT = "grimorio:analytics-choice";
 const SESSION = "grimorio_statistics_session";
 /** The first opening of the installed app was sent from this browser (the server keeps it once per visitor too). */
 const APP_OPENED = "grimorio_statistics_app_opened";
+/** Saves the choice («Ok» = "accepted", «No» = "rejected") and tells the provider. */
+export async function saveStatisticsChoice(consent: Consent): Promise<boolean> {
+  try {
+    const response = await fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ consent }),
+    });
+    if (!response.ok) return false;
+    window.dispatchEvent(new CustomEvent(CHOICE_EVENT, { detail: consent }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * The statistics of the site, counted by default from the first page (28 October 2026), except who presses «No»
+ * on the bar or turns off «Contami nelle statistiche» in /privacy. The thin bar at the bottom says so once, after
+ * the welcome screen; the invite to install the app waits for it (components/statistics/notice.ts).
+ */
 export function AnalyticsProvider() {
   const path = usePathname();
+  const { ready, firstLaunch } = useUserEdition();
   const [status, setStatus] = useState<Status | null>(null),
-    [preferences, setPreferences] = useState(false),
     [saving, setSaving] = useState(false),
     [error, setError] = useState("");
   const enabled = useRef(false);
@@ -21,18 +47,27 @@ export function AnalyticsProvider() {
     fetch("/api/analytics", { cache: "no-store", signal: controller.signal })
       .then((r) => r.json())
       .then(setStatus)
-      .catch(() => {});
+      .catch(() => { if (!controller.signal.aborted) setStatus({ enabled: false, excluded: false, consent: null }); });
     return () => controller.abort();
   }, []);
   useEffect(() => {
-    const open = () => {
-      setPreferences(true);
-      setError("");
+    const chosen = (event: Event) => {
+      const consent = (event as CustomEvent).detail;
+      if (consent !== "accepted" && consent !== "rejected") return;
+      setStatus((old) => (old ? { ...old, consent } : old));
+      // «No» stops at once; «Ok» changes nothing in the counting.
+      if (consent === "rejected") {
+        enabled.current = false;
+        try {
+          sessionStorage.removeItem(SESSION);
+        } catch {}
+      }
     };
-    window.addEventListener("grimorio:analytics-preferences", open);
-    return () => window.removeEventListener("grimorio:analytics-preferences", open);
+    window.addEventListener(CHOICE_EVENT, chosen);
+    return () => window.removeEventListener(CHOICE_EVENT, chosen);
   }, []);
-  const accepted = !!status?.enabled && !status.excluded && status.consent === "accepted";
+  // Counted unless «No»: without waiting for an answer.
+  const accepted = !!status?.enabled && !status.excluded && status.consent !== "rejected";
   useEffect(() => {
     enabled.current = accepted;
     return () => {
@@ -180,82 +215,57 @@ export function AnalyticsProvider() {
       window.removeEventListener("appinstalled", appInstalled);
     };
   }, [accepted, path]);
-  async function choose(consent: "accepted" | "rejected") {
+  // The bar: once (until «Ok» or «No»), never over the welcome screen nor in the reserved area.
+  const due = !!status?.enabled && !status.excluded && status.consent === null;
+  const show = due && ready && !firstLaunch && !path.startsWith("/admin");
+  useEffect(() => {
+    setStatisticsNotice(status === null ? "waiting" : due ? "open" : "closed");
+  }, [status, due]);
+  // While the bar is shown the page keeps room for it at the bottom (app/globals.css).
+  useEffect(() => {
+    if (!show) return;
+    document.documentElement.dataset.statisticsRoom = "";
+    return () => { delete document.documentElement.dataset.statisticsRoom; };
+  }, [show]);
+  async function choose(consent: Consent) {
     setSaving(true);
     setError("");
-    enabled.current = false;
-    try {
-      const response = await fetch("/api/analytics", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ consent }),
-      });
-      if (!response.ok) throw new Error();
-      enabled.current = consent === "accepted" && !!status?.enabled && !status.excluded;
-      setStatus((old) => (old ? { ...old, consent } : old));
-      setPreferences(false);
-      if (consent === "rejected")
-        try {
-          sessionStorage.removeItem(SESSION);
-        } catch {}
-    } catch {
-      enabled.current = accepted;
-      setError("Scelta non salvata. Riprova.");
-    } finally {
-      setSaving(false);
-    }
+    if (consent === "rejected") enabled.current = false;
+    if (!(await saveStatisticsChoice(consent))) setError("Scelta non salvata. Riprova.");
+    setSaving(false);
   }
-  const show = status?.enabled && (preferences || (!status.excluded && status.consent === null));
   return show ? (
     <aside
       role="region"
-      aria-label="Preferenze statistiche"
-      className="fixed inset-x-3 bottom-[calc(100px+env(safe-area-inset-bottom,0px))] z-50 mx-auto max-w-lg rounded-2xl border border-primary/30 bg-card p-4 shadow-2xl"
+      aria-label="Statistiche anonime"
+      data-statistics-bar=""
+      className="fixed inset-x-0 bottom-[calc(80px+env(safe-area-inset-bottom,0px))] z-50 bg-[#2B2118] text-[#F6EFDF] shadow-[0_-4px_14px_rgb(43_33_24_/_25%)] lg:bottom-0 lg:left-[240px]"
     >
-      <h2 className="font-serif text-xl text-foreground">Statistiche facoltative</h2>
-      <p className="mt-2 text-sm leading-5 text-muted">
-        Ci aiuti a migliorare il Grimorio? Con il tuo consenso misuriamo visite, provenienza, tipo di dispositivo, ricerche, schede
-        consultate e condivisioni, anche tramite PostHog in UE. Puoi cambiare scelta in qualsiasi momento.
-      </p>
-      <Link
-        href="/privacy"
-        prefetch={false}
-        className="mt-2 inline-flex min-h-11 items-center text-sm text-primary underline underline-offset-4"
-      >
-        Come usiamo i dati
-      </Link>
-      {error && (
-        <p role="alert" className="mb-2 text-sm text-destructive">
-          {error}
+      <div className="mx-auto flex max-w-2xl items-center gap-2 px-4 py-2">
+        <p className="min-w-0 flex-1 text-[16px] leading-tight">
+          Statistiche anonime?{" "}
+          <Link href="/privacy" prefetch={false} className="inline-flex min-h-11 items-center font-semibold text-[#E0A21A] underline underline-offset-4">
+            Info
+          </Link>
+          {error && <span role="alert" className="block text-[13px] text-[#F6EFDF]">{error}</span>}
         </p>
-      )}
-      <div className="grid grid-cols-2 gap-3">
         <button
+          type="button"
           disabled={saving}
           onClick={() => void choose("rejected")}
-          className="min-h-11 rounded-lg border border-border px-3 py-2 text-sm text-foreground disabled:opacity-50"
+          className="min-h-11 shrink-0 rounded-full border-[1.5px] border-[#6B5432] px-4 text-[16px] font-semibold text-[#F6EFDF] disabled:opacity-50"
         >
-          Rifiuta statistiche
+          No
         </button>
         <button
+          type="button"
           disabled={saving}
           onClick={() => void choose("accepted")}
-          className="min-h-11 rounded-lg border border-primary/40 px-3 py-2 text-sm text-primary disabled:opacity-50"
+          className="min-h-11 shrink-0 rounded-full bg-[#E0A21A] px-5 text-[16px] font-bold text-[#2B2118] disabled:opacity-50"
         >
-          Accetta statistiche
+          Ok
         </button>
       </div>
     </aside>
   ) : null;
-}
-export function AnalyticsPreferencesButton() {
-  return (
-    <button
-      type="button"
-      onClick={() => window.dispatchEvent(new Event("grimorio:analytics-preferences"))}
-      className="inline-flex min-h-11 items-center rounded-lg border border-border px-3 py-2 text-sm text-primary"
-    >
-      Preferenze statistiche
-    </button>
-  );
 }

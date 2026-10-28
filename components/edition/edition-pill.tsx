@@ -113,13 +113,19 @@ function EditionPanel({ sheet, keyboard, onClose, pill, page }: { sheet: boolean
   );
 }
 
-/** The pill itself and its panel: «Edizione 2024 ⌄» bordeaux, «Edizione 2014 ⌄» blue, at least 44 px high. */
-function Pill({ shown, page, sheet, compact, className }: { shown: Edition; page?: PageEdition; sheet: boolean; compact?: boolean; className: string }) {
+/**
+ * The pill itself and its panel: «Edizione 2024 ⌄» bordeaux, «Edizione 2014 ⌄» blue, at least 44 px high.
+ * large: the pill centred on the picture of the Home, 52 px high, 18 px text, arrow 20 px, a deeper shadow.
+ */
+function Pill({ shown, page, sheet, compact, large, className }: { shown: Edition; page?: PageEdition; sheet: boolean; compact?: boolean; large?: boolean; className: string }) {
   const { ready, forced } = useUserEdition();
   const [open, setOpen] = useState(false);
   const [keyboard, setKeyboard] = useState(false);
   const pill = useRef<HTMLButtonElement>(null);
-  const look = `inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-4 text-[15px] font-bold text-white shadow-[0_2px_8px_rgb(43_33_24_/_28%)] ${ready ? "" : "invisible"}`;
+  const size = large
+    ? "min-h-[52px] gap-2 px-6 text-[18px] shadow-[0_4px_14px_rgb(43_33_24_/_38%)]"
+    : "min-h-11 gap-1.5 px-4 text-[15px] shadow-[0_2px_8px_rgb(43_33_24_/_28%)]";
+  const look = `inline-flex shrink-0 items-center whitespace-nowrap rounded-full font-bold text-white ${size} ${ready ? "" : "invisible"}`;
   // On a narrow phone the pill of a page says only «2024 ⌄», so the title keeps its line.
   const label = <>{compact ? <span className="max-[419px]:hidden">Edizione </span> : "Edizione "}{shown}</>;
   if (forced) {
@@ -132,7 +138,7 @@ function Pill({ shown, page, sheet, compact, className }: { shown: Edition; page
         className={`${look} focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber`}
         style={{ backgroundColor: EDITION_COLOR[shown] }}>
         {label}
-        <ChevronDown size={18} strokeWidth={2.6} aria-hidden="true" />
+        <ChevronDown size={large ? 20 : 18} strokeWidth={2.6} aria-hidden="true" />
       </button>
       {open && <EditionPanel sheet={sheet} keyboard={keyboard} pill={pill} page={page} onClose={() => setOpen(false)} />}
     </div>
@@ -146,11 +152,11 @@ function Pill({ shown, page, sheet, compact, className }: { shown: Edition; page
  * the column pill shows the edition of the page (an address can set it) and chooses through the page.
  * Shown once the device is read; with a single edition offered to the public it does not open.
  */
-export function EditionPill({ place, className = "" }: { place: "home" | "side"; className?: string }) {
+export function EditionPill({ place, size, className = "" }: { place: "home" | "side"; size?: "large"; className?: string }) {
   const { edition } = useUserEdition();
   const page = usePageEdition();
   const own = place === "side" ? page : undefined;
-  return <Pill shown={own?.shown ?? edition} page={own} sheet={place === "home"} className={className} />;
+  return <Pill shown={own?.shown ?? edition} page={own} sheet={place === "home"} large={size === "large"} className={className} />;
 }
 
 /**

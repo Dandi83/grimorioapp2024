@@ -16,6 +16,11 @@ export const VISITOR_COOKIE = "grimorio_statistics_visitor";
 export const EXCLUDED_COOKIE = "grimorio_statistics_excluded";
 
 export const COOKIE_OPTIONS = { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/", maxAge: 60 * 60 * 24 * 180 };
+/**
+ * The choice of the statistics bar («Ok», «No»): 13 months at most, renewed at every visit, so a «No» lasts while
+ * the device is used.
+ */
+export const CHOICE_OPTIONS = { ...COOKIE_OPTIONS, maxAge: 60 * 60 * 24 * 395 };
 /** 400 days: the longest a browser keeps a cookie; renewed at every visit. */
 export const EXCLUDED_OPTIONS = { ...COOKIE_OPTIONS, maxAge: 60 * 60 * 24 * 400 };
 

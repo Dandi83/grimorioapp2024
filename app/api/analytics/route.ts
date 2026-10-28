@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { spellName } from "@/lib/spell-name";
 import { randomUUID } from "node:crypto";
 import { isAdmin } from "@/lib/admin-auth";
@@ -6,7 +6,6 @@ import {
   analyticsConfigured,
   analyticsSecret,
   storeAnalyticsEvent,
-  exportAnalytics,
   excludeVisitor,
   type CardInfo,
 } from "@/lib/analytics";
@@ -16,6 +15,7 @@ import {
   VISITOR_COOKIE as VISITOR,
   EXCLUDED_COOKIE,
   COOKIE_OPTIONS as options,
+  CHOICE_OPTIONS,
   EXCLUDED_OPTIONS,
   signVisitor as sign,
   visitorOf,
@@ -48,16 +48,26 @@ function allowed(request: NextRequest) {
 function response(value: object, status = 200) {
   return NextResponse.json(value, { status, headers: { "Cache-Control": "no-store" } });
 }
+/**
+ * Counted by default, from the first page, except who presses «No» (28 October 2026): the statistics are first
+ * party, aggregated, without IP or user agent, never sent to others (lib/analytics.ts), so they need no consent
+ * (Garante, cookie guidelines of 10 June 2021). consent: "accepted" = the bar closed with «Ok», "rejected" = «No»
+ * (excluded, nothing saved any more), null = the bar not answered yet (counted).
+ */
 export async function GET(request: NextRequest) {
   const excluded = await excludedDevice(request);
   const choice = request.cookies.get(CONSENT)?.value;
-  const result = response({
-    enabled: allowed(request),
-    excluded,
-    consent: choice === "accepted" || choice === "rejected" ? choice : null,
-  });
-  // Renewed at every visit: the mark of an administrator's device lasts while the device is used.
+  const consent = choice === "accepted" || choice === "rejected" ? choice : null;
+  const result = response({ enabled: allowed(request), excluded, consent });
+  // Renewed at every visit: the mark of an administrator's device lasts while the device is used, a «No» too.
   if (excluded) result.cookies.set(EXCLUDED_COOKIE, "1", EXCLUDED_OPTIONS);
+  if (consent) result.cookies.set(CONSENT, consent, CHOICE_OPTIONS);
+  // Counted: the random visitor ID is given here, before the first events of the page, so the events sent
+  // together at the opening share it.
+  if (allowed(request) && !excluded && consent !== "rejected" && !visitorFrom(request)) {
+    const id = randomUUID();
+    result.cookies.set(VISITOR, `${id}.${sign(id)}`, options);
+  }
   return result;
 }
 export async function POST(request: NextRequest) {
@@ -79,7 +89,7 @@ export async function POST(request: NextRequest) {
     if (choice !== "accepted" && choice !== "rejected")
       return response({ error: "Scelta non valida" }, 400);
     const result = response({ ok: true, consent: choice });
-    result.cookies.set(CONSENT, choice, options);
+    result.cookies.set(CONSENT, choice, CHOICE_OPTIONS);
     if (choice === "accepted") {
       const id = visitorFrom(request) || randomUUID();
       result.cookies.set(VISITOR, `${id}.${sign(id)}`, options);
@@ -89,10 +99,12 @@ export async function POST(request: NextRequest) {
     return result;
   }
   if (await excludedDevice(request)) return response({ ignored: true, reason: "admin" });
-  if (request.cookies.get(CONSENT)?.value !== "accepted")
-    return response({ ignored: true, reason: "consent" });
-  const visitor = visitorFrom(request);
-  if (!visitor) return response({ ignored: true, reason: "identity" });
+  // «No» (also pressed before 28 October 2026, when it was «Rifiuta statistiche»): nothing is saved.
+  if (request.cookies.get(CONSENT)?.value === "rejected")
+    return response({ ignored: true, reason: "rejected" });
+  // The first event of a browser gives it a new random visitor ID (a cookie that does not verify too, never re-signed).
+  const known = visitorFrom(request);
+  const visitor = known || randomUUID();
   const input = parseAnalyticsInput(body);
   if (!input) return response({ error: "Evento non valido" }, 400);
   if (
@@ -124,14 +136,9 @@ export async function POST(request: NextRequest) {
       card = { id, kind: isSrdAnimal(record) ? "animal" : "monster", title: record.nome };
     }
     const stored = await storeAnalyticsEvent(input, visitor, card);
-    after(async () => {
-      try {
-        await exportAnalytics();
-      } catch {
-        console.error("Analytics export pending; event retained for retry.");
-      }
-    });
-    return response({ ok: true, stored });
+    const result = response({ ok: true, stored });
+    if (!known) result.cookies.set(VISITOR, `${visitor}.${sign(visitor)}`, options);
+    return result;
   } catch {
     return response({ error: "Statistiche temporaneamente non disponibili" }, 503);
   }
