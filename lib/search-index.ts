@@ -28,6 +28,7 @@ import { spellName } from "./spell-name";
 import { toolListRows } from "./tools-editions";
 import { HOMEBREW_LABEL, fold, type SearchIndex, type SearchSectionKey } from "./search";
 import { isHiddenPath, partId, sectionOfPath } from "./public-sections";
+import { spellHref } from "./spell-public-id";
 
 /** A row of a hidden section, or of a hidden edition, collection or tab (hidden: sections and part ids). */
 function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
@@ -54,7 +55,7 @@ export const SEARCH_SOURCES: SearchSource[] = [
     rows: async () => (await getSpellIndex()).map(spell => ({
       nome: spellName(spell.nome_italiano, spell.edizione),
       label: [spell.scuola, spell.livello_num === 0 ? "trucchetto" : spell.livello_num > 0 ? `liv. ${spell.livello_num}` : ""].filter(Boolean).join(" · "),
-      href: `/spell/${spell.id}`, edizione: spell.edizione ?? "2024",
+      href: spellHref(spell.id), edizione: spell.edizione ?? "2024",
     })),
   },
   {

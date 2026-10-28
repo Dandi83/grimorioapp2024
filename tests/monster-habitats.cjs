@@ -139,7 +139,11 @@ const form = (data, habitats) => {
   const config = (await import(require('node:url').pathToFileURL(path.resolve('next.config.mjs')).href)).default;
   const redirects = await config.redirects();
   const renamed = JSON.parse(fs.readFileSync('lib/data/renamed-monster-ids.json','utf8'));
-  assert.deepEqual(redirects.map(r=>[r.source,r.destination,r.permanent]),[...renamed.map(id=>[`/mostro/${id}`,`/mostro/${id}-2014`,true]),['/spell/i-re-spirare-sott-acqua','/spell/i-re-spirare-sott-acqua-2',true]]);
+  // Spell addresses without proper names (PROMPT 8): every old address answers 308 straight to the final one.
+  const publicIds = JSON.parse(fs.readFileSync('lib/data/public-spell-ids.json','utf8')).ids;
+  assert.deepEqual(redirects.map(r=>[r.source,r.destination,r.permanent]),[...renamed.map(id=>[`/mostro/${id}`,`/mostro/${id}-2014`,true]),['/spell/i-re-spirare-sott-acqua','/spell/respirare-sott-acqua',true],...Object.entries(publicIds).map(([id,open])=>[`/spell/${id}`,`/spell/${open}`,true])]);
+  assert.equal(Object.keys(publicIds).length,26);
+  for (const [id,open] of Object.entries(publicIds)) assert.ok(!/agath|hadar|nystul|tasha|leomund|tenser|drawmij|melf|rary|bigby|yolande|mordenkainen|tiluke|evard/.test(open),`${id} -> ${open}`);
   for (const id of renamed) {
     assert.ok(ids2014.has(`${id}-2014`),`${id}: redirects to an existing 2014 sheet`);
     assert.ok(!ids2024.has(id),`${id}: never hides a 2024 sheet`);

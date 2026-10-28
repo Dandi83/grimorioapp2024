@@ -7,6 +7,9 @@ import { securityHeaders } from "./lib/security-headers.mjs";
 const renamedMonsterIds = JSON.parse(readFileSync(new URL("./lib/data/renamed-monster-ids.json", import.meta.url), "utf8"));
 // Duplicate spell rows shown as one card: the hidden address opens the kept one.
 const mergedSpellIds = JSON.parse(readFileSync(new URL("./lib/data/merged-spell-ids.json", import.meta.url), "utf8"));
+// Spell addresses without proper names (lib/spell-public-id.ts): the old address answers 308, straight to the final one.
+const publicSpellIds = JSON.parse(readFileSync(new URL("./lib/data/public-spell-ids.json", import.meta.url), "utf8")).ids;
+const spellAddress = id => publicSpellIds[id] ?? id;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -21,7 +24,8 @@ const nextConfig = {
   async redirects() {
     return [
       ...renamedMonsterIds.map(id => ({ source: `/mostro/${id}`, destination: `/mostro/${id}-2014`, permanent: true })),
-      ...Object.entries(mergedSpellIds).map(([id, kept]) => ({ source: `/spell/${id}`, destination: `/spell/${kept}`, permanent: true })),
+      ...Object.entries(mergedSpellIds).map(([id, kept]) => ({ source: `/spell/${id}`, destination: `/spell/${spellAddress(kept)}`, permanent: true })),
+      ...Object.entries(publicSpellIds).map(([id, open]) => ({ source: `/spell/${id}`, destination: `/spell/${open}`, permanent: true })),
     ];
   },
   async headers() {

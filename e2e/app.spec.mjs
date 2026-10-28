@@ -90,7 +90,8 @@ test("bestiary: 2014 edition list, remembered on the phone, and old 2014 links",
 });
 
 // The 2014 spells published so far (SRD 5.1) come from the project files.
-const spells2014 = JSON.parse(readFileSync(new URL("../lib/data/srd-spells-5.1-it.json", import.meta.url), "utf8")).records.length;
+// The 2014 cards of the SRD 5.1 file and the 2014 summary of the files (Manto del crociato, PROMPT 8).
+const spells2014 = JSON.parse(readFileSync(new URL("../lib/data/srd-spells-5.1-it.json", import.meta.url), "utf8")).records.length + 1;
 
 test("spells: 2014 selector, 2014 card with its source and 2024 link, 2014 creature bollini", async ({ page }) => {
   await page.goto("/grimorio");
@@ -114,12 +115,15 @@ test("spells: 2014 selector, 2014 card with its source and 2024 link, 2014 creat
 });
 
 test("spells: the duplicate Water Breathing address opens the kept card", async ({ page }) => {
+  // Both stored ids of the duplicate reach the address without the odd id (PROMPT 8): «/spell/respirare-sott-acqua».
   await page.goto("/spell/i-re-spirare-sott-acqua");
-  await expect(page).toHaveURL(/\/spell\/i-re-spirare-sott-acqua-2$/);
+  await expect(page).toHaveURL(/\/spell\/respirare-sott-acqua$/);
+  await page.goto("/spell/i-re-spirare-sott-acqua-2");
+  await expect(page).toHaveURL(/\/spell\/respirare-sott-acqua$/);
   await page.goto("/grimorio");
   await page.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("respirare");
-  await expect(page.locator('a[href="/spell/i-re-spirare-sott-acqua"]')).toHaveCount(0);
-  await expect(page.locator('a[href="/spell/i-re-spirare-sott-acqua-2"]')).toHaveCount(1);
+  await expect(page.locator('a[href^="/spell/i-re-spirare-sott-acqua"]')).toHaveCount(0);
+  await expect(page.locator('a[href="/spell/respirare-sott-acqua"]')).toHaveCount(1);
 });
 
 test("spells: casting time filter, together with the other filters, in both editions", async ({ page }) => {
@@ -1747,8 +1751,9 @@ test("admin eye on single cards: a 2024 database spell, a 2014 file spell and a 
   const spellsApi = await (await request.get("/api/catalogo/incantesimi")).json();
   expect(spellsApi.spells.map(spell => spell.id)).not.toContain("palla-di-fuoco");
   expect(spellsApi.spells.map(spell => spell.id)).not.toContain("allarme-2014");
-  expect(spellsApi.spells.filter(spell => spell.edizione === "2014")).toHaveLength(318);
-  expect(spellsApi.spells.filter(spell => spell.edizione !== "2014")).toHaveLength(387);
+  // With the four summaries added on 28/10/2026 (one 2014, three 2024).
+  expect(spellsApi.spells.filter(spell => spell.edizione === "2014")).toHaveLength(319);
+  expect(spellsApi.spells.filter(spell => spell.edizione !== "2014")).toHaveLength(390);
   expect((await (await request.get("/api/catalogo/bestiario")).json()).monsters.map(monster => monster.id)).not.toContain("aboleth");
   await visitor.goto("/grimorio");
   await visitor.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("palla di fuoco");

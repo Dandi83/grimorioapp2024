@@ -57,16 +57,19 @@ function load(relative) {
   const before = await publicEditions();
   const admin = await spells.getAdminSpells();
   assert.equal(admin.length, before.size, 'the same cards');
-  let srd51 = 0, srd521 = 0, own = 0;
+  let srd51 = 0, srd521 = 0, summaries = 0, own = 0;
   for (const card of admin) {
     // The edition the editor shows is the edition of the public list.
     assert.equal(spellEdition(card), before.get(card.id), card.id);
     if (card.fonte === 'SRD 5.1') { srd51++; assert.equal(spellEdition(card), '2014', card.id); }
     else if (card.fonte === 'SRD 5.2.1') { srd521++; assert.equal(spellEdition(card), '2024', card.id); }
+    // The four summaries added on 28/10/2026 are read from the files (one 2014, three 2024).
+    else if (card.sintesi_progetto) { summaries++; assert.equal(spellEdition(card), card.id === 'manto-del-crociato-2014' ? '2014' : '2024', card.id); }
     else own++;
   }
   assert.equal(srd51, 319, 'every SRD 5.1 card has its fixed 2014 edition');
   assert.ok(srd521 >= 20, 'the SRD 5.2.1 cards have their fixed 2024 edition');
+  assert.equal(summaries, 4, 'the summaries of the files keep their edition');
   assert.equal(own, 2, 'cards created here: the dropdown');
 
   // Every card saved from the editor without changes: nothing is written, no edition changes.
@@ -126,7 +129,7 @@ function load(relative) {
   assert.deepEqual(await deleteMonsterAction(del('beholder')), {ok: true}, 'a creature made here');
   assert.equal((await pg.query("SELECT count(*)::int AS n FROM spells WHERE id = 'raggio-di-prova'")).rows[0].n, 0);
   // The label of the source: the same rule in both editions.
-  assert.deepEqual([...new Set(admin.map(card => card.origine))].sort(), ['Aggiunta da te', 'SRD 5.1', 'SRD 5.2.1']);
+  assert.deepEqual([...new Set(admin.map(card => card.origine))].sort(), ['Aggiunta da te', 'SRD 5.1', 'SRD 5.2.1', 'Sintesi originale']);
   assert.ok(admin.every(card => (card.origine === 'SRD 5.1' || card.origine === 'SRD 5.2.1') === !!card.fonte));
   // An original summary edited by the administrator stays NO SRD (its spell is not in the SRD); an SRD card edited has no label.
   assert.equal(spells.spellCardSource({ id: 'interdizione-alle-lame', descrizione: 'Testo riscritto dall’amministratore.' }), 'Sintesi originale');

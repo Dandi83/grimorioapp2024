@@ -16,7 +16,7 @@ import { slugify } from "@/lib/spells-types";
 import { deleteContentWithEdition, getContentEditions, getOriginalSummaries, summaryFromForm } from "@/lib/content-editions";
 import { saveAdminContent } from "@/lib/admin-content-save";
 import { getSrdSource } from "@/lib/srd-descriptions";
-import { getOriginalSource } from "@/lib/original-descriptions";
+import { getOriginalSource, originalEdition } from "@/lib/original-descriptions";
 import { editorLogReady, logEditorSave } from "@/lib/editor-log";
 import { changedSpellFields, SPELL_EDITOR_FIELDS } from "@/lib/spell-update";
 import { db } from "@/lib/db";
@@ -24,6 +24,7 @@ import { getSpellById, publicSpellOfRow, spellCardSource, spellFileRow } from "@
 import { spellSrdDifferences } from "@/lib/srd-modified";
 import { getLegacySpellSource, isLegacySpellId } from "@/lib/srd-spells-2014";
 import { excludeThisDevice } from "@/lib/analytics-exclusion";
+import { spellHref } from "@/lib/spell-public-id";
 
 interface SpellInput {
   nome_italiano: string;
@@ -70,7 +71,7 @@ export async function logoutAction() {
 
 function revalidateSpell(id: string) {
   updateTag("spells");
-  for (const route of ["/", "/grimorio", "/preferiti", "/admin", `/spell/${id}`, "/ricerca-indice.json"]) revalidatePath(route);
+  for (const route of ["/", "/grimorio", "/preferiti", "/admin", spellHref(id), "/ricerca-indice.json"]) revalidatePath(route);
   // Every card may name this spell (lib/spell-reference-catalog.ts): its links follow a new name, edition or card at once.
   revalidatePath("/spell/[id]", "page");
   revalidatePath("/mostro/[id]", "page");
@@ -136,12 +137,12 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   // A save rewrites only the fields that really changed: the others keep their exact bytes.
   const changes = changedSpellFields(base, sent);
   const description = changes.descrizione ?? base.descrizione ?? "";
-  const sourceEdition = getSrdSource(id, description) || getOriginalSource(id, description) ? "2024" : undefined;
+  const sourceEdition = getSrdSource(id, description) ? "2024" : getOriginalSource(id, description) ? originalEdition(id) : undefined;
   // Nothing changed (fields and edition label): nothing is written, no row, no label, no log.
   const label = (await getContentEditions("spell", id)).get(id);
   const edition = formData.get("edition");
   // The edition the public list gives the card: its label, else 2014 for the SRD 5.1 cards, else 2024.
-  const current = label ?? (isLegacySpellId(id) ? "2014" : "2024");
+  const current = label ?? (isLegacySpellId(id) || originalEdition(id) === "2014" ? "2014" : "2024");
   const sameEdition = edition === null || (edition === "" ? !label : edition === current);
   // «Sintesi originale»: only for a card added here (an SRD card or one of the project summaries has its own origin).
   if (fileRow || spellCardSource({ id, descrizione: description }) !== "Aggiunta da te") formData.delete("sintesi-campo");

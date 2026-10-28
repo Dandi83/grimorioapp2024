@@ -17,6 +17,7 @@ import { CardOriginBox } from "@/components/card-origin-box";
 import { SpellSheetBody, SpellSheetHeading } from "@/components/spell-sheet";
 import { getSpellById } from "@/lib/spells";
 import { spellName } from "@/lib/spell-name";
+import { publicSpellId, spellHref } from "@/lib/spell-public-id";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
@@ -29,7 +30,7 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const { getSpellIndex } = await import("@/lib/spell-index");
-  return (await getSpellIndex()).map(({ id }) => ({ id }));
+  return (await getSpellIndex()).map(({ id }) => ({ id: publicSpellId(id) }));
 }
 
 export async function generateMetadata({
@@ -49,7 +50,7 @@ export async function generateMetadata({
   const titolo = spellName(spell.nome_italiano, spell.edizione);
   const description = spell.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
     `${titolo}, incantesimo di ${spell.scuola}.`;
-  const url = `https://ilgrimorio.app/spell/${encodeURIComponent(spell.id)}`;
+  const url = `https://ilgrimorio.app${spellHref(spell.id)}`;
   return {
     title: `${titolo} — Il Grimorio.App`,
     description,
@@ -109,7 +110,7 @@ export default async function SpellDetailPage({
           }}
         />
         <BackButton fallback="/grimorio" />
-        <ShareButton path={`/spell/${encodeURIComponent(spell.id)}`} title={titolo} />
+        <ShareButton path={spellHref(spell.id)} title={titolo} />
         <FavoriteButton id={spell.id} />
         <div className="relative px-6 pb-2 pt-[92px]">
           {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}

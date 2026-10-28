@@ -66,6 +66,7 @@ console.log('[favorites] Ascending numeric spell levels and CR (including fracti
 // Public catalog and favorites share SpellRow: original summaries must have plain titles.
 const SpellRow=load(path.join(root,'components/spell-row.tsx')).SpellRow;
 const originalSummaries=JSON.parse(readFileSync(path.join(root,'lib/data/original-descriptions-2024.json'))).spells;
+const publicIds=JSON.parse(readFileSync(path.join(root,'lib/data/public-spell-ids.json'))).ids;
 assert.ok(originalSummaries.some(s=>s.id==='amicizia'),'Include the reported Amicizia regression');
 for(const summary of originalSummaries){
  const row={...spell,...summary,edizione:'2024'};
@@ -73,7 +74,8 @@ for(const summary of originalSummaries){
  const title=markup.match(/<p\b[^>]*>([\s\S]*?)<\/p>/)?.[1];
  assert.ok(title,`Missing title for ${row.id}`);
  assert.doesNotMatch(title,/<sup\b|\*/,`No asterisk beside ${row.id} in public lists`);
- assert.ok(markup.includes(`/spell/${row.id}`));
+ // The address without proper names (lib/spell-public-id.ts) when the stored id has one.
+ assert.ok(markup.includes(`/spell/${publicIds[row.id]??row.id}`),row.id);
  assert.doesNotMatch(markup,/D&amp;D5e|lucide-book-open/,'Edition labels belong only inside detail pages');
 }
-console.log('[spell lists] All 49 original summaries have plain titles without edition badges; detail links preserved.');
+console.log('[spell lists] All 53 original summaries have plain titles without edition badges; detail links preserved.');

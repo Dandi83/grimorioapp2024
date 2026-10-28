@@ -2,6 +2,7 @@ import { srdDescriptionDifferences } from "./srd-descriptions";
 import { srdMonsterDifferences, srdMonsterRecordEdition } from "./srd-monsters";
 import { isLegacySpellId, legacySpellDifferences } from "./srd-spells-2014";
 import { wordDiff, type DiffPart } from "./word-diff";
+import { spellHref } from "./spell-public-id";
 
 /**
  * «Schede SRD modificate» (reserved area): spells and creatures with an SRD record of the same id whose text no
@@ -58,7 +59,7 @@ const text = (value: unknown) => (value === null || value === undefined ? "" : S
 function card(kind: SrdCardKind, id: string, name: string, edition: "2014" | "2024", values: Record<string, unknown>, differences: { field: string; srd: string | number }[]): SrdModifiedCard {
   return {
     kind, id, name, edition,
-    href: kind === "incantesimo" ? `/spell/${id}` : `/mostro/${id}`,
+    href: kind === "incantesimo" ? spellHref(id) : `/mostro/${id}`,
     fields: differences.map(({ field, srd }) => ({
       field, label: LABELS[field] ?? field, srd: text(srd), current: text(values[field]), diff: wordDiff(text(srd), text(values[field])),
     })),

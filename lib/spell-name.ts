@@ -13,7 +13,7 @@ const PROPER: Record<string, string> = {
   aganazzar: "Aganazzar", maximilian: "Maximilian", snilloc: "Snilloc", tiamat: "Tiamat", bahamut: "Bahamut",
   // Names chosen by Daniele for some spells: «Armatura di Agata», «Braccia di Ada», «Calderone ribollente di Ash»…
   agata: "Agata", ada: "Ada", ash: "Ash", iolanda: "Iolanda",
-  // «0TILUKE» (a zero) in two stored names: shown as the manual prints it.
+  // «0TILUKE» (a zero) in two stored names: never shown (spellName drops it, PROMPT 8).
   "0tiluke": "Otiluke",
 };
 
@@ -23,7 +23,8 @@ const PROPER: Record<string, string> = {
  */
 export function spellName(name: string, edition?: string): string {
   if (!name) return name;
-  const lower = name.trim().replace(/\s+/g, " ").toLocaleLowerCase("it");
+  // «Sfera elastica», «Sfera congelante»: the proper name of the two stored names is not shown (display only).
+  const lower = name.trim().replace(/\s+/g, " ").toLocaleLowerCase("it").replace(/ di [0o]tiluke\b/u, "");
   const words = lower.replace(/[\p{L}\p{N}]+/gu, (word, offset: number) =>
     PROPER[word] ?? (word === "otto" && /\bdi $/.test(lower.slice(0, offset)) ? "Otto" : word));
   const first = words.replace(/\p{L}/u, letter => letter.toLocaleUpperCase("it"));

@@ -17,6 +17,7 @@ import type { Character } from "@/lib/characters";
 import { digitalGroup, digitalGroups, abilityNames } from "@/lib/digital-sheet";
 import { getPaperValue } from "@/lib/paper-sheet";
 import { changeDashboardHp, changeAmmo, changeResource } from "@/lib/character-dashboard";
+import { spellHref } from "@/lib/spell-public-id";
 
 export function CharacterDashboard({
   c,
@@ -428,7 +429,7 @@ export function CharacterDashboard({
                 <a
                   className="pg-spell"
                   key={s.id}
-                  href={`/spell/${encodeURIComponent(s.id)}`}
+                  href={spellHref(s.id)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

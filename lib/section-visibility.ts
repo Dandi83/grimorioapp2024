@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { unstable_cache } from "next/cache";
 import { pool } from "./db";
 import { PUBLIC_SECTIONS, isPartId, type PublicSectionKey } from "./public-sections";
+import { publicSpellId } from "./spell-public-id";
 
 /**
  * Which public sections are hidden (/admin/sezioni). One row per section that was ever switched;
@@ -38,7 +39,8 @@ interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards
 
 /** The address of a card, which is also how a hidden card is named in the lists of hidden things. */
 // An added subclass has no page of its own (it is shown in the sheet of its class): "/sottoclassi/<id>" only names it.
-export const cardPath = (kind: CardKind, id: string) => `${kind === "incantesimo" ? "/spell" : kind === "mostro" ? "/mostro" : "/sottoclassi"}/${id}`;
+// A spell is named by its public address (lib/spell-public-id.ts): the stored id is the same on both sides of every check.
+export const cardPath = (kind: CardKind, id: string) => `${kind === "incantesimo" ? "/spell" : kind === "mostro" ? "/mostro" : "/sottoclassi"}/${kind === "incantesimo" ? publicSpellId(id) : id}`;
 
 let tablesReady: Promise<void> | undefined;
 /** Additive migration: the tables are created by the first switch (never by a public page). */

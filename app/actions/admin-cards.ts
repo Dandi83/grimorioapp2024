@@ -9,6 +9,7 @@ import { SECTIONS_TAG, setCardHidden, type CardKind } from "@/lib/section-visibi
 import { getSpellIndex } from "@/lib/spell-index";
 import { getSubclass } from "@/lib/subclasses";
 import { spellName } from "@/lib/spell-name";
+import { storedSpellId } from "@/lib/spell-public-id";
 
 type CardSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
 
@@ -52,7 +53,8 @@ export async function setCardVisibilityAction(kind: string, id: string, hidden: 
 /** The card of a contested page (/spell/<id>, /mostro/<id>), or undefined for any other page. */
 export async function contestedCard(path: string | null): Promise<{ kind: "incantesimo" | "mostro"; id: string } | undefined> {
   const match = /^\/(spell|mostro)\/([a-z0-9-]+)$/.exec(path ?? "");
-  return match ? { kind: match[1] === "spell" ? "incantesimo" : "mostro", id: match[2] } : undefined;
+  if (!match) return undefined;
+  return match[1] === "spell" ? { kind: "incantesimo", id: storedSpellId(match[2]) } : { kind: "mostro", id: match[2] };
 }
 
 /** «Nascondi in attesa di verifica» on a rights request: the eye of the contested card, from the request itself. */

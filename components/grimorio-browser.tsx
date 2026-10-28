@@ -21,6 +21,7 @@ import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, c
 import { useReportSearch } from "@/components/statistics/use-report-search";
 import { searchList } from "@/lib/fuzzy-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
+import { spellHref } from "@/lib/spell-public-id";
 
 const PAGE_SIZE = 40;
 export type SpellEdition = "2024" | "2014";
@@ -262,7 +263,7 @@ export function GrimorioBrowser({
 // Memoized: toggling one star re-renders only that row.
 /** noSrd: the administrator sees «*» after the name of a NO SRD card (components/admin-edit/no-srd-mark.tsx). */
 const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false, noSrd = false }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean; noSrd?: boolean }) {
-  const href = `/spell/${spell.id}`;
+  const href = spellHref(spell.id);
   const prefetch = useIntentPrefetch(href);
   const details = [spell.scuola, castingTimeShort(spell.tempo_di_lancio)].filter(Boolean).join(" · ");
   return (
