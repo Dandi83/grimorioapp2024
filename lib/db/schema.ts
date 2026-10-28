@@ -135,6 +135,13 @@ export const ratings = pgTable("grimorio_ratings", {
 
 export type AnalyticsEventRow = typeof analyticsEvents.$inferSelect;
 
+/** Send limits of the statistics (lib/analytics.ts): a keyed hash of the address that changes every day, kept one day. */
+export const analyticsLimits = pgTable("grimorio_analytics_limits", {
+  address_key: text("address_key").notNull(),
+  new_visitor: boolean("new_visitor").notNull().default(false),
+  at: timestamp("at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 /** Events marked on the statistics chart by the administrator (lib/analytics.ts): a day and a short text. */
 export const analyticsMarkers = pgTable("grimorio_analytics_markers", {
   id: uuid("id").primaryKey(),
@@ -167,6 +174,15 @@ export const feedbackReports = pgTable("grimorio_feedback_reports", {
   email_esito: text("email_esito"),
   // «dalla valutazione: <voto>»: a report written after the faces of the Home (reserved area only).
   etichetta: text("etichetta"),
+  // Arrived over the hourly ceiling of the site: saved without email nor push (28 October 2026).
+  picco: boolean("picco").notNull().default(false),
+});
+
+/** The notices of new reports and proposals in the last hours (lib/notice-limit.ts): the hourly ceiling and its summary. */
+export const noticeLog = pgTable("grimorio_notice_log", {
+  tipo: text("tipo").notNull(),
+  riassunto: boolean("riassunto").notNull().default(false),
+  inviato_il: timestamp("inviato_il", { withTimezone: true }).notNull().defaultNow(),
 });
 
 /** Send limit of the reports: salted device hashes, deleted after one day (lib/feedback.ts). */
@@ -307,6 +323,8 @@ export const homebrewProposals = pgTable("grimorio_homebrew_proposals", {
   homebrew_id: text("homebrew_id"),
   /** The licence accepted with the form («CC BY-NC-SA 4.0»); empty on the proposals sent before it. */
   licenza: text("licenza"),
+  // Arrived over the hourly ceiling of the site: saved without a notice (28 October 2026).
+  picco: boolean("picco").notNull().default(false),
 });
 
 /** Send limits of the proposals: salted hash of the address, one day. */

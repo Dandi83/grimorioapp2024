@@ -3,7 +3,8 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { adminBadgeCount } from "@/lib/admin-badge";
 import { FORM_UNAVAILABLE, checkFormToken, feedbackAvailable, issueFormToken, turnstilePassed } from "@/lib/feedback";
 import { PROPOSAL_MAX_BYTES, parseProposal } from "@/lib/homebrew-types";
-import { proposalDeviceKey, proposalLimited, recordProposalSend, saveProposal } from "@/lib/homebrew";
+import { proposalDeviceKey, proposalLimits, recordProposalSend, saveProposal } from "@/lib/homebrew";
+import { noticeTurn, summaryNotice } from "@/lib/notice-limit";
 import { partId } from "@/lib/public-sections";
 import { proposalPayload, sendPush } from "@/lib/push";
 import { visibilityState } from "@/lib/section-visibility";
@@ -65,12 +66,19 @@ export async function POST(request: NextRequest) {
   if (!(await turnstilePassed((body as Record<string, unknown>).turnstile))) return reply({ error: "Verifica antispam non superata: ricarica la pagina e riprova." }, 403);
   const key = proposalDeviceKey(request.headers);
   try {
-    if (await proposalLimited(key)) return reply({ error: "Hai inviato molte proposte: riprova più tardi." }, 429);
-    const proposal = await saveProposal({ ...parsed.value, impronta: key });
+    const { limited, peak } = await proposalLimits(key);
+    if (limited) return reply({ error: "Hai inviato molte proposte: riprova più tardi." }, 429);
+    // Over the ceiling of the whole site the proposal is saved all the same, without a notice.
+    const proposal = await saveProposal({ ...parsed.value, impronta: key, picco: peak });
     await recordProposalSend(key);
+    if (peak) return reply({ ok: true });
     after(async () => {
+      // At most NOTICES_PER_HOUR notices an hour, then a single summary (lib/notice-limit.ts).
+      const turn = await noticeTurn("proposte").catch(() => "send" as const);
+      if (turn === "skip") return;
       const badge = await adminBadgeCount().catch(() => null);
-      await sendPush("proposte", proposalPayload(proposal, badge)).catch(() => console.warn("[notifiche] Invio della notifica non riuscito."));
+      const payload = turn === "summary" ? { ...summaryNotice("proposte"), ...(typeof badge === "number" ? { badge } : {}) } : proposalPayload(proposal, badge);
+      await sendPush("proposte", payload).catch(() => console.warn("[notifiche] Invio della notifica non riuscito."));
     });
     return reply({ ok: true });
   } catch {

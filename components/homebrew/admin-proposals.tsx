@@ -100,6 +100,8 @@ export interface ProposalCardData {
   homebrewId?: string | null;
   /** The licence accepted with the form; null: sent before it, not to be published without the author's consent. */
   licenza: string | null;
+  /** Arrived over the hourly ceiling of the site: saved without a notice. */
+  picco?: boolean;
   draft: HomebrewDraft;
 }
 
@@ -152,6 +154,7 @@ export function ProposalCard({ data }: { data: ProposalCardData }) {
     <li className="rounded-[14px] border-[1.5px] border-border bg-card p-3.5" data-proposal={data.id}>
       <p className="break-words font-serif text-xl font-bold text-foreground">{data.nome}</p>
       <p className="text-[13px] text-muted">di {data.nickname} · {data.quando}</p>
+      {data.picco && <p className="text-[12px] font-bold text-primary" data-picco="">Arrivata durante un picco (senza notifica)</p>}
       <p className="text-[13px] text-muted" data-proposal-license={data.licenza ?? ""}>{data.licenza ? `Licenza accettata: ${data.licenza}` : "Licenza non indicata"}</p>
       <div className="mt-2 flex flex-wrap gap-1.5">
         <span className={`${pill} border-border bg-background`}>{data.edizione} · GS {data.gs}</span>

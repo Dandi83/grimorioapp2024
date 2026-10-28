@@ -7,6 +7,8 @@ import {
   analyticsSecret,
   storeAnalyticsEvent,
   storeRating,
+  admitEvent,
+  analyticsAddressKey,
   excludeVisitor,
   type CardInfo,
 } from "@/lib/analytics";
@@ -22,6 +24,7 @@ import {
   visitorOf,
   visitorExcluded,
 } from "@/lib/analytics-exclusion";
+import { clientAddress } from "@/lib/admin-login-limit";
 import { getSpellById } from "@/lib/spells";
 import { getMonsterById } from "@/lib/monsters";
 import { isSrdAnimal } from "@/lib/monsters-types";
@@ -65,7 +68,10 @@ export async function GET(request: NextRequest) {
   if (consent) result.cookies.set(CONSENT, consent, CHOICE_OPTIONS);
   // Counted: the random visitor ID is given here, before the first events of the page, so the events sent
   // together at the opening share it.
-  if (allowed(request) && !excluded && consent !== "rejected" && !visitorFrom(request)) {
+  // Only a few new IDs an hour for one network address (lib/analytics.ts, ANALYTICS_LIMITS): a script without the
+  // cookie cannot make up visitors; a real browser over the limit is simply not counted.
+  if (allowed(request) && !excluded && consent !== "rejected" && !visitorFrom(request)
+    && await admitEvent(analyticsAddressKey(clientAddress(request.headers)), true).catch(() => false)) {
     const id = randomUUID();
     result.cookies.set(VISITOR, `${id}.${sign(id)}`, options);
   }
@@ -115,6 +121,10 @@ export async function POST(request: NextRequest) {
     )
   )
     return response({ ignored: true, reason: "bot" });
+  // The limits per network address, for new visitor IDs and for the whole site (ANALYTICS_LIMITS): over them the
+  // event is dropped in silence, the visitor sees nothing.
+  if (!(await admitEvent(analyticsAddressKey(clientAddress(request.headers)), !known).catch(() => true)))
+    return response({ ok: true, stored: false });
   // «Come ti trovi con il Grimorio?»: only the vote, the day and the kind of device, in its own table.
   if (input.event === "valutazione") {
     try {

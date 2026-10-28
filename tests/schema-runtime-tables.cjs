@@ -45,6 +45,7 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
  const limit=load('lib/admin-login-limit.ts');
  await limit.loginBlocked(limit.addressKey('203.0.113.1'));
  await load('lib/feedback.ts').ensureFeedbackTables();
+ await load('lib/notice-limit.ts').noticeTurn('segnalazioni');
  deps['next/headers']={cookies:async()=>({get:()=>undefined,set(){},delete(){}})};
  await load('lib/admin-auth.ts').startAdminSession();
  deps['next/cache']={unstable_cache:fn=>fn};
@@ -55,7 +56,7 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
  await load('lib/subclasses.ts').ensureSubclassTables();
  deps['web-push']={generateVAPIDKeys:()=>({publicKey:'p',privateKey:'k'})};
  await load('lib/push.ts').ensurePushTables();
- for(const table of [schema.contentEditions,schema.originalSummaries,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.ratings,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.adminSessions,schema.contentOverrides,schema.editorLog,schema.sectionVisibility,schema.sectionVisibilityLog,schema.sectionParts,schema.sectionPartsLog,schema.cardVisibility,schema.cardVisibilityLog,schema.homebrew,schema.homebrewProposals,schema.homebrewLimits,schema.homebrewLog,schema.subclasses,schema.subclassLog,schema.pushKeys,schema.pushSubscriptions,schema.pushTypes]){
+ for(const table of [schema.contentEditions,schema.originalSummaries,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.ratings,schema.analyticsLimits,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.noticeLog,schema.adminSessions,schema.contentOverrides,schema.editorLog,schema.sectionVisibility,schema.sectionVisibilityLog,schema.sectionParts,schema.sectionPartsLog,schema.cardVisibility,schema.cardVisibilityLog,schema.homebrew,schema.homebrewProposals,schema.homebrewLimits,schema.homebrewLog,schema.subclasses,schema.subclassLog,schema.pushKeys,schema.pushSubscriptions,schema.pushTypes]){
   const config=getTableConfig(table);
   const {rows}=await pg.query('SELECT column_name,data_type,is_nullable,column_default FROM information_schema.columns WHERE table_name=$1 ORDER BY ordinal_position',[config.name]);
   assert.ok(rows.length,`${config.name} is created by the runtime code`);

@@ -32,6 +32,8 @@ interface FeedbackReport {
   email_esito: string | null;
   /** «dalla valutazione: <voto>» when written from the faces of the Home. */
   etichetta: string | null;
+  /** Arrived when the whole site was over its hourly ceiling: saved, but without email nor push. */
+  picco?: boolean;
 }
 
 let tablesReady: Promise<void> | undefined;
@@ -64,6 +66,8 @@ export function ensureFeedbackTables() {
     await pool.query("ALTER TABLE grimorio_feedback_reports ADD COLUMN IF NOT EXISTS email_esito text");
     // Added on 28 October 2026: the inner label of a report written after the faces of the Home.
     await pool.query("ALTER TABLE grimorio_feedback_reports ADD COLUMN IF NOT EXISTS etichetta text");
+    // 28 October 2026: a report arrived over the hourly ceiling of the site is saved without email nor push.
+    await pool.query("ALTER TABLE grimorio_feedback_reports ADD COLUMN IF NOT EXISTS picco boolean NOT NULL DEFAULT false");
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_feedback_limits (
       device_hash text NOT NULL,
       sent_at timestamptz NOT NULL DEFAULT now()
@@ -132,8 +136,12 @@ export function deviceKey(headers: Headers): string | null {
   return hmac(`grimorio-feedback-device:${address}`);
 }
 
-/** True when this device (or everyone together) already sent too many reports. */
-export async function feedbackLimited(key: string | null): Promise<boolean> {
+/**
+ * limited: this device (address) already sent too many reports (refused, 429). peak: everyone together is over
+ * the hourly ceiling: the report is saved all the same, without email nor push, marked «arrivata durante un picco»,
+ * so a spammer cannot close the form to the others nor fill the mailbox (28 October 2026).
+ */
+export async function feedbackLimits(key: string | null): Promise<{ limited: boolean; peak: boolean }> {
   await ensureFeedbackTables();
   const { rows } = await pool.query<{ hour: number; day: number; overall: number }>(
     `SELECT count(*) FILTER (WHERE device_hash = $1 AND sent_at > now() - interval '1 hour')::int AS hour,
@@ -143,8 +151,10 @@ export async function feedbackLimited(key: string | null): Promise<boolean> {
     [key ?? ""],
   );
   const { hour, day, overall } = rows[0];
-  if (overall >= FEEDBACK_LIMITS.overallPerHour) return true;
-  return key !== null && (hour >= FEEDBACK_LIMITS.perHour || day >= FEEDBACK_LIMITS.perDay);
+  return {
+    limited: key !== null && (hour >= FEEDBACK_LIMITS.perHour || day >= FEEDBACK_LIMITS.perDay),
+    peak: overall >= FEEDBACK_LIMITS.overallPerHour,
+  };
 }
 
 export async function recordFeedbackSend(key: string | null): Promise<void> {
@@ -153,12 +163,13 @@ export async function recordFeedbackSend(key: string | null): Promise<void> {
   await pool.query("DELETE FROM grimorio_feedback_limits WHERE sent_at < now() - interval '1 day'");
 }
 
-export async function saveFeedback(input: FeedbackInput): Promise<FeedbackReport> {
+export async function saveFeedback(input: FeedbackInput, options: { picco?: boolean } = {}): Promise<FeedbackReport> {
   await ensureFeedbackTables();
   const { rows } = await pool.query<FeedbackReport>(
-    `INSERT INTO grimorio_feedback_reports (id, tipo, messaggio, percorso, edizione, email_risposta, etichetta)
-     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-    [randomUUID(), input.tipo, input.messaggio, input.percorso, input.edizione, input.email, input.etichetta ?? null],
+    `INSERT INTO grimorio_feedback_reports (id, tipo, messaggio, percorso, edizione, email_risposta, etichetta, picco, email_esito)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+    [randomUUID(), input.tipo, input.messaggio, input.percorso, input.edizione, input.email, input.etichetta ?? null, !!options.picco,
+      options.picco ? "Non inviata: arrivata durante un picco di segnalazioni." : null],
   );
   return rows[0];
 }
@@ -310,6 +321,37 @@ export async function sendFeedbackEmailWithReason(report: FeedbackReport, contex
   } catch {
     console.warn("[segnalazioni] Email non inviata: Resend non raggiungibile. La segnalazione è salvata.");
     return { result: "failed", reason: "Resend non raggiungibile (rete o tempo scaduto)." };
+  }
+}
+
+/**
+ * The single email of a busy hour (lib/notice-limit.ts): only the count is said, never a visitor's text.
+ * Nothing without RESEND_API_KEY and FEEDBACK_TO_EMAIL.
+ */
+export async function sendSummaryEmail(origin: string, send: typeof fetch = fetch): Promise<EmailResult> {
+  const key = process.env.RESEND_API_KEY;
+  const to = process.env.FEEDBACK_TO_EMAIL;
+  if (!key || !to) return "not-configured";
+  try {
+    const response = await send("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: process.env.FEEDBACK_FROM_EMAIL || RESEND_TEST_SENDER,
+        to: to.split(",").map(address => address.trim()).filter(Boolean),
+        subject: "[Grimorio] Molte segnalazioni nell’ultima ora",
+        text: [
+          "Nell’ultima ora sono arrivate molte segnalazioni su Il Grimorio.App.",
+          "Per un’ora le prossime arrivano senza email: sono tutte salvate nell’area riservata.",
+          "",
+          `Apri le segnalazioni: ${origin}/admin/segnalazioni`,
+        ].join("\n"),
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+    return response.ok ? "sent" : "failed";
+  } catch {
+    return "failed";
   }
 }
 
