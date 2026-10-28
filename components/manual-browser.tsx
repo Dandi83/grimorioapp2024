@@ -3,6 +3,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search, ArrowRight, BookOpen } from "lucide-react";
 import { MANUAL_CATEGORIES, type ManualCategory } from "@/lib/manual-types";
+import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
+import { DidYouMean } from "@/components/search/did-you-mean";
 interface ManualIndexEntry {
   id: string;
   title: string;
@@ -20,17 +22,18 @@ export function ManualBrowser({
 }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<ManualCategory | "tutte">(initialCategory || "tutte");
-  const filtered = useMemo(
-    () =>
-      entries
-        .filter(
-          (entry) =>
-            (category === "tutte" || entry.category === category) &&
-            entry.search.includes(query.toLocaleLowerCase("it").trim()),
-        )
-        .sort((a, b) => a.title.localeCompare(b.title, "it")),
-    [entries, category, query],
-  );
+  // The words of the whole text, as before; typos only in the titles (lib/fuzzy-search.ts), after the exact ones.
+  const texts = useMemo(() => new Map(entries.map((entry) => [entry.id, normalizeSearch(entry.search)])), [entries]);
+  const { filtered, suggestion } = useMemo(() => {
+    const rows = entries
+      .filter((entry) => category === "tutte" || entry.category === category)
+      .sort((a, b) => a.title.localeCompare(b.title, "it"));
+    const needle = normalizeSearch(query);
+    const inText = rows.filter((entry) => texts.get(entry.id)!.includes(needle));
+    if (!needle || inText.length) return { filtered: inText, suggestion: null };
+    const { approximate, suggestion } = searchList(rows, query, (entry) => entry.title);
+    return { filtered: approximate, suggestion: suggestion?.title ?? null };
+  }, [entries, texts, category, query]);
   return (
     <div className="min-w-0">
       <header className="border-b border-border px-6 pb-5 pt-7">
@@ -93,6 +96,7 @@ export function ManualBrowser({
           {filtered.length} {filtered.length === 1 ? "voce" : "voci"}
         </p>
       </div>
+      {suggestion && <DidYouMean name={suggestion} onPick={setQuery} className="mx-6 mb-3" />}
       <ul className="px-6 pb-6">
         {filtered.map((entry) => (
           <li key={entry.id} className="border-b border-divider">

@@ -545,7 +545,12 @@ test("magic items 2024: Compendio tile, search, combined filters in the address,
   const search = page.getByRole("searchbox", { name: "Cerca un oggetto magico" });
   await search.fill("spada");
   await expect(rows.first()).toBeVisible();
-  for (const text of await rows.allInnerTexts()) expect(text.toLowerCase()).toContain("spada");
+  // The names with «spada» first; the similar ones (typos: Spadone…) apart, under «Risultati simili».
+  const exact = page.locator('main ul[data-exact-results] a[href^="/oggetti-magici/"]');
+  expect(await exact.count()).toBeGreaterThanOrEqual(3);
+  for (const text of await exact.allInnerTexts()) expect(text.toLowerCase()).toContain("spada");
+  await expect(page.locator("main ul[data-similar-list]").getByRole("link", { name: /^Spadone/ }).first()).toBeVisible();
+  await expect(page.locator("[data-did-you-mean]")).toHaveCount(0);
   await search.fill("pozione");
   expect(await rows.count()).toBeGreaterThan(10);
   await expect(page).toHaveURL(/q=pozione/);
@@ -614,7 +619,9 @@ test("magic items 2014: selector remembered, search, renamed and single-edition 
   await expect(page.getByText("SRD 5.1", { exact: true })).toBeVisible();
   const search = page.getByRole("searchbox", { name: "Cerca un oggetto magico" });
   await search.fill("spada");
-  for (const text of await rows.allInnerTexts()) expect(text.toLowerCase()).toContain("spada");
+  const exact = page.locator('main ul[data-exact-results] a[href^="/oggetti-magici/"]');
+  await expect(exact.first()).toBeVisible();
+  for (const text of await exact.allInnerTexts()) expect(text.toLowerCase()).toContain("spada");
   await search.fill("pozione");
   await expect(rows.filter({ hasText: "Pozione dell'invisibilità" })).toHaveCount(1);
   await search.fill("");

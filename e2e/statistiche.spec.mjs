@@ -152,11 +152,16 @@ test("installed app: the first opening from the icon is sent once, with the devi
   expect(first.device).toBe("iphone");
   expect(first.path).toBe("/");
   // Other pages, a reload, a new start of the app: never again from this device.
+  // Each view is waited for before moving on: a reload too early would cancel the one of the page left.
+  const views = () => sent.filter(event => event.event === "page_view").length;
+  await expect.poll(views).toBeGreaterThanOrEqual(1);
   await page.goto("/grimorio");
+  await expect.poll(views).toBeGreaterThanOrEqual(2);
   await page.reload();
+  await expect.poll(views).toBeGreaterThanOrEqual(3);
   const again = await context.newPage();
   await again.goto("/bestiario");
-  await expect.poll(() => sent.filter(event => event.event === "page_view").length).toBeGreaterThanOrEqual(4);
+  await expect.poll(views).toBeGreaterThanOrEqual(4);
   expect(sent.filter(event => event.event === "first_standalone_open")).toHaveLength(1);
   expect(sent.filter(event => event.event === "page_view").every(event => event.installed === true)).toBe(true);
   // The browser says the app was installed (Android, computer): app_installed with the device.

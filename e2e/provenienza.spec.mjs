@@ -33,9 +33,12 @@ const adminRows = page => page.locator("main li[data-card-row]");
 const resultCount = async page => Number(await page.locator("[data-result-count]").getAttribute("data-result-count"));
 /** «NO SRD» counter on, the number of rows, counter off again. */
 async function adminNoSrd(page) {
-  await page.locator('[data-counter="nosrd"]').click();
+  const counter = page.locator('[data-counter="nosrd"]');
+  await counter.click();
+  // The list is filtered after the click: its count is read once it shows the rows of the counter.
+  await expect.poll(async () => (await resultCount(page)) === Number((await counter.innerText()).match(/\d+/)[0])).toBe(true);
   const count = await resultCount(page);
-  await page.locator('[data-counter="nosrd"]').click();
+  await counter.click();
   return count;
 }
 const pillCount = (page, pill) => page.locator(`main li[data-card-row] [data-row-pill="${pill}"]`).count();
@@ -98,7 +101,8 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
     await expect(editor).toHaveCount(0);
   }
   // The list of the reserved area: the NO SRD counter, the pills of the rows.
-  expect(await adminNoSrd(page)).toBe(base2014.nosrd + 2);
+  // A new card reaches the list after the save has refreshed it.
+  await expect.poll(() => adminNoSrd(page)).toBe(base2014.nosrd + 2);
   await page.getByRole("searchbox", { name: "Cerca in Incantesimi" }).fill("prova provenienza");
   await expect(adminRows(page).filter({ hasText: SUMMARY }).locator('[data-row-pill="Sintesi"]')).toHaveCount(1);
   await expect(adminRows(page).filter({ hasText: ADDED }).locator('[data-row-pill="Aggiunta da te"]')).toHaveCount(1);
@@ -112,11 +116,11 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
   await page.getByRole("dialog").locator("#nome").fill(CREATURE);
   await page.getByRole("dialog").getByRole("button", { name: "Crea nel catalogo" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  expect(await adminNoSrd(page)).toBe(base2024Monsters + 1);
+  await expect.poll(() => adminNoSrd(page)).toBe(base2024Monsters + 1);
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fincantesimi");
   // «SRD modificate»: SRD cards that no longer match their record (the test database has some), NO SRD too.
   const modifiedAdmin = Number((await page.locator('[data-counter="modificate"]').innerText()).match(/\d+/)[0]);
-  expect(await adminNoSrd(page)).toBe(49 + modifiedAdmin);
+  await expect.poll(() => adminNoSrd(page)).toBe(49 + modifiedAdmin);
 
   // Lists of the site, 2024: the 49 original summaries; SRD = the rest.
   await edition(page, "2024");

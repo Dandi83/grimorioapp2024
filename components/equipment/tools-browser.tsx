@@ -10,8 +10,9 @@ import { useEquipmentEdition } from "@/components/equipment/use-equipment-editio
 import { SectionEditionPill } from "@/components/edition/edition-pill";
 import type { ToolListRow } from "@/lib/tools-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
+import { DidYouMean } from "@/components/search/did-you-mean";
+import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
 
-const fold = (text: string) => text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, " ");
 const GROUPS: Record<EquipmentEdition, [string, string][]> = {
   "2024": [["artigiano", "Strumenti da artigiano"], ["altri", "Altri strumenti"]],
   "2014": [["artigiano", "Strumenti da artigiano"], ["giochi", "Giochi"], ["musicali", "Strumenti musicali"], ["altri", "Altri strumenti"]],
@@ -54,9 +55,11 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
     url.searchParams.delete("manca");
     window.history.replaceState(window.history.state, "", url);
   }, []);
-  const needle = fold(query.trim());
+  const needle = normalizeSearch(query);
   const items = rows[edition];
-  const found = useMemo(() => (needle ? items.filter(row => fold(row.nome).includes(needle)) : items), [items, needle]);
+  // Typos tolerated (lib/fuzzy-search.ts): the exact names first in each group, then the similar ones.
+  const result = useMemo(() => searchList(items, query, row => row.nome), [items, query]);
+  const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
@@ -74,6 +77,7 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
           className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
       </label>
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "strumento trovato" : "strumenti trovati"}`}</p>
+      {result.suggestion && <DidYouMean name={result.suggestion.nome} onPick={setQuery} className="mt-2" />}
       {found.length === 0 && <p className="mt-3 text-[15px]">Nessuno strumento con questo nome.</p>}
       <div className="mt-2 space-y-5">
         {GROUPS[edition].map(([key, title]) => {

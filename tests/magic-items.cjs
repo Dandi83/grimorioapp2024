@@ -85,7 +85,10 @@ for(const edition of ['2024','2014']){
  for(const word of ['spada','pozione']){
   const found=types.searchMagicItems(rows[edition],word,none);
   assert.ok(found.length>=3,`${edition} ${word}`);
-  assert.ok(found.every(row=>row.nome.toLowerCase().includes(word)),`${edition} ${word}`);
+  // The names with the word first, then only the similar ones (typos, lib/fuzzy-search.ts).
+  const exact=found.findIndex(row=>!row.nome.toLowerCase().includes(word));
+  assert.ok(exact===-1||found.slice(exact).every(row=>!row.nome.toLowerCase().includes(word)),`${edition} ${word}: exact first`);
+  assert.ok(exact===-1||exact>=3,`${edition} ${word}`);
  }
  // Sorted A–Z.
  const names=rows[edition].map(r=>r.nome);
