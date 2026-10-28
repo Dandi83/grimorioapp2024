@@ -1,7 +1,7 @@
 import "server-only";
-import { randomUUID } from "node:crypto";
+import { createHmac, randomUUID } from "node:crypto";
 import { pool } from "./db";
-import type { AnalyticsInput } from "./analytics-events";
+import type { AnalyticsInput, Vote } from "./analytics-events";
 import { INSTAGRAM_START, ORIGINS, DEVICES, type Origin, type Device } from "./analytics-stats";
 /** The panel of Vercel Analytics: every visitor, without the consent details. */
 export const VERCEL_ANALYTICS_URL = "https://vercel.com/grimorio-app/grimorioapp2024/analytics";
@@ -56,8 +56,14 @@ async function ensureSchema() {
         await client.query(
           "CREATE UNIQUE INDEX IF NOT EXISTS grimorio_analytics_view_idx ON grimorio_analytics_events (visitor_id, view_id, event_name) WHERE event_name IN ('page_view','card_open','card_read')",
         );
-        for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer"])
+        for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer", "share_from text"])
           await client.query(`ALTER TABLE grimorio_analytics_events ADD COLUMN IF NOT EXISTS ${column}`);
+        // The answers of «Come ti trovi con il Grimorio?» (28 October 2026): the vote, the day and the kind of device.
+        // chiave: a keyed hash of the visitor ID, only to refuse a second vote within 4 months, emptied after them.
+        await client.query(`CREATE TABLE IF NOT EXISTS grimorio_ratings (
+        id uuid PRIMARY KEY, voto text NOT NULL CHECK (voto IN ('male','cosi-cosi','bene')), device text,
+        is_test boolean NOT NULL DEFAULT false, creato_il timestamptz NOT NULL DEFAULT now(), chiave text)`);
+        await client.query("CREATE INDEX IF NOT EXISTS grimorio_ratings_key_idx ON grimorio_ratings (chiave) WHERE chiave IS NOT NULL");
         // The visitor IDs of the administrator's devices: never saved again, even after the logout.
         await client.query(`CREATE TABLE IF NOT EXISTS grimorio_analytics_excluded (
         visitor_id text PRIMARY KEY, escluso_il timestamptz NOT NULL DEFAULT now())`);
@@ -89,11 +95,11 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
   await ensureSchema();
   const result = await pool.query(
     `INSERT INTO grimorio_analytics_events
-    (id,visitor_id,session_id,view_id,event_name,path,card_kind,card_id,title,source,is_test,active_seconds,scroll_percent,origin,device,installed,search_query,search_results)
-    SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18
+    (id,visitor_id,session_id,view_id,event_name,path,card_kind,card_id,title,source,is_test,active_seconds,scroll_percent,origin,device,installed,search_query,search_results,share_from)
+    SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19
     WHERE (SELECT count(*) FROM grimorio_analytics_events WHERE visitor_id=$2 AND received_at>now()-interval '1 minute')<90
       AND NOT EXISTS (SELECT 1 FROM grimorio_analytics_excluded WHERE visitor_id=$2)
-      AND ($5 NOT IN ('app_installed','first_standalone_open')
+      AND ($5 NOT IN ('app_installed','first_standalone_open','arrivo_da_amico')
         OR NOT EXISTS (SELECT 1 FROM grimorio_analytics_events WHERE visitor_id=$2 AND event_name=$5))
     ON CONFLICT DO NOTHING RETURNING id`,
     [
@@ -115,10 +121,33 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
       input.installed ?? null,
       input.query ?? null,
       input.results ?? null,
+      input.from ?? null,
     ],
   );
   return result.rows.length > 0;
 }
+/** The months a visitor waits before answering again (and before the question comes back). */
+export const RATING_MONTHS = 4;
+/**
+ * One answer to «Come ti trovi con il Grimorio?»: the vote, the day and the kind of device, in its own table. A second
+ * vote of the same visitor within 4 months, or from an excluded device, is not saved. The visitor ID never enters the
+ * table: only a keyed hash of it, emptied after the 4 months.
+ */
+export async function storeRating(vote: Vote, visitor: string, device: string | null, test: boolean): Promise<boolean> {
+  await ensureSchema();
+  const key = createHmac("sha256", analyticsSecret()).update(`grimorio-rating:${visitor}`).digest("hex");
+  await pool.query(`UPDATE grimorio_ratings SET chiave=NULL WHERE chiave IS NOT NULL AND creato_il<now()-interval '${RATING_MONTHS} months'`);
+  const result = await pool.query(
+    `INSERT INTO grimorio_ratings (id, voto, device, is_test, chiave)
+    SELECT $1,$2,$3,$4,$5
+    WHERE NOT EXISTS (SELECT 1 FROM grimorio_analytics_excluded WHERE visitor_id=$6)
+      AND NOT EXISTS (SELECT 1 FROM grimorio_ratings WHERE chiave=$5)
+    RETURNING id`,
+    [randomUUID(), vote, device, test, key, visitor],
+  );
+  return result.rows.length > 0;
+}
+
 /**
  * A device of the administrator (lib/analytics-exclusion.ts): its visitor ID never saves events again and the ones
  * already saved are deleted.
@@ -245,4 +274,56 @@ export async function addMarker(giorno: string, etichetta: string): Promise<void
 export async function deleteMarker(id: string): Promise<void> {
   await ensureSchema();
   await pool.query("DELETE FROM grimorio_analytics_markers WHERE id = $1", [id]);
+}
+
+/** The periods of «Come si trovano?»: the last 7 or 30 days, or every answer. */
+export const RATING_PERIODS = { "7": "7 giorni", "30": "30 giorni", sempre: "Sempre" } as const;
+export type RatingPeriod = keyof typeof RATING_PERIODS;
+export type WeekRow = { week: string; total: number; part: number };
+export type Ratings = { total: number; bene: number; cosiCosi: number; male: number; weeks: WeekRow[] };
+export type WordOfMouth = { tapped: number; fromHome: number; fromRating: number; sent: number; arrived: number; weeks: WeekRow[] };
+
+const since = (period: RatingPeriod, column: string) =>
+  period === "sempre" ? "true" : `${column}>=now()-interval '${Number(period)} days'`;
+// Weeks from Monday, in the Rome time zone.
+const week = (column: string) => `to_char(date_trunc('week', ${column} AT TIME ZONE 'Europe/Rome'),'YYYY-MM-DD')`;
+
+/** The answers of the period (test visits left out) and, week by week, how many said «Bene». */
+export async function readRatings(period: RatingPeriod): Promise<Ratings> {
+  await ensureSchema();
+  const where = `is_test=false AND ${since(period, "creato_il")}`;
+  const [counts, weeks] = await Promise.all([
+    pool.query(`SELECT count(*)::int AS total, count(*) FILTER (WHERE voto='bene')::int AS bene,
+      count(*) FILTER (WHERE voto='cosi-cosi')::int AS cosi, count(*) FILTER (WHERE voto='male')::int AS male
+      FROM grimorio_ratings WHERE ${where}`),
+    pool.query(`SELECT ${week("creato_il")} AS week, count(*)::int AS total, count(*) FILTER (WHERE voto='bene')::int AS part
+      FROM grimorio_ratings WHERE ${where} GROUP BY week ORDER BY week DESC LIMIT 26`),
+  ]);
+  const row = counts.rows[0] ?? {};
+  return { total: row.total ?? 0, bene: row.bene ?? 0, cosiCosi: row.cosi ?? 0, male: row.male ?? 0, weeks: weeks.rows.reverse() };
+}
+
+/**
+ * «Passaparola»: different people (visitors), not taps. Who tapped «Condividi» (from the Home or after the
+ * vote), who really sent or copied the link, who arrived from a friend's link, and those arrivals week by week.
+ * The events are kept 90 days (purgeAnalytics), so «Sempre» means the last 90 days here.
+ */
+export async function readWordOfMouth(period: RatingPeriod): Promise<WordOfMouth> {
+  await ensureSchema();
+  const where = `is_test=false AND ${since(period, "received_at")}`;
+  const [people, weeks] = await Promise.all([
+    pool.query(`SELECT count(DISTINCT visitor_id) FILTER (WHERE event_name='share_tap')::int AS tapped,
+      count(DISTINCT visitor_id) FILTER (WHERE event_name='share_tap' AND share_from='home')::int AS home,
+      count(DISTINCT visitor_id) FILTER (WHERE event_name='share_tap' AND share_from='valutazione')::int AS rating,
+      count(DISTINCT visitor_id) FILTER (WHERE event_name='share_sent')::int AS sent,
+      count(DISTINCT visitor_id) FILTER (WHERE event_name='arrivo_da_amico')::int AS arrived
+      FROM grimorio_analytics_events WHERE ${where} AND event_name IN ('share_tap','share_sent','arrivo_da_amico')`),
+    pool.query(`SELECT ${week("received_at")} AS week, count(DISTINCT visitor_id)::int AS total, count(DISTINCT visitor_id)::int AS part
+      FROM grimorio_analytics_events WHERE ${where} AND event_name='arrivo_da_amico' GROUP BY week ORDER BY week DESC LIMIT 26`),
+  ]);
+  const row = people.rows[0] ?? {};
+  return {
+    tapped: row.tapped ?? 0, fromHome: row.home ?? 0, fromRating: row.rating ?? 0, sent: row.sent ?? 0, arrived: row.arrived ?? 0,
+    weeks: weeks.rows.reverse(),
+  };
 }

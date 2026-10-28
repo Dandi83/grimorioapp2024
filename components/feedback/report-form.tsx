@@ -7,7 +7,7 @@ import { Check } from "lucide-react";
 import { FormUnavailable } from "@/components/feedback/form-unavailable";
 import {
   CONTESTED_PAGE_ERROR, EMAIL_MAX, FEEDBACK_TYPES, FORM_TYPE_LABELS, MESSAGE_MAX, MIN_FILL_MS, RIGHTS_EMAIL_ERROR, RIGHTS_TYPE,
-  cleanContestedPage, cleanEdition, cleanPath, cleanText, messageError, textLength, validEmail, type FeedbackType,
+  cleanContestedPage, cleanEdition, cleanPath, cleanText, messageError, ratingLabel, textLength, validEmail, type FeedbackType,
 } from "@/lib/feedback-input";
 
 declare global {
@@ -67,9 +67,15 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
     token.current = { value, at: Date.now() };
   }
 
+  /** From the faces of the Home (?tipo=consiglio&valutazione=…): the vote travels as an inner label, never shown. */
+  const rating = useRef<string | null>(null);
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- the address is read once, after hydration
     setAbout(readAbout());
+    const params = new URLSearchParams(window.location.search);
+    const vote = params.get("valutazione");
+    if (ratingLabel(vote)) rating.current = vote;
+    if ((FEEDBACK_TYPES as readonly string[]).includes(params.get("tipo") ?? "") && params.get("tipo") !== RIGHTS_TYPE) setTipo(params.get("tipo") as FeedbackType);
     fetchToken().catch(() => undefined);
     const online = () => { if (!token.current) fetchToken().catch(() => undefined); };
     window.addEventListener("online", online);
@@ -125,6 +131,7 @@ export function ReportForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) 
           percorso: rights ? contested : about?.percorso ?? null,
           edizione: !rights || contested === about?.percorso ? about?.edizione ?? null : null,
           token: token.current!.value, sito: honeypot.current?.value ?? "", turnstile: turnstile.current.token,
+          ...(rating.current && !rights ? { valutazione: rating.current } : {}),
         }),
       });
       let response = await send();

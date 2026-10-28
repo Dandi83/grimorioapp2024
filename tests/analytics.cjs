@@ -76,10 +76,48 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  process.env.ANALYTICS_SECRET='analytics-only-secret';assert.equal(analytics.analyticsConfigured(),true);
  assert.equal(analytics.exportAnalytics,undefined,'no export to third parties');
  assert.ok(!fs.readFileSync('lib/analytics.ts','utf8').includes('posthog.com'),'no third-party endpoint in the statistics');
+ // The Home (28 October 2026): the sharing of the whole app from any public page, with where it started; the faces.
+ const home=(name,props={})=>parseAnalyticsInput(event(name,{path:'/',device:'iphone',...props}));
+ assert.equal(home('share_tap',{from:'home'}).from,'home');
+ assert.equal(home('share_sent',{from:'valutazione'}).from,'valutazione');
+ assert.equal(home('share_cancel',{from:'home'}).from,'home');
+ assert.equal(home('share_tap'),undefined,'a tap says where it started');
+ assert.equal(home('share_tap',{from:'altrove'}),undefined);
+ assert.equal(home('share_cancel'),undefined,'the cards keep their own share events, on their pages');
+ assert.equal(home('valutazione',{vote:'bene'}).vote,'bene');
+ assert.equal(home('valutazione',{vote:'ottimo'}),undefined,'only the three faces');
+ assert.equal(home('arrivo_da_amico').from,undefined);
+ // Different people: f1 taps from the Home twice and sends, f2 taps after the vote and cancels, f3 arrives twice.
+ const f1=randomUUID(),f2=randomUUID(),f3=randomUUID();
+ for(const [input,visitor] of [[home('share_tap',{from:'home'}),f1],[home('share_tap',{from:'home'}),f1],[home('share_sent',{from:'home'}),f1],[home('share_tap',{from:'valutazione'}),f2],[home('share_cancel',{from:'valutazione'}),f2]])
+  assert.equal(await analytics.storeAnalyticsEvent(input,visitor),true);
+ assert.equal(await analytics.storeAnalyticsEvent(home('arrivo_da_amico'),f3),true);
+ assert.equal(await analytics.storeAnalyticsEvent(home('arrivo_da_amico'),f3),false,'a friend arrival counts once per visitor');
+ const word=await analytics.readWordOfMouth('30');
+ assert.deepEqual({tapped:word.tapped,fromHome:word.fromHome,fromRating:word.fromRating,sent:word.sent,arrived:word.arrived},{tapped:2,fromHome:1,fromRating:1,sent:1,arrived:1});
+ assert.equal(word.weeks.reduce((sum,row)=>sum+row.part,0),1);
+ // Votes: one per visitor every 4 months, never from an excluded device; the table keeps no visitor ID.
+ const v1=randomUUID(),v2=randomUUID();
+ assert.equal(await analytics.storeRating('bene',v1,'iphone',false),true);
+ assert.equal(await analytics.storeRating('male',v1,'iphone',false),false,'a second vote within 4 months is refused');
+ assert.equal(await analytics.storeRating('cosi-cosi',v2,'computer',false),true);
+ assert.equal(await analytics.storeRating('bene',ex,'android',false),false,'an excluded device does not vote');
+ assert.equal(await analytics.storeRating('bene',randomUUID(),'android',true),true,'a test vote is saved…');
+ let votes=await analytics.readRatings('sempre');
+ assert.deepEqual({total:votes.total,bene:votes.bene,cosiCosi:votes.cosiCosi,male:votes.male},{total:2,bene:1,cosiCosi:1,male:0},'…but not counted');
+ const ratingColumns=(await pg.query("SELECT column_name FROM information_schema.columns WHERE table_name='grimorio_ratings'")).rows.map(r=>r.column_name).sort();
+ assert.deepEqual(ratingColumns,['chiave','creato_il','device','id','is_test','voto']);
+ assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_ratings WHERE chiave=$1',[v1])).rows[0].n,0,'the key is not the visitor ID');
+ // After 4 months the key is emptied and the same visitor may vote again; the old vote stays in «Sempre».
+ await pg.query("UPDATE grimorio_ratings SET creato_il=now()-interval '5 months'");
+ assert.equal(await analytics.storeRating('male',v1,'iphone',false),true);
+ assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_ratings WHERE chiave IS NOT NULL')).rows[0].n,1);
+ votes=await analytics.readRatings('sempre');assert.equal(votes.total,3);
+ assert.equal((await analytics.readRatings('30')).total,1,'the period counts only its answers');
  await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '91 days'");await analytics.purgeAnalytics();assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events')).rows[0].n,0);
  let admin=false,stored=0;const afterCallbacks=[],excludedIds=new Set();
  const {NextRequest}=require('next/server');
- const fakeAnalytics={analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id)};
+ let votesSaved=[];const fakeAnalytics={storeRating:async(vote,visitor,device,test)=>{votesSaved.push({vote,device,test});return true},analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id)};
  const exclusion=load('lib/analytics-exclusion.ts',{'server-only':{},'next/headers':{cookies:async()=>({get:()=>undefined,set(){}})},'./analytics':fakeAnalytics});
  const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true},'@/lib/spell-name':{spellName:name=>name}});
  process.env.ANALYTICS_SECRET='analytics-only-secret';
@@ -119,6 +157,13 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  process.env.ADMIN_PASSCODE='passcode-changed';
  assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).stored,true,'changing the admin passcode does not reset visitors');
  process.env.ADMIN_PASSCODE='test-only-secret';
+ // A face of the Home: saved by storeRating (its own table), never as an event; nothing after «No» or for the admin.
+ const storedBeforeVote=stored;
+ const voted=await route.POST(request(event('valutazione',{path:'/',vote:'bene',device:'iphone'}),{cookie:cookies}));
+ assert.equal((await voted.json()).stored,true);assert.deepEqual(votesSaved,[{vote:'bene',device:'iphone',test:false}]);assert.equal(stored,storedBeforeVote);
+ assert.equal((await (await route.POST(request(event('valutazione',{path:'/',vote:'bene'}),{cookie:'grimorio_statistics_consent=rejected'}))).json()).reason,'rejected');
+ admin=true;assert.equal((await (await route.POST(request(event('valutazione',{path:'/',vote:'male'}),{cookie:cookies}))).json()).reason,'admin');admin=false;
+ assert.equal(votesSaved.length,1,'no vote after «No» nor from the administrator');
  // A malformed escape in a card path is a bad request, not a server failure.
  const storedBefore=stored;
  const badPath=await route.POST(request(event('card_open',{path:'/spell/%E0%A4%A'}),{cookie:cookies}));

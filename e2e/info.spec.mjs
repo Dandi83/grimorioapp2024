@@ -25,6 +25,9 @@ test("Home: «Area riservata» with the lock, «Info e note legali» at the foot
   await expect(info).toBeVisible();
   await expect(info).toHaveCSS("font-size", "13px");
   await expect(info).toHaveCSS("color", "rgb(94, 78, 62)");
+  // Under the share card «Porta il Grimorio al tavolo» (28 October 2026): reached by scrolling on short screens,
+  // never covered by the bar.
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   const box = await info.boundingBox();
   const bar = await page.getByRole("navigation", { name: "Navigazione principale" }).boundingBox();
   expect(box.y + box.height, "above the bar").toBeLessThanOrEqual(bar.y);

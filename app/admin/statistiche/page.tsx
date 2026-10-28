@@ -155,6 +155,16 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
         ) : <p className={`${SOFT} mt-2`}>Nessuna ricerca senza risultati ripetuta almeno 2 volte.</p>}
       </section>
 
+      {/* The faces of the Home and the sharing of the app (canvas «Valutazione Il Grimorio.App», ③). */}
+      <Link href="/admin/statistiche/valutazione" data-rating-link=""
+        className={`${PAPER} flex min-h-[64px] items-center justify-between gap-3`}>
+        <span>
+          <span className={`${QUESTION} block`}>Come si trovano?</span>
+          <span className="text-[14px] text-[#5E4E3E]">Le tre faccine della Home e il passaparola</span>
+        </span>
+        <span aria-hidden="true" className="text-[22px] text-[#7A1F2B]">›</span>
+      </Link>
+
       <section aria-labelledby="contano" className="px-1">
         <h2 id="contano" className="font-serif text-lg font-bold text-[#2B2118]">Come si contano</h2>
         <p className={`${SOFT} mt-1`}>Dettagli di tutti i visitatori tranne chi rinuncia («No»). Le tue visite da admin non contano.</p>

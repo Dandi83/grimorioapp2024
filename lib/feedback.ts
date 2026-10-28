@@ -30,6 +30,8 @@ interface FeedbackReport {
   nota_admin: string | null;
   /** Why the notice email was not sent (no addresses, no message text): shown in the reserved area. */
   email_esito: string | null;
+  /** «dalla valutazione: <voto>» when written from the faces of the Home. */
+  etichetta: string | null;
 }
 
 let tablesReady: Promise<void> | undefined;
@@ -60,6 +62,8 @@ export function ensureFeedbackTables() {
     }
     // Added on 28 October 2026: the reason of a notice email not sent.
     await pool.query("ALTER TABLE grimorio_feedback_reports ADD COLUMN IF NOT EXISTS email_esito text");
+    // Added on 28 October 2026: the inner label of a report written after the faces of the Home.
+    await pool.query("ALTER TABLE grimorio_feedback_reports ADD COLUMN IF NOT EXISTS etichetta text");
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_feedback_limits (
       device_hash text NOT NULL,
       sent_at timestamptz NOT NULL DEFAULT now()
@@ -152,9 +156,9 @@ export async function recordFeedbackSend(key: string | null): Promise<void> {
 export async function saveFeedback(input: FeedbackInput): Promise<FeedbackReport> {
   await ensureFeedbackTables();
   const { rows } = await pool.query<FeedbackReport>(
-    `INSERT INTO grimorio_feedback_reports (id, tipo, messaggio, percorso, edizione, email_risposta)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-    [randomUUID(), input.tipo, input.messaggio, input.percorso, input.edizione, input.email],
+    `INSERT INTO grimorio_feedback_reports (id, tipo, messaggio, percorso, edizione, email_risposta, etichetta)
+     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+    [randomUUID(), input.tipo, input.messaggio, input.percorso, input.edizione, input.email, input.etichetta ?? null],
   );
   return rows[0];
 }
@@ -168,7 +172,8 @@ export async function markEmailFailed(id: string, reason: string): Promise<void>
   await pool.query("UPDATE grimorio_feedback_reports SET email_inviata = false, email_esito = $2 WHERE id = $1", [id, reason.slice(0, 300)]);
 }
 
-export interface FeedbackFilter { tipo?: FeedbackType; stato?: FeedbackState }
+/** valutazione: only the reports written after the faces of the Home («dalla valutazione: …»). */
+export interface FeedbackFilter { tipo?: FeedbackType; stato?: FeedbackState; valutazione?: boolean }
 
 export async function listFeedback(filter: FeedbackFilter = {}): Promise<{ reports: FeedbackReport[]; nuove: number }> {
   await ensureFeedbackTables();
@@ -176,12 +181,20 @@ export async function listFeedback(filter: FeedbackFilter = {}): Promise<{ repor
     pool.query<FeedbackReport>(
       `SELECT * FROM grimorio_feedback_reports
        WHERE ($1::text IS NULL OR tipo = $1) AND ($2::text IS NULL OR stato = $2)
+         AND (NOT $3::boolean OR etichetta LIKE 'dalla valutazione%')
        ORDER BY (tipo = 'diritti' AND stato IN ('nuova', 'letta')) DESC, creato_il DESC LIMIT 500`,
-      [filter.tipo ?? null, filter.stato ?? null],
+      [filter.tipo ?? null, filter.stato ?? null, !!filter.valutazione],
     ),
     pool.query<{ n: number }>("SELECT count(*)::int AS n FROM grimorio_feedback_reports WHERE stato = 'nuova'"),
   ]);
   return { reports: list.rows, nuove: count.rows[0].n };
+}
+
+/** The reports written after the faces of the Home: the link «Commenti arrivati con Scrivici» of the statistics. */
+export async function countRatingFeedback(): Promise<number> {
+  await ensureFeedbackTables();
+  const { rows } = await pool.query<{ n: number }>("SELECT count(*)::int AS n FROM grimorio_feedback_reports WHERE etichetta LIKE 'dalla valutazione%'");
+  return rows[0].n;
 }
 
 /** Rights requests not handled yet (new or read): they stay on top until resolved or archived. */
@@ -266,7 +279,7 @@ export async function sendFeedbackEmailWithReason(report: FeedbackReport, contex
     return { result: "not-configured", reason: `Invio non configurato: manca ${missing} su Vercel.` };
   }
   const testSender = !process.env.FEEDBACK_FROM_EMAIL;
-  const input = { tipo: report.tipo, messaggio: report.messaggio, percorso: report.percorso, edizione: report.edizione as FeedbackInput["edizione"], email: report.email_risposta };
+  const input = { tipo: report.tipo, messaggio: report.messaggio, percorso: report.percorso, edizione: report.edizione as FeedbackInput["edizione"], email: report.email_risposta, etichetta: report.etichetta ?? null };
   const body = {
     from: process.env.FEEDBACK_FROM_EMAIL || RESEND_TEST_SENDER,
     to: to.split(",").map(address => address.trim()).filter(Boolean),

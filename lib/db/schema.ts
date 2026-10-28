@@ -116,6 +116,21 @@ export const analyticsEvents = pgTable("grimorio_analytics_events", {
   // search: the cleaned word and how many results it gave.
   search_query: text("search_query"),
   search_results: integer("search_results"),
+  // share_tap, share_sent, share_cancel of the whole app: "home" (the card) or "valutazione" (after «Bene»).
+  share_from: text("share_from"),
+});
+
+/**
+ * The answers of «Come ti trovi con il Grimorio?» (lib/analytics.ts): the vote, the day and the kind of device.
+ * chiave: a keyed hash of the visitor ID, only to refuse a second vote within 4 months, emptied after them.
+ */
+export const ratings = pgTable("grimorio_ratings", {
+  id: uuid("id").primaryKey(),
+  voto: text("voto").notNull(),
+  device: text("device"),
+  is_test: boolean("is_test").notNull().default(false),
+  creato_il: timestamp("creato_il", { withTimezone: true }).notNull().defaultNow(),
+  chiave: text("chiave"),
 });
 
 export type AnalyticsEventRow = typeof analyticsEvents.$inferSelect;
@@ -150,6 +165,8 @@ export const feedbackReports = pgTable("grimorio_feedback_reports", {
   email_inviata: boolean("email_inviata").notNull().default(false),
   nota_admin: text("nota_admin"),
   email_esito: text("email_esito"),
+  // «dalla valutazione: <voto>»: a report written after the faces of the Home (reserved area only).
+  etichetta: text("etichetta"),
 });
 
 /** Send limit of the reports: salted device hashes, deleted after one day (lib/feedback.ts). */

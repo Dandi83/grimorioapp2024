@@ -5,6 +5,7 @@ import { Lock } from "lucide-react";
 import { HomeSearch } from "@/components/search/home-search";
 import { EditionPill } from "@/components/edition/edition-pill";
 import { FirstLaunch } from "@/components/edition/first-launch";
+import { HomeExtras } from "@/components/home/home-extras";
 import { HomeShortcuts, type HomeShortcut } from "@/components/edition/home-shortcuts";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { collectionOf } from "@/lib/monsters-types";
@@ -78,8 +79,11 @@ export default async function HomePage() {
           <nav className={styles.shortcuts} aria-label="Scorciatoie">
             <HomeShortcuts links={links} />
           </nav>
+          {/* Computer: under the shortcuts (phones and tablets: under the picture). */}
+          <HomeExtras className={styles.extrasWide} />
         </div>
       </section>
+      <HomeExtras className={styles.extras} />
       {/* Phones and tablets: the legal pages, one small link above the bar (computers: in the side column). */}
       <p className={styles.info}><Link href="/info" prefetch={false}>Info e note legali</Link></p>
       <FirstLaunch />

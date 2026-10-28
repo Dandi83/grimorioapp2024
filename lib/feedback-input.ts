@@ -32,6 +32,18 @@ export interface FeedbackInput {
   percorso: string | null;
   edizione: "2014" | "2024" | null;
   email: string | null;
+  /** Inner label of the reserved area, never shown to visitors: «dalla valutazione: <voto>» from the Home. */
+  etichetta: string | null;
+}
+
+/** The answers of the faces of the Home, as the label of a report written after them. */
+export const RATING_LABELS = { male: "male", "cosi-cosi": "così così", bene: "bene" } as const;
+export const RATING_LABEL_PREFIX = "dalla valutazione";
+/** «dalla valutazione: male», or null for any other value. */
+export function ratingLabel(value: unknown): string | null {
+  return typeof value === "string" && Object.hasOwn(RATING_LABELS, value)
+    ? `${RATING_LABEL_PREFIX}: ${RATING_LABELS[value as keyof typeof RATING_LABELS]}`
+    : null;
 }
 
 type FeedbackParse =
@@ -143,7 +155,10 @@ export function parseFeedback(body: unknown, host?: string | null): FeedbackPars
     ok: true,
     spam,
     token,
-    value: { tipo: tipo as FeedbackType, messaggio, percorso, edizione: cleanEdition(data.edizione), email },
+    value: {
+      tipo: tipo as FeedbackType, messaggio, percorso, edizione: cleanEdition(data.edizione), email,
+      etichetta: tipo === RIGHTS_TYPE ? null : ratingLabel(data.valutazione),
+    },
   };
 }
 
@@ -162,6 +177,7 @@ export function feedbackEmailText(input: FeedbackInput & { id: string; createdAt
     `Riguarda: ${input.riguarda}`,
     `Data e ora: ${when}`,
     `Email per la risposta: ${input.email ?? "non indicata"}`,
+    ...(input.etichetta ? [`Etichetta: ${input.etichetta}`] : []),
     ``,
     `Messaggio:`,
     input.messaggio,
