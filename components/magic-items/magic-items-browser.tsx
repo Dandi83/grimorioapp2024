@@ -11,9 +11,10 @@ import { useEquipmentEdition } from "@/components/equipment/use-equipment-editio
 import { SectionEditionPill } from "@/components/edition/edition-pill";
 import {
   ATTUNEMENT_FILTERS, MAGIC_ITEM_RARITIES, MAGIC_ITEM_TYPES, NO_MAGIC_ITEM_FILTERS,
-  magicItemFiltersFromParams, magicItemSearch, searchMagicItems,
+  findMagicItems, magicItemFiltersFromParams, magicItemSearch, searchMagicItems,
   type MagicItemEdition, type MagicItemFilters, type MagicItemListRow,
 } from "@/lib/magic-items-types";
+import { DidYouMean, SimilarResultsHeading } from "@/components/search/did-you-mean";
 
 const SOURCE: Record<MagicItemEdition, string> = { "2024": "SRD 5.2.1", "2014": "SRD 5.1" };
 
@@ -78,7 +79,8 @@ export function MagicItemsBrowser({ rows: byEdition, title = "Oggetti magici", r
     if (search !== window.location.search) window.history.replaceState(window.history.state, "", window.location.pathname + search);
   };
 
-  const found = useMemo(() => searchMagicItems(rows, query, filters), [rows, query, filters]);
+  const result = useMemo(() => findMagicItems(rows, query, filters), [rows, query, filters]);
+  const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
   const draftCount = useMemo(() => (draft ? searchMagicItems(rows, query, draft).length : 0), [rows, query, draft]);
   const active: ActiveFilter[] = [
     ...filters.rarita.map(value => ({ key: `rarita:${value}`, label: value, remove: () => show({ ...filters, rarita: filters.rarita.filter(x => x !== value) }, query) })),
@@ -114,6 +116,7 @@ export function MagicItemsBrowser({ rows: byEdition, title = "Oggetti magici", r
             onToggle={value => setDraft({ ...draft, sintonia: toggle(draft.sintonia, value, ATTUNEMENT_FILTERS) })} />
         </>}
       </FilterSheet>
+      {result.suggestion && <DidYouMean name={result.suggestion.nome} onPick={value => show(filters, value)} className="mt-3" />}
       <div className="mt-4 flex items-end justify-between gap-3 border-b-2 border-primary pb-1.5">
         <p role="status" aria-live="polite" className="text-[15px] font-semibold">
           {found.length} {found.length === 1 ? "oggetto" : "oggetti"}{found.length === rows.length ? "" : ` su ${rows.length}`}
@@ -121,9 +124,19 @@ export function MagicItemsBrowser({ rows: byEdition, title = "Oggetti magici", r
         <p className="text-[14px] text-muted">{SOURCE[edition]}</p>
       </div>
       {found.length ? (
-        <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-          {found.map(row => <ItemRow key={row.id} row={row} />)}
-        </ul>
+        <>
+          {result.exact.length > 0 && (
+            <ul data-exact-results="" className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
+              {result.exact.map(row => <ItemRow key={row.id} row={row} />)}
+            </ul>
+          )}
+          {result.approximate.length > 0 && <>
+            <SimilarResultsHeading className={result.exact.length ? "" : "!mt-3"} />
+            <ul data-similar-list="" className="overflow-hidden rounded-[14px] border border-border bg-card">
+              {result.approximate.map(row => <ItemRow key={row.id} row={row} />)}
+            </ul>
+          </>}
+        </>
       ) : (
         <p className="mt-3 text-[15px]">Nessun oggetto con questi criteri.</p>
       )}

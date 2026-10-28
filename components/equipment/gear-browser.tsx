@@ -13,8 +13,9 @@ import { usePart } from "@/components/sections/parts-context";
 import { SectionEditionPill } from "@/components/edition/edition-pill";
 import type { GearListRow } from "@/lib/adventuring-gear-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
+import { DidYouMean } from "@/components/search/did-you-mean";
+import { searchList } from "@/lib/fuzzy-search";
 
-const fold = (text: string) => text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, " ");
 const weight = (peso?: string) => (peso === "—" ? "peso trascurabile" : peso);
 
 function GearRow({ row, edition }: { row: GearListRow; edition: EquipmentEdition }) {
@@ -73,9 +74,10 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
     url.searchParams.delete("manca");
     window.history.replaceState(window.history.state, "", url);
   }, []);
-  const needle = fold(query.trim());
   const items = rows[edition];
-  const found = useMemo(() => (needle ? items.filter(row => fold(row.nome).includes(needle) || row.righe?.some(item => fold(item.nome).includes(needle))) : items), [items, needle]);
+  // A group (armi, munizioni…) is found by its own name or by one of its rows; typos are tolerated (lib/fuzzy-search.ts).
+  const result = useMemo(() => searchList(items, query, row => [row.nome, ...(row.righe?.map(item => item.nome) ?? [])]), [items, query]);
+  const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
   const packs = found.filter(row => row.dotazione);
   const count = items.reduce((sum, row) => sum + (row.righe?.length ?? 1), 0);
   return (
@@ -95,6 +97,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
           className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
       </label>
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "oggetto trovato" : "oggetti trovati"}`}</p>
+      {result.suggestion && <DidYouMean name={result.suggestion.nome} onPick={setQuery} className="mt-2" />}
       {packs.length > 0 && !packsPart.shown && packsPart.soon && <SoonBlock id="avventura:dotazioni" title="Dotazioni" className="mt-6" />}
       {packs.length > 0 && packsPart.shown && (
         <section aria-labelledby="dotazioni" data-part="avventura:dotazioni" className="mt-3">

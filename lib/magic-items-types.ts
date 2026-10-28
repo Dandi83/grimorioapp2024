@@ -1,5 +1,6 @@
 // Pure types and helpers of the Oggetti magici section: safe in client components.
 // The list carries names and the printed type line only; item texts stay on the server.
+import { searchList } from "./fuzzy-search";
 
 export type MagicItemEdition = "2014" | "2024";
 
@@ -57,12 +58,18 @@ function matchesMagicItem(row: MagicItemListRow, filters: MagicItemFilters): boo
   return true;
 }
 
-/** Name search: case, accents and apostrophes ignored. */
-export const foldName = (text: string) => text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, " ");
+/**
+ * The rows of the filters matching the name: the exact ones (A–Z kept inside each kind: exact, starts with,
+ * contains), the similar ones with typos apart (lib/fuzzy-search.ts), and «Forse cercavi» when none is exact.
+ */
+export function findMagicItems(rows: MagicItemListRow[], query: string, filters: MagicItemFilters) {
+  return searchList(rows.filter(row => matchesMagicItem(row, filters)), query, row => row.nome);
+}
 
+/** The rows of the filters matching the name: exact ones first, then those with typos. */
 export function searchMagicItems(rows: MagicItemListRow[], query: string, filters: MagicItemFilters): MagicItemListRow[] {
-  const needle = foldName(query.trim());
-  return rows.filter(row => (!needle || foldName(row.nome).includes(needle)) && matchesMagicItem(row, filters));
+  const { exact, approximate } = findMagicItems(rows, query, filters);
+  return [...exact, ...approximate];
 }
 
 // Filters in the address: ?rarita=raro,molto-raro&tipo=anello&sintonia=richiesta (slugs of the labels).

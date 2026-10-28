@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { FlaskConical, Skull, Star } from "lucide-react";
 
@@ -21,6 +21,8 @@ import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
 import { authorLine } from "@/lib/homebrew-types";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
 import { useReportSearch } from "@/components/statistics/use-report-search";
+import { searchList } from "@/lib/fuzzy-search";
+import { DidYouMean, SimilarResultsHeading, usePreparedNames } from "@/components/search/did-you-mean";
 
 export type Edition = "2024" | "2014";
 const PAGE_SIZE = 40;
@@ -116,16 +118,20 @@ export function BestiarioBrowser({
   const hasHomebrew = editionMonsters.some(monster => monster.homebrew);
   const categories = CATEGORIES.filter(c => c === "tutti" || (parts[c].shown && (c !== "homebrew" || hasHomebrew)));
   const meta = useMemo(() => computeMonstersMeta(editionMonsters), [editionMonsters]);
-  const searched = useMemo(() => {
-    const needle = deferredQ.trim().toLowerCase();
-    return needle ? editionMonsters.filter(m => m.nome.toLowerCase().includes(needle)) : editionMonsters;
-  }, [editionMonsters, deferredQ]);
-  // The searched name and how many creatures of the edition have it (statistics, only with the consent).
-  useReportSearch(deferredQ, searched.length);
+  // By challenge rating, then by name.
+  const byChallenge = useMemo(() => [...editionMonsters].sort((a, b) => a.gs_num - b.gs_num || a.nome.localeCompare(b.nome, "it")), [editionMonsters]);
+  usePreparedNames(() => byChallenge.map(m => m.nome), byChallenge);
+  // Accents, capitals and typos ignored (lib/fuzzy-search.ts): exact, starts with, contains (each by challenge), then
+  // the approximate ones under «Risultati simili».
+  const found = useMemo(() => searchList(byChallenge, deferredQ, m => m.nome), [byChallenge, deferredQ]);
+  const searched = useMemo(() => [...found.exact, ...found.approximate], [found]);
+  // The searched name and how many creatures of the edition have it exactly (statistics, only with the consent).
+  useReportSearch(deferredQ, found.exact.length);
 
-  const results = useMemo(() => searched.filter(m => matchesFilters(m, filters) && (!originIds || matchesProvenance(m, originValue, originIds)))
-    // By challenge rating, then by name.
-    .sort((a, b) => a.gs_num - b.gs_num || a.nome.localeCompare(b.nome, "it")), [searched, filters, originIds, originValue]);
+  const matches = useCallback((m: MonsterListItem) => matchesFilters(m, filters) && (!originIds || matchesProvenance(m, originValue, originIds)), [filters, originIds, originValue]);
+  const results = useMemo(() => searched.filter(matches), [searched, matches]);
+  const approximateFrom = useMemo(() => found.exact.filter(matches).length, [found, matches]);
+  const suggestion = found.suggestion && matches(found.suggestion) ? found.suggestion.nome : null;
   const draftCount = useMemo(() => draft ? searched.filter(m => matchesFilters(m, draft) && (!originIds || matchesProvenance(m, originDraft, originIds))).length : 0, [searched, draft, originIds, originDraft]);
 
   // A new edition, search or filter starts again from the first page.
@@ -233,6 +239,7 @@ export function BestiarioBrowser({
             <span />
           </>}
         </div>
+        {suggestion && <DidYouMean name={suggestion} onPick={setQ} className="mt-3" />}
         {results.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
             <Skull size={48} className="text-muted" aria-hidden="true" />
@@ -240,8 +247,9 @@ export function BestiarioBrowser({
           </div>
         ) : (
           <ul onClickCapture={() => { if (pane) return; scroll.current = window.scrollY; save(); }}>
-            {visible.map(monster => (
+            {visible.map((monster, i) => (
               <li key={monster.id} className="catalog-row border-b border-divider">
+                {i === approximateFrom && <SimilarResultsHeading className={i > 0 ? "" : "!mt-3"} />}
                 {pane
                   ? <PaneRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} selected={pane.selectedId === monster.id} noSrd={noSrd?.has(monster.id) ?? false} />
                   : <BestiaryRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} noSrd={noSrd?.has(monster.id) ?? false} />}

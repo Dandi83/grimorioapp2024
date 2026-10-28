@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { FileText, Star } from "lucide-react";
 
@@ -19,6 +19,8 @@ import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, castingTimeShort, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
 import { useReportSearch } from "@/components/statistics/use-report-search";
+import { searchList } from "@/lib/fuzzy-search";
+import { DidYouMean, SimilarResultsHeading, usePreparedNames } from "@/components/search/did-you-mean";
 
 const PAGE_SIZE = 40;
 export type SpellEdition = "2024" | "2014";
@@ -97,20 +99,24 @@ export function GrimorioBrowser({
       .filter(spell => (spell.edizione === "2014") === (edizione === "2014"))
       .sort((a, b) => rank(a.livello_num) - rank(b.livello_num) || a.nome_italiano.localeCompare(b.nome_italiano, "it"));
   }, [spells, edizione]);
-  const searched = useMemo(() => {
-    const needle = deferredQ.trim().toLowerCase();
-    return needle ? sorted.filter(s => s.nome_italiano.toLowerCase().includes(needle)) : sorted;
-  }, [sorted, deferredQ]);
+  // Accents, capitals and typos ignored (lib/fuzzy-search.ts): exact matches by level, best first in each level;
+  // the approximate ones after them, under «Risultati simili».
+  const found = useMemo(() => searchList(sorted, deferredQ, s => s.nome_italiano, { groupOf: s => s.livello_num }), [sorted, deferredQ]);
+  const searched = useMemo(() => [...found.exact, ...found.approximate], [found]);
   const { ids: originIds, value: originValue, draft: originDraft } = origin;
-  // The searched name and how many spells of the edition have it (statistics, only with the consent).
-  useReportSearch(deferredQ, searched.length);
-  const results = useMemo(() => searched.filter(s => matchesSpellFilters(s, filters) && (!originIds || matchesProvenance(s, originValue, originIds))), [searched, filters, originIds, originValue]);
+  // The searched name and how many spells of the edition have it exactly (statistics, only with the consent).
+  useReportSearch(deferredQ, found.exact.length);
+  usePreparedNames(() => sorted.map(s => s.nome_italiano), sorted);
+  const matches = useCallback((s: SpellListItem) => matchesSpellFilters(s, filters) && (!originIds || matchesProvenance(s, originValue, originIds)), [filters, originIds, originValue]);
+  const results = useMemo(() => searched.filter(matches), [searched, matches]);
+  const approximateFrom = useMemo(() => found.exact.filter(matches).length, [found, matches]);
+  const suggestion = found.suggestion && matches(found.suggestion) ? spellName(found.suggestion.nome_italiano, found.suggestion.edizione) : null;
   const draftCount = useMemo(() => draft ? searched.filter(s => matchesSpellFilters(s, draft) && (!originIds || matchesProvenance(s, originDraft, originIds))).length : 0, [searched, draft, originIds, originDraft]);
   const perLevel = useMemo(() => {
     const counts = new Map<number, number>();
-    for (const spell of results) counts.set(spell.livello_num, (counts.get(spell.livello_num) ?? 0) + 1);
+    for (const spell of results.slice(0, approximateFrom)) counts.set(spell.livello_num, (counts.get(spell.livello_num) ?? 0) + 1);
     return counts;
-  }, [results]);
+  }, [results, approximateFrom]);
 
   // A new edition, search or filter starts again from the first page.
   const key = JSON.stringify([edizione, q, filters, originValue]);
@@ -206,6 +212,7 @@ export function GrimorioBrowser({
       </FilterSheet>
 
       <p role="status" aria-live="polite" className="sr-only">{results.length} {results.length === 1 ? "risultato" : "risultati"}</p>
+      {suggestion && <DidYouMean name={suggestion} onPick={setQ} className="mx-6 mt-3" />}
       {results.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 px-6 py-24 text-center">
           <FileText size={48} className="text-muted" aria-hidden="true" />
@@ -217,11 +224,13 @@ export function GrimorioBrowser({
         <ul className="px-6 pb-2" onClickCapture={() => { if (pane) return; scroll.current = window.scrollY; save(); }}>
           {visible.map((spell, i) => {
             const prev = visible[i - 1];
-            const newGroup = !prev || prev.livello_num !== spell.livello_num;
+            const similar = i >= approximateFrom;
+            const newGroup = similar ? i === approximateFrom : !prev || prev.livello_num !== spell.livello_num;
             const count = perLevel.get(spell.livello_num) ?? 0;
             return (
               <li key={spell.id} className={`catalog-row${newGroup ? (i > 0 ? " catalog-row-group" : " catalog-row-first-group") : ""}`}>
-                {newGroup && (
+                {newGroup && similar && <SimilarResultsHeading className={i > 0 ? "" : "!mt-3"} />}
+                {newGroup && !similar && (
                   <div className={`flex items-center gap-3 ${i > 0 ? "mt-6" : "mt-3"} mb-1`}>
                     <h2 className="font-serif text-[26px] font-bold text-primary">{levelName(spell.livello_num)}</h2>
                     <span className="h-px flex-1 bg-border" aria-hidden="true" />

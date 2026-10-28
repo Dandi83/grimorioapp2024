@@ -6,9 +6,10 @@ import { HomebrewPill } from "@/components/homebrew-pill";
 import { ChevronRight, Search } from "lucide-react";
 
 import { useUserEdition } from "@/components/edition/edition-provider";
-import { HOMEBREW_LABEL, rowHref, rowsOf, search, splitByEdition, type SearchGroup, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
+import { HOMEBREW_LABEL, rowHref, rowsOf, search, splitByEdition, suggestionOf, type SearchGroup, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
 import { otherEdition } from "@/lib/user-edition";
 import { useReportSearch } from "@/components/statistics/use-report-search";
+import { DidYouMean, usePreparedNames } from "@/components/search/did-you-mean";
 
 export interface SearchPanelProps {
   initialQuery: string;
@@ -27,6 +28,7 @@ const loadIndex = () => (indexPromise ??= fetch("/ricerca-indice.json").then(res
 }).catch(error => { indexPromise = undefined; throw error; }));
 
 function Highlighted({ row, length }: { row: SearchMatch; length: number }) {
+  if (row.start < 0) return <>{row.nome}</>;
   return (
     <>
       {row.nome.slice(0, row.start)}
@@ -110,15 +112,22 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
   }, [query, section]);
 
   const rows = useMemo(() => splitByEdition(index ? rowsOf(index) : [], edition), [index, edition]);
-  const groups = useMemo(() => (index ? search(index, rows.own, query, { section, expanded }) : []), [index, rows, query, section, expanded]);
+  const ownGroups = useMemo(() => (index ? search(index, rows.own, query, { section, expanded }) : []), [index, rows, query, section, expanded]);
   const otherGroups = useMemo(() => (index ? search(index, rows.other, query, { section, expanded }) : []), [index, rows, query, section, expanded]);
+  usePreparedNames(() => rows.own.concat(rows.other).map(row => row.nome), rows);
+  // A name found exactly in the other edition beats the similar ones of this edition («cesto»: Cesto in 2024, not
+  // «Custodia…» in 2014): «Nessun risultato nel 2014» and «Cerca anche nel 2024», as before the typos.
+  const exactOf = (list: SearchGroup[]) => list.reduce((sum, group) => sum + group.exact, 0);
+  const groups = !exactOf(ownGroups) && exactOf(otherGroups) ? [] : ownGroups;
   const ownTotal = groups.reduce((sum, group) => sum + group.total, 0);
   const otherTotal = otherGroups.reduce((sum, group) => sum + group.total, 0);
   const total = ownTotal + (alsoOther ? otherTotal : 0);
   const typed = query.trim().length;
   // Counted only with the consent to the statistics: the word and the results of the site (both editions).
-  useReportSearch(query, ownTotal + otherTotal, !!index);
+  // Only the exact results: a search found only with typos still counts as «cercano senza trovare».
+  useReportSearch(query, exactOf(ownGroups) + exactOf(otherGroups), !!index);
   const choose = (value: string) => { setQuery(value); setExpanded([]); input.current?.focus(); };
+  const suggestion = suggestionOf(groups) ?? (!groups.length && alsoOther ? suggestionOf(otherGroups) : null);
 
   return (
     <div role="dialog" aria-modal="true" aria-label="Cerca in tutto il Grimorio" className="fixed inset-0 z-[70] flex flex-col bg-background">
@@ -134,6 +143,8 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
           </label>
           <button type="button" onClick={onClose} className="min-h-11 min-w-11 px-1 text-[15px] font-bold text-primary">Annulla</button>
         </div>
+        {/* Until the index arrives, the place of the section filters is kept: the results do not jump down. */}
+        {!index && <div className="mt-2.5 h-11" aria-hidden="true" />}
         {index && (
           <div role="group" aria-label="Sezioni" className="no-scrollbar -mx-4 mt-2.5 flex gap-2 overflow-x-auto px-4">
             {[{ k: undefined, t: "Tutto" }, ...index.sections].map(item => {
@@ -168,6 +179,7 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
             </div>
           )}
           {typed > 0 && index && !total && <p className="py-8 text-center text-[15px] text-muted">Nessun risultato per «{query.trim()}»{otherTotal ? ` nel ${edition}` : ""}</p>}
+          {typed > 0 && suggestion && <DidYouMean name={suggestion} onPick={choose} className="mt-3" />}
           <Groups groups={groups} query={query} edition={edition} prefix="gruppo" onExpand={key => setExpanded(list => [...list, key])} />
           {typed > 0 && otherTotal > 0 && !alsoOther && (
             <button type="button" onClick={() => setAlsoOther(true)}

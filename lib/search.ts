@@ -1,4 +1,5 @@
 // Search of the whole Grimorio: pure functions, safe in client components and tests.
+import { MATCH, matchName, normalizeSearch, type MatchKind } from "./fuzzy-search";
 // The index (lib/search-index.ts, served at /ricerca-indice.json) holds only name, short label and address.
 
 /** Compact index: sections, then one row per result. */
@@ -17,9 +18,11 @@ export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggia
 
 interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014" }
 
-export interface SearchMatch extends SearchRow { start: number }
+/** start: where the query starts in the name, -1 for an approximate match (a typo, lib/fuzzy-search.ts). */
+export interface SearchMatch extends SearchRow { start: number; kind: MatchKind; typos: number }
 
-export interface SearchGroup { section: SearchSectionKey; title: string; total: number; rows: SearchMatch[] }
+/** exact: the rows found without typos (counted in the statistics of the searches; the others are «Risultati simili»). */
+export interface SearchGroup { section: SearchSectionKey; title: string; total: number; exact: number; rows: SearchMatch[] }
 
 const GROUP_LIMIT = 8;
 
@@ -60,25 +63,39 @@ export function splitByEdition(rows: SearchRow[], edition: "2024" | "2014"): { o
 }
 
 /**
- * Results grouped by section in index order: names starting with the query first, then A–Z;
- * at most `limit` rows per group unless the group is expanded. One character is enough.
+ * Results grouped by section in index order: the exact name first, then names starting with the query, then those
+ * with a word starting with it, then the approximate ones (typos, lib/fuzzy-search.ts), each kind A–Z; accents and
+ * capitals ignored; at most `limit` rows per group unless the group is expanded. One character is enough.
  */
 export function search(index: SearchIndex, rows: SearchRow[], query: string, options: { section?: SearchSectionKey; expanded?: SearchSectionKey[]; limit?: number } = {}): SearchGroup[] {
   const limit = options.limit ?? GROUP_LIMIT;
-  if (!fold(query).trim()) return [];
+  if (!normalizeSearch(query)) return [];
   const found = new Map<SearchSectionKey, SearchMatch[]>();
   for (const row of rows) {
     if (options.section && row.section !== options.section) continue;
-    const start = matchStart(row.nome, query);
-    if (start < 0) continue;
+    const match = matchName(row.nome, query, { wordStart: true });
+    if (!match) continue;
     const list = found.get(row.section) ?? [];
-    list.push({ ...row, start });
+    list.push({ ...row, ...match });
     found.set(row.section, list);
   }
   return index.sections.filter(section => found.has(section.k)).map(section => {
-    const all = found.get(section.k)!.sort((a, b) => Number(a.start !== 0) - Number(b.start !== 0) || a.nome.localeCompare(b.nome, "it"));
-    return { section: section.k, title: section.t, total: all.length, rows: options.expanded?.includes(section.k) ? all : all.slice(0, limit) };
+    const all = found.get(section.k)!.sort((a, b) => a.kind - b.kind || a.typos - b.typos || a.nome.localeCompare(b.nome, "it"));
+    return { section: section.k, title: section.t, total: all.length, exact: all.filter(row => row.kind !== MATCH.approximate).length, rows: options.expanded?.includes(section.k) ? all : all.slice(0, limit) };
   });
+}
+
+/**
+ * «Forse cercavi»: when no result matches the query exactly (only typos), the closest name; otherwise null.
+ */
+export function suggestionOf(groups: SearchGroup[]): string | null {
+  let best: SearchMatch | null = null;
+  for (const group of groups)
+    for (const row of group.rows) {
+      if (row.kind !== MATCH.approximate) return null;
+      if (!best || row.typos < best.typos) best = row;
+    }
+  return best?.nome ?? null;
 }
 
 /**
