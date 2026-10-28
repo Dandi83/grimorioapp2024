@@ -3,6 +3,7 @@ import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
 import legacyMonsters from "@/lib/data/srd-monsters-5.1-it.json";
 import legacySpells from "@/lib/data/spell-reference-index-2014.json";
 import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
+import { CopyrightLine } from "@/components/legal/copyright";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
 
 export const metadata = { title: "Fonti e licenze — Il Grimorio.App" };
@@ -101,6 +102,7 @@ export default function SourcesPage() {
         <p>Icone di Baldur’s Gate 3 © Larian Studios, consultate tramite BG3 Wiki. Sono elementi grafici distinti dai testi SRD; Il Grimorio.App non è affiliata a Larian Studios.</p>
         <p><a className="text-primary underline underline-offset-4" href="https://bg3.wiki/wiki/Category:Damage_type_icons" target="_blank" rel="noreferrer">Icone originali e attribuzione</a></p>
       </section>
+      <CopyrightLine />
     </article>
   );
 }
