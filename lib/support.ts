@@ -5,17 +5,13 @@ import type { SUPPORT_FROM } from "./analytics-events";
  * this site and nothing is unlocked by a contribution.
  *
  * SUPPORT_URL is the switch: while it is empty the link of the Home, of /info and of the side column, the page
- * /sostieni (a plain 404) and the occasional card of the Home do not exist. Write here the address of the Ko-fi page
- * (for example "https://ko-fi.com/…") to turn them on.
+ * /sostieni (a plain 404) and the occasional card of the Home do not exist. Turned on on 28 October 2026 (PROMPT 9)
+ * with the page of Daniele. Ko-fi documents no way to choose the amount in the address: the button opens the page.
  */
-export const SUPPORT_URL = "";
+export const SUPPORT_URL = "https://ko-fi.com/ilgrimorioapp";
 
-/**
- * The address in use. The browser tests give a made-up one through GRIMORIO_SUPPORT_URL_PROVA (e2e/run.mjs only),
- * never written in the code; on Vercel that variable does not exist.
- */
-export function supportUrl(): string {
-  const url = SUPPORT_URL || process.env.GRIMORIO_SUPPORT_URL_PROVA || "";
+/** The address in use: only an https address counts, anything else (or nothing) turns «Sostieni» off. */
+export function supportUrl(url: string = SUPPORT_URL): string {
   return /^https:\/\/[^\s"<>]+$/.test(url) ? url : "";
 }
 
