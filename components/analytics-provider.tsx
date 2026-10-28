@@ -193,6 +193,9 @@ export function AnalyticsProvider() {
       // «Sostieni il Grimorio» (components/support): the link with where it was, the page, the Ko-fi button with the amount.
       else if (name === "support_link" && typeof detail.from === "string") void send("support_link", { from: detail.from, device });
       else if (name === "support_click" && typeof detail.amount === "number") void send("support_click", { amount: detail.amount, device });
+      // A star (components/favorites-provider.tsx): the kind and the id of the card, from any page.
+      else if ((name === "favorite_add" || name === "favorite_remove") && typeof detail.kind === "string" && typeof detail.id === "string")
+        void send(name, { favoriteKind: detail.kind, favoriteId: detail.id, device });
       else if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) void send(name);
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
       else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results });

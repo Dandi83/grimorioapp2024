@@ -11,7 +11,10 @@ export const E2E_ENV = {
   ADMIN_PASSCODE: "passcode-di-prova-e2e",
   // The reports and homebrew proposals are signed with their own secret, never the passcode.
   FEEDBACK_SECRET: "segreto-moduli-di-prova-e2e",
-  // «Sostieni il Grimorio» on in the browser tests only: a made-up Ko-fi address, never in the code (lib/support.ts).
+  // The statistics counted only on http://localhost (e2e/preferiti-contati.spec.mjs): the other tests use 127.0.0.1,
+  // where they stay off. A made-up key, for the test database only.
+  ANALYTICS_SECRET: "statistiche-di-prova-e2e",
+  GRIMORIO_ANALYTICS_TEST_HOST: "localhost",
   NEXT_TELEMETRY_DISABLED: "1",
 };
 

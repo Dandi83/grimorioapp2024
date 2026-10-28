@@ -1,7 +1,7 @@
 import "server-only";
 import { createHmac, randomUUID } from "node:crypto";
 import { pool } from "./db";
-import type { AnalyticsInput, Vote } from "./analytics-events";
+import type { AnalyticsInput, FavoritePeriod, Vote } from "./analytics-events";
 import { INSTAGRAM_START, ORIGINS, DEVICES, type Origin, type Device } from "./analytics-stats";
 /** The panel of Vercel Analytics: every visitor, without the consent details. */
 export const VERCEL_ANALYTICS_URL = "https://vercel.com/grimorio-app/grimorioapp2024/analytics";
@@ -69,6 +69,13 @@ async function ensureSchema() {
         await client.query(`CREATE TABLE IF NOT EXISTS grimorio_analytics_limits (
         address_key text NOT NULL, new_visitor boolean NOT NULL DEFAULT false, at timestamptz NOT NULL DEFAULT now())`);
         await client.query("CREATE INDEX IF NOT EXISTS grimorio_analytics_limits_at_idx ON grimorio_analytics_limits (at)");
+        // «I più salvati» (PROMPT 10, 28 October 2026): one row per visitor and card, whether the card is saved now.
+        // Kept beyond the 90 days of the events, so «Sempre» stays true; a removed star is deleted after 90 days.
+        await client.query(`CREATE TABLE IF NOT EXISTS grimorio_favorite_saves (
+        visitor_id text NOT NULL, kind text NOT NULL, card_id text NOT NULL, saved boolean NOT NULL,
+        added_at timestamptz, changed_at timestamptz NOT NULL DEFAULT now(), is_test boolean NOT NULL DEFAULT false,
+        PRIMARY KEY (visitor_id, kind, card_id))`);
+        await client.query("CREATE INDEX IF NOT EXISTS grimorio_favorite_saves_card_idx ON grimorio_favorite_saves (kind, card_id) WHERE saved");
         // The visitor IDs of the administrator's devices: never saved again, even after the logout.
         await client.query(`CREATE TABLE IF NOT EXISTS grimorio_analytics_excluded (
         visitor_id text PRIMARY KEY, escluso_il timestamptz NOT NULL DEFAULT now())`);
@@ -196,6 +203,46 @@ export async function excludeVisitor(visitor: string) {
   await ensureSchema();
   await pool.query("INSERT INTO grimorio_analytics_excluded (visitor_id) VALUES ($1) ON CONFLICT DO NOTHING", [visitor]);
   await pool.query("DELETE FROM grimorio_analytics_events WHERE visitor_id=$1", [visitor]);
+  await pool.query("DELETE FROM grimorio_favorite_saves WHERE visitor_id=$1", [visitor]);
+}
+
+/** «No» to the statistics: the stars this visitor gave are no longer counted. */
+export async function forgetFavorites(visitor: string) {
+  await ensureSchema();
+  await pool.query("DELETE FROM grimorio_favorite_saves WHERE visitor_id=$1", [visitor]);
+}
+
+/**
+ * A star tapped (favorite_add, favorite_remove), after its event was saved (storeAnalyticsEvent: never for an
+ * excluded device, within the limits). The state of the visitor and the card, not a sum: a second «add» of the same
+ * visitor changes nothing, a «remove» without an «add» never goes below zero. The first day of the star is kept
+ * while it stays saved (the 30 days of «I più salvati»).
+ */
+export async function storeFavorite(visitor: string, kind: string, cardId: string, saved: boolean, test: boolean) {
+  await ensureSchema();
+  await pool.query(
+    `INSERT INTO grimorio_favorite_saves (visitor_id, kind, card_id, saved, added_at, is_test)
+    VALUES ($1,$2,$3,$4, CASE WHEN $4 THEN now() END, $5)
+    ON CONFLICT (visitor_id, kind, card_id) DO UPDATE SET saved=EXCLUDED.saved, changed_at=now(), is_test=EXCLUDED.is_test,
+      added_at=CASE WHEN NOT EXCLUDED.saved THEN NULL WHEN grimorio_favorite_saves.saved THEN grimorio_favorite_saves.added_at ELSE now() END`,
+    [visitor, kind, cardId, saved, test],
+  );
+}
+
+export type FavoriteCount = { kind: string; id: string; people: number };
+
+/**
+ * How many people have each card in their favorites now (test visits left out), most saved first. «30 giorni»: the
+ * stars given in the last 30 days and still there.
+ */
+export async function readFavoriteCounts(period: FavoritePeriod = "sempre"): Promise<FavoriteCount[]> {
+  await ensureSchema();
+  const { rows } = await pool.query(
+    `SELECT kind, card_id AS id, count(*)::int AS people FROM grimorio_favorite_saves
+    WHERE saved AND is_test=false ${period === "30" ? "AND added_at>=now()-interval '30 days'" : ""}
+    GROUP BY kind, card_id ORDER BY people DESC, card_id ASC`,
+  );
+  return rows;
 }
 
 export async function isVisitorExcluded(visitor: string): Promise<boolean> {
@@ -216,6 +263,7 @@ export async function purgeAnalytics() {
     "DELETE FROM grimorio_analytics_events WHERE received_at<now()-interval '90 days'",
     `DELETE FROM grimorio_ratings WHERE creato_il<now()-interval '${RATINGS_KEPT_MONTHS} months'`,
     "DELETE FROM grimorio_analytics_limits WHERE at<now()-interval '1 day'",
+    "DELETE FROM grimorio_favorite_saves WHERE NOT saved AND changed_at<now()-interval '90 days'",
   ]) {
     try {
       await pool.query(sql);

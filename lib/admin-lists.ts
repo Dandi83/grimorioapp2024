@@ -15,7 +15,8 @@ import { spellName } from "./spell-name";
 import { getSrdModifiedCards } from "./srd-modified-server";
 import { usesLegacyMonsterRules } from "./srd-monsters";
 import { wordDiff } from "./word-diff";
-import { spellHref } from "./spell-public-id";
+import { publicSpellId, spellHref } from "./spell-public-id";
+import { readFavoriteCounts } from "./analytics";
 
 /**
  * The lists of the reserved area as rows (lib/admin-list-types.ts): spells, creatures with the homebrew, and every
@@ -27,16 +28,19 @@ const pillOf = (source: CardSource | string | undefined, homebrew = false): Pill
   homebrew ? "Homebrew" : source === "Sintesi originale" ? "Sintesi" : source === "Aggiunta da te" ? "Aggiunta da te" : undefined;
 
 async function checks() {
-  const [modified, names, hidden] = await Promise.all([
+  const [modified, names, hidden, saves] = await Promise.all([
     getSrdModifiedCards().catch(() => []), getReviewNameCards().catch(() => []), hiddenCardPaths().catch(() => [] as string[]),
+    readFavoriteCounts().catch(() => []),
   ]);
   const modifiedOf = new Map(modified.map(card => [`${card.kind}:${card.id}`, card.fields.map(field => ({ label: field.label, diff: field.diff }))]));
   const namesOf = new Map(names.map(card => [`${card.kind}:${card.id}`, card.found]));
-  return { modifiedOf, namesOf, hidden: new Set(hidden) };
+  // The stars are counted on the address id (a spell renamed by PROMPT 8 on its new address).
+  const savesOf = new Map(saves.map(row => [`${row.kind}:${row.id}`, row.people]));
+  return { modifiedOf, namesOf, hidden: new Set(hidden), savesOf };
 }
 
 export async function spellList(edition: AdminEdition): Promise<AdminListData> {
-  const [spells, { modifiedOf, namesOf, hidden }] = await Promise.all([getAdminSpells(), checks()]);
+  const [spells, { modifiedOf, namesOf, hidden, savesOf }] = await Promise.all([getAdminSpells(), checks()]);
   const rows = spells.filter(spell => spellEdition(spell) === edition).map((spell): AdminRow => {
     const key = `incantesimo:${spell.id}`;
     const modified = modifiedOf.get(key);
@@ -49,6 +53,7 @@ export async function spellList(edition: AdminEdition): Promise<AdminListData> {
       modified, reviewNames: namesOf.get(key), hidden: hidden.has(cardPath("incantesimo", spell.id)),
       // «Chiudi editor» comes back to the list.
       editHref: `/admin/incantesimi/${encodeURIComponent(spell.id)}?ritorno=%2Fadmin%2Fincantesimi`, publicHref: spellHref(spell.id),
+      ...(savesOf.get(`incantesimo:${publicSpellId(spell.id)}`) ? { saves: savesOf.get(`incantesimo:${publicSpellId(spell.id)}`) } : {}),
       ...(spell.fonte ? {} : { deletable: "spell" as const }),
     };
   });
@@ -57,7 +62,7 @@ export async function spellList(edition: AdminEdition): Promise<AdminListData> {
 }
 
 export async function monsterList(edition: AdminEdition): Promise<AdminListData> {
-  const [monsters, homebrew, { modifiedOf, namesOf, hidden }] = await Promise.all([getAllMonsters(), publishedHomebrew().catch(() => []), checks()]);
+  const [monsters, homebrew, { modifiedOf, namesOf, hidden, savesOf }] = await Promise.all([getAllMonsters(), publishedHomebrew().catch(() => []), checks()]);
   const ofEdition = monsters.filter(monster => (usesLegacyMonsterRules(monster) ? "2014" : "2024") === edition);
   const brewed = homebrew.filter(row => row.edizione === edition || row.edizione === "entrambe").map(homebrewMonster);
   const rows = [...ofEdition, ...brewed].map((monster): AdminRow => {
@@ -70,6 +75,7 @@ export async function monsterList(edition: AdminEdition): Promise<AdminListData>
       source: modified || isHomebrew || isNoSrdSource(monster.fonte_scheda) ? "nosrd" : "srd", pill: modified ? undefined : pillOf(monster.fonte_scheda, isHomebrew),
       modified, reviewNames: namesOf.get(key), hidden: hidden.has(`/mostro/${monster.id}`),
       editHref: `/admin/mostri/${encodeURIComponent(monster.id)}?ritorno=%2Fadmin%2Fmostri`, publicHref: `/mostro/${monster.id}`,
+      ...(savesOf.get(key) ? { saves: savesOf.get(key) } : {}),
       ...(monster.provenienza ? {} : { deletable: isHomebrew ? "homebrew" as const : "monster" as const }),
     };
   }).sort((a, b) => a.group.order - b.group.order || a.name.localeCompare(b.name, "it"));

@@ -10,6 +10,8 @@ import {
   admitEvent,
   analyticsAddressKey,
   excludeVisitor,
+  forgetFavorites,
+  storeFavorite,
   type CardInfo,
 } from "@/lib/analytics";
 import { parseAnalyticsInput } from "@/lib/analytics-events";
@@ -28,6 +30,8 @@ import { clientAddress } from "@/lib/admin-login-limit";
 import { getSpellById } from "@/lib/spells";
 import { getMonsterById } from "@/lib/monsters";
 import { isSrdAnimal } from "@/lib/monsters-types";
+import { MERGED_SPELL_IDS } from "@/lib/monster-id-aliases";
+import { publicSpellId } from "@/lib/spell-public-id";
 export const dynamic = "force-dynamic";
 function visitorFrom(request: NextRequest): string | undefined {
   return visitorOf(request.cookies.get(VISITOR)?.value);
@@ -42,11 +46,13 @@ async function excludedDevice(request: NextRequest): Promise<boolean> {
   return !!visitor && (await visitorExcluded(visitor));
 }
 function allowed(request: NextRequest) {
+  // The host the browser asked for: Next writes 127.0.0.1 as «localhost» in nextUrl, so the browser tests could not
+  // keep the statistics off on 127.0.0.1 and on on localhost. On Vercel the two are the same name.
+  const host = (request.headers.get("host") || "").replace(/:\d+$/, "") || request.nextUrl.hostname;
   return (
     analyticsConfigured() &&
-    ["ilgrimorio.app", "www.ilgrimorio.app", "grimorioapp2024.vercel.app"].includes(
-      request.nextUrl.hostname,
-    )
+    // GRIMORIO_ANALYTICS_TEST_HOST: set only by the browser tests (e2e/run.mjs), never on Vercel.
+    ["ilgrimorio.app", "www.ilgrimorio.app", "grimorioapp2024.vercel.app", process.env.GRIMORIO_ANALYTICS_TEST_HOST].includes(host)
   );
 }
 function response(value: object, status = 200) {
@@ -102,7 +108,12 @@ export async function POST(request: NextRequest) {
       result.cookies.set(VISITOR, `${id}.${sign(id)}`, options);
       // A device of the administrator that accepts: its new visitor ID is refused from the start.
       if (await excludedDevice(request)) await excludeVisitor(id).catch(() => {});
-    } else result.cookies.set(VISITOR, "", { ...options, maxAge: 0 });
+    } else {
+      result.cookies.set(VISITOR, "", { ...options, maxAge: 0 });
+      // «No»: the stars of this browser are no longer counted in «I più salvati».
+      const visitor = visitorFrom(request);
+      if (visitor) await forgetFavorites(visitor).catch(() => {});
+    }
     return result;
   }
   if (await excludedDevice(request)) return response({ ignored: true, reason: "admin" });
@@ -129,6 +140,26 @@ export async function POST(request: NextRequest) {
   if (input.event === "valutazione") {
     try {
       const stored = await storeRating(input.vote!, visitor, input.device ?? null, input.test);
+      const result = response({ ok: true, stored });
+      if (!known) result.cookies.set(VISITOR, `${visitor}.${sign(visitor)}`, options);
+      return result;
+    } catch {
+      return response({ error: "Statistiche temporaneamente non disponibili" }, 503);
+    }
+  }
+  // A star (favorite_add, favorite_remove): only for a card of the catalog, counted on its address id (a spell renamed
+  // by PROMPT 8 or merged with another card counts on the new address), then the state of the visitor and the card.
+  if (input.event === "favorite_add" || input.event === "favorite_remove") {
+    try {
+      const spell = input.favoriteKind === "incantesimo";
+      const record = spell ? await getSpellById(MERGED_SPELL_IDS[input.favoriteId!] ?? input.favoriteId!) : await getMonsterById(input.favoriteId!);
+      if (!record) return response({ ignored: true });
+      const id = spell ? publicSpellId(record.id) : record.id;
+      const card: CardInfo = "nome_italiano" in record
+        ? { id, kind: "spell", title: spellName(record.nome_italiano) }
+        : { id, kind: isSrdAnimal(record) ? "animal" : "monster", title: record.nome };
+      const stored = await storeAnalyticsEvent(input, visitor, card);
+      if (stored) await storeFavorite(visitor, input.favoriteKind!, id, input.event === "favorite_add", input.test);
       const result = response({ ok: true, stored });
       if (!known) result.cookies.set(VISITOR, `${visitor}.${sign(visitor)}`, options);
       return result;

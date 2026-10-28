@@ -3,7 +3,13 @@ import { Fragment } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { isAdmin } from "@/lib/admin-auth";
 import { AdminLogin } from "@/components/admin-login";
-import { readStatistics, readSupport, VERCEL_ANALYTICS_URL } from "@/lib/analytics";
+import { readFavoriteCounts, readStatistics, readSupport, VERCEL_ANALYTICS_URL } from "@/lib/analytics";
+import { FAVORITES_NOTE, FAVORITE_PERIODS } from "@/lib/analytics-events";
+import { rankFavorites, rankingFilterOf, type RankingCard } from "@/lib/favorite-ranking";
+import { getSpellIndex } from "@/lib/spell-index";
+import { getMonsterListIndex } from "@/lib/monster-index";
+import { spellName } from "@/lib/spell-name";
+import { publicSpellId, spellHref } from "@/lib/spell-public-id";
 import { bestDay, dayLabel, fillDays, percentChange, periodOf, periodRange, share, signed, summarySentence, PERIODS } from "@/lib/analytics-stats";
 import { Bars, DailyChart, Ring } from "@/components/statistics/charts";
 import { PeriodSelect } from "@/components/statistics/period-select";
@@ -35,10 +41,26 @@ const number = (value: number) => value.toLocaleString("it-IT");
 export default async function StatisticsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   // Login in place: a link opened from an email (no strict cookie on arrival) still reaches this page.
   if (!(await isAdmin())) return <AdminLogin />;
-  const period = periodOf((await searchParams).periodo);
+  const params = await searchParams;
+  const period = periodOf(params.periodo);
+  const saved = rankingFilterOf(params);
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
   const range = periodRange(period, today);
-  const [data, excluded, support] = await Promise.all([readStatistics(range), deviceExcluded(), readSupport(range)]);
+  const [data, excluded, support, counts, spells, monsters] = await Promise.all([
+    readStatistics(range), deviceExcluded(), readSupport(range), readFavoriteCounts(saved.period).catch(() => []),
+    getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
+  ]);
+  // «I più salvati»: the catalog of the two kinds with a star, on the address ids the stars are counted on.
+  const catalog: RankingCard[] = [
+    ...spells.map(spell => ({ kind: "incantesimo" as const, id: publicSpellId(spell.id), title: spellName(spell.nome_italiano, spell.edizione), edition: spell.edizione === "2014" ? "2014" as const : "2024" as const, href: spellHref(spell.id) })),
+    ...monsters.map(monster => ({ kind: "mostro" as const, id: monster.id, title: monster.nome, edition: monster.edizione, href: `/mostro/${encodeURIComponent(monster.id)}` })),
+  ];
+  const mostSaved = rankFavorites(counts, catalog, saved);
+  // The address of a filter of «I più salvati», keeping the period of the page and the other two filters.
+  const savedHref = (change: Record<string, string>) => {
+    const next = { periodo: period, salvati_tipo: saved.kind, salvati_edizione: saved.edition, salvati_periodo: saved.period, ...change };
+    return `/admin/statistiche?${new URLSearchParams(next)}#salvati`;
+  };
   const days = fillDays(range.from, range.to, data.days);
   const change = percentChange(data.people, data.previousPeople);
   const best = bestDay(days);
@@ -154,6 +176,40 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
             ))}
           </ul>
         ) : <p className={`${SOFT} mt-2`}>Nessuna ricerca senza risultati ripetuta almeno 2 volte.</p>}
+      </section>
+
+      {/* «I più salvati» (PROMPT 10): people who have the card in their favorites now, not taps on the star. */}
+      <section id="salvati" aria-labelledby="salvati-titolo" className={`${PAPER} scroll-mt-4`} data-most-saved="">
+        <h2 id="salvati-titolo" className={QUESTION}>I più salvati</h2>
+        <p className={`${SOFT} mt-1`}>Quante persone hanno la scheda nei preferiti adesso.</p>
+        {([
+          ["Tipo", "salvati_tipo", saved.kind, [["tutti", "Tutti"], ["incantesimo", "Incantesimi"], ["mostro", "Mostri"]]],
+          ["Edizione", "salvati_edizione", saved.edition, [["tutte", "Tutte"], ["2024", "2024"], ["2014", "2014"]]],
+          ["Periodo", "salvati_periodo", saved.period, Object.entries(FAVORITE_PERIODS)],
+        ] as const).map(([label, key, current, options]) => (
+          <nav key={key} aria-label={`I più salvati: ${label.toLowerCase()}`} className="mt-2 flex flex-wrap items-center gap-1.5">
+            <span className="w-16 text-[13px] font-semibold text-[#5E4E3E]">{label}</span>
+            {options.map(([value, text]) => (
+              <Link key={value} href={savedHref({ [key]: value })} scroll={false} aria-current={current === value ? "true" : undefined} data-saved-filter={`${key}:${value}`}
+                className={`inline-flex min-h-11 items-center rounded-full border px-3 text-[14px] font-semibold ${current === value ? "border-[#7A1F2B] bg-[#7A1F2B] text-[#FFFBF0]" : "border-[#DDCFAE] bg-[#F6EFDF] text-[#2B2118]"}`}>{text}</Link>
+            ))}
+          </nav>
+        ))}
+        {mostSaved.length ? (
+          <ol className="mt-3 divide-y divide-[#DDCFAE]" data-most-saved-list="">
+            {mostSaved.map((card, index) => (
+              <li key={`${card.kind}-${card.id}`} className="flex items-center gap-3 py-2" data-saved-card={`${card.kind}:${card.id}`}>
+                <span className="w-5 text-right font-serif font-bold text-[#7A1F2B]">{index + 1}</span>
+                <Link href={card.href} className="min-w-0 flex-1 truncate text-[15px] font-semibold text-[#2B2118] underline-offset-4 hover:underline">{card.title}</Link>
+                <span className="text-[12px] text-[#5E4E3E]">{card.kind === "incantesimo" ? "Incantesimo" : "Mostro"}</span>
+                <span className="rounded-full bg-[#2B2118] px-2 py-0.5 text-[11px] font-bold text-[#F6EFDF]">{card.edition}</span>
+                <span className="w-12 text-right text-sm font-bold tabular-nums text-[#7A1F2B]" data-saved-people={card.people}
+                  aria-label={`${card.people} ${card.people === 1 ? "persona" : "persone"}`}>{number(card.people)}</span>
+              </li>
+            ))}
+          </ol>
+        ) : <p className={`${SOFT} mt-3`}>Nessuna scheda salvata con questi filtri.</p>}
+        <p className="mt-3 text-[12px] text-[#5E4E3E]" data-saves-note="">{FAVORITES_NOTE}</p>
       </section>
 
       {/* «Sostieni il Grimorio» (canvas «Sostieni il Grimorio»): people, not taps; the contributions are on Ko-fi. */}

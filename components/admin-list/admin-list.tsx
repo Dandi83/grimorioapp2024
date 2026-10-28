@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ExternalLink, MoreHorizontal, PenLine, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
+import { ChevronLeft, ExternalLink, MoreHorizontal, PenLine, Plus, Search, SlidersHorizontal, Star, Trash2, X } from "lucide-react";
 
+import { FAVORITES_NOTE } from "@/lib/analytics-events";
 import { deleteSpellAction } from "@/app/actions/admin";
 import { deleteHomebrewAction } from "@/app/actions/admin-homebrew";
 import { deleteMonsterAction } from "@/app/actions/admin-monsters";
@@ -204,6 +205,9 @@ function AdminListView({ data, create }: { data: AdminListData; create?: "spell"
               </table>
             </>
           )}
+          {(data.kind === "incantesimo" || data.kind === "mostro") && (
+            <p className="mt-3 px-1 text-[12px] text-[#5E4E3E]" data-saves-note="">{FAVORITES_NOTE}</p>
+          )}
         </div>
       </div>
 
@@ -262,6 +266,18 @@ function RowLine({ row }: { row: AdminRow }) {
       {row.pill && <span className={SOURCE_PILL} data-row-pill={row.pill}>{row.pill}</span>}
       {!!row.modified?.length && <span className={AMBER_PILL} data-warning="srd-modificata">SRD modificata</span>}
       {!!row.reviewNames?.length && <span className={AMBER_PILL} data-warning="nome-da-rivedere" title={row.reviewNames.join(", ")}>Nome da rivedere</span>}
+      <Saves count={row.saves} />
+    </span>
+  );
+}
+
+/** «★ N»: how many people have the card in their favorites (PROMPT 10); nothing when none. */
+function Saves({ count }: { count?: number }) {
+  if (!count) return null;
+  return (
+    <span className="inline-flex items-center gap-0.5 font-semibold tabular-nums text-[#7A1F2B]" data-saves={count}
+      aria-label={`Nei preferiti di ${count} ${count === 1 ? "persona" : "persone"}`} title={`Nei preferiti di ${count} ${count === 1 ? "persona" : "persone"}`}>
+      <Star size={13} strokeWidth={2} className="fill-[#7A1F2B]" aria-hidden="true" />{count}
     </span>
   );
 }
@@ -326,7 +342,7 @@ function TableRow({ row, hidden, hideable, selecting, selected, onSelect, onTogg
     <tr data-card-row={row.id} data-public-href={row.publicHref} data-hidden={hidden ? "" : undefined} className={hidden ? "bg-[#F1EBDD] text-[#2B2118]/60" : ""}>
       {selecting && <td className={cell}>{row.hidden !== null && <Checkbox checked={selected} name={row.name} onChange={onSelect} />}</td>}
       <td className={`${cell} font-serif text-[16px] font-bold tabular-nums text-[#7A1F2B]`}>{row.lead}</td>
-      <td className={cell}><Link href={row.editHref} prefetch={false} className="text-[15px] font-semibold text-[#2B2118] hover:underline">{row.name}</Link></td>
+      <td className={cell}><Link href={row.editHref} prefetch={false} className="text-[15px] font-semibold text-[#2B2118] hover:underline">{row.name}</Link>{row.saves ? <span className="ml-2 text-[13px]"><Saves count={row.saves} /></span> : null}</td>
       <td className={`${cell} text-[14px] text-[#5E4E3E]`}>{row.sub}</td>
       <td className={cell}>
         <span className="flex flex-wrap gap-1">

@@ -26,7 +26,22 @@ export const ANALYTICS_EVENTS = [
   "support_link",
   "support_page",
   "support_click",
+  // A star of the favorites tapped (components/favorites-provider.tsx), anywhere: the kind and the id of the card.
+  // The favorites themselves stay on the phone; the server keeps only who has which card saved now (lib/analytics.ts).
+  "favorite_add",
+  "favorite_remove",
 ] as const;
+/** The kinds of cards with a star: spells and creatures (the animals are creatures of the Bestiario). */
+export const FAVORITE_KINDS = ["incantesimo", "mostro"] as const;
+export type FavoriteKind = (typeof FAVORITE_KINDS)[number];
+/** The day the stars started to be counted (the merge of PROMPT 10): the favorites saved before are not known. */
+export const FAVORITES_COUNTED_SINCE = "2026-10-28";
+export const FAVORITES_NOTE = "Conteggio dal 28 ottobre 2026: i preferiti salvati prima non sono noti.";
+/** The periods of «I più salvati»: the stars given in the last 30 days and still there, or all of them. */
+export const FAVORITE_PERIODS = { "30": "30 giorni", sempre: "Sempre" } as const;
+export type FavoritePeriod = keyof typeof FAVORITE_PERIODS;
+/** The id of a card: letters, numbers and dashes, as in the addresses. */
+const CARD_ID = /^[a-z0-9][a-z0-9-]{0,119}$/;
 /** Where the sharing of the whole app started: the card of the Home or the invite after «Bene». */
 export const SHARE_FROM = ["home", "valutazione", "sostieni"] as const;
 /** Where a link to /sostieni was tapped (lib/support.ts). */
@@ -38,7 +53,7 @@ export type ShareFrom = (typeof SHARE_FROM)[number];
 export const VOTES = ["male", "cosi-cosi", "bene"] as const;
 export type Vote = (typeof VOTES)[number];
 /** The events of the Home (the sharing of the whole app, the faces), accepted from any public page. */
-const HOME_EVENTS = ["share_tap", "share_sent", "arrivo_da_amico", "valutazione", "support_link", "support_page", "support_click"] as const;
+const HOME_EVENTS = ["share_tap", "share_sent", "arrivo_da_amico", "valutazione", "support_link", "support_page", "support_click", "favorite_add", "favorite_remove"] as const;
 /** The events of an installation: both count once per visitor in the statistics. */
 export const INSTALL_EVENTS = ["app_installed", "first_standalone_open"] as const;
 export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[number];
@@ -66,6 +81,9 @@ export type AnalyticsInput = {
   vote?: Vote;
   /** support_click only: 1, 3 or 5 euro. */
   amount?: number;
+  /** favorite_add and favorite_remove only: the card whose star was tapped (the id kept on the phone). */
+  favoriteKind?: FavoriteKind;
+  favoriteId?: string;
 };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 /** One segment of an address of the site: letters, numbers and dashes. */
@@ -107,6 +125,8 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (r.event === "valutazione" && !VOTES.includes(r.vote as Vote)) return;
   if (r.event === "support_link" && !SUPPORT_FROM.includes(r.from as (typeof SUPPORT_FROM)[number])) return;
   if (r.event === "support_click" && !SUPPORT_AMOUNTS.includes(r.amount as (typeof SUPPORT_AMOUNTS)[number])) return;
+  const favorite = r.event === "favorite_add" || r.event === "favorite_remove";
+  if (favorite && (!FAVORITE_KINDS.includes(r.favoriteKind as FavoriteKind) || typeof r.favoriteId !== "string" || !CARD_ID.test(r.favoriteId))) return;
   const input: AnalyticsInput = {
     event: r.event as AnalyticsEvent,
     id: r.id as string,
@@ -127,6 +147,10 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (input.event === "support_link") input.from = r.from as AnalyticsInput["from"];
   if (input.event === "support_click") input.amount = r.amount as number;
   if (input.event === "valutazione") input.vote = r.vote as Vote;
+  if (favorite) {
+    input.favoriteKind = r.favoriteKind as FavoriteKind;
+    input.favoriteId = r.favoriteId as string;
+  }
   if (input.event === "search") {
     const query = cleanSearchQuery(r.query);
     const results = typeof r.results === "number" ? Math.floor(r.results) : NaN;
