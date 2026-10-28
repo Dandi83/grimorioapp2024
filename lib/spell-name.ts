@@ -11,6 +11,8 @@ const PROPER: Record<string, string> = {
   leomund: "Leomund", melf: "Melf", mordenkainen: "Mordenkainen", nystul: "Nystul", otiluke: "Otiluke",
   rary: "Rary", tasha: "Tasha", tenser: "Tenser", yolande: "Yolande", abi: "Abi", dalzhel: "Dalzhel",
   aganazzar: "Aganazzar", maximilian: "Maximilian", snilloc: "Snilloc", tiamat: "Tiamat", bahamut: "Bahamut",
+  // Names chosen by Daniele for some spells: «Armatura di Agata», «Braccia di Ada», «Calderone ribollente di Ash»…
+  agata: "Agata", ada: "Ada", ash: "Ash", iolanda: "Iolanda",
   // «0TILUKE» (a zero) in two stored names: shown as the manual prints it.
   "0tiluke": "Otiluke",
 };

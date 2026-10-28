@@ -31,8 +31,11 @@ test("home: header, bottom navigation and security headers", async ({ page }) =>
 test("spells: 40-row pages, search, detail, favorite and back", async ({ page }) => {
   await page.goto("/grimorio");
   await expect(catalogRows(page)).toHaveCount(40);
-  await page.getByRole("button", { name: /Mostra altri/ }).click();
-  await expect(catalogRows(page)).toHaveCount(80);
+  // A tap before the page is interactive does nothing (CI, 28 October 2026): tap again only while the list is still at 40.
+  await expect(async () => {
+    if ((await catalogRows(page).count()) === 40) await page.getByRole("button", { name: /Mostra altri/ }).click();
+    await expect(catalogRows(page)).toHaveCount(80, { timeout: 1000 });
+  }).toPass();
   await page.getByRole("searchbox", { name: "Cerca un incantesimo" }).fill("dardo incantato");
   await expect(catalogRows(page)).toHaveCount(1);
   await page.getByRole("link", { name: /Dardo Incantato/i }).click();
