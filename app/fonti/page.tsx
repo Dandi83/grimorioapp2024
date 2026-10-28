@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { AnalyticsPreferencesButton } from "@/components/analytics-provider";
 import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
 import legacyMonsters from "@/lib/data/srd-monsters-5.1-it.json";
 import legacySpells from "@/lib/data/spell-reference-index-2014.json";
@@ -13,7 +12,7 @@ export default function SourcesPage() {
     <article className="space-y-6 p-6">
       <Link href="/" className="inline-flex min-h-11 items-center text-sm text-primary">← Torna alla Home</Link>
       <h1 className="font-serif text-3xl font-bold">Fonti e licenze</h1>
-      <section className="space-y-3 text-sm"><h2 className="font-serif text-xl text-foreground">Statistiche e privacy</h2><Link href="/privacy" className="block text-primary underline underline-offset-4">Come usiamo i dati di navigazione</Link><AnalyticsPreferencesButton /></section>
+      <section className="space-y-3 text-sm"><h2 className="font-serif text-xl text-foreground">Statistiche e privacy</h2><Link href="/privacy" className="block text-primary underline underline-offset-4">Come usiamo i dati (e come non essere contati)</Link></section>
       <section aria-labelledby="project-info" className="space-y-3 text-sm leading-6 text-muted">
         <h2 id="project-info" className="font-serif text-xl font-bold text-foreground">Informazioni sul progetto</h2>
         <p>

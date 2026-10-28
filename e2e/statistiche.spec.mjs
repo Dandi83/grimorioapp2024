@@ -102,7 +102,7 @@ test("statistics: the administrator sees the questions with charts and marked ev
   await cleanup();
 });
 
-test("without consent no event is sent: page views, cards and searches stay in the browser", async ({ browser }) => {
+test("where the statistics are off (previews, other hosts, this test server): nothing is sent, no visitor ID", async ({ browser }) => {
   const context = await browser.newContext({ baseURL: test.info().project.use.baseURL, viewport: { width: 390, height: 844 } });
   await context.addInitScript(() => { try { localStorage.setItem("grimorio.edizione", "2024"); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } });
   const page = await context.newPage();
@@ -169,7 +169,7 @@ test("installed app: the first opening from the icon is sent once, with the devi
   await expect.poll(() => sent.filter(event => event.event === "app_installed").length).toBe(1);
   await context.close();
 
-  // Without consent (not chosen, or refused): no event at all, the installation neither.
+  // Not answered yet: counted at once (28 October 2026), the installation too. «No» (also pressed before): nothing.
   for (const consent of [null, "rejected"]) {
     const other = await browser.newContext(options);
     await standalone(other);
@@ -177,10 +177,12 @@ test("installed app: the first opening from the icon is sent once, with the devi
     await withConsent(other, none, { consent });
     const view = await other.newPage();
     await view.goto("/");
+    if (consent === null) await expect.poll(() => none.filter(event => event.event === "page_view").length).toBeGreaterThanOrEqual(1);
     await view.evaluate(() => window.dispatchEvent(new Event("appinstalled")));
     await view.goto("/grimorio");
     await view.waitForTimeout(1500);
-    expect(none, String(consent)).toEqual([]);
+    if (consent === null) expect(none.some(event => event.event === "app_installed")).toBe(true);
+    else expect(none, String(consent)).toEqual([]);
     await other.close();
   }
 });
@@ -195,7 +197,8 @@ test("the administrator's device: excluded at the login and still after «Esci»
   expect((await mark()).expires - Date.now() / 1000).toBeGreaterThan(399 * 24 * 3600);
   await page.goto("/admin/statistiche");
   await expect(page.getByText("Questo dispositivo: escluso dalle statistiche ✓")).toBeVisible();
-  await expect(page.getByText("Le installazioni si contano solo per chi accetta le statistiche. Su iPhone si contano al primo avvio dall’icona.")).toBeVisible();
+  await expect(page.getByText("Le installazioni si contano per chi non ha rinunciato alle statistiche. Su iPhone si contano al primo avvio dall’icona.")).toBeVisible();
+  await expect(page.locator("[data-counting-since]")).toHaveText("Dal 28 ottobre 2026 si contano tutti i visitatori tranne chi rinuncia (prima solo chi accettava).");
   await expect(page.locator("[data-installs]")).toContainText("Nuove installazioni nel periodo:");
   await expect(page.locator("[data-installs-detail]")).toContainText(/Android e computer: \d+ confermate · iPhone: \d+ al primo avvio dall’icona/);
   await expect(page.locator("[data-installed]")).toContainText(/Usano l’app installata: \d+ person[ae] nel periodo/);
@@ -216,6 +219,6 @@ test("the administrator's device: excluded at the login and still after «Esci»
   expect((await mark())?.value).toBe("1");
   // Visitors never see any of it.
   const guest = await (await request.get("/privacy")).text();
-  expect(guest).toContain("la prima apertura dell’app dall’icona");
+  expect(guest).toContain("la prima apertura dall’icona");
   expect(guest).not.toMatch(/Non contare questo dispositivo|grimorio_statistics_excluded/);
 });

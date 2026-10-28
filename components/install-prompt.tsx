@@ -6,12 +6,16 @@ import { useEffect, useState } from "react";
 import { Copy, Download, X } from "lucide-react";
 
 import { copyLink, dismissInvite, promptInstall, useDeviceAdvice, useInstallEvent } from "@/components/install/install-events";
+import { useUserEdition } from "@/components/edition/edition-provider";
+import { useStatisticsNotice } from "@/components/statistics/notice";
 
 /**
  * The invite to install the app, small, above the bottom bar: the «Installa» button where the browser offers it
  * (Chromium on Android and computer), else the steps of the browser's own menu (iPhone, Firefox, Samsung,
  * Huawei, Mi Browser…), or «open the link in the browser» inside WhatsApp, Instagram and the other apps.
  * Never when the app is already installed; «Chiudi» hides it for 7 days. All browsers: /installa.
+ * Never together with the statistics bar nor over the welcome screen: it waits until the bar is closed («Ok» or
+ * «No»), then its usual moment; a bar closed in an earlier visit changes nothing (components/statistics/notice.ts).
  */
 export function InstallPrompt() {
   const pathname = usePathname();
@@ -20,17 +24,21 @@ export function InstallPrompt() {
   const [late, setLate] = useState(false);
   const [closed, setClosed] = useState(false);
   const [copied, setCopied] = useState(false);
+  const notice = useStatisticsNotice();
+  const { firstLaunch } = useUserEdition();
+  const free = notice === "closed" && !firstLaunch;
   const guide = advice && !advice.installed && !advice.dismissed && advice.guide.kind !== "none" ? advice.guide : null;
-  const wait = guide ? (guide.promptFirst ? 4000 : 1200) : 0;
+  const wait = guide && free ? (guide.promptFirst ? 4000 : 1200) : 0;
 
   useEffect(() => {
     if (!wait) return;
-    // A moment after the page opens; Chromium on Android waits for its own install event a little longer.
+    // A moment after the page opens (or the statistics bar closes); Chromium on Android waits for its own
+    // install event a little longer.
     const timer = setTimeout(() => setLate(true), wait);
     return () => clearTimeout(timer);
   }, [wait]);
 
-  if (!guide || closed || pathname === "/installa") return null;
+  if (!guide || !free || closed || pathname === "/installa") return null;
   const button = guide.promptFirst && event !== null;
   if (!button && (guide.kind === "button" || !late)) return null;
 

@@ -73,6 +73,7 @@ export default async function FeedbackDetailPage({ params }: { params: Promise<{
         ) : "nessuna pagina indicata"}
       </p>
       <p className="text-sm text-muted">Email di avviso: {report.email_inviata ? "inviata" : <b className="text-primary">non inviata</b>}</p>
+      {!report.email_inviata && report.email_esito && <p className="text-sm text-muted" data-email-reason="">Motivo: {report.email_esito}</p>}
       {report.email_risposta ? (
         <>
           <p className="break-all text-sm text-muted">Risposta a: <b className="text-foreground">{report.email_risposta}</b></p>

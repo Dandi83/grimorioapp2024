@@ -46,7 +46,7 @@ Regola esplicita di Daniele del 18 ottobre 2026: evitare sovrapposizioni tra que
 - Negli elenchi pubblici e preferiti niente etichette edizione. Solo nelle schede: etichetta scura con icona libro e anno (`2024` oppure `2014`), con «D&D5e» e la fonte nel testo accessibile. Conserva metadati edizione e scelta amministrativa.
 - Incantesimi, mostri e animali condivisibili tramite link pubblici alle singole schede.
 - Non sostituire o cancellare modifiche amministrative successive con le fixture SRD. Mantieni verifica delle fonti, attribuzioni, varianti 2014 e separazione tra edizione e licenza.
-- Statistiche con consenso facoltativo; test e amministratori esclusi. Visitatori unici indicano browser/installazioni riconosciute, non persone certificate. Letture e condivisioni sono indicatori con limiti espliciti.
+- Statistiche contate per tutti dalla prima pagina tranne chi rinuncia («No» sulla barra o interruttore in /privacy), dal 28 ottobre 2026 su decisione di Daniele: solo prima parte, aggregate, niente IP né user agent completo, niente invio a terzi (PostHog rimosso), cookie visitatore ≤ 13 mesi; test e amministratori esclusi. Visitatori unici indicano browser/installazioni riconosciute, non persone certificate. Letture e condivisioni sono indicatori con limiti espliciti.
 - Preferiti del browser non si trasferiscono automaticamente nell'app iOS. Il sito web ha un service worker (`app/sw.js/route.ts`, `lib/sw/service-worker.js`) che rende disponibili offline le pagine pubbliche già aperte, con avviso «copia salvata»; interruttore di emergenza `GRIMORIO_SERVICE_WORKER=off` su Vercel. Riguarda solo il sito nel browser: l'app iOS non ha ancora offline né Universal Links.
 
 ## Comunicazione

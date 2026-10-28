@@ -322,3 +322,14 @@ aside a.underline {
     [data-with-side-nav] { margin-left: 240px; margin-right: 0; width: auto; max-width: none; border-inline-width: 0; }
   }
 }
+
+/* The statistics bar (components/analytics-provider.tsx), 60 px above the bottom navigation: while it is shown the
+   end of the page keeps room for it, so nothing stays hidden under it. */
+html[data-statistics-room] main {
+  padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 1024px) {
+  html[data-statistics-room] main {
+    padding-bottom: 60px;
+  }
+}

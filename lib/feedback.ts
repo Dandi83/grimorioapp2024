@@ -28,6 +28,8 @@ interface FeedbackReport {
   stato: FeedbackState;
   email_inviata: boolean;
   nota_admin: string | null;
+  /** Why the notice email was not sent (no addresses, no message text): shown in the reserved area. */
+  email_esito: string | null;
 }
 
 let tablesReady: Promise<void> | undefined;
@@ -56,6 +58,8 @@ export function ensureFeedbackTables() {
       await pool.query(`ALTER TABLE grimorio_feedback_reports DROP CONSTRAINT "${name.replace(/"/g, "")}"`);
       await pool.query(`ALTER TABLE grimorio_feedback_reports ADD CONSTRAINT grimorio_feedback_reports_tipo_check CHECK (tipo IN ('errore', 'mancanza', 'consiglio', 'diritti'))`);
     }
+    // Added on 28 October 2026: the reason of a notice email not sent.
+    await pool.query("ALTER TABLE grimorio_feedback_reports ADD COLUMN IF NOT EXISTS email_esito text");
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_feedback_limits (
       device_hash text NOT NULL,
       sent_at timestamptz NOT NULL DEFAULT now()
@@ -156,7 +160,12 @@ export async function saveFeedback(input: FeedbackInput): Promise<FeedbackReport
 }
 
 export async function markEmailSent(id: string): Promise<void> {
-  await pool.query("UPDATE grimorio_feedback_reports SET email_inviata = true WHERE id = $1", [id]);
+  await pool.query("UPDATE grimorio_feedback_reports SET email_inviata = true, email_esito = NULL WHERE id = $1", [id]);
+}
+
+/** A notice email not sent: its reason (from emailFailure, never an address) is kept with the report. */
+export async function markEmailFailed(id: string, reason: string): Promise<void> {
+  await pool.query("UPDATE grimorio_feedback_reports SET email_inviata = false, email_esito = $2 WHERE id = $1", [id, reason.slice(0, 300)]);
 }
 
 export interface FeedbackFilter { tipo?: FeedbackType; stato?: FeedbackState }
@@ -241,12 +250,22 @@ type EmailResult = "sent" | "not-configured" | "failed";
  * Without RESEND_API_KEY or FEEDBACK_TO_EMAIL nothing is sent and a warning is logged.
  */
 export async function sendFeedbackEmail(report: FeedbackReport, context: { origin: string; name: string | null }, send: typeof fetch = fetch): Promise<EmailResult> {
+  return (await sendFeedbackEmailWithReason(report, context, send)).result;
+}
+
+/**
+ * The same, with the reason of a failure for the reserved area: the variables missing, the status and error name
+ * of Resend (never its message, which may contain the recipient), or the connection. No personal data.
+ */
+export async function sendFeedbackEmailWithReason(report: FeedbackReport, context: { origin: string; name: string | null }, send: typeof fetch = fetch): Promise<{ result: EmailResult; reason: string | null }> {
   const key = process.env.RESEND_API_KEY;
   const to = process.env.FEEDBACK_TO_EMAIL;
   if (!key || !to) {
-    console.warn("[segnalazioni] Email non inviata: RESEND_API_KEY o FEEDBACK_TO_EMAIL non configurate. La segnalazione è salvata.");
-    return "not-configured";
+    const missing = [!key && "RESEND_API_KEY", !to && "FEEDBACK_TO_EMAIL"].filter(Boolean).join(" e ");
+    console.warn(`[segnalazioni] Email non inviata: ${missing} non configurate. La segnalazione è salvata.`);
+    return { result: "not-configured", reason: `Invio non configurato: manca ${missing} su Vercel.` };
   }
+  const testSender = !process.env.FEEDBACK_FROM_EMAIL;
   const input = { tipo: report.tipo, messaggio: report.messaggio, percorso: report.percorso, edizione: report.edizione as FeedbackInput["edizione"], email: report.email_risposta };
   const body = {
     from: process.env.FEEDBACK_FROM_EMAIL || RESEND_TEST_SENDER,
@@ -271,14 +290,26 @@ export async function sendFeedbackEmail(report: FeedbackReport, context: { origi
     if (!response.ok) {
       // Only the error code of Resend: its message may contain the recipient address.
       const code = await response.json().then((body: { name?: unknown }) => (typeof body?.name === "string" ? ` (${body.name.slice(0, 60)})` : ""), () => "");
-      console.warn(`[segnalazioni] Email non inviata: Resend ha risposto ${response.status}${code}. La segnalazione è salvata.`);
-      return "failed";
+      console.warn(`[segnalazioni] Email non inviata: Resend ha risposto ${response.status}${code}${testSender ? ", mittente di prova" : ""}. La segnalazione è salvata.`);
+      return { result: "failed", reason: emailFailure(response.status, code, testSender) };
     }
-    return "sent";
+    return { result: "sent", reason: null };
   } catch {
     console.warn("[segnalazioni] Email non inviata: Resend non raggiungibile. La segnalazione è salvata.");
-    return "failed";
+    return { result: "failed", reason: "Resend non raggiungibile (rete o tempo scaduto)." };
   }
+}
+
+/** The reason of a refusal of Resend, in words for the reserved area. */
+export function emailFailure(status: number, code: string, testSender: boolean): string {
+  const refused = `Resend ha rifiutato l’invio: ${status}${code}.`;
+  // Without FEEDBACK_FROM_EMAIL the test sender of Resend is used, which delivers only to the owner of the account.
+  if (testSender && (status === 403 || status === 422))
+    return `${refused} Il mittente di prova onboarding@resend.dev consegna solo all’email del titolare dell’account Resend: serve un dominio verificato su Resend e FEEDBACK_FROM_EMAIL su Vercel.`;
+  if (status === 401) return `${refused} La chiave RESEND_API_KEY non è valida.`;
+  if (status === 403) return `${refused} Il dominio del mittente (FEEDBACK_FROM_EMAIL) non è verificato su Resend.`;
+  if (status === 429) return `${refused} Troppi invii: limite di Resend raggiunto.`;
+  return refused;
 }
 
 /** Cloudflare Turnstile is used only when both keys are set on the server. */

@@ -40,7 +40,7 @@ test("Home: «Area riservata» with the lock, «Info e note legali» at the foot
   // First tile: the Termini d'uso.
   await expect(page.getByRole("list").first().getByRole("link").first()).toHaveAccessibleName(/^Termini d’uso/);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/info-390.png`, fullPage: true });
-  for (const [name, url, heading] of [[/^Termini d’uso/, /\/termini$/, "Termini d’uso"], [/^Fonti e licenze SRD/, /\/fonti$/, "Fonti e licenze"], [/^Privacy/, /\/privacy$/, "Statistiche e privacy"]]) {
+  for (const [name, url, heading] of [[/^Termini d’uso/, /\/termini$/, "Termini d’uso"], [/^Fonti e licenze SRD/, /\/fonti$/, "Fonti e licenze"], [/^Privacy/, /\/privacy$/, "Come usiamo i dati"]]) {
     await page.goto("/info");
     const tile = page.getByRole("link", { name });
     expect((await tile.boundingBox()).height).toBeGreaterThanOrEqual(44);

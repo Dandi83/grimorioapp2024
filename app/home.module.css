@@ -86,11 +86,13 @@
 }
 
 /* «Edizione 2024 ⌄» at the top right of the picture (phones and tablets). */
+/* Centred over the picture, about 20 px from its top (canvas «Prima visita Il Grimorio.App», G1). */
 .edition {
   position: absolute;
   z-index: 1;
-  top: 14px;
-  right: 16px;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .copy {

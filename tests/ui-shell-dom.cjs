@@ -90,6 +90,15 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  await render(React.createElement(InstallPrompt,{key:'dismissed'}));await wait(1300);
  assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'a recent dismissal is respected');
  window.localStorage.removeItem('grimorio-install-dismissed');
+ // Never together with the statistics bar (components/statistics/notice.ts): it waits until the bar is closed.
+ const notice=load('components/statistics/notice.ts');
+ notice.setStatisticsNotice('open');
+ await render(React.createElement(InstallPrompt,{key:'iphone-bar'}));await wait(1300);
+ assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'no invite while the statistics bar is open');
+ await act(async()=>notice.setStatisticsNotice('closed'));
+ assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'not at once when the bar closes');
+ await wait(1300);
+ assert.ok(document.body.textContent.includes('Aggiungi Il Grimorio.App'),'its usual moment after the bar closes');
  await render(React.createElement(InstallPrompt,{key:'iphone'}));await wait(1300);
  assert.ok(document.body.textContent.includes('Tocca Condividi (il quadrato con la freccia), poi «Aggiungi alla schermata Home».'),'iPhone Safari shows the manual steps');
  assert.ok(document.querySelector('a[href="/installa"]'),'with the link to every step');

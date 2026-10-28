@@ -66,7 +66,7 @@ export default async function HomePage() {
         />
         <div className={styles.shade} aria-hidden="true" />
         {/* Phones and tablets; on computers the pill is in the side column. */}
-        <EditionPill place="home" className={styles.edition} />
+        <EditionPill place="home" size="large" className={styles.edition} />
         <div className={styles.copy}>
           <h1 id="home-quote" className={styles.quote}>
             Il sapere è la più

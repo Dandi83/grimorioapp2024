@@ -66,48 +66,54 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  // The searched words and categories only: the row keeps no referrer, address or user agent.
  const columns=(await pg.query("SELECT column_name FROM information_schema.columns WHERE table_name='grimorio_analytics_events'")).rows.map(r=>r.column_name);
  assert.ok(!columns.some(name=>/referr|agent|ip|address|url/.test(name)),columns.join());
- let payload;
- process.env.POSTHOG_PROJECT_TOKEN='test-public-token';process.env.POSTHOG_INGEST_HOST='https://eu.i.posthog.com';process.env.ADMIN_PASSCODE='test-only-secret';
+ process.env.ADMIN_PASSCODE='test-only-secret';
  // The admin passcode is never the statistics key: without ANALYTICS_SECRET the statistics do not start.
  delete process.env.ANALYTICS_SECRET;
  {const warn=console.warn,warnings=[];console.warn=m=>warnings.push(String(m));
   assert.equal(analytics.analyticsSecret(),'');assert.equal(analytics.analyticsConfigured(),false);
   console.warn=warn;assert.deepEqual(warnings,['[statistiche] Variabile mancante: ANALYTICS_SECRET. Statistiche non attive.']);}
+ // First party only (28 October 2026): running with the key alone, nothing is sent to PostHog or anywhere else.
  process.env.ANALYTICS_SECRET='analytics-only-secret';assert.equal(analytics.analyticsConfigured(),true);
- global.fetch=async()=>({ok:false,status:503});await assert.rejects(()=>analytics.exportAnalytics(),/503/);
- assert.ok((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events WHERE exported=false')).rows[0].n>0,'failure retains outbox');
- global.fetch=async(url,options)=>{assert.equal(url,'https://eu.i.posthog.com/batch/');payload=JSON.parse(options.body);return {ok:true}};
- await analytics.exportAnalytics();
- assert.equal(payload.api_key,'test-public-token');assert.ok(payload.batch.every(e=>e.event.startsWith('grimorio_')&&e.distinct_id.startsWith('grimorio:')&&e.properties.app==='il_grimorio'&&e.properties.$process_person_profile===false&&e.properties.$geoip_disable===true&&e.properties.$ip===null));
- assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events WHERE exported=false')).rows[0].n,0);
- const delivered=[];
- for(let i=0;i<5;i++)await analytics.storeAnalyticsEvent(event('share_click'),a,card);
- global.fetch=async(url,options)=>{delivered.push(...JSON.parse(options.body).batch.map(e=>e.uuid));await new Promise(r=>setTimeout(r,10));return {ok:true}};
- await Promise.all([analytics.exportAnalytics(),analytics.exportAnalytics()]);
- assert.equal(delivered.length,5);assert.equal(new Set(delivered).size,5,'concurrent exporters claim disjoint rows');
+ assert.equal(analytics.exportAnalytics,undefined,'no export to third parties');
+ assert.ok(!fs.readFileSync('lib/analytics.ts','utf8').includes('posthog.com'),'no third-party endpoint in the statistics');
  await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '91 days'");await analytics.purgeAnalytics();assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events')).rows[0].n,0);
  let admin=false,stored=0;const afterCallbacks=[],excludedIds=new Set();
  const {NextRequest}=require('next/server');
- const fakeAnalytics={analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},exportAnalytics:async()=>{},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id)};
+ const fakeAnalytics={analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id)};
  const exclusion=load('lib/analytics-exclusion.ts',{'server-only':{},'next/headers':{cookies:async()=>({get:()=>undefined,set(){}})},'./analytics':fakeAnalytics});
  const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true},'@/lib/spell-name':{spellName:name=>name}});
  process.env.ANALYTICS_SECRET='analytics-only-secret';
  const request=(body,headers={})=>new NextRequest('https://ilgrimorio.app/api/analytics',{method:'POST',headers:{origin:'https://ilgrimorio.app','content-type':'application/json',...headers},body:JSON.stringify(body)});
  assert.equal((await route.POST(request(event(),{origin:'https://bad.example'}))).status,403);
- assert.equal((await (await route.POST(request(event()))).json()).reason,'consent');assert.equal(stored,0);
+ // Counted by default (28 October 2026): the first event of a new browser is saved and gives it a random visitor ID.
+ const first=await route.POST(request(event()));
+ assert.equal((await first.json()).stored,true);assert.equal(stored,1);
+ const firstVisitor=first.cookies.get('grimorio_statistics_visitor');
+ assert.match(firstVisitor.value,/^[0-9a-f-]{36}\.[0-9a-f]{64}$/);assert.equal(firstVisitor.maxAge,180*24*3600,'the visitor cookie lasts 180 days, under the 13 months');
  const consent=await route.POST(request({consent:'accepted'}));
+ const choice=consent.cookies.get('grimorio_statistics_consent');assert.equal(choice.value,'accepted');assert.equal(choice.maxAge,395*24*3600,'the answer lasts 13 months');
  const visitorCookie=consent.cookies.get('grimorio_statistics_visitor').value;
  const cookies=`grimorio_statistics_consent=accepted; grimorio_statistics_visitor=${visitorCookie}`;
- assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).stored,true);assert.equal(stored,1);
- admin=true;assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).reason,'admin');assert.equal(stored,1);admin=false;
- assert.equal((await (await route.POST(request(event(),{cookie:'grimorio_statistics_consent=accepted; grimorio_statistics_visitor=forged'}))).json()).reason,'identity');
+ const counted=await route.POST(request(event(),{cookie:cookies}));
+ assert.equal((await counted.json()).stored,true);assert.equal(stored,2);assert.equal(counted.cookies.get('grimorio_statistics_visitor'),undefined,'a known visitor keeps its ID');
+ admin=true;assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).reason,'admin');assert.equal(stored,2);admin=false;
+ const forged=await route.POST(request(event(),{cookie:'grimorio_statistics_visitor=forged'}));
+ assert.notEqual(forged.cookies.get('grimorio_statistics_visitor').value.split('.')[0],'forged','a cookie that does not verify is a new visitor');
+ // «No»: nothing saved any more, the ID removed; also for those who refused before (the same cookie value).
+ const storedBeforeNo=stored;
  const revoked=await route.POST(request({consent:'rejected'},{cookie:cookies}));assert.equal(revoked.cookies.get('grimorio_statistics_visitor').maxAge,0);
+ assert.equal(revoked.cookies.get('grimorio_statistics_consent').value,'rejected');
+ for(const cookie of ['grimorio_statistics_consent=rejected',`grimorio_statistics_consent=rejected; grimorio_statistics_visitor=${visitorCookie}`]){
+  const refusedEvent=await route.POST(request(event(),{cookie}));
+  assert.equal((await refusedEvent.json()).reason,'rejected');assert.equal(refusedEvent.cookies.get('grimorio_statistics_visitor'),undefined);
+ }
+ assert.equal(stored,storedBeforeNo,'after «No» no event is saved');
  // Only ANALYTICS_SECRET signs: a cookie signed with the admin passcode (the old «legacy» cookies) is a new visitor.
  const {createHmac}=require('node:crypto');
  const oldId='0f8fad5b-d9cb-469f-a165-70867728950e';
  const byPasscode=`grimorio_statistics_consent=accepted; grimorio_statistics_visitor=${oldId}.${createHmac('sha256',process.env.ADMIN_PASSCODE).update(`statistics:${oldId}`).digest('hex')}`;
  const refused=await route.POST(request(event(),{cookie:byPasscode}));
- assert.equal((await refused.json()).reason,'identity','a passcode-signed cookie is not accepted');assert.equal(refused.cookies.get('grimorio_statistics_visitor'),undefined,'and never re-signed');
+ await refused.json();assert.notEqual(refused.cookies.get('grimorio_statistics_visitor').value.split('.')[0],oldId,'a passcode-signed cookie is not accepted, never re-signed: a new ID');
  const renewed=await route.POST(request({consent:'accepted'},{cookie:byPasscode}));
  assert.notEqual(renewed.cookies.get('grimorio_statistics_visitor').value.split('.')[0],oldId,'accepting again gives a new visitor ID');
  process.env.ADMIN_PASSCODE='passcode-changed';
@@ -121,6 +127,13 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  const status=async(url,cookie)=>(await route.GET(new NextRequest(url,{headers:cookie?{cookie}:{}}))).json();
  assert.deepEqual(await status('https://ilgrimorio.app/api/analytics'),{enabled:true,excluded:false,consent:null});
  assert.deepEqual(await status('https://ilgrimorio.app/api/analytics','grimorio_statistics_consent=rejected'),{enabled:true,excluded:false,consent:'rejected'});
+ // The status gives a new browser its visitor ID before the first events (they share it); never after «No».
+ const fresh=await route.GET(new NextRequest('https://ilgrimorio.app/api/analytics'));
+ assert.match(fresh.cookies.get('grimorio_statistics_visitor').value,/^[0-9a-f-]{36}\./);
+ const no=await route.GET(new NextRequest('https://ilgrimorio.app/api/analytics',{headers:{cookie:'grimorio_statistics_consent=rejected'}}));
+ assert.equal(no.cookies.get('grimorio_statistics_visitor'),undefined);
+ assert.equal(no.cookies.get('grimorio_statistics_consent').maxAge,395*24*3600,'«No» renewed at every visit, 13 months');
+ assert.equal((await route.GET(new NextRequest('https://anteprima.example.vercel.app/api/analytics'))).cookies.get('grimorio_statistics_visitor'),undefined,'no ID where nothing is collected');
  assert.equal((await status('https://ilgrimorio.app/api/analytics','grimorio_statistics_consent=altro')).consent,null,'unknown choices are ignored');
  assert.equal((await status('https://anteprima.example.vercel.app/api/analytics')).enabled,false,'previews and other hosts never collect');
  admin=true;assert.equal((await status('https://ilgrimorio.app/api/analytics')).excluded,true,'administrators are excluded');
@@ -141,11 +154,11 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.ok(excludedIds.has(acceptedHere.cookies.get('grimorio_statistics_visitor').value.split('.')[0]));
  excludedIds.clear();
  assert.equal((await route.GET(new NextRequest('https://ilgrimorio.app/api/analytics'))).headers.get('cache-control'),'no-store');
- const maintenance=load('app/api/analytics/maintenance/route.ts',{'@/lib/analytics':{purgeAnalytics:async()=>{},exportAnalytics:async()=>{}}});process.env.CRON_SECRET='maintenance-test';
+ const maintenance=load('app/api/analytics/maintenance/route.ts',{'@/lib/analytics':{purgeAnalytics:async()=>{}}});process.env.CRON_SECRET='maintenance-test';
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance'))).status,401);
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance',{headers:{authorization:'Bearer maintenance-test'}}))).status,200);
  const LoginForm=()=>null;
  const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readStatistics:async()=>{throw new Error('private data leaked')},VERCEL_ANALYTICS_URL:''},'@/app/actions/admin-statistics':{deleteMarkerAction(){},excludeDeviceAction(){}},'@/lib/analytics-exclusion':{deviceExcluded:async()=>false},'@/components/statistics/marker-form':{MarkerForm:()=>null},'@/components/statistics/period-select':{PeriodSelect:()=>null}});
  assert.equal((await statistics.default({searchParams:Promise.resolve({})})).type,LoginForm,'without login only the login form is shown');
- await pg.close();console.log('Analytics: consent enforcement, signed IDs, admin exclusion, validation, unique counts, duplicate events, PostgreSQL aggregates, outbox retry, privacy payload and retention passed.');
+ await pg.close();console.log('Analytics: counted by default with «No» excluding, signed IDs, admin exclusion, validation, unique counts, duplicate events, PostgreSQL aggregates, first party only and retention passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

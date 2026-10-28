@@ -226,8 +226,10 @@ test("phone: pill on the picture of the Home, sheet from the bottom closed by a 
   const pill = page.getByRole("button", { name: "Edizione 2024: cambia la tua edizione" });
   await expect(pill).toBeVisible();
   const box = await pill.boundingBox();
-  expect(box.height).toBeGreaterThanOrEqual(44);
-  expect(box.x + box.width).toBeGreaterThan(330);
+  // Centred on the picture, larger (canvas «Prima visita», G1).
+  expect(box.height).toBeGreaterThanOrEqual(52);
+  const width = page.viewportSize().width;
+  expect(Math.abs(box.x + box.width / 2 - width / 2)).toBeLessThanOrEqual(2);
   await pill.click();
   const panel = page.getByRole("dialog", { name: "Scegli l’edizione" });
   // Opened with a tap: focus on the active choice, no ring.
