@@ -96,8 +96,9 @@ export default async function FeedbackListPage({ searchParams }: { searchParams:
                   {report.stato === "nuova" && <span className="shrink-0 rounded-[10px] bg-amber px-2 py-0.5 text-[11px] font-bold text-foreground">NUOVA</span>}
                 </span>
                 <span className="line-clamp-2 break-words text-[15px] leading-[1.3]">{report.messaggio}</span>
+                {report.picco && <span className="self-start text-xs font-bold text-primary" data-picco="">Arrivata durante un picco (senza email né notifica)</span>}
                 {report.etichetta && <span className="self-start rounded-[10px] bg-[#E6F0EA] px-2 py-0.5 text-[12px] font-semibold text-[#1F4D33]" data-etichetta="">{report.etichetta}</span>}
-                {!report.email_inviata && <span className="text-xs font-bold text-primary">Email di avviso non inviata</span>}
+                {!report.email_inviata && !report.picco && <span className="text-xs font-bold text-primary">Email di avviso non inviata</span>}
               </Link>
               {rights && report.percorso && (
                 <Link href={report.percorso} prefetch={false} data-contested-link=""

@@ -121,25 +121,31 @@ assert.equal(input.formatWhen(new Date('2026-10-19T10:00:00Z'),now),'19 ott');
  assert.notEqual(key,fb.deviceKey(new Headers({'x-real-ip':'203.0.113.8'})));
 
  // Send limit: 5 an hour from one device, 20 a day, 60 an hour overall.
- for(let i=0;i<5;i++){assert.equal(await fb.feedbackLimited(key),false);await fb.recordFeedbackSend(key);}
- assert.equal(await fb.feedbackLimited(key),true,'sixth report in an hour refused');
+ for(let i=0;i<5;i++){assert.equal((await fb.feedbackLimits(key)).limited,false);await fb.recordFeedbackSend(key);}
+ assert.equal((await fb.feedbackLimits(key)).limited,true,'sixth report in an hour refused');
  const other=fb.deviceKey(new Headers({'x-real-ip':'203.0.113.9'}));
- assert.equal(await fb.feedbackLimited(other),false,'other devices are not affected');
+ assert.equal((await fb.feedbackLimits(other)).limited,false,'other devices are not affected');
  await pg.query("UPDATE grimorio_feedback_limits SET sent_at = now() - interval '2 hours'");
  for(let i=0;i<15;i++)await fb.recordFeedbackSend(key);
  await pg.query("UPDATE grimorio_feedback_limits SET sent_at = now() - interval '2 hours'");
- assert.equal(await fb.feedbackLimited(key),true,'twenty in a day refused');
+ assert.equal((await fb.feedbackLimits(key)).limited,true,'twenty in a day refused');
  await pg.query("UPDATE grimorio_feedback_limits SET sent_at = now() - interval '25 hours'");
  await fb.recordFeedbackSend(other);
  assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_feedback_limits')).rows[0].n,1,'hashes older than a day are deleted');
  for(let i=0;i<59;i++)await fb.recordFeedbackSend(`k${i}`);
- assert.equal(await fb.feedbackLimited(fb.deviceKey(new Headers({'x-real-ip':'192.0.2.1'}))),true,'overall limit of 60 an hour');
+ // Over 60 an hour from everyone the form does not close (28 October 2026): a new device is not refused, the
+ // report is marked as arrived during a peak and saved without email nor push.
+ assert.deepEqual(await fb.feedbackLimits(fb.deviceKey(new Headers({'x-real-ip':'192.0.2.1'}))),{limited:false,peak:true},'overall ceiling of 60 an hour: a peak, not a refusal');
  await pg.query('DELETE FROM grimorio_feedback_limits');
 
+ const peakReport=await fb.saveFeedback(r.value,{picco:true});
+ assert.equal(peakReport.picco,true);assert.equal(peakReport.email_inviata,false);assert.equal(peakReport.email_esito,'Non inviata: arrivata durante un picco di segnalazioni.');
+ assert.equal((await fb.saveFeedback(r.value)).picco,false);
+ await pg.query('DELETE FROM grimorio_feedback_reports');
  // Saved columns: no address, no browser.
  const report=await fb.saveFeedback(r.value);
  const columns=(await pg.query("SELECT column_name FROM information_schema.columns WHERE table_name='grimorio_feedback_reports'")).rows.map(c=>c.column_name).sort();
- assert.deepEqual(columns,['creato_il','edizione','email_esito','email_inviata','email_risposta','etichetta','id','messaggio','nota_admin','percorso','stato','tipo']);
+ assert.deepEqual(columns,['creato_il','edizione','email_esito','email_inviata','email_risposta','etichetta','id','messaggio','nota_admin','percorso','picco','stato','tipo']);
  assert.equal(report.stato,'nuova');assert.equal(report.email_inviata,false);
 
  // Email without RESEND_API_KEY: nothing sent, a warning, the report stays saved.

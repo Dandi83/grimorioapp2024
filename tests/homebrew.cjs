@@ -189,10 +189,11 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
   assert.deepEqual(tables, ['grimorio_homebrew', 'grimorio_homebrew_limits', 'grimorio_homebrew_log', 'grimorio_homebrew_proposals'], 'only its own tables');
   // Send limits per device (salted hash, never the address) and overall.
   for (let i = 0; i < 3; i++) await homebrew.recordProposalSend('device-a');
-  assert.equal(await homebrew.proposalLimited('device-a'), true, '3 an hour from one device');
-  assert.equal(await homebrew.proposalLimited('device-b'), false);
+  assert.equal((await homebrew.proposalLimits('device-a')).limited, true, '3 an hour from one device');
+  assert.deepEqual(await homebrew.proposalLimits('device-b'), {limited: false, peak: false});
   for (let i = 0; i < 27; i++) await homebrew.recordProposalSend(`device-${i}`);
-  assert.equal(await homebrew.proposalLimited('device-nuovo'), true, '30 an hour from everyone');
+  // Over 30 an hour from everyone the form does not close: saved without a notice (28 October 2026).
+  assert.deepEqual(await homebrew.proposalLimits('device-nuovo'), {limited: false, peak: true}, '30 an hour from everyone: a peak, not a refusal');
   process.env.FEEDBACK_SECRET = 'segreto-di-prova';
   const key = homebrew.proposalDeviceKey(new Headers({'x-real-ip': '203.0.113.9'}));
   assert.match(key, /^[0-9a-f]{64}$/); assert.ok(!key.includes('203.0.113'));

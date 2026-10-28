@@ -115,12 +115,14 @@ function load(relative) {
 
   // The report route: saved and answered «ok» first; email and push after, a failing push changes nothing.
   const later = [];
-  let emails = 0, pushes = 0;
+  let emails = 0, pushes = 0, summaries = 0, limits = {limited: false, peak: false}, turn = 'send';
+  // The hourly ceiling of the notices (lib/notice-limit.ts): «send», then one «summary», then «skip».
+  deps['@/lib/notice-limit'] = {noticeTurn: async () => turn, summaryNotice: kind => ({title: 'Molte segnalazioni nell’ultima ora', body: 'riassunto', url: `/admin/${kind}`, tag: `riassunto-${kind}`})};
   deps['next/server'] = {after: fn => later.push(fn), NextResponse: {json: (value, init) => ({value, status: init?.status ?? 200})}};
   deps['@/lib/feedback-input'] = {BODY_MAX_BYTES: 8192, TYPE_LABELS: {errore: 'Errore'}, parseFeedback: () => ({ok: true, value: {tipo: 'errore'}, token: 't'})};
   deps['@/lib/feedback'] = {
     FORM_UNAVAILABLE: 'Modulo temporaneamente non disponibile.', feedbackAvailable: () => true,
-    checkFormToken: () => 'ok', deviceKey: () => null, feedbackLimited: async () => false, issueFormToken: () => 't', turnstilePassed: async () => true,
+    checkFormToken: () => 'ok', deviceKey: () => null, feedbackLimits: async () => limits, sendSummaryEmail: async () => { summaries++; return 'sent'; }, issueFormToken: () => 't', turnstilePassed: async () => true,
     saveFeedback: async () => report, recordFeedbackSend: async () => {}, markEmailSent: async () => {}, countNewFeedback: async () => 7,
     markEmailFailed: async () => {}, sendFeedbackEmailWithReason: async () => { emails++; return {result: 'sent', reason: null}; },
   };
@@ -140,6 +142,27 @@ function load(relative) {
   assert.equal(pushes, 1); assert.equal(emails, 1, 'the email is still sent');
   assert.equal(pushed.badge, 7, 'the push carries the number for the badge');
   assert.deepEqual(warnings, ['[notifiche] Invio della notifica non riuscito.'], 'only a short warning: no key, address or text in the logs');
+
+  // Over the hourly ceiling of the notices: one summary (push and email), then nothing; the report is saved anyway.
+  const post = () => route.POST({headers: {get: name => headers.get(name) ?? null}, text: async () => '{}'});
+  later.length = 0; emails = 0; pushes = 0; turn = 'summary';
+  deps['@/lib/push'].sendPush = async (type, body) => { pushes++; pushed = body; };
+  assert.deepEqual(await post(), {value: {ok: true}, status: 200});
+  for (const fn of later) await fn();
+  assert.equal(summaries, 1); assert.equal(emails, 0, 'no email of the single report'); assert.equal(pushes, 1);
+  assert.equal(pushed.title, 'Molte segnalazioni nell’ultima ora'); assert.equal(pushed.badge, 7);
+  later.length = 0; pushes = 0; turn = 'skip';
+  assert.deepEqual(await post(), {value: {ok: true}, status: 200});
+  for (const fn of later) await fn();
+  assert.equal(pushes + emails, 0, 'after the summary nothing until the hour has passed'); assert.equal(summaries, 1);
+  // Over the ceiling of the whole site: saved all the same, without email nor push; the visitor sees «ok».
+  later.length = 0; turn = 'send'; limits = {limited: false, peak: true};
+  assert.deepEqual(await post(), {value: {ok: true}, status: 200});
+  assert.equal(later.length, 0, 'a report of a peak gets no notice');
+  // Too many from one address: refused, as before.
+  limits = {limited: true, peak: false};
+  assert.equal((await post()).status, 429);
+  limits = {limited: false, peak: false};
 
   // Without FEEDBACK_SECRET the form is closed: no token, nothing saved, «Modulo temporaneamente non disponibile».
   let saved = 0;

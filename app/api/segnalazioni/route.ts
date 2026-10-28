@@ -2,9 +2,10 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { BODY_MAX_BYTES, TYPE_LABELS, parseFeedback } from "@/lib/feedback-input";
 import { feedbackPayload, sendPush } from "@/lib/push";
 import {
-  FORM_UNAVAILABLE, checkFormToken, deviceKey, feedbackAvailable, feedbackLimited, issueFormToken, markEmailFailed, markEmailSent,
-  recordFeedbackSend, saveFeedback, sendFeedbackEmailWithReason, turnstilePassed,
+  FORM_UNAVAILABLE, checkFormToken, deviceKey, feedbackAvailable, feedbackLimits, issueFormToken, markEmailFailed, markEmailSent,
+  recordFeedbackSend, saveFeedback, sendFeedbackEmailWithReason, sendSummaryEmail, turnstilePassed,
 } from "@/lib/feedback";
+import { noticeTurn, summaryNotice } from "@/lib/notice-limit";
 import { pageName } from "@/lib/feedback-names";
 import { adminBadgeCount } from "@/lib/admin-badge";
 
@@ -59,12 +60,26 @@ export async function POST(request: NextRequest) {
 
   const key = deviceKey(request.headers);
   try {
-    if (await feedbackLimited(key)) return reply({ error: "Hai inviato molte segnalazioni: riprova più tardi." }, 429);
-    const report = await saveFeedback(parsed.value);
+    const { limited, peak } = await feedbackLimits(key);
+    if (limited) return reply({ error: "Hai inviato molte segnalazioni: riprova più tardi." }, 429);
+    // Over the ceiling of the whole site the report is saved all the same, without email nor push.
+    const report = await saveFeedback(parsed.value, { picco: peak });
     await recordFeedbackSend(key);
+    if (peak) return reply({ ok: true });
     // Saved first; the email and the admin notification follow after the answer, and their failure
     // never reaches the visitor (the report stays saved).
     after(async () => {
+      // At most NOTICES_PER_HOUR notices an hour, then a single summary (lib/notice-limit.ts).
+      const turn = await noticeTurn("segnalazioni").catch(() => "send" as const);
+      if (turn === "skip") return markEmailFailed(report.id, "Non inviata: già molte segnalazioni nell’ultima ora (avviso riassuntivo inviato).").catch(() => undefined);
+      if (turn === "summary") {
+        const badge = await adminBadgeCount().catch(() => null);
+        await Promise.all([
+          sendSummaryEmail(origin),
+          sendPush("segnalazioni", { ...summaryNotice("segnalazioni"), ...(typeof badge === "number" ? { badge } : {}) }).catch(() => console.warn("[notifiche] Invio della notifica non riuscito.")),
+        ]);
+        return markEmailFailed(report.id, "Non inviata singolarmente: compresa nell’avviso «Molte segnalazioni nell’ultima ora».").catch(() => undefined);
+      }
       // The number for the app icon badge travels with the notification (new reports, this one included, and proposals).
       const [name, badge] = await Promise.all([pageName(report.percorso, report.edizione).catch(() => null), adminBadgeCount().catch(() => null)]);
       const [email] = await Promise.all([

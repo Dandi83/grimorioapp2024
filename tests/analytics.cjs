@@ -114,12 +114,41 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_ratings WHERE chiave IS NOT NULL')).rows[0].n,1);
  votes=await analytics.readRatings('sempre');assert.equal(votes.total,3);
  assert.equal((await analytics.readRatings('30')).total,1,'the period counts only its answers');
+ // Limits per network address (28 October 2026): a hash that changes every day, never the address.
+ const L=analytics.ANALYTICS_LIMITS;
+ const keyToday=analytics.analyticsAddressKey('203.0.113.7','2026-10-28');
+ assert.match(keyToday,/^[0-9a-f]{64}$/);assert.ok(!keyToday.includes('203.0.113.7'));
+ assert.notEqual(keyToday,analytics.analyticsAddressKey('203.0.113.7','2026-10-29'),'the hash changes every day');
+ assert.equal(keyToday,analytics.analyticsAddressKey('203.0.113.7','2026-10-28'));
+ // New visitors without the cookie: only a few an hour from one address.
+ const net=analytics.analyticsAddressKey('198.51.100.1');
+ for(let i=0;i<L.newVisitorsPerAddressPerHour;i++)assert.equal(await analytics.admitEvent(net,true),true);
+ assert.equal(await analytics.admitEvent(net,true),false,'one more new visitor from the same address is dropped');
+ assert.equal(await analytics.admitEvent(net,false),true,'a known visitor of that address is still counted');
+ assert.equal(await analytics.admitEvent(analytics.analyticsAddressKey('198.51.100.2'),true),true,'another address is not affected');
+ // Events of one address in a minute.
+ const busy=analytics.analyticsAddressKey('198.51.100.3');
+ await pg.query(`INSERT INTO grimorio_analytics_limits (address_key) SELECT $1 FROM generate_series(1,$2)`,[busy,L.perAddressPerMinute]);
+ assert.equal(await analytics.admitEvent(busy,false),false,'over the events of one address in a minute');
+ await pg.query("UPDATE grimorio_analytics_limits SET at=now()-interval '2 minutes' WHERE address_key=$1",[busy]);
+ assert.equal(await analytics.admitEvent(busy,false),true,'a minute later it counts again');
+ // The whole site in a minute: over the ceiling every event is dropped in silence.
+ await pg.query(`INSERT INTO grimorio_analytics_limits (address_key) SELECT 'riempimento-'||n FROM generate_series(1,$1) AS n`,[L.overallPerMinute]);
+ assert.equal(await analytics.admitEvent(analytics.analyticsAddressKey('198.51.100.4'),false),false,'over the ceiling of the site');
+ await pg.query("UPDATE grimorio_analytics_limits SET at=now()-interval '2 days'");
+ assert.equal(await analytics.admitEvent(analytics.analyticsAddressKey('198.51.100.4'),false),true);
+ // The daily cleaning: limits after one day, votes after 13 months, events after 90 days.
+ await pg.query("INSERT INTO grimorio_ratings (id,voto,creato_il) VALUES ($1,'bene',now()-interval '14 months'),($2,'male',now()-interval '12 months')",[randomUUID(),randomUUID()]);
+ await analytics.purgeAnalytics();
+ assert.equal((await pg.query("SELECT count(*)::int AS n FROM grimorio_analytics_limits WHERE at<now()-interval '1 day'")).rows[0].n,0,'the hashes of the limits last one day');
+ assert.equal((await pg.query("SELECT count(*)::int AS n FROM grimorio_ratings WHERE creato_il<now()-interval '13 months'")).rows[0].n,0,'votes older than 13 months are deleted');
+ assert.equal((await pg.query("SELECT count(*)::int AS n FROM grimorio_ratings WHERE creato_il<now()-interval '11 months'")).rows[0].n,1,'a vote of 12 months ago stays');
  await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '91 days'");await analytics.purgeAnalytics();assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events')).rows[0].n,0);
  let admin=false,stored=0;const afterCallbacks=[],excludedIds=new Set();
  const {NextRequest}=require('next/server');
- let votesSaved=[];const fakeAnalytics={storeRating:async(vote,visitor,device,test)=>{votesSaved.push({vote,device,test});return true},analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id)};
+ let votesSaved=[];let admitted=true;const fakeAnalytics={admitEvent:async()=>admitted,analyticsAddressKey:address=>`key:${address}`,storeRating:async(vote,visitor,device,test)=>{votesSaved.push({vote,device,test});return true},analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id)};
  const exclusion=load('lib/analytics-exclusion.ts',{'server-only':{},'next/headers':{cookies:async()=>({get:()=>undefined,set(){}})},'./analytics':fakeAnalytics});
- const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true},'@/lib/spell-name':{spellName:name=>name}});
+ const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/admin-login-limit':{clientAddress:headers=>headers.get('x-real-ip')},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true},'@/lib/spell-name':{spellName:name=>name}});
  process.env.ANALYTICS_SECRET='analytics-only-secret';
  const request=(body,headers={})=>new NextRequest('https://ilgrimorio.app/api/analytics',{method:'POST',headers:{origin:'https://ilgrimorio.app','content-type':'application/json',...headers},body:JSON.stringify(body)});
  assert.equal((await route.POST(request(event(),{origin:'https://bad.example'}))).status,403);
@@ -164,6 +193,21 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal((await (await route.POST(request(event('valutazione',{path:'/',vote:'bene'}),{cookie:'grimorio_statistics_consent=rejected'}))).json()).reason,'rejected');
  admin=true;assert.equal((await (await route.POST(request(event('valutazione',{path:'/',vote:'male'}),{cookie:cookies}))).json()).reason,'admin');admin=false;
  assert.equal(votesSaved.length,1,'no vote after «No» nor from the administrator');
+ // /avanzamento and /termini were refused with 400 until 28 October 2026 (tests/analytics-pages.cjs checks every page).
+ for(const path of ['/avanzamento','/termini','/segnala','/in-arrivo/bestiario','/classi/mago','/dadi']){
+  const counted=await route.POST(request(event('page_view',{path}),{cookie:cookies}));
+  assert.equal(counted.status,200,path);assert.equal((await counted.json()).stored,true,path);
+ }
+ // Over a limit (lib/analytics.ts, admitEvent): nothing saved, no new visitor ID, no error for the visitor.
+ admitted=false;
+ const storedBeforeLimit=stored;
+ const dropped=await route.POST(request(event()));
+ assert.equal(dropped.status,200);assert.deepEqual(await dropped.json(),{ok:true,stored:false});
+ assert.equal(dropped.cookies.get('grimorio_statistics_visitor'),undefined,'no visitor is made up');
+ assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).stored,false);
+ assert.equal(stored,storedBeforeLimit);
+ assert.equal((await route.GET(new NextRequest('https://ilgrimorio.app/api/analytics'))).cookies.get('grimorio_statistics_visitor'),undefined,'the status gives no new ID over the limit');
+ admitted=true;
  // A malformed escape in a card path is a bad request, not a server failure.
  const storedBefore=stored;
  const badPath=await route.POST(request(event('card_open',{path:'/spell/%E0%A4%A'}),{cookie:cookies}));

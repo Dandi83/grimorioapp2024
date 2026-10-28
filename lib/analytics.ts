@@ -64,6 +64,11 @@ async function ensureSchema() {
         id uuid PRIMARY KEY, voto text NOT NULL CHECK (voto IN ('male','cosi-cosi','bene')), device text,
         is_test boolean NOT NULL DEFAULT false, creato_il timestamptz NOT NULL DEFAULT now(), chiave text)`);
         await client.query("CREATE INDEX IF NOT EXISTS grimorio_ratings_key_idx ON grimorio_ratings (chiave) WHERE chiave IS NOT NULL");
+        // The send limits of the statistics (28 October 2026): a keyed hash of the address that changes every day,
+        // never the address; kept one day (purgeAnalytics). new_visitor: a request that got a new visitor ID.
+        await client.query(`CREATE TABLE IF NOT EXISTS grimorio_analytics_limits (
+        address_key text NOT NULL, new_visitor boolean NOT NULL DEFAULT false, at timestamptz NOT NULL DEFAULT now())`);
+        await client.query("CREATE INDEX IF NOT EXISTS grimorio_analytics_limits_at_idx ON grimorio_analytics_limits (at)");
         // The visitor IDs of the administrator's devices: never saved again, even after the logout.
         await client.query(`CREATE TABLE IF NOT EXISTS grimorio_analytics_excluded (
         visitor_id text PRIMARY KEY, escluso_il timestamptz NOT NULL DEFAULT now())`);
@@ -126,6 +131,40 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
   );
   return result.rows.length > 0;
 }
+/**
+ * The limits that keep the numbers honest, besides the 90 events a minute of one visitor (storeAnalyticsEvent):
+ * - perAddressPerMinute: events from one network address in a minute (a family or a school share one);
+ * - newVisitorsPerAddressPerHour: new visitor IDs given to one address in an hour (requests without the cookie);
+ * - overallPerMinute: every event of the site in a minute.
+ * Over a limit the event is dropped in silence: the page goes on as usual, nothing is shown to the visitor.
+ */
+export const ANALYTICS_LIMITS = { perAddressPerMinute: 120, newVisitorsPerAddressPerHour: 20, overallPerMinute: 3000 } as const;
+
+/**
+ * The address as a keyed hash that changes every day (the day is in the hashed text): never stored in clear, and
+ * yesterday's hashes cannot be matched with today's.
+ */
+export function analyticsAddressKey(address: string | null, day = new Date().toISOString().slice(0, 10)): string {
+  return createHmac("sha256", analyticsSecret()).update(`grimorio-analytics-address:${day}:${address || "unknown"}`).digest("hex");
+}
+
+/** True when the event may be saved (and is counted for the limits); false: drop it in silence. */
+export async function admitEvent(addressKey: string, newVisitor: boolean): Promise<boolean> {
+  await ensureSchema();
+  const { rows } = await pool.query(
+    `WITH recent AS (
+      SELECT count(*) FILTER (WHERE address_key=$1 AND at>now()-interval '1 minute')::int AS mine,
+        count(*) FILTER (WHERE at>now()-interval '1 minute')::int AS overall,
+        count(*) FILTER (WHERE address_key=$1 AND new_visitor)::int AS fresh
+      FROM grimorio_analytics_limits WHERE at>now()-interval '1 hour')
+    INSERT INTO grimorio_analytics_limits (address_key, new_visitor)
+    SELECT $1, $2 FROM recent WHERE mine<$3 AND overall<$4 AND (NOT $2 OR fresh<$5)
+    RETURNING 1`,
+    [addressKey, newVisitor, ANALYTICS_LIMITS.perAddressPerMinute, ANALYTICS_LIMITS.overallPerMinute, ANALYTICS_LIMITS.newVisitorsPerAddressPerHour],
+  );
+  return rows.length > 0;
+}
+
 /** The months a visitor waits before answering again (and before the question comes back). */
 export const RATING_MONTHS = 4;
 /**
@@ -164,13 +203,24 @@ export async function isVisitorExcluded(visitor: string): Promise<boolean> {
   return rows.length > 0;
 }
 
+/** Votes older than this are deleted: the raw answers never pile up without end. */
+export const RATINGS_KEPT_MONTHS = 13;
+
+/**
+ * The daily cleaning (app/api/analytics/maintenance, Vercel cron with CRON_SECRET): the events after 90 days, the
+ * votes after 13 months, the hashes of the limits after one day. Tables not created yet are skipped.
+ */
 export async function purgeAnalytics() {
-  try {
-    await pool.query(
-      "DELETE FROM grimorio_analytics_events WHERE received_at<now()-interval '90 days'",
-    );
-  } catch (error) {
-    if ((error as { code?: string }).code !== "42P01") throw error;
+  for (const sql of [
+    "DELETE FROM grimorio_analytics_events WHERE received_at<now()-interval '90 days'",
+    `DELETE FROM grimorio_ratings WHERE creato_il<now()-interval '${RATINGS_KEPT_MONTHS} months'`,
+    "DELETE FROM grimorio_analytics_limits WHERE at<now()-interval '1 day'",
+  ]) {
+    try {
+      await pool.query(sql);
+    } catch (error) {
+      if ((error as { code?: string }).code !== "42P01") throw error;
+    }
   }
 }
 export type StatisticsMarker = { id: string; giorno: string; etichetta: string };

@@ -27,6 +27,8 @@ interface HomebrewRow { id: string; scheda: HomebrewDraft; edizione: HomebrewEdi
 interface ProposalRow {
   id: string; stato: ProposalState; scheda: HomebrewDraft; nickname: string; email: string | null; originale: boolean; autorizza: boolean; licenza?: string | null;
   creata_il: Date | string; decisa_il: Date | string | null; motivo: string | null; homebrew_id: string | null;
+  /** Arrived when the whole site was over its hourly ceiling: saved, but without a notice. */
+  picco?: boolean;
 }
 interface HomebrewLogRow { id: string; homebrew_id: string; nome: string; edizione: string; azione: string; creata_il: Date | string }
 
@@ -61,6 +63,8 @@ export function ensureHomebrewTables() {
     // The licence came later: the tables made before get the column, empty on the rows they already have.
     await pool.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS licenza text");
     await pool.query("ALTER TABLE grimorio_homebrew_proposals ADD COLUMN IF NOT EXISTS licenza text");
+    // 28 October 2026: a proposal arrived over the hourly ceiling of the site is saved without a notice.
+    await pool.query("ALTER TABLE grimorio_homebrew_proposals ADD COLUMN IF NOT EXISTS picco boolean NOT NULL DEFAULT false");
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_homebrew_limits (
       device_hash text NOT NULL,
       sent_at timestamptz NOT NULL DEFAULT now()
@@ -167,7 +171,12 @@ export function proposalDeviceKey(headers: Headers): string | null {
   return createHmac("sha256", secret).update(`grimorio-homebrew-device:${clientAddress(headers) || "unknown"}`).digest("hex");
 }
 
-export async function proposalLimited(key: string | null): Promise<boolean> {
+/**
+ * limited: this address sent too many (refused, 429); peak: the whole site is over its hourly ceiling, so the
+ * proposal is saved all the same but without a notice («arrivata durante un picco»): a spammer cannot close the
+ * form to the others nor fill the notifications.
+ */
+export async function proposalLimits(key: string | null): Promise<{ limited: boolean; peak: boolean }> {
   await ensureHomebrewTables();
   const { rows } = await pool.query<{ hour: number; day: number; overall: number }>(
     `SELECT count(*) FILTER (WHERE device_hash = $1 AND sent_at > now() - interval '1 hour')::int AS hour,
@@ -175,8 +184,10 @@ export async function proposalLimited(key: string | null): Promise<boolean> {
             count(*) FILTER (WHERE sent_at > now() - interval '1 hour')::int AS overall
      FROM grimorio_homebrew_limits`, [key ?? ""]);
   const { hour, day, overall } = rows[0];
-  if (overall >= PROPOSAL_LIMITS.overallPerHour) return true;
-  return key !== null && (hour >= PROPOSAL_LIMITS.perHour || day >= PROPOSAL_LIMITS.perDay);
+  return {
+    limited: key !== null && (hour >= PROPOSAL_LIMITS.perHour || day >= PROPOSAL_LIMITS.perDay),
+    peak: overall >= PROPOSAL_LIMITS.overallPerHour,
+  };
 }
 
 export async function recordProposalSend(key: string | null): Promise<void> {
@@ -185,12 +196,12 @@ export async function recordProposalSend(key: string | null): Promise<void> {
 }
 
 /** licenza: the version of the licence accepted with the box of the form (HOMEBREW_LICENSE). */
-export async function saveProposal(input: { draft: HomebrewDraft; nickname: string; email: string | null; licenza: string; impronta: string | null }): Promise<ProposalRow> {
+export async function saveProposal(input: { draft: HomebrewDraft; nickname: string; email: string | null; licenza: string; impronta: string | null; picco?: boolean }): Promise<ProposalRow> {
   await ensureHomebrewTables();
   const { rows } = await pool.query<ProposalRow>(
-    `INSERT INTO grimorio_homebrew_proposals (id, scheda, nickname, email, originale, autorizza, licenza, impronta)
-     VALUES ($1, $2, $3, $4, true, true, $5, $6) RETURNING *`,
-    [randomUUID(), JSON.stringify(input.draft), input.nickname, input.email, input.licenza, input.impronta]);
+    `INSERT INTO grimorio_homebrew_proposals (id, scheda, nickname, email, originale, autorizza, licenza, impronta, picco)
+     VALUES ($1, $2, $3, $4, true, true, $5, $6, $7) RETURNING *`,
+    [randomUUID(), JSON.stringify(input.draft), input.nickname, input.email, input.licenza, input.impronta, !!input.picco]);
   return rows[0];
 }
 

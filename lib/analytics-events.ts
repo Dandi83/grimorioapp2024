@@ -58,9 +58,12 @@ export type AnalyticsInput = {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 /** One segment of an address of the site: letters, numbers and dashes. */
 const SEGMENT = "[a-z0-9][a-z0-9-]{0,119}";
-/** The public pages counted, nothing else. */
+/**
+ * The public pages counted, nothing else (tests/analytics-pages.cjs checks that every public page of app/ is here:
+ * /avanzamento and /termini were refused with 400 until 28 October 2026).
+ */
 export const ANALYTICS_PATH = new RegExp(
-  `^/(?:$|grimorio$|bestiario$|preferiti$|fonti$|privacy$|info$|installa$|compendio(?:/${SEGMENT})?$|regole/${SEGMENT}$|oggi/${SEGMENT}$|oggetti-magici(?:/${SEGMENT})?$|equipaggiamento(?:/${SEGMENT}(?:/${SEGMENT})?)?$|manuale(?:/[^/?#]+)?$|spell/[^/?#]+$|mostro/[^/?#]+$)`,
+  `^/(?:$|grimorio$|bestiario(?:/proponi)?$|preferiti$|fonti$|privacy$|info$|termini$|installa$|segnala$|avanzamento$|dadi$|classi(?:/${SEGMENT})?$|in-arrivo/${SEGMENT}$|compendio(?:/${SEGMENT})?$|regole/${SEGMENT}$|oggi/${SEGMENT}$|oggetti-magici(?:/${SEGMENT})?$|equipaggiamento(?:/${SEGMENT}(?:/${SEGMENT})?)?$|manuale(?:/[^/?#]+)?$|spell/[^/?#]+$|mostro/[^/?#]+$)`,
 );
 export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (!raw || typeof raw !== "object") return;
