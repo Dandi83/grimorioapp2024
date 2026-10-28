@@ -1281,6 +1281,10 @@ test("admin spells and creatures = public catalog for both editions; a 2014 SRD 
   const publicCount = async url => {
     const counts = {};
     await page.goto(url);
+    // The page starts from 2024 and then shows the edition saved on the device: read the pill only once it does,
+    // or a 2024 read too early is followed by 2014 a moment later (main, 28 October 2026).
+    const saved = await page.evaluate(() => window.localStorage.getItem("grimorio.edizione")) ?? "2024";
+    await expectEdition(page, saved);
     for (const edition of ["2024", "2014"]) {
       if ((await editionPill(page).getAttribute("aria-label")).slice(9, 13) !== edition) await chooseEdition(page, edition);
       await expectEdition(page, edition);

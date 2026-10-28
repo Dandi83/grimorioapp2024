@@ -12,6 +12,7 @@ import type { ToolListRow } from "@/lib/tools-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 import { DidYouMean } from "@/components/search/did-you-mean";
 import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
+import { SEARCH_INPUT } from "@/lib/search-input";
 
 const GROUPS: Record<EquipmentEdition, [string, string][]> = {
   "2024": [["artigiano", "Strumenti da artigiano"], ["altri", "Altri strumenti"]],
@@ -73,7 +74,7 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
       <label className="relative mt-4 block">
         <span className="sr-only">Cerca uno strumento</span>
         <Search size={20} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
-        <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Cerca: liuto, scasso…"
+        <input {...SEARCH_INPUT} value={query} onChange={event => setQuery(event.target.value)} placeholder="Cerca: liuto, scasso…"
           className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
       </label>
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "strumento trovato" : "strumenti trovati"}`}</p>

@@ -15,6 +15,7 @@ import type { GearListRow } from "@/lib/adventuring-gear-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 import { DidYouMean } from "@/components/search/did-you-mean";
 import { searchList } from "@/lib/fuzzy-search";
+import { SEARCH_INPUT } from "@/lib/search-input";
 
 const weight = (peso?: string) => (peso === "—" ? "peso trascurabile" : peso);
 
@@ -93,7 +94,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
       <label className="relative mt-4 block">
         <span className="sr-only">Cerca un oggetto</span>
         <Search size={20} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
-        <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Cerca: corda, torcia…"
+        <input {...SEARCH_INPUT} value={query} onChange={event => setQuery(event.target.value)} placeholder="Cerca: corda, torcia…"
           className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
       </label>
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "oggetto trovato" : "oggetti trovati"}`}</p>

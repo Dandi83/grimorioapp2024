@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight, Search } from "lucide-react";
 
 import { fold } from "@/lib/search";
+import { SEARCH_INPUT } from "@/lib/search-input";
 
 export interface SearchEntry { name: string; kind: string; href: string }
 
@@ -30,7 +31,7 @@ export function AdminGlobalSearch({ entries }: { entries: SearchEntry[] }) {
       <label className="relative block">
         <span className="sr-only">Cerca qualsiasi scheda da modificare</span>
         <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#5E4E3E]" aria-hidden="true" />
-        <input type="search" value={query} onChange={event => setQuery(event.target.value)} autoComplete="off" enterKeyHint="search"
+        <input {...SEARCH_INPUT} value={query} onChange={event => setQuery(event.target.value)}
           placeholder="Cerca qualsiasi scheda da modificare"
           className="block min-h-[52px] w-full rounded-[16px] border-[1.5px] border-[#DDCFAE] bg-[#FFFBF0] pl-11 pr-4 text-[16px] text-[#2B2118] outline-none placeholder:text-[#7A6A58] focus:border-[#7A1F2B]" />
       </label>

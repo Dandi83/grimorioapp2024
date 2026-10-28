@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Filter, Search, X } from "lucide-react";
 
 import { SectionEditionPill } from "@/components/edition/edition-pill";
+import { SEARCH_INPUT } from "@/lib/search-input";
 
 /**
  * Shared catalog header: serif title, 2024 | 2014 edition selector and a 4 px bordeaux rule.
@@ -39,11 +40,9 @@ export function SearchAndFilters({ query, onQuery, label, active, onOpen, placeh
         <input
           value={query}
           onChange={event => onQuery(event.target.value)}
-          type="search"
+          {...SEARCH_INPUT}
           aria-label={label}
           placeholder={placeholder}
-          autoCorrect="off"
-          autoCapitalize="none"
           className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted"
         />
         {query.length > 0 && (

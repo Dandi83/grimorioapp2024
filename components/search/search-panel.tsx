@@ -10,6 +10,7 @@ import { HOMEBREW_LABEL, rowHref, rowsOf, search, splitByEdition, suggestionOf, 
 import { otherEdition } from "@/lib/user-edition";
 import { useReportSearch } from "@/components/statistics/use-report-search";
 import { DidYouMean, usePreparedNames } from "@/components/search/did-you-mean";
+import { SEARCH_INPUT } from "@/lib/search-input";
 
 export interface SearchPanelProps {
   initialQuery: string;
@@ -136,8 +137,8 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
           <label className="flex min-h-[52px] min-w-0 flex-1 items-center gap-2.5 rounded-[26px] border-2 border-primary bg-card px-3.5">
             <Search size={22} strokeWidth={2.2} className="shrink-0 text-primary" aria-hidden="true" />
             <span className="sr-only">Cerca in tutto il Grimorio</span>
-            <input ref={input} type="search" value={query} onChange={event => { setQuery(event.target.value); setExpanded([]); }}
-              placeholder={`Cerca nel Grimorio ${edition}…`} autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false}
+            <input ref={input} {...SEARCH_INPUT} value={query} onChange={event => { setQuery(event.target.value); setExpanded([]); }}
+              placeholder={`Cerca nel Grimorio ${edition}…`}
               aria-controls="search-results" aria-describedby="search-count"
               className="h-12 min-w-0 flex-1 bg-transparent text-[17px] text-foreground outline-none placeholder:text-[#8a7a66]" />
           </label>
