@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BookOpen, ChevronRight, Download, FileText, MessageSquare, ShieldCheck, type LucideIcon } from "lucide-react";
+import { CopyrightLine, CopyrightSection } from "@/components/legal/copyright";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
 
 export const metadata = { title: "Info e note legali — Il Grimorio.App" };
@@ -28,6 +29,7 @@ export default function InfoPage() {
         Il Grimorio.App è gratuito e non ufficiale. Qui trovi le regole d’uso, da dove vengono i contenuti e come trattiamo i dati.
       </p>
       <p data-trademark-note="" className="mt-2 text-[16px] leading-snug text-muted">{TRADEMARK_NOTE}</p>
+      <CopyrightSection />
       <ul className="mt-5 flex flex-col gap-3">
         {TILES.map(({ href, title, line, Icon }) => (
           <li key={href}>
@@ -49,6 +51,7 @@ export default function InfoPage() {
         Compatibile con la quinta edizione. Le attribuzioni complete sono in{" "}
         <Link href="/fonti" className="font-semibold text-primary underline underline-offset-4">Fonti e licenze</Link>.
       </p>
+      <CopyrightLine />
     </article>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CopyrightLine } from "@/components/legal/copyright";
 import { StatisticsSwitch } from "@/components/statistics/statistics-switch";
 export const metadata={title:"Come usiamo i dati — Il Grimorio.App"};
 /** «Come usiamo i dati»: what the statistics count, why, for how long, and the switch to be left out (28 October 2026). */
@@ -16,5 +17,6 @@ export default function PrivacyPage() {
     <section className="space-y-2"><h2 className="font-serif text-xl text-foreground">Creature proposte</h2><p>Il modulo «Proponi una creatura» del Bestiario non richiede un account. Salviamo la scheda della creatura, il nickname che scegli, le due conferme (creazione originale e autorizzazione a pubblicarla con licenza CC BY-NC-SA 4.0), la versione della licenza accettata e la data. Il nickname compare sulla scheda se la creatura viene pubblicata. L’email è facoltativa, non viene mai mostrata e serve solo per avvisarti quando la creatura viene pubblicata: la cancelliamo quando l’amministratore approva o rifiuta la proposta. Come per le segnalazioni, non salviamo l’indirizzo IP: per limitare gli invii automatici salviamo con la proposta solo un codice cifrato e non reversibile ricavato dall’indirizzo di rete.</p></section>
     <section className="space-y-2"><h2 className="font-serif text-xl text-foreground">Limiti dei conteggi</h2><p>Un visitatore unico rappresenta un browser riconosciuto nel periodo scelto, non necessariamente una persona. Dispositivi diversi, navigazione privata e cancellazione dei cookie possono generare più identificativi; la rinuncia («No») o il blocco dei cookie producono dati parziali. Copiare un link o aprire il menu di condivisione non certifica l’invio a un destinatario.</p></section>
     <Link href="/fonti" className="text-primary underline underline-offset-4">Fonti e licenze</Link>
+    <CopyrightLine />
   </article>;
 }

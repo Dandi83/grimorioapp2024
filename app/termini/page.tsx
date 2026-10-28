@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
+import { CopyrightLine, CopyrightTerms } from "@/components/legal/copyright";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
 
 export const metadata = { title: "Termini d’uso — Il Grimorio.App" };
 
 /** Last update of the text below: change it with every change of the terms. */
-const UPDATED = "27 ottobre 2026";
+const UPDATED = "28 ottobre 2026";
 
 /** A short section of the terms. */
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -46,6 +47,10 @@ export default function TermsPage() {
           Attribution 4.0. Puoi riutilizzare quei testi rispettando la licenza e le attribuzioni, che trovi in{" "}
           <Link href="/fonti" className="font-semibold text-primary underline underline-offset-4">Fonti e licenze</Link>.
         </p>
+      </Section>
+
+      <Section title="Proprietà dei contenuti">
+        <CopyrightTerms />
       </Section>
 
       <Section title="Creature proposte">
@@ -105,6 +110,7 @@ export default function TermsPage() {
           continuando a usare l’app dopo una modifica accetti la nuova versione.
         </p>
       </Section>
+      <CopyrightLine />
     </article>
   );
 }
