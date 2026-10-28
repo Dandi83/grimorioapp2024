@@ -27,6 +27,8 @@ export interface AdminRow {
   hidden: boolean | null;
   editHref: string;
   publicHref: string;
+  /** «I più salvati» (PROMPT 10): how many people have the card in their favorites now; absent when none. */
+  saves?: number;
   /** Only for the cards added here: which delete action. */
   deletable?: "spell" | "monster" | "homebrew";
 }
