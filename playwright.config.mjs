@@ -17,7 +17,9 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    command: `npx next start -p ${port} -H 127.0.0.1`,
+    // Idle connections kept open for 10 minutes: with Node's default (5 s) the server could close a kept-alive
+    // connection just as a test reused it after a pause, and the request failed with ECONNRESET (main, 28 October 2026).
+    command: `npx next start -p ${port} -H 127.0.0.1 --keepAliveTimeout 600000`,
     url: `http://127.0.0.1:${port}/`,
     reuseExistingServer: false,
     timeout: 120_000,
