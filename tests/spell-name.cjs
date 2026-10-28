@@ -19,6 +19,10 @@ for (const [stored, shown] of [
   ['DANZA IRRESISTIBILE DI OTTO', 'Danza irresistibile di Otto'], ['FIOTTO ACIDO', 'Fiotto acido'], ['SFERA ELASTICA DI 0TILUKE', 'Sfera elastica di Otiluke'],
   ['Cura Ferite di Massa', 'Cura ferite di massa'], ["RESPIRARE SOTT'ACQUA", "Respirare sott'acqua"], ["Aura magica dell'arcanista", "Aura magica dell'arcanista"],
 ]) assert.equal(spellName(stored), shown, stored);
+// Proper names chosen for some spells, the same in both editions, from any stored spelling.
+for (const shown of ['Armatura di Agata', 'Braccia di Ada', 'Fame di Ada', 'Calderone ribollente di Ash', 'Presenza regale di Iolanda'])
+  for (const stored of [shown, shown.toUpperCase(), shown.toLowerCase()])
+    for (const edition of ['2024', '2014', undefined]) assert.equal(spellName(stored, edition), shown, `${stored} (${edition})`);
 
 // The 319 cards of the SRD 5.1 file keep exactly their spelling.
 const legacy = read('lib/data/srd-spells-5.1-it.json').records.map(r => r.spell.nome_italiano);
@@ -42,7 +46,7 @@ const catalog = [...new Set([
   ...read('lib/data/original-descriptions-2024.json').spells.map(s => s.nome_italiano),
 ].map(spellName))].sort((a, b) => a.localeCompare(b, 'it'));
 const inner = catalog.filter(name => /\s\p{Lu}|\p{L}'\p{Lu}/u.test(name));
-assert.ok(inner.every(name => /(Agathys|Bigby|Drawmij|Evard|Hadar|Leomund|Melf|Mordenkainen|Nystul|Otiluke|Otto|Rary|Tasha|Tenser|Yolande)$/.test(name)), inner.join(', '));
+assert.ok(inner.every(name => /(Ada|Agata|Agathys|Ash|Bigby|Drawmij|Evard|Hadar|Iolanda|Leomund|Melf|Mordenkainen|Nystul|Otiluke|Otto|Rary|Tasha|Tenser|Yolande)$/.test(name)), inner.join(', '));
 if (process.argv.includes('--list')) console.log(inner.join('\n'));
 // The site uses it everywhere a spell name is shown; the stored names are never rewritten.
 for (const file of ['app/spell/[id]/page.tsx', 'components/grimorio-browser.tsx', 'components/spell-row.tsx', 'lib/search-index.ts', 'components/admin-spell-editor.tsx', 'lib/admin-lists.ts', 'app/admin/registro/page.tsx'])
