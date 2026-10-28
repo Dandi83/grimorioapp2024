@@ -23,6 +23,7 @@ import { db } from "@/lib/db";
 import { getSpellById, publicSpellOfRow, spellCardSource, spellFileRow } from "@/lib/spells";
 import { spellSrdDifferences } from "@/lib/srd-modified";
 import { getLegacySpellSource, isLegacySpellId } from "@/lib/srd-spells-2014";
+import { excludeThisDevice } from "@/lib/analytics-exclusion";
 
 interface SpellInput {
   nome_italiano: string;
@@ -49,6 +50,8 @@ export async function loginAction(_prev: unknown, formData: FormData) {
     }
     await clearLoginFailures(key);
     await startAdminSession();
+    // A device where the administrator logged in never counts in the statistics, also after the logout.
+    await excludeThisDevice().catch(() => {});
     // Preview mode: the public pages are rendered for the administrator, hidden sections included (/admin/sezioni).
     (await draftMode()).enable();
   } catch {

@@ -38,6 +38,26 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.deepEqual(data.cards.map(row=>[row.id,row.opens]),[['gatto',3],['allarme-2014',1]]);
  assert.deepEqual(data.notFound,[{query:'drago rossa',times:2}]);
  assert.equal((await analytics.readStatistics({from:'2000-01-01',to:'2000-01-02',prevFrom:today,prevTo:today})).previousPeople,3,'the previous period is counted the same way');
+ // Installations: once per visitor. i1 installs from the browser and then opens the app (1 confirmed), i2 opens the
+ // app from the icon twice (1 at the first opening); an excluded device saves nothing and loses what it had saved.
+ const install=(name,device)=>parseAnalyticsInput(event(name,{path:'/',device}));
+ assert.equal(install('app_installed','android').device,'android');
+ assert.equal(parseAnalyticsInput(event('app_installed',{path:'/admin'})),undefined,'only public pages');
+ const i1=randomUUID(),i2=randomUUID(),ex=randomUUID();
+ assert.equal(await analytics.storeAnalyticsEvent(install('app_installed','android'),i1),true);
+ assert.equal(await analytics.storeAnalyticsEvent(install('first_standalone_open','android'),i1),true);
+ assert.equal(await analytics.storeAnalyticsEvent(install('first_standalone_open','iphone'),i2),true);
+ assert.equal(await analytics.storeAnalyticsEvent(install('first_standalone_open','iphone'),i2),false,'a second opening from the icon is not saved');
+ assert.equal(await analytics.storeAnalyticsEvent(install('app_installed','android'),i1),false,'nor a second installation of the same visitor');
+ const installed=await analytics.readStatistics(range(today));
+ assert.deepEqual(installed.installs,{total:2,confirmed:1,firstOpen:1},'app_installed and first_standalone_open of one visitor count 1');
+ assert.equal((await analytics.readStatistics({from:'2000-01-01',to:'2000-01-02',prevFrom:today,prevTo:today})).previousInstalls,2,'compared with the period before');
+ assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('page_view',{path:'/'})),ex),true);
+ await analytics.excludeVisitor(ex);
+ assert.equal(await analytics.isVisitorExcluded(ex),true);
+ assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events WHERE visitor_id=$1',[ex])).rows[0].n,0,'its saved events are deleted');
+ for(const name of ['page_view','first_standalone_open'])assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(event(name,{path:'/'})),ex),false,`an excluded device saves no ${name}`);
+ assert.equal((await analytics.readStatistics(range(today))).people,3,'the excluded device is not counted');
  await analytics.addMarker('2026-10-30','Post sul gruppo');
  const marked=await analytics.readStatistics(range(today));
  assert.deepEqual(marked.markers.map(m=>m.etichetta),['Apertura profilo Instagram','Post sul gruppo']);
@@ -66,9 +86,11 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  await Promise.all([analytics.exportAnalytics(),analytics.exportAnalytics()]);
  assert.equal(delivered.length,5);assert.equal(new Set(delivered).size,5,'concurrent exporters claim disjoint rows');
  await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '91 days'");await analytics.purgeAnalytics();assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events')).rows[0].n,0);
- let admin=false,stored=0;const afterCallbacks=[];
+ let admin=false,stored=0;const afterCallbacks=[],excludedIds=new Set();
  const {NextRequest}=require('next/server');
- const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':{analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},exportAnalytics:async()=>{}},'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true},'@/lib/spell-name':{spellName:name=>name}});
+ const fakeAnalytics={analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},exportAnalytics:async()=>{},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id)};
+ const exclusion=load('lib/analytics-exclusion.ts',{'server-only':{},'next/headers':{cookies:async()=>({get:()=>undefined,set(){}})},'./analytics':fakeAnalytics});
+ const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true},'@/lib/spell-name':{spellName:name=>name}});
  process.env.ANALYTICS_SECRET='analytics-only-secret';
  const request=(body,headers={})=>new NextRequest('https://ilgrimorio.app/api/analytics',{method:'POST',headers:{origin:'https://ilgrimorio.app','content-type':'application/json',...headers},body:JSON.stringify(body)});
  assert.equal((await route.POST(request(event(),{origin:'https://bad.example'}))).status,403);
@@ -101,13 +123,29 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.deepEqual(await status('https://ilgrimorio.app/api/analytics','grimorio_statistics_consent=rejected'),{enabled:true,excluded:false,consent:'rejected'});
  assert.equal((await status('https://ilgrimorio.app/api/analytics','grimorio_statistics_consent=altro')).consent,null,'unknown choices are ignored');
  assert.equal((await status('https://anteprima.example.vercel.app/api/analytics')).enabled,false,'previews and other hosts never collect');
- admin=true;assert.equal((await status('https://ilgrimorio.app/api/analytics')).excluded,true,'administrators are excluded');admin=false;
+ admin=true;assert.equal((await status('https://ilgrimorio.app/api/analytics')).excluded,true,'administrators are excluded');
+ // The device of a login stays excluded after the logout: GET marks it with a long cookie, renewed at every visit.
+ const markedDevice=await route.GET(new NextRequest('https://ilgrimorio.app/api/analytics'));admin=false;
+ const mark=markedDevice.cookies.get('grimorio_statistics_excluded');
+ assert.equal(mark.value,'1');assert.equal(mark.maxAge,400*24*3600);assert.equal(mark.httpOnly,true);
+ const excludedCookies=`${cookies}; grimorio_statistics_excluded=1`;
+ assert.equal((await status('https://ilgrimorio.app/api/analytics','grimorio_statistics_excluded=1')).excluded,true,'excluded after the logout');
+ const storedBeforeExclusion=stored;
+ assert.equal((await (await route.POST(request(event(),{cookie:excludedCookies}))).json()).reason,'admin');
+ // Without the cookie (lost, or another storage) a visitor ID marked before is refused too.
+ excludedIds.add(visitorCookie.split('.')[0]);
+ assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).reason,'admin');
+ assert.equal(stored,storedBeforeExclusion,'an excluded device saves no event');
+ // Accepting the statistics on an excluded device: the new visitor ID is refused from the start.
+ const acceptedHere=await route.POST(request({consent:'accepted'},{cookie:'grimorio_statistics_excluded=1'}));
+ assert.ok(excludedIds.has(acceptedHere.cookies.get('grimorio_statistics_visitor').value.split('.')[0]));
+ excludedIds.clear();
  assert.equal((await route.GET(new NextRequest('https://ilgrimorio.app/api/analytics'))).headers.get('cache-control'),'no-store');
  const maintenance=load('app/api/analytics/maintenance/route.ts',{'@/lib/analytics':{purgeAnalytics:async()=>{},exportAnalytics:async()=>{}}});process.env.CRON_SECRET='maintenance-test';
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance'))).status,401);
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance',{headers:{authorization:'Bearer maintenance-test'}}))).status,200);
  const LoginForm=()=>null;
- const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readStatistics:async()=>{throw new Error('private data leaked')},VERCEL_ANALYTICS_URL:''},'@/app/actions/admin-statistics':{deleteMarkerAction(){}},'@/components/statistics/marker-form':{MarkerForm:()=>null},'@/components/statistics/period-select':{PeriodSelect:()=>null}});
+ const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readStatistics:async()=>{throw new Error('private data leaked')},VERCEL_ANALYTICS_URL:''},'@/app/actions/admin-statistics':{deleteMarkerAction(){},excludeDeviceAction(){}},'@/lib/analytics-exclusion':{deviceExcluded:async()=>false},'@/components/statistics/marker-form':{MarkerForm:()=>null},'@/components/statistics/period-select':{PeriodSelect:()=>null}});
  assert.equal((await statistics.default({searchParams:Promise.resolve({})})).type,LoginForm,'without login only the login form is shown');
  await pg.close();console.log('Analytics: consent enforcement, signed IDs, admin exclusion, validation, unique counts, duplicate events, PostgreSQL aggregates, outbox retry, privacy payload and retention passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

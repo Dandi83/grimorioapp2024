@@ -9,7 +9,13 @@ export const ANALYTICS_EVENTS = [
   "share_copy",
   "share_cancel",
   "search",
+  // The app installed: confirmed by the browser (Android, Chrome and Edge on a computer), or opened from the icon the
+  // first time (the only sign on iPhone, where Safari says nothing). One of each per visitor (lib/analytics.ts).
+  "app_installed",
+  "first_standalone_open",
 ] as const;
+/** The events of an installation: both count once per visitor in the statistics. */
+export const INSTALL_EVENTS = ["app_installed", "first_standalone_open"] as const;
 export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[number];
 export type AnalyticsInput = {
   event: AnalyticsEvent;
@@ -21,7 +27,7 @@ export type AnalyticsInput = {
   source: "share" | "direct";
   activeSeconds: number;
   scrollPercent: number;
-  /** page_view only: categories computed in the browser, never the referrer or the user agent. */
+  /** page_view and installations: categories computed in the browser, never the referrer or the user agent. */
   origin?: Origin;
   device?: Device;
   installed?: boolean;
@@ -57,7 +63,8 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   )
     return;
   if (r.event === "card_read" && (activeSeconds < 20 || scrollPercent < 50)) return;
-  if (r.event !== "page_view" && r.event !== "search" && !/^\/(spell|mostro)\//.test(r.path)) return;
+  const install = (INSTALL_EVENTS as readonly string[]).includes(r.event as string);
+  if (r.event !== "page_view" && r.event !== "search" && !install && !/^\/(spell|mostro)\//.test(r.path)) return;
   const input: AnalyticsInput = {
     event: r.event as AnalyticsEvent,
     id: r.id as string,
@@ -71,9 +78,9 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   };
   if (input.event === "page_view") {
     if (ORIGINS.includes(r.origin as Origin)) input.origin = r.origin as Origin;
-    if (DEVICES.includes(r.device as Device)) input.device = r.device as Device;
     if (typeof r.installed === "boolean") input.installed = r.installed;
   }
+  if ((input.event === "page_view" || install) && DEVICES.includes(r.device as Device)) input.device = r.device as Device;
   if (input.event === "search") {
     const query = cleanSearchQuery(r.query);
     const results = typeof r.results === "number" ? Math.floor(r.results) : NaN;

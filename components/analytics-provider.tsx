@@ -7,6 +7,8 @@ import { deviceOf, originOf, type Origin } from "@/lib/analytics-stats";
 
 type Status = { enabled: boolean; excluded: boolean; consent: "accepted" | "rejected" | null };
 const SESSION = "grimorio_statistics_session";
+/** The first opening of the installed app was sent from this browser (the server keeps it once per visitor too). */
+const APP_OPENED = "grimorio_statistics_app_opened";
 export function AnalyticsProvider() {
   const path = usePathname();
   const [status, setStatus] = useState<Status | null>(null),
@@ -88,7 +90,7 @@ export function AnalyticsProvider() {
     const device = deviceOf(navigator.userAgent, navigator.maxTouchPoints);
     const installed = window.matchMedia?.("(display-mode: standalone)").matches === true || (navigator as Navigator & { standalone?: boolean }).standalone === true;
     function send(event: AnalyticsEvent, extra: Partial<AnalyticsInput> = {}) {
-      if (!enabled.current || !live) return;
+      if (!enabled.current || !live) return Promise.resolve(false);
       const body: AnalyticsInput = {
         event,
         id: crypto.randomUUID(),
@@ -100,14 +102,15 @@ export function AnalyticsProvider() {
         activeSeconds: Math.floor(seconds),
         scrollPercent: Math.floor(scroll),
         ...(event === "page_view" ? { origin, device, installed } : {}),
+        ...(event === "app_installed" || event === "first_standalone_open" ? { device } : {}),
         ...extra,
       };
-      void fetch("/api/analytics", {
+      return fetch("/api/analytics", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
         keepalive: true,
-      }).catch(() => {});
+      }).then(response => response.ok, () => false);
     }
     function measureScroll() {
       const article = document.querySelector("article.spell-sheet,article.monster-sheet");
@@ -129,12 +132,27 @@ export function AnalyticsProvider() {
     const share = (event: Event) => {
       const detail = (event as CustomEvent).detail;
       const name = detail?.event as AnalyticsEvent;
-      if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) send(name);
+      if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) void send(name);
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
-      else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") send("search", { query: detail.query, results: detail.results });
+      else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results });
     };
-    send("page_view");
-    if (card) send("card_open");
+    void send("page_view");
+    if (card) void send("card_open");
+    // Installations: the browser says so (Android, Chrome and Edge on a computer); on iPhone, where Safari says
+    // nothing, the first opening from the icon. Once per device here, once per visitor on the server.
+    const appInstalled = () => void send("app_installed");
+    window.addEventListener("appinstalled", appInstalled);
+    let opened = true;
+    try {
+      opened = localStorage.getItem(APP_OPENED) === "1";
+    } catch {}
+    if (installed && !opened)
+      void send("first_standalone_open").then(ok => {
+        if (ok)
+          try {
+            localStorage.setItem(APP_OPENED, "1");
+          } catch {}
+      });
     measureScroll();
     const timer = window.setInterval(() => {
       const now = Date.now(),
@@ -145,7 +163,7 @@ export function AnalyticsProvider() {
       measureScroll();
       if (card && !read && seconds >= 20 && scroll >= 50) {
         read = true;
-        send("card_read");
+        void send("card_read");
       }
     }, 1000);
     for (const name of ["scroll", "pointerdown", "keydown", "touchstart"])
@@ -159,6 +177,7 @@ export function AnalyticsProvider() {
         window.removeEventListener(name, interact);
       document.removeEventListener("visibilitychange", visibility);
       window.removeEventListener("grimorio:analytics-event", share);
+      window.removeEventListener("appinstalled", appInstalled);
     };
   }, [accepted, path]);
   async function choose(consent: "accepted" | "rejected") {

@@ -59,6 +59,9 @@ async function ensureSchema() {
         );
         for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer"])
           await client.query(`ALTER TABLE grimorio_analytics_events ADD COLUMN IF NOT EXISTS ${column}`);
+        // The visitor IDs of the administrator's devices: never saved again, even after the logout.
+        await client.query(`CREATE TABLE IF NOT EXISTS grimorio_analytics_excluded (
+        visitor_id text PRIMARY KEY, escluso_il timestamptz NOT NULL DEFAULT now())`);
         // Events marked on the chart by the administrator; the opening of the Instagram profile only when the table is new.
         const { rows: existing } = await client.query("SELECT to_regclass('grimorio_analytics_markers') AS name");
         await client.query(`CREATE TABLE IF NOT EXISTS grimorio_analytics_markers (
@@ -79,6 +82,10 @@ async function ensureSchema() {
   await schemaReady;
 }
 export type CardInfo = { kind: "spell" | "monster" | "animal"; id: string; title: string };
+/**
+ * One event of a visitor who accepted the statistics. Never for an excluded device; an installation (app_installed,
+ * first_standalone_open) at most once per visitor and kind, whatever the browser sends again.
+ */
 export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string, card?: CardInfo) {
   await ensureSchema();
   const result = await pool.query(
@@ -86,6 +93,9 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
     (id,visitor_id,session_id,view_id,event_name,path,card_kind,card_id,title,source,is_test,active_seconds,scroll_percent,origin,device,installed,search_query,search_results)
     SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18
     WHERE (SELECT count(*) FROM grimorio_analytics_events WHERE visitor_id=$2 AND received_at>now()-interval '1 minute')<90
+      AND NOT EXISTS (SELECT 1 FROM grimorio_analytics_excluded WHERE visitor_id=$2)
+      AND ($5 NOT IN ('app_installed','first_standalone_open')
+        OR NOT EXISTS (SELECT 1 FROM grimorio_analytics_events WHERE visitor_id=$2 AND event_name=$5))
     ON CONFLICT DO NOTHING RETURNING id`,
     [
       input.id,
@@ -110,6 +120,22 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
   );
   return result.rows.length > 0;
 }
+/**
+ * A device of the administrator (lib/analytics-exclusion.ts): its visitor ID never saves events again and the ones
+ * already saved are deleted, here and before they reach PostHog.
+ */
+export async function excludeVisitor(visitor: string) {
+  await ensureSchema();
+  await pool.query("INSERT INTO grimorio_analytics_excluded (visitor_id) VALUES ($1) ON CONFLICT DO NOTHING", [visitor]);
+  await pool.query("DELETE FROM grimorio_analytics_events WHERE visitor_id=$1", [visitor]);
+}
+
+export async function isVisitorExcluded(visitor: string): Promise<boolean> {
+  await ensureSchema();
+  const { rows } = await pool.query("SELECT 1 FROM grimorio_analytics_excluded WHERE visitor_id=$1", [visitor]);
+  return rows.length > 0;
+}
+
 export async function purgeAnalytics() {
   try {
     await pool.query(
@@ -191,7 +217,12 @@ export type Statistics = {
   previousPeople: number;
   days: { day: string; visitors: number }[];
   returning: number;
+  /** People who opened the site as the installed app in the period, and in the previous one. */
   installed: number;
+  previousInstalled: number;
+  /** New installations: people whose first installation event falls in the period (confirmed by the browser, or first opening from the icon). */
+  installs: { total: number; confirmed: number; firstOpen: number };
+  previousInstalls: number;
   origins: Record<Origin, number>;
   devices: Record<Device, number>;
   areas: { incantesimi: number; bestiario: number; compendio: number };
@@ -200,7 +231,8 @@ export type Statistics = {
   markers: StatisticsMarker[];
 };
 const empty = (): Statistics => ({
-  people: 0, previousPeople: 0, days: [], returning: 0, installed: 0,
+  people: 0, previousPeople: 0, days: [], returning: 0, installed: 0, previousInstalled: 0,
+  installs: { total: 0, confirmed: 0, firstOpen: 0 }, previousInstalls: 0,
   origins: Object.fromEntries(ORIGINS.map(key => [key, 0])) as Record<Origin, number>,
   devices: Object.fromEntries(DEVICES.map(key => [key, 0])) as Record<Device, number>,
   areas: { incantesimi: 0, bestiario: 0, compendio: 0 }, cards: [], notFound: [], markers: [],
@@ -209,11 +241,22 @@ const RANGE = "is_test=false AND received_at>=($1::date::timestamp AT TIME ZONE 
 
 /**
  * The numbers of /admin/statistiche for a period (days in the Rome time zone) and the people of the previous one.
- * Only consented events, test visits left out; administrators never send events (app/api/analytics).
+ * Only consented events, test visits left out; the administrator's devices never save events (lib/analytics-exclusion.ts).
  */
+// Each visitor's first installation event (app_installed or first_standalone_open, test visits left out): one
+// installation per visitor, confirmed when the browser said so.
+const INSTALLS = `SELECT visitor_id, min(received_at) AS first_at, bool_or(event_name='app_installed') AS confirmed
+  FROM grimorio_analytics_events WHERE is_test=false AND event_name IN ('app_installed','first_standalone_open') GROUP BY visitor_id`;
+const IN_PERIOD = "first_at>=($1::date::timestamp AT TIME ZONE 'Europe/Rome') AND first_at<(($2::date+1)::timestamp AT TIME ZONE 'Europe/Rome')";
+
 export async function readStatistics(range: { from: string; to: string; prevFrom: string; prevTo: string }): Promise<Statistics> {
   await ensureSchema();
   const period = [range.from, range.to];
+  const [installs, previousInstalls, previousInstalled] = await Promise.all([
+    pool.query(`SELECT count(*)::int AS total, count(*) FILTER (WHERE confirmed)::int AS confirmed FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, period),
+    pool.query(`SELECT count(*)::int AS total FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, [range.prevFrom, range.prevTo]),
+    pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view' AND installed=true`, [range.prevFrom, range.prevTo]),
+  ]);
   const [people, previous, days, returning, installed, origins, devices, areas, cards, notFound, markers] = await Promise.all([
     pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'`, period),
     pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'`, [range.prevFrom, range.prevTo]),
@@ -246,6 +289,10 @@ export async function readStatistics(range: { from: string; to: string; prevFrom
   result.days = days.rows;
   result.returning = returning.rows[0]?.n ?? 0;
   result.installed = installed.rows[0]?.n ?? 0;
+  result.previousInstalled = previousInstalled.rows[0]?.n ?? 0;
+  const total = installs.rows[0]?.total ?? 0, confirmed = installs.rows[0]?.confirmed ?? 0;
+  result.installs = { total, confirmed, firstOpen: total - confirmed };
+  result.previousInstalls = previousInstalls.rows[0]?.total ?? 0;
   for (const row of origins.rows) if (row.origin in result.origins) result.origins[row.origin as Origin] = row.n;
   for (const row of devices.rows) if (row.device in result.devices) result.devices[row.device as Device] = row.n;
   result.areas = areas.rows[0] ?? result.areas;
