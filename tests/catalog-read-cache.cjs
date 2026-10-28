@@ -55,6 +55,7 @@ async function render(check) {
       './spell-text-repairs':{repairSpellText:(_id, text) => text},
       './monster-id-aliases':{MERGED_SPELL_IDS:{}},
       './spell-name':{spellName:name => name},
+      './spell-public-id':{storedSpellId:id => id},
     };
     const reader = load(`lib/${kind === 'monster' ? 'monsters' : 'spells'}.ts`, deps);
     const read = kind === 'monster' ? reader.getMonsterById : reader.getSpellById;
