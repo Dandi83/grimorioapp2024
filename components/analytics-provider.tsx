@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { AnalyticsEvent, AnalyticsInput } from "@/lib/analytics-events";
 import { deviceOf, originOf, type Origin } from "@/lib/analytics-stats";
 import { useUserEdition } from "@/components/edition/edition-provider";
-import { setStatisticsCounted, setStatisticsNotice } from "@/components/statistics/notice";
+import { setAdminDevice, setStatisticsCounted, setStatisticsNotice } from "@/components/statistics/notice";
 import { recordVisitDay } from "@/components/home/rating-store";
 import { FRIEND_PARAM, FRIEND_VALUE } from "@/lib/share-app";
 
@@ -82,6 +82,7 @@ export function AnalyticsProvider() {
   const accepted = !!status?.enabled && !status.excluded && status.consent !== "rejected";
   useEffect(() => {
     setStatisticsCounted(status === null ? null : accepted);
+    setAdminDevice(status === null ? null : status.excluded);
     // Not counted: the friend's mark goes away all the same, without being sent.
     if (status !== null && !accepted) dropFriendMark();
   }, [status, accepted]);
@@ -185,16 +186,21 @@ export function AnalyticsProvider() {
       const detail = (event as CustomEvent).detail;
       const name = detail?.event as AnalyticsEvent;
       // The whole app shared (lib/share-app.ts): from the card of the Home or the invite after «Bene».
-      if ((name === "share_tap" || name === "share_sent" || name === "share_cancel") && (detail.from === "home" || detail.from === "valutazione"))
+      if ((name === "share_tap" || name === "share_sent" || name === "share_cancel") && ["home", "valutazione", "sostieni"].includes(detail.from))
         void send(name, { from: detail.from, device });
       // The face tapped on the Home (components/home/rating-box.tsx): only the vote and the kind of device.
       else if (name === "valutazione" && ["male", "cosi-cosi", "bene"].includes(detail.vote)) void send("valutazione", { vote: detail.vote, device });
+      // «Sostieni il Grimorio» (components/support): the link with where it was, the page, the Ko-fi button with the amount.
+      else if (name === "support_link" && typeof detail.from === "string") void send("support_link", { from: detail.from, device });
+      else if (name === "support_click" && typeof detail.amount === "number") void send("support_click", { amount: detail.amount, device });
       else if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) void send(name);
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
       else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results });
     };
     void send("page_view");
     if (card) void send("card_open");
+    // /sostieni opened (canvas «Sostieni il Grimorio»): sent here, with the page view, so it is never lost.
+    if (path === "/sostieni") void send("support_page", { device });
     // Arrived from a friend's link (?da=amico): counted once per person by the server, then the mark goes away.
     if (new URLSearchParams(window.location.search).get(FRIEND_PARAM) === FRIEND_VALUE) {
       void send("arrivo_da_amico", { device });

@@ -6,6 +6,9 @@ import { HomeSearch } from "@/components/search/home-search";
 import { EditionPill } from "@/components/edition/edition-pill";
 import { FirstLaunch } from "@/components/edition/first-launch";
 import { HomeExtras } from "@/components/home/home-extras";
+import { CupIcon } from "@/components/support/cup-icon";
+import { SupportLink } from "@/components/support/support-link";
+import { supportUrl } from "@/lib/support";
 import { HomeShortcuts, type HomeShortcut } from "@/components/edition/home-shortcuts";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { collectionOf } from "@/lib/monsters-types";
@@ -44,6 +47,7 @@ async function shortcuts(): Promise<HomeShortcut[]> {
 
 export default async function HomePage() {
   const links = await shortcuts();
+  const support = !!supportUrl();
   return (
     <div className={styles.home}>
       <header className={styles.header}>
@@ -80,12 +84,16 @@ export default async function HomePage() {
             <HomeShortcuts links={links} />
           </nav>
           {/* Computer: under the shortcuts (phones and tablets: under the picture). */}
-          <HomeExtras className={styles.extrasWide} />
+          <HomeExtras className={styles.extrasWide} support={support} />
         </div>
       </section>
-      <HomeExtras className={styles.extras} />
+      <HomeExtras className={styles.extras} support={support} />
       {/* Phones and tablets: the legal pages, one small link above the bar (computers: in the side column). */}
-      <p className={styles.info}><Link href="/info" prefetch={false}>Info e note legali</Link></p>
+      {/* «Sostieni il Grimorio» on the left when the Ko-fi address is set (lib/support.ts), the legal pages on the right. */}
+      <p className={styles.info}>
+        <SupportLink enabled={support} from="home" className={styles.support}><CupIcon size={18} />Sostieni il Grimorio</SupportLink>
+        <Link href="/info" prefetch={false}>Info e note legali</Link>
+      </p>
       <FirstLaunch />
     </div>
   );

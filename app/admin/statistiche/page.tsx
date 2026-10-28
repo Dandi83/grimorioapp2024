@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { isAdmin } from "@/lib/admin-auth";
 import { AdminLogin } from "@/components/admin-login";
-import { readStatistics, VERCEL_ANALYTICS_URL } from "@/lib/analytics";
+import { readStatistics, readSupport, VERCEL_ANALYTICS_URL } from "@/lib/analytics";
 import { bestDay, dayLabel, fillDays, percentChange, periodOf, periodRange, share, signed, summarySentence, PERIODS } from "@/lib/analytics-stats";
 import { Bars, DailyChart, Ring } from "@/components/statistics/charts";
 import { PeriodSelect } from "@/components/statistics/period-select";
@@ -37,7 +38,7 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const period = periodOf((await searchParams).periodo);
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
   const range = periodRange(period, today);
-  const [data, excluded] = await Promise.all([readStatistics(range), deviceExcluded()]);
+  const [data, excluded, support] = await Promise.all([readStatistics(range), deviceExcluded(), readSupport(range)]);
   const days = fillDays(range.from, range.to, data.days);
   const change = percentChange(data.people, data.previousPeople);
   const best = bestDay(days);
@@ -153,6 +154,24 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
             ))}
           </ul>
         ) : <p className={`${SOFT} mt-2`}>Nessuna ricerca senza risultati ripetuta almeno 2 volte.</p>}
+      </section>
+
+      {/* «Sostieni il Grimorio» (canvas «Sostieni il Grimorio»): people, not taps; the contributions are on Ko-fi. */}
+      <section aria-labelledby="sostegno" className={PAPER} data-support-stats="">
+        <h2 id="sostegno" className={QUESTION}>Sostegno</h2>
+        <dl className="mt-3 grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 text-[15px]">
+          <dt className="text-[#5E4E3E]">Persone che hanno aperto la pagina Sostieni</dt>
+          <dd className="text-right font-bold tabular-nums" data-support-opened={support.opened}>{number(support.opened)}</dd>
+          <dt className="text-[#5E4E3E]">Persone che hanno toccato «Sostieni con…»</dt>
+          <dd className="text-right font-bold tabular-nums" data-support-clicked={support.clicked}>{number(support.clicked)}</dd>
+          {[1, 3, 5].map(amount => (
+            <Fragment key={amount}>
+              <dt className="pl-3 text-[14px] text-[#5E4E3E]">con {amount} €</dt>
+              <dd className="text-right text-[14px] tabular-nums" data-support-amount={amount}>{number(support.byAmount.find(row => row.amount === amount)?.people ?? 0)}</dd>
+            </Fragment>
+          ))}
+        </dl>
+        <p className="mt-3 text-[13px] text-[#5E4E3E]">Le donazioni vere si vedono su Ko-fi: qui solo chi apre la pagina e tocca il pulsante.</p>
       </section>
 
       {/* The faces of the Home and the sharing of the app (canvas «Valutazione Il Grimorio.App», ③). */}

@@ -14,8 +14,8 @@ export type NoticeState = "waiting" | "open" | "closed";
 /** The invite to install the app: "waiting" for its moment, "shown", "none" (not due, closed, already installed). */
 export type InviteState = "waiting" | "shown" | "none";
 
-type State = { notice: NoticeState; counted: boolean | null; invite: InviteState; rating: boolean };
-let state: State = { notice: "waiting", counted: null, invite: "waiting", rating: false };
+type State = { notice: NoticeState; counted: boolean | null; invite: InviteState; rating: boolean; admin: boolean | null };
+let state: State = { notice: "waiting", counted: null, invite: "waiting", rating: false, admin: null };
 const listeners = new Set<() => void>();
 
 function update(next: Partial<State>) {
@@ -31,6 +31,11 @@ export function setStatisticsNotice(next: NoticeState) {
 /** This browser is counted (statistics on, not «No», not an administrator's device); null while unknown. */
 export function setStatisticsCounted(next: boolean | null) {
   update({ counted: next });
+}
+
+/** An administrator's device (never counted, never shown the occasional support card); null while unknown. */
+export function setAdminDevice(next: boolean | null) {
+  update({ admin: next });
 }
 
 export function setInstallInvite(next: InviteState) {

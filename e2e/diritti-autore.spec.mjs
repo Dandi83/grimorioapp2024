@@ -22,7 +22,8 @@ const MAIN = {
 async function legalHtml(page) {
   return page.locator("main article").first().evaluate(article => {
     const copy = article.cloneNode(true);
-    copy.querySelectorAll("[data-copyright], [data-copyright-line]").forEach(node => node.remove());
+    // The new parts of the page: the copyright note and «Sostieni il Grimorio» (PROMPT 7), never the attributions.
+    copy.querySelectorAll("[data-copyright], [data-copyright-line], [data-support-row]").forEach(node => node.remove());
     return copy.innerHTML;
   });
 }

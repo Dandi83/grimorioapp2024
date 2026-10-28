@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { BookOpen, ChevronRight, Download, FileText, MessageSquare, ShieldCheck, type LucideIcon } from "lucide-react";
 import { CopyrightLine, CopyrightSection } from "@/components/legal/copyright";
+import { CupIcon } from "@/components/support/cup-icon";
+import { SupportLink } from "@/components/support/support-link";
+import { supportUrl } from "@/lib/support";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
 
 export const metadata = { title: "Info e note legali — Il Grimorio.App" };
@@ -47,6 +50,12 @@ export default function InfoPage() {
           </li>
         ))}
       </ul>
+      {/* «Sostieni il Grimorio», when the Ko-fi address is set (lib/support.ts). */}
+      {supportUrl() && <p className="mt-4" data-support-row="">
+        <SupportLink enabled from="info" className="inline-flex min-h-11 items-center gap-2 text-[16px] font-bold text-primary underline-offset-4 hover:underline">
+          <CupIcon size={20} />Sostieni il Grimorio
+        </SupportLink>
+      </p>}
       <p className="mt-6 border-t border-divider pt-4 text-[14px] leading-6 text-muted">
         Compatibile con la quinta edizione. Le attribuzioni complete sono in{" "}
         <Link href="/fonti" className="font-semibold text-primary underline underline-offset-4">Fonti e licenze</Link>.
