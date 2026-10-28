@@ -8,13 +8,14 @@ import { getContentEditions, getOriginalSummaries } from "./content-editions";
 import { spells as spellsTable } from "./db/schema";
 import { parseLivello, type Spell } from "./spells-types";
 import { getSrdSource } from "./srd-descriptions";
-import { getOriginalSource } from "./original-descriptions";
+import { getOriginalSource, originalEdition } from "./original-descriptions";
 import { previewSpellRows, previewSpellById } from "./srd-additions";
 import { getLegacySpellSource, isLegacySpellId, legacySpellById, withLegacySpells } from "./srd-spells-2014";
 import { repairCatalogSpell } from "./spell-catalog-repairs";
 import { displaySpellRow } from "./spell-display-row";
 import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { spellName } from "./spell-name";
+import { storedSpellId } from "./spell-public-id";
 import { repairSpellText } from "./spell-text-repairs";
 import type { CardSource } from "./card-display";
 import srdSpellIndex from "./data/spell-reference-index.json";
@@ -63,7 +64,8 @@ function toSpell(r: RawRow, repair = true): Spell {
   if (repair) r = { ...r, descrizione: repairSpellText(r.id, r.descrizione) };
   const { livello_num, scuola, classi } = parseLivello(r.livello || "");
   const spell: Spell = {
-    edizione: isLegacySpellId(r.id) ? "2014" : getSrdSource(r.id, r.descrizione) || getOriginalSource(r.id, r.descrizione) ? "2024" : undefined,
+    // The 2014 summary of the files stays 2014 also once edited (as the SRD 5.1 cards).
+    edizione: isLegacySpellId(r.id) || originalEdition(r.id) === "2014" ? "2014" : getSrdSource(r.id, r.descrizione) || getOriginalSource(r.id, r.descrizione) ? "2024" : undefined,
     id: r.id,
     nome_italiano: r.nome_italiano,
     livello: r.livello || "",
@@ -146,7 +148,9 @@ export async function getAllSpells(): Promise<Spell[]> {
 }
 
 // Deduplicate metadata/page reads without retaining stale administrative edits.
-export const getSpellById = cache(async (id: string): Promise<Spell | undefined> => {
+// The id of an address without proper names (lib/spell-public-id.ts) reads its stored row; the card keeps the stored id.
+export const getSpellById = cache(async (address: string): Promise<Spell | undefined> => {
+  const id = storedSpellId(address);
   const [rows, editions, summaries] = await Promise.all([db
     .select()
     .from(spellsTable)

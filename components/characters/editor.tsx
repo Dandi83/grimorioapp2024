@@ -15,6 +15,7 @@ import {
 import type { ManualEntry } from "@/lib/manual-types";
 import { conditions } from "@/lib/conditions";
 import { ConditionReferences } from "@/components/condition-references";
+import { spellHref } from "@/lib/spell-public-id";
 import {
   Field,
   NameField,
@@ -728,7 +729,7 @@ export function CharacterEditor({
                 >
                   <div className="min-w-0">
                     <a
-                      href={`/spell/${s.id}`}
+                      href={spellHref(s.id)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="break-words text-sm text-primary underline"

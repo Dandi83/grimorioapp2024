@@ -147,10 +147,10 @@ export async function POST(request: NextRequest) {
   let card: CardInfo | undefined;
   try {
     if (input.path.startsWith("/spell/")) {
-      const id = cardId!,
-        record = await getSpellById(id);
+      // The stored id (lib/spell-public-id.ts): the readings of the old and new address of a card add up.
+      const record = await getSpellById(cardId!);
       if (!record) return response({ ignored: true });
-      card = { id, kind: "spell", title: spellName(record.nome_italiano) };
+      card = { id: record.id, kind: "spell", title: spellName(record.nome_italiano) };
     } else if (input.path.startsWith("/mostro/")) {
       const id = cardId!,
         record = await getMonsterById(id);

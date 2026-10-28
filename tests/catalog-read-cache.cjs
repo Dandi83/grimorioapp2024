@@ -47,7 +47,7 @@ async function render(check) {
       './spells-types':load('lib/spells-types.ts'),
       './srd-monsters':{previewMonsterById:() => undefined, getSrdMonsterSource:() => undefined, isSrdMonsterId:() => true},
       './srd-descriptions':{applySrdDescription:row => row, getSrdSource:() => undefined},
-      './original-descriptions':{applyOriginalDescription:row => row, getOriginalSource:() => undefined},
+      './original-descriptions':{applyOriginalDescription:row => row, getOriginalSource:() => undefined, originalEdition:() => undefined},
       './srd-additions':{previewSpellById:() => undefined},
       './srd-spells-2014':{legacySpellById:() => undefined, isLegacySpellId:() => false, getLegacySpellSource:() => undefined},
       './spell-catalog-repairs':{repairCatalogSpell:row => row},
@@ -55,6 +55,7 @@ async function render(check) {
       './spell-text-repairs':{repairSpellText:(_id, text) => text},
       './monster-id-aliases':{MERGED_SPELL_IDS:{}},
       './spell-name':{spellName:name => name},
+      './spell-public-id':{storedSpellId:id => id},
     };
     const reader = load(`lib/${kind === 'monster' ? 'monsters' : 'spells'}.ts`, deps);
     const read = kind === 'monster' ? reader.getMonsterById : reader.getSpellById;

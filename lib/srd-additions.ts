@@ -1,7 +1,8 @@
 import data from "./data/srd-italiano-5.2.1.json";
 import manifest from "./data/srd-additions-20261017.json";
+import { originalFileRows } from "./original-descriptions";
 
-const additions = manifest.spells.map(({ id }) => {
+const srdAdditions = manifest.spells.map(({ id }) => {
   const source = data.spells.find((spell) => spell.id === id);
   if (!source) throw new Error(`Missing SRD addition: ${id}`);
   return {
@@ -15,8 +16,10 @@ const additions = manifest.spells.map(({ id }) => {
     descrizione: source.descrizione,
   };
 });
+// With the four original summaries added on 28/10/2026 (lib/original-descriptions.ts), also read from the files.
+const additions = [...srdAdditions, ...originalFileRows];
 
-/** Serve the twenty approved records without mutating database rows. */
+/** Serve the twenty approved SRD records and the four added summaries without mutating database rows. */
 export function previewSpellRows<T extends { id: string; nome_italiano: string }>(rows: T[], environment?: string) {
   if (environment !== "preview" && environment !== "production") return rows;
   const existing = new Set(rows.map((row) => row.id));

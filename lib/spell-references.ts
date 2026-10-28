@@ -1,5 +1,6 @@
 import index from "./data/spell-reference-index.json";
 import legacyIndex from "./data/spell-reference-index-2014.json";
+import { spellHref } from "./spell-public-id";
 
 export type SpellReference = { id: string; name: string };
 /**
@@ -72,7 +73,7 @@ export function findReferencedSpells(html: string, legacy = false, catalog: Spel
 }
 
 export function inlineSpellReferences(html: string, legacy = false, catalog: SpellReferenceCatalog = fileSpellCatalog) {
-  return findReferencedSpells(html, legacy, catalog).map(spell => ({ label: spell.name, href: `/spell/${spell.id}` }));
+  return findReferencedSpells(html, legacy, catalog).map(spell => ({ label: spell.name, href: spellHref(spell.id) }));
 }
 
 /**

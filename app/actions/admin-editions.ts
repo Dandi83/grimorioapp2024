@@ -8,6 +8,7 @@ import { getSpellById } from "@/lib/spells";
 import { getSrdMonsterSource } from "@/lib/srd-monsters";
 import { getSrdSource } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
+import { spellHref } from "@/lib/spell-public-id";
 
 type Result = { ok: boolean; error?: string };
 
@@ -36,7 +37,7 @@ export async function setContentEditionAction(_previous: Result | null, form: Fo
   } catch {
     return { ok: false, error: "Etichetta non salvata. Riprova." };
   }
-  for (const route of ["/admin", "/admin/incantesimi", "/admin/mostri", "/bestiario", "/grimorio", "/preferiti", kind === "monster" ? `/mostro/${id}` : `/spell/${id}`]) {
+  for (const route of ["/admin", "/admin/incantesimi", "/admin/mostri", "/bestiario", "/grimorio", "/preferiti", kind === "monster" ? `/mostro/${id}` : spellHref(id)]) {
     revalidatePath(route);
   }
   // A spell of the other edition is linked by the cards of that edition (lib/spell-reference-catalog.ts).

@@ -1,6 +1,7 @@
 import "server-only";
 import { PAGE_NAMES } from "./feedback-input";
 import { SEARCH_SOURCES } from "./search-index";
+import { spellHref, spellIdOfPath } from "./spell-public-id";
 
 let names: Promise<Map<string, string>> | undefined;
 let builtAt = 0;
@@ -28,6 +29,9 @@ async function cardNames(): Promise<Map<string, string>> {
 export async function pageName(path: string | null, edition: string | null): Promise<string | null> {
   if (!path) return null;
   if (PAGE_NAMES[path]) return PAGE_NAMES[path];
+  // A report sent from an old spell address (with a proper name) names the card of its new address.
+  const spell = spellIdOfPath(path);
+  if (spell) path = spellHref(spell);
   try {
     const map = await cardNames();
     return map.get(`${path}|${edition}`) ?? map.get(path) ?? null;

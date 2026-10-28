@@ -82,9 +82,9 @@ function load(relative, deps={}) {
    });
    const values=await reader.getSpellIndex();
    assert.ok(!values.some(s=>s.id==='i-re-spirare-sott-acqua'),'the merged duplicate row is not listed');
-   assert.ok(configured);assert.equal(values.length,environment?21+legacyIds.length:2);
+   assert.ok(configured);assert.equal(values.length,environment?21+4+legacyIds.length:2,'the 20 SRD additions and the 4 summaries added on 28/10/2026 come from the files');
    // The 2014 spells come from the project files and carry their edition, so the 2014 selector appears.
-   assert.deepEqual(values.filter(s=>s.edizione==='2014'&&s.id!=='manual-index').map(s=>s.id).sort(),environment?[...legacyIds].sort():[]);
+   assert.deepEqual(values.filter(s=>s.edizione==='2014'&&s.id!=='manual-index').map(s=>s.id).sort(),environment?[...legacyIds,'manto-del-crociato-2014'].sort():[]);
    assert.equal(values.find(s=>s.id===additionId).nome_italiano,'Modifica amministrativa','virtual additions never replace an existing manual row');
    assert.deepEqual(values.find(s=>s.id==='manual-index'),{id:'manual-index',nome_italiano:'Manuale',livello_num:2,scuola:'Divinazione',classi:['mago'],tempo_di_lancio:'1 minuto o rituale',concentrazione:true,rituale:true,edizione:'2014'});
    for(const value of values){assert.ok(!('descrizione' in value)&&!('durata' in value),'list rows carry no description or duration text');assert.ok(Object.keys(value).every(key=>['id','nome_italiano','livello_num','scuola','classi','tempo_di_lancio','concentrazione','rituale','edizione'].includes(key)));}

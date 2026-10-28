@@ -7,7 +7,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 
 const require = createRequire(import.meta.url);
 const root = new URL('../', import.meta.url);
-const expected = ["dardo-stregato","duello-obbligato","evoca-pioggia-di-armi","evoca-raffica","fame-di-hadar","faretra-rapida","fonte-di-luce-lunare","freccia-folgorante","frusta-di-spine","interdizione-alle-lame","manto-del-crociato","morte-apparente","nube-di-pugnali","onda-distruttiva","parola-del-potere-fortificare","parola-radiosa","percezione-delle-bestie","portale-arcano","presenza-regale-di-yolande","punizione-collerica","punizione-demoralizzante","punizione-esiliante","punizione-tonante","raffica-di-spine","rampicante-afferrante","richiama-aberrazione","richiama-bestia","richiama-celestiale","richiama-costrutto","richiama-elementale","richiama-folletto","richiama-immondo","richiama-non-morto","rintocco-dei-morti","scheggia-della-mente","scossa-sinaptica","telepatia","turbine-implacabile","vigore-arcano"];
+const expected = ["dardo-stregato","duello-obbligato","evoca-pioggia-di-armi","evoca-raffica","fame-di-hadar","faretra-rapida","fonte-di-luce-lunare","freccia-folgorante","frusta-di-spine","interdizione-alle-lame","manto-del-crociato","morte-apparente","nube-di-pugnali","onda-distruttiva","parola-del-potere-fortificare","parola-radiosa","percezione-delle-bestie","portale-arcano","presenza-regale-di-yolande","punizione-collerica","punizione-demoralizzante","punizione-esiliante","punizione-tonante","raffica-di-spine","rampicante-afferrante","richiama-aberrazione","richiama-bestia","richiama-celestiale","richiama-costrutto","richiama-elementale","richiama-folletto","richiama-immondo","richiama-non-morto","rintocco-dei-morti","scheggia-della-mente","scossa-sinaptica","telepatia","turbine-implacabile","vigore-arcano","manto-del-crociato-2014","punizione-accecante-2024","tempesta-radiosa","rombo-di-tuono"];
 const dataUrl = new URL('lib/data/original-descriptions-2024.json', root);
 assert.ok(existsSync(dataUrl), 'The 39 empty spells need original, sourced descriptions');
 const data = JSON.parse(readFileSync(dataUrl, 'utf8'));
@@ -30,7 +30,7 @@ function loadTs(relative) {
   }, mod, mod.exports);
   return mod.exports;
 }
-assert.equal(data.spells.length, 49);
+assert.equal(data.spells.length, 53);
 assert.deepEqual(data.spells.map(s => s.id).sort(), [...expected].sort());
 assert.deepEqual(JSON.parse(readFileSync(new URL('lib/data/original-description-ids.json',root),'utf8')).sort(), [...expected].sort());
 const { applyOriginalDescription, getOriginalSource } = loadTs('lib/original-descriptions.ts');
@@ -39,7 +39,8 @@ const { HtmlText } = loadTs('components/html-text.tsx');
 for (const spell of data.spells) {
   assert.ok(spell.descrizione.length > 70, spell.id);
   assert.ok(!/not available|TODO|TBD|non disponibile/i.test(spell.descrizione), spell.id);
-  assert.ok(spell.sourceUrl.startsWith('https://roll20.net/compendium/dnd5e/Spells:'), spell.id);
+  // The 2014 summary: Roll20 has no free 2014 page any more, AideDD keeps the 2014 rules.
+  assert.ok(spell.sourceUrl.startsWith(spell.edizione === '2014' ? 'https://www.aidedd.org/dnd/sorts.php?vo=' : 'https://roll20.net/compendium/dnd5e/Spells:'), spell.id);
   assert.ok(spell.referenceUrl.startsWith('https://'), spell.id);
   assert.ok(!canonical.spells.some(s => s.id === spell.id));
   assert.equal(isOriginalDescription(spell.id), true);
@@ -85,11 +86,36 @@ assert.match(byId['richiama-non-morto'].livello, /3°/);
 assert.match(byId['scheggia-della-mente'].livello, /Ammaliamento/);
 assert.equal(data.replacements.length, 10);
 assert.deepEqual(data.replacements.map(s => s.id).sort(), legacy.excluded.map(s => s.id).sort());
-for (const replacement of data.replacements) assert.match(replacement.previousDescriptionSha256, /^[a-f0-9]{64}$/);
+for (const replacement of [...data.replacements, ...data.revisions]) assert.match(replacement.previousDescriptionSha256, /^[a-f0-9]{64}$/);
 assert.match(byId['cerchio-di-potere'].descrizione, /contro incantesimi e altri effetti magici/);
 assert.match(byId['aura-di-vitalita'].descrizione, /inizio di ogni tuo turno/);
 assert.match(byId['cordone-di-frecce'].descrizione, /2d4/);
 assert.match(byId['armatura-di-agathys'].descrizione, /punti ferita temporanei/);
 assert.equal(byId['armatura-di-agathys'].tempo_di_lancio, 'Azione bonus');
 assert.match(byId['corona-di-follia'].descrizione, /azione di Magia/);
-console.log('[originals] 49 original 2024 descriptions (marked NO SRD on the sheet); ten hash-guarded replacements, source references and preservation verified.');
+// PROMPT 8 (28/10/2026): the rewritten summaries replace only their exact previous text (an edit made later wins).
+const { createHash } = await import('node:crypto');
+assert.deepEqual(data.revisions.map(r => r.id).sort(), ['punizione-esiliante','richiama-aberrazione','richiama-bestia','richiama-celestiale','richiama-costrutto','richiama-elementale','richiama-folletto','richiama-immondo','richiama-non-morto']);
+for (const revision of data.revisions) {
+  const spell = byId[revision.id];
+  assert.notEqual(createHash('sha256').update(spell.descrizione).digest('hex'), revision.previousDescriptionSha256, revision.id);
+}
+// No proper names or trademarks outside the SRD in the summaries and in the spirit statistics; no English variant names.
+const BANNED = /\b(?:Beholder\w*|Mind Flayer|Illithid|Slaad|Yugoloth|Avenger|Defender|Fuming|Mirthful|Tricksy|Ghostly|Putrid|Skeletal|Jallarzi|Otiluke|Far Realm)\b/i;
+for (const spell of data.spells) for (const field of ['nome_italiano', 'descrizione', 'statBlockSummary']) assert.ok(!BANNED.test(spell[field] ?? ''), `${spell.id} ${field}`);
+assert.match(byId['richiama-aberrazione'].statBlockSummary, /Occhiuto.*Tentacolato|Rigenerante/s);
+assert.match(byId['richiama-immondo'].statBlockSummary, /Mercenario/);
+// The four cards added on 28/10/2026: read from the file (no database row), complete game data, 60–100 words.
+const added = data.spells.filter(spell => spell.addedAt);
+assert.deepEqual(added.map(s => s.id), ['manto-del-crociato-2014','punizione-accecante-2024','tempesta-radiosa','rombo-di-tuono']);
+for (const spell of added) {
+  for (const field of ['nome_italiano','livello','tempo_di_lancio','gittata','componenti','durata','descrizione']) assert.ok(spell[field]?.trim(), `${spell.id} ${field}`);
+  const words = spell.descrizione.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+  assert.ok(words >= 60 && words <= 100, `${spell.id}: ${words} words`);
+}
+assert.equal(byId['manto-del-crociato-2014'].edizione, '2014');
+for (const id of ['punizione-accecante-2024','tempesta-radiosa','rombo-di-tuono']) assert.equal(byId[id].edizione, undefined);
+assert.match(byId['punizione-accecante-2024'].livello, /3°/);
+assert.match(byId['tempesta-radiosa'].livello, /5°/);
+assert.match(byId['rombo-di-tuono'].livello, /^Trucchetto/);
+console.log('[originals] 53 original descriptions (marked NO SRD on the sheet; one 2014); hash-guarded replacements and revisions, source references and preservation verified.');

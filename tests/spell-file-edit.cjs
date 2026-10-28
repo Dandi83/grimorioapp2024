@@ -61,7 +61,7 @@ function load(relative) {
   const admin = await spells.getAdminSpells();
   const adminCounts = {'2024': admin.filter(spell => spellEdition(spell) === '2024').length, '2014': admin.filter(spell => spellEdition(spell) === '2014').length};
   assert.deepEqual(adminCounts, counts(await getSpellIndex()), 'admin = public list, for both editions');
-  assert.equal(adminCounts['2014'], files.records.length, 'every 2014 card of the SRD 5.1 file');
+  assert.equal(adminCounts['2014'], files.records.length + 1, 'every 2014 card of the SRD 5.1 file, and the 2014 summary of the files (Manto del crociato)');
   assert.ok(!admin.some(spell => spell.id === merged), 'merged duplicates are not listed');
   assert.ok(admin.find(spell => spell.id === 'palla-di-fuoco') && !admin.find(spell => spell.id === 'palla-di-fuoco').da_file);
 

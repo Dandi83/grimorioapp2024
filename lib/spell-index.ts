@@ -7,6 +7,7 @@ import { db } from "./db";
 import { spells } from "./db/schema";
 import { previewSpellRows } from "./srd-additions";
 import { isLegacySpellId, withLegacySpells } from "./srd-spells-2014";
+import { originalEdition } from "./original-descriptions";
 import { catalogRepairs } from "./spell-catalog-repairs";
 import { displaySpellRow } from "./spell-display-row";
 import { MERGED_SPELL_IDS } from "./monster-id-aliases";
@@ -46,7 +47,7 @@ export const getSpellIndex = unstable_cache(
       return {
         id: row.id, nome_italiano: row.nome_italiano, livello_num, scuola, classi,
         tempo_di_lancio: row.tempo_di_lancio || "", ...spellListFlags(row),
-        ...((editions.get(row.id) ?? (isLegacySpellId(row.id) ? "2014" : undefined)) === "2014" ? { edizione: "2014" as const } : {}),
+        ...((editions.get(row.id) ?? (isLegacySpellId(row.id) ? "2014" : originalEdition(row.id))) === "2014" ? { edizione: "2014" as const } : {}),
       };
     });
   },

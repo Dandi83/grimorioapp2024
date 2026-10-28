@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 
 // «*» after the NO SRD cards in the lists, for the administrator only: asked from /api/admin/no-srd (401 without
@@ -89,7 +90,9 @@ test("NO SRD asterisk: visitors never get it nor the ids; the administrator sees
   // Every marked row is in the list of the endpoint, and every listed NO SRD card is marked.
   await searchList(page, "");
   const shown = await page.locator("li.catalog-row").evaluateAll(list => list.map(item => ({ href: item.querySelector('a[href^="/spell/"]')?.getAttribute("href"), mark: !!item.querySelector("[data-no-srd-mark]") })));
-  for (const item of shown) expect(item.mark, item.href).toBe(ids.incantesimi.includes(item.href.split("/").pop()));
+  // The endpoint lists stored ids; the rows link the public addresses (lib/spell-public-id.ts).
+  const storedOf = Object.fromEntries(Object.entries(JSON.parse(readFileSync("lib/data/public-spell-ids.json", "utf8")).ids).map(([stored, open]) => [open, stored]));
+  for (const item of shown) { const id = item.href.split("/").pop(); expect(item.mark, item.href).toBe(ids.incantesimi.includes(storedOf[id] ?? id)); }
   // The row keeps its height: the asterisk sits on the line of the name.
   const jumps = await page.locator("li.catalog-row").evaluateAll(list => list.filter(item => item.querySelector("[data-no-srd-mark]")).map(item => {
     const mark = item.querySelector("[data-no-srd-mark]");

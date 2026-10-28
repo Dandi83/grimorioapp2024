@@ -24,6 +24,7 @@ import { allCardLog, allSectionLog } from "@/lib/section-visibility";
 import { allHomebrewLog } from "@/lib/homebrew";
 import { allSubclassLog } from "@/lib/subclasses";
 import { subclassClass } from "@/lib/subclass-types";
+import { spellHref } from "@/lib/spell-public-id";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Registro — Il Grimorio.App", robots: { index: false, follow: false } };
@@ -95,7 +96,7 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       id: row.id, editor: true, sezione: row.sezione, when: new Date(row.creata_il), undoneAt: row.annullata_il ? new Date(row.annullata_il) : null, inForce: !row.annullata_il,
       title: `${EDITOR_TITLES[row.sezione]}${cardEdition ? ` ${cardEdition}` : ""} · editor`, edition: cardEdition,
       card: (row.sezione === "incantesimi" ? spellNameOf(spells.find(spell => spell.id === row.scheda_id)) : monsters.find(monster => monster.id === row.scheda_id)?.nome) ?? row.scheda_id,
-      href: row.sezione === "incantesimi" ? `/spell/${row.scheda_id}` : `/mostro/${row.scheda_id}`,
+      href: row.sezione === "incantesimi" ? spellHref(row.scheda_id) : `/mostro/${row.scheda_id}`,
       field: EDITOR_FIELDS[row.sezione].label[row.campo] ?? row.campo.replace(/_/g, " "),
       before: row.valore_prima, after: row.valore_dopo, motivo: "Modifica dall’editor",
       text: `Hai modificato «${(row.sezione === "incantesimi" ? spellNameOf(spells.find(spell => spell.id === row.scheda_id)) : monsters.find(monster => monster.id === row.scheda_id)?.nome) ?? row.scheda_id}»`, icon: "edit" as const, diff: true,
@@ -121,7 +122,7 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       return {
         id: row.id, editor: false, sezione, when: new Date(row.creata_il), undoneAt: null, inForce: true,
         title: `${subclass ? "Classi" : EDITOR_TITLES[sezione as EditorSection]}${cardEdition ? ` ${cardEdition}` : ""} · ${subclass ? "sottoclasse · " : ""}visibilità`, edition: cardEdition,
-        card: row.nome, href: row.tipo === "incantesimo" ? `/spell/${row.scheda}` : subclass ? `/classi/${subclassClass(row.scheda)}#sottoclasse` : `/mostro/${row.scheda}`,
+        card: row.nome, href: row.tipo === "incantesimo" ? spellHref(row.scheda) : subclass ? `/classi/${subclassClass(row.scheda)}#sottoclasse` : `/mostro/${row.scheda}`,
         field: "visibilità", before: row.nascosta ? "Visibile" : "Nascosta", after: row.nascosta ? "Nascosta" : "Visibile",
         motivo: row.nascosta ? "Nascosta dal sito: la scheda e i suoi dati restano com’erano." : "Di nuovo visibile sul sito.", fixed: "cambio di stato",
         text: row.nascosta ? `Hai nascosto «${row.nome}»` : `Hai mostrato di nuovo «${row.nome}»`, icon: row.nascosta ? "hide" as const : "show" as const,

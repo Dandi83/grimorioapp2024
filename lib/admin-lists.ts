@@ -9,12 +9,13 @@ import { homebrewMonster, publishedHomebrew } from "./homebrew";
 import { getAllMonsters } from "./monsters";
 import { typeCategory } from "./monsters-types";
 import { getReviewNameCards } from "./review-names-server";
-import { hiddenCardPaths } from "./section-visibility";
+import { cardPath, hiddenCardPaths } from "./section-visibility";
 import { getAdminSpells } from "./spells";
 import { spellName } from "./spell-name";
 import { getSrdModifiedCards } from "./srd-modified-server";
 import { usesLegacyMonsterRules } from "./srd-monsters";
 import { wordDiff } from "./word-diff";
+import { spellHref } from "./spell-public-id";
 
 /**
  * The lists of the reserved area as rows (lib/admin-list-types.ts): spells, creatures with the homebrew, and every
@@ -45,9 +46,9 @@ export async function spellList(edition: AdminEdition): Promise<AdminListData> {
       lead: spell.livello_num === 0 ? "T" : spell.livello_num > 0 ? String(spell.livello_num) : "?", group: spellGroup(spell.livello_num),
       // NO SRD as in the rest of the app (lib/provenance.ts): summaries, cards added here and SRD cards modified.
       source: modified || isNoSrdSource(source as CardSource) ? "nosrd" : "srd", pill: modified ? undefined : pillOf(source),
-      modified, reviewNames: namesOf.get(key), hidden: hidden.has(`/spell/${spell.id}`),
+      modified, reviewNames: namesOf.get(key), hidden: hidden.has(cardPath("incantesimo", spell.id)),
       // «Chiudi editor» comes back to the list.
-      editHref: `/admin/incantesimi/${encodeURIComponent(spell.id)}?ritorno=%2Fadmin%2Fincantesimi`, publicHref: `/spell/${spell.id}`,
+      editHref: `/admin/incantesimi/${encodeURIComponent(spell.id)}?ritorno=%2Fadmin%2Fincantesimi`, publicHref: spellHref(spell.id),
       ...(spell.fonte ? {} : { deletable: "spell" as const }),
     };
   });

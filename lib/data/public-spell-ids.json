@@ -1,0 +1,31 @@
+{
+  "_nota": "Indirizzi pubblici senza nomi propri (PROMPT 8, 28/10/2026): identificativo salvato -> indirizzo /spell/<nuovo>. Le righe del database, i preferiti e l'area riservata tengono l'identificativo salvato; i vecchi indirizzi rispondono 308 (next.config.mjs).",
+  "ids": {
+    "armatura-di-agathis": "armatura-di-agata-2014",
+    "armatura-di-agathys": "armatura-di-agata",
+    "aura-magica-di-nystul": "aura-magica-dell-arcanista",
+    "braccia-di-hadar-2": "braccia-di-ada-2014",
+    "braccia-di-hadar": "braccia-di-ada",
+    "calderone-ribollente-di-tasha": "calderone-ribollente-di-ash",
+    "capanna-di-leomund": "capanna",
+    "disco-fluttuante-di-tenser": "disco-fluttuante",
+    "evocazioni-istantanee-di-drawmij": "evocazioni-istantanee",
+    "fame-di-hadar-2": "fame-di-ada-2014",
+    "fame-di-hadar": "fame-di-ada",
+    "freccia-acida-di-melf": "freccia-acida",
+    "i-re-spirare-sott-acqua-2": "respirare-sott-acqua",
+    "legame-telepatico-di-rary": "legame-telepatico",
+    "mano-di-bigby": "mano-arcana",
+    "presenza-regale-di-yolande": "presenza-regale-di-iolanda",
+    "reggia-meravigliosa-di-mordenkainen": "reggia-meravigliosa",
+    "risata-incontenibile-di-tasha": "risata-incontenibile",
+    "santuario-privato-di-mordenkainen": "santuario-privato",
+    "scrigno-segreto-di-leomund": "scrigno-segreto",
+    "segugio-fedele-di-mordenkainen": "segugio-fedele",
+    "sfera-congelante-di-0tiluke": "sfera-congelante",
+    "sfera-elastica-di-0tiluke": "sfera-elastica",
+    "spada-di-mordenkainen": "spada-arcana",
+    "tentacoli-neri-di-evard": "tentacoli-neri",
+    "veleni": "individuazione-delle-malattie-e-dei-veleni"
+  }
+}

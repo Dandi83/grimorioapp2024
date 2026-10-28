@@ -10,6 +10,7 @@ import { fieldError, normalizeValue, reasonError } from "@/lib/content-validate"
 import { db } from "@/lib/db";
 import { ensureEditorLogTable, undoEditorChange, type UndoResult } from "@/lib/editor-log";
 import { dropSpellRowLikeFile } from "@/lib/spells";
+import { spellHref } from "@/lib/spell-public-id";
 
 export type ContentActionResult = { ok: true; message: string } | { ok: false; error: string; fields?: Record<string, string> };
 
@@ -91,7 +92,7 @@ export async function undoEditorAction(formData: FormData): Promise<ContentActio
   if (!result.ok) return result;
   const { sezione, scheda_id } = result.row;
   updateTag(sezione === "incantesimi" ? "spells" : "monsters");
-  const pages = sezione === "incantesimi" ? ["/", "/grimorio", "/preferiti", `/spell/${scheda_id}`, "/admin/incantesimi"] : ["/bestiario", "/preferiti", `/mostro/${scheda_id}`, "/admin/mostri"];
+  const pages = sezione === "incantesimi" ? ["/", "/grimorio", "/preferiti", spellHref(scheda_id), "/admin/incantesimi"] : ["/bestiario", "/preferiti", `/mostro/${scheda_id}`, "/admin/mostri"];
   for (const path of [...pages, "/ricerca-indice.json", "/admin", "/admin/registro"]) revalidatePath(path);
   return { ok: true, message: "Modifica annullata: la scheda ha di nuovo il valore precedente." };
 }

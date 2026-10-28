@@ -10,6 +10,7 @@ import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import type { SpellListItem } from "@/lib/spells-types";
 import { spellName } from "@/lib/spell-name";
 import { schoolColor } from "@/lib/school-colors";
+import { spellHref } from "@/lib/spell-public-id";
 
 function metaLine(spell: SpellListItem): string {
   if (spell.livello_num === 0) return `Trucchetto · ${spell.scuola}`;
@@ -25,7 +26,7 @@ export const SpellRow = memo(function SpellRow({ spell, fav, onToggle, unavailab
   unavailable?: boolean;
 }) {
 
-  const href = `/spell/${spell.id}`;
+  const href = spellHref(spell.id);
   const prefetch = useIntentPrefetch(href);
 
   return (

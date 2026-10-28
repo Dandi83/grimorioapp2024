@@ -2,7 +2,7 @@
   "edition": "Player’s Handbook 2024",
   "textType": "original-rules-summary",
   "reviewedAt": "2026-10-17",
-  "notes": "49 sintesi originali delle meccaniche 2024, non traduzioni integrali né testi SRD. Dieci sostituzioni autorizzate sono vincolate all’hash del testo precedente; le modifiche editoriali successive prevalgono. Le statistiche degli spiriti sono riepilogate separatamente e collegate.",
+  "notes": "53 sintesi originali delle meccaniche (49 del 17/10/2026 e 4 aggiunte il 28/10/2026, una delle quali 2014), non traduzioni integrali né testi SRD. Le sostituzioni autorizzate sono vincolate all’hash del testo precedente; le modifiche editoriali successive prevalgono. Le statistiche degli spiriti sono riepilogate separatamente e collegate. Le quattro schede aggiunte non hanno righe nel database: il sito le legge da questo file.",
   "spells": [
     {
       "id": "dardo-stregato",
@@ -285,7 +285,7 @@
       "gittata": "incantatore",
       "componenti": "V",
       "durata": "concentrazione, fino a 1 minuto",
-      "descrizione": "Aggiungi 5d10 danni da forza al colpo che attiva l’incantesimo. Se l’attacco lascia al bersaglio 50 punti ferita o meno, questo effettua un tiro salvezza su Carisma.<br><br>Se fallisce, viene trasferito in un semipiano innocuo ed è Incapacitato mentre vi rimane. Quando l’incantesimo termina, torna nello spazio di partenza, o nel più vicino spazio libero se quello è occupato.",
+      "descrizione": "Il colpo che attiva l’incantesimo infligge 5d10 danni da forza aggiuntivi. Se dopo il colpo il bersaglio ha 50 punti ferita o meno, effettua un tiro salvezza su Carisma.<br><br>Se lo fallisce, scompare dal mondo per la durata: finisce in un luogo extradimensionale dove non corre pericoli ma resta Incapacitato. Alla fine dell’incantesimo riappare dove si trovava, o nello spazio libero più vicino se quel punto è occupato.",
       "sourceName": "Banishing Smite",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Banishing%20Smite?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/banishing-smite"
@@ -337,12 +337,12 @@
       "gittata": "27 metri",
       "componenti": "V, S, M (un tentacolo in salamoia e un occhio in una fiala intarsiata di platino del valore di almeno 400 mo)",
       "durata": "concentrazione, fino a 1 ora",
-      "descrizione": "Richiami uno spirito in uno spazio libero e visibile entro gittata. Scegli la variante Beholderkin, Mind Flayer oppure Slaad della scheda Spirito aberrante: non sostituirla con la scheda di un mostro ordinario. La variante determina i tratti e gli attacchi disponibili.<br><br><b>Gestione dello spirito.</b> È alleato tuo e dei tuoi alleati; agisce subito dopo di te alla tua stessa iniziativa. Puoi impartirgli ordini verbali senza spendere azioni. Senza ordini usa Schivata e si muove per evitare pericoli. Scompare a 0 punti ferita o quando termina l’incantesimo.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per calcolare tutti i valori dipendenti dal livello nella scheda della creatura, usa il livello dello slot effettivamente speso.",
+      "descrizione": "Uno spirito alieno prende forma in uno spazio libero che vedi entro gittata e usa la scheda Spirito aberrante. Al lancio ne scegli la forma: Occhiuto, che fluttua e colpisce da lontano con un raggio mentale; Tentacolato, che ferisce la mente di chi gli sta accanto; Rigenerante, che lacera con gli artigli e richiude da solo le proprie ferite.<br><br><b>Al tuo fianco.</b> Lo spirito è amichevole verso di te e i tuoi compagni e agisce subito dopo di te, nel tuo stesso turno d’iniziativa. Gli dai istruzioni a voce senza spendere azioni; se non ne riceve, si limita a Schivare e a stare lontano dal pericolo. Svanisce a 0 punti ferita o quando l’incantesimo termina.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni valore della scheda che dipende dal livello usa il livello dello slot speso.",
       "sourceName": "Summon Aberration",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Summon%20Aberration?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/summon-aberration",
       "statBlockUrl": "https://www.aidedd.org/monster/aberrant-spirit",
-      "statBlockSummary": "L = livello dello slot. CA 11+L; PF 40+10×(L−4); velocità 9 m. For 16, Des 10, Cos 15, Int 16, Sag 10, Car 6. Immunità: psichico. Scurovisione 18 m.<br><br><b>Attacchi:</b> ⌊L/2⌋ per azione, usando il tuo modificatore di attacco con incantesimo. Slaad: mischia 1,5 m, 1d10+3+L taglienti; il bersaglio non recupera PF fino all’inizio del prossimo turno dello spirito. Beholderkin: raggio 45 m, 1d8+3+L psichici; volo 9 m con fluttuazione. Mind Flayer: mischia 1,5 m, 1d8+3+L psichici.<br><br><b>Tratti:</b> Slaad recupera 5 PF all’inizio del turno se ha almeno 1 PF. Mind Flayer non Incapacitato: all’inizio del proprio turno, ogni creatura diversa da te entro 1,5 m effettua TS Saggezza contro la tua CD; fallimento, 2d6 psichici."
+      "statBlockSummary": "L = livello dello slot. CA 11+L; PF 40+10×(L−4); velocità 9 m. For 16, Des 10, Cos 15, Int 16, Sag 10, Car 6. Immunità: psichico. Scurovisione 18 m.<br><br><b>Attacchi:</b> ⌊L/2⌋ per azione, usando il tuo modificatore di attacco con incantesimo. Rigenerante: mischia 1,5 m, 1d10+3+L taglienti; il bersaglio non recupera PF fino all’inizio del prossimo turno dello spirito. Occhiuto: raggio 45 m, 1d8+3+L psichici; volo 9 m con fluttuazione. Tentacolato: mischia 1,5 m, 1d8+3+L psichici.<br><br><b>Tratti:</b> Rigenerante recupera 5 PF all’inizio del turno se ha almeno 1 PF. Tentacolato non Incapacitato: all’inizio del proprio turno, ogni creatura diversa da te entro 1,5 m effettua TS Saggezza contro la tua CD; fallimento, 2d6 psichici."
     },
     {
       "id": "richiama-bestia",
@@ -352,7 +352,7 @@
       "gittata": "27 metri",
       "componenti": "V, S, M (una piuma, un ciuffo di pelo e una coda di pesce in una ghianda dorata del valore di almeno 200 mo)",
       "durata": "concentrazione, fino a 1 ora",
-      "descrizione": "Richiami uno spirito in uno spazio libero e visibile entro gittata. Scegli Aria, Terra oppure Acqua nella scheda Spirito bestiale. Puoi descriverne l’aspetto come un animale di quell’ambiente, ma usi le statistiche dello spirito, non quelle dell’animale scelto.<br><br><b>Gestione dello spirito.</b> È alleato tuo e dei tuoi alleati; agisce subito dopo di te alla tua stessa iniziativa. Puoi impartirgli ordini verbali senza spendere azioni. Senza ordini usa Schivata e si muove per evitare pericoli. Scompare a 0 punti ferita o quando termina l’incantesimo.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per calcolare tutti i valori dipendenti dal livello nella scheda della creatura, usa il livello dello slot effettivamente speso.",
+      "descrizione": "Uno spirito animale compare in uno spazio libero che vedi entro gittata e usa la scheda Spirito bestiale. Scegli l’ambiente da cui proviene: Aria, che vola; Terra, che si arrampica; Acqua, che nuota e respira solo sott’acqua. Puoi dargli l’aspetto di un animale di quell’ambiente, ma le statistiche restano quelle dello spirito.<br><br><b>Al tuo fianco.</b> Lo spirito è amichevole verso di te e i tuoi compagni e agisce subito dopo di te, nel tuo stesso turno d’iniziativa. Gli dai istruzioni a voce senza spendere azioni; se non ne riceve, si limita a Schivare e a stare lontano dal pericolo. Svanisce a 0 punti ferita o quando l’incantesimo termina.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni valore della scheda che dipende dal livello usa il livello dello slot speso.",
       "sourceName": "Summon Beast",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Summon%20Beast?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/summon-beast",
@@ -367,7 +367,7 @@
       "gittata": "27 metri",
       "componenti": "V, S, M (un reliquiario del valore di almeno 500 mo)",
       "durata": "concentrazione, fino a 1 ora",
-      "descrizione": "Richiami uno spirito in uno spazio libero e visibile entro gittata. Nella scheda Spirito celestiale scegli la variante Vendicatore (Avenger) oppure Difensore (Defender). La scelta stabilisce le opzioni di attacco e difesa della creatura.<br><br><b>Gestione dello spirito.</b> È alleato tuo e dei tuoi alleati; agisce subito dopo di te alla tua stessa iniziativa. Puoi impartirgli ordini verbali senza spendere azioni. Senza ordini usa Schivata e si muove per evitare pericoli. Scompare a 0 punti ferita o quando termina l’incantesimo.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per calcolare tutti i valori dipendenti dal livello nella scheda della creatura, usa il livello dello slot effettivamente speso.",
+      "descrizione": "Uno spirito celeste di taglia Grande appare in uno spazio libero che vedi entro gittata e usa la scheda Spirito celestiale. Scegli il suo ruolo: Vendicatore, che colpisce da lontano con dardi di luce, oppure Difensore, più corazzato, che in mischia protegge gli alleati con punti ferita temporanei. Una volta al giorno può anche curare una creatura con un tocco.<br><br><b>Al tuo fianco.</b> Lo spirito è amichevole verso di te e i tuoi compagni e agisce subito dopo di te, nel tuo stesso turno d’iniziativa. Gli dai istruzioni a voce senza spendere azioni; se non ne riceve, si limita a Schivare e a stare lontano dal pericolo. Svanisce a 0 punti ferita o quando l’incantesimo termina.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni valore della scheda che dipende dal livello usa il livello dello slot speso.",
       "sourceName": "Summon Celestial",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Summon%20Celestial?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/summon-celestial",
@@ -382,7 +382,7 @@
       "gittata": "27 metri",
       "componenti": "V, S, M (una cassetta di sicurezza del valore di almeno 400 mo)",
       "durata": "Concentrazione, fino a 1 ora",
-      "descrizione": "Richiami uno spirito in uno spazio libero e visibile entro gittata. Scegli Argilla, Metallo oppure Pietra nella scheda Spirito del costrutto. Il materiale determina i suoi tratti; puoi personalizzare l’aspetto della statua animata senza modificarne le statistiche.<br><br><b>Gestione dello spirito.</b> È alleato tuo e dei tuoi alleati; agisce subito dopo di te alla tua stessa iniziativa. Puoi impartirgli ordini verbali senza spendere azioni. Senza ordini usa Schivata e si muove per evitare pericoli. Scompare a 0 punti ferita o quando termina l’incantesimo.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per calcolare tutti i valori dipendenti dal livello nella scheda della creatura, usa il livello dello slot effettivamente speso.",
+      "descrizione": "Dai vita a una statua animata in uno spazio libero che vedi entro gittata, con la scheda Spirito del costrutto. Il materiale che scegli decide come reagisce: l’Argilla risponde ai colpi ricevuti, il Metallo rovente scotta chi lo tocca, la Pietra rallenta chi le si avvicina. L’aspetto della statua è libero, le statistiche no.<br><br><b>Al tuo fianco.</b> Lo spirito è amichevole verso di te e i tuoi compagni e agisce subito dopo di te, nel tuo stesso turno d’iniziativa. Gli dai istruzioni a voce senza spendere azioni; se non ne riceve, si limita a Schivare e a stare lontano dal pericolo. Svanisce a 0 punti ferita o quando l’incantesimo termina.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni valore della scheda che dipende dal livello usa il livello dello slot speso.",
       "sourceName": "Summon Construct",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Summon%20Construct?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/summon-construct",
@@ -397,7 +397,7 @@
       "gittata": "27 metri",
       "componenti": "V, S, M (aria, un sassolino, cenere e acqua in una fiala intarsiata d’oro del valore di almeno 400 mo)",
       "durata": "concentrazione, fino a 1 ora",
-      "descrizione": "Richiami uno spirito in uno spazio libero e visibile entro gittata. Scegli Aria, Terra, Fuoco oppure Acqua nella scheda Spirito elementale. La scelta determina movimento, difese e tipo di danno: non usare la scheda di un elementale ordinario.<br><br><b>Gestione dello spirito.</b> È alleato tuo e dei tuoi alleati; agisce subito dopo di te alla tua stessa iniziativa. Puoi impartirgli ordini verbali senza spendere azioni. Senza ordini usa Schivata e si muove per evitare pericoli. Scompare a 0 punti ferita o quando termina l’incantesimo.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per calcolare tutti i valori dipendenti dal livello nella scheda della creatura, usa il livello dello slot effettivamente speso.",
+      "descrizione": "Uno spirito degli elementi si forma in uno spazio libero che vedi entro gittata e usa la scheda Spirito elementale. Scegli fra Aria, Terra, Fuoco e Acqua: l’elemento decide come si muove, a quali danni resiste e che tipo di danno infliggono i suoi schianti. La scheda di un elementale comune non si usa.<br><br><b>Al tuo fianco.</b> Lo spirito è amichevole verso di te e i tuoi compagni e agisce subito dopo di te, nel tuo stesso turno d’iniziativa. Gli dai istruzioni a voce senza spendere azioni; se non ne riceve, si limita a Schivare e a stare lontano dal pericolo. Svanisce a 0 punti ferita o quando l’incantesimo termina.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni valore della scheda che dipende dal livello usa il livello dello slot speso.",
       "sourceName": "Summon Elemental",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Summon%20Elemental?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/summon-elemental",
@@ -412,7 +412,7 @@
       "gittata": "27 metri",
       "componenti": "V, S, M (un fiore dorato del valore di almeno 300 mo)",
       "durata": "concentrazione, fino a 1 ora",
-      "descrizione": "Richiami uno spirito in uno spazio libero e visibile entro gittata. Scegli il temperamento Furioso (Fuming), Gioioso (Mirthful) oppure Scaltro (Tricksy) nella scheda Spirito fatato. Puoi sceglierne l’aspetto, ma il temperamento stabilisce l’effetto aggiuntivo del suo teletrasporto.<br><br><b>Gestione dello spirito.</b> È alleato tuo e dei tuoi alleati; agisce subito dopo di te alla tua stessa iniziativa. Puoi impartirgli ordini verbali senza spendere azioni. Senza ordini usa Schivata e si muove per evitare pericoli. Scompare a 0 punti ferita o quando termina l’incantesimo.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per calcolare tutti i valori dipendenti dal livello nella scheda della creatura, usa il livello dello slot effettivamente speso.",
+      "descrizione": "Uno spirito fatato di taglia Piccola compare in uno spazio libero che vedi entro gittata e usa la scheda Spirito fatato. Ne scegli l’umore, Furioso, Gioioso o Scaltro, che decide cosa succede quando balza con il teletrasporto: un attacco più preciso, una creatura vicina incantata oppure una piccola zona di oscurità. L’aspetto lo decidi tu.<br><br><b>Al tuo fianco.</b> Lo spirito è amichevole verso di te e i tuoi compagni e agisce subito dopo di te, nel tuo stesso turno d’iniziativa. Gli dai istruzioni a voce senza spendere azioni; se non ne riceve, si limita a Schivare e a stare lontano dal pericolo. Svanisce a 0 punti ferita o quando l’incantesimo termina.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni valore della scheda che dipende dal livello usa il livello dello slot speso.",
       "sourceName": "Summon Fey",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Summon%20Fey?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/summon-fey",
@@ -427,12 +427,12 @@
       "gittata": "27 metri",
       "componenti": "V, S, M (una fiala insanguinata del valore di almeno 600 mo)",
       "durata": "concentrazione, fino a 1 ora",
-      "descrizione": "Richiami uno spirito in uno spazio libero e visibile entro gittata. Scegli Demone, Diavolo oppure Yugoloth nella scheda Spirito immondo. Tratti, punti ferita e attacchi dipendono da questa variante; non si usa la scheda di un immondo ordinario.<br><br><b>Gestione dello spirito.</b> È alleato tuo e dei tuoi alleati; agisce subito dopo di te alla tua stessa iniziativa. Puoi impartirgli ordini verbali senza spendere azioni. Senza ordini usa Schivata e si muove per evitare pericoli. Scompare a 0 punti ferita o quando termina l’incantesimo.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per calcolare tutti i valori dipendenti dal livello nella scheda della creatura, usa il livello dello slot effettivamente speso.",
+      "descrizione": "Uno spirito dei piani inferiori, di taglia Grande, appare in uno spazio libero che vedi entro gittata e usa la scheda Spirito immondo. Scegli se è un Demone, che esplode quando cade; un Diavolo, che vola e scaglia fuoco; oppure un Mercenario, che colpisce e subito sparisce per ricomparire poco lontano. Punti ferita e attacchi cambiano con la scelta.<br><br><b>Al tuo fianco.</b> Lo spirito è amichevole verso di te e i tuoi compagni e agisce subito dopo di te, nel tuo stesso turno d’iniziativa. Gli dai istruzioni a voce senza spendere azioni; se non ne riceve, si limita a Schivare e a stare lontano dal pericolo. Svanisce a 0 punti ferita o quando l’incantesimo termina.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni valore della scheda che dipende dal livello usa il livello dello slot speso.",
       "sourceName": "Summon Fiend",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Summon%20Fiend?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/summon-fiend",
       "statBlockUrl": "https://www.aidedd.org/monster/fiendish-spirit",
-      "statBlockSummary": "L = livello dello slot. Taglia Grande. CA 12+L; PF 50 Demone/40 Diavolo/60 Yugoloth, più 15×(L−6). Velocità 12 m; Demone scala 12 m; Diavolo vola 18 m. For 13, Des 16, Cos 15, Int 10, Sag 10, Car 16. Resistenza fuoco; immunità veleno e Avvelenato; scurovisione 18 m; vantaggio ai TS contro magia.<br><br><b>Attacchi:</b> ⌊L/2⌋ per azione, tuo modificatore di attacco con incantesimo. Demone: mischia 1,5 m, 1d12+3+L necrotici. Yugoloth: mischia 1,5 m, 1d8+3+L taglienti, poi può teletrasportarsi fino a 9 m in spazio libero visibile, anche se manca. Diavolo: mischia 1,5 m o distanza 45 m, 2d6+3+L fuoco; vede nell’oscurità magica.<br><br><b>Demone:</b> a 0 PF o a fine incantesimo esplode entro 3 m: TS Destrezza contro la tua CD, 2d10+L fuoco, dimezzati con successo."
+      "statBlockSummary": "L = livello dello slot. Taglia Grande. CA 12+L; PF 50 Demone/40 Diavolo/60 Mercenario, più 15×(L−6). Velocità 12 m; Demone scala 12 m; Diavolo vola 18 m. For 13, Des 16, Cos 15, Int 10, Sag 10, Car 16. Resistenza fuoco; immunità veleno e Avvelenato; scurovisione 18 m; vantaggio ai TS contro magia.<br><br><b>Attacchi:</b> ⌊L/2⌋ per azione, tuo modificatore di attacco con incantesimo. Demone: mischia 1,5 m, 1d12+3+L necrotici. Mercenario: mischia 1,5 m, 1d8+3+L taglienti, poi può teletrasportarsi fino a 9 m in spazio libero visibile, anche se manca. Diavolo: mischia 1,5 m o distanza 45 m, 2d6+3+L fuoco; vede nell’oscurità magica.<br><br><b>Demone:</b> a 0 PF o a fine incantesimo esplode entro 3 m: TS Destrezza contro la tua CD, 2d10+L fuoco, dimezzati con successo."
     },
     {
       "id": "richiama-non-morto",
@@ -442,7 +442,7 @@
       "gittata": "27 metri",
       "componenti": "V, S, M (un teschio dorato del valore di almeno 300 mo)",
       "durata": "concentrazione, fino a 1 ora",
-      "descrizione": "Richiami uno spirito in uno spazio libero e visibile entro gittata. Scegli Spettrale (Ghostly), Putrido (Putrid) oppure Scheletrico (Skeletal) nella scheda Spirito non morto. La forma determina i suoi tratti e attacchi: non sostituire la scheda con quella di un normale non morto.<br><br><b>Gestione dello spirito.</b> È alleato tuo e dei tuoi alleati; agisce subito dopo di te alla tua stessa iniziativa. Puoi impartirgli ordini verbali senza spendere azioni. Senza ordini usa Schivata e si muove per evitare pericoli. Scompare a 0 punti ferita o quando termina l’incantesimo.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Per calcolare tutti i valori dipendenti dal livello nella scheda della creatura, usa il livello dello slot effettivamente speso.",
+      "descrizione": "Uno spirito dei defunti si alza in uno spazio libero che vedi entro gittata e usa la scheda Spirito non morto. Scegli la forma: Spettrale, che vola attraverso gli ostacoli e spaventa chi colpisce; Putrido, che avvelena chi gli sta vicino e paralizza chi è già avvelenato; Scheletrico, che colpisce da lontano. Ogni forma ha punti ferita propri.<br><br><b>Al tuo fianco.</b> Lo spirito è amichevole verso di te e i tuoi compagni e agisce subito dopo di te, nel tuo stesso turno d’iniziativa. Gli dai istruzioni a voce senza spendere azioni; se non ne riceve, si limita a Schivare e a stare lontano dal pericolo. Svanisce a 0 punti ferita o quando l’incantesimo termina.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni valore della scheda che dipende dal livello usa il livello dello slot speso.",
       "sourceName": "Summon Undead",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Summon%20Undead?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/summon-undead",
@@ -656,6 +656,63 @@
       "sourceName": "Crown of Madness",
       "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Crown%20of%20Madness?expansion=32231",
       "referenceUrl": "https://www.aidedd.org/spell/crown-of-madness"
+    },
+    {
+      "id": "manto-del-crociato-2014",
+      "nome_italiano": "Manto del crociato",
+      "livello": "Invocazione di 3° livello (paladino)",
+      "tempo_di_lancio": "1 azione",
+      "gittata": "Incantatore (raggio di 9 metri)",
+      "componenti": "V",
+      "durata": "Concentrazione, fino a 1 minuto",
+      "descrizione": "Un’aura di 9 metri di raggio ti accompagna per tutta la durata, centrata su di te, e si sposta insieme a te. Finché restano nell’area, tu e ogni creatura non ostile aggiungete 1d4 danni radiosi a ogni attacco con un’arma che va a segno. L’aura non richiede altre azioni per restare attiva e termina se perdi la concentrazione o se l’incantesimo finisce.",
+      "sourceName": "Crusader's Mantle",
+      "sourceUrl": "https://www.aidedd.org/dnd/sorts.php?vo=crusader-s-mantle",
+      "referenceUrl": "https://dnd5e.wikidot.com/spell:crusaders-mantle",
+      "edizione": "2014",
+      "addedAt": "2026-10-28"
+    },
+    {
+      "id": "punizione-accecante-2024",
+      "nome_italiano": "PUNIZIONE ACCECANTE",
+      "livello": "Invocazione di 3° livello (paladino)",
+      "tempo_di_lancio": "Azione bonus, subito dopo aver colpito un bersaglio con un’arma da mischia o un colpo senz’armi",
+      "gittata": "incantatore",
+      "componenti": "V",
+      "durata": "1 minuto",
+      "descrizione": "Il colpo con cui lanci l’incantesimo infligge al bersaglio 3d8 danni radiosi aggiuntivi e il bersaglio diventa Accecato fino alla fine dell’incantesimo. Alla fine di ognuno dei suoi turni il bersaglio effettua un tiro salvezza su Costituzione: se lo supera, l’effetto termina per lui.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni livello oltre il 3° aggiunge 1d8 al danno radioso.",
+      "sourceName": "Blinding Smite",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Blinding%20Smite?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/blinding-smite",
+      "addedAt": "2026-10-28"
+    },
+    {
+      "id": "tempesta-radiosa",
+      "nome_italiano": "TEMPESTA RADIOSA",
+      "livello": "Invocazione di 5° livello (mago, warlock)",
+      "tempo_di_lancio": "azione",
+      "gittata": "36 metri",
+      "componenti": "V, S, M (un pizzico di fosforo)",
+      "durata": "Concentrazione, fino a 1 minuto",
+      "descrizione": "In un punto entro gittata compare un cilindro di luce e tuono con raggio di 3 metri e altezza di 12 metri. Al suo interno le creature sono Accecate e Assordate e non possono lanciare incantesimi con componente verbale.<br><br>Quando il cilindro compare, chi è dentro effettua un tiro salvezza su Costituzione: 2d10 danni radiosi più 2d10 danni da tuono se fallisce, metà se riesce. Ripete il tiro quando entra nell’area o vi termina il turno, una volta per turno.<br><br>Utilizzo di uno slot incantesimo di livello superiore. Ogni livello oltre il 5° aggiunge 1d10 a entrambi i danni.",
+      "sourceName": "Jallarzi's Storm of Radiance",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Jallarzi's%20Storm%20of%20Radiance?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/jallarzi-s-storm-of-radiance",
+      "addedAt": "2026-10-28"
+    },
+    {
+      "id": "rombo-di-tuono",
+      "nome_italiano": "ROMBO DI TUONO",
+      "livello": "Trucchetto di Invocazione (bardo, druido, mago, stregone, warlock)",
+      "tempo_di_lancio": "azione",
+      "gittata": "incantatore",
+      "componenti": "S",
+      "durata": "istantanea",
+      "descrizione": "Produci un colpo secco di tuono attorno a te. Ogni altra creatura entro 1,5 metri da te effettua un tiro salvezza su Costituzione: se lo fallisce subisce 1d6 danni da tuono, se lo supera non subisce danni. Il boato si sente fino a 30 metri di distanza.<br><br>Potenziamento del trucchetto. Il danno sale a 2d6 al 5° livello, a 3d6 all’11° e a 4d6 al 17°.",
+      "sourceName": "Thunderclap",
+      "sourceUrl": "https://roll20.net/compendium/dnd5e/Spells:Thunderclap?expansion=32231",
+      "referenceUrl": "https://www.aidedd.org/spell/thunderclap",
+      "addedAt": "2026-10-28"
     }
   ],
   "replacements": [
@@ -698,6 +755,53 @@
     {
       "id": "corona-di-follia",
       "previousDescriptionSha256": "36ab6e1e41561b203356e2d4c38db5f83bdb97f48542223d15bc4bb333d4e0c2"
+    }
+  ],
+  "revisions": [
+    {
+      "id": "richiama-aberrazione",
+      "previousDescriptionSha256": "653bc7337bb1e4838384fbec28f6c344ab3f676740a0f853ec7d9b69d71d4179",
+      "revisedAt": "2026-10-28"
+    },
+    {
+      "id": "richiama-bestia",
+      "previousDescriptionSha256": "742b29a22aa08172d9cf0178717919d551b9c31ff32aa0e174953b138b8d64b7",
+      "revisedAt": "2026-10-28"
+    },
+    {
+      "id": "richiama-celestiale",
+      "previousDescriptionSha256": "4748043c1e9e67ba8d9a570735a1c2c70b92fc50074f87e4eb14246963572555",
+      "revisedAt": "2026-10-28"
+    },
+    {
+      "id": "richiama-costrutto",
+      "previousDescriptionSha256": "146e763f4ac84d028d2c92453ead6e005a64acabbb740447c3ba7fe88d8628e5",
+      "revisedAt": "2026-10-28"
+    },
+    {
+      "id": "richiama-elementale",
+      "previousDescriptionSha256": "5b72989b5ddf3e68932bed099b6615bfa144a057db383743d8e46d6cc2bd1d08",
+      "revisedAt": "2026-10-28"
+    },
+    {
+      "id": "richiama-folletto",
+      "previousDescriptionSha256": "a2085aadf3b7130ab2e3334c205e3d570c77fb3cce512ced33e30eff2c374d2c",
+      "revisedAt": "2026-10-28"
+    },
+    {
+      "id": "richiama-immondo",
+      "previousDescriptionSha256": "2cbcc454acd152d69cf853f5119454d4fef10545b44c2d5d0c7485eeea9f1186",
+      "revisedAt": "2026-10-28"
+    },
+    {
+      "id": "richiama-non-morto",
+      "previousDescriptionSha256": "c50f4ecd28cede8704a94c0c83050fc6b596617b805b72ac6a5fdd30bbd5fecc",
+      "revisedAt": "2026-10-28"
+    },
+    {
+      "id": "punizione-esiliante",
+      "previousDescriptionSha256": "d4331ccc1165ed8243360ae272414000404e72dbae1b7fa58d68ecdf38b43f83",
+      "revisedAt": "2026-10-28"
     }
   ]
 }
