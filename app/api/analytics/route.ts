@@ -1,44 +1,41 @@
 import { NextRequest, NextResponse, after } from "next/server";
 import { spellName } from "@/lib/spell-name";
-import { createHmac, timingSafeEqual, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { isAdmin } from "@/lib/admin-auth";
 import {
   analyticsConfigured,
   analyticsSecret,
   storeAnalyticsEvent,
   exportAnalytics,
+  excludeVisitor,
   type CardInfo,
 } from "@/lib/analytics";
 import { parseAnalyticsInput } from "@/lib/analytics-events";
+import {
+  CONSENT_COOKIE as CONSENT,
+  VISITOR_COOKIE as VISITOR,
+  EXCLUDED_COOKIE,
+  COOKIE_OPTIONS as options,
+  EXCLUDED_OPTIONS,
+  signVisitor as sign,
+  visitorOf,
+  visitorExcluded,
+} from "@/lib/analytics-exclusion";
 import { getSpellById } from "@/lib/spells";
 import { getMonsterById } from "@/lib/monsters";
 import { isSrdAnimal } from "@/lib/monsters-types";
 export const dynamic = "force-dynamic";
-const CONSENT = "grimorio_statistics_consent",
-  VISITOR = "grimorio_statistics_visitor";
-const options = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "lax" as const,
-  path: "/",
-  maxAge: 60 * 60 * 24 * 180,
-};
-// ANALYTICS_SECRET signs the visitor IDs. A cookie that does not verify (also one signed earlier with the admin
-// passcode) is simply a new visitor.
-function sign(id: string) {
-  const secret = analyticsSecret();
-  if (!secret) throw new Error("ANALYTICS_SECRET missing");
-  return createHmac("sha256", secret).update(`statistics:${id}`).digest("hex");
-}
-function matches(signature: string, expected: string) {
-  const a = Buffer.from(signature),
-    b = Buffer.from(expected);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
 function visitorFrom(request: NextRequest): string | undefined {
-  const [id, signature] = request.cookies.get(VISITOR)?.value.split(".") ?? [];
-  if (!id || !signature || !/^[0-9a-f-]{36}$/i.test(id) || !analyticsSecret()) return;
-  if (matches(signature, sign(id))) return id;
+  return visitorOf(request.cookies.get(VISITOR)?.value);
+}
+/**
+ * A device of the administrator (lib/analytics-exclusion.ts): logged in now, marked by its cookie, or a visitor ID
+ * marked before. It never saves events, also after the logout.
+ */
+async function excludedDevice(request: NextRequest): Promise<boolean> {
+  if (request.cookies.get(EXCLUDED_COOKIE)?.value === "1" || (await isAdmin())) return true;
+  const visitor = analyticsSecret() ? visitorFrom(request) : undefined;
+  return !!visitor && (await visitorExcluded(visitor));
 }
 function allowed(request: NextRequest) {
   return (
@@ -52,13 +49,16 @@ function response(value: object, status = 200) {
   return NextResponse.json(value, { status, headers: { "Cache-Control": "no-store" } });
 }
 export async function GET(request: NextRequest) {
-  const excluded = await isAdmin();
+  const excluded = await excludedDevice(request);
   const choice = request.cookies.get(CONSENT)?.value;
-  return response({
+  const result = response({
     enabled: allowed(request),
     excluded,
     consent: choice === "accepted" || choice === "rejected" ? choice : null,
   });
+  // Renewed at every visit: the mark of an administrator's device lasts while the device is used.
+  if (excluded) result.cookies.set(EXCLUDED_COOKIE, "1", EXCLUDED_OPTIONS);
+  return result;
 }
 export async function POST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin)
@@ -83,10 +83,12 @@ export async function POST(request: NextRequest) {
     if (choice === "accepted") {
       const id = visitorFrom(request) || randomUUID();
       result.cookies.set(VISITOR, `${id}.${sign(id)}`, options);
+      // A device of the administrator that accepts: its new visitor ID is refused from the start.
+      if (await excludedDevice(request)) await excludeVisitor(id).catch(() => {});
     } else result.cookies.set(VISITOR, "", { ...options, maxAge: 0 });
     return result;
   }
-  if (await isAdmin()) return response({ ignored: true, reason: "admin" });
+  if (await excludedDevice(request)) return response({ ignored: true, reason: "admin" });
   if (request.cookies.get(CONSENT)?.value !== "accepted")
     return response({ ignored: true, reason: "consent" });
   const visitor = visitorFrom(request);

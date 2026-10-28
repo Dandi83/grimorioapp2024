@@ -65,7 +65,7 @@ test("statistics: the administrator sees the questions with charts and marked ev
   const daily = page.locator('svg[data-chart="giorni"]');
   await expect(daily).toHaveAttribute("aria-label", /Persone al giorno dal .* massimo 3/);
   await expect(page.locator('svg[data-chart="anello"]')).toHaveAttribute("aria-label", /^25% delle persone è tornato .*: 1 su 4\.$/);
-  await expect(page.locator("[data-installed]")).toContainText("1 la usano dall’app installata sulla schermata Home.");
+  await expect(page.locator("[data-installed]")).toContainText("Usano l’app installata: 1 persona nel periodo");
   await expect(page.locator('svg[data-chart="barre"]')).toHaveAttribute("aria-label", "Provenienza di 4 persone: Instagram 50%, Diretto 25%, Google 25%, Link condivisi 0%, Altro 0%.");
   await expect(page.locator("[data-devices]")).toHaveText("Su iPhone 50% · Android 25% · computer 25%");
   await expect(page.locator('[data-area="Incantesimi"]')).toContainText("50%");
@@ -119,4 +119,98 @@ test("without consent no event is sent: page views, cards and searches stay in t
   expect(sent).toEqual([]);
   expect(await context.cookies()).not.toContainEqual(expect.objectContaining({ name: "grimorio_statistics_visitor" }));
   await context.close();
+});
+
+/** The statistics of the browser with consent given (the test server never collects: no PostHog, local host). */
+async function withConsent(context, sent, { consent = "accepted", excluded = false } = {}) {
+  await context.route("**/api/analytics", async route => {
+    if (route.request().method() === "GET") return route.fulfill({ json: { enabled: true, excluded, consent } });
+    sent.push(JSON.parse(route.request().postData() || "{}"));
+    return route.fulfill({ json: { ok: true, stored: true } });
+  });
+}
+/** The site opened as the app installed on the Home screen (display-mode standalone, navigator.standalone on iPhone). */
+async function standalone(context) {
+  await context.addInitScript(() => {
+    const media = window.matchMedia.bind(window);
+    window.matchMedia = query => (query.includes("display-mode: standalone") ? { matches: true, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, onchange: null, dispatchEvent: () => false } : media(query));
+    Object.defineProperty(Navigator.prototype, "standalone", { configurable: true, get: () => true });
+    try { localStorage.setItem("grimorio.edizione", "2024"); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
+  });
+}
+
+test("installed app: the first opening from the icon is sent once, with the device; without consent nothing", async ({ browser }) => {
+  const options = { baseURL: test.info().project.use.baseURL, viewport: { width: 390, height: 844 }, userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1" };
+  const context = await browser.newContext(options);
+  await standalone(context);
+  const sent = [];
+  await withConsent(context, sent);
+  const page = await context.newPage();
+  await page.goto("/");
+  await expect.poll(() => sent.filter(event => event.event === "first_standalone_open").length).toBe(1);
+  const first = sent.find(event => event.event === "first_standalone_open");
+  expect(first.device).toBe("iphone");
+  expect(first.path).toBe("/");
+  // Other pages, a reload, a new start of the app: never again from this device.
+  await page.goto("/grimorio");
+  await page.reload();
+  const again = await context.newPage();
+  await again.goto("/bestiario");
+  await expect.poll(() => sent.filter(event => event.event === "page_view").length).toBeGreaterThanOrEqual(4);
+  expect(sent.filter(event => event.event === "first_standalone_open")).toHaveLength(1);
+  expect(sent.filter(event => event.event === "page_view").every(event => event.installed === true)).toBe(true);
+  // The browser says the app was installed (Android, computer): app_installed with the device.
+  await page.evaluate(() => window.dispatchEvent(new Event("appinstalled")));
+  await expect.poll(() => sent.filter(event => event.event === "app_installed").length).toBe(1);
+  await context.close();
+
+  // Without consent (not chosen, or refused): no event at all, the installation neither.
+  for (const consent of [null, "rejected"]) {
+    const other = await browser.newContext(options);
+    await standalone(other);
+    const none = [];
+    await withConsent(other, none, { consent });
+    const view = await other.newPage();
+    await view.goto("/");
+    await view.evaluate(() => window.dispatchEvent(new Event("appinstalled")));
+    await view.goto("/grimorio");
+    await view.waitForTimeout(1500);
+    expect(none, String(consent)).toEqual([]);
+    await other.close();
+  }
+});
+
+test("the administrator's device: excluded at the login and still after «Esci»; the button also excludes a device", async ({ page, request }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await login(page);
+  const mark = async () => (await page.context().cookies()).find(cookie => cookie.name === "grimorio_statistics_excluded");
+  expect((await mark())?.value).toBe("1");
+  expect((await mark())?.httpOnly).toBe(true);
+  // 400 days: the longest a browser keeps a cookie, renewed at every visit.
+  expect((await mark()).expires - Date.now() / 1000).toBeGreaterThan(399 * 24 * 3600);
+  await page.goto("/admin/statistiche");
+  await expect(page.getByText("Questo dispositivo: escluso dalle statistiche ✓")).toBeVisible();
+  await expect(page.getByText("Le installazioni si contano solo per chi accetta le statistiche. Su iPhone si contano al primo avvio dall’icona.")).toBeVisible();
+  await expect(page.locator("[data-installs]")).toContainText("Nuove installazioni nel periodo:");
+  await expect(page.locator("[data-installs-detail]")).toContainText(/Android e computer: \d+ confermate · iPhone: \d+ al primo avvio dall’icona/);
+  await expect(page.locator("[data-installed]")).toContainText(/Usano l’app installata: \d+ person[ae] nel periodo/);
+  // «Esci»: the session ends, the device stays excluded.
+  await page.goto("/admin");
+  await page.getByRole("button", { name: "Esci", exact: true }).click();
+  await expect(page.getByLabel("Passcode")).toBeVisible();
+  expect((await mark())?.value).toBe("1");
+  const status = await page.evaluate(async () => (await fetch("/api/analytics", { cache: "no-store" })).json());
+  expect(status.excluded).toBe(true);
+  // A device without the mark (another storage, such as the app on iPhone): «Non contare questo dispositivo».
+  await page.context().clearCookies({ name: "grimorio_statistics_excluded" });
+  await login(page);
+  await page.context().clearCookies({ name: "grimorio_statistics_excluded" });
+  await page.goto("/admin/statistiche");
+  await page.getByRole("button", { name: "Non contare questo dispositivo" }).click();
+  await expect(page.getByText("Questo dispositivo: escluso dalle statistiche ✓")).toBeVisible();
+  expect((await mark())?.value).toBe("1");
+  // Visitors never see any of it.
+  const guest = await (await request.get("/privacy")).text();
+  expect(guest).toContain("la prima apertura dell’app dall’icona");
+  expect(guest).not.toMatch(/Non contare questo dispositivo|grimorio_statistics_excluded/);
 });

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { clean, requireAdmin } from "@/lib/admin-action-helpers";
 import { addMarker, deleteMarker } from "@/lib/analytics";
+import { excludeThisDevice } from "@/lib/analytics-exclusion";
 
 export type MarkerResult = { ok: true } | { ok: false; error: string };
 
@@ -22,5 +23,15 @@ export async function deleteMarkerAction(form: FormData): Promise<void> {
   await requireAdmin();
   const id = clean(form.get("id"));
   if (/^[0-9a-f-]{36}$/i.test(id)) await deleteMarker(id);
+  revalidatePath("/admin/statistiche");
+}
+
+/**
+ * «Non contare questo dispositivo»: the device of this request never counts again (lib/analytics-exclusion.ts).
+ * Also from the app installed on iPhone, which keeps its own cookies apart from Safari.
+ */
+export async function excludeDeviceAction(): Promise<void> {
+  await requireAdmin();
+  await excludeThisDevice();
   revalidatePath("/admin/statistiche");
 }

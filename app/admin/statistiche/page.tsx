@@ -7,7 +7,8 @@ import { bestDay, dayLabel, fillDays, percentChange, periodOf, periodRange, shar
 import { Bars, DailyChart, Ring } from "@/components/statistics/charts";
 import { PeriodSelect } from "@/components/statistics/period-select";
 import { MarkerForm } from "@/components/statistics/marker-form";
-import { deleteMarkerAction } from "@/app/actions/admin-statistics";
+import { deleteMarkerAction, excludeDeviceAction } from "@/app/actions/admin-statistics";
+import { deviceExcluded } from "@/lib/analytics-exclusion";
 
 // Administrator only, drawn on every request: never in a cached page or a saved copy of the service worker.
 export const dynamic = "force-dynamic";
@@ -36,7 +37,7 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const period = periodOf((await searchParams).periodo);
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
   const range = periodRange(period, today);
-  const data = await readStatistics(range);
+  const [data, excluded] = await Promise.all([readStatistics(range), deviceExcluded()]);
   const days = fillDays(range.from, range.to, data.days);
   const change = percentChange(data.people, data.previousPeople);
   const best = bestDay(days);
@@ -96,9 +97,19 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
             <b className="text-[#2B2118]">{number(data.returning)}</b> {data.returning === 1 ? "persona è tornata" : "persone sono tornate"} almeno una seconda volta, su {number(data.people)}.
           </p>
         </div>
-        <p className={`${SOFT} mt-3 border-t border-[#DDCFAE] pt-3`} data-installed={data.installed}>
-          <b className="text-[#2B2118]">{number(data.installed)}</b> la usano dall’app installata sulla schermata Home.
-        </p>
+        <div className="mt-3 space-y-3 border-t border-[#DDCFAE] pt-3">
+          <div data-installs={data.installs.total}>
+            <p className={SOFT}>Nuove installazioni nel periodo: <b className="text-[#2B2118]">{number(data.installs.total)}</b></p>
+            <p className="text-[13px] leading-5 text-[#5E4E3E]" data-installs-detail="">
+              Android e computer: {number(data.installs.confirmed)} confermate · iPhone: {number(data.installs.firstOpen)} al primo avvio dall’icona
+            </p>
+            <p className="mt-0.5"><Change value={percentChange(data.installs.total, data.previousInstalls)} /></p>
+          </div>
+          <div data-installed={data.installed}>
+            <p className={SOFT}>Usano l’app installata: <b className="text-[#2B2118]">{number(data.installed)}</b> {data.installed === 1 ? "persona" : "persone"} nel periodo</p>
+            <p className="mt-0.5"><Change value={percentChange(data.installed, data.previousInstalled)} /></p>
+          </div>
+        </div>
       </section>
 
       <section aria-labelledby="arrivano" className={PAPER}>
@@ -147,10 +158,22 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
       <section aria-labelledby="contano" className="px-1">
         <h2 id="contano" className="font-serif text-lg font-bold text-[#2B2118]">Come si contano</h2>
         <p className={`${SOFT} mt-1`}>Dettagli solo di chi accetta le statistiche. Le tue visite da admin non contano.</p>
+        <p className={`${SOFT} mt-1`}>Le installazioni si contano solo per chi accetta le statistiche. Su iPhone si contano al primo avvio dall’icona.</p>
         <a href={VERCEL_ANALYTICS_URL} target="_blank" rel="noreferrer" className="mt-1 inline-flex min-h-11 items-center text-[15px] font-bold text-[#7A1F2B] underline underline-offset-4">
           Totale di tutti i visitatori su Vercel Analytics
         </a>
         <p className="text-xs text-[#5E4E3E]">Periodo: {PERIODS[period].charAt(0).toLowerCase() + PERIODS[period].slice(1)} (dal {dayLabel(range.from)}), fuso orario italiano.</p>
+      </section>
+
+      {/* This device: marked at the login (lib/analytics-exclusion.ts); the button also from the app installed on iPhone. */}
+      <section aria-label="Questo dispositivo" className="border-t border-[#DDCFAE] px-1 pt-3" data-device-excluded={excluded ? "true" : "false"}>
+        {excluded ? (
+          <p className="text-[15px] font-semibold text-[#1F6B45]">Questo dispositivo: escluso dalle statistiche ✓</p>
+        ) : (
+          <form action={excludeDeviceAction}>
+            <button type="submit" className="inline-flex min-h-11 items-center rounded-full border-[1.5px] border-[#7A1F2B] px-4 text-[15px] font-bold text-[#7A1F2B]">Non contare questo dispositivo</button>
+          </form>
+        )}
       </section>
     </main>
   );
