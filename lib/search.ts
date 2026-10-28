@@ -19,7 +19,7 @@ export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggia
 interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014" }
 
 /** start: where the query starts in the name, -1 for an approximate match (a typo, lib/fuzzy-search.ts). */
-export interface SearchMatch extends SearchRow { start: number; kind: MatchKind; typos: number }
+export interface SearchMatch extends SearchRow { start: number; kind: MatchKind; typos: number; length?: number }
 
 /** exact: the rows found without typos (counted in the statistics of the searches; the others are «Risultati simili»). */
 export interface SearchGroup { section: SearchSectionKey; title: string; total: number; exact: number; rows: SearchMatch[] }
@@ -67,18 +67,25 @@ export function splitByEdition(rows: SearchRow[], edition: "2024" | "2014"): { o
  * with a word starting with it, then the approximate ones (typos, lib/fuzzy-search.ts), each kind A–Z; accents and
  * capitals ignored; at most `limit` rows per group unless the group is expanded. One character is enough.
  */
-export function search(index: SearchIndex, rows: SearchRow[], query: string, options: { section?: SearchSectionKey; expanded?: SearchSectionKey[]; limit?: number } = {}): SearchGroup[] {
+export function search(index: SearchIndex, rows: SearchRow[], query: string, options: { section?: SearchSectionKey; expanded?: SearchSectionKey[]; limit?: number; settled?: boolean } = {}): SearchGroup[] {
   const limit = options.limit ?? GROUP_LIMIT;
   if (!normalizeSearch(query)) return [];
   const found = new Map<SearchSectionKey, SearchMatch[]>();
   for (const row of rows) {
     if (options.section && row.section !== options.section) continue;
-    const match = matchName(row.nome, query, { wordStart: true });
+    const match = matchName(row.nome, query, { wordStart: true, settled: options.settled });
     if (!match) continue;
     const list = found.get(row.section) ?? [];
     list.push({ ...row, ...match });
     found.set(row.section, list);
   }
+  // The similar ones (typos) only when no section of the filter has a row found exactly, starts with or contains.
+  if ([...found.values()].some(list => list.some(row => row.kind !== MATCH.approximate)))
+    for (const [key, list] of found) {
+      const kept = list.filter(row => row.kind !== MATCH.approximate);
+      if (kept.length) found.set(key, kept);
+      else found.delete(key);
+    }
   return index.sections.filter(section => found.has(section.k)).map(section => {
     const all = found.get(section.k)!.sort((a, b) => a.kind - b.kind || a.typos - b.typos || a.nome.localeCompare(b.nome, "it"));
     return { section: section.k, title: section.t, total: all.length, exact: all.filter(row => row.kind !== MATCH.approximate).length, rows: options.expanded?.includes(section.k) ? all : all.slice(0, limit) };

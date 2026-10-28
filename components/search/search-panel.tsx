@@ -9,7 +9,7 @@ import { useUserEdition } from "@/components/edition/edition-provider";
 import { HOMEBREW_LABEL, rowHref, rowsOf, search, splitByEdition, suggestionOf, type SearchGroup, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
 import { otherEdition } from "@/lib/user-edition";
 import { useReportSearch } from "@/components/statistics/use-report-search";
-import { DidYouMean, usePreparedNames } from "@/components/search/did-you-mean";
+import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 import { SEARCH_INPUT } from "@/lib/search-input";
 
 export interface SearchPanelProps {
@@ -28,8 +28,10 @@ const loadIndex = () => (indexPromise ??= fetch("/ricerca-indice.json").then(res
   return response.json() as Promise<SearchIndex>;
 }).catch(error => { indexPromise = undefined; throw error; }));
 
-function Highlighted({ row, length }: { row: SearchMatch; length: number }) {
+function Highlighted({ row, length: typed }: { row: SearchMatch; length: number }) {
   if (row.start < 0) return <>{row.nome}</>;
+  // Singular and plural: the word of the name, not the length of the typed one.
+  const length = row.length ?? typed;
   return (
     <>
       {row.nome.slice(0, row.start)}
@@ -113,8 +115,9 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
   }, [query, section]);
 
   const rows = useMemo(() => splitByEdition(index ? rowsOf(index) : [], edition), [index, edition]);
-  const ownGroups = useMemo(() => (index ? search(index, rows.own, query, { section, expanded }) : []), [index, rows, query, section, expanded]);
-  const otherGroups = useMemo(() => (index ? search(index, rows.other, query, { section, expanded }) : []), [index, rows, query, section, expanded]);
+  const settled = useSettledQuery(query);
+  const ownGroups = useMemo(() => (index ? search(index, rows.own, query, { section, expanded, settled }) : []), [index, rows, query, section, expanded, settled]);
+  const otherGroups = useMemo(() => (index ? search(index, rows.other, query, { section, expanded, settled }) : []), [index, rows, query, section, expanded, settled]);
   usePreparedNames(() => rows.own.concat(rows.other).map(row => row.nome), rows);
   // A name found exactly in the other edition beats the similar ones of this edition («cesto»: Cesto in 2024, not
   // «Custodia…» in 2014): «Nessun risultato nel 2014» and «Cerca anche nel 2024», as before the typos.
@@ -181,6 +184,8 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
           )}
           {typed > 0 && index && !total && <p className="py-8 text-center text-[15px] text-muted">Nessun risultato per «{query.trim()}»{otherTotal ? ` nel ${edition}` : ""}</p>}
           {typed > 0 && suggestion && <DidYouMean name={suggestion} onPick={choose} className="mt-3" />}
+          {/* Only similar names (no exact result in any section): never mixed with the right ones. */}
+          {typed > 0 && groups.length > 0 && groups.every(group => !group.exact) && <SimilarResultsHeading className="!mt-4 !mb-0" />}
           <Groups groups={groups} query={query} edition={edition} prefix="gruppo" onExpand={key => setExpanded(list => [...list, key])} />
           {typed > 0 && otherTotal > 0 && !alsoOther && (
             <button type="button" onClick={() => setAlsoOther(true)}

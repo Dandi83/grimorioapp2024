@@ -10,7 +10,7 @@ import { useEquipmentEdition } from "@/components/equipment/use-equipment-editio
 import { SectionEditionPill } from "@/components/edition/edition-pill";
 import type { ToolListRow } from "@/lib/tools-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
-import { DidYouMean } from "@/components/search/did-you-mean";
+import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
 import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
 import { SEARCH_INPUT } from "@/lib/search-input";
 
@@ -59,7 +59,8 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
   const needle = normalizeSearch(query);
   const items = rows[edition];
   // Typos tolerated (lib/fuzzy-search.ts): the exact names first in each group, then the similar ones.
-  const result = useMemo(() => searchList(items, query, row => row.nome), [items, query]);
+  const settled = useSettledQuery(query);
+  const result = useMemo(() => searchList(items, query, row => row.nome, { settled }), [items, query, settled]);
   const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">

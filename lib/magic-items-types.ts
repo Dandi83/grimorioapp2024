@@ -62,8 +62,8 @@ function matchesMagicItem(row: MagicItemListRow, filters: MagicItemFilters): boo
  * The rows of the filters matching the name: the exact ones (A–Z kept inside each kind: exact, starts with,
  * contains), the similar ones with typos apart (lib/fuzzy-search.ts), and «Forse cercavi» when none is exact.
  */
-export function findMagicItems(rows: MagicItemListRow[], query: string, filters: MagicItemFilters) {
-  return searchList(rows.filter(row => matchesMagicItem(row, filters)), query, row => row.nome);
+export function findMagicItems(rows: MagicItemListRow[], query: string, filters: MagicItemFilters, settled = true) {
+  return searchList(rows.filter(row => matchesMagicItem(row, filters)), query, row => row.nome, { settled });
 }
 
 /** The rows of the filters matching the name: exact ones first, then those with typos. */

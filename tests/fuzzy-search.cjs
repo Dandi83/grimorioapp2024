@@ -10,7 +10,7 @@ function load(relative) {
   new Function('module', 'exports', 'require', code)(mod, mod.exports, require);
   return mod.exports;
 }
-const {normalizeSearch, allowedTypos, typoDistance, matchName, searchRows, didYouMean, MATCH} = load('lib/fuzzy-search.ts');
+const {normalizeSearch, allowedTypos, typoDistance, matchName, searchRows, searchList, didYouMean, wordStem, MATCH} = load('lib/fuzzy-search.ts');
 const read = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 
 // Normalization: case, accents, apostrophes and dashes.
@@ -42,10 +42,35 @@ assert.equal(matchName('Mago', 'lag'), null, 'no tolerance under 4 letters');
 assert.equal(matchName('Palla di fuoco', 'palla da fuoco'), null, '«di» → «da» is a typo in a 2-letter word: not tolerated');
 assert.equal(matchName('Dardo incantato', 'dardo incxyzao'), null, 'more typos than allowed');
 
-// Order: exact, starts with, contains, approximate after every exact one; the list order inside each kind.
+// Order: exact, starts with, contains; singular and plural are the same word; the list order inside each kind.
 const names = ['Scudo della fede', 'Scudo', 'Muro di scudi', 'Scudi', 'Sfera di fuoco', 'Scusa'];
-assert.deepEqual(searchRows(names, 'scudo', n => n), ['Scudo', 'Scudo della fede', 'Muro di scudi', 'Scudi'], '«Scusa» is 2 typos away: over the 1 allowed in 5 letters');
-assert.deepEqual(searchRows(names, 'scudi', n => n), ['Scudi', 'Muro di scudi', 'Scudo della fede', 'Scudo'], 'same kind and typos: the order of the list');
+assert.deepEqual(searchRows(names, 'scudo', n => n), ['Scudo', 'Scudo della fede', 'Scudi', 'Muro di scudi'], '«Scusa» is never shown: there are exact results');
+assert.deepEqual(searchRows(names, 'scudi', n => n), ['Scudi', 'Scudo della fede', 'Scudo', 'Muro di scudi'], 'same kind: the order of the list');
+// Singular and plural (only the final vowel, with the h of -chi/-ghi and the i of -ia/-ie).
+assert.deepEqual(['palla', 'palle', 'fuoco', 'fuochi', 'magia', 'magie', 'di'].map(wordStem), ['pall', 'pall', 'fuoc', 'fuoc', 'mag', 'mag', 'di']);
+assert.equal(matchName('Bacchetta delle palle di fuoco', 'palla').kind, MATCH.contains, '«palla» = «palle»: exact');
+assert.equal(matchName('Bacchetta delle palle di fuoco', 'palla', {wordStart: true}).length, 5);
+assert.equal(matchName('Dardi di fuochi', 'fuoco').kind, MATCH.contains);
+assert.equal(matchName('Palla di fuoco', 'palle di fuoco').kind, MATCH.start);
+
+// No noise while typing «palla» (28 October 2026): the right names only, never «Allarme» («alla»), «Interdizione
+// alla morte», «Parlare con…» («parla») or «Pala»; the similar ones only when nothing is found exactly.
+const noisy = ['Allarme', 'Interdizione alla morte', 'Parlare con gli animali', 'Parlare con i morti', 'Parlare con i vegetali', 'Pala', 'Palla di fuoco', 'Palla di fuoco ritardata', 'Bacchetta delle palle di fuoco'];
+for (const settled of [false, true]) {
+  const found = searchList(noisy, 'palla', n => n, {settled});
+  assert.deepEqual(found.exact, ['Palla di fuoco', 'Palla di fuoco ritardata', 'Bacchetta delle palle di fuoco'], `settled ${settled}`);
+  assert.deepEqual(found.approximate, [], 'no similar names next to the right ones');
+  assert.equal(found.suggestion, null);
+}
+// A typo needs the same first letter, a name word of 4 letters at least and not a common short word.
+assert.equal(matchName('Allarme', 'pallarme'), null, 'another first letter: never similar');
+assert.equal(matchName('Interdizione alla morte', 'palla'), null);
+assert.equal(matchName('Pala', 'palla').kind, MATCH.approximate, 'alone, «Pala» is a similar name');
+assert.equal(matchName('Fuoco della vita', 'fuoco dela'), null, 'no typos on «della»');
+// The last word being typed: only the start of a name word; after the pause (or «Cerca») typos too.
+assert.equal(matchName('Palla di fuoco', 'palla di foco', {settled: false}), null);
+assert.equal(matchName('Palla di fuoco', 'palla di foco', {settled: true}).kind, MATCH.approximate);
+assert.equal(matchName('Palla di fuoco', 'plla di fuo', {settled: false}).kind, MATCH.approximate, 'the complete words may have typos');
 assert.deepEqual(searchRows(names, '', n => n), names, 'no query: the list as it is');
 // «Forse cercavi»: only when nothing matches exactly.
 assert.equal(didYouMean(['Palla di fuoco', 'Palla di neve'], 'palla di foco', n => n), 'Palla di fuoco');

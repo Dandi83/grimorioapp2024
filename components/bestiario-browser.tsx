@@ -22,7 +22,7 @@ import { authorLine } from "@/lib/homebrew-types";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
 import { useReportSearch } from "@/components/statistics/use-report-search";
 import { searchList } from "@/lib/fuzzy-search";
-import { DidYouMean, SimilarResultsHeading, usePreparedNames } from "@/components/search/did-you-mean";
+import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 
 export type Edition = "2024" | "2014";
 const PAGE_SIZE = 40;
@@ -123,7 +123,8 @@ export function BestiarioBrowser({
   usePreparedNames(() => byChallenge.map(m => m.nome), byChallenge);
   // Accents, capitals and typos ignored (lib/fuzzy-search.ts): exact, starts with, contains (each by challenge), then
   // the approximate ones under «Risultati simili».
-  const found = useMemo(() => searchList(byChallenge, deferredQ, m => m.nome), [byChallenge, deferredQ]);
+  const settled = useSettledQuery(deferredQ);
+  const found = useMemo(() => searchList(byChallenge, deferredQ, m => m.nome, { settled }), [byChallenge, deferredQ, settled]);
   const searched = useMemo(() => [...found.exact, ...found.approximate], [found]);
   // The searched name and how many creatures of the edition have it exactly (statistics, only with the consent).
   useReportSearch(deferredQ, found.exact.length);
