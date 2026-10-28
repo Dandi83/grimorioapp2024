@@ -3,11 +3,11 @@ import { randomUUID } from "node:crypto";
 import pg from "pg";
 import { TEST_DATABASE_URL } from "./test-db.mjs";
 
-// «Sostieni il Grimorio» (canvas «Sostieni il Grimorio»): with the made-up Ko-fi address of the browser tests
-// (e2e/run.mjs; empty in the code, so nothing exists on the site until Daniele sets it: tests/support.cjs).
+// «Sostieni il Grimorio» (canvas «Sostieni il Grimorio»): with the real Ko-fi address (lib/support.ts, PROMPT 9).
+// Ko-fi is never opened: its tab is answered by the test itself.
 // The statistics server is simulated in the public tests; the reserved page reads rows of the local test database.
 const SHOTS = process.env.SOSTIENI_SHOTS;
-const KOFI = "https://ko-fi.com/grimorio-prova-e2e";
+const KOFI = "https://ko-fi.com/ilgrimorioapp";
 
 async function visitor(browser, { days = 0, width = 390, consent = "accepted", paused = false, invite = false, ratingPaused = true } = {}) {
   const context = await browser.newContext({
@@ -85,7 +85,8 @@ test("/sostieni: the exact texts, 3 € chosen, Ko-fi in a new tab, «Non puoi d
     window.__shared = [];
     Object.defineProperty(navigator, "share", { configurable: true, value: async data => { window.__shared.push(data); } });
   });
-  await page.goto("/sostieni");
+  const answer = await page.goto("/sostieni");
+  expect(answer.status()).toBe(200);
   await expect(page).toHaveTitle("Sostieni il Grimorio — Il Grimorio.App");
   await expect(page.getByRole("button", { name: "‹ Indietro" })).toBeVisible();
   await expect(page.locator('main img[src="/icon-192.png"]')).toHaveAttribute("alt", "");
