@@ -5,6 +5,7 @@ import { Search, ArrowRight, BookOpen } from "lucide-react";
 import { MANUAL_CATEGORIES, type ManualCategory } from "@/lib/manual-types";
 import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
 import { DidYouMean } from "@/components/search/did-you-mean";
+import { SEARCH_INPUT } from "@/lib/search-input";
 interface ManualIndexEntry {
   id: string;
   title: string;
@@ -70,7 +71,7 @@ export function ManualBrowser({
           <Search size={18} className="text-muted" />
           <input
             className="h-12 min-w-0 flex-1 bg-transparent text-base outline-none"
-            type="search"
+            {...SEARCH_INPUT}
             aria-label="Cerca nel Manuale"
             placeholder="Cerca nel Manuale..."
             value={query}

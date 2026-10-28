@@ -19,6 +19,7 @@ import {
   type AdminListData, type AdminRow, type ListFilters, type SourceFilter, type VisibilityFilter,
 } from "@/lib/admin-list-types";
 import { fold } from "@/lib/search";
+import { SEARCH_INPUT } from "@/lib/search-input";
 
 const AMBER_PILL = "inline-flex items-center rounded-full bg-[#FCEFD0] px-2 text-[12px] font-bold leading-5 text-[#7A4E00]";
 const SOURCE_PILL = "inline-flex items-center rounded-full border border-[#DDCFAE] bg-[#F6EFDF] px-2 text-[12px] font-semibold leading-5 text-[#5E4E3E]";
@@ -118,7 +119,7 @@ function AdminListView({ data, create }: { data: AdminListData; create?: "spell"
             <label className="relative block flex-1">
               <span className="sr-only">Cerca in {data.title}</span>
               <Search size={18} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5E4E3E]" aria-hidden="true" />
-              <input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={data.kind === "incantesimo" ? "Cerca per nome o scuola…" : data.kind === "mostro" ? "Cerca per nome o tipo…" : `Cerca in ${data.title.toLowerCase()}…`} autoComplete="off"
+              <input {...SEARCH_INPUT} value={query} onChange={event => setQuery(event.target.value)} placeholder={data.kind === "incantesimo" ? "Cerca per nome o scuola…" : data.kind === "mostro" ? "Cerca per nome o tipo…" : `Cerca in ${data.title.toLowerCase()}…`}
                 className="block min-h-12 w-full rounded-[14px] border-[1.5px] border-[#DDCFAE] bg-[#FFFBF0] pl-10 pr-3 text-[16px] outline-none placeholder:text-[#7A6A58] focus:border-[#7A1F2B]" />
             </label>
             <button type="button" onClick={openPanel} aria-label={`Filtri${activeFilterCount(filters) ? ` · ${activeFilterCount(filters)} attivi` : ""}`}
