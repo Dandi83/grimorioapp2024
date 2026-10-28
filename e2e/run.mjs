@@ -11,6 +11,8 @@ export const E2E_ENV = {
   ADMIN_PASSCODE: "passcode-di-prova-e2e",
   // The reports and homebrew proposals are signed with their own secret, never the passcode.
   FEEDBACK_SECRET: "segreto-moduli-di-prova-e2e",
+  // «Sostieni il Grimorio» on in the browser tests only: a made-up Ko-fi address, never in the code (lib/support.ts).
+  GRIMORIO_SUPPORT_URL_PROVA: "https://ko-fi.com/grimorio-prova-e2e",
   NEXT_TELEMETRY_DISABLED: "1",
 };
 

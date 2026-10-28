@@ -56,7 +56,7 @@ async function ensureSchema() {
         await client.query(
           "CREATE UNIQUE INDEX IF NOT EXISTS grimorio_analytics_view_idx ON grimorio_analytics_events (visitor_id, view_id, event_name) WHERE event_name IN ('page_view','card_open','card_read')",
         );
-        for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer", "share_from text"])
+        for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer", "share_from text", "amount integer"])
           await client.query(`ALTER TABLE grimorio_analytics_events ADD COLUMN IF NOT EXISTS ${column}`);
         // The answers of «Come ti trovi con il Grimorio?» (28 October 2026): the vote, the day and the kind of device.
         // chiave: a keyed hash of the visitor ID, only to refuse a second vote within 4 months, emptied after them.
@@ -100,8 +100,8 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
   await ensureSchema();
   const result = await pool.query(
     `INSERT INTO grimorio_analytics_events
-    (id,visitor_id,session_id,view_id,event_name,path,card_kind,card_id,title,source,is_test,active_seconds,scroll_percent,origin,device,installed,search_query,search_results,share_from)
-    SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19
+    (id,visitor_id,session_id,view_id,event_name,path,card_kind,card_id,title,source,is_test,active_seconds,scroll_percent,origin,device,installed,search_query,search_results,share_from,amount)
+    SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20
     WHERE (SELECT count(*) FROM grimorio_analytics_events WHERE visitor_id=$2 AND received_at>now()-interval '1 minute')<90
       AND NOT EXISTS (SELECT 1 FROM grimorio_analytics_excluded WHERE visitor_id=$2)
       AND ($5 NOT IN ('app_installed','first_standalone_open','arrivo_da_amico')
@@ -127,6 +127,7 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
       input.query ?? null,
       input.results ?? null,
       input.from ?? null,
+      input.amount ?? null,
     ],
   );
   return result.rows.length > 0;
@@ -376,4 +377,23 @@ export async function readWordOfMouth(period: RatingPeriod): Promise<WordOfMouth
     tapped: row.tapped ?? 0, fromHome: row.home ?? 0, fromRating: row.rating ?? 0, sent: row.sent ?? 0, arrived: row.arrived ?? 0,
     weeks: weeks.rows.reverse(),
   };
+}
+
+export type SupportStats = { opened: number; clicked: number; byAmount: { amount: number; people: number }[] };
+
+/**
+ * «Sostegno» of /admin/statistiche: different people who opened /sostieni and who tapped the Ko-fi button, by
+ * amount. The contributions themselves are seen only on Ko-fi.
+ */
+export async function readSupport(range: { from: string; to: string }): Promise<SupportStats> {
+  await ensureSchema();
+  const period = [range.from, range.to];
+  const [people, amounts] = await Promise.all([
+    pool.query(`SELECT count(DISTINCT visitor_id) FILTER (WHERE event_name='support_page')::int AS opened,
+      count(DISTINCT visitor_id) FILTER (WHERE event_name='support_click')::int AS clicked
+      FROM grimorio_analytics_events WHERE ${RANGE} AND event_name IN ('support_page','support_click')`, period),
+    pool.query(`SELECT amount, count(DISTINCT visitor_id)::int AS people FROM grimorio_analytics_events
+      WHERE ${RANGE} AND event_name='support_click' AND amount IS NOT NULL GROUP BY amount ORDER BY amount`, period),
+  ]);
+  return { opened: people.rows[0]?.opened ?? 0, clicked: people.rows[0]?.clicked ?? 0, byAmount: amounts.rows };
 }

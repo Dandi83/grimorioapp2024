@@ -21,15 +21,24 @@ export const ANALYTICS_EVENTS = [
   "arrivo_da_amico",
   // The three faces of the Home: only the answer, kept in its own table (lib/analytics.ts), never with the events.
   "valutazione",
+  // «Sostieni il Grimorio» (lib/support.ts): a link to /sostieni (with where), the page opened, the Ko-fi button
+  // tapped (with the amount chosen). The contributions themselves are seen only on Ko-fi.
+  "support_link",
+  "support_page",
+  "support_click",
 ] as const;
 /** Where the sharing of the whole app started: the card of the Home or the invite after «Bene». */
-export const SHARE_FROM = ["home", "valutazione"] as const;
+export const SHARE_FROM = ["home", "valutazione", "sostieni"] as const;
+/** Where a link to /sostieni was tapped (lib/support.ts). */
+export const SUPPORT_FROM = ["home", "info", "card", "colonna"] as const;
+/** The amounts of /sostieni, in euro. */
+export const SUPPORT_AMOUNTS = [1, 3, 5] as const;
 export type ShareFrom = (typeof SHARE_FROM)[number];
 /** The answers of «Come ti trovi con il Grimorio?». */
 export const VOTES = ["male", "cosi-cosi", "bene"] as const;
 export type Vote = (typeof VOTES)[number];
 /** The events of the Home (the sharing of the whole app, the faces), accepted from any public page. */
-const HOME_EVENTS = ["share_tap", "share_sent", "arrivo_da_amico", "valutazione"] as const;
+const HOME_EVENTS = ["share_tap", "share_sent", "arrivo_da_amico", "valutazione", "support_link", "support_page", "support_click"] as const;
 /** The events of an installation: both count once per visitor in the statistics. */
 export const INSTALL_EVENTS = ["app_installed", "first_standalone_open"] as const;
 export type AnalyticsEvent = (typeof ANALYTICS_EVENTS)[number];
@@ -50,10 +59,13 @@ export type AnalyticsInput = {
   /** search only: the cleaned word (lib/analytics-stats.ts) and how many results it gave. */
   query?: string;
   results?: number;
-  /** share_tap, share_sent, share_cancel of the whole app: the card of the Home or the invite after «Bene». */
-  from?: ShareFrom;
+  /** share_tap, share_sent, share_cancel of the whole app (the card of the Home, the invite after «Bene», /sostieni);
+   * support_link: where the link to /sostieni was tapped. */
+  from?: ShareFrom | (typeof SUPPORT_FROM)[number];
   /** valutazione only. */
   vote?: Vote;
+  /** support_click only: 1, 3 or 5 euro. */
+  amount?: number;
 };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 /** One segment of an address of the site: letters, numbers and dashes. */
@@ -63,7 +75,7 @@ const SEGMENT = "[a-z0-9][a-z0-9-]{0,119}";
  * /avanzamento and /termini were refused with 400 until 28 October 2026).
  */
 export const ANALYTICS_PATH = new RegExp(
-  `^/(?:$|grimorio$|bestiario(?:/proponi)?$|preferiti$|fonti$|privacy$|info$|termini$|installa$|segnala$|avanzamento$|dadi$|classi(?:/${SEGMENT})?$|in-arrivo/${SEGMENT}$|compendio(?:/${SEGMENT})?$|regole/${SEGMENT}$|oggi/${SEGMENT}$|oggetti-magici(?:/${SEGMENT})?$|equipaggiamento(?:/${SEGMENT}(?:/${SEGMENT})?)?$|manuale(?:/[^/?#]+)?$|spell/[^/?#]+$|mostro/[^/?#]+$)`,
+  `^/(?:$|grimorio$|bestiario(?:/proponi)?$|preferiti$|fonti$|privacy$|info$|termini$|sostieni$|installa$|segnala$|avanzamento$|dadi$|classi(?:/${SEGMENT})?$|in-arrivo/${SEGMENT}$|compendio(?:/${SEGMENT})?$|regole/${SEGMENT}$|oggi/${SEGMENT}$|oggetti-magici(?:/${SEGMENT})?$|equipaggiamento(?:/${SEGMENT}(?:/${SEGMENT})?)?$|manuale(?:/[^/?#]+)?$|spell/[^/?#]+$|mostro/[^/?#]+$)`,
 );
 export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (!raw || typeof raw !== "object") return;
@@ -93,6 +105,8 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (r.event !== "page_view" && r.event !== "search" && !install && !appShare && !/^\/(spell|mostro)\//.test(r.path)) return;
   if ((r.event === "share_tap" || r.event === "share_sent") && !from) return;
   if (r.event === "valutazione" && !VOTES.includes(r.vote as Vote)) return;
+  if (r.event === "support_link" && !SUPPORT_FROM.includes(r.from as (typeof SUPPORT_FROM)[number])) return;
+  if (r.event === "support_click" && !SUPPORT_AMOUNTS.includes(r.amount as (typeof SUPPORT_AMOUNTS)[number])) return;
   const input: AnalyticsInput = {
     event: r.event as AnalyticsEvent,
     id: r.id as string,
@@ -109,7 +123,9 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
     if (typeof r.installed === "boolean") input.installed = r.installed;
   }
   if ((input.event === "page_view" || install || appShare) && DEVICES.includes(r.device as Device)) input.device = r.device as Device;
-  if (appShare && from && input.event !== "arrivo_da_amico" && input.event !== "valutazione") input.from = from;
+  if (appShare && from && ["share_tap", "share_sent", "share_cancel"].includes(input.event)) input.from = from;
+  if (input.event === "support_link") input.from = r.from as AnalyticsInput["from"];
+  if (input.event === "support_click") input.amount = r.amount as number;
   if (input.event === "valutazione") input.vote = r.vote as Vote;
   if (input.event === "search") {
     const query = cleanSearchQuery(r.query);

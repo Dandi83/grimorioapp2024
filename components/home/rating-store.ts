@@ -15,6 +15,8 @@ const PAUSE_KEY = "grimorio.valutazione-fino-al";
 export const PAUSE_MS = 122 * 24 * 60 * 60 * 1000;
 /** The question comes from this visit on (different days). */
 export const VISIT_DAYS = 3;
+/** The days remembered: the occasional support card comes from the 5th (components/support/support-card.tsx). */
+const KEPT_DAYS = 5;
 
 /** "question": the faces; "thanks": what follows the vote («Bene», or «Male» and «Così così»); "none": nothing. */
 export type RatingView = { step: "none" } | { step: "question" } | { step: "thanks"; vote: Vote };
@@ -38,12 +40,12 @@ export function useRatingView(): RatingView {
 
 const today = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
 
-/** Today among the days of visit (at most the first 3 are kept: nothing more is needed). */
+/** Today among the days of visit (the first 5 are kept: the question needs 3, the support card 5). */
 export function recordVisitDay(): number {
   try {
     const days = JSON.parse(localStorage.getItem(DAYS_KEY) || "[]") as unknown;
-    const list = Array.isArray(days) ? days.filter((day): day is string => typeof day === "string").slice(0, VISIT_DAYS) : [];
-    if (!list.includes(today()) && list.length < VISIT_DAYS) {
+    const list = Array.isArray(days) ? days.filter((day): day is string => typeof day === "string").slice(0, KEPT_DAYS) : [];
+    if (!list.includes(today()) && list.length < KEPT_DAYS) {
       list.push(today());
       localStorage.setItem(DAYS_KEY, JSON.stringify(list));
     }

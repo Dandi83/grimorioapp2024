@@ -118,6 +118,8 @@ export const analyticsEvents = pgTable("grimorio_analytics_events", {
   search_results: integer("search_results"),
   // share_tap, share_sent, share_cancel of the whole app: "home" (the card) or "valutazione" (after «Bene»).
   share_from: text("share_from"),
+  // support_click: the amount chosen on /sostieni (1, 3 or 5 euro).
+  amount: integer("amount"),
 });
 
 /**

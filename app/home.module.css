@@ -138,16 +138,30 @@
 
 /* Phones and tablets: with the question on screen the picture gives it room, so it is seen without scrolling. */
 @media (max-width: 1023px) {
-  .home:has([data-rating]) .library {
+  .home:has([data-rating]) .library,
+  .home:has([data-support-card]) .library {
     min-height: 380px;
   }
 }
 
 /* «Info e note legali»: small, at the bottom right above the navigation bar. */
 .info {
+  display: flex;
   margin: 0;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
   padding: 0 16px 4px;
   text-align: right;
+}
+
+/* «Sostieni il Grimorio» (canvas «Sostieni il Grimorio», ①): bordeaux, bold, on the left of the legal pages. */
+.info .support {
+  margin-right: auto;
+  gap: 6px;
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .info a {

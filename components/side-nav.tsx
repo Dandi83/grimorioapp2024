@@ -8,6 +8,8 @@ import { FOOT_LINKS, visibleNavItems } from "@/components/nav-items";
 import { soonHref } from "@/lib/public-sections";
 import { EditionPill } from "@/components/edition/edition-pill";
 import { Lock } from "lucide-react";
+import { CupIcon } from "@/components/support/cup-icon";
+import { SupportLink } from "@/components/support/support-link";
 
 const NONE: readonly string[] = [];
 
@@ -15,7 +17,7 @@ const NONE: readonly string[] = [];
  * Computer (≥1024 px): the five places in a fixed column on the left, instead of the bottom bar
  * (components/bottom-nav.tsx, same items). Not in the admin area, like the bar.
  */
-export function SideNav({ hidden = NONE, admin: adminView = false, soon = NONE }: { hidden?: readonly string[]; admin?: boolean; soon?: readonly string[] }) {
+export function SideNav({ hidden = NONE, admin: adminView = false, soon = NONE, support = false }: { hidden?: readonly string[]; admin?: boolean; soon?: readonly string[]; support?: boolean }) {
   const pathname = usePathname();
   const items = useMemo(() => visibleNavItems(hidden, adminView, soon), [hidden, adminView, soon]);
   // Browsers without :has() (app/globals.css): the frame of the pages is marked while the column is there.
@@ -61,6 +63,14 @@ export function SideNav({ hidden = NONE, admin: adminView = false, soon = NONE }
         })}
       </ul>
       <ul className="mt-auto flex flex-col px-5 pb-5 pt-6 text-[13px] text-muted">
+        {/* «Sostieni il Grimorio» near the legal pages, when the Ko-fi address is set (lib/support.ts). */}
+        {support && (
+          <li>
+            <SupportLink enabled from="colonna" className="inline-flex min-h-11 items-center gap-1.5 rounded-sm font-bold text-primary hover:underline focus-visible:outline-2 focus-visible:outline-primary">
+              <CupIcon size={16} />Sostieni il Grimorio
+            </SupportLink>
+          </li>
+        )}
         {FOOT_LINKS.map(({ href, label, lock }) => (
           <li key={href}>
             <Link href={href} prefetch={false} className="inline-flex min-h-11 items-center gap-1.5 rounded-sm hover:text-primary hover:underline focus-visible:outline-2 focus-visible:outline-primary">

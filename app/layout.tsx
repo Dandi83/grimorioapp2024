@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { FavoritesProvider } from "@/components/favorites-provider";
 import { BottomNav } from "@/components/bottom-nav";
 import { SideNav } from "@/components/side-nav";
+import { supportUrl } from "@/lib/support";
 import { ContentFrame } from "@/components/layout/content-frame";
 import { AnalyticsProvider } from "@/components/analytics-provider";
 import { VercelAnalytics } from "@/components/vercel-analytics";
@@ -104,7 +105,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               </main>
               <BottomNav hidden={hidden} admin={admin} soon={soon} />
               {/* After the content in the page order (it is fixed on the left): on phones the order stays the same. */}
-              <SideNav hidden={hidden} admin={admin} soon={soon} />
+              <SideNav hidden={hidden} admin={admin} soon={soon} support={!!supportUrl()} />
             </div>
             <InstallPrompt />
             <AppBadgeSync />
