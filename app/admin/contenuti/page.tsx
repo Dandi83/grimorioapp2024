@@ -23,7 +23,7 @@ export const metadata = { title: "Contenuti — Il Grimorio.App", robots: { inde
 const GROUPS: { label: string; rows: { key: string; name: string; Icon: LucideIcon; section?: PublicSectionKey; note?: string }[] }[] = [
   { label: "Schede", rows: [
     { key: "incantesimi", name: "Incantesimi", Icon: Sparkles, section: "incantesimi" },
-    { key: "mostri", name: "Mostri", Icon: Skull, section: "bestiario", note: "con i Creati da voi" },
+    { key: "mostri", name: "Mostri", Icon: Skull, section: "bestiario", note: "con le Creature originali" },
     { key: "oggetti-magici", name: "Oggetti magici", Icon: Gem, section: "oggetti-magici" },
     { key: "condizioni", name: "Condizioni", Icon: HeartPulse, section: "condizioni" },
     { key: "classi", name: "Classi", Icon: Crown, section: "classi" },

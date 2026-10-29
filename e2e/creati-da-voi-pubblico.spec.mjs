@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import pg from "pg";
 import { TEST_DATABASE_URL } from "./test-db.mjs";
+import { GRIMORIO_TITLE, setBestiaryPart } from "./originals-parts.mjs";
 
 // «I mostri creati da voi» with the switch on: on in the code since PROMPT 15 («Beta»); before, e2e/run.mjs built it
 // with GRIMORIO_COMMUNITY_TEST_PUBLIC=on for the tests only. What the visitors see. Local test database only.
@@ -38,6 +39,8 @@ test.afterAll(async ({ browser }) => {
   const context = await browser.newContext({ baseURL: test.info().project.use.baseURL });
   const admin = await context.newPage();
   await login(admin);
+  // «Mostri del Grimorio» back to its first state.
+  await setBestiaryPart(admin, GRIMORIO_TITLE, "In arrivo");
   await admin.goto("/admin/mostri");
   await admin.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
   await admin.getByPlaceholder("Cerca per nome o tipo…").fill("custode pubblico");
@@ -73,6 +76,8 @@ test("switch on: a visitor sees the card, the category, the section, the form an
   await editor.locator("#admin-hb-azioni-0-testo").fill("Tiro per colpire in mischia: +5, portata 1,5 m. Colpito: 10 (2d6 + 3) danni contundenti.");
   await editor.getByRole("button", { name: "Salva" }).click();
   await expect(editor).toHaveCount(0);
+  // Ours is «Dalla redazione»: its part «Mostri del Grimorio» starts «In arrivo», shown here.
+  await setBestiaryPart(admin, GRIMORIO_TITLE, "Visibile");
 
   await page.addInitScript(() => {
     try {
@@ -87,23 +92,23 @@ test("switch on: a visitor sees the card, the category, the section, the form an
   await expect.poll(async () => (await (await request.get("/api/catalogo/bestiario")).json()).monsters.filter(monster => monster.homebrew).length).toBe(2);
 
   await page.goto("/bestiario");
-  const card = page.locator("[data-community-invite]");
-  await expect(card).toHaveAttribute("data-community-invite", "2");
-  await expect(card).not.toContainText("Nascosta");
-  await expect(card.getByRole("link", { name: "Sfoglia · 2" })).toBeVisible();
+  const block = page.locator("[data-originals-block]:not([data-compact])");
+  await expect(block.locator("[data-originals-all]")).toHaveAttribute("data-originals-all", "2");
+  await expect(block).not.toContainText("Nascosta");
+  await expect(block.locator("[data-originals-count]")).toHaveText(["1 creatura ›", "1 creatura ›"]);
   await page.getByRole("button", { name: /^Filtri/ }).click();
   await expect(page.getByRole("dialog").getByRole("button", { name: "Creati da voi", exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
 
-  await card.getByRole("link", { name: "Sfoglia · 2" }).click();
-  await expect(page).toHaveURL(/\/bestiario\/creati-da-voi$/);
+  await block.getByRole("link", { name: "Vedi tutte · 2 ›" }).click();
+  await expect(page).toHaveURL(/\/bestiario\/creature-originali$/);
   await expect(page.locator("[data-community-switch]")).toHaveCount(0);
-  await expect(page.locator("[data-community-chip]")).toHaveText(["Tutti · 2", "Dalla community · 1", "Dal Grimorio · 1"]);
+  await expect(page.locator("[data-community-chip]")).toHaveText(["Tutte · 2", "Dalla redazione · 1", "Dalla community · 1"]);
   const row = id => page.locator("li.catalog-row").filter({ has: page.locator(`a[href="/mostro/${id}"]`) });
-  await expect(row(COMMUNITY_ID).locator("[data-homebrew-pill=community]")).toHaveText("Creato da voi");
+  await expect(row(COMMUNITY_ID).locator("[data-homebrew-pill=community]")).toHaveText("Dalla community");
   await expect(row(COMMUNITY_ID)).toContainText("2014 e 2024");
   await expect(row(COMMUNITY_ID)).toContainText("di Lia");
-  await expect(row(OURS_ID).locator("[data-homebrew-pill=grimorio]")).toHaveText("Creato dal Grimorio");
+  await expect(row(OURS_ID).locator("[data-homebrew-pill=grimorio]")).toHaveText("Dalla redazione");
 
   // «2014 e 2024»: in the 2014 Bestiario too, alone.
   await page.goto(`/mostro/${COMMUNITY_ID}`);
@@ -116,8 +121,8 @@ test("switch on: a visitor sees the card, the category, the section, the form an
   // Search and Preferiti: the rows with their pill.
   await expect.poll(async () => (await request.get("/ricerca-indice.json")).text()).toContain(`/mostro/${COMMUNITY_ID}`);
   const index = await (await request.get("/ricerca-indice.json")).text();
-  expect(index).toContain("Creato da voi · ");
-  expect(index).toContain("Creato dal Grimorio · ");
+  expect(index).toContain("Dalla community · ");
+  expect(index).toContain("Dalla redazione · ");
 
   // The two creatures stay for the next tests of this file; the clean up is after the last one (test.afterAll).
   await adminContext.close();
@@ -150,29 +155,31 @@ test("switch on: in /admin/sezioni «I mostri creati da voi» has its usual stat
   await visitor.close();
 });
 
-test("«Beta»: on the card, the section and the form, with its note on a tap; never on the sheets or the lists", async ({ page }) => {
+test("«Beta»: on the row «Creature originali», the section and the form, with its note on a tap; never on the sheets or the lists", async ({ page }) => {
   test.setTimeout(120_000);
   await page.addInitScript(() => { try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/bestiario");
-  const card = page.locator("[data-community-invite]");
-  const beta = card.locator("[data-beta-pill]");
+  const row = page.locator("[data-originals-block]:not([data-compact]) [data-originals-row]");
+  const beta = row.locator("[data-beta-pill]");
   await expect(beta).toHaveText("Beta");
   await expect(beta).toHaveCSS("font-size", "11px");
   await expect(beta).toHaveCSS("font-weight", "700");
-  await expect(beta).toHaveCSS("color", "rgb(224, 162, 26)");
-  await expect(beta).toHaveCSS("border-top-color", "rgb(224, 162, 26)");
-  await expect(beta).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
-  // A tap: the note, described by the pill; a tap outside closes it.
-  const note = card.locator("[data-beta-note]");
+  await expect(beta).toHaveCSS("color", "rgb(122, 78, 0)");
+  await expect(beta).toHaveCSS("background-color", "rgb(252, 239, 208)");
+  // A tap: the note, described by the pill, inside the screen; a tap outside closes it.
+  const note = row.locator("[data-beta-note]");
   await expect(note).toBeHidden();
   await beta.click();
   await expect(note).toBeVisible();
   await expect(note).toHaveText("Sezione nuova: può cambiare. Se qualcosa non va, scrivici da Info → Segnala un problema.");
   expect(await beta.getAttribute("aria-describedby")).toBe(await note.getAttribute("id"));
+  const box = await note.boundingBox();
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(390);
   await page.locator("main").getByRole("searchbox").first().click();
   await expect(note).toBeHidden();
-  for (const path of ["/bestiario/creati-da-voi", "/bestiario/proponi"]) {
+  for (const path of ["/bestiario/creati-da-voi", "/bestiario/proponi", "/bestiario/creature-originali"]) {
     await page.goto(path);
     const pill = page.getByRole("heading", { level: 1 }).locator("[data-beta-pill]");
     await expect(pill, path).toHaveText("Beta");
@@ -192,9 +199,9 @@ test("«Beta»: on the card, the section and the form, with its note on a tap; n
   await expect(page.locator("li.catalog-row [data-beta-pill]")).toHaveCount(0);
 });
 
-// PROMPT 17: on a computer the list column has the card too, compact, above «N risultati»; the phone is unchanged.
-for (const [edition, count] of [["2024", 2], ["2014", 1]]) {
-  test(`computer (1280, ${edition}): the compact card in the list column; «Beta» opens; «Sfoglia» and «Proponi il tuo» work`, async ({ page }) => {
+// PROMPT 17 → 25: on a computer the list column has the block too, compact, above «N risultati»; the phone has its own.
+for (const [edition, community, ours] of [["2024", 1, 1], ["2014", 1, 0]]) {
+  test(`computer (1280, ${edition}): the compact block in the list column; «Beta» opens; the tiles and «Proponi il tuo» work`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.addInitScript(value => {
       try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); window.localStorage.setItem("grimorio.edizione", value); } catch { /* no storage */ }
@@ -202,68 +209,72 @@ for (const [edition, count] of [["2024", 2], ["2014", 1]]) {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/bestiario");
     const column = page.getByRole("complementary", { name: "Elenco del bestiario" });
-    const card = column.locator("[data-community-invite][data-compact]");
-    await expect(card).toBeVisible();
-    await expect(card).toHaveAttribute("data-community-invite", String(count));
-    await expect(card).toHaveCSS("background-color", "rgb(43, 33, 24)");
-    await expect(card).toHaveCSS("padding-top", "12px");
-    await expect(card.getByText("Dalla community")).toBeVisible();
-    await expect(card.getByRole("heading", { name: /I mostri creati da voi/ })).toHaveCSS("font-size", "20px");
-    await expect(card.locator("svg.lucide-pen-line")).toHaveCount(1);
-    // Above «N risultati» of the column.
+    const block = column.locator("[data-originals-block][data-compact]");
+    await expect(block).toBeVisible();
+    await expect(block.locator("[data-originals-all]")).toHaveAttribute("data-originals-all", String(community + ours));
+    await expect(block.locator("[data-originals-tile=grimorio] [data-originals-count]")).toHaveAttribute("data-originals-count", String(ours));
+    await expect(block.locator("[data-originals-tile=community] [data-originals-count]")).toHaveAttribute("data-originals-count", String(community));
+    await expect(block.locator("[data-originals-tile=community]")).toHaveCSS("background-color", "rgb(43, 33, 24)");
+    await expect(block.locator("[data-originals-tile=grimorio]")).toHaveCSS("border-top-color", "rgb(122, 31, 43)");
+    // Above «N risultati» of the column; the two tiles side by side.
     const results = column.getByRole("status").filter({ hasText: /risultat/ });
-    expect((await card.boundingBox()).y).toBeLessThan((await results.boundingBox()).y);
-    // The two buttons on one row, 44 px high.
-    const browse = card.getByRole("link", { name: `Sfoglia · ${count}` }), propose = card.getByRole("link", { name: "Proponi il tuo" });
-    const [a, b] = [await browse.boundingBox(), await propose.boundingBox()];
+    expect((await block.boundingBox()).y).toBeLessThan((await results.boundingBox()).y);
+    const [a, b] = [await block.locator("[data-originals-tile=grimorio]").boundingBox(), await block.locator("[data-originals-tile=community]").boundingBox()];
     expect(Math.round(a.y)).toBe(Math.round(b.y));
-    expect(Math.round(a.height)).toBe(44);
-    expect(Math.round(b.height)).toBe(44);
-    await expect(card.locator("[data-community-text]")).toHaveCount(0);
-    // «Beta»: the note on the mouse, not cut by the card.
-    const beta = card.locator("[data-beta-pill]");
-    await beta.hover();
-    const note = card.locator("[data-beta-note]");
+    // «Beta»: the note on the mouse, not cut by the column.
+    const aside = await column.boundingBox();
+    await block.locator("[data-beta-pill]").hover();
+    const note = block.locator("[data-beta-note]");
     await expect(note).toBeVisible();
-    await expect(note).toHaveText("Sezione nuova: può cambiare. Se qualcosa non va, scrivici da Info → Segnala un problema.");
-    const box = await note.boundingBox(), aside = await column.boundingBox();
+    const box = await note.boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(aside.x);
     expect(box.x + box.width).toBeLessThanOrEqual(aside.x + aside.width);
     await page.mouse.move(900, 600);
-    // «Sfoglia»: the section in the right column, the list stays on the left.
-    await browse.click();
+    // «Creati da voi»: the section in the right column, the list stays on the left.
+    await block.locator("[data-originals-link=community]").click();
     await expect(page).toHaveURL(/\/bestiario\/creati-da-voi$/);
     await expect(column).toBeVisible();
-    await expect(column.locator("[data-community-invite][data-compact]")).toBeVisible();
     await expect(page.getByRole("heading", { level: 1, name: /I mostri creati da voi/ })).toBeVisible();
     expect((await page.getByRole("heading", { level: 1, name: /I mostri creati da voi/ }).boundingBox()).x).toBeGreaterThan(aside.x + aside.width);
     await expect(page.locator(`a[href="/mostro/${COMMUNITY_ID}"]`).filter({ visible: true }).first()).toBeVisible();
+    // «Mostri del Grimorio»: ours only.
+    await column.locator("[data-originals-block][data-compact] [data-originals-link=grimorio]").click();
+    await expect(page).toHaveURL(/\/bestiario\/del-grimorio$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Mostri del Grimorio" })).toBeVisible();
+    await expect(page.locator(`main a[href="/mostro/${COMMUNITY_ID}"]`).filter({ visible: true })).toHaveCount(0);
     // «Proponi il tuo»: the form.
-    await column.getByRole("link", { name: "Proponi il tuo" }).click();
+    await column.locator("[data-originals-block][data-compact] [data-community-propose]").click();
     await expect(page).toHaveURL(/\/bestiario\/proponi$/);
     await expect(page.locator("[data-progress] li")).toHaveCount(4);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1280);
     if (SHOTS) {
       await page.goto("/bestiario");
-      await page.getByRole("complementary", { name: "Elenco del bestiario" }).locator("[data-community-invite][data-compact]").waitFor();
+      await page.getByRole("complementary", { name: "Elenco del bestiario" }).locator("[data-originals-block][data-compact]").waitFor();
       await page.screenshot({ path: `${SHOTS}/bestiario-1280-${edition}.png` });
     }
   });
 }
 
-test("phone (390): the card of the Bestiario as before, no compact card", async ({ page }) => {
+test("phone (390): the block above the list, two tiles side by side, no compact block, no horizontal scroll", async ({ page }) => {
   await page.addInitScript(() => { try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); window.localStorage.setItem("grimorio.edizione", "2024"); } catch { /* no storage */ } });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/bestiario");
-  const card = page.locator("[data-community-invite]");
-  await expect(card).toHaveCount(1);
-  await expect(card).not.toHaveAttribute("data-compact", "");
-  await expect(card).toHaveCSS("padding-top", "16px");
-  await expect(card.getByRole("heading", { name: /I mostri creati da voi/ })).toHaveCSS("font-size", "26px");
-  await expect(card.locator("svg.lucide-pen-line")).toHaveCount(2);
-  await expect(card.getByText("Creature inventate dai master del Grimorio, controllate da noi prima di pubblicarle.")).toBeVisible();
-  await expect(card.getByRole("link", { name: "Sfoglia · 2" })).toHaveCSS("min-height", "46px");
+  const block = page.locator("[data-originals-block]").filter({ visible: true });
+  await expect(block).toHaveCount(1);
+  await expect(block).not.toHaveAttribute("data-compact", "");
+  await expect(block.getByRole("heading", { name: /Creature originali/ })).toHaveCSS("font-size", "21px");
+  const [a, b] = [await block.locator("[data-originals-tile=grimorio]").boundingBox(), await block.locator("[data-originals-tile=community]").boundingBox()];
+  expect(Math.round(a.y)).toBe(Math.round(b.y));
+  expect(a.x + a.width).toBeLessThanOrEqual(b.x);
+  expect(b.x + b.width).toBeLessThanOrEqual(390);
+  await expect(block.locator("[data-community-propose]")).toHaveText("Proponi il tuo");
+  // In the flow of the page: it scrolls away with the list.
+  const top = (await block.boundingBox()).y;
+  await page.mouse.wheel(0, 600);
+  await expect.poll(async () => (await block.boundingBox()).y).toBeLessThan(top - 300);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await expect(page.getByRole("complementary", { name: "Elenco del bestiario" })).toBeHidden();
-  if (SHOTS) await page.screenshot({ path: `${SHOTS}/bestiario-390.png` });
+  if (SHOTS) { await page.evaluate(() => window.scrollTo(0, 0)); await page.screenshot({ path: `${SHOTS}/bestiario-390.png` }); }
 });
 
 for (const [width, edition] of [[390, "2024"], [1280, "2014"]]) {
@@ -276,14 +287,14 @@ for (const [width, edition] of [[390, "2024"], [1280, "2014"]]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/bestiario");
     if (width < 1024) {
-      await expect(page.locator("[data-community-invite] [data-beta-pill]")).toBeVisible();
+      await expect(page.locator("[data-originals-row] [data-beta-pill]").filter({ visible: true })).toBeVisible();
       await page.getByRole("button", { name: /^Filtri/ }).click();
       await page.getByRole("dialog").getByRole("button", { name: "Creati da voi", exact: true }).click();
       await page.getByRole("dialog").getByRole("button", { name: /^Mostra \d+ risultat/ }).click();
       await expect(page).toHaveURL(/\/bestiario\/creati-da-voi$/);
     } else {
-      // Computer: «Sfoglia» of the card in the list column (PROMPT 17).
-      await page.getByRole("complementary", { name: "Elenco del bestiario" }).getByRole("link", { name: /^Sfoglia · \d+$/ }).click();
+      // Computer: the tile «Creati da voi» in the list column (PROMPT 25).
+      await page.getByRole("complementary", { name: "Elenco del bestiario" }).locator("[data-originals-link=community]").click();
       await expect(page).toHaveURL(/\/bestiario\/creati-da-voi$/);
     }
     await expect(page.locator(`a[href="/mostro/${COMMUNITY_ID}"]`).filter({ visible: true }).first()).toBeVisible();

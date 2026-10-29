@@ -60,7 +60,7 @@ export const SEARCH_SOURCES: SearchSource[] = [
   },
   {
     section: "mostri", title: "Mostri",
-    // «I mostri creati da voi»: «Creato da voi» or «Creato dal Grimorio» first in the label (the panel shows the pill); «Entrambe» belongs to no single edition.
+    // «I mostri creati da voi»: «Dalla community» or «Dalla redazione» first in the label (the panel shows the pill); «Entrambe» belongs to no single edition.
     rows: async () => (await getMonsterListIndex()).map(monster => ({
       nome: monster.nome,
       label: [monster.homebrew ? (monster.autore ? HOMEBREW_LABEL : GRIMORIO_LABEL) : "", typeCategory(monster.tipo) || monster.tipo, monster.grado_sfida ? `GS ${monster.grado_sfida}` : ""].filter(Boolean).join(" · "),

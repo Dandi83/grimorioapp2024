@@ -141,7 +141,11 @@ const form = (data, habitats) => {
   const renamed = JSON.parse(fs.readFileSync('lib/data/renamed-monster-ids.json','utf8'));
   // Spell addresses without proper names (PROMPT 8): every old address answers 308 straight to the final one.
   const publicIds = JSON.parse(fs.readFileSync('lib/data/public-spell-ids.json','utf8')).ids;
-  assert.deepEqual(redirects.map(r=>[r.source,r.destination,r.permanent]),[...renamed.map(id=>[`/mostro/${id}`,`/mostro/${id}-2014`,true]),['/spell/i-re-spirare-sott-acqua','/spell/respirare-sott-acqua',true],...Object.entries(publicIds).map(([id,open])=>[`/spell/${id}`,`/spell/${open}`,true])]);
+  // «Dal Grimorio» (PROMPT 25): the forms a link to the old chip could have, to /bestiario/del-grimorio.
+  const grimorio = redirects.filter(r=>r.source==='/bestiario/creati-da-voi');
+  assert.equal(grimorio.length,6);
+  assert.ok(grimorio.every(r=>r.destination==='/bestiario/del-grimorio'&&r.permanent&&r.has[0].type==='query'&&['grimorio','redazione'].includes(r.has[0].value)));
+  assert.deepEqual(redirects.filter(r=>!grimorio.includes(r)).map(r=>[r.source,r.destination,r.permanent]),[...renamed.map(id=>[`/mostro/${id}`,`/mostro/${id}-2014`,true]),['/spell/i-re-spirare-sott-acqua','/spell/respirare-sott-acqua',true],...Object.entries(publicIds).map(([id,open])=>[`/spell/${id}`,`/spell/${open}`,true])]);
   assert.equal(Object.keys(publicIds).length,26);
   for (const [id,open] of Object.entries(publicIds)) assert.ok(!/agath|hadar|nystul|tasha|leomund|tenser|drawmij|melf|rary|bigby|yolande|mordenkainen|tiluke|evard/.test(open),`${id} -> ${open}`);
   for (const id of renamed) {

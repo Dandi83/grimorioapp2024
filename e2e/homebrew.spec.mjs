@@ -2,6 +2,7 @@ import { chooseEdition, editionPill } from "./edition-pill.mjs";
 import { test, expect } from "@playwright/test";
 import pg from "pg";
 import { TEST_DATABASE_URL } from "./test-db.mjs";
+import { GRIMORIO_TITLE, setBestiaryPart } from "./originals-parts.mjs";
 
 // «I mostri creati da voi» (the old Homebrew collection): proposals of the community in four steps, approval, the
 // section. Run with the switch on (e2e/run.mjs, second pass: GRIMORIO_COMMUNITY_TEST_PUBLIC=on). Local test database only.
@@ -63,14 +64,18 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   const before = { api: await (await request.get("/api/catalogo/bestiario")).text(), index: await (await request.get("/ricerca-indice.json")).text() };
   expect(JSON.parse(before.api).monsters.some(monster => monster.homebrew)).toBe(false);
 
-  // No creature published yet: no empty «Creati da voi» filter; the card of the Bestiario has only «Proponi il tuo».
+  // No creature published yet: no empty «Creati da voi» filter; the tile «Creati da voi» with 0 and «Proponi il tuo»,
+  // «Mostri del Grimorio» «In arrivo» (its first state, PROMPT 25).
   await page.goto("/bestiario");
   await page.getByRole("button", { name: /^Filtri/ }).click();
   await expect(page.getByRole("dialog").getByRole("button", { name: /^Mostra \d+ risultat/ })).toBeVisible();
   await expect(page.getByRole("button", { name: "Creati da voi", exact: true })).toHaveCount(0);
   await page.keyboard.press("Escape");
-  await expect(page.locator("[data-community-invite]")).toHaveAttribute("data-community-invite", "0");
-  await page.locator("[data-community-invite]").getByRole("link", { name: "Proponi il tuo" }).click();
+  const block = page.locator("[data-originals-block]").filter({ visible: true });
+  await expect(block.locator("[data-originals-tile=community] [data-originals-count]")).toHaveAttribute("data-originals-count", "0");
+  await expect(block.locator("[data-originals-tile=grimorio]")).toHaveAttribute("data-tile-state", "in-arrivo");
+  await expect(block.locator("[data-originals-tile=grimorio] [data-originals-count]")).toHaveCount(0);
+  await block.getByRole("link", { name: "Proponi il tuo" }).click();
   await expect(page).toHaveURL("/bestiario/proponi");
   await page.evaluate(() => localStorage.removeItem("grimorio.proposta-bozza"));
   await page.reload();
@@ -216,7 +221,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
     await expect(visitor.getByRole("link", { name: "Proponi un mostro" })).toHaveAttribute("href", "/bestiario/proponi");
     const row = visitor.locator("li.catalog-row").filter({ has: visitor.locator(`a[href="${CARD}"]`) });
     await expect(row, `${edition}: «Entrambe» in both editions`).toHaveCount(1);
-    await expect(row).toContainText("Creato da voi");
+    await expect(row).toContainText("Dalla community");
     await expect(row).toContainText("2014 e 2024");
     await expect(row).toContainText("di Master Ombra");
   }
@@ -235,7 +240,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("drago di nebbia");
   const adminRow = page.locator("main ul li[data-card-row]").filter({ hasText: "Drago di nebbia" });
-  await expect(adminRow.locator("[data-row-pill]")).toHaveText("Creati da voi");
+  await expect(adminRow.locator("[data-row-pill]")).toHaveText("Dalla community");
   await adminRow.getByRole("switch", { name: "Visibile sul sito: Drago di nebbia" }).click();
   await expect.poll(async () => (await request.get(CARD)).status()).toBe(404);
   await adminRow.getByRole("switch", { name: "Visibile sul sito: Drago di nebbia" }).click();
@@ -258,7 +263,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(page.locator("[data-homebrew-section]")).toContainText("Visibile al pubblico");
   await expect.poll(async () => (await request.get(CARD)).status()).toBe(200);
 
-  // «Creati da voi» of the administrator: «Creato dal Grimorio», 2014 only; the bin removes it.
+  // «Creati da voi» of the administrator: «Dalla redazione», 2014 only, shown with «Mostri del Grimorio»; the bin removes it.
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2014" }).click();
   await expect(page.getByTestId("admin-edition-band")).toHaveText("2014");
@@ -272,9 +277,13 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await editor.locator("#admin-hb-azioni-0-testo").fill("Attacco con arma da mischia: +4 al tiro per colpire, portata 1,5 m, un bersaglio. Colpito: 6 (1d8 + 2) danni contundenti.");
   await editor.getByRole("button", { name: "Salva" }).click();
   await expect(editor).toHaveCount(0);
+  await setBestiaryPart(page, GRIMORIO_TITLE, "Visibile");
+  await page.goto("/admin/mostri");
+  await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2014" }).click();
+  await expect(page.getByTestId("admin-edition-band")).toHaveText("2014");
   await expect.poll(async () => (await request.get("/mostro/homebrew-guardiano-di-sale")).status()).toBe(200);
   await visitor.goto("/mostro/homebrew-guardiano-di-sale");
-  await expect(visitor.locator("[data-homebrew-pill=grimorio]")).toHaveText("Creato dal Grimorio");
+  await expect(visitor.locator("[data-homebrew-pill=grimorio]")).toHaveText("Dalla redazione");
   await expect(visitor.locator("[data-homebrew-byline=grimorio]")).toHaveText("Mostro originale, bilanciato sui mostri ufficiali dello stesso GS");
   // As on the SRD 2014 sheets: the initiative box comes from Dexterity, not from the sheet.
   await expect(visitor.getByText("dalla Destrezza").first()).toBeVisible();
@@ -283,6 +292,8 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await page.locator("main ul li[data-card-row]").filter({ hasText: "Guardiano di sale" }).dispatchEvent("contextmenu");
   await page.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
   await expect.poll(async () => (await request.get("/mostro/homebrew-guardiano-di-sale")).status()).toBe(404);
+  await setBestiaryPart(page, GRIMORIO_TITLE, "In arrivo");
+  await page.goto("/admin/mostri");
 
   // Clean up the published card: lists, index and API as before.
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();

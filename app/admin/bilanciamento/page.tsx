@@ -45,7 +45,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
   const made = monsters.filter(monster => !monster.homebrew_edizione && balanceApplies(monster));
   const all = [
     ...made.map(monster => ({ monster, kind: "Creata qui", editions: balanceEditions(monster, usesLegacyMonsterRules(monster)), row: undefined })),
-    ...homebrew.map(row => { const monster = homebrewMonster(row); return { monster, kind: "Creati da voi", editions: balanceEditions(monster, false), row }; }),
+    ...homebrew.map(row => { const monster = homebrewMonster(row); return { monster, kind: row.autore ? "Dalla community" : "Dalla redazione", editions: balanceEditions(monster, false), row }; }),
   ].map(item => {
     // A creature «2014 e 2024»: both checks (PROMPT 22); the overall verdict, the sentence of the worse, every warning.
     const results = item.editions.map(edition => evaluateMonster(item.monster, edition, LIST_FIGHTS));

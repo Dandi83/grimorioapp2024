@@ -2,9 +2,14 @@ import type { CardSource } from "./card-display";
 import animalIds from "./data/srd-animal-ids.json";
 const ANIMAL_IDS = new Set(animalIds);
 export function isSrdAnimal(monster: {id:string}) { return ANIMAL_IDS.has(monster.id); }
-/** The collection of a creature in the Bestiario: Mostri, Animali or Homebrew. */
-export function collectionOf(monster: {id:string; homebrew?: unknown}): "mostri" | "animali" | "homebrew" {
-  return monster.homebrew ? "homebrew" : ANIMAL_IDS.has(monster.id) ? "animali" : "mostri";
+/**
+ * The collection of a creature in the Bestiario: Mostri, Animali, the community («homebrew», «I mostri creati da voi»)
+ * or the editorial staff («grimorio», «Mostri del Grimorio», PROMPT 25: an original creature without an author).
+ */
+export type Collection = "mostri" | "animali" | "homebrew" | "grimorio";
+export function collectionOf(monster: { id: string; homebrew?: unknown; autore?: string | null; homebrew_autore?: string | null }): Collection {
+  if (monster.homebrew) return monster.autore || monster.homebrew_autore ? "homebrew" : "grimorio";
+  return ANIMAL_IDS.has(monster.id) ? "animali" : "mostri";
 }
 
 // Tipi e utility PURE per i mostri (nessun accesso al DB) — sicure sia lato

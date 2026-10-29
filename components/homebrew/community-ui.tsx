@@ -1,48 +1,86 @@
 import Link from "next/link";
-import { ChevronLeft, PenLine } from "lucide-react";
+import { PenLine } from "lucide-react";
+
+import { BackButton } from "@/components/back-button";
 
 import { HiddenTag } from "@/components/sections/hidden-tag";
+import { SoonTag } from "@/components/sections/soon-tag";
 import { BetaPill } from "./beta-pill";
 
-/** Where the form and the section are (the internal addresses keep «homebrew» elsewhere). */
+/** Where the form and the sections are (the internal addresses keep «homebrew» elsewhere). */
 export const COMMUNITY_HREF = "/bestiario/creati-da-voi";
 export const PROPOSE_HREF = "/bestiario/proponi";
+/** PROMPT 25: the original creatures of the editorial staff, and the two groups together. */
+export const GRIMORIO_HREF = "/bestiario/del-grimorio";
+export const ORIGINALS_HREF = "/bestiario/creature-originali";
+
+type PartView = { shown: boolean; hidden: boolean; soon: boolean };
+const plural = (count: number) => (count === 1 ? "1 creatura" : `${count} creature`);
 
 /**
- * The card of the Bestiario (screen ① of «I mostri creati da voi», PROMPT 13): dark, under the search and the active
- * filters. count: the creatures published in the chosen edition; none yet, only «Proponi il tuo». hidden: the
- * administrator sees it while the visitors do not (the switch of lib/community.ts or /admin/sezioni).
- * compact: the list column of the computer (PROMPT 17), above «N risultati»: smaller, no large pen, the two buttons on
- * one row and, with none yet, the sentence on one line.
+ * «Creature originali» above the list of the Bestiario (PROMPT 25, in place of the dark card of PROMPT 13), under the
+ * search and the filters, in the flow of the page: the row «Creature originali · Beta · Vedi tutte · N ›» while at least
+ * one group is shown, and two tiles side by side (also at 390 px): «Dalla redazione» (light, bordeaux border) and
+ * «Dalla community» (dark, gold), each with the creatures of the chosen edition. A group «In arrivo»: its tile dimmed,
+ * with the pill, no count, to the «in arrivo» page (the community keeps «Proponi il tuo»); hidden: no tile (the
+ * administrator sees it, labelled). compact: the list column of the computer.
  */
-export function CommunityInvite({ count, hidden = false, compact = false }: { count: number; hidden?: boolean; compact?: boolean }) {
-  const text = count > 0
-    ? "Creature inventate dai master del Grimorio, controllate da noi prima di pubblicarle."
-    : "Sii il primo a proporre una creatura: la controlliamo e la pubblichiamo con il tuo nome.";
-  // Compact: no overflow-hidden (the note of «Beta» goes past the bottom of the small card).
+export function OriginalsBlock({ counts, parts, compact = false }: {
+  counts: { grimorio: number; community: number }; parts: { grimorio: PartView; community: PartView }; compact?: boolean;
+}) {
+  const shown = (part: PartView) => part.shown;
+  const present = (part: PartView) => part.shown || part.soon;
+  if (!present(parts.grimorio) && !present(parts.community)) return null;
+  const total = (shown(parts.grimorio) ? counts.grimorio : 0) + (shown(parts.community) ? counts.community : 0);
+  const tiles = [present(parts.grimorio) && "grimorio", present(parts.community) && "community"].filter(Boolean) as ("grimorio" | "community")[];
   return (
-    <section aria-labelledby={compact ? "community-invite-compact-title" : "community-invite-title"} data-community-invite={count} data-compact={compact ? "" : undefined}
-      className={`relative rounded-[16px] bg-[#2B2118] text-[#FFFBF0] ${compact ? "mt-3 p-3" : "mt-4 overflow-hidden p-4"}`}>
-      {!compact && <PenLine aria-hidden="true" size={120} strokeWidth={1.2} className="pointer-events-none absolute -right-5 -top-5 text-[#E0A21A] opacity-15" />}
-      {hidden && <HiddenTag className="relative mb-2 !bg-[#FFFBF0] !text-[#2B2118]" />}
-      <p className="relative text-[12px] font-bold uppercase tracking-[0.12em] text-[#E0A21A]">Dalla community</p>
-      <h2 id={compact ? "community-invite-compact-title" : "community-invite-title"}
-        className={`relative mt-1 font-serif font-bold leading-tight ${compact ? "text-[20px]" : "text-[26px]"}`}>I mostri creati da voi <BetaPill tone="dark" narrow={compact} /></h2>
-      {compact
-        ? count === 0 && <p className="relative mt-1 truncate text-[14px] leading-5 text-[#F1E6CC]" title={text} data-community-text="">{text}</p>
-        : <p className="relative mt-1 text-[15px] leading-6 text-[#F1E6CC]">{text}</p>}
-      {/* Compact: «Sfoglia» as wide as its text, «Proponi il tuo» the rest, both on one line in the 320 px column. */}
-      <div className={`relative gap-2 ${compact ? "mt-2.5 flex [&>a]:whitespace-nowrap [&>a:last-child]:flex-1" : `mt-3 grid ${count > 0 ? "grid-cols-2" : "grid-cols-1"}`}`}>
-        {count > 0 && (
-          <Link href={COMMUNITY_HREF} data-community-browse="" className={`flex ${compact ? "min-h-11 text-[14px]" : "min-h-[46px] text-[15px]"} items-center justify-center rounded-[10px] bg-[#FFFBF0] px-3 font-bold text-[#2B2118]`}>
-            Sfoglia · {count}
+    <section aria-labelledby={compact ? "originals-compact-title" : "originals-title"} data-originals-block="" data-compact={compact ? "" : undefined} className={compact ? "mt-3" : "mt-4"}>
+      {(shown(parts.grimorio) || shown(parts.community)) && (
+        <div className="relative flex items-center gap-2" data-originals-row="">
+          <h2 id={compact ? "originals-compact-title" : "originals-title"} className={`min-w-0 font-serif font-bold leading-tight text-foreground ${compact ? "text-[18px]" : "text-[21px]"}`}>
+            Creature originali <BetaPill row />
+          </h2>
+          <Link href={ORIGINALS_HREF} data-originals-all={total} className="ml-auto inline-flex min-h-11 shrink-0 items-center whitespace-nowrap text-[15px] font-bold text-primary">
+            Vedi tutte · {total} ›
           </Link>
-        )}
-        <Link href={PROPOSE_HREF} data-community-propose="" className={`flex ${compact ? "min-h-11 text-[14px]" : "min-h-[46px] text-[15px]"} items-center justify-center gap-2 rounded-[10px] bg-[#E0A21A] px-3 font-bold text-[#2B2118]`}>
-          <PenLine size={compact ? 16 : 17} aria-hidden="true" />Proponi il tuo
-        </Link>
+        </div>
+      )}
+      <div className={`mt-1 grid gap-2 ${tiles.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+        {tiles.map(group => group === "grimorio"
+          ? <OriginalsTile key={group} group={group} part={parts.grimorio} count={counts.grimorio} compact={compact} />
+          : <OriginalsTile key={group} group={group} part={parts.community} count={counts.community} compact={compact} />)}
       </div>
     </section>
+  );
+}
+
+const TILE = {
+  grimorio: { kicker: "Dalla redazione", title: "Mostri del Grimorio", href: GRIMORIO_HREF, part: "bestiario:grimorio",
+    style: "border-[1.5px] border-[#7A1F2B] bg-[#FFFBF0] text-[#2B2118]", kickerStyle: "text-[#7A1F2B]", countStyle: "text-[#7A1F2B]" },
+  community: { kicker: "Dalla community", title: "Creati da voi", href: COMMUNITY_HREF, part: "bestiario:homebrew",
+    style: "bg-[#2B2118] text-[#FFFBF0]", kickerStyle: "text-[#E0A21A]", countStyle: "text-[#E0A21A]" },
+} as const;
+
+function OriginalsTile({ group, part, count, compact }: { group: "grimorio" | "community"; part: PartView; count: number; compact: boolean }) {
+  const tile = TILE[group];
+  const soon = !part.shown && part.soon;
+  const href = soon ? `/in-arrivo/${encodeURIComponent(tile.part)}` : tile.href;
+  return (
+    <div className={`flex min-w-0 flex-col rounded-[14px] ${tile.style} ${compact ? "p-2.5" : "p-3"}`} data-originals-tile={group} data-part={tile.part} data-tile-state={soon ? "in-arrivo" : part.hidden ? "nascosta" : "visibile"}>
+      <Link href={href} prefetch={false} className={`flex min-w-0 flex-1 flex-col ${soon ? "opacity-60" : ""}`} data-originals-link={group}>
+        <span className={`text-[11px] font-bold uppercase tracking-[0.1em] ${tile.kickerStyle}`}>{tile.kicker}</span>
+        <span className={`mt-0.5 font-serif font-bold leading-tight ${compact ? "text-[16px]" : "text-[18px]"}`}>{tile.title}</span>
+        {part.hidden && part.shown && <span className="mt-1">{part.soon ? <SoonTag /> : <HiddenTag />}</span>}
+        {soon
+          ? <span className="mt-1.5"><SoonTag /></span>
+          : <span className={`mt-1.5 text-[14px] font-bold ${tile.countStyle}`} data-originals-count={count}>{plural(count)} ›</span>}
+      </Link>
+      {group === "community" && (
+        <Link href={PROPOSE_HREF} data-community-propose="" className={`mt-2 flex items-center justify-center gap-1.5 rounded-[10px] bg-[#E0A21A] px-2 font-bold text-[#2B2118] ${compact ? "min-h-10 text-[13px]" : "min-h-11 text-[14px]"}`}>
+          <PenLine size={15} aria-hidden="true" /><span className="whitespace-nowrap">Proponi il tuo</span>
+        </Link>
+      )}
+    </div>
   );
 }
 
@@ -52,13 +90,11 @@ const STEPS = [
   ["La pubblichiamo", "qui, con il tuo nome. Tutti la possono usare al tavolo."],
 ] as const;
 
-/** The top of /bestiario/creati-da-voi (screen ②): back to the Bestiario, the title, the text, the button, the three steps. */
+/** The top of /bestiario/creati-da-voi (screen ②): back (where the visitor came from, else the Bestiario), the title, the text, the button, the three steps. */
 export function CommunityHeader({ children }: { children?: React.ReactNode }) {
   return (
     <div data-community-header="">
-      <Link href="/bestiario" className="-ml-2 inline-flex min-h-11 items-center gap-1 px-2 text-base font-bold text-primary">
-        <ChevronLeft size={22} aria-hidden="true" />Bestiario
-      </Link>
+      <BackButton fallback="/bestiario" label="Bestiario" />
       <div className="mt-1 flex items-start justify-between gap-3">
         <h1 className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground">I mostri creati da voi <BetaPill /></h1>
         {children}
@@ -82,5 +118,45 @@ export function CommunityHeader({ children }: { children?: React.ReactNode }) {
         Come valutiamo il bilanciamento ›
       </Link>
     </div>
+  );
+}
+
+/** The top of /bestiario/del-grimorio (PROMPT 25): back, the title, a short line and the method; no «Proponi». */
+export function GrimorioHeader({ children }: { children?: React.ReactNode }) {
+  return (
+    <div data-grimorio-header="">
+      <BackButton fallback="/bestiario" label="Bestiario" />
+      <div className="mt-1 flex items-start justify-between gap-3">
+        <h1 className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground">Mostri del Grimorio</h1>
+        {children}
+      </div>
+      <p className="mt-2 text-[15px] leading-6 text-muted">
+        Creature originali della redazione, bilanciate con il nostro simulatore.{" "}
+        <Link href="/bestiario/creati-da-voi/bilanciamento" data-method-link="grimorio" className="font-semibold text-[#7A1F2B] underline-offset-4 hover:underline">Come valutiamo il bilanciamento ›</Link>
+      </p>
+    </div>
+  );
+}
+
+/** The top of /bestiario/creature-originali (PROMPT 25): back, «Creature originali» with «Beta». */
+export function OriginalsHeader({ children }: { children?: React.ReactNode }) {
+  return (
+    <div data-originals-header="">
+      <BackButton fallback="/bestiario" label="Bestiario" />
+      <div className="mt-1 flex items-start justify-between gap-3">
+        <h1 className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground">Creature originali <BetaPill /></h1>
+        {children}
+      </div>
+      <p className="mt-2 text-[15px] leading-6 text-muted">Le creature della redazione e quelle della community, tutte insieme. Non fanno parte dei manuali.</p>
+    </div>
+  );
+}
+
+/** At the end of «Creature originali» and of an empty community: the form. */
+export function ProposeButton() {
+  return (
+    <Link href={PROPOSE_HREF} data-community-propose="" className="flex min-h-[54px] items-center justify-center gap-2 rounded-[10px] bg-[#E0A21A] px-4 text-[17px] font-bold text-[#2B2118]">
+      <PenLine size={19} aria-hidden="true" />Proponi il tuo
+    </Link>
   );
 }

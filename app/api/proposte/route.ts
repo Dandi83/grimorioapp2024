@@ -23,12 +23,14 @@ function reply(value: object, status = 200) {
 
 /**
  * «forbidden» while «I mostri creati da voi» is switched off (lib/community.ts) and the sender is not the
- * administrator (403); «closed» while the Bestiario or the section is hidden from /admin/sezioni (404).
+ * administrator (403); «closed» while the Bestiario or the section is hidden from /admin/sezioni (404). «In arrivo»
+ * (PROMPT 25): the proposals stay open, the form is reached from the tile of the Bestiario.
  */
 async function access(): Promise<"open" | "closed" | "forbidden"> {
   if (!communityPublic()) return (await isAdmin()) ? "open" : "forbidden";
   const state = await visibilityState();
-  return effectiveHidden(state.sections, state.parts).includes("bestiario") || state.parts.includes(partId("bestiario", "homebrew")) ? "closed" : "open";
+  const part = partId("bestiario", "homebrew");
+  return effectiveHidden(state.sections, state.parts).includes("bestiario") || (state.parts.includes(part) && !state.soon.includes(part)) ? "closed" : "open";
 }
 const SWITCHED_OFF = "Le proposte non sono aperte in questo momento.";
 

@@ -26,6 +26,10 @@ const nextConfig = {
       ...renamedMonsterIds.map(id => ({ source: `/mostro/${id}`, destination: `/mostro/${id}-2014`, permanent: true })),
       ...Object.entries(mergedSpellIds).map(([id, kept]) => ({ source: `/spell/${id}`, destination: `/spell/${spellAddress(kept)}`, permanent: true })),
       ...Object.entries(publicSpellIds).map(([id, open]) => ({ source: `/spell/${id}`, destination: `/spell/${open}`, permanent: true })),
+      // PROMPT 25: «Dal Grimorio» of «I mostri creati da voi» is now its own page (the chip never wrote the address: these
+      // are the forms a link could have).
+      ...["chi", "filtro", "categoria"].flatMap(key => ["grimorio", "redazione"].map(value => ({
+        source: "/bestiario/creati-da-voi", has: [{ type: "query", key, value }], destination: "/bestiario/del-grimorio", permanent: true }))),
     ];
   },
   async headers() {

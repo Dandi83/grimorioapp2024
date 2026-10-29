@@ -222,7 +222,8 @@ test("Contenuti, a content list, Sezioni: phone and computer", async ({ page }) 
   await login(page);
   await page.goto("/admin/contenuti");
   for (const group of ["Schede", "Equipaggiamento", "Regole"]) await expect(page.getByRole("heading", { level: 2, name: group })).toBeVisible();
-  await expect(page.locator('[data-content-row="mostri"]')).toContainText("con i Creati da voi");
+  // The note, or the count of the parts closed to the visitors («Mostri del Grimorio» starts «In arrivo», PROMPT 25).
+  await expect(page.locator('[data-content-row="mostri"]')).toContainText(/con le Creature originali|parte nascosta|parti nascoste/);
   await page.locator('[data-content-row="armi"]').click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Armi");
   await expect(page.locator("section[data-list-group]").first()).toBeVisible();

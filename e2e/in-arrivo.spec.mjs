@@ -48,6 +48,29 @@ async function underConstruction(page, pill) {
   else await expect(page.locator("[data-soon-pill]")).toHaveCount(0);
 }
 
+/** Back to «Visibile» whatever happened in the test: a failure half way never leaves sections closed for the next files. */
+async function restore(page, opener, title) {
+  if (!page.url().endsWith("/admin/sezioni")) await page.goto("/admin/sezioni");
+  if (opener) {
+    const button = page.locator(`button[aria-controls="parti-${opener}"]`);
+    if ((await button.getAttribute("aria-expanded")) !== "true") await button.click();
+  }
+  const radio = stateRadio(opener ? page.locator(`#parti-${opener}`) : page, title, "Visibile");
+  if ((await radio.getAttribute("aria-checked")) === "true") return;
+  await radio.click();
+  await expect(radio).toHaveAttribute("aria-checked", "true");
+}
+
+test.afterAll(async ({ browser }) => {
+  const context = await browser.newContext({ baseURL: test.info().project.use.baseURL });
+  const page = await context.newPage();
+  await login(page);
+  for (const title of ["Incantesimi", "Classi", "Oggetti magici"]) await restore(page, null, title);
+  await restore(page, "bestiario", "Raccolta Animali");
+  for (const title of ["Calcolatore di PE", "Talenti bonus oltre il 20º livello"]) await restore(page, "avanzamento", title);
+  await context.close();
+});
+
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => { try { localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } });
 });
@@ -76,7 +99,8 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await setPart(page, "avanzamento", "Talenti bonus oltre il 20º livello", "Nascosta");
   await expect(page.getByText("2 in arrivo")).toBeVisible();
   await expect(page.getByText("1 nascosta", { exact: true })).toBeVisible();
-  await expect(page.getByText("2 parti in arrivo")).toBeVisible();
+  // Plus «Mostri del Grimorio», «In arrivo» from the start (PROMPT 25, lib/section-visibility.ts DEFAULT_PART_STATES).
+  await expect(page.getByText("3 parti in arrivo")).toBeVisible();
   // Plus «I mostri creati da voi» while the switch of lib/community.ts is off.
   await expect(page.getByText(hiddenPartsText(1))).toBeVisible();
 

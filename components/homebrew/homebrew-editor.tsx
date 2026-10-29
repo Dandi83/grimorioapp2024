@@ -90,7 +90,7 @@ export type EditorStep = 1 | 2 | 3;
  */
 export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview: shownPreview, ours = false }: {
   value: HomebrewDraft; onChange: (draft: HomebrewDraft) => void; idPrefix?: string; step?: EditorStep; preview?: boolean;
-  /** A creature «Creato dal Grimorio» (made or edited in the reserved area, no author): its pill in the preview. */
+  /** A creature «Dalla redazione» (made or edited in the reserved area, no author): its pill in the preview. */
   ours?: boolean;
 }) {
   const [ownPreview, setPreview] = useState(false);

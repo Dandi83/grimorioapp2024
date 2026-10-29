@@ -9,7 +9,7 @@ import type { MonsterListItem } from "@/lib/monsters-types";
 import { readListState, returningBack } from "@/components/navigation-memory";
 import type { SpellFilters, SpellListState } from "@/components/grimorio-browser";
 import { CASTING_TIMES, type CastingTime } from "@/lib/spells-types";
-import { GS_BANDS, gsBand, type GsBand, type MonsterFilters, type MonsterListState } from "@/components/bestiario-browser";
+import { GS_BANDS, gsBand, type GsBand, type MonsterFilters, type MonsterListState, type OriginalsSection } from "@/components/bestiario-browser";
 import { isEdition } from "@/lib/user-edition";
 import { currentTypeNames, parseGs } from "@/lib/monsters-types";
 import { normalizeHabitats } from "@/lib/habitats";
@@ -97,20 +97,20 @@ function filtersFromParams(params: URLSearchParams): MonsterFilters {
   };
 }
 
-export function BestiarioWithFilters({ monsters, pane, community }: { monsters: MonsterListItem[]; pane?: ListPane; community?: boolean }) {
+export function BestiarioWithFilters({ monsters, pane, section }: { monsters: MonsterListItem[]; pane?: ListPane; section?: OriginalsSection }) {
   const { params, search } = useCatalogSearch(pane ? "/bestiario" : undefined);
   const filters = filtersFromParams(params);
   const requested = params.get("edizione");
   const { edition: userEdition, ready } = useUserEdition();
   const edizione = isEdition(requested) ? requested : userEdition;
   const restored = useRestoredList<MonsterListState>("bestiario", search, pane);
-  // The section «I mostri creati da voi» keeps no state of the Bestiario list.
-  const restoredFilters: MonsterFilters | null = !community && restored && Array.isArray(restored.gs)
+  // The pages of the original creatures keep no state of the Bestiario list.
+  const restoredFilters: MonsterFilters | null = !section && restored && Array.isArray(restored.gs)
     ? { categoria: restored.categoria, gs: restored.gs, tipo: currentTypeNames(restored.tipo ?? []), taglia: restored.taglia, habitat: restored.habitat }
     : null;
   return <BestiarioBrowser key={JSON.stringify([filters, !!restoredFilters])}
     monsters={monsters} initialFilters={restoredFilters ?? filters}
     initialEdizione={restoredFilters ? restored!.edizione : edizione} edizione={edizione} editionReady={ready}
     initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
-    initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} community={community} />;
+    initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} section={section} />;
 }

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import pg from "pg";
 import { TEST_DATABASE_URL } from "./test-db.mjs";
 
-// PROMPT 22, administrator: the preview of the editor with «Creato dal Grimorio» and the pills under a long name never
+// PROMPT 22, administrator: the preview of the editor with «Dalla redazione» and the pills under a long name never
 // broken inside a word; the typographic minus «−» on the sheets of «Creati da voi»; «NO SRD» without them and the
 // quick filter «Creati da voi»; two checks 2014/2024 in the «Bilanciamento» of a creature «2014 e 2024», never in the
 // public HTML. Phone and computer, 2014 and 2024. Local test database only.
@@ -120,20 +120,20 @@ for (const width of [390, 1280]) {
       for (const name of mine) await expect(rows.filter({ hasText: name })).toHaveCount(1);
       await creati.click();
 
-      // «Nuovo "Creato dal Grimorio"»: the preview with the bordeaux pill, the long name whole, the pills under it.
+      // «Nuovo "Dalla redazione"»: the preview with the bordeaux pill, the long name whole, the pills under it.
       await page.getByRole("button", { name: "Nuovo", exact: true }).click();
       await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
       let editor = page.getByRole("dialog");
       await editor.locator("#admin-hb-nome").fill("Cineraio dell’abisso profondissimo");
       await editor.getByRole("button", { name: "Anteprima della scheda" }).click();
       let preview = editor.locator("[data-homebrew-preview]");
-      await expect(preview.locator("[data-homebrew-pill='grimorio']")).toHaveText("Creato dal Grimorio");
+      await expect(preview.locator("[data-homebrew-pill='grimorio']")).toHaveText("Dalla redazione");
       await expect(preview.locator("[data-homebrew-pill='community']")).toHaveCount(0);
       expect(await title(preview)).toEqual({ broken: [], hyphens: "none", wrap: "normal", labelsBelow: true });
       await editor.getByRole("button", { name: "Chiudi editor" }).click();
       await expect(editor).toHaveCount(0);
 
-      // «Modifica» of ours from its sheet: «Creato dal Grimorio», «−» in the preview too.
+      // «Modifica» of ours from its sheet: «Dalla redazione», «−» in the preview too.
       await page.goto(`/mostro/${OURS}`);
       await page.locator("[data-admin-edit]").filter({ visible: true }).first().click();
       editor = page.getByRole("dialog");
@@ -188,7 +188,7 @@ for (const width of [390, 1280]) {
   }
 }
 
-test("the form preview keeps «Creato da voi»; the name whole, the pills under it", async ({ browser }) => {
+test("the form preview keeps «Dalla community»; the name whole, the pills under it", async ({ browser }) => {
   for (const width of [390, 1280]) {
     const context = await browser.newContext({ baseURL: test.info().project.use.baseURL, viewport: { width, height: 900 } });
     const page = await context.newPage();

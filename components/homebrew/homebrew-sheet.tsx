@@ -9,7 +9,7 @@ import { BothEditionsPill, HomebrewPill, VerifiedPill } from "@/components/homeb
 import { ChosenEditionBadge } from "./chosen-edition-badge";
 
 /**
- * The label of a sheet of «I mostri creati da voi»: the pill («Creato da voi» or «Creato dal Grimorio»), then the edition;
+ * The label of a sheet of «I mostri creati da voi»: the pill («Dalla community» or «Dalla redazione»), then the edition;
  * a creature «2014 e 2024» keeps that pill and the dark label follows the edition chosen by the user.
  */
 export function HomebrewLabel({ edizione, ours = false, verified = false }: { edizione: "2014" | "2024" | "entrambe"; ours?: boolean; verified?: boolean }) {
@@ -24,7 +24,7 @@ export function HomebrewLabel({ edizione, ours = false, verified = false }: { ed
 
 /**
  * Under the title: «Proposta da <nickname>» in bold, then in small print the licence and «controllata dal Grimorio»;
- * ours: «Mostro originale, bilanciato sui mostri ufficiali dello stesso GS» (the pill already says «Creato dal Grimorio»).
+ * ours: «Mostro originale, bilanciato sui mostri ufficiali dello stesso GS» (the pill already says «Dalla redazione»).
  */
 export function HomebrewByline({ autore, licenza }: { autore: string | null | undefined; licenza: string | null | undefined }) {
   if (!autore) {
@@ -41,11 +41,13 @@ export function HomebrewByline({ autore, licenza }: { autore: string | null | un
   );
 }
 
-/** The closing note of a homebrew sheet, in place of the SRD source. */
-export function HomebrewNote() {
+/** The closing note of an original sheet, in place of the SRD source: the community's, or the editorial staff's (PROMPT 25). */
+export function HomebrewNote({ ours = false }: { ours?: boolean }) {
   return (
-    <aside aria-label="Fonte della scheda" data-source-box="" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
-      <p>Creatura di «I mostri creati da voi», non ufficiale. Non fa parte dell’SRD e non è materiale Wizards of the Coast.</p>
+    <aside aria-label="Fonte della scheda" data-source-box="" data-original-note={ours ? "redazione" : "community"} className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
+      <p>{ours
+        ? "Creatura originale della redazione del Grimorio, non ufficiale. Non fa parte dell’SRD e non è materiale Wizards of the Coast."
+        : "Creatura di «I mostri creati da voi», non ufficiale. Non fa parte dell’SRD e non è materiale Wizards of the Coast."}</p>
     </aside>
   );
 }
@@ -57,7 +59,7 @@ export function HomebrewSheet({ monster, before, context = {} }: { monster: Mons
     <article className="monster-sheet relative pb-2 pt-4">
       <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} ours={!monster.homebrew_autore} verified={!!monster.homebrew_verificato} />} byline={<HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} />} labelBelow />
       <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} descriptionFirst />
-      <HomebrewNote />
+      <HomebrewNote ours={!monster.homebrew_autore} />
     </article>
   );
 }

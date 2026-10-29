@@ -21,7 +21,7 @@ export interface AdminRow {
    */
   source: "srd" | "nosrd" | "creati";
   /** The pill of a NO SRD card. */
-  pill?: "Sintesi" | "Aggiunta da te" | "Creati da voi";
+  pill?: "Sintesi" | "Aggiunta da te" | "Dalla redazione" | "Dalla community";
   /** «SRD modificata»: the fields that no longer match the SRD, for «Ripristina testo SRD». */
   modified?: { label: string; diff: DiffPart[] }[];
   /** «Nome da rivedere»: the names of lib/data/nomi-da-rivedere.json found in the card. */
