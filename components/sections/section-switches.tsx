@@ -7,7 +7,13 @@ import { setPartStateAction, setSectionStateAction } from "@/app/actions/admin-s
 import { PART_GROUPS, type PartGroup } from "@/lib/public-sections";
 import type { SectionState } from "@/lib/section-visibility";
 
-interface PartRow { id: string; title: string; group: PartGroup; state: SectionState }
+/**
+ * locked: «I mostri creati da voi» while the switch of lib/community.ts is off: hidden from the visitors whatever its
+ * state says, so it counts as hidden and its buttons cannot change anything (only a new deploy turns it on).
+ */
+interface PartRow { id: string; title: string; group: PartGroup; state: SectionState; locked?: boolean }
+/** What the visitors really get: a locked part is hidden. */
+const shown = (part: PartRow): SectionState => (part.locked ? "nascosta" : part.state);
 interface Row { key: string; title: string; where: string; state: SectionState; parts: PartRow[] }
 
 const OPTIONS: { value: SectionState; label: string; active: string }[] = [
@@ -18,13 +24,14 @@ const OPTIONS: { value: SectionState; label: string; active: string }[] = [
 const SAID: Record<SectionState, string> = { visibile: "visibile", "in-arrivo": "in arrivo", nascosta: "nascosta" };
 
 /** «Visibile · In arrivo · Nascosta» of a section or part: green, amber, dark grey when chosen. */
-function StateSelector({ title, state, disabled, onChange }: { title: string; state: SectionState; disabled: boolean; onChange: (state: SectionState) => void }) {
+function StateSelector({ title, state, disabled, locked = false, onChange }: { title: string; state: SectionState; disabled: boolean; locked?: boolean; onChange: (state: SectionState) => void }) {
   return (
-    <div role="radiogroup" aria-label={`Stato di ${title}`} className="flex shrink-0 overflow-hidden rounded-full border-[1.5px] border-[#DDCFAE] bg-[#FFFBF0] text-[13px] font-bold">
+    <div role="radiogroup" aria-label={`Stato di ${title}`} aria-disabled={locked || undefined} data-locked={locked ? "" : undefined}
+      className={`flex shrink-0 overflow-hidden rounded-full border-[1.5px] border-[#DDCFAE] bg-[#FFFBF0] text-[13px] font-bold ${locked ? "opacity-50" : ""}`}>
       {OPTIONS.map(option => (
-        <button key={option.value} type="button" role="radio" aria-checked={state === option.value} disabled={disabled}
-          onClick={() => { if (state !== option.value) onChange(option.value); }}
-          className={`min-h-11 px-2.5 transition-colors sm:px-3.5 ${state === option.value ? option.active : "text-[#5E4E3E] hover:bg-[#F6EFDF]"}`}>
+        <button key={option.value} type="button" role="radio" aria-checked={state === option.value} disabled={disabled || locked} aria-disabled={locked || undefined}
+          onClick={() => { if (!locked && state !== option.value) onChange(option.value); }}
+          className={`min-h-11 px-2.5 transition-colors sm:px-3.5 ${locked ? "cursor-not-allowed" : ""} ${state === option.value ? option.active : `text-[#5E4E3E] ${locked ? "" : "hover:bg-[#F6EFDF]"}`}`}>
           {option.label}
         </button>
       ))}
@@ -49,9 +56,14 @@ function PartList({ row, group, pending, busy, change }: {
           <li key={part.id} data-part-row={part.id} className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-l-2 border-[#DDCFAE] py-1.5 pl-3">
             <div className="min-w-0 flex-1">
               <p className="text-[15px] font-semibold leading-snug">{part.title}</p>
-              <p className="text-[13px] leading-5"><State state={part.state} /></p>
+              {part.locked ? (
+                <>
+                  <p className="text-[13px] leading-5"><span data-switch-off="" className="inline-block rounded-[6px] bg-[#E4E0DB] px-1.5 font-bold text-[#4A4038]">Spenta dall’interruttore</span></p>
+                  <p className="text-[12px] leading-4 text-[#5E4E3E]">Si accende solo con un nuovo deploy: chiedi il prompt di accensione</p>
+                </>
+              ) : <p className="text-[13px] leading-5"><State state={part.state} /></p>}
             </div>
-            <StateSelector title={part.title} state={part.state} disabled={pending && busy === part.id} onChange={state => change(row.key, part.title, state, part.id)} />
+            <StateSelector title={part.title} state={part.state} disabled={pending && busy === part.id} locked={part.locked} onChange={state => change(row.key, part.title, state, part.id)} />
           </li>
         ))}
       </ul>
@@ -69,7 +81,7 @@ export function SectionSwitches({ sections }: { sections: Row[] }) {
   const [rows, setRows] = useState(sections);
   const [open, setOpen] = useState<string[]>([]);
   // «Avanzate» starts open where an edition already differs, then stays as the administrator leaves it.
-  const [advanced, setAdvanced] = useState<string[]>(() => sections.filter(row => row.parts.some(part => part.group === "edizioni" && part.state !== "visibile")).map(row => row.key));
+  const [advanced, setAdvanced] = useState<string[]>(() => sections.filter(row => row.parts.some(part => part.group === "edizioni" && shown(part) !== "visibile")).map(row => row.key));
   const [toast, setToast] = useState<{ text: string; error?: boolean; at: number } | null>(null);
   const [pending, startTransition] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
@@ -81,7 +93,7 @@ export function SectionSwitches({ sections }: { sections: Row[] }) {
   }, [toast]);
 
   const count = (state: SectionState) => rows.filter(row => row.state === state).length;
-  const partsIn = (state: SectionState) => rows.reduce((sum, row) => sum + row.parts.filter(part => part.state === state).length, 0);
+  const partsIn = (state: SectionState) => rows.reduce((sum, row) => sum + row.parts.filter(part => shown(part) === state).length, 0);
   const [visible, soon, hidden, soonParts, hiddenParts] = [count("visibile"), count("in-arrivo"), count("nascosta"), partsIn("in-arrivo"), partsIn("nascosta")];
 
   /** Optimistic change of a section (part undefined) or of one of its parts, put back if saving fails. */
@@ -124,10 +136,10 @@ export function SectionSwitches({ sections }: { sections: Row[] }) {
       <ul aria-label="Sezioni" className="overflow-hidden rounded-[16px] border-[1.5px] border-[#DDCFAE] bg-[#FFFBF0]">
         {rows.map(row => {
           const expanded = open.includes(row.key);
-          const changedParts = row.parts.filter(part => part.state !== "visibile" && part.group !== "edizioni");
+          const changedParts = row.parts.filter(part => shown(part) !== "visibile" && part.group !== "edizioni");
           const groups = (Object.keys(PART_GROUPS) as PartGroup[]).filter(group => group !== "edizioni" && row.parts.some(part => part.group === group));
           const editionParts = row.parts.some(part => part.group === "edizioni");
-          const changedEditions = row.parts.filter(part => part.group === "edizioni" && part.state !== "visibile");
+          const changedEditions = row.parts.filter(part => part.group === "edizioni" && shown(part) !== "visibile");
           return (
             <li key={row.key} data-section-row={row.key} className="border-t border-[#DDCFAE]/70 first:border-t-0">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3.5 py-2.5">

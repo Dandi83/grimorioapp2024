@@ -76,7 +76,8 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await expect(page.getByText("2 in arrivo")).toBeVisible();
   await expect(page.getByText("1 nascosta", { exact: true })).toBeVisible();
   await expect(page.getByText("2 parti in arrivo")).toBeVisible();
-  await expect(page.getByText("1 parte nascosta")).toBeVisible();
+  // Plus «I mostri creati da voi», hidden by the switch of lib/community.ts.
+  await expect(page.getByText("2 parti nascoste")).toBeVisible();
 
   // Visitor, phone.
   const guest = await visitor(browser);

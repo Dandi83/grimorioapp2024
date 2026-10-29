@@ -68,30 +68,52 @@ export function toggleChip(list: ChipList, option: string): ChipList {
 }
 
 export type Languages = ChipList & { understandsOnly: boolean };
-// «capisce il Comune e il Draconico ma non può parlare» (and the SRD forms «ma non lo parla», «ma non li parla»…).
-const UNDERSTANDS = /^capisce\s+(.+?)\s+ma non (?:può parlar\w*|è in grado di parlar\w*|l[oaie] parla)\.?$/i;
+// «capisce il Comune e il Silvano ma non li parla» (the SRD form), then maybe «, telepatia 36 m»; also the form written
+// by the first version of the form, «capisce Comune, Draconico ma non può parlare».
+const UNDERSTANDS = /^capisce\s+(.+?)\s+ma non (?:può parlar\w*|è in grado di parlar\w*|l[oaie] parla)\.?(?:\s*,\s*(.+))?$/i;
+const ARTICLE = /\b(?:il|lo|la|l['’]|i|gli|le)\s*(?=[A-ZÀ-Ý])/g;
+
+/** The article of a language, as the SRD sheets write it: «l'Elfico», «lo Gnomesco», «il Comune». */
+export function withArticle(language: string): string {
+  if (/^[AEIOUHÀ-Ý]/i.test(language)) return `l'${language}`;
+  if (/^(?:Gn|Ps|Pn|Z|X|Y|S[^aeiouàèéìòù])/.test(language)) return `lo ${language}`;
+  return `il ${language}`;
+}
+/** «a», «a e b», «a, b e c». */
+const italianList = (items: string[]) => (items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} e ${items[items.length - 1]}`);
 
 /**
  * The languages: the chips, «altra» (the other pieces, as written: «telepatia 36 m») and «Capisce ma non può parlare».
- * The pieces of a list of languages stand on their own, so here a list is split at the commas only.
+ * The pieces of a list of languages stand on their own, so here a list is split at the commas only. A sentence with
+ * «capisce» naming something that is not a language of the menu is kept whole, word for word.
  */
 export function readLanguages(text: string, options: readonly string[]): Languages {
-  const match = UNDERSTANDS.exec((text || "").trim());
-  const list = match ? match[1].replace(/\b(?:il|lo|la|l['’]|i|gli|le)\s*(?=[A-ZÀ-Ý])/g, "").replace(/\s+e\s+/g, ", ") : (text || "").trim();
-  if (list === "—") return { selected: [], extra: "", understandsOnly: false };
+  const source = (text || "").trim();
+  if (source === "—") return { selected: [], extra: "", understandsOnly: false };
   const byKey = new Map(options.map(option => [fold(option), option]));
+  const match = UNDERSTANDS.exec(source);
+  if (match) {
+    const named = match[1].replace(ARTICLE, "").split(/,|\s+e\s+/).map(item => item.trim()).filter(Boolean).map(item => byKey.get(fold(item)));
+    if (named.length && named.every(Boolean)) {
+      return { selected: options.filter(option => named.includes(option)), extra: (match[2] || "").trim(), understandsOnly: true };
+    }
+    return { selected: [], extra: source, understandsOnly: false };
+  }
   const selected = new Set<string>();
   const extra: string[] = [];
-  for (const piece of list.split(/[,;]/).map(item => item.trim()).filter(Boolean)) {
+  for (const piece of source.split(/[,;]/).map(item => item.trim()).filter(Boolean)) {
     const option = byKey.get(fold(piece));
     if (option) selected.add(option); else extra.push(piece);
   }
-  return { selected: options.filter(option => selected.has(option)), extra: extra.join(", "), understandsOnly: !!match };
+  return { selected: options.filter(option => selected.has(option)), extra: extra.join(", "), understandsOnly: false };
 }
 
+/** The text saved: «Comune, Draconico, telepatia 36 m», or «capisce il Comune e il Draconico ma non li parla, telepatia 36 m». */
 export function writeLanguages(value: Languages, options: readonly string[]): string {
-  const list = writeChips(value, options);
-  return value.understandsOnly && list ? `capisce ${list} ma non può parlare` : list;
+  const chosen = options.filter(option => value.selected.includes(option));
+  if (!value.understandsOnly || !chosen.length) return writeChips(value, options);
+  const sentence = `capisce ${italianList(chosen.map(withArticle))} ma non ${chosen.length === 1 ? "lo" : "li"} parla`;
+  return value.extra.trim() ? `${sentence}, ${value.extra.trim()}` : sentence;
 }
 
 export type SenseRow = { sense: string; metres: number };
