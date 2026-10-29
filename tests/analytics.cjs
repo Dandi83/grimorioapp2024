@@ -176,9 +176,10 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '91 days'");await analytics.purgeAnalytics();assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events')).rows[0].n,0);
  let admin=false,stored=0;const afterCallbacks=[],excludedIds=new Set();
  const {NextRequest}=require('next/server');
- let votesSaved=[];let admitted=true;const fakeAnalytics={admitEvent:async()=>admitted,analyticsAddressKey:address=>`key:${address}`,storeRating:async(vote,visitor,device,test)=>{votesSaved.push({vote,device,test});return true},analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id),storeFavorite:async()=>{},forgetFavorites:async()=>{}};
+ let votesSaved=[];let admitted=true;const tableVotes=[];const fakeAnalytics={admitEvent:async()=>admitted,analyticsAddressKey:address=>`key:${address}`,storeRating:async(vote,visitor,device,test)=>{votesSaved.push({vote,device,test});return true},analyticsConfigured:()=>true,analyticsSecret:()=>process.env.ANALYTICS_SECRET||'',storeAnalyticsEvent:async()=>{stored++;return true},excludeVisitor:async id=>{excludedIds.add(id)},isVisitorExcluded:async id=>excludedIds.has(id),storeFavorite:async()=>{},forgetFavorites:async()=>{}};
  const exclusion=load('lib/analytics-exclusion.ts',{'server-only':{},'next/headers':{cookies:async()=>({get:()=>undefined,set(){}})},'./analytics':fakeAnalytics});
- const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/admin-login-limit':{clientAddress:headers=>headers.get('x-real-ip')},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true},'@/lib/spell-name':{spellName:name=>name}});
+ const route=load('app/api/analytics/route.ts',{'next/server':{...require('next/server'),after:fn=>afterCallbacks.push(fn)},'@/lib/admin-auth':{isAdmin:async()=>admin},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},'@/lib/admin-login-limit':{clientAddress:headers=>headers.get('x-real-ip')},'@/lib/spells':{getSpellById:async()=>({nome_italiano:'Test'})},'@/lib/monsters':{getMonsterById:async()=>({id:'gatto',nome:'Gatto'})},'@/lib/monsters-types':{isSrdAnimal:()=>true},'@/lib/spell-name':{spellName:name=>name},
+  '@/lib/homebrew':{getHomebrew:async id=>id.startsWith('homebrew-')?{id}:undefined},'@/lib/table-votes':{storeTableVote:async(visitor,card,vote,test)=>{tableVotes.push({visitor,card,vote,test});return true}}});
  process.env.ANALYTICS_SECRET='analytics-only-secret';
  const request=(body,headers={})=>new NextRequest('https://ilgrimorio.app/api/analytics',{method:'POST',headers:{origin:'https://ilgrimorio.app','content-type':'application/json',...headers},body:JSON.stringify(body)});
  assert.equal((await route.POST(request(event(),{origin:'https://bad.example'}))).status,403);
@@ -194,6 +195,17 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  const counted=await route.POST(request(event(),{cookie:cookies}));
  assert.equal((await counted.json()).stored,true);assert.equal(stored,2);assert.equal(counted.cookies.get('grimorio_statistics_visitor'),undefined,'a known visitor keeps its ID');
  admin=true;assert.equal((await (await route.POST(request(event(),{cookie:cookies}))).json()).reason,'admin');assert.equal(stored,2);admin=false;
+ // «L'hai provato al tavolo?» (PROMPT 19): only on a card of «I mostri creati da voi», with a valid vote; never from the administrator.
+ const table=(path,vote)=>event('prova_tavolo',{path,tableVote:vote});
+ assert.equal((await (await route.POST(request(table('/mostro/homebrew-drago','giusto'),{cookie:cookies}))).json()).stored,true);
+ assert.deepEqual(tableVotes.map(row=>[row.card,row.vote]),[['homebrew-drago','giusto']]);
+ assert.equal(tableVotes[0].visitor,visitorCookie.split('.')[0],'one vote per device: the visitor ID');
+ assert.equal((await (await route.POST(request(table('/mostro/homebrew-drago','difficile'),{cookie:cookies}))).json()).stored,true,'changed: the same key, a new vote');
+ assert.equal((await (await route.POST(request(table('/mostro/troll','facile'),{cookie:cookies}))).json()).ignored,true,'never on an official sheet');
+ assert.equal((await route.POST(request(table('/mostro/homebrew-drago','benissimo'),{cookie:cookies}))).status,400);
+ assert.equal((await route.POST(request(table('/grimorio','giusto'),{cookie:cookies}))).status,400);
+ admin=true;assert.equal((await (await route.POST(request(table('/mostro/homebrew-drago','facile'),{cookie:cookies}))).json()).reason,'admin');admin=false;
+ assert.equal(tableVotes.length,2,'the administrator never votes');
  const forged=await route.POST(request(event(),{cookie:'grimorio_statistics_visitor=forged'}));
  assert.notEqual(forged.cookies.get('grimorio_statistics_visitor').value.split('.')[0],'forged','a cookie that does not verify is a new visitor');
  // «No»: nothing saved any more, the ID removed; also for those who refused before (the same cookie value).
@@ -203,7 +215,9 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  for(const cookie of ['grimorio_statistics_consent=rejected',`grimorio_statistics_consent=rejected; grimorio_statistics_visitor=${visitorCookie}`]){
   const refusedEvent=await route.POST(request(event(),{cookie}));
   assert.equal((await refusedEvent.json()).reason,'rejected');assert.equal(refusedEvent.cookies.get('grimorio_statistics_visitor'),undefined);
+  assert.equal((await (await route.POST(request(event('prova_tavolo',{path:'/mostro/homebrew-drago',tableVote:'giusto'}),{cookie}))).json()).reason,'rejected','after «No» no vote either');
  }
+ assert.equal(tableVotes.length,2);
  assert.equal(stored,storedBeforeNo,'after «No» no event is saved');
  // Only ANALYTICS_SECRET signs: a cookie signed with the admin passcode (the old «legacy» cookies) is a new visitor.
  const {createHmac}=require('node:crypto');
@@ -277,7 +291,7 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance'))).status,401);
  assert.equal((await maintenance.GET(new NextRequest('https://ilgrimorio.app/api/analytics/maintenance',{headers:{authorization:'Bearer maintenance-test'}}))).status,200);
  const LoginForm=()=>null;
- const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/spell-index':{getSpellIndex:async()=>{throw new Error('private data leaked')}},'@/lib/monster-index':{getMonsterListIndex:async()=>{throw new Error('private data leaked')}},'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readStatistics:async()=>{throw new Error('private data leaked')},VERCEL_ANALYTICS_URL:''},'@/app/actions/admin-statistics':{deleteMarkerAction(){},excludeDeviceAction(){}},'@/lib/analytics-exclusion':{deviceExcluded:async()=>false},'@/components/statistics/marker-form':{MarkerForm:()=>null},'@/components/statistics/period-select':{PeriodSelect:()=>null}});
+ const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/homebrew':{publishedHomebrew:async()=>{throw new Error('private data leaked')}},'@/lib/table-votes':{readAllTableCounts:async()=>{throw new Error('private data leaked')}},'@/lib/spell-index':{getSpellIndex:async()=>{throw new Error('private data leaked')}},'@/lib/monster-index':{getMonsterListIndex:async()=>{throw new Error('private data leaked')}},'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readStatistics:async()=>{throw new Error('private data leaked')},VERCEL_ANALYTICS_URL:''},'@/app/actions/admin-statistics':{deleteMarkerAction(){},excludeDeviceAction(){}},'@/lib/analytics-exclusion':{deviceExcluded:async()=>false},'@/components/statistics/marker-form':{MarkerForm:()=>null},'@/components/statistics/period-select':{PeriodSelect:()=>null}});
  assert.equal((await statistics.default({searchParams:Promise.resolve({})})).type,LoginForm,'without login only the login form is shown');
  // /api/admin/riepilogo (PROMPT 18): 401 without the session, private and never stored; the numbers only for the administrator.
  {

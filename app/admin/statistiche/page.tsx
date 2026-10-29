@@ -3,6 +3,8 @@ import { Fragment } from "react";
 import { isAdmin } from "@/lib/admin-auth";
 import { AdminLogin } from "@/components/admin-login";
 import { readFavoriteCounts, readNow, readStatistics, readSupport, VERCEL_ANALYTICS_URL } from "@/lib/analytics";
+import { publishedHomebrew } from "@/lib/homebrew";
+import { readAllTableCounts, type TableCounts } from "@/lib/table-votes";
 import { NowDot } from "@/components/home/admin-strip";
 import { FAVORITES_NOTE, FAVORITE_PERIODS } from "@/lib/analytics-events";
 import { rankFavorites, rankingFilterOf, type RankingCard } from "@/lib/favorite-ranking";
@@ -37,10 +39,15 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const saved = rankingFilterOf(params);
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
   const range = periodRange(period, today);
-  const [data, excluded, support, counts, spells, monsters, now] = await Promise.all([
+  const [data, excluded, support, counts, spells, monsters, now, tableVotes, homebrew] = await Promise.all([
     readStatistics(range), deviceExcluded(), readSupport(range), readFavoriteCounts(saved.period).catch(() => []),
     getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []), readNow(),
+    readAllTableCounts().catch(() => new Map<string, TableCounts>()), publishedHomebrew().catch(() => []),
   ]);
+  // «Prove al tavolo» (PROMPT 19): every card of «I mostri creati da voi» with votes, the most voted first.
+  const tried = homebrew.map(row => ({ id: row.id, nome: row.scheda.nome, votes: tableVotes.get(row.id) }))
+    .filter((row): row is { id: string; nome: string; votes: TableCounts } => !!row.votes?.total)
+    .sort((a, b) => b.votes.total - a.votes.total || a.nome.localeCompare(b.nome, "it"));
   // «I più salvati»: the catalog of the two kinds with a star, on the address ids the stars are counted on.
   const catalog: RankingCard[] = [
     ...spells.map(spell => ({ kind: "incantesimo" as const, id: publicSpellId(spell.id), title: spellName(spell.nome_italiano, spell.edizione), edition: spell.edizione === "2014" ? "2014" as const : "2024" as const, href: spellHref(spell.id) })),
@@ -203,6 +210,20 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
             ) : <p className={`${SOFT} mt-3`}>Nessuna scheda salvata con questi filtri.</p>}
             <p className="mt-3 text-[12px] text-[#5E4E3E]" data-saves-note="">{FAVORITES_NOTE}</p>
           </div>
+        </RestItem>
+
+        {/* «L'hai provato al tavolo?» (PROMPT 19): the votes of the masters on each card, also under 5 (the public sees them from 5). */}
+        <RestItem id="tavolo" title="Prove al tavolo">
+          {tried.length ? (
+            <ul className="divide-y divide-[#E8D3A0]" data-table-stats="">
+              {tried.map(row => (
+                <li key={row.id} className="flex flex-wrap items-center justify-between gap-x-3 py-2 text-[15px]" data-table-row={row.id}>
+                  <Link href={`/mostro/${encodeURIComponent(row.id)}`} className="font-semibold underline-offset-4 hover:underline">{row.nome}</Link>
+                  <span className="text-[14px] text-[#5E4E3E]">{row.votes.total} {row.votes.total === 1 ? "voto" : "voti"}: facile {row.votes.facile} · giusto {row.votes.giusto} · difficile {row.votes.difficile}</span>
+                </li>
+              ))}
+            </ul>
+          ) : <p className={SOFT} data-table-stats="0">Nessun voto ancora. I voti arrivano dal riquadro «L’hai provato al tavolo?» in fondo alle schede di «I mostri creati da voi».</p>}
         </RestItem>
 
         {/* «Sostieni il Grimorio»: people, not taps; the contributions are on Ko-fi. */}

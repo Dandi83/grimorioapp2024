@@ -64,6 +64,8 @@ export interface Monster {
   homebrew_autore?: string | null;
   /** The licence a homebrew card shows (lib/homebrew.ts homebrewLicense); null: none accepted. */
   homebrew_licenza?: string | null;
+  /** «Bilanciamento verificato» (PROMPT 19): the pill only, never a number of the simulator. */
+  homebrew_verificato?: boolean;
   /** The label of the card: «SRD 5.2.1», «SRD 5.1», «Aggiunta da te», «Homebrew»; none for an SRD sheet edited. */
   fonte_scheda?: CardSource;
 }

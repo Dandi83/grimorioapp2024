@@ -5,6 +5,7 @@ import { clientAddress } from "./admin-login-limit";
 import { feedbackSecret } from "./feedback";
 import { HOMEBREW_LICENSE, draftToMonster, homebrewId, isHomebrewId, type HomebrewDraft, type HomebrewEdition } from "./homebrew-types";
 import { toMonsterListItem, type Monster, type MonsterListItem } from "./monsters-types";
+import { deleteTableVotes } from "./table-votes";
 
 /**
  * Homebrew creatures and the proposals of the community. Two tables of their own, created at the first use:
@@ -23,7 +24,11 @@ export type ProposalState = (typeof PROPOSAL_STATES)[number];
 const PROPOSAL_LIMITS = { perHour: 3, perDay: 10, overallPerHour: 30 } as const;
 
 /** licenza: the licence the author accepted (HOMEBREW_LICENSE); null on what came before it (column added later). */
-interface HomebrewRow { id: string; scheda: HomebrewDraft; edizione: HomebrewEdition; autore: string | null; licenza?: string | null; pubblicata_il: Date | string; aggiornata_il: Date | string }
+interface HomebrewRow {
+  id: string; scheda: HomebrewDraft; edizione: HomebrewEdition; autore: string | null; licenza?: string | null; pubblicata_il: Date | string; aggiornata_il: Date | string;
+  /** PROMPT 19: the verdict of the Bilanciamento saved at the approval (or at the last save), and the green pill shown. */
+  bilanciamento?: string | null; verificato?: boolean;
+}
 interface ProposalRow {
   id: string; stato: ProposalState; scheda: HomebrewDraft; nickname: string; email: string | null; originale: boolean; autorizza: boolean; licenza?: string | null;
   creata_il: Date | string; decisa_il: Date | string | null; motivo: string | null; homebrew_id: string | null;
@@ -65,6 +70,9 @@ export function ensureHomebrewTables() {
     await pool.query("ALTER TABLE grimorio_homebrew_proposals ADD COLUMN IF NOT EXISTS licenza text");
     // 28 October 2026: a proposal arrived over the hourly ceiling of the site is saved without a notice.
     await pool.query("ALTER TABLE grimorio_homebrew_proposals ADD COLUMN IF NOT EXISTS picco boolean NOT NULL DEFAULT false");
+    // 29 October 2026 (PROMPT 19): the verdict of the Bilanciamento and «Bilanciamento verificato» shown on the card.
+    await pool.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS bilanciamento text");
+    await pool.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS verificato boolean NOT NULL DEFAULT false");
     await pool.query(`CREATE TABLE IF NOT EXISTS grimorio_homebrew_limits (
       device_hash text NOT NULL,
       sent_at timestamptz NOT NULL DEFAULT now()
@@ -102,8 +110,15 @@ export function homebrewLicense(row: Pick<HomebrewRow, "autore" | "licenza">): s
 
 /** The card of a published homebrew, as the sheet component expects it. */
 export function homebrewMonster(row: HomebrewRow): Monster {
-  return { ...draftToMonster(row.scheda, row.id), homebrew_edizione: row.edizione, homebrew_autore: row.autore, homebrew_licenza: homebrewLicense(row), fonte_scheda: "Homebrew" };
+  return {
+    ...draftToMonster(row.scheda, row.id), homebrew_edizione: row.edizione, homebrew_autore: row.autore, homebrew_licenza: homebrewLicense(row), fonte_scheda: "Homebrew",
+    // Only the pill: never a number of the simulator on a public page.
+    ...(verifiedPill(row) ? { homebrew_verificato: true } : {}),
+  };
 }
+
+/** «Bilanciamento verificato»: the verdict saved was «in linea» and the administrator left the pill on. */
+export const verifiedPill = (row: Pick<HomebrewRow, "bilanciamento" | "verificato">) => !!row.verificato && row.bilanciamento === "in linea";
 
 /** The row of the lists: the light fields, «homebrew», the author and, for «Entrambe», both editions. */
 export function homebrewListItem(row: HomebrewRow): MonsterListItem {
@@ -137,18 +152,21 @@ async function log(homebrewIdValue: string, nome: string, edizione: string, azio
 }
 
 /** A homebrew made in the admin area («del Grimorio»): the same licence as the proposed ones. */
-export async function createHomebrew(draft: HomebrewDraft): Promise<string> {
+export async function createHomebrew(draft: HomebrewDraft, giudizio: string | null = null): Promise<string> {
   await ensureHomebrewTables();
   const id = await freeId(draft.nome);
-  await pool.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, licenza) VALUES ($1, $2, $3, NULL, $4)", [id, JSON.stringify(draft), draft.edizione, HOMEBREW_LICENSE]);
+  // The pill starts off: the administrator turns it on from /admin/bilanciamento when the verdict is «in linea».
+  await pool.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, licenza, bilanciamento) VALUES ($1, $2, $3, NULL, $4, $5)", [id, JSON.stringify(draft), draft.edizione, HOMEBREW_LICENSE, giudizio]);
   await log(id, draft.nome, draft.edizione, "creata");
   return id;
 }
 
 /** Corrections of a published homebrew (the address stays the same). */
-export async function updateHomebrew(id: string, draft: HomebrewDraft): Promise<boolean> {
+export async function updateHomebrew(id: string, draft: HomebrewDraft, giudizio: string | null = null): Promise<boolean> {
   await ensureHomebrewTables();
-  const result = await pool.query("UPDATE grimorio_homebrew SET scheda = $2, edizione = $3, aggiornata_il = now() WHERE id = $1", [id, JSON.stringify(draft), draft.edizione]);
+  // The verdict of the corrected sheet: the pill stays only while it is «in linea».
+  const result = await pool.query("UPDATE grimorio_homebrew SET scheda = $2, edizione = $3, aggiornata_il = now(), bilanciamento = $4, verificato = verificato AND $4 = 'in linea' WHERE id = $1",
+    [id, JSON.stringify(draft), draft.edizione, giudizio]);
   if (!result.rowCount) return false;
   await log(id, draft.nome, draft.edizione, "corretta");
   return true;
@@ -158,8 +176,16 @@ export async function deleteHomebrew(id: string): Promise<boolean> {
   await ensureHomebrewTables();
   const { rows } = await pool.query<HomebrewRow>("DELETE FROM grimorio_homebrew WHERE id = $1 RETURNING id, scheda, edizione", [id]);
   if (!rows[0]) return false;
+  await deleteTableVotes(id);
   await log(id, rows[0].scheda.nome, rows[0].edizione, "eliminata");
   return true;
+}
+
+/** The green pill on or off (/admin/bilanciamento): on only while the saved verdict is «in linea». */
+export async function setHomebrewVerified(id: string, show: boolean): Promise<boolean> {
+  await ensureHomebrewTables();
+  const { rows } = await pool.query<{ verificato: boolean }>("UPDATE grimorio_homebrew SET verificato = $2 AND bilanciamento = 'in linea' WHERE id = $1 RETURNING verificato", [id, show]);
+  return rows.length > 0 && rows[0].verificato === show;
 }
 
 // Proposals.
@@ -236,7 +262,7 @@ export async function updateProposal(id: string, draft: HomebrewDraft): Promise<
  * it and its email is deleted (it is returned once, for the notice). One transaction: never a card without its
  * proposal decided. A proposal sent before the licence (none accepted) is not published: «no-license».
  */
-export async function approveProposal(id: string): Promise<{ homebrewId: string; nome: string; email: string | null } | "no-license" | null> {
+export async function approveProposal(id: string, balance: { giudizio: string | null; verificato: boolean } = { giudizio: null, verificato: false }): Promise<{ homebrewId: string; nome: string; email: string | null } | "no-license" | null> {
   if (!UUID.test(id)) return null;
   await ensureHomebrewTables();
   const client = await pool.connect();
@@ -256,8 +282,8 @@ export async function approveProposal(id: string): Promise<{ homebrewId: string;
     const taken = new Set((await client.query<{ id: string }>("SELECT id FROM grimorio_homebrew WHERE id = $1 OR id LIKE $2", [base, `${base}-%`])).rows.map(row => row.id));
     let card = base;
     for (let n = 2; taken.has(card); n++) card = `${base}-${n}`;
-    await client.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, proposta_id, licenza) VALUES ($1, $2, $3, $4, $5, $6)",
-      [card, JSON.stringify(proposal.scheda), proposal.scheda.edizione, proposal.nickname, proposal.id, proposal.licenza]);
+    await client.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, proposta_id, licenza, bilanciamento, verificato) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      [card, JSON.stringify(proposal.scheda), proposal.scheda.edizione, proposal.nickname, proposal.id, proposal.licenza, balance.giudizio, balance.verificato && balance.giudizio === "in linea"]);
     await client.query("UPDATE grimorio_homebrew_proposals SET stato = 'approvata', decisa_il = now(), email = NULL, homebrew_id = $2 WHERE id = $1", [id, card]);
     await client.query("INSERT INTO grimorio_homebrew_log (id, homebrew_id, nome, edizione, azione) VALUES ($1, $2, $3, $4, 'pubblicata')",
       [randomUUID(), card, proposal.scheda.nome, proposal.scheda.edizione]);

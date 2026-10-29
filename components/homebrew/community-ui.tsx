@@ -77,6 +77,10 @@ export function CommunityHeader({ children }: { children?: React.ReactNode }) {
           </li>
         ))}
       </ol>
+      {/* PROMPT 19: how the creatures are checked, the public page of the method. */}
+      <Link href="/bestiario/creati-da-voi/bilanciamento" data-method-link="header" className="mt-1 inline-flex min-h-11 items-center text-[14px] font-semibold text-[#7A1F2B] underline-offset-4 hover:underline">
+        Come valutiamo il bilanciamento ›
+      </Link>
     </div>
   );
 }

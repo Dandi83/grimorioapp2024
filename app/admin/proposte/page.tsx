@@ -10,6 +10,7 @@ import { listProposals, proposalCounts, publishedHomebrew, type ProposalState } 
 import { estimateChallenge, statsOf, VERDICT_LABEL, type CrReference } from "@/lib/homebrew-cr";
 import { HOMEBREW_EDITION_LABEL, draftActionText, draftToMonster, mismatchedFormat, similarName } from "@/lib/homebrew-types";
 import { getMonsterListIndex } from "@/lib/monster-index";
+import { homebrewVerdict } from "@/lib/homebrew-balance";
 import { hiddenPartIds } from "@/lib/section-visibility";
 import { publicLinksOut } from "@/lib/section-view";
 import { CardDisplayProvider } from "@/components/card-display-context";
@@ -41,6 +42,8 @@ export default async function ProposalsPage({ searchParams }: { searchParams: Pr
       formato: mismatchedFormat({ edizione: draft.edizione, text: draftActionText(draft) }),
       simile: similarName(draft.nome, names.filter(name => name !== draft.nome || stato === "da-vedere")),
       email: !!proposal.email, stato: proposal.stato, motivo: proposal.motivo, homebrewId: proposal.homebrew_id, licenza: proposal.licenza ?? null, picco: !!proposal.picco, draft,
+      // The verdict of the Bilanciamento (PROMPT 19): the box «Bilanciamento verificato» starts ticked only when «in linea».
+      ...(proposal.stato === "da-vedere" ? { bilanciamento: homebrewVerdict(draft) } : {}),
     };
   });
   const tab = (on: boolean) => `inline-flex min-h-11 shrink-0 items-center rounded-[22px] border-[1.5px] px-3.5 text-sm font-semibold ${on ? "border-primary bg-primary text-primary-foreground" : "border-chip-border bg-card text-primary"}`;

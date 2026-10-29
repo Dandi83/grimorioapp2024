@@ -88,11 +88,14 @@ test("administrator: the box under our sheets, a homebrew and a sheet made here,
       const box = page.locator("[data-balance-box]");
       await expect(box, `${id} ${viewport.width}`).toBeVisible();
       await expect(box).toContainText("BILANCIAMENTO");
-      await expect(box.locator("[data-balance-row]")).toHaveCount(3);
-      for (const label of ["Danni ai PG per round", "Round che resiste", "PG a terra (% scontri)"]) await expect(box).toContainText(label);
-      await expect(box.locator("[data-balance-verdict]")).toHaveCount(3);
-      await expect(box.locator("[data-balance-row]").first()).toContainText("fascia 10–90:");
-      await expect(box).toContainText(`Simulazione contro 4 PG di livello ${level}`);
+      // PROMPT 19: the three tactics, each with damage, rounds and characters down; the test situations; the warnings.
+      await expect(box.locator("[data-balance-tactic]")).toHaveCount(3);
+      for (const label of ["Danni a round", "Round", "PG a terra", "Ottimale", "A caso", "Prudente", "SITUAZIONI DI PROVA", "AVVISI"]) await expect(box).toContainText(label);
+      await expect(box.locator("[data-balance-verdict]")).toHaveCount(9);
+      await expect(box.locator("[data-balance-situation]")).toHaveCount(7);
+      await expect(box).toContainText("Fascia 10–90 dei mostri SRD");
+      await expect(box.locator("[data-balance-note]")).toContainText(`Simulazione: 11.100 combattimenti contro 4 PG di livello ${level}`);
+      await expect(box.locator("[data-balance-note]")).toContainText("scenari: base + 7 di prova");
       await expect(box).toContainText("mostri SRD 2024");
       await expect(box.locator("[data-balance-typical]")).toContainText("Valori tipici per questo GS");
       await expect(box.locator("[data-balance-result]")).toHaveAttribute("data-balance-result", /^(in-linea|da-controllare|fuori)$/);
@@ -101,7 +104,7 @@ test("administrator: the box under our sheets, a homebrew and a sheet made here,
         await expect(box.locator("[data-balance-result]")).toHaveAttribute("data-balance-result", result);
         await expect(box.locator("[data-balance-level]")).toHaveText("Fuori dal GS");
         await expect(box.locator("[data-balance-level]")).toHaveCSS("background-color", "rgb(122, 31, 43)");
-        await expect(box.locator("[data-balance-result]")).toContainText("Picchia più dei mostri del suo GS");
+        await expect(box.locator("[data-balance-sentence]")).toContainText(/^Con un master .* picchia troppo forte/);
       }
       await expect(box).toHaveCSS("border-style", "dashed");
       await expect(box).toHaveCSS("background-color", "rgb(252, 239, 208)");
@@ -148,12 +151,12 @@ test("administrator: /admin/bilanciamento by verdict with its filter, and the ed
   await expect(section.locator("[data-balance-box]")).toHaveCount(0);
   await section.getByRole("button", { name: "Ricalcola" }).click();
   await expect(section.locator("[data-balance-box]")).toBeVisible();
-  await expect(section.locator("[data-balance-box]")).toContainText("Simulazione contro 4 PG di livello 2");
+  await expect(section.locator("[data-balance-box]")).toContainText("contro 4 PG di livello 2");
   // A change in the form, then «Ricalcola» again: a CR of 10 is compared with level 10.
   // The editor can be in the page twice for a moment (as the section above): the visible field.
   await page.locator("#grado_sfida").filter({ visible: true }).first().selectOption("10");
   await section.getByRole("button", { name: "Ricalcola" }).click();
-  await expect(section.locator("[data-balance-box]")).toContainText("Simulazione contro 4 PG di livello 10");
+  await expect(section.locator("[data-balance-box]")).toContainText("contro 4 PG di livello 10");
   // Nothing was saved: the page of the sheet still shows CR 2.
   await page.goto("/mostro/prova-bilanciamento-guardiano");
   await expect(page.locator("[data-balance-box]")).toContainText("livello 2");

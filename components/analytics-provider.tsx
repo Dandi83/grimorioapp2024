@@ -197,6 +197,9 @@ export function AnalyticsProvider() {
       else if ((name === "favorite_add" || name === "favorite_remove") && typeof detail.kind === "string" && typeof detail.id === "string")
         void send(name, { favoriteKind: detail.kind, favoriteId: detail.id, device });
       else if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) void send(name);
+      // «L'hai provato al tavolo?» (components/homebrew/table-test.tsx): the vote of this card; the box hears back when it is saved.
+      else if (name === "prova_tavolo" && ["facile", "giusto", "difficile"].includes(detail.vote))
+        void send("prova_tavolo", { tableVote: detail.vote }).then(ok => window.dispatchEvent(new CustomEvent("grimorio:prova-tavolo-salvata", { detail: { ok } })));
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
       else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results });
     };

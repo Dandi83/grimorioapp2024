@@ -30,6 +30,9 @@ export const ANALYTICS_EVENTS = [
   // The favorites themselves stay on the phone; the server keeps only who has which card saved now (lib/analytics.ts).
   "favorite_add",
   "favorite_remove",
+  // «L'hai provato al tavolo?» (PROMPT 19) under a sheet of «I mostri creati da voi»: easy, right or hard for its CR.
+  // One vote per device and card, changeable, kept in its own table (lib/table-votes.ts), never with the events.
+  "prova_tavolo",
 ] as const;
 /** The kinds of cards with a star: spells and creatures (the animals are creatures of the Bestiario). */
 export const FAVORITE_KINDS = ["incantesimo", "mostro"] as const;
@@ -52,6 +55,9 @@ export type ShareFrom = (typeof SHARE_FROM)[number];
 /** The answers of «Come ti trovi con il Grimorio?». */
 export const VOTES = ["male", "cosi-cosi", "bene"] as const;
 export type Vote = (typeof VOTES)[number];
+/** The answers of «L'hai provato al tavolo?»: how it went against its Challenge Rating. */
+export const TABLE_VOTES = ["facile", "giusto", "difficile"] as const;
+export type TableVote = (typeof TABLE_VOTES)[number];
 /** The events of the Home (the sharing of the whole app, the faces), accepted from any public page. */
 const HOME_EVENTS = ["share_tap", "share_sent", "arrivo_da_amico", "valutazione", "support_link", "support_page", "support_click", "favorite_add", "favorite_remove"] as const;
 /** The events of an installation: both count once per visitor in the statistics. */
@@ -84,6 +90,8 @@ export type AnalyticsInput = {
   /** favorite_add and favorite_remove only: the card whose star was tapped (the id kept on the phone). */
   favoriteKind?: FavoriteKind;
   favoriteId?: string;
+  /** prova_tavolo only: the vote; the card is the one of the path (/mostro/<id>). */
+  tableVote?: TableVote;
 };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 /** One segment of an address of the site: letters, numbers and dashes. */
@@ -93,7 +101,7 @@ const SEGMENT = "[a-z0-9][a-z0-9-]{0,119}";
  * /avanzamento and /termini were refused with 400 until 28 October 2026).
  */
 export const ANALYTICS_PATH = new RegExp(
-  `^/(?:$|grimorio$|bestiario(?:/proponi|/creati-da-voi)?$|preferiti$|fonti$|privacy$|info$|termini$|sostieni$|installa$|segnala$|avanzamento$|dadi$|classi(?:/${SEGMENT})?$|in-arrivo/${SEGMENT}$|compendio(?:/${SEGMENT})?$|regole/${SEGMENT}$|oggi/${SEGMENT}$|oggetti-magici(?:/${SEGMENT})?$|equipaggiamento(?:/${SEGMENT}(?:/${SEGMENT})?)?$|manuale(?:/[^/?#]+)?$|spell/[^/?#]+$|mostro/[^/?#]+$)`,
+  `^/(?:$|grimorio$|bestiario(?:/proponi|/creati-da-voi(?:/bilanciamento)?)?$|preferiti$|fonti$|privacy$|info$|termini$|sostieni$|installa$|segnala$|avanzamento$|dadi$|classi(?:/${SEGMENT})?$|in-arrivo/${SEGMENT}$|compendio(?:/${SEGMENT})?$|regole/${SEGMENT}$|oggi/${SEGMENT}$|oggetti-magici(?:/${SEGMENT})?$|equipaggiamento(?:/${SEGMENT}(?:/${SEGMENT})?)?$|manuale(?:/[^/?#]+)?$|spell/[^/?#]+$|mostro/[^/?#]+$)`,
 );
 export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (!raw || typeof raw !== "object") return;
@@ -127,6 +135,7 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (r.event === "support_click" && !SUPPORT_AMOUNTS.includes(r.amount as (typeof SUPPORT_AMOUNTS)[number])) return;
   const favorite = r.event === "favorite_add" || r.event === "favorite_remove";
   if (favorite && (!FAVORITE_KINDS.includes(r.favoriteKind as FavoriteKind) || typeof r.favoriteId !== "string" || !CARD_ID.test(r.favoriteId))) return;
+  if (r.event === "prova_tavolo" && (!TABLE_VOTES.includes(r.tableVote as TableVote) || !/^\/mostro\/[a-z0-9][a-z0-9-]{0,119}$/.test(r.path))) return;
   const input: AnalyticsInput = {
     event: r.event as AnalyticsEvent,
     id: r.id as string,
@@ -147,6 +156,7 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (input.event === "support_link") input.from = r.from as AnalyticsInput["from"];
   if (input.event === "support_click") input.amount = r.amount as number;
   if (input.event === "valutazione") input.vote = r.vote as Vote;
+  if (input.event === "prova_tavolo") input.tableVote = r.tableVote as TableVote;
   if (favorite) {
     input.favoriteKind = r.favoriteKind as FavoriteKind;
     input.favoriteId = r.favoriteId as string;

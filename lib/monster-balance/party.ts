@@ -25,13 +25,22 @@ function saves(level: number, proficient: Ability[]): Record<Ability, number> {
 }
 const heavyAc = (level: number) => 18 + (level >= 5 ? 1 : 0) + (level >= 10 ? 1 : 0);
 
-export function party(level: number): Hero[] {
-  return [
-    { kind: "guerriero", ac: heavyAc(level), hp: 12 + 8 * (level - 1), saves: saves(level, ["for", "cos"]) },
-    { kind: "chierico", ac: heavyAc(level), hp: 10 + 7 * (level - 1), saves: saves(level, ["sag", "car"]) },
-    { kind: "ladro", ac: 14 + (level >= 5 ? 1 : 0) + (level >= 10 ? 1 : 0), hp: 10 + 7 * (level - 1), saves: saves(level, ["des", "int"]) },
-    { kind: "mago", ac: 15, hp: 8 + 6 * (level - 1), saves: saves(level, ["int", "sag"]) },
-  ];
+export type HeroKind = Hero["kind"];
+/** The reference group (PROMPT 11): fighter, cleric, rogue, wizard. */
+export const BASE_PARTY: HeroKind[] = ["guerriero", "chierico", "ladro", "mago"];
+
+export function hero(kind: HeroKind, level: number): Hero {
+  switch (kind) {
+    case "guerriero": return { kind, ac: heavyAc(level), hp: 12 + 8 * (level - 1), saves: saves(level, ["for", "cos"]) };
+    case "chierico": return { kind, ac: heavyAc(level), hp: 10 + 7 * (level - 1), saves: saves(level, ["sag", "car"]) };
+    case "ladro": return { kind, ac: 14 + (level >= 5 ? 1 : 0) + (level >= 10 ? 1 : 0), hp: 10 + 7 * (level - 1), saves: saves(level, ["des", "int"]) };
+    default: return { kind, ac: 15, hp: 8 + 6 * (level - 1), saves: saves(level, ["int", "sag"]) };
+  }
+}
+
+/** The characters of a group: the reference one, or another mix (the test situations of PROMPT 19). */
+export function party(level: number, kinds: HeroKind[] = BASE_PARTY): Hero[] {
+  return kinds.map(kind => hero(kind, level));
 }
 
 /** Fighter: attacks per turn, bonus, damage; Action Surge (attacks doubled in the first round) from level 2. */

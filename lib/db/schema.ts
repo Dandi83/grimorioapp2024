@@ -307,7 +307,21 @@ export const homebrew = pgTable("grimorio_homebrew", {
   aggiornata_il: timestamp("aggiornata_il", { withTimezone: true }).notNull().defaultNow(),
   /** The licence of the card (CC BY-NC-SA 4.0); empty on the creatures proposed before it. */
   licenza: text("licenza"),
+  /** PROMPT 19: the verdict of the Bilanciamento saved at the approval or the last save («in linea», «da controllare», «fuori»). */
+  bilanciamento: text("bilanciamento"),
+  /** The pill «Bilanciamento verificato» on the public card (only with the verdict «in linea»). */
+  verificato: boolean("verificato").notNull().default(false),
 });
+
+/** «L'hai provato al tavolo?» (lib/table-votes.ts): one vote per device (keyed hash) and card, changeable. */
+export const tableVotes = pgTable("grimorio_table_votes", {
+  scheda_id: text("scheda_id").notNull(),
+  chiave: text("chiave").notNull(),
+  voto: text("voto").notNull(),
+  is_test: boolean("is_test").notNull().default(false),
+  creato_il: timestamp("creato_il", { withTimezone: true }).notNull().defaultNow(),
+  aggiornato_il: timestamp("aggiornato_il", { withTimezone: true }).notNull().defaultNow(),
+}, table => [primaryKey({ columns: [table.scheda_id, table.chiave] })]);
 
 /** Creatures proposed from /bestiario/proponi; the optional email is deleted at the decision. */
 export const homebrewProposals = pgTable("grimorio_homebrew_proposals", {
