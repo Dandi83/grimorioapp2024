@@ -46,12 +46,20 @@ for (const [over, error] of [
   [{azioni: []}, /almeno un’azione/], [{azioni: [{nome: 'Morso', testo: '<script>alert(1)</script>'}]}, /caratteri non ammessi/],
   [{azioni: Array.from({length: 13}, () => ({nome: 'A', testo: 'B'}))}, /al massimo 12/], [{habitat: ['Luna']}, /Habitat/], [{ts_competenti: ['fortuna']}, /Tiri salvezza/],
   [{edizione: '2020'}, /edizione/], [{abilita: 'x'.repeat(161)}, /Abilità/],
+  [{descrizione: 'x'.repeat(601)}, /Descrizione: al massimo 600/], [{descrizione: 'Un <b>drago</b>'}, /senza < >/], [{descrizione: 'Più forte > meno forte'}, /senza < >/],
 ]) {
   const result = types.parseDraft(draft(over));
   assert.equal(result.ok, false, JSON.stringify(over));
   assert.match(result.error, error, JSON.stringify(over));
 }
 assert.deepEqual(types.parseDraft(draft({edizione: '2014', azioni_bonus: [{nome: 'Scatto', testo: 'Si muove.'}]})).draft.azioni_bonus, [], 'the 2014 sheets have no bonus actions');
+
+// The description of the form (PROMPT 21): optional, at most 600 characters, plain text; empty or missing = none stored.
+assert.equal('descrizione' in ok.draft, false, 'no description: nothing stored');
+assert.equal('descrizione' in types.parseDraft(draft({descrizione: '   '})).draft, false, 'only spaces: nothing stored');
+assert.equal(types.parseDraft(draft({descrizione: 'x'.repeat(600)})).draft.descrizione, 'x'.repeat(600), '600 characters: accepted');
+assert.equal(types.parseDraft(draft({descrizione: 'è'.repeat(600)})).draft.descrizione.length, 600, 'accented letters count one each');
+assert.equal(types.parseDraft(draft({descrizione: '  Vive nella nebbia.\r\n\r\n\r\nCaccia di notte.  '})).draft.descrizione, 'Vive nella nebbia.\n\nCaccia di notte.');
 
 // The description at the top of the sheet (PROMPT 20): paragraphs apart, escaped; none on the older cards.
 assert.equal(types.draftToMonster({...ok.draft, descrizione: 'Vive nella nebbia.\n\nCaccia di notte & all’alba.\nMai di giorno.'}, 'x').descrizione, 'Vive nella nebbia.<br><br>Caccia di notte &amp; all’alba.<br>Mai di giorno.');
