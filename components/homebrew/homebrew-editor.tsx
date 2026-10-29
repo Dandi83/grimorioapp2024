@@ -162,6 +162,16 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
               <Choice id={id("tipo")} label="Tipo" value={value.tipo} options={HOMEBREW_TYPES} onChange={next => set("tipo", next)} />
               <Choice id={id("allineamento")} label="Allineamento" value={value.allineamento} options={HOMEBREW_ALIGNMENTS} onChange={next => set("allineamento", next)} />
             </div>
+            {/* Optional; on the sheet at the top, in italics (PROMPT 20, 21). */}
+            <div>
+              <label htmlFor={id("descrizione")} className={labelClass}>Descrizione</label>
+              <textarea id={id("descrizione")} value={value.descrizione ?? ""} maxLength={LIMITS.descrizione} rows={3} aria-describedby={id("descrizione-aiuto")}
+                onChange={event => set("descrizione", event.target.value)} className={`${inputClass} min-h-24`} />
+              <p id={id("descrizione-aiuto")} className="mt-1 flex justify-between gap-3 text-[13px] leading-5 text-muted">
+                <span>Com’è fatta, dove vive, come si comporta. Due o tre frasi bastano.</span>
+                <span className="shrink-0 tabular-nums" data-description-count="">{(value.descrizione ?? "").length}/{LIMITS.descrizione}</span>
+              </p>
+            </div>
           </Section>
 
           <Section title="Combattimento">

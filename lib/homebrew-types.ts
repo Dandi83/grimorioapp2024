@@ -81,7 +81,7 @@ export const EMPTY_DRAFT: HomebrewDraft = {
   grado_sfida: "1", tratti: [], azioni: [{ nome: "", testo: "" }], azioni_bonus: [], reazioni: [], azioni_leggendarie: [], descrizione: "",
 };
 
-export const LIMITS = { nome: 60, short: 160, entryName: 60, entryText: 1500, entries: 12, nickname: 40, motivo: 500 } as const;
+export const LIMITS = { nome: 60, short: 160, entryName: 60, entryText: 1500, entries: 12, nickname: 40, motivo: 500, descrizione: 600 } as const;
 /** The whole JSON of a proposal: enough for a big creature, small enough for the database and the antispam. */
 export const PROPOSAL_MAX_BYTES = 48 * 1024;
 
@@ -156,6 +156,9 @@ export function parseDraft(input: unknown): DraftCheck {
     blocks[block] = edizione === "2014" && block === "azioni_bonus" ? [] : entries;
   }
   if (!blocks.azioni?.length) return fail("Aggiungi almeno un’azione.");
+  // Optional (PROMPT 21): the cards and proposals saved before have none.
+  const descrizione = plainText(data.descrizione ?? "", LIMITS.descrizione, true);
+  if (descrizione === null) return fail(`Descrizione: al massimo ${LIMITS.descrizione} caratteri, senza < >.`);
   return {
     ok: true,
     draft: {
@@ -167,6 +170,7 @@ export function parseDraft(input: unknown): DraftCheck {
       immunita_condizioni: texts.immunita_condizioni, sensi: texts.sensi, linguaggi: texts.linguaggi,
       habitat: normalizeHabitats(habitat), grado_sfida: data.grado_sfida as string,
       tratti: blocks.tratti!, azioni: blocks.azioni!, azioni_bonus: blocks.azioni_bonus!, reazioni: blocks.reazioni!, azioni_leggendarie: blocks.azioni_leggendarie!,
+      ...(descrizione ? { descrizione } : {}),
     },
   };
 }
