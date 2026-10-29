@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
 import pg from "pg";
 import { TEST_DATABASE_URL } from "./test-db.mjs";
+import { GRIMORIO_TITLE, setBestiaryPart } from "./originals-parts.mjs";
 
-// «Descrizione in alto» (PROMPT 20): the sheets of «I mostri creati da voi» (community and «Creato dal Grimorio") open
+// «Descrizione in alto» (PROMPT 20): the sheets of «I mostri creati da voi» (community and «Dalla redazione») open
 // with their description in italics, under the pills and the author line and above the ink strip; on the phone 4 lines
 // and «Leggi tutto». The form preview does the same. The official sheets keep «Descrizione» at the bottom. A creature
 // «2014 e 2024» keeps its pill and its dark label follows the chosen edition. Local test database only.
@@ -78,14 +79,28 @@ test.beforeAll(async () => {
  * Clean-up: the other rows from the database, ours with the bin of the reserved area, which refreshes the cached lists of
  * the site (e2e/homebrew.spec.mjs starts with no creature of «Creati da voi»); the cache is read again until it is empty.
  */
-async function cleanUp(browser, ids, binned) {
-  await database(client => client.query("DELETE FROM grimorio_homebrew WHERE id = ANY($1)", [ids.filter(id => id !== binned.id)]));
+/** An administrator page of its own context, signed in. */
+async function signIn(browser) {
   const context = await browser.newContext({ baseURL: test.info().project.use.baseURL });
   const admin = await context.newPage();
   await admin.goto("/admin");
   await admin.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await admin.getByRole("button", { name: "Entra" }).click();
   await expect(admin.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
+  return { context, admin };
+}
+
+// Ours is «Dalla redazione»: «Mostri del Grimorio» starts «In arrivo» (PROMPT 25), shown for these tests.
+test.beforeAll(async ({ browser }) => {
+  const { context, admin } = await signIn(browser);
+  await setBestiaryPart(admin, GRIMORIO_TITLE, "Visibile");
+  await context.close();
+});
+
+async function cleanUp(browser, ids, binned) {
+  await database(client => client.query("DELETE FROM grimorio_homebrew WHERE id = ANY($1)", [ids.filter(id => id !== binned.id)]));
+  const { context, admin } = await signIn(browser);
+  await setBestiaryPart(admin, GRIMORIO_TITLE, "In arrivo");
   await admin.goto("/admin/mostri");
   await admin.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
   await admin.getByPlaceholder("Cerca per nome o tipo…").fill(binned.name.toLowerCase());
@@ -114,7 +129,7 @@ for (const width of [390, 1280]) {
       expect((await place(page)).sections).not.toContain("Descrizione");
       await expect(page.locator("[data-lead-more]")).toHaveCount(0);
     }
-    // «Creato dal Grimorio»: its pill and line under the title, then the description.
+    // «Dalla redazione»: its pill and line under the title, then the description.
     await page.goto(`/mostro/${OURS}`);
     await expect(page.locator("[data-homebrew-pill='grimorio']")).toBeVisible();
     await expect(page.locator("[data-homebrew-byline='grimorio']")).toBeVisible();

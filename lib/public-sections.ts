@@ -54,8 +54,10 @@ export const PUBLIC_SECTIONS = [
     ...editions("/bestiario"),
     { key: "mostri", title: "Raccolta Mostri", group: "raccolte", set: "raccolta", page: "/bestiario" },
     { key: "animali", title: "Raccolta Animali", group: "raccolte", set: "raccolta", page: "/bestiario" },
-    // Homebrew creatures and the form «Proponi una creatura» (/bestiario/proponi).
+    // The creatures of the community and the form «Proponi una creatura» (/bestiario/proponi).
     { key: "homebrew", title: "I mostri creati da voi", group: "raccolte", set: "raccolta", page: "/bestiario" },
+    // PROMPT 25: the original creatures of the editorial staff (homebrew without an author), «In arrivo» until set.
+    { key: "grimorio", title: "Mostri del Grimorio", group: "raccolte", set: "raccolta", page: "/bestiario" },
   ] },
   { key: "classi", title: "Classi", where: "Compendio · Personaggi", paths: ["/classi"], parts: [
     ...editions("/classi/mago"),

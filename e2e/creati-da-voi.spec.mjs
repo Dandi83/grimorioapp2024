@@ -63,7 +63,7 @@ test.beforeEach(async ({ page }) => {
 
 test("a visitor: nothing of «I mostri creati da voi» (switch off): no card, no category, 404 pages and sheets, 403 API", async ({ page, request }) => {
   const html = await (await request.get("/bestiario")).text();
-  expect(html).not.toMatch(/creati da voi|Dalla community|data-community-invite/i);
+  expect(html).not.toMatch(/creati da voi|Dalla community|data-originals-tile="community"/i);
   for (const path of ["/bestiario/creati-da-voi", "/bestiario/proponi", `/mostro/${COMMUNITY_ID}`, `/mostro/${OURS_ID}`]) {
     const response = await request.get(path);
     expect(response.status(), path).toBe(404);
@@ -75,11 +75,11 @@ test("a visitor: nothing of «I mostri creati da voi» (switch off): no card, no
   expect(sent.status()).toBe(403);
   expect((await (await request.get("/api/catalogo/bestiario")).json()).monsters.some(monster => monster.homebrew)).toBe(false);
   const index = await (await request.get("/ricerca-indice.json")).text();
-  expect(index).not.toMatch(/homebrew-|Creato da voi|Creato dal Grimorio/);
+  expect(index).not.toMatch(/homebrew-|Dalla community|Dalla redazione/);
 
   await page.goto("/bestiario");
   await expect(page.getByRole("searchbox", { name: "Cerca una creatura" })).toBeVisible();
-  await expect(page.locator("[data-community-invite]")).toHaveCount(0);
+  await expect(page.locator("[data-originals-tile=community]")).toHaveCount(0);
   await page.getByRole("button", { name: /^Filtri/ }).click();
   await expect(page.getByRole("dialog").getByRole("button", { name: /^Mostra \d+ risultat/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /Creati da voi/ })).toHaveCount(0);
@@ -92,16 +92,14 @@ test("the administrator: card (N > 0 and N = 0), section with chips, pills and s
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/bestiario");
   if ((await editionPill(page).getAttribute("aria-label")).slice(9, 13) !== "2024") await chooseEdition(page, "2024");
-  const card = page.locator("[data-community-invite]");
+  // PROMPT 25: the tile «Creati da voi» of «Creature originali» (the community only; ours is «Mostri del Grimorio»).
+  const card = page.locator("[data-originals-block]").filter({ visible: true }).locator("[data-originals-tile=community]");
   await expect(card).toBeVisible();
-  await expect(card).toHaveAttribute("data-community-invite", "2");
+  await expect(card.locator("[data-originals-count]")).toHaveAttribute("data-originals-count", "1");
   await expect(card).toContainText("Nascosta");
-  await expect(card).toContainText("DALLA COMMUNITY", { ignoreCase: false }).catch(async () => expect(card.getByText("Dalla community")).toHaveCSS("text-transform", "uppercase"));
-  await expect(card.getByRole("heading", { name: "I mostri creati da voi" })).toHaveCSS("font-size", "26px");
   await expect(card).toHaveCSS("background-color", "rgb(43, 33, 24)");
-  await expect(card.getByRole("link", { name: "Sfoglia · 2" })).toHaveAttribute("href", "/bestiario/creati-da-voi");
+  await expect(card.locator("[data-originals-link]")).toHaveAttribute("href", "/bestiario/creati-da-voi");
   await expect(card.getByRole("link", { name: "Proponi il tuo" })).toHaveAttribute("href", "/bestiario/proponi");
-  await expect(card).toContainText("Creature inventate dai master del Grimorio, controllate da noi prima di pubblicarle.");
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/1-bestiario-card-390.png` });
   // The category «Creati da voi» of the filters leads to the same list.
   await page.getByRole("button", { name: /^Filtri/ }).click();
@@ -114,12 +112,13 @@ test("the administrator: card (N > 0 and N = 0), section with chips, pills and s
   await expect(page.getByRole("heading", { name: "I mostri creati da voi", level: 1 })).toHaveCSS("font-size", "36px");
   await expect(page.getByRole("link", { name: "Proponi un mostro" })).toHaveAttribute("href", "/bestiario/proponi");
   await expect(page.locator("[data-community-steps] li")).toHaveCount(3);
-  await expect(page.locator("[data-community-chip]")).toHaveText(["Tutti · 2", "Dalla community · 1", "Dal Grimorio · 1"]);
+  await page.goto("/bestiario/creature-originali");
+  await expect(page.locator("[data-community-chip]")).toHaveText(["Tutte · 2", "Dalla redazione · 1", "Dalla community · 1"]);
   const row = id => page.locator("li.catalog-row").filter({ has: page.locator(`a[href="/mostro/${id}"]`) });
-  await expect(row(COMMUNITY_ID).locator("[data-homebrew-pill=community]")).toHaveText("Creato da voi");
+  await expect(row(COMMUNITY_ID).locator("[data-homebrew-pill=community]")).toHaveText("Dalla community");
   await expect(row(COMMUNITY_ID).locator("[data-homebrew-pill=community]")).toHaveCSS("background-color", "rgb(246, 227, 176)");
   await expect(row(COMMUNITY_ID)).toContainText("di Lia");
-  await expect(row(OURS_ID).locator("[data-homebrew-pill=grimorio]")).toHaveText("Creato dal Grimorio");
+  await expect(row(OURS_ID).locator("[data-homebrew-pill=grimorio]")).toHaveText("Dalla redazione");
   await expect(row(OURS_ID).locator("[data-homebrew-pill=grimorio]")).toHaveCSS("background-color", "rgb(122, 31, 43)");
   await expect(row(OURS_ID).locator("[data-homebrew-author]")).toHaveCount(0);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/2-sezione-390.png`, fullPage: true });
@@ -142,9 +141,9 @@ test("the administrator: card (N > 0 and N = 0), section with chips, pills and s
   await expect(page.getByRole("button", { name: "Torna indietro" })).toContainText("I mostri creati da voi");
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/4-scheda-390.png` });
   await page.getByRole("button", { name: "Torna indietro" }).click();
-  await expect(page).toHaveURL(/\/bestiario\/creati-da-voi$/);
+  await expect(page).toHaveURL(/\/bestiario\/creature-originali$/);
   await page.goto(`/mostro/${OURS_ID}`);
-  await expect(page.locator("[data-homebrew-pill=grimorio]")).toHaveText("Creato dal Grimorio");
+  await expect(page.locator("[data-homebrew-pill=grimorio]")).toHaveText("Dalla redazione");
   await expect(page.locator("[data-homebrew-byline=grimorio]")).toHaveText("Mostro originale, bilanciato sui mostri ufficiali dello stesso GS");
   // The box of PROMPT 12 stays on these sheets.
   await expect(page.locator("[data-balance-box]")).toBeVisible();
@@ -152,15 +151,12 @@ test("the administrator: card (N > 0 and N = 0), section with chips, pills and s
   // N = 0: in 2014 no creature yet, only «Proponi il tuo».
   await page.goto("/bestiario");
   await chooseEdition(page, "2014");
-  await expect(card).toHaveAttribute("data-community-invite", "0");
-  await expect(card.getByRole("link", { name: /Sfoglia/ })).toHaveCount(0);
-  await expect(card).toContainText("Sii il primo a proporre una creatura: la controlliamo e la pubblichiamo con il tuo nome.");
+  await expect(card.locator("[data-originals-count]")).toHaveAttribute("data-originals-count", "0");
   await expect(card.getByRole("link", { name: "Proponi il tuo" })).toBeVisible();
   await chooseEdition(page, "2024");
-  // Computer: the card is not in the list column, the section opens on the right.
+  // Computer: the section opens on the right.
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/bestiario/creati-da-voi");
-  await expect(page.locator("aside [data-community-invite]")).toHaveCount(0);
   await expect(page.locator("[data-community-header]").filter({ visible: true })).toBeVisible();
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/2-sezione-1280.png` });
 });

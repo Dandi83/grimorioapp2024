@@ -308,8 +308,8 @@ export const isHomebrewId = (id: string) => id.startsWith("homebrew-");
 
 /** The author line: «di Nick» in the lists, «Proposta da Nick» on the card; the administrator's are «del Grimorio». */
 export function authorLine(autore: string | null | undefined, where: "list" | "card"): string {
-  // Ours: the «Creato dal Grimorio» pill says it all (no author line in the lists).
-  if (!autore) return where === "list" ? "" : "Creato dal Grimorio";
+  // Ours: the «Dalla redazione» pill says it all (no author line in the lists).
+  if (!autore) return where === "list" ? "" : "Dalla redazione";
   return where === "list" ? `di ${autore}` : `Proposta da ${autore}`;
 }
 

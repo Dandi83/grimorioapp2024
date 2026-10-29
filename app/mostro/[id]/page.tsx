@@ -14,7 +14,8 @@ import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
 import { cardHidden, editionCard, linksOut, partState, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
-import { collectionOf } from "@/lib/monsters-types";
+import { collectionOf, type Collection } from "@/lib/monsters-types";
+import { COMMUNITY_HREF, GRIMORIO_HREF } from "@/components/homebrew/community-ui";
 import { HomebrewByline, HomebrewLabel, HomebrewNote } from "@/components/homebrew/homebrew-sheet";
 import { TableTest } from "@/components/homebrew/table-test";
 
@@ -23,8 +24,8 @@ import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { ReportLink } from "@/components/feedback/report-link";
 import { CardOriginBox } from "@/components/card-origin-box";
 
-/** A creature of a hidden collection (Mostri, Animali) is not found; true when the administrator sees it hidden. */
-async function collectionCard(collection: "mostri" | "animali" | "homebrew"): Promise<boolean> {
+/** A creature of a hidden collection (Mostri, Animali, community, editorial staff) is not found; true when the administrator sees it hidden. */
+async function collectionCard(collection: Collection): Promise<boolean> {
   const state = await partState("bestiario", collection);
   if (!state.shown) notFound();
   return state.hidden;
@@ -60,7 +61,7 @@ export async function generateMetadata({
   await cardHidden("mostro", monster.id);
   if (monster.homebrew_edizione === "entrambe") await bothEditionsCard();
   else await editionCard("bestiario", monster.edizione === "2014" || (!monster.edizione && usesLegacyMonsterRules(monster)) ? "2014" : "2024");
-  await collectionCard(collectionOf({ id: monster.id, homebrew: monster.homebrew_edizione }));
+  await collectionCard(collectionOf({ id: monster.id, homebrew: monster.homebrew_edizione, homebrew_autore: monster.homebrew_autore }));
   const description = monster.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
     `${monster.nome}, ${monster.tipo}.`;
   const url = `https://ilgrimorio.app/mostro/${encodeURIComponent(monster.id)}`;
@@ -89,7 +90,7 @@ export default async function MonsterDetailPage({
   const legacy = usesLegacyMonsterRules(monster);
   // A creature of an edition or a collection hidden from /admin/sezioni is not found (the administrator sees it, labelled).
   const edition = monster.edizione === "2014" || (!monster.edizione && legacy) ? "2014" : "2024";
-  const collection = collectionOf({ id: monster.id, homebrew: monster.homebrew_edizione });
+  const collection = collectionOf({ id: monster.id, homebrew: monster.homebrew_edizione, homebrew_autore: monster.homebrew_autore });
   // A homebrew for both editions is not found only when both are hidden.
   const both = monster.homebrew_edizione === "entrambe";
   // A card hidden with the eye of the admin area: not found for the public, labelled for the administrator.
@@ -106,8 +107,9 @@ export default async function MonsterDetailPage({
         monster={monster}
         before={
           <div className="flex min-h-11 items-center justify-between pb-2">
-            {/* «I mostri creati da voi»: back to the section (PROMPT 13). */}
-            {homebrew ? <BackButton fallback="/bestiario/creati-da-voi" label="I mostri creati da voi" /> : <BackButton fallback="/bestiario" label="Bestiario" />}
+            {/* Original creatures: back to where the visitor came from (the browser's history), else to their section (PROMPT 25). */}
+            {collection === "grimorio" ? <BackButton fallback={GRIMORIO_HREF} label="Mostri del Grimorio" />
+              : homebrew ? <BackButton fallback={COMMUNITY_HREF} label="I mostri creati da voi" /> : <BackButton fallback="/bestiario" label="Bestiario" />}
             <div className="flex items-center">
               {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
               <AdminEditButton target={{ kind: "mostro", id: monster.id, edition: homebrew ? (monster.homebrew_edizione === "entrambe" ? undefined : monster.homebrew_edizione) : legacy ? "2014" : "2024" }} desktop="lg:static lg:mr-2" />
@@ -139,7 +141,7 @@ export default async function MonsterDetailPage({
 
       {/* «L'hai provato al tavolo?» (PROMPT 19): the votes of the masters, drawn in the browser. */}
       {homebrew && <TableTest id={monster.id} />}
-      {homebrew && <HomebrewNote />}
+      {homebrew && <HomebrewNote ours={collection === "grimorio"} />}
 
       <ReportLink edition={monster.edizione ?? (legacy ? "2014" : "2024")} />
     </article>

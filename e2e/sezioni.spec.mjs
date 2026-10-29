@@ -60,7 +60,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await page.getByRole("button", { name: "Entra" }).click();
   // Rows of the log already there (other tests of the run, e2e/in-arrivo.spec.mjs among them, use the same database).
   await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
-  await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
+  await page.goto("/admin/registro?sezione=sezioni&stato=tutte&limite=5000");
   await expect(page.getByRole("heading", { level: 1, name: "Registro" })).toBeVisible();
   const logBefore = await page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]").filter({ hasNotText: "I mostri creati da voi" }).count();
   await page.goto("/admin");
@@ -236,7 +236,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await expect(pub.getByRole("heading", { level: 2, name: "Personaggi" })).toBeVisible();
 
   // The log: every switch, with section and new state.
-  await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
+  await page.goto("/admin/registro?sezione=sezioni&stato=tutte&limite=5000");
   const log = page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]");
   await expect(log.first()).toContainText("Classi · visibilità");
   await expect(log.first()).toContainText("Visibile");
@@ -486,7 +486,7 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await expect(pub.locator("main h2")).toHaveCount(4);
 
   // The log: section, part, new state.
-  await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
+  await page.goto("/admin/registro?sezione=sezioni&stato=tutte&limite=5000");
   const log = page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]");
   await expect(log.filter({ hasText: "Classi · Tab Tabella · visibilità" })).toHaveCount(2);
   await expect(log.filter({ hasText: "Avanzamento · Calcolatore di PE · visibilità" }).first()).toContainText("Visibile");

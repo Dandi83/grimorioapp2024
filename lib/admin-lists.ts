@@ -24,8 +24,9 @@ import { readFavoriteCounts } from "./analytics";
  */
 
 type Pill = AdminRow["pill"];
-const pillOf = (source: CardSource | string | undefined, homebrew = false): Pill =>
-  homebrew ? "Creati da voi" : source === "Sintesi originale" ? "Sintesi" : source === "Aggiunta da te" ? "Aggiunta da te" : undefined;
+/** The original creatures (PROMPT 25): «Dalla redazione» without an author, «Dalla community» with one. */
+const pillOf = (source: CardSource | string | undefined, homebrew: false | "redazione" | "community" = false): Pill =>
+  homebrew === "redazione" ? "Dalla redazione" : homebrew === "community" ? "Dalla community" : source === "Sintesi originale" ? "Sintesi" : source === "Aggiunta da te" ? "Aggiunta da te" : undefined;
 
 async function checks() {
   const [modified, names, hidden, saves] = await Promise.all([
@@ -72,7 +73,7 @@ export async function monsterList(edition: AdminEdition): Promise<AdminListData>
     return {
       id: monster.id, name: monster.nome, sub: [typeCategory(monster.tipo) || monster.tipo, monster.taglia].filter(Boolean).join(" · "),
       lead: monster.grado_sfida || "?", group: challengeGroup(monster.grado_sfida, monster.gs_num),
-      source: isHomebrew ? "creati" : modified || isNoSrdSource(monster.fonte_scheda) ? "nosrd" : "srd", pill: modified ? undefined : pillOf(monster.fonte_scheda, isHomebrew),
+      source: isHomebrew ? "creati" : modified || isNoSrdSource(monster.fonte_scheda) ? "nosrd" : "srd", pill: modified ? undefined : pillOf(monster.fonte_scheda, isHomebrew && (monster.homebrew_autore ? "community" : "redazione")),
       modified, reviewNames: namesOf.get(key), hidden: hidden.has(`/mostro/${monster.id}`),
       editHref: `/admin/mostri/${encodeURIComponent(monster.id)}?ritorno=%2Fadmin%2Fmostri`, publicHref: `/mostro/${monster.id}`,
       ...(savesOf.get(key) ? { saves: savesOf.get(key) } : {}),
@@ -106,7 +107,7 @@ export async function editableEntries(edition: AdminEdition): Promise<{ name: st
   const [spells, monsters] = await Promise.all([spellList(edition).catch(() => null), monsterList(edition).catch(() => null)]);
   return [
     ...(spells?.rows ?? []).map(row => ({ name: row.name, kind: `Incantesimo · ${row.sub}`, href: row.editHref })),
-    ...(monsters?.rows ?? []).map(row => ({ name: row.name, kind: `${row.pill === "Creati da voi" ? "Creati da voi" : "Mostro"} · ${row.group.label}`, href: row.editHref })),
+    ...(monsters?.rows ?? []).map(row => ({ name: row.name, kind: `${row.pill === "Dalla redazione" || row.pill === "Dalla community" ? row.pill : "Mostro"} · ${row.group.label}`, href: row.editHref })),
     ...CONTENT_SECTIONS.filter(section => section.editions.includes(edition)).flatMap(section => section.items(edition).map(item => ({
       name: item.nome, kind: `${section.title}${item.etichetta ? ` · ${item.etichetta}` : ""}`, href: `/admin/contenuti/${section.key}/${encodeURIComponent(item.id)}?edizione=${edition}`,
     }))),

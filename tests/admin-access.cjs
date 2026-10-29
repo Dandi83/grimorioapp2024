@@ -162,7 +162,8 @@ function load(relative) {
   assert.deepEqual(await sections.setPartVisibilityAction('classi:tab-tabella',true),{ok:true,hidden:true});
   assert.deepEqual(await sections.setPartVisibilityAction('classi:inventata',true),{ok:false,error:'Parte sconosciuta.'});
   // «I mostri creati da voi»: while off (lib/community.ts) its part counts as hidden whatever the switches say; on, it follows them.
-  const switchedOff = require('../lib/community.ts').COMMUNITY_PUBLIC ? [] : ['bestiario:homebrew'];
+  // «Mostri del Grimorio» (PROMPT 25): «In arrivo» until the administrator sets it.
+  const switchedOff = [...(require('../lib/community.ts').COMMUNITY_PUBLIC ? [] : ['bestiario:homebrew']), 'bestiario:grimorio'].sort();
   assert.deepEqual((await visibility.visibilityState()).parts,[...switchedOff,'classi:tab-tabella']);
   await sections.setPartVisibilityAction('avanzamento:tabella',true);
   for (const part of ['punti-ferita','talenti','calcolatore']) await sections.setPartVisibilityAction(`avanzamento:${part}`,true);

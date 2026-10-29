@@ -133,13 +133,9 @@ test("leaving the editor, «indietro» on the card leads to the list, never to t
   await brew.locator("#admin-hb-azioni-0-testo").fill("Tiro per colpire in mischia: +4, portata 1,5 m. Colpito: 5 (1d6 + 2) danni necrotici.");
   await brew.getByRole("button", { name: "Salva" }).click();
   await expect(brew).toHaveCount(0);
-  await page.goto("/bestiario");
-  await page.getByRole("searchbox").first().fill("ombra del ritorno");
-  await page.getByRole("button", { name: /^Filtri/ }).click();
-  // «Creati da voi» leads to the section (switched off for the visitors: «Nascosta» for the administrator).
-  await page.getByRole("button", { name: /^Creati da voi/ }).click();
-  await page.getByRole("button", { name: /^Mostra \d+ risultat/ }).click();
-  await expect(page).toHaveURL(/\/bestiario\/creati-da-voi$/);
+  // Ours is «Dalla redazione»: «Mostri del Grimorio» («In arrivo» for the visitors, labelled for the administrator).
+  await page.goto("/bestiario/del-grimorio");
+  await expect(page).toHaveURL(/\/bestiario\/del-grimorio$/);
   await page.locator('a[href="/mostro/homebrew-ombra-del-ritorno"]').first().click();
   await expect(page).toHaveURL(/\/mostro\/homebrew-ombra-del-ritorno/);
   await edit(page).click();

@@ -73,7 +73,7 @@ const parts = Object.fromEntries(ps.PUBLIC_SECTIONS.map(section => [section.key,
 for (const key of ['incantesimi','bestiario','armi','armature','avventura','strumenti','oggetti-magici','condizioni','classi']) {
   assert.deepEqual(parts[key].slice(0, 2), ['2014', '2024'], `${key}: Edizione 2014 and 2024`);
 }
-assert.deepEqual(parts.bestiario.slice(2), ['mostri', 'animali', 'homebrew']);
+assert.deepEqual(parts.bestiario.slice(2), ['mostri', 'animali', 'homebrew', 'grimorio']);
 assert.deepEqual(parts.classi.slice(2), ['tab-tabella', 'tab-sottoclasse', 'abilita', 'diventare', 'lista-incantesimi', 'incantesimi-del']);
 for (const key of ['armi', 'avventura', 'strumenti', 'oggetti-magici']) assert.ok(parts[key].includes('confronto'), `${key}: 2014 → 2024`);
 assert.deepEqual(parts.avanzamento, ['tabella', 'punti-ferita', 'talenti', 'calcolatore']);
@@ -93,7 +93,8 @@ assert.equal(ps.isPartId('armature:confronto'), false);
 assert.deepEqual(ps.effectiveHidden([], ['incantesimi:2014']), []);
 assert.deepEqual(ps.effectiveHidden([], ['incantesimi:2014', 'incantesimi:2024']), ['incantesimi']);
 assert.deepEqual(ps.effectiveHidden([], ['bestiario:mostri', 'bestiario:animali']), [], 'the Homebrew collection is still shown');
-assert.deepEqual(ps.effectiveHidden([], ['bestiario:mostri', 'bestiario:animali', 'bestiario:homebrew']), ['bestiario']);
+assert.deepEqual(ps.effectiveHidden([], ['bestiario:mostri', 'bestiario:animali', 'bestiario:homebrew']), [], '«Mostri del Grimorio» is still shown (PROMPT 25)');
+assert.deepEqual(ps.effectiveHidden([], ['bestiario:mostri', 'bestiario:animali', 'bestiario:homebrew', 'bestiario:grimorio']), ['bestiario']);
 assert.deepEqual(ps.effectiveHidden([], ['avanzamento:tabella', 'avanzamento:punti-ferita', 'avanzamento:talenti']), []);
 assert.deepEqual(ps.effectiveHidden([], ['avanzamento:tabella', 'avanzamento:punti-ferita', 'avanzamento:talenti', 'avanzamento:calcolatore']), ['avanzamento']);
 assert.deepEqual(ps.effectiveHidden([], ['classi:tab-tabella', 'classi:tab-sottoclasse']), [], 'the tabs do not make up the page');

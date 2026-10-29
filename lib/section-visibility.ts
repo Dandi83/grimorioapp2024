@@ -28,6 +28,13 @@ export const SECTION_STATES: readonly SectionState[] = ["visibile", "in-arrivo",
 export const isSectionState = (value: unknown): value is SectionState => SECTION_STATES.includes(value as SectionState);
 const stateOf = (row: { nascosta: boolean; in_arrivo?: boolean | null } | undefined): SectionState =>
   !row?.nascosta ? "visibile" : row.in_arrivo ? "in-arrivo" : "nascosta";
+/**
+ * The state of a part never set from /admin/sezioni: «Visibile», except the parts that start «In arrivo» (PROMPT 25:
+ * «Mostri del Grimorio»), until the administrator chooses.
+ */
+export const DEFAULT_PART_STATES: Readonly<Record<string, SectionState>> = { "bestiario:grimorio": "in-arrivo" };
+const partStateOf = (id: string, row: { nascosta: boolean; in_arrivo?: boolean | null } | undefined): SectionState =>
+  row ? stateOf(row) : DEFAULT_PART_STATES[id] ?? "visibile";
 
 export type CardKind = "incantesimo" | "mostro" | "sottoclasse";
 interface CardLogRow { id: string; tipo: CardKind; scheda: string; nome: string; edizione: string; nascosta: boolean; autore: string; creata_il: Date | string }
@@ -120,10 +127,13 @@ async function readHidden(): Promise<PublicSectionKey[]> {
 async function readState(): Promise<VisibilityState> {
   const [sections, parts, cards] = await Promise.all([
     readHiddenRows(),
-    hiddenRows<{ sezione: string; parte: string; in_arrivo: boolean }>(`SELECT sezione, parte, ${SOON} FROM grimorio_section_parts t WHERE nascosta`),
+    hiddenRows<{ sezione: string; parte: string; nascosta: boolean; in_arrivo: boolean }>(`SELECT sezione, parte, nascosta, ${SOON} FROM grimorio_section_parts t`),
     hiddenRows<{ tipo: string; scheda: string }>("SELECT tipo, scheda FROM grimorio_card_visibility WHERE nascosta"),
   ]);
-  const partRows = parts.map(row => ({ id: `${row.sezione}:${row.parte}`, soon: row.in_arrivo })).filter(row => isPartId(row.id));
+  // Every row (the parts set back to «Visibile» too), then the parts never set with their default state.
+  const saved = parts.map(row => ({ id: `${row.sezione}:${row.parte}`, state: stateOf(row) })).filter(row => isPartId(row.id));
+  const defaults = Object.entries(DEFAULT_PART_STATES).filter(([id]) => !saved.some(row => row.id === id)).map(([id, state]) => ({ id, state }));
+  const partRows = [...saved, ...defaults].filter(row => row.state !== "visibile").map(row => ({ id: row.id, soon: row.state === "in-arrivo" }));
   return {
     sections: sections.map(row => row.sezione),
     parts: partRows.map(row => row.id).sort(),
@@ -184,6 +194,7 @@ export async function allSectionStates(): Promise<Record<string, SectionState>> 
   ]);
   return Object.fromEntries([
     ...sections.rows.map(row => [row.sezione, stateOf(row)] as const),
+    ...Object.entries(DEFAULT_PART_STATES),
     ...parts.rows.map(row => [`${row.sezione}:${row.parte}`, stateOf(row)] as const),
   ]);
 }
@@ -225,7 +236,7 @@ export async function setPartState(sezione: PublicSectionKey, parte: string, sta
   try {
     await client.query("BEGIN");
     const { rows } = await client.query<{ nascosta: boolean; in_arrivo: boolean }>("SELECT nascosta, in_arrivo FROM grimorio_section_parts WHERE sezione = $1 AND parte = $2 FOR UPDATE", [sezione, parte]);
-    if (stateOf(rows[0]) === state) {
+    if (partStateOf(`${sezione}:${parte}`, rows[0]) === state) {
       await client.query("ROLLBACK");
       return false;
     }

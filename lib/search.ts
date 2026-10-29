@@ -120,5 +120,5 @@ export function rowHref(row: SearchRow, chosen: string | null | undefined): stri
 
 /** First word of the label of a homebrew creature: the search panel shows it as the «Homebrew» pill. */
 /** The first words of the label of a creature of «I mostri creati da voi» in the search (the panel shows them as the pill). */
-export const HOMEBREW_LABEL = "Creato da voi";
-export const GRIMORIO_LABEL = "Creato dal Grimorio";
+export const HOMEBREW_LABEL = "Dalla community";
+export const GRIMORIO_LABEL = "Dalla redazione";
