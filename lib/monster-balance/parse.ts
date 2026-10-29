@@ -34,6 +34,8 @@ export type MonsterModel = {
   legendary: { uses: number; options: LegendaryOption[] };
   legendaryResistance: number;
   magicResistance: boolean;
+  /** Hit points recovered at the start of each of its turns («Rigenerazione»), 0 without. */
+  regeneration: number;
   /** Resistance (or immunity) to bludgeoning, piercing and slashing together. */
   weaponResistance: boolean;
   /** Something to fight with: an attack or a damaging ability. */
@@ -184,6 +186,15 @@ function legendary(html: string, attacks: Attack[]): MonsterModel["legendary"] {
   return { uses: options.length ? uses : 0, options };
 }
 
+/**
+ * «Il troll recupera 15 punti ferita all'inizio di ogni suo turno» (2014: «… all'inizio del suo turno», «riguadagna»):
+ * the hit points. What stops it (fire, acid, radiant…) is ignored: an estimate.
+ */
+export function regeneration(traits: string): number {
+  const match = /(?:recupera|riguadagna)\s+(\d+)\s+punti\s+ferita\s+all['’]inizio\s+(?:di\s+ogni|del)\s+suo\s+turno/i.exec(traits);
+  return match ? Number(match[1]) : 0;
+}
+
 export function readMonster(sheet: SheetFields): MonsterModel {
   const actions = entries(sheet.azioni);
   const bonusActions = entries(sheet.azioni_bonus);
@@ -210,6 +221,7 @@ export function readMonster(sheet: SheetFields): MonsterModel {
     legendary: legend,
     legendaryResistance: resistance ? Number(resistance[1]) : 0,
     magicResistance: /Resistenza alla magia/i.test(traits),
+    regeneration: regeneration(traits),
     weaponResistance: ["contundent", "perforant", "taglient"].every(word => defences.includes(word)),
     simulable: attacks.length > 0 || abilities.length > 0,
     toHit: lists.length ? Math.max(...lists) : null,

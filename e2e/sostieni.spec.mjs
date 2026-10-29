@@ -88,6 +88,9 @@ test("/sostieni: the exact texts, 3 € chosen, Ko-fi in a new tab, «Non puoi d
   const answer = await page.goto("/sostieni");
   expect(answer.status()).toBe(200);
   await expect(page).toHaveTitle("Sostieni il Grimorio — Il Grimorio.App");
+  // The description of the previews (Google, WhatsApp…): no «gratuito»; nor «gratis»/«gratuito» in the page.
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", "Se Il Grimorio.App ti è utile al tavolo, puoi aiutarlo a crescere con un contributo libero su Ko-fi.");
+  expect(await page.content()).not.toMatch(/gratuit|gratis/i);
   await expect(page.getByRole("button", { name: "‹ Indietro" })).toBeVisible();
   await expect(page.locator('main img[src="/icon-192.png"]')).toHaveAttribute("alt", "");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sostieni il Grimorio");

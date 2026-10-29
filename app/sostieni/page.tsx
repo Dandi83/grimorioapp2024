@@ -5,7 +5,7 @@ import { supportUrl } from "@/lib/support";
 
 export const metadata = {
   title: "Sostieni il Grimorio — Il Grimorio.App",
-  description: "Il Grimorio.App è gratuito: se ti è utile al tavolo, puoi aiutarlo a crescere con un contributo libero su Ko-fi.",
+  description: "Se Il Grimorio.App ti è utile al tavolo, puoi aiutarlo a crescere con un contributo libero su Ko-fi.",
 };
 
 /**
