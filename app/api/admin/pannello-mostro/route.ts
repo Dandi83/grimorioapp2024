@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-action-helpers";
 import { getMonsterById } from "@/lib/monsters";
 import { parseGs } from "@/lib/monsters-types";
-import { balanceApplies, balanceBoxHtml, balanceEdition, evaluateMonster, NOT_FOR_OFFICIAL, type BalanceEdition } from "@/lib/monster-balance";
+import { balanceApplies, balanceBoxHtml, balanceEditions, evaluateMonster, NOT_FOR_OFFICIAL, type BalanceEdition } from "@/lib/monster-balance";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 
 export const dynamic = "force-dynamic";
@@ -24,8 +24,9 @@ export async function GET(request: NextRequest) {
   if (!monster) return NextResponse.json({ error: "Scheda non trovata" }, { status: 404, headers: PRIVATE });
   // The official sheets (SRD, its animals, NO SRD from a manual) are only the reference group: nothing is computed.
   if (!balanceApplies(monster)) return NextResponse.json({ error: NOT_FOR_OFFICIAL }, { status: 422, headers: PRIVATE });
-  const result = evaluateMonster(monster, balanceEdition(monster, usesLegacyMonsterRules(monster)));
-  return NextResponse.json({ html: balanceBoxHtml(result) }, { headers: PRIVATE });
+  // A creature «2014 e 2024»: one check for each edition (PROMPT 22).
+  const results = balanceEditions(monster, usesLegacyMonsterRules(monster)).map(edition => evaluateMonster(monster, edition));
+  return NextResponse.json({ html: balanceBoxHtml(results) }, { headers: PRIVATE });
 }
 
 /** POST: the sheet being written in the editor («Ricalcola»), with its edition; nothing is saved. */
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
   }
   const text = (key: string) => (typeof body[key] === "string" ? (body[key] as string) : "");
   const score = (key: string) => Number(body[key]) || 10;
-  const edition: BalanceEdition = text("edizione") === "2014" ? "2014" : "2024";
+  const editions: BalanceEdition[] = text("edizione") === "entrambe" ? ["2024", "2014"] : [text("edizione") === "2014" ? "2014" : "2024"];
   const sheet = {
     nome: text("nome") || "Senza nome", gs_num: parseGs(text("grado_sfida")), classe_armatura: text("classe_armatura"), punti_ferita: text("punti_ferita"),
     tiri_salvezza: text("tiri_salvezza"), forza: score("forza"), destrezza: score("destrezza"), costituzione: score("costituzione"),
@@ -54,5 +55,5 @@ export async function POST(request: NextRequest) {
     immunita_danni: text("immunita_danni"), immunita: text("immunita"), tratti: text("tratti"), azioni: text("azioni"),
     azioni_bonus: text("azioni_bonus"), azioni_leggendarie: text("azioni_leggendarie"),
   };
-  return NextResponse.json({ html: balanceBoxHtml(evaluateMonster(sheet, edition)) }, { headers: PRIVATE });
+  return NextResponse.json({ html: balanceBoxHtml(editions.map(edition => evaluateMonster(sheet, edition))) }, { headers: PRIVATE });
 }

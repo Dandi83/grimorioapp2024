@@ -47,8 +47,10 @@ export function HomebrewSectionEye({ hidden: initial, switchedOff = false }: { h
  * The guided editor in a dialog: «Correggi» of a proposal, «+ Nuova homebrew», «Modifica» of a published
  * homebrew. page: the editor is the page («Modifica» on the public card), not a dialog over the list.
  */
-function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false }: {
+function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false, ours = false }: {
   title: string;
+  /** «Creato dal Grimorio» (no author): the pill of the preview. */
+  ours?: boolean;
   initial: HomebrewDraft;
   onSave: (draft: HomebrewDraft) => Promise<{ ok: true } | { ok: false; error: string }>;
   /** saved: true after a successful save. */
@@ -78,7 +80,7 @@ function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false }:
         <h2 ref={heading} tabIndex={-1} className="font-serif text-2xl outline-none">{title}</h2>
         <button type="button" onClick={() => onClose()} disabled={saving} aria-label="Chiudi editor" className="grid size-11 place-items-center rounded-lg text-muted"><X className="h-5 w-5" aria-hidden="true" /></button>
       </header>
-      <div className="p-4"><HomebrewEditor value={draft} onChange={setDraft} idPrefix="admin-hb" /></div>
+      <div className="p-4"><HomebrewEditor value={draft} onChange={setDraft} idPrefix="admin-hb" ours={ours} /></div>
       <footer className="sticky bottom-0 z-10 border-t border-border bg-card px-4 py-3">
         {error && <p role="alert" className="mb-2 text-sm font-semibold text-primary">{error}</p>}
         <button type="button" onClick={save} disabled={saving} className="min-h-11 w-full rounded-lg bg-primary px-3 text-[15px] font-bold text-primary-foreground disabled:opacity-60">
@@ -215,7 +217,7 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
       <button type="button" onClick={() => setOpen(true)} className="flex min-h-11 items-center justify-center gap-2 rounded-lg border-[1.5px] border-[#E0A21A] bg-[#F6E3B0] px-4 py-2.5 font-semibold text-[#5C3F00]">
         + Nuovo «Creato dal Grimorio»
       </button>
-      {open && <HomebrewEditorDialog title="Nuovo «Creato dal Grimorio»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={() => setOpen(false)}
+      {open && <HomebrewEditorDialog ours title="Nuovo «Creato dal Grimorio»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={() => setOpen(false)}
         onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />}
     </>
   );
@@ -224,13 +226,13 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
 /** «+» of /admin/mostri, «Homebrew»: the guided editor of a new homebrew creature, already open. */
 export function NewHomebrewDialog({ edition, onClose }: { edition: "2014" | "2024"; onClose: () => void }) {
   const router = useRouter();
-  return <HomebrewEditorDialog title="Nuovo «Creato dal Grimorio»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
+  return <HomebrewEditorDialog ours title="Nuovo «Creato dal Grimorio»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
     onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />;
 }
 
 /** «Modifica» of a published homebrew in /admin/mostri. */
-export function EditHomebrewDialog({ id, nome, draft, onClose, page }: { id: string; nome: string; draft: HomebrewDraft; onClose: (saved?: boolean) => void; page?: boolean }) {
+export function EditHomebrewDialog({ id, nome, draft, ours = false, onClose, page }: { id: string; nome: string; draft: HomebrewDraft; ours?: boolean; onClose: (saved?: boolean) => void; page?: boolean }) {
   const router = useRouter();
-  return <HomebrewEditorDialog title={`Modifica «${nome}»`} initial={draft} onClose={onClose} page={page}
+  return <HomebrewEditorDialog title={`Modifica «${nome}»`} initial={draft} onClose={onClose} page={page} ours={ours}
     onSave={async next => { const result = await updateHomebrewAction(id, next); if (result.ok) router.refresh(); return result; }} />;
 }

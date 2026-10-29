@@ -5,7 +5,7 @@ import { VerifiedToggle } from "@/components/admin-balance/verified-toggle";
 import { isAdmin } from "@/lib/admin-auth";
 import { publishedHomebrew, homebrewMonster, verifiedPill } from "@/lib/homebrew";
 import { getAllMonsters } from "@/lib/monsters";
-import { balanceApplies, balanceEdition, evaluateMonster, LEVELS, levelSentence } from "@/lib/monster-balance";
+import { balanceApplies, balanceEditions, evaluateMonster, LEVELS, levelSentence, overallLevel, type BalanceEdition } from "@/lib/monster-balance";
 import type { Level } from "@/lib/monster-balance/compare";
 import { gapFromCr } from "@/lib/monster-balance/compare";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
@@ -44,12 +44,18 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
   const [monsters, homebrew, votes] = await Promise.all([getAllMonsters(), publishedHomebrew().catch(() => []), readAllTableCounts().catch(() => new Map<string, TableCounts>())]);
   const made = monsters.filter(monster => !monster.homebrew_edizione && balanceApplies(monster));
   const all = [
-    ...made.map(monster => ({ monster, kind: "Creata qui", edition: balanceEdition(monster, usesLegacyMonsterRules(monster)), row: undefined })),
-    ...homebrew.map(row => { const monster = homebrewMonster(row); return { monster, kind: "Creati da voi", edition: balanceEdition(monster, false), row }; }),
+    ...made.map(monster => ({ monster, kind: "Creata qui", editions: balanceEditions(monster, usesLegacyMonsterRules(monster)), row: undefined })),
+    ...homebrew.map(row => { const monster = homebrewMonster(row); return { monster, kind: "Creati da voi", editions: balanceEditions(monster, false), row }; }),
   ].map(item => {
-    const result = evaluateMonster(item.monster, item.edition, LIST_FIGHTS);
-    const level: Level | "non simulabile" = result.measures ? result.comparison.level : "non simulabile";
-    return { ...item, result, level, gap: result.measures ? gapFromCr(result.comparison) : -1 };
+    // A creature «2014 e 2024»: both checks (PROMPT 22); the overall verdict, the sentence of the worse, every warning.
+    const results = item.editions.map(edition => evaluateMonster(item.monster, edition, LIST_FIGHTS));
+    const overall = overallLevel(results);
+    const level: Level | "non simulabile" = overall ?? "non simulabile";
+    const worst = results.reduce((top, result) => (overall && result.comparison.level === overall && gapFromCr(result.comparison) >= gapFromCr(top.comparison) ? result : top), results[0]);
+    const both = results.length > 1;
+    const warnings = results.flatMap(result => result.warnings.map(warning => ({ ...warning, text: both ? `${result.edition}: ${warning.text}` : warning.text })));
+    const edition = both ? "2014 e 2024" : item.editions[0] as BalanceEdition | string;
+    return { ...item, edition, result: { ...worst, warnings }, level, gap: overall ? Math.max(...results.map(result => gapFromCr(result.comparison))) : -1 };
   }).sort((a, b) => ORDER[a.level] - ORDER[b.level] || b.gap - a.gap || a.monster.nome.localeCompare(b.monster.nome, "it"));
   const matches = (item: (typeof all)[number], key: (typeof FILTERS)[number]["key"]) =>
     key === "tutti" ? true : key === "con-avvisi" ? item.result.warnings.length > 0 : item.level !== "non simulabile" && LEVELS[item.level].slug === key;

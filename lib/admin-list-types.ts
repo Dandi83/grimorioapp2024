@@ -15,8 +15,11 @@ export interface AdminRow {
   /** The first column on a computer: level, challenge rating, nothing. */
   lead?: string;
   group: { key: string; label: string; order: number };
-  /** SRD: transcribed from the SRD and unchanged; NO SRD: original summaries, cards added here, homebrew, SRD cards modified. */
-  source: "srd" | "nosrd";
+  /**
+   * SRD: transcribed from the SRD and unchanged; NO SRD: original summaries, cards added here, SRD cards modified;
+   * creati: «I mostri creati da voi» (PROMPT 22: not NO SRD, which means cards from manuals outside the SRD).
+   */
+  source: "srd" | "nosrd" | "creati";
   /** The pill of a NO SRD card. */
   pill?: "Sintesi" | "Aggiunta da te" | "Creati da voi";
   /** «SRD modificata»: the fields that no longer match the SRD, for «Ripristina testo SRD». */
@@ -43,7 +46,7 @@ export interface AdminListData {
 }
 
 export type VisibilityFilter = "tutte" | "visibili" | "nascoste";
-export type SourceFilter = "tutte" | "srd" | "nosrd";
+export type SourceFilter = "tutte" | "srd" | "nosrd" | "creati";
 export interface ListFilters { visibility: VisibilityFilter; source: SourceFilter; modified: boolean; reviewNames: boolean }
 export const NO_FILTERS: ListFilters = { visibility: "tutte", source: "tutte", modified: false, reviewNames: false };
 
@@ -72,6 +75,7 @@ export function filterCounts(rows: readonly AdminRow[], isHidden: (row: AdminRow
     hidden: rows.filter(row => row.hidden !== null && isHidden(row)).length,
     srd: rows.filter(row => row.source === "srd").length,
     nosrd: rows.filter(row => row.source === "nosrd").length,
+    creati: rows.filter(row => row.source === "creati").length,
     modified: rows.filter(row => !!row.modified?.length).length,
     reviewNames: rows.filter(row => !!row.reviewNames?.length).length,
   };

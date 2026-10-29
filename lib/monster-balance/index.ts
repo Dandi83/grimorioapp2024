@@ -24,10 +24,25 @@ export type BalanceResult = {
 
 const references = data.editions as unknown as Record<BalanceEdition, ReferenceRow[]>;
 
-/** The edition of a sheet: a homebrew «entrambe» is compared with 2024, its format. */
+/** The edition of a sheet: a homebrew «entrambe» is compared with 2024, its format (see balanceEditions for both). */
 export function balanceEdition(monster: { homebrew_edizione?: string; edizione?: string }, legacy: boolean): BalanceEdition {
   if (monster.homebrew_edizione) return monster.homebrew_edizione === "2014" ? "2014" : "2024";
   return legacy ? "2014" : "2024";
+}
+
+/**
+ * The editions a sheet is checked against (PROMPT 22): a homebrew «2014 e 2024» against both SRD, 2024 first; every other
+ * sheet against its own edition only.
+ */
+export function balanceEditions(monster: { homebrew_edizione?: string; edizione?: string }, legacy: boolean): BalanceEdition[] {
+  return monster.homebrew_edizione === "entrambe" ? ["2024", "2014"] : [balanceEdition(monster, legacy)];
+}
+
+/** The overall verdict of one or two checks: «in linea» only when every one is; the worst otherwise. null: not simulable. */
+export function overallLevel(results: readonly BalanceResult[]): Level | null {
+  if (results.some(result => !result.measures)) return null;
+  const rank: Record<Level, number> = { "in linea": 0, "da controllare": 1, fuori: 2 };
+  return results.map(result => result.comparison.level).reduce((worst, level) => (rank[level] > rank[worst] ? level : worst), "in linea" as Level);
 }
 
 const EMPTY = { damagePerRound: 0, rounds: 0, downPct: 0, wipePct: 0, winPct: 0, oneShotPct: 0 };
@@ -97,11 +112,31 @@ const h = (text: string) => `<p style="margin:12px 0 6px;font-size:12px;font-wei
  * The «Bilanciamento» box as HTML, drawn on the server for the administrator (the public page, the editor and the
  * proposals receive only this text through /api/admin/pannello-mostro): never in a public page or in the browser code.
  */
-export function balanceBoxHtml(result: BalanceResult): string {
+const BOX_OPEN = `<section data-balance-box="" aria-label="Bilanciamento" style="margin:16px 0;border:1.5px dashed #7A4E00;background:#FCEFD0;border-radius:14px;padding:14px 16px;color:#2B2118;font-size:14px;line-height:1.45">`
+  + `<p style="margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:.12em;color:#7A4E00">BILANCIAMENTO</p>`;
+export const EDITION_CHECK: Record<BalanceEdition, string> = { "2024": "Edizione 2024 (SRD 5.2.1)", "2014": "Edizione 2014 (SRD 5.1)" };
+
+/**
+ * One check, or two for a creature «2014 e 2024» (PROMPT 22): the overall verdict on top («In linea» only when both
+ * are), then each edition with its numbers, its band, its verdict, its situations and warnings.
+ */
+export function balanceBoxHtml(input: BalanceResult | readonly BalanceResult[]): string {
+  const results = Array.isArray(input) ? input as readonly BalanceResult[] : [input as BalanceResult];
+  if (results.length === 1) return `${BOX_OPEN}${checkHtml(results[0])}</section>`;
+  const overall = overallLevel(results);
+  const head = overall
+    ? `<p data-balance-overall="${LEVELS[overall].slug}" style="margin:0 0 6px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px"><b style="font-weight:700">Esito complessivo:</b>`
+      + `<span style="display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:800;${LEVELS[overall].style}">${LEVELS[overall].label}</span></p>`
+      + `<p style="margin:0 0 4px;color:#6B5B48;font-size:12px">Creatura «2014 e 2024»: due controlli, uno per edizione; in linea solo se lo sono entrambi.</p>`
+    : `<p data-balance-overall="non-simulabile" style="margin:0 0 6px"><b>Esito complessivo:</b> non simulabile.</p>`;
+  return BOX_OPEN + head + results.map(result =>
+    `<div data-balance-edition="${result.edition}" style="margin-top:12px;border-top:1.5px solid #E8D3A0;padding-top:10px">`
+    + `<p style="margin:0 0 8px;font-family:var(--font-serif),serif;font-size:17px;font-weight:700;color:#7A1F2B">${EDITION_CHECK[result.edition]}</p>${checkHtml(result)}</div>`).join("") + `</section>`;
+}
+
+function checkHtml(result: BalanceResult): string {
   const { comparison: c, measures, model, warnings } = result;
   const parts: string[] = [];
-  parts.push(`<section data-balance-box="" aria-label="Bilanciamento" style="margin:16px 0;border:1.5px dashed #7A4E00;background:#FCEFD0;border-radius:14px;padding:14px 16px;color:#2B2118;font-size:14px;line-height:1.45">`);
-  parts.push(`<p style="margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:.12em;color:#7A4E00">BILANCIAMENTO</p>`);
   const groupText = `${c.group.length} mostri SRD ${result.edition} ${c.widened ? `di GS vicino (GS ${crLabel(model.cr)} ±${c.widened})` : `dello stesso GS (${crLabel(model.cr)})`}`;
   if (!measures) {
     parts.push(`<p data-balance-unsimulable="" style="margin:0 0 10px"><b>Non simulabile:</b> la scheda non ha attacchi né capacità con danni da confrontare.</p>`);
@@ -148,6 +183,5 @@ export function balanceBoxHtml(result: BalanceResult): string {
     + own.map(([label, mine, typical]) => `<tr><td style="padding:2px 0">${label}</td><td style="text-align:right">${number(mine)}</td><td style="text-align:right">${number(typical)}</td></tr>`).join("")
     + `</tbody></table>`);
   parts.push(`<p data-balance-note="" style="margin:10px 0 0;color:#6B5B48;font-size:12px">Simulazione: ${number(result.fights)} combattimenti contro 4 PG di livello ${result.level}; confronto con ${groupText}; scenari: base + ${STRESS.length} di prova.</p>`);
-  parts.push(`</section>`);
   return parts.join("");
 }

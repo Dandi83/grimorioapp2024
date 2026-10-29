@@ -17,7 +17,7 @@ import { adoptEditorStep, leaveEditor } from "@/lib/admin-edit-return";
 export type EditorCard =
   | { kind: "incantesimo"; spell: Spell }
   | { kind: "mostro"; monster: Monster }
-  | { kind: "homebrew"; id: string; nome: string; draft: HomebrewDraft };
+  | { kind: "homebrew"; id: string; nome: string; draft: HomebrewDraft; ours?: boolean };
 
 /**
  * The editor of one card as the page («Modifica» on its public card): «‹ Torna alla scheda», then the
@@ -39,7 +39,7 @@ export function AdminCardEditor({ card, edition, back, hidden }: { card: EditorC
       ) : card.kind === "mostro" ? (
         <MonsterEditor page monster={card.monster} edition={edition} onClose={close} visibility={eye(card.monster.nome)} />
       ) : (
-        <EditHomebrewDialog page id={card.id} nome={card.nome} draft={card.draft} onClose={close} />
+        <EditHomebrewDialog page id={card.id} nome={card.nome} draft={card.draft} ours={card.ours} onClose={close} />
       )}
     </div>
   );

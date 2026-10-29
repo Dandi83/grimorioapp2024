@@ -217,7 +217,9 @@ export function descriptionHtml(text: string | undefined): string {
   return text ? escape(text).split(/\n{2,}/).map(part => part.replace(/\n/g, "<br>")).join("<br><br>") : "";
 }
 
-const signed = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
+// The typographic minus «−» of the SRD sheets (PROMPT 22), only when the sheet is drawn: the saved drafts stay as written.
+const signed = (n: number) => (n >= 0 ? `+${n}` : `−${-n}`);
+export const typographicMinus = (text: string) => text.replace(/(^|[\s(,;:/])-(?=\d)/g, "$1−");
 
 /** The sheet of a draft, in the format of its edition («Entrambe» uses the 2024 one). */
 export function draftToMonster(draft: HomebrewDraft, id: string): Monster {
@@ -226,7 +228,7 @@ export function draftToMonster(draft: HomebrewDraft, id: string): Monster {
   const mod = (key: AbilityKey) => Math.floor((draft[key] - 10) / 2);
   const saves = ABILITY_KEYS.filter(key => !legacy || draft.ts_competenti.includes(key))
     .map(key => `${ABILITY_SHORT[key]} ${signed(mod(key) + (draft.ts_competenti.includes(key) ? prof : 0))}`).join(", ");
-  const perception = /Percezione\s*([+-]\d+)/i.exec(draft.abilita);
+  const perception = /Percezione\s*([+\-−]\d+)/i.exec(draft.abilita);
   const passive = 10 + (perception ? Number(perception[1]) : mod("saggezza"));
   const sensi = [`Percezione passiva ${passive}`, draft.sensi].filter(Boolean).join(legacy ? ", " : "; ");
   const immunities = [draft.immunita_danni, draft.immunita_condizioni].filter(Boolean).join("; ");
@@ -238,7 +240,7 @@ export function draftToMonster(draft: HomebrewDraft, id: string): Monster {
     classe_armatura: draft.ca_nota ? `${draft.ca} (${draft.ca_nota})` : String(draft.ca),
     punti_ferita: `${draft.pf} (${draft.dadi_vita})`, velocita: draft.velocita,
     forza: draft.forza, destrezza: draft.destrezza, costituzione: draft.costituzione, intelligenza: draft.intelligenza, saggezza: draft.saggezza, carisma: draft.carisma,
-    tiri_salvezza: saves, abilita: draft.abilita, vulnerabilita: draft.vulnerabilita, resistenze: draft.resistenze,
+    tiri_salvezza: saves, abilita: typographicMinus(draft.abilita), vulnerabilita: draft.vulnerabilita, resistenze: draft.resistenze,
     immunita_danni: legacy ? draft.immunita_danni : "", immunita_condizioni: legacy ? draft.immunita_condizioni : "",
     ...(legacy ? {} : { immunita: immunities, iniziativa: `${signed(dex)} (${10 + dex})`, bonus_competenza: signed(prof), azioni_bonus: entriesHtml(draft.azioni_bonus) }),
     sensi, linguaggi: draft.linguaggi || "—",
