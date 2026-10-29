@@ -1,6 +1,6 @@
 // «Schede SRD modificate» (lib/srd-modified.ts): the SRD cards whose text no longer matches their record, with the very
 // comparison that decides the source box; the restore form sends only the fields that differ; the «SRD modificate»
-// option of the «Provenienza» filter (lib/provenance.ts).
+// quick filter of the list of the reserved area (lib/admin-list-types.ts).
 const assert = require('node:assert/strict');
 const {modifiedSpell, modifiedMonster, spellSrdDifferences, srdModifiedCards, restoreEntries} = require('../lib/srd-modified.ts');
 const {getLegacySpellSource} = require('../lib/srd-spells-2014.ts');
@@ -8,7 +8,6 @@ const {getSrdSource} = require('../lib/srd-descriptions.ts');
 const {getSrdMonsterSource} = require('../lib/srd-monsters.ts');
 const {repairSpellText} = require('../lib/spell-text-repairs.ts');
 const {wordDiff} = require('../lib/word-diff.ts');
-const {matchesProvenance, provenanceIds, PROVENANCE_OPTIONS, PROVENANCE_LABEL} = require('../lib/provenance.ts');
 const legacySpells = require('../lib/data/srd-spells-5.1-it.json');
 const srd2024 = require('../lib/data/srd-italiano-5.2.1.json');
 const legacyMonsters = require('../lib/data/srd-monsters-5.1-it.json');
@@ -77,23 +76,7 @@ const gsItem = modifiedMonster({...lich, grado_sfida: '1', gs_num: 1});
 assert.ok(gsItem.fields.some(field => field.field === 'gs_num'));
 assert.ok(!restoreEntries(gsItem).some(([field]) => field === 'gs_num'));
 
-// The filter: one option more, «SRD modificate»; those cards are in «Solo NO SRD» and not in «Solo SRD».
-assert.equal(PROVENANCE_OPTIONS.at(-1), 'modificate');
-assert.equal(PROVENANCE_LABEL.modificate, 'SRD modificate');
-const cards = [
-  {id: 'palla-di-fuoco', fonte_scheda: 'SRD 5.2.1'}, {id: 'guida-2014'}, {id: 'amicizia', fonte_scheda: 'Sintesi originale'},
-  {id: 'lampo-di-prova', fonte_scheda: 'Aggiunta da te'}, {id: 'homebrew-x', homebrew: true},
-];
-const ids = provenanceIds(cards, ['guida-2014']);
-const count = value => cards.filter(card => matchesProvenance(card, value, ids)).map(card => card.id);
-assert.deepEqual(count('modificate'), ['guida-2014']);
-assert.deepEqual(count('srd'), ['palla-di-fuoco']);
-assert.deepEqual(count('nosrd'), ['guida-2014', 'amicizia', 'lampo-di-prova']);
-assert.deepEqual(count('tutte').length, 5);
-assert.deepEqual(count('modificate').length + count('srd').length + count('sintesi').length + count('aggiunte').length + 1, 5, 'every card in one group (homebrew aside)');
-assert.deepEqual(provenanceIds(cards).modificate.size, 0, 'none by default');
-
 // The word diff on its own.
 assert.deepEqual(wordDiff('a b c', 'a b c'), [{kind: 'same', text: 'a b c'}]);
 assert.deepEqual(wordDiff('', 'nuovo'), [{kind: 'attuale', text: 'nuovo'}]);
-console.log('srd-modified: guida-2014 «1d4» listed, «un d4» not; repairs not counted; restore writes only the fields that differ; «SRD modificate» filter counts.');
+console.log('srd-modified: guida-2014 «1d4» listed, «un d4» not; repairs not counted; restore writes only the fields that differ; the list of the reserved area has its own «SRD modificate» filter (tests/admin-list.cjs).');

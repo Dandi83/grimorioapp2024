@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 // «Schede SRD modificate» (lib/srd-modified.ts): the list of the reserved area, the warning of the editor before a
-// save that takes the SRD box away, the «SRD modificate» option of the «Provenienza» filter, «Ripristina testo SRD».
+// save that takes the SRD box away, the «SRD modificate» quick filter of the list of the reserved area, «Ripristina testo SRD».
 // Visitors see none of it and their pages and /api/catalogo/* stay the same. Test database only: the card changed
 // here is restored at the end.
 const WARNING = "Con questa modifica la scheda non coinciderà più con l’SRD e perderà il riquadro di provenienza.";
@@ -29,7 +29,6 @@ async function visitorView(browser) {
   for (const text of [main, html, JSON.stringify(api2014), JSON.stringify(monsters)]) expect(text).not.toMatch(/SRD modificat|Ripristina testo SRD|data-srd-|modificate/);
   await openFilters(page, "/grimorio");
   await page.waitForTimeout(600);
-  await expect(page.locator("[data-provenance-filter]")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "SRD modificate" })).toHaveCount(0);
   expect((await page.request.get("/api/admin/no-srd")).status()).toBe(401);
   await page.goto("/admin/srd-modificate");
@@ -50,19 +49,24 @@ async function login(page) {
 
 const listed = page => page.locator("[data-srd-modified]");
 
-const shownCount = async page => Number((await page.getByRole("button", { name: /^Mostra \d+ risultat/ }).innerText()).match(/\d+/)[0]);
 async function openFilters(page, path) {
   await page.goto(path);
   await page.locator("li.catalog-row").first().waitFor();
   await page.getByRole("button", { name: /^Filtri/ }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
 }
-/** The count of a «Provenienza» option in the filters of Incantesimi (the «Mostra N risultati» button). */
-async function provenanceCount(page, option) {
-  const filter = page.getByRole("dialog").locator("[data-provenance-filter]");
-  await filter.getByRole("button", { name: option, exact: true }).click();
-  await expect(filter.getByRole("button", { name: option, exact: true })).toHaveAttribute("aria-pressed", "true");
-  return shownCount(page);
+/**
+ * The «SRD modificate» quick filter of the 2014 spells of the reserved area (PROMPT 24: no longer in the Filtri panel of
+ * the site): its count, and the rows it shows.
+ */
+async function modifiedCount(page) {
+  await page.goto("/admin/edizione?valore=2014&poi=%2Fadmin%2Fincantesimi");
+  const counter = page.locator('[data-counter="modificate"]');
+  await expect(counter).toBeVisible();
+  const n = Number((await counter.innerText()).match(/\d+/)[0]);
+  await counter.click();
+  await expect.poll(() => page.locator("main li[data-card-row]").count()).toBe(n);
+  return n;
 }
 
 test("Schede SRD modificate: list, editor warning, filter option, restore; visitors see nothing and keep the same pages", async ({ page, browser }) => {
@@ -114,21 +118,15 @@ test("Schede SRD modificate: list, editor warning, filter option, restore; visit
   await expect(fields).toContainText("Nome");
   await expect(fields.locator("[data-srd-text]")).toHaveText(name);
   await expect(fields.locator("[data-current-text] ins")).toHaveText(" di prova");
-  // The «SRD modificate» option of the filter (2014 list): the card, also in «Solo NO SRD», not in «Solo SRD».
-  await openFilters(page, "/grimorio");
-  const modified2014 = await provenanceCount(page, "SRD modificate");
+  // The «SRD modificate» quick filter of the list of the reserved area (2014): the card is there.
+  const modified2014 = await modifiedCount(page);
   expect(modified2014).toBeGreaterThanOrEqual(1);
-  const [all, srd, nosrd] = [await provenanceCount(page, "Tutte"), await provenanceCount(page, "Solo SRD"), await provenanceCount(page, "Solo NO SRD")];
-  expect(srd + nosrd, "every 2014 spell is SRD or NO SRD").toBe(all);
-  await provenanceCount(page, "SRD modificate");
-  await page.getByRole("button", { name: /^Mostra \d+ risultat/ }).click();
-  await expect(page.locator("main li.catalog-row").filter({ hasText: `${name} di prova` })).toHaveCount(1);
+  await expect(page.locator("main li[data-card-row]").filter({ hasText: `${name} di prova` })).toHaveCount(1);
   await page.goto("/spell/guida-2014");
   await expect(page.locator("main")).not.toContainText(SOURCE);
 
   // «Ripristina testo SRD»: a confirmation with the differences first, then only the changed field goes back.
-  await openFilters(page, "/grimorio");
-  const modifiedWith = await provenanceCount(page, "SRD modificate");
+  const modifiedWith = await modifiedCount(page);
   await page.goto("/admin/srd-modificate");
   await item.getByRole("button", { name: "Ripristina testo SRD" }).click();
   const confirm = item.getByRole("dialog");
@@ -142,8 +140,7 @@ test("Schede SRD modificate: list, editor warning, filter option, restore; visit
   await expect(listed(page)).toHaveCount(baseline);
   await page.goto("/spell/guida-2014");
   await expect(page.locator("main")).toContainText(SOURCE);
-  await openFilters(page, "/grimorio");
-  expect(await provenanceCount(page, "SRD modificate"), "restored: one less in the filter").toBe(modifiedWith - 1);
+  expect(await modifiedCount(page), "restored: one less in the filter").toBe(modifiedWith - 1);
 
   // Visitors: the same card, the same catalogue as before the test.
   await page.goto("/admin");

@@ -8,9 +8,7 @@ import { Skull, Star } from "lucide-react";
 import { useFavorites } from "@/components/favorites-provider";
 import { saveListState } from "@/components/navigation-memory";
 import { HiddenTag } from "@/components/sections/hidden-tag";
-import { NoSrdMark, useNoSrd } from "@/components/admin-edit/no-srd-mark";
-import { ProvenanceGroup, useProvenanceFilter } from "@/components/admin-edit/provenance-filter";
-import { PROVENANCE_LABEL, matchesProvenance } from "@/lib/provenance";
+import { NoSrdMark, useNoSrdIds } from "@/components/admin-edit/no-srd-mark";
 import { useIntentPrefetch } from "@/components/use-intent-prefetch";
 import { useRevealSelected } from "@/components/layout/use-reveal-selected";
 import { useUserEdition } from "@/components/edition/edition-provider";
@@ -119,11 +117,7 @@ export function BestiarioBrowser({
   const deferredQ = useDeferredValue(q);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
   // The administrator only: «*» after the NO SRD cards, asked after the session check (never in the page).
-  const noSrdView = useNoSrd("mostri");
-  const noSrd = noSrdView?.ids ?? null;
-  // The administrator only: «Provenienza» in the filters, from the same data as the «*».
-  const origin = useProvenanceFilter(noSrdView?.provenance ?? null);
-  const { ids: originIds, value: originValue, draft: originDraft } = origin;
+  const noSrd = useNoSrdIds("mostri");
 
   const editionMonsters = useMemo(() => monsters.filter(monster => (monster.edizione === edizione || monster.entrambe)
     && collectionShown(monster)), [monsters, edizione, animalsPart.shown, monstersPart.shown, homebrewPart.shown]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -142,18 +136,18 @@ export function BestiarioBrowser({
   // The searched name and how many creatures of the edition have it exactly (statistics, only with the consent).
   useReportSearch(deferredQ, found.exact.length);
 
-  const matches = useCallback((m: MonsterListItem) => matchesFilters(m, filters) && (!originIds || matchesProvenance(m, originValue, originIds))
-    && (!community || who === "tutti" || whoOf(m) === who), [filters, originIds, originValue, community, who]);
+  const matches = useCallback((m: MonsterListItem) => matchesFilters(m, filters)
+    && (!community || who === "tutti" || whoOf(m) === who), [filters, community, who]);
   // «I mostri creati da voi» of the chosen edition: the card of the Bestiario and the chips of the section.
   const communityMonsters = useMemo(() => editionMonsters.filter(monster => monster.homebrew), [editionMonsters]);
   const whoCount = (value: Who) => communityMonsters.filter(monster => value === "tutti" || whoOf(monster) === value).length;
   const results = useMemo(() => searched.filter(matches), [searched, matches]);
   const approximateFrom = useMemo(() => found.exact.filter(matches).length, [found, matches]);
   const suggestion = found.suggestion && matches(found.suggestion) ? found.suggestion.nome : null;
-  const draftCount = useMemo(() => draft ? searched.filter(m => matchesFilters(m, draft) && (!originIds || matchesProvenance(m, originDraft, originIds))).length : 0, [searched, draft, originIds, originDraft]);
+  const draftCount = useMemo(() => draft ? searched.filter(m => matchesFilters(m, draft)).length : 0, [searched, draft]);
 
   // A new edition, search or filter starts again from the first page.
-  const key = JSON.stringify([edizione, q, filters, originValue, who]);
+  const key = JSON.stringify([edizione, q, filters, who]);
   const lastKey = useRef(key);
   useEffect(() => {
     if (lastKey.current === key) return;
@@ -210,7 +204,6 @@ export function BestiarioBrowser({
     ...filters.tipo.map(tipo => ({ key: `tipo:${tipo}`, label: tipo, remove: () => setFilters(f => ({ ...f, tipo: f.tipo.filter(x => x !== tipo) })) })),
     ...filters.taglia.map(taglia => ({ key: `taglia:${taglia}`, label: taglia, remove: () => setFilters(f => ({ ...f, taglia: f.taglia.filter(x => x !== taglia) })) })),
     ...filters.habitat.map(habitat => ({ key: `habitat:${habitat}`, label: habitat, remove: () => setFilters(f => ({ ...f, habitat: f.habitat.filter(x => x !== habitat) })) })),
-    ...(originValue !== "tutte" ? [{ key: "provenienza", label: PROVENANCE_LABEL[originValue], remove: () => origin.setValue("tutte") }] : []),
   ];
 
   return (
@@ -230,7 +223,7 @@ export function BestiarioBrowser({
           </div>
         )}
         <SearchAndFilters query={q} onQuery={setQ} label="Cerca una creatura"
-          placeholder={pane ? "Cerca…" : undefined} active={active.length} onOpen={() => { setDraft(filters); origin.setDraft(originValue); }} />
+          placeholder={pane ? "Cerca…" : undefined} active={active.length} onOpen={() => setDraft(filters)} />
         <ActiveFilters filters={active} />
         {/* «I mostri creati da voi» (PROMPT 13): the invitation under the search and the filters, not in the computer column. */}
         {!community && !pane && homebrewPart.shown && <CommunityInvite count={communityMonsters.length} hidden={homebrewPart.hidden} />}
@@ -239,11 +232,11 @@ export function BestiarioBrowser({
       <FilterSheet
         open={draft !== null}
         onClose={() => setDraft(null)}
-        onReset={() => { setDraft(NO_FILTERS); origin.setDraft("tutte"); }}
+        onReset={() => setDraft(NO_FILTERS)}
         onApply={() => {
           // «Creati da voi» leads to the list of the section.
           if (draft?.categoria === "homebrew" && !community) { setDraft(null); router.push(COMMUNITY_HREF); return; }
-          if (draft) setFilters(draft); origin.setValue(originDraft); setDraft(null);
+          if (draft) setFilters(draft); setDraft(null);
         }}
         count={draftCount}
       >
@@ -261,7 +254,6 @@ export function BestiarioBrowser({
             onToggle={taglia => setDraft({ ...draft, taglia: toggle(draft.taglia, taglia, meta.taglie) })} />
           <FilterGroup title="Habitat" options={HABITATS} selected={draft.habitat}
             onToggle={habitat => setDraft({ ...draft, habitat: toggle(draft.habitat, habitat, HABITATS) })} />
-          {originIds && <ProvenanceGroup value={originDraft} onChange={origin.setDraft} />}
         </>}
       </FilterSheet>
 

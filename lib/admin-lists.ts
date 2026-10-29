@@ -48,7 +48,7 @@ export async function spellList(edition: AdminEdition): Promise<AdminListData> {
     return {
       id: spell.id, name: spell.nome_mostrato ?? spellName(spell.nome_italiano, spell.edizione), sub: spell.scuola || "Scuola da indicare",
       lead: spell.livello_num === 0 ? "T" : spell.livello_num > 0 ? String(spell.livello_num) : "?", group: spellGroup(spell.livello_num),
-      // NO SRD as in the rest of the app (lib/provenance.ts): summaries, cards added here and SRD cards modified.
+      // NO SRD as in the rest of the app: summaries, cards added here and SRD cards modified.
       source: modified || isNoSrdSource(source as CardSource) ? "nosrd" : "srd", pill: modified ? undefined : pillOf(source),
       modified, reviewNames: namesOf.get(key), hidden: hidden.has(cardPath("incantesimo", spell.id)),
       // «Chiudi editor» comes back to the list.
