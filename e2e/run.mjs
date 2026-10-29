@@ -6,6 +6,9 @@ import { startTestDatabase, TEST_DATABASE_URL } from "./test-db.mjs";
 
 export const E2E_ENV = {
   DATABASE_URL: TEST_DATABASE_URL,
+  // One connection: PGlite serves every socket from one backend, so the Parse/Bind messages of two connections
+  // can interleave («unnamed prepared statement does not exist», a 500 on a random page).
+  GRIMORIO_DB_POOL_MAX: "1",
   // Same catalog rules as production: SRD records visible, preview-only pages hidden.
   VERCEL_ENV: "production",
   ADMIN_PASSCODE: "passcode-di-prova-e2e",
