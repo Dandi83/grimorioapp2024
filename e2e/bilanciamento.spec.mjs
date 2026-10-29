@@ -126,7 +126,7 @@ test("administrator: /admin/bilanciamento by verdict with its filter, and the ed
   await expect(items.first()).toHaveAttribute("data-balance-item", "prova-bilanciamento-colosso");
   await expect(page.locator('[data-balance-item="prova-bilanciamento-colosso"] [data-balance-outcome]')).toHaveAttribute("data-balance-outcome", "fuori");
   await expect(page.locator('[data-balance-item="prova-bilanciamento-guardiano"]')).toContainText("Creata qui · GS 2 · 2024");
-  await expect(page.locator(`[data-balance-item="${HOMEBREW_ID}"]`)).toContainText("Creati da voi · GS 7 · 2024");
+  await expect(page.locator(`[data-balance-item="${HOMEBREW_ID}"]`)).toContainText("Dalla community · GS 7 · 2024");
   // Only our sheets: no SRD monster in the list.
   await expect(page.locator('[data-balance-item="drago-nero-adulto"], [data-balance-item="troll"]')).toHaveCount(0);
   // The order: «Fuori dal GS», then «Da controllare», then «In linea».
