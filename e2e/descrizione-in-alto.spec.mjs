@@ -186,15 +186,14 @@ for (const width of [390, 1280]) {
   });
 }
 
-test("«2014 e 2024»: the pill stays, the dark label follows the chosen edition", async ({ browser }) => {
+test("«2014 e 2024»: one dark label «📖 2014 e 2024» whatever the chosen edition (PROMPT 28)", async ({ browser }) => {
   for (const edition of ["2014", "2024"]) {
     const context = await visitor(browser, 390, edition);
     const page = await context.newPage();
     await page.goto(`/mostro/${BOTH}`);
     const header = page.locator("article header").first();
-    await expect(header.getByText("2014 e 2024", { exact: true })).toBeVisible();
-    await expect(header.locator("[data-chosen-edition]")).toHaveAttribute("data-chosen-edition", edition);
-    await expect(header.locator("[data-chosen-edition]")).toHaveText(edition);
+    await expect(header.locator("[data-edition-pill]")).toHaveText("2014 e 2024");
+    await expect(header.getByText("2014 e 2024", { exact: true })).toHaveCount(1);
     await context.close();
   }
 });
