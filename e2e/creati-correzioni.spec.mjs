@@ -68,8 +68,31 @@ test.beforeAll(async () => {
     await client.query(insert, [THEIRS, JSON.stringify(draft(THEIRS_NAME, "2014")), "2014", "Lia", "CC BY-NC-SA 4.0"]);
   });
 });
-test.afterAll(async () => {
-  await database(client => client.query("DELETE FROM grimorio_homebrew WHERE id = ANY($1)", [[OURS, THEIRS]]));
+
+/**
+ * Clean-up: the other rows from the database, ours with the bin of the reserved area, which refreshes the cached lists of
+ * the site (e2e/homebrew.spec.mjs starts with no creature of «Creati da voi»); the cache is read again until it is empty.
+ */
+async function cleanUp(browser, ids, binned) {
+  await database(client => client.query("DELETE FROM grimorio_homebrew WHERE id = ANY($1)", [ids.filter(id => id !== binned.id)]));
+  const context = await browser.newContext({ baseURL: test.info().project.use.baseURL });
+  const admin = await context.newPage();
+  await admin.goto("/admin");
+  await admin.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await admin.getByRole("button", { name: "Entra" }).click();
+  await expect(admin.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
+  await admin.goto("/admin/mostri");
+  await admin.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
+  await admin.getByPlaceholder("Cerca per nome o tipo…").fill(binned.name.toLowerCase());
+  admin.once("dialog", dialog => dialog.accept());
+  await admin.locator("main ul li[data-card-row]").filter({ hasText: binned.name }).dispatchEvent("contextmenu");
+  await admin.locator("[data-row-menu]").getByRole("button", { name: "Elimina" }).click();
+  await expect.poll(async () => (await (await context.request.get("/api/catalogo/bestiario")).json()).monsters.some(monster => monster.homebrew)).toBe(false);
+  await context.close();
+}
+
+test.afterAll(async ({ browser }) => {
+  await cleanUp(browser, [OURS, THEIRS], { id: OURS, name: OURS_NAME });
 });
 
 for (const width of [390, 1280]) {
