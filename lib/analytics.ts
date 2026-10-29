@@ -107,6 +107,21 @@ async function ensureSchema() {
     });
   await schemaReady;
 }
+/** «Adesso»: the last 5 minutes. */
+export const NOW_MINUTES = 5;
+
+/**
+ * «N adesso» (PROMPT 18): different people with at least one event in the last 5 minutes. Only what the statistics
+ * keep: test visits left out, the administrator's devices (never saved, and left out here too) and «No» (never sent).
+ */
+export async function readNow(): Promise<number> {
+  await ensureSchema();
+  const { rows } = await pool.query<{ n: number }>(
+    `SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events
+     WHERE received_at > now() - make_interval(mins => $1) AND is_test=false
+       AND NOT EXISTS (SELECT 1 FROM grimorio_analytics_excluded AS excluded WHERE excluded.visitor_id=grimorio_analytics_events.visitor_id)`, [NOW_MINUTES]);
+  return rows[0]?.n ?? 0;
+}
 export type CardInfo = { kind: "spell" | "monster" | "animal"; id: string; title: string };
 /**
  * One event of a visitor who accepted the statistics. Never for an excluded device; an installation (app_installed,

@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { isAdmin } from "@/lib/admin-auth";
 import { AdminLogin } from "@/components/admin-login";
-import { readFavoriteCounts, readStatistics, readSupport, VERCEL_ANALYTICS_URL } from "@/lib/analytics";
+import { readFavoriteCounts, readNow, readStatistics, readSupport, VERCEL_ANALYTICS_URL } from "@/lib/analytics";
+import { NowDot } from "@/components/home/admin-strip";
 import { FAVORITES_NOTE, FAVORITE_PERIODS } from "@/lib/analytics-events";
 import { rankFavorites, rankingFilterOf, type RankingCard } from "@/lib/favorite-ranking";
 import { getSpellIndex } from "@/lib/spell-index";
@@ -36,9 +37,9 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const saved = rankingFilterOf(params);
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
   const range = periodRange(period, today);
-  const [data, excluded, support, counts, spells, monsters] = await Promise.all([
+  const [data, excluded, support, counts, spells, monsters, now] = await Promise.all([
     readStatistics(range), deviceExcluded(), readSupport(range), readFavoriteCounts(saved.period).catch(() => []),
-    getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
+    getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []), readNow(),
   ]);
   // «I più salvati»: the catalog of the two kinds with a star, on the address ids the stars are counted on.
   const catalog: RankingCard[] = [
@@ -81,6 +82,10 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
     <main className="mx-auto max-w-xl space-y-4 bg-[#F6EFDF] px-4 pb-10 pt-4 text-[#2B2118] lg:max-w-5xl">
       <Link href="/admin" className="inline-flex min-h-11 items-center text-[15px] font-bold text-[#7A1F2B]">‹ Area riservata</Link>
       <h1 className="font-serif text-[34px] font-bold leading-tight text-[#7A1F2B]">Statistiche</h1>
+      {/* «Adesso» (PROMPT 18): people with an event in the last 5 minutes, as in the strip of the Home. */}
+      <p className="-mt-2 flex items-center gap-1.5 text-[13px] text-[#5E4E3E]" data-now={now}>
+        <NowDot />{now.toLocaleString("it-IT")} {now === 1 ? "persona" : "persone"} adesso
+      </p>
       <PeriodSelect value={period} />
 
       {/* «Quattro tessere» (canvas «Statistiche che contano», proposal A, PROMPT 16). */}
