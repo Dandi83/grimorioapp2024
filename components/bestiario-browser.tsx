@@ -266,6 +266,8 @@ export function BestiarioBrowser({
       </FilterSheet>
 
       <div className="px-6">
+        {/* The computer column (PROMPT 17): the same invitation, compact, above «N risultati». */}
+        {pane && homebrewPart.shown && <CommunityInvite compact count={communityMonsters.length} hidden={homebrewPart.hidden} />}
         <div className={`${pane ? "flex" : "grid grid-cols-[minmax(0,1.3fr)_48px_minmax(0,0.8fr)_44px]"} items-end gap-2 border-b-2 border-border-strong pb-2 pt-4 text-[12px] font-bold uppercase tracking-[0.06em] text-muted`}>
           <span role="status" className="whitespace-nowrap" aria-live="polite">{pane ? "" : "Nome · "}{results.length} {results.length === 1 ? "risultato" : "risultati"}</span>
           {!pane && <>

@@ -12,27 +12,34 @@ export const PROPOSE_HREF = "/bestiario/proponi";
  * The card of the Bestiario (screen ① of «I mostri creati da voi», PROMPT 13): dark, under the search and the active
  * filters. count: the creatures published in the chosen edition; none yet, only «Proponi il tuo». hidden: the
  * administrator sees it while the visitors do not (the switch of lib/community.ts or /admin/sezioni).
+ * compact: the list column of the computer (PROMPT 17), above «N risultati»: smaller, no large pen, the two buttons on
+ * one row and, with none yet, the sentence on one line.
  */
-export function CommunityInvite({ count, hidden = false }: { count: number; hidden?: boolean }) {
+export function CommunityInvite({ count, hidden = false, compact = false }: { count: number; hidden?: boolean; compact?: boolean }) {
+  const text = count > 0
+    ? "Creature inventate dai master del Grimorio, controllate da noi prima di pubblicarle."
+    : "Sii il primo a proporre una creatura: la controlliamo e la pubblichiamo con il tuo nome.";
+  // Compact: no overflow-hidden (the note of «Beta» goes past the bottom of the small card).
   return (
-    <section aria-labelledby="community-invite-title" data-community-invite={count} className="relative mt-4 overflow-hidden rounded-[16px] bg-[#2B2118] p-4 text-[#FFFBF0]">
-      <PenLine aria-hidden="true" size={120} strokeWidth={1.2} className="pointer-events-none absolute -right-5 -top-5 text-[#E0A21A] opacity-15" />
+    <section aria-labelledby={compact ? "community-invite-compact-title" : "community-invite-title"} data-community-invite={count} data-compact={compact ? "" : undefined}
+      className={`relative rounded-[16px] bg-[#2B2118] text-[#FFFBF0] ${compact ? "mt-3 p-3" : "mt-4 overflow-hidden p-4"}`}>
+      {!compact && <PenLine aria-hidden="true" size={120} strokeWidth={1.2} className="pointer-events-none absolute -right-5 -top-5 text-[#E0A21A] opacity-15" />}
       {hidden && <HiddenTag className="relative mb-2 !bg-[#FFFBF0] !text-[#2B2118]" />}
       <p className="relative text-[12px] font-bold uppercase tracking-[0.12em] text-[#E0A21A]">Dalla community</p>
-      <h2 id="community-invite-title" className="relative mt-1 font-serif text-[26px] font-bold leading-tight">I mostri creati da voi <BetaPill tone="dark" /></h2>
-      <p className="relative mt-1 text-[15px] leading-6 text-[#F1E6CC]">
-        {count > 0
-          ? "Creature inventate dai master del Grimorio, controllate da noi prima di pubblicarle."
-          : "Sii il primo a proporre una creatura: la controlliamo e la pubblichiamo con il tuo nome."}
-      </p>
-      <div className={`relative mt-3 grid gap-2 ${count > 0 ? "grid-cols-2" : "grid-cols-1"}`}>
+      <h2 id={compact ? "community-invite-compact-title" : "community-invite-title"}
+        className={`relative mt-1 font-serif font-bold leading-tight ${compact ? "text-[20px]" : "text-[26px]"}`}>I mostri creati da voi <BetaPill tone="dark" narrow={compact} /></h2>
+      {compact
+        ? count === 0 && <p className="relative mt-1 truncate text-[14px] leading-5 text-[#F1E6CC]" title={text} data-community-text="">{text}</p>
+        : <p className="relative mt-1 text-[15px] leading-6 text-[#F1E6CC]">{text}</p>}
+      {/* Compact: «Sfoglia» as wide as its text, «Proponi il tuo» the rest, both on one line in the 320 px column. */}
+      <div className={`relative gap-2 ${compact ? "mt-2.5 flex [&>a]:whitespace-nowrap [&>a:last-child]:flex-1" : `mt-3 grid ${count > 0 ? "grid-cols-2" : "grid-cols-1"}`}`}>
         {count > 0 && (
-          <Link href={COMMUNITY_HREF} data-community-browse="" className="flex min-h-[46px] items-center justify-center rounded-[10px] bg-[#FFFBF0] px-3 text-[15px] font-bold text-[#2B2118]">
+          <Link href={COMMUNITY_HREF} data-community-browse="" className={`flex ${compact ? "min-h-11 text-[14px]" : "min-h-[46px] text-[15px]"} items-center justify-center rounded-[10px] bg-[#FFFBF0] px-3 font-bold text-[#2B2118]`}>
             Sfoglia · {count}
           </Link>
         )}
-        <Link href={PROPOSE_HREF} data-community-propose="" className="flex min-h-[46px] items-center justify-center gap-2 rounded-[10px] bg-[#E0A21A] px-3 text-[15px] font-bold text-[#2B2118]">
-          <PenLine size={17} aria-hidden="true" />Proponi il tuo
+        <Link href={PROPOSE_HREF} data-community-propose="" className={`flex ${compact ? "min-h-11 text-[14px]" : "min-h-[46px] text-[15px]"} items-center justify-center gap-2 rounded-[10px] bg-[#E0A21A] px-3 font-bold text-[#2B2118]`}>
+          <PenLine size={compact ? 16 : 17} aria-hidden="true" />Proponi il tuo
         </Link>
       </div>
     </section>

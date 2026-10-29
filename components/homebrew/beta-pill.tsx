@@ -7,8 +7,9 @@ const NOTE = "Sezione nuova: può cambiare. Se qualcosa non va, scrivici da Info
 /**
  * «Beta» next to the title of «I mostri creati da voi» (PROMPT 15): on the dark card of the Bestiario (amber) and on the
  * light pages (brown on cream). A tap (phone) or the mouse shows a small note; a tap outside closes it.
+ * narrow: a narrower note, inside the list column of the computer (320 px).
  */
-export function BetaPill({ tone = "light" }: { tone?: "dark" | "light" }) {
+export function BetaPill({ tone = "light", narrow = false }: { tone?: "dark" | "light"; narrow?: boolean }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const box = useRef<HTMLSpanElement>(null);
@@ -32,7 +33,7 @@ export function BetaPill({ tone = "light" }: { tone?: "dark" | "light" }) {
         Beta
       </button>
       <span id={id} role="tooltip" hidden={!open} data-beta-note=""
-        className="absolute right-0 top-full z-30 mt-1.5 w-[min(260px,calc(100vw-48px))] rounded-[10px] bg-[#2B2118] px-3 py-2 font-sans text-[13px] font-normal normal-case leading-5 tracking-normal text-[#FFFBF0] shadow-lg">
+        className={`absolute right-0 top-full z-30 mt-1.5 ${narrow ? "w-[220px]" : "w-[min(260px,calc(100vw-48px))]"} rounded-[10px] bg-[#2B2118] px-3 py-2 font-sans text-[13px] font-normal normal-case leading-5 tracking-normal text-[#FFFBF0] shadow-lg`}>
         {NOTE}
       </span>
     </span>

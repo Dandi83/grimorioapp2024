@@ -27,12 +27,14 @@ async function seed() {
   add(a, sessions[a][1], 0, "card_open", { path: "/spell/palla-di-fuoco", kind: "spell", card: "palla-di-fuoco", title: "Palla di fuoco" });
   add(a, sessions[a][1], 0, "card_open", { path: "/spell/palla-di-fuoco", kind: "spell", card: "palla-di-fuoco", title: "Palla di fuoco" });
   add(b, sessions[b][0], 1, "page_view", { origin: "instagram", device: "android", installed: false, path: "/bestiario" });
+  // The app of «b» opened two days ago on a tablet: «altro» in «Usano l’app» (the app is the one of that device).
+  add(b, sessions[b][0], 2, "page_view", { origin: "instagram", device: "altro", installed: true, path: "/" });
   add(b, sessions[b][0], 1, "card_open", { path: "/mostro/lich-2014", kind: "monster", card: "lich-2014", title: "Lich" });
   // One card read under its old id and its current one (a duplicate merged into the kept row): one line, 3 readings.
   add(b, sessions[b][0], 1, "card_open", { path: "/spell/i-re-spirare-sott-acqua", kind: "spell", card: "i-re-spirare-sott-acqua", title: "Respirare sott'acqua" });
   add(c, sessions[c][0], 0, "card_open", { path: "/spell/i-re-spirare-sott-acqua-2", kind: "spell", card: "i-re-spirare-sott-acqua-2", title: "Respirare sott'acqua" });
   add(d, sessions[d][0], 0, "card_open", { path: "/spell/i-re-spirare-sott-acqua-2", kind: "spell", card: "i-re-spirare-sott-acqua-2", title: "Respirare sott'acqua" });
-  add(c, sessions[c][0], 0, "page_view", { origin: "google", device: "computer", installed: false, path: "/compendio/condizioni" });
+  add(c, sessions[c][0], 0, "page_view", { origin: "google", device: "computer", installed: true, path: "/compendio/condizioni" });
   add(d, sessions[d][0], 0, "page_view", { origin: "diretto", device: "iphone", installed: false, path: "/" });
   for (const visitor of [a, b, c]) add(visitor, sessions[visitor][0], 0, "search", { query: "drago rossa", results: 0 });
   await client.query("DELETE FROM grimorio_analytics_events WHERE visitor_id LIKE 'prova-statistiche-%'");
@@ -80,7 +82,12 @@ test("statistics: the administrator sees the questions with charts and marked ev
   await expect(tile("tornano").locator('svg[data-chart="anello"]')).toHaveAttribute("aria-label", /^25% delle persone è tornato .*: 1 su 4\.$/);
   await expect(tile("tornano").locator("[data-tile-detail]")).toHaveText("1 su 4 sono tornate almeno una volta");
   await expect(tile("app").locator("h2")).toHaveText("Usano l’app");
-  await expect(tile("app").locator("[data-tile-value]")).toHaveText("1");
+  // «Usano l’app» (PROMPT 17): the bar divides the same 3 people of the number, by system; the computer with Android.
+  await expect(tile("app").locator("[data-tile-value]")).toHaveText("3");
+  await expect(tile("app").locator("[data-app-split]")).toHaveText("Android e computer 1 · iPhone 1 · altro 1");
+  await expect(tile("app").locator('[data-chart="installazioni"]')).toHaveAttribute("aria-label", "Persone che usano l’app per sistema: Android e computer 1, iPhone 1, altro 1.");
+  await expect(tile("app").locator('[data-chart="installazioni"] > span')).toHaveCount(3);
+  await expect(tile("app").locator("[data-installs]")).toHaveText("0 nuove installazioni");
   await expect(tile("app").locator("[data-tile-value]")).toHaveCSS("color", "rgb(31, 107, 69)");
   await expect(tile("provenienza").locator("h2")).toHaveText("Da Instagram");
   await expect(tile("provenienza").locator("h2")).toHaveCSS("text-transform", "uppercase");
@@ -258,7 +265,7 @@ test("the administrator's device: excluded at the login and still after «Esci»
   await expect(page.getByText("Le installazioni si contano per chi non ha rinunciato alle statistiche. Su iPhone si contano al primo avvio dall’icona.")).toBeVisible();
   await expect(page.locator("[data-counting-since]")).toHaveText("Dal 28 ottobre 2026 si contano tutti i visitatori tranne chi rinuncia (prima solo chi accettava).");
   await expect(page.locator("[data-installs]")).toContainText(/^\d+ nuov[ae] installazion[ei]$/);
-  await expect(page.locator("[data-installs-detail]")).toContainText(/^Android \d+ · iPhone \d+$/);
+  await expect(page.locator("[data-app-split]")).toHaveText(/^Android( e computer)? \d+ · iPhone \d+( · altro \d+)?$/);
   await expect(page.locator('[data-tile="app"] [data-tile-value]')).toHaveText(/^\d+$/);
   // «Esci»: the session ends, the device stays excluded.
   await page.goto("/admin");
