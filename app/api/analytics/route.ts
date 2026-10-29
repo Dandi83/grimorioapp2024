@@ -32,6 +32,8 @@ import { getMonsterById } from "@/lib/monsters";
 import { isSrdAnimal } from "@/lib/monsters-types";
 import { MERGED_SPELL_IDS } from "@/lib/monster-id-aliases";
 import { publicSpellId } from "@/lib/spell-public-id";
+import { getHomebrew } from "@/lib/homebrew";
+import { storeTableVote } from "@/lib/table-votes";
 export const dynamic = "force-dynamic";
 function visitorFrom(request: NextRequest): string | undefined {
   return visitorOf(request.cookies.get(VISITOR)?.value);
@@ -140,6 +142,20 @@ export async function POST(request: NextRequest) {
   if (input.event === "valutazione") {
     try {
       const stored = await storeRating(input.vote!, visitor, input.device ?? null, input.test);
+      const result = response({ ok: true, stored });
+      if (!known) result.cookies.set(VISITOR, `${visitor}.${sign(visitor)}`, options);
+      return result;
+    } catch {
+      return response({ error: "Statistiche temporaneamente non disponibili" }, 503);
+    }
+  }
+  // «L'hai provato al tavolo?» (PROMPT 19): only on a published card of «I mostri creati da voi»; one vote per device
+  // and card, changeable, in its own table (lib/table-votes.ts).
+  if (input.event === "prova_tavolo") {
+    try {
+      const card = input.path.slice("/mostro/".length);
+      if (!(await getHomebrew(card))) return response({ ignored: true });
+      const stored = await storeTableVote(visitor, card, input.tableVote!, input.test);
       const result = response({ ok: true, stored });
       if (!known) result.cookies.set(VISITOR, `${visitor}.${sign(visitor)}`, options);
       return result;

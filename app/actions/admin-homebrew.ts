@@ -4,7 +4,8 @@ import { revalidatePath, updateTag } from "next/cache";
 import { headers } from "next/headers";
 
 import { requireAdmin } from "@/lib/admin-action-helpers";
-import { approveProposal, createHomebrew, deleteHomebrew, getHomebrew, refuseProposal, sendPublishedEmail, updateHomebrew, updateProposal } from "@/lib/homebrew";
+import { approveProposal, createHomebrew, deleteHomebrew, getHomebrew, getProposal, refuseProposal, sendPublishedEmail, setHomebrewVerified, updateHomebrew, updateProposal } from "@/lib/homebrew";
+import { homebrewVerdict } from "@/lib/homebrew-balance";
 import { HOMEBREW_LICENSE, LIMITS, parseDraft, plainText } from "@/lib/homebrew-types";
 
 type HomebrewResult = { ok: true; id?: string; email?: "sent" | "not-configured" | "failed" | "none" } | { ok: false; error: string };
@@ -22,12 +23,17 @@ async function siteOrigin(): Promise<string> {
   return `${list.get("x-forwarded-proto") ?? "https"}://${host}`;
 }
 
-/** «Approva»: the card is published; the author gets the notice when an email was left and Resend is configured. */
-export async function approveProposalAction(id: string): Promise<HomebrewResult> {
+/**
+ * «Approva»: the card is published; the author gets the notice when an email was left and Resend is configured.
+ * verified: the box «Mostra "Bilanciamento verificato"»; the pill appears only if the verdict computed now is «in linea».
+ */
+export async function approveProposalAction(id: string, verified = false): Promise<HomebrewResult> {
   await requireAdmin();
   let approved: Awaited<ReturnType<typeof approveProposal>>;
   try {
-    approved = await approveProposal(String(id));
+    const proposal = await getProposal(String(id));
+    const giudizio = proposal ? homebrewVerdict(proposal.scheda) : null;
+    approved = await approveProposal(String(id), { giudizio, verificato: verified === true });
   } catch {
     return { ok: false, error: "Pubblicazione non riuscita. Riprova tra poco." };
   }
@@ -58,7 +64,7 @@ export async function createHomebrewAction(draft: unknown): Promise<HomebrewResu
   await requireAdmin();
   const checked = parseDraft(draft);
   if (!checked.ok) return checked;
-  const id = await createHomebrew(checked.draft);
+  const id = await createHomebrew(checked.draft, homebrewVerdict(checked.draft));
   refresh();
   return { ok: true, id };
 }
@@ -68,7 +74,7 @@ export async function updateHomebrewAction(id: string, draft: unknown): Promise<
   const checked = parseDraft(draft);
   if (!checked.ok) return checked;
   if (!(await getHomebrew(String(id)))) return { ok: false, error: "Creatura homebrew non trovata." };
-  await updateHomebrew(String(id), checked.draft);
+  await updateHomebrew(String(id), checked.draft, homebrewVerdict(checked.draft));
   refresh();
   return { ok: true, id: String(id) };
 }
@@ -78,6 +84,15 @@ export async function deleteHomebrewAction(formData: FormData): Promise<{ ok: tr
   await requireAdmin();
   const id = formData.get("id");
   if (typeof id !== "string" || !(await deleteHomebrew(id))) return { ok: false, error: "Creatura homebrew non trovata." };
+  refresh();
+  return { ok: true };
+}
+
+/** /admin/bilanciamento: the green pill «Bilanciamento verificato» on a card, or taken away. */
+export async function setVerifiedAction(id: string, show: boolean): Promise<{ ok: true } | { ok: false; error: string }> {
+  await requireAdmin();
+  if (!(await getHomebrew(String(id)))) return { ok: false, error: "Creatura homebrew non trovata." };
+  if (!(await setHomebrewVerified(String(id), show === true)) && show) return { ok: false, error: "La pillola compare solo con il giudizio «In linea»." };
   refresh();
   return { ok: true };
 }

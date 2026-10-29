@@ -5,13 +5,14 @@ import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { HOMEBREW_LICENSE_URL, authorLine } from "@/lib/homebrew-types";
 import type { Monster } from "@/lib/monsters-types";
 import type { CardDisplayContext } from "@/lib/card-display";
-import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
+import { BothEditionsPill, HomebrewPill, VerifiedPill } from "@/components/homebrew-pill";
 
 /** The label of a sheet of «I mostri creati da voi»: the pill («Creato da voi» or «Creato dal Grimorio»), then the edition (or «2014 e 2024»). */
-export function HomebrewLabel({ edizione, ours = false }: { edizione: "2014" | "2024" | "entrambe"; ours?: boolean }) {
+export function HomebrewLabel({ edizione, ours = false, verified = false }: { edizione: "2014" | "2024" | "entrambe"; ours?: boolean; verified?: boolean }) {
   return (
     <span className="flex flex-wrap items-center justify-end gap-1.5">
       <HomebrewPill ours={ours} />
+      {verified && <VerifiedPill />}
       {edizione === "entrambe" ? <BothEditionsPill /> : <MonsterProvenanceBadge edition={edizione} variant="dark" />}
     </span>
   );
@@ -50,7 +51,7 @@ export function HomebrewSheet({ monster, before, context = {} }: { monster: Mons
   const edizione = monster.homebrew_edizione ?? "2024";
   return (
     <article className="monster-sheet relative pb-2 pt-4">
-      <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} ours={!monster.homebrew_autore} />} byline={<HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} />} />
+      <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} ours={!monster.homebrew_autore} verified={!!monster.homebrew_verificato} />} byline={<HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} />} />
       <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} />
       <HomebrewNote />
     </article>

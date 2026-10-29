@@ -50,6 +50,8 @@ export type SheetFields = {
   nome: string; gs_num: number; classe_armatura: string; punti_ferita: string; tiri_salvezza?: string;
   forza: number; destrezza: number; costituzione: number; intelligenza: number; saggezza: number; carisma: number;
   resistenze?: string; immunita_danni?: string; immunita?: string; tratti?: string; azioni?: string; azioni_bonus?: string; azioni_leggendarie?: string;
+  /** The checks of PROMPT 19: the immunities to conditions (2014 and homebrew; 2024 after «;» in immunita) and the reactions. */
+  immunita_condizioni?: string; reazioni?: string;
 };
 
 const ABILITY_NAMES: Record<string, Ability> = {

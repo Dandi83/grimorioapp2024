@@ -100,7 +100,7 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  const exclusion=load('lib/analytics-exclusion.ts',{'server-only':{},'@/lib/analytics':fakeAnalytics,'./analytics':fakeAnalytics});
  const spells={'sfera-elastica-di-0tiluke':{id:'sfera-elastica-di-0tiluke',nome_italiano:'SFERA ELASTICA DI 0TILUKE'},'i-re-spirare-sott-acqua-2':{id:'i-re-spirare-sott-acqua-2',nome_italiano:"RESPIRARE SOTT'ACQUA"},'palla-di-fuoco':{id:'palla-di-fuoco',nome_italiano:'PALLA DI FUOCO'}};
  const publicIds=load('lib/spell-public-id.ts');
- const route=load('app/api/analytics/route.ts',{'@/lib/admin-auth':{isAdmin:async()=>admin2},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},
+ const route=load('app/api/analytics/route.ts',{'@/lib/homebrew':{getHomebrew:async()=>undefined},'@/lib/table-votes':{storeTableVote:async()=>false},'@/lib/admin-auth':{isAdmin:async()=>admin2},'@/lib/analytics':fakeAnalytics,'@/lib/analytics-exclusion':exclusion,'@/lib/analytics-events':{parseAnalyticsInput},
   '@/lib/admin-login-limit':{clientAddress:()=>'1.2.3.4'},'@/lib/spells':{getSpellById:async id=>spells[publicIds.storedSpellId(id)]},'@/lib/monsters':{getMonsterById:async id=>id==='goblin'?{id:'goblin',nome:'Goblin'}:undefined},
   '@/lib/monsters-types':{isSrdAnimal:()=>false},'@/lib/spell-name':{spellName:name=>name},'@/lib/monster-id-aliases':load('lib/monster-id-aliases.ts'),'@/lib/spell-public-id':publicIds});
  process.env.ANALYTICS_SECRET='analytics-only-secret';

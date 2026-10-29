@@ -108,6 +108,8 @@ export interface ProposalCardData {
   /** Arrived over the hourly ceiling of the site: saved without a notice. */
   picco?: boolean;
   draft: HomebrewDraft;
+  /** «Da vedere»: the verdict of the Bilanciamento now (null: nothing to simulate). */
+  bilanciamento?: "in linea" | "da controllare" | "fuori" | null;
 }
 
 const NOTICE_EVENT = "grimorio:proposte-avviso";
@@ -136,6 +138,8 @@ export function ProposalCard({ data }: { data: ProposalCardData }) {
   const [editing, setEditing] = useState(false);
   const [refusing, setRefusing] = useState(false);
   const [motivo, setMotivo] = useState("");
+  // «Mostra "Bilanciamento verificato"»: ticked by default only with the verdict «In linea» (PROMPT 19).
+  const [verified, setVerified] = useState(data.bilanciamento === "in linea");
   const [message, setMessage] = useState("");
   const [pending, start] = useTransition();
   // The page refreshes after the action and the card leaves this tab: the outcome is told by the page notice.
@@ -145,7 +149,7 @@ export function ProposalCard({ data }: { data: ProposalCardData }) {
     router.refresh();
   };
   const approve = () => start(async () => {
-    const result = await approveProposalAction(data.id);
+    const result = await approveProposalAction(data.id, verified);
     if (!result.ok) return setMessage(result.error);
     done(result.email === "sent" ? "Pubblicata. Avviso inviato all’autore." : result.email === "not-configured" ? "Pubblicata. Email non configurata: nessun avviso inviato." : result.email === "failed" ? "Pubblicata. L’avviso email non è partito." : "Pubblicata.");
   });
@@ -170,6 +174,12 @@ export function ProposalCard({ data }: { data: ProposalCardData }) {
         {!data.licenza && data.stato !== "rifiutata" && <span className={`${pill} border-[#E0A21A] bg-[#F6E3B0] text-[#5C3F00]`}>Chiedere il consenso alla licenza</span>}
       </div>
       {data.stato === "rifiutata" && data.motivo && <p className="mt-2 text-[13px] text-muted">Motivo: {data.motivo}</p>}
+      {data.stato === "da-vedere" && (
+        <label className="mt-3 flex min-h-11 items-center gap-2.5 text-[14px]" data-verified-box={data.bilanciamento ?? "non-simulabile"}>
+          <input type="checkbox" checked={verified} onChange={event => setVerified(event.target.checked)} className="size-5 accent-[#1F6B45]" />
+          <span>Mostra «Bilanciamento verificato» <span className="text-muted">· giudizio: {data.bilanciamento === "in linea" ? "In linea" : data.bilanciamento === "da controllare" ? "Da controllare" : data.bilanciamento === "fuori" ? "Fuori dal GS" : "non simulabile"}{data.bilanciamento !== "in linea" && " (la pillola compare solo se «In linea»)"}</span></span>
+        </label>
+      )}
       {data.stato === "da-vedere" ? (
         <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
           <Link href={`/admin/proposte/${data.id}`} className="flex min-h-11 items-center justify-center gap-1.5 rounded-[8px] border border-border text-[14px] font-semibold"><FileSearch size={16} aria-hidden="true" />Anteprima</Link>

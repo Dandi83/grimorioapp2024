@@ -100,7 +100,7 @@ test("statistics: the administrator sees the questions with charts and marked ev
   expect((await box("app")).y).toBeGreaterThan((await box("persone")).y);
   // «Il resto»: every item closed; opened, it stays open after a reload.
   const items = page.locator("[data-rest-item]");
-  await expect(items).toHaveCount(7);
+  await expect(items).toHaveCount(8);
   await expect(page.locator("[data-rest-item][open]")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Tornano?" })).toHaveCount(0);
   const daily = page.locator('svg[data-chart="giorni"]');

@@ -82,7 +82,7 @@ export const SECRET_ENV = ['RESEND_API_KEY', 'FEEDBACK_TO_EMAIL', 'FEEDBACK_FROM
  * Server code that must never reach the browser: the email service, the push library that signs with the private key,
  * and the Bilanciamento of the administrator (PROMPT 11: its box, drawn on the server, and the SRD measures).
  */
-const SERVER_ONLY_MARKERS = ['api.resend.com', 'generateVAPIDKeys', 'BILANCIAMENTO', 'Danni ai PG per round', 'misure simulate dei mostri SRD'];
+const SERVER_ONLY_MARKERS = ['api.resend.com', 'generateVAPIDKeys', 'BILANCIAMENTO', 'Danni ai PG per round', 'misure simulate dei mostri SRD', 'SITUAZIONI DI PROVA', 'data-balance-tactics'];
 
 export function findSecretLeaks(clientDir, env = process.env) {
   const needles = [

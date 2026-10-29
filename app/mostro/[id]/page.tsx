@@ -16,6 +16,7 @@ import { cardHidden, editionCard, linksOut, partState, sectionPage, CLOSED_METAD
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { collectionOf } from "@/lib/monsters-types";
 import { HomebrewByline, HomebrewLabel, HomebrewNote } from "@/components/homebrew/homebrew-sheet";
+import { TableTest } from "@/components/homebrew/table-test";
 
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
@@ -116,7 +117,7 @@ export default async function MonsterDetailPage({
           </div>
         }
         // «I mostri creati da voi»: the pill next to the edition label, where the sheets show their labels.
-        label={homebrew ? <HomebrewLabel edizione={monster.homebrew_edizione!} ours={!monster.homebrew_autore} /> : <MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
+        label={homebrew ? <HomebrewLabel edizione={monster.homebrew_edizione!} ours={!monster.homebrew_autore} verified={!!monster.homebrew_verificato} /> : <MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
         byline={homebrew ? <HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} /> : undefined}
       />
       <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} catalog={await getSpellReferenceCatalog()} />
@@ -135,6 +136,8 @@ export default async function MonsterDetailPage({
       {/* NO SRD: where the sheet comes from, in the place of the SRD source (homebrew keeps its licence box). */}
       <CardOriginBox source={monster.fonte_scheda} className="mx-6 mb-8" />
 
+      {/* «L'hai provato al tavolo?» (PROMPT 19): the votes of the masters, drawn in the browser. */}
+      {homebrew && <TableTest id={monster.id} />}
       {homebrew && <HomebrewNote />}
 
       <ReportLink edition={monster.edizione ?? (legacy ? "2014" : "2024")} />

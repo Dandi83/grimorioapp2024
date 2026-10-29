@@ -192,6 +192,13 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
         </div>
       </div>
 
+      {/* Step 2 (PROMPT 19): how the sheet will be checked, before the defences that weigh on it. */}
+      {step === 2 && (
+        <p className="text-[14px] leading-6 text-muted" data-method-link="form">
+          Prima di pubblicarla mettiamo alla prova la creatura contro i mostri ufficiali del suo GS.{" "}
+          <Link href="/bestiario/creati-da-voi/bilanciamento" className="font-semibold text-primary underline underline-offset-2">Come valutiamo il bilanciamento ›</Link>
+        </p>
+      )}
       {step < 4 && <HomebrewEditor value={draft} onChange={setDraft} step={step as EditorStep} preview={preview} />}
       {step === 4 && preview && <HomebrewEditor value={draft} onChange={setDraft} step={3} preview />}
 

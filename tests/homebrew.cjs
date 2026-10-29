@@ -134,6 +134,8 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
   const pool = {query: (sql, params) => pg.query(sql, params), connect: async () => ({query: (sql, params) => pg.query(sql, params), release() {}})};
   deps['server-only'] = {};
   deps['./db'] = deps['@/lib/db'] = {db: {}, pool};
+  // The votes «al tavolo» of a card go with it (lib/table-votes.ts), against the same database.
+  deps['./table-votes'] = load('lib/table-votes.ts', {'server-only': {}, './db': {pool}, './analytics': {tableVoteKey: visitor => `k-${visitor}`}});
   const homebrew = load('lib/homebrew.ts');
   assert.deepEqual(await homebrew.publishedHomebrew(), [], 'no table yet: no homebrew, no error');
   assert.equal(await homebrew.countProposalsToReview(), 0);
@@ -145,11 +147,12 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
   assert.equal(await homebrew.countProposalsToReview(), 3);
   assert.deepEqual((await homebrew.listProposals('da-vedere')).map(row => row.scheda.nome), ['Drago di nebbia', 'Spirito del guado', 'Copia di un manuale']);
   assert.deepEqual(await homebrew.publishedHomebrew(), [], 'nothing published before the approval');
-  const approved = await homebrew.approveProposal(saved.id);
+  const approved = await homebrew.approveProposal(saved.id, {giudizio: 'in linea', verificato: true});
   assert.deepEqual(approved, {homebrewId: 'homebrew-drago-di-nebbia', nome: 'Drago di nebbia', email: 'master@esempio.it'}, 'the email is returned once, for the notice');
   assert.equal((await homebrew.getProposal(saved.id)).email, null, 'then deleted');
   assert.equal(await homebrew.approveProposal(saved.id), null, 'decided once');
-  await homebrew.approveProposal(both.id);
+  // A verdict out of line: the box ticked all the same never shows the pill (PROMPT 19).
+  await homebrew.approveProposal(both.id, {giudizio: 'fuori', verificato: true});
   assert.equal(await homebrew.refuseProposal(refused.id, 'Testo copiato'), true);
   const refusedRow = await homebrew.getProposal(refused.id);
   assert.equal(refusedRow.stato, 'rifiutata'); assert.equal(refusedRow.email, null, 'email deleted at the refusal'); assert.equal(refusedRow.motivo, 'Testo copiato');
@@ -162,6 +165,15 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
   assert.equal(published[0].licenza, licenza, 'the published card keeps the licence of its proposal');
   assert.equal(card.homebrew_licenza, licenza);
   assert.equal(card.homebrew_autore, 'Master Ombra'); assert.equal(card.homebrew_edizione, '2024'); assert.equal(card.nome, 'Drago di nebbia');
+  // «Bilanciamento verificato» (PROMPT 19): the verdict saved at the approval, the pill only when «in linea» and left on.
+  assert.deepEqual(published.map(row => [row.bilanciamento, row.verificato]), [['in linea', true], ['fuori', false]]);
+  assert.equal(card.homebrew_verificato, true);
+  assert.equal(homebrew.homebrewMonster(published[1]).homebrew_verificato, undefined, 'no pill and no field when out of line');
+  assert.equal(await homebrew.setHomebrewVerified('homebrew-drago-di-nebbia', false), true, 'taken away by the administrator');
+  assert.equal(homebrew.homebrewMonster(await homebrew.getHomebrew('homebrew-drago-di-nebbia')).homebrew_verificato, undefined);
+  assert.equal(await homebrew.setHomebrewVerified('homebrew-drago-di-nebbia', true), true, 'and back');
+  assert.equal(await homebrew.setHomebrewVerified('homebrew-spirito-del-guado', true), false, 'never on with a verdict out of line');
+  assert.equal(homebrew.homebrewMonster(await homebrew.getHomebrew('homebrew-spirito-del-guado')).homebrew_verificato, undefined);
   assert.equal(await homebrew.getHomebrew('aboleth'), undefined, 'only homebrew ids');
   // Same name again: a new address, never one taken.
   const second = await homebrew.saveProposal({draft: ok.draft, nickname: 'Altro', email: null, licenza, impronta: null});
@@ -181,12 +193,24 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
   assert.equal(homebrew.homebrewLicense({autore: 'Lia', licenza: null}), null);
   assert.equal(homebrew.homebrewLicense({autore: null, licenza: null}), licenza);
   assert.equal(homebrew.homebrewLicense({autore: 'Lia', licenza}), licenza);
-  assert.equal(await homebrew.updateHomebrew(own, {...ok.draft, nome: 'Guardiano di sale', edizione: '2014', pf: 90}), true);
+  assert.equal((await homebrew.getHomebrew(own)).verificato, false, 'ours start without the pill');
+  assert.equal(await homebrew.updateHomebrew(own, {...ok.draft, nome: 'Guardiano di sale', edizione: '2014', pf: 90}, 'in linea'), true);
+  assert.equal(await homebrew.setHomebrewVerified(own, true), true);
+  // A correction out of line takes the pill away.
+  assert.equal(await homebrew.updateHomebrew(own, {...ok.draft, nome: 'Guardiano di sale', edizione: '2014', pf: 300}, 'fuori'), true);
+  assert.deepEqual([(await homebrew.getHomebrew(own)).bilanciamento, (await homebrew.getHomebrew(own)).verificato], ['fuori', false]);
+  // The votes «al tavolo» of a card go with it.
+  const votes = deps['./table-votes'];
+  for (const visitor of ['a', 'b']) await votes.storeTableVote(visitor, own, 'giusto', false);
+  await votes.storeTableVote('c', 'homebrew-drago-di-nebbia', 'facile', false);
+  assert.equal((await votes.readAllTableCounts()).get(own).total, 2);
   assert.equal(await homebrew.deleteHomebrew(own), true);
-  assert.deepEqual((await homebrew.allHomebrewLog()).map(row => row.azione).sort(), ['corretta', 'creata', 'eliminata', 'pubblicata', 'pubblicata', 'pubblicata', 'rifiutata', 'rifiutata']);
+  assert.equal((await votes.readAllTableCounts()).get(own), undefined, 'its votes deleted with the card');
+  assert.equal((await votes.readAllTableCounts()).get('homebrew-drago-di-nebbia').total, 1, 'the others stay');
+  assert.deepEqual((await homebrew.allHomebrewLog()).map(row => row.azione).sort(), ['corretta', 'corretta', 'creata', 'eliminata', 'pubblicata', 'pubblicata', 'pubblicata', 'rifiutata', 'rifiutata']);
   assert.deepEqual((await homebrew.proposalCounts()), {'da-vedere': 0, approvata: 3, rifiutata: 2});
   const tables = (await pg.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name")).rows.map(row => row.table_name);
-  assert.deepEqual(tables, ['grimorio_homebrew', 'grimorio_homebrew_limits', 'grimorio_homebrew_log', 'grimorio_homebrew_proposals'], 'only its own tables');
+  assert.deepEqual(tables, ['grimorio_homebrew', 'grimorio_homebrew_limits', 'grimorio_homebrew_log', 'grimorio_homebrew_proposals', 'grimorio_table_votes'], 'only its own tables');
   // Send limits per device (salted hash, never the address) and overall.
   for (let i = 0; i < 3; i++) await homebrew.recordProposalSend('device-a');
   assert.equal((await homebrew.proposalLimits('device-a')).limited, true, '3 an hour from one device');
@@ -210,9 +234,11 @@ assert.equal(cr.estimateChallenge(cr.statsOf(sheet2024), reference).esito, 'in-l
   deps['@/lib/admin-action-helpers'] = {requireAdmin: async () => { throw new Error('Non autorizzato'); }};
   deps['next/cache'] = {revalidatePath() {}, updateTag() {}};
   deps['next/headers'] = {headers: async () => new Headers()};
+  deps['@/lib/homebrew-balance'] = {homebrewVerdict: () => 'in linea'};
   const actions = load('app/actions/admin-homebrew.ts');
   for (const call of [() => actions.approveProposalAction(both.id), () => actions.refuseProposalAction(both.id, ''), () => actions.correctProposalAction(both.id, ok.draft),
-    () => actions.createHomebrewAction(ok.draft), () => actions.updateHomebrewAction('homebrew-drago-di-nebbia', ok.draft), () => actions.deleteHomebrewAction(new FormData())]) {
+    () => actions.createHomebrewAction(ok.draft), () => actions.updateHomebrewAction('homebrew-drago-di-nebbia', ok.draft), () => actions.deleteHomebrewAction(new FormData()),
+    () => actions.setVerifiedAction('homebrew-drago-di-nebbia', false)]) {
     await assert.rejects(call(), /Non autorizzato/);
   }
   await pg.close();

@@ -228,6 +228,13 @@ export async function excludeVisitor(visitor: string) {
   await pool.query("INSERT INTO grimorio_analytics_excluded (visitor_id) VALUES ($1) ON CONFLICT DO NOTHING", [visitor]);
   await pool.query("DELETE FROM grimorio_analytics_events WHERE visitor_id=$1", [visitor]);
   await pool.query("DELETE FROM grimorio_favorite_saves WHERE visitor_id=$1", [visitor]);
+  // Its votes «al tavolo» (lib/table-votes.ts) go too, when the table exists (and only with the key that made them).
+  if (process.env.ANALYTICS_SECRET) await pool.query("DELETE FROM grimorio_table_votes WHERE chiave=$1", [tableVoteKey(visitor)]).catch(() => undefined);
+}
+
+/** The key of a device among the votes «al tavolo»: a keyed hash of the visitor ID, never the ID itself. */
+export function tableVoteKey(visitor: string): string {
+  return createHmac("sha256", analyticsSecret()).update(`grimorio-prova-tavolo:${visitor}`).digest("hex");
 }
 
 /** «No» to the statistics: the stars this visitor gave are no longer counted. */

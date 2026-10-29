@@ -97,7 +97,7 @@ export function MonsterSheetTitle({ monster, label, before, byline }: { monster:
       {before}
       <div className="flex items-start justify-between gap-3 border-b-4 border-primary pb-2">
         <h1 className="min-w-0 break-words font-serif text-[42px] font-bold leading-[1.05] text-foreground lg:text-[46px]">{monster.nome || "Nome del mostro"}</h1>
-        {label && <div className="shrink-0 pt-3">{label}</div>}
+        {label && <div className="max-w-[55%] shrink-0 pt-3">{label}</div>}
         {/* Computer: GS and PE as a bordeaux pill at the top right. */}
         {monster.grado_sfida && (
           <span className="mt-3 hidden shrink-0 items-center rounded-full bg-primary px-3.5 py-1 font-serif text-[17px] font-bold text-primary-foreground lg:inline-flex">

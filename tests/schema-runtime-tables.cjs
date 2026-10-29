@@ -53,10 +53,13 @@ const sqlType={text:'text',integer:'integer',boolean:'boolean',jsonb:'jsonb',uui
  await load('lib/editor-log.ts').ensureEditorLogTable();
  await load('lib/section-visibility.ts').ensureSectionTables();
  await load('lib/homebrew.ts').ensureHomebrewTables();
+ deps['./analytics']={tableVoteKey:visitor=>`k-${visitor}`};
+ await load('lib/table-votes.ts').storeTableVote('v','homebrew-prova','giusto',false);
+ delete deps['./analytics'];
  await load('lib/subclasses.ts').ensureSubclassTables();
  deps['web-push']={generateVAPIDKeys:()=>({publicKey:'p',privateKey:'k'})};
  await load('lib/push.ts').ensurePushTables();
- for(const table of [schema.contentEditions,schema.originalSummaries,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.ratings,schema.analyticsLimits,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.noticeLog,schema.adminSessions,schema.contentOverrides,schema.editorLog,schema.sectionVisibility,schema.sectionVisibilityLog,schema.sectionParts,schema.sectionPartsLog,schema.cardVisibility,schema.cardVisibilityLog,schema.homebrew,schema.homebrewProposals,schema.homebrewLimits,schema.homebrewLog,schema.subclasses,schema.subclassLog,schema.pushKeys,schema.pushSubscriptions,schema.pushTypes]){
+ for(const table of [schema.contentEditions,schema.originalSummaries,schema.monsterDetails,schema.monsterHabitats,schema.analyticsEvents,schema.ratings,schema.analyticsLimits,schema.adminLoginFailures,schema.feedbackReports,schema.feedbackLimits,schema.noticeLog,schema.adminSessions,schema.contentOverrides,schema.editorLog,schema.sectionVisibility,schema.sectionVisibilityLog,schema.sectionParts,schema.sectionPartsLog,schema.cardVisibility,schema.cardVisibilityLog,schema.homebrew,schema.tableVotes,schema.homebrewProposals,schema.homebrewLimits,schema.homebrewLog,schema.subclasses,schema.subclassLog,schema.pushKeys,schema.pushSubscriptions,schema.pushTypes]){
   const config=getTableConfig(table);
   const {rows}=await pg.query('SELECT column_name,data_type,is_nullable,column_default FROM information_schema.columns WHERE table_name=$1 ORDER BY ordinal_position',[config.name]);
   assert.ok(rows.length,`${config.name} is created by the runtime code`);

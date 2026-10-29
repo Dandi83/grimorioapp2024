@@ -4,7 +4,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {createRequire}=require('node:module');
 require.cache[require.resolve('server-only')]={exports:{}};
 const {readMonster,multiattackCount,damageDice,entries,regeneration}=require('../lib/monster-balance/parse.ts');
-const {simulate}=require('../lib/monster-balance/simulate.ts');
+const {simulate,TACTICS,levelFor}=require('../lib/monster-balance/simulate.ts');
+const {STRESS,measure,fightsOfASheet}=require('../lib/monster-balance/scenarios.ts');
+const {heavyControl,conditionImmunities}=require('../lib/monster-balance/checks.ts');
 const {party,levelOf,heroDc,wizard,fighter,cleric}=require('../lib/monster-balance/party.ts');
 const {compare,band,referenceGroup,gapFromCr,levelOf:verdictOf,BAND,CHECK_LIMIT}=require('../lib/monster-balance/compare.ts');
 const {balanceApplies}=require('../lib/balance-scope.ts');
@@ -90,55 +92,150 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  // The same seed gives the same result; a different seed changes it a little.
  const once=simulate(dragon,3000),again=simulate(dragon,3000),other=simulate(dragon,3000,7);
  assert.deepEqual(once,again);assert.notDeepEqual(once,other);
- for(const key of ['damagePerRound','rounds','downPct','wipePct'])assert.ok(Number.isFinite(once[key]),key);
+ for(const key of ['damagePerRound','rounds','downPct','wipePct','winPct','oneShotPct'])assert.ok(Number.isFinite(once[key]),key);
  assert.ok(once.rounds>=1&&once.rounds<=15);
- // Under 1 second on the server for one sheet (3000 fights), the slowest kind: legendary, recharge, multiattack.
- for(const name of ['Drago nero adulto','Tarrasque','Lich']){const start=Date.now();balance.evaluateMonster(find(m2024,name),'2024');assert.ok(Date.now()-start<1000,`${name}: ${Date.now()-start} ms`);}
 
- // The comparison: the band from the 10th to the 90th percentile, widening to at least 6 SRD monsters, three verdicts.
+ // PROMPT 19: three tactics of the master. The same seed, the same result for each; «a caso» and «prudente» differ from «ottimale».
+ assert.deepEqual(TACTICS,['ottimale','caso','prudente']);
+ assert.deepEqual(simulate(dragon,2000,undefined,{tactic:'ottimale'}),simulate(dragon,2000),'«ottimale» is the default');
+ const byTactic=Object.fromEntries(TACTICS.map(t=>[t,simulate(dragon,3000,undefined,{tactic:t})]));
+ assert.deepEqual(simulate(dragon,3000,undefined,{tactic:'caso'}),byTactic.caso,'seeded: the same fights');
+ assert.notDeepEqual(byTactic.caso,byTactic.ottimale);assert.notDeepEqual(byTactic.prudente,byTactic.ottimale);
+ // Prudent: the breath one time out of two when ready, so less damage than the optimal master (the breath is its best move).
+ assert.ok(byTactic.prudente.damagePerRound<byTactic.ottimale.damagePerRound,`${byTactic.prudente.damagePerRound} < ${byTactic.ottimale.damagePerRound}`);
+ // A monster with only attacks plays the same way with «ottimale» and «prudente» (no ability to choose).
+ const goblin=readMonster(find(m2024,'Goblin guerriero'));
+ assert.deepEqual(simulate(goblin,1000,undefined,{tactic:'prudente'}),simulate(goblin,1000));
+ // The groups of the test situations.
+ assert.deepEqual(STRESS.map(x=>x.key),['tre','cinque','sei','sotto','sopra','marziale','arcano']);
+ const kinds=key=>STRESS.find(x=>x.key===key).setup.kinds;
+ assert.deepEqual(kinds('tre'),['guerriero','chierico','ladro'],'the wizard taken out');
+ assert.deepEqual(kinds('cinque'),['guerriero','chierico','ladro','mago','guerriero'],'a second fighter');
+ assert.deepEqual(kinds('sei'),['guerriero','chierico','ladro','mago','guerriero','chierico'],'then a second cleric');
+ assert.deepEqual(kinds('marziale'),['guerriero','guerriero','ladro','chierico']);assert.deepEqual(kinds('arcano'),['mago','mago','chierico','ladro']);
+ assert.equal(STRESS.find(x=>x.key==='sotto').setup.levelShift,-1);assert.equal(STRESS.find(x=>x.key==='sopra').setup.levelShift,1);
+ assert.deepEqual(party(3,kinds('arcano')).map(h=>h.kind),['mago','mago','chierico','ladro']);
+ assert.equal(levelFor(1,-1),1,'never under level 1');assert.equal(levelFor(20,1),20,'never over 20');assert.equal(levelFor(5,-1),4);
+ // More characters: the monster falls sooner and wipes the group less often.
+ const three=simulate(dragon,1500,undefined,{kinds:kinds('tre')}),six=simulate(dragon,1500,undefined,{kinds:kinds('sei')});
+ assert.ok(six.rounds<three.rounds&&six.wipePct<=three.wipePct,`6 PG ${six.rounds} round vs 3 PG ${three.rounds}`);
+ assert.ok(simulate(dragon,1500,undefined,{levelShift:1}).winPct>=simulate(dragon,1500,undefined,{levelShift:-1}).winPct,'stronger characters win more');
+ const measures=measure(dragon,500,100);
+ assert.deepEqual(Object.keys(measures.tactics),TACTICS);assert.deepEqual(Object.keys(measures.stress),STRESS.map(x=>x.key));
+ assert.equal(fightsOfASheet(),3000*3+300*7);
+
+ // Under 2 seconds on the server for one sheet (3 × 3000 + 7 × 300 fights), the slowest kinds: legendary, recharge, multiattack.
+ for(const name of ['Drago nero adulto','Tarrasque','Lich']){const start=Date.now();balance.evaluateMonster(find(m2024,name),'2024');assert.ok(Date.now()-start<2000,`${name}: ${Date.now()-start} ms`);}
+ // In memory for a version of the sheet: the same fields give the same object at once; a change computes again.
+ const sheet={...find(m2024,'Troll'),id:'troll-prova',fonte_scheda:'Aggiunta da te'};
+ const first=balance.evaluateMonster(sheet,'2024');assert.equal(balance.evaluateMonster({...sheet},'2024'),first,'cached');
+ const changed=balance.evaluateMonster({...sheet,punti_ferita:'200 (20d10 + 90)'},'2024');assert.notEqual(changed,first);assert.ok(changed.model.hp===200);
+ assert.notEqual(balance.evaluateMonster(sheet,'2014'),first,'another edition, another result');
+ assert.equal(balance.cacheKey(sheet,'2024',3000),balance.cacheKey({...sheet},'2024',3000));
+
+ // The comparison: the band from the 10th to the 90th percentile, widening to at least 6 SRD monsters, three verdicts, the worst tactic.
  assert.deepEqual(BAND,{low:0.1,high:0.9});assert.equal(CHECK_LIMIT,25);
  assert.deepEqual(band([0,1,2,3,4,5,6,7,8,9,10]),{median:5,low:1,high:9});
- const rows=[0,1,2,3,4,5,6,7].map(i=>({id:`m${i}`,name:`M${i}`,cr:i<3?5:9,damagePerRound:10+i,rounds:3,downPct:i*10,wipePct:0,ac:15,hp:100,toHit:7,dc:15}));
+ const metricsOf=(d,r,down=20,extra={})=>({damagePerRound:d,rounds:r,downPct:down,wipePct:0,winPct:100,oneShotPct:0,...extra});
+ const stressOf=()=>Object.fromEntries(STRESS.map(x=>[x.key,{rounds:4,wipePct:10,winPct:80}]));
+ const rowOf=(id,cr,d,r,down=20,extra={})=>({id,name:id,cr,ac:13,hp:60,toHit:5,dc:13,tactics:Object.fromEntries(TACTICS.map(t=>[t,metricsOf(d,r,down,extra)])),stress:stressOf()});
+ const allTactics=(d,r,over={})=>({tactics:{ottimale:metricsOf(d,r),caso:metricsOf(d,r),prudente:metricsOf(d,r),...over},stress:stressOf()});
+ const rows=[0,1,2,3,4,5,6,7].map(i=>rowOf(`m${i}`,i<3?5:9,10+i,3,i*10));
  assert.equal(referenceGroup(5,rows).widened,4,'3 at CR 5: widened until 6');
- const metrics={damagePerRound:40,rounds:3,downPct:50,wipePct:0};
- const cmp=compare(metrics,9,rows);
- assert.equal(cmp.damage.verdict,'sopra');assert.equal(cmp.rounds.verdict,'in linea');assert.equal(cmp.level,'fuori');
- assert.match(cmp.outside[0],/^Picchia più dei mostri del suo GS \(\+\d+%\)$/);assert.ok(gapFromCr(cmp)>0);
- assert.equal(compare({...metrics,damagePerRound:15},9,rows).level,'in linea');
+ const cmp=compare(allTactics(40,3),9,rows);
+ assert.equal(cmp.tactics.ottimale.damage.verdict,'sopra');assert.equal(cmp.tactics.ottimale.rounds.verdict,'in linea');assert.equal(cmp.level,'fuori');
+ assert.match(cmp.sentence,/^Con un master che gioca al meglio picchia troppo forte \(\+\d+%\)\.$/);assert.ok(gapFromCr(cmp)>0);
+ assert.equal(compare(allTactics(15,3),9,rows).level,'in linea');
+ assert.equal(compare(allTactics(15,3),9,rows).sentence,'Danni e resistenza nella fascia dei mostri del suo GS con tutti e tre i modi di giocarlo.');
  // The limits of the three levels: a group whose band is exactly 8 damage and 4 rounds.
- const flat=[0,1,2,3,4,5].map(i=>({id:`f${i}`,name:`F${i}`,cr:3,damagePerRound:8,rounds:4,downPct:20,wipePct:0,ac:13,hp:60,toHit:5,dc:13}));
- const level=(damagePerRound,rounds)=>compare({damagePerRound,rounds,downPct:20,wipePct:0},3,flat);
- assert.equal(level(8,4).level,'in linea');assert.deepEqual(level(8,4).outside,[]);
+ const flat=[0,1,2,3,4,5].map(i=>rowOf(`f${i}`,3,8,4));
+ const level=(d,r)=>compare(allTactics(d,r),3,flat);
+ assert.equal(level(8,4).level,'in linea');assert.equal(level(8,4).worst,null);
  assert.equal(level(10,4).level,'da controllare','+25% exactly: still to check');
  assert.equal(level(10.1,4).level,'fuori','+26%: out of the CR');
  assert.equal(level(6,4).level,'da controllare','−25% exactly');assert.equal(level(5.9,4).level,'fuori');
  assert.equal(level(8,5).level,'da controllare');assert.equal(level(8,3).level,'da controllare');assert.equal(level(8,2.9).level,'fuori');
  assert.equal(level(9,5).level,'fuori','both out, even by little');
- assert.deepEqual(level(10,4).outside,['Picchia più dei mostri del suo GS (+25%)']);
- assert.deepEqual(level(8,3).outside,['Cade prima dei mostri del suo GS (−25%)']);
- assert.deepEqual(level(6,5).outside,['Picchia meno dei mostri del suo GS (−25%)','Resiste più a lungo dei mostri del suo GS (+25%)']);
- assert.equal(verdictOf(level(10,4).damage,level(10,4).rounds),'da controllare');
+ assert.deepEqual(level(8,3).tactics.ottimale.outside,['cade troppo presto (−25%)']);
+ assert.deepEqual(level(6,5).tactics.ottimale.outside,['picchia troppo piano (−25%)','resiste troppo a lungo (+25%)']);
+ assert.equal(verdictOf(level(10,4).tactics.ottimale.damage,level(10,4).tactics.ottimale.rounds),'da controllare');
+ // «In linea» only when all three tactics are: the worst one decides, and the sentence says which and what.
+ const randomShort=compare(allTactics(8,4,{caso:metricsOf(8,2)}),3,flat);
+ assert.equal(randomShort.tactics.ottimale.level,'in linea');assert.equal(randomShort.tactics.caso.level,'fuori');
+ assert.equal(randomShort.level,'fuori');assert.equal(randomShort.worst,'caso');
+ assert.equal(randomShort.sentence,'Con un master che sceglie a caso cade troppo presto (−50%).');
+ const prudentCheck=compare(allTactics(8,4,{prudente:metricsOf(6.5,4)}),3,flat);
+ assert.equal(prudentCheck.level,'da controllare');assert.match(prudentCheck.sentence,/^Con un master prudente picchia troppo piano/);
+ // Each tactic against the same tactic of the SRD monsters.
+ const split=[0,1,2,3,4,5].map(i=>({...rowOf(`s${i}`,3,8,4),tactics:{ottimale:metricsOf(8,4),caso:metricsOf(4,4),prudente:metricsOf(8,4)}}));
+ assert.equal(compare(allTactics(8,4,{caso:metricsOf(4,4)}),3,split).level,'in linea','4 damage is normal for a master who plays at random');
+ // The test situations: warnings over the 90th percentile of wipes and rounds, under the 10th of the characters' wins.
+ const stressed=compare({...allTactics(8,4),stress:{...stressOf(),tre:{rounds:9,wipePct:60,winPct:30}}},3,flat);
+ assert.deepEqual(stressed.stress.find(x=>x.key==='tre').warnings.length,3);
+ assert.equal(stressed.stress.find(x=>x.key==='cinque').warnings.length,0);
+ assert.equal(stressed.level,'in linea','the test situations never change the verdict');
+
+ // The checks the CR does not measure (a–e): a case that raises each warning and one that does not.
+ const base={nome:'Prova',gs_num:6,classe_armatura:'15',punti_ferita:'90',forza:16,destrezza:12,costituzione:14,intelligenza:8,saggezza:10,carisma:8,
+  azioni:'<strong>Multiattacco.</strong> La creatura effettua due attacchi Artiglio.<br><br><strong>Artiglio.</strong> <em>Tiro per colpire in mischia:</em> +6, portata 1,5 m. <em>Colpito:</em> 12 (2d8 + 3) danni taglienti.'};
+ const keysOf=(sheet,cr=sheet.gs_num)=>{const r=balance.evaluateMonster({...sheet,gs_num:cr},'2024');return r.warnings.map(w=>w.key);};
+ // a. Heavy control without a new saving throw; stronger at CR 4 or less.
+ const gaze='<br><br><strong>Sguardo.</strong> Tiro salvezza su Costituzione: CD 13, una creatura entro 9 metri. <em>Fallimento:</em> il bersaglio è paralizzato per 1 minuto.';
+ assert.deepEqual(heavyControl({...base,azioni:base.azioni+gaze}),[{condition:'paralizzato',name:'Sguardo'}]);
+ assert.deepEqual(heavyControl({...base,azioni:base.azioni+gaze.replace('per 1 minuto.','per 1 minuto. Il bersaglio ripete il tiro salvezza alla fine di ciascuno dei suoi turni.')}),[],'with a new saving throw: no warning');
+ assert.deepEqual(heavyControl({...base,azioni:base.azioni+gaze.replace('per 1 minuto','fino alla fine del suo turno successivo')}),[],'over by the next turn: no warning');
+ assert.deepEqual(heavyControl({...base,tratti:'<strong>Tattiche del branco.</strong> Vantaggio se un alleato entro 1,5 metri dalla creatura non è incapacitato.'}),[],'a requirement about an ally');
+ const weakGaze=balance.evaluateMonster({...base,gs_num:3,azioni:base.azioni+gaze},'2024').warnings.find(w=>w.kind==='controllo');
+ assert.equal(weakGaze.strong,true);assert.match(weakGaze.text,/a GS 3 è molto pesante/);
+ assert.equal(balance.evaluateMonster({...base,azioni:base.azioni+gaze},'2024').warnings.find(w=>w.kind==='controllo').strong,false);
+ // b. A character down in one turn more often than the SRD monsters of the CR.
+ const brute={...base,gs_num:2,azioni:'<strong>Multiattacco.</strong> La creatura effettua tre attacchi Maglio.<br><br><strong>Maglio.</strong> <em>Tiro per colpire in mischia:</em> +9, portata 1,5 m. <em>Colpito:</em> 30 (4d10 + 8) danni contundenti.'};
+ assert.ok(keysOf(brute).includes('colpo'),keysOf(brute).join());assert.ok(!keysOf(base).includes('colpo'));
+ // c. CR 5 or more with one action a turn.
+ const lone={...base,azioni:'<strong>Artiglio.</strong> <em>Tiro per colpire in mischia:</em> +6, portata 1,5 m. <em>Colpito:</em> 30 (4d12 + 4) danni taglienti.'};
+ assert.ok(keysOf(lone).includes('azioni'));assert.ok(!keysOf(base).includes('azioni'),'with a multiattack: no warning');
+ assert.ok(!keysOf(lone,4).includes('azioni'),'under CR 5: no warning');
+ assert.ok(!keysOf({...lone,azioni_bonus:'<strong>Balzo.</strong> La creatura si muove di 9 metri.'}).includes('azioni'),'a bonus action: no warning');
+ // d. Few answers.
+ assert.ok(keysOf({...base,resistenze:'contundenti, perforanti, taglienti'}).includes('contromosse:armi'));
+ assert.ok(!keysOf({...base,resistenze:'contundenti, perforanti, taglienti'},9).includes('contromosse:armi'),'over CR 8: normal');
+ assert.ok(keysOf({...base,immunita:'veleno; affascinato, avvelenato, indebolimento, paralizzato, pietrificato, spaventato'}).includes('contromosse:condizioni'));
+ assert.ok(!keysOf({...base,immunita:'veleno; avvelenato, spaventato'}).includes('contromosse:condizioni'),'two conditions: no warning');
+ assert.deepEqual(conditionImmunities({immunita_condizioni:'affascinato, avvelenato e spaventato'}),['affascinato','avvelenato','spaventato'],'2014 and homebrew in their own field');
+ const resistant={...base,tratti:'<strong>Resistenza alla magia.</strong> Vantaggio ai tiri salvezza contro incantesimi.<br><br><strong>Resistenza leggendaria (2/giorno).</strong> Se fallisce un tiro salvezza, può superarlo.'};
+ assert.ok(keysOf(resistant).includes('contromosse:magia'));assert.ok(!keysOf(resistant,11).includes('contromosse:magia'));
+ // e. Numbers out of scale, with the typical value.
+ const armoured=balance.evaluateMonster({...base,classe_armatura:'24'},'2024').warnings.find(w=>w.key==='numeri:ca-alta');
+ assert.ok(armoured);assert.match(armoured.data,/^CA 24: di solito \d+ \(fascia \d+–\d+\)$/);
+ assert.ok(!keysOf(base).some(key=>key.startsWith('numeri:ca')),'a usual AC: no warning');
+ assert.ok(keysOf({...base,azioni:base.azioni.replace('+6','+15')}).includes('numeri:colpire-alta'));
+
  // A sheet against the SRD file of its edition (never against itself).
  const result=balance.evaluateMonster(find(m2024,'Drago nero adulto'),'2024');
  assert.ok(result.comparison.group.length>=6);assert.ok(result.comparison.group.every(row=>row.id!=='drago-nero-adulto'&&Math.abs(row.cr-14)<=result.comparison.widened));
  const html=balance.balanceBoxHtml(result);
- for(const text of ['BILANCIAMENTO','Danni ai PG per round','Round che resiste','PG a terra (% scontri)','mediana SRD','Simulazione contro 4 PG di livello 14','mostri SRD 2024','Valori tipici per questo GS'])assert.ok(html.includes(text),text);
+ for(const text of ['BILANCIAMENTO','Master','Danni a round','Round','PG a terra','Ottimale','A caso','Prudente','SITUAZIONI DI PROVA','AVVISI','Simulazione: 11.100 combattimenti contro 4 PG di livello 14','mostri SRD 2024','scenari: base + 7 di prova','Valori tipici per questo GS'])assert.ok(html.includes(text),text);
  assert.match(html,/border:1\.5px dashed #7A4E00;background:#FCEFD0/);
- assert.equal((html.match(/data-balance-verdict=/g)||[]).length,3);
- assert.ok(html.includes('fascia 10–90:'),'the band column says 10–90');
+ assert.equal((html.match(/data-balance-verdict=/g)||[]).length,9,'3 tactics × 3 measures');
+ assert.equal((html.match(/data-balance-situation=/g)||[]).length,7);
+ assert.match(html,/data-balance-warnings="(\d+)"/);
  assert.match(html,new RegExp(`data-balance-result="${balance.LEVELS[result.comparison.level].slug}"`));
  assert.ok(html.includes(balance.LEVELS[result.comparison.level].label));
+ assert.ok(html.indexOf('data-balance-result')<html.indexOf('data-balance-tactics'),'the verdict and the sentence at the top');
  // The pills of the three verdicts: green, amber, bordeaux.
  assert.match(balance.LEVELS['in linea'].style,/#1F6B45/);assert.match(balance.LEVELS['da controllare'].style,/color:#7A4E00/);assert.match(balance.LEVELS['da controllare'].style,/#FCEFD0/);assert.match(balance.LEVELS.fuori.style,/background:#7A1F2B;color:#FFFFFF/);
  assert.deepEqual(Object.values(balance.LEVELS).map(l=>l.label),['In linea','Da controllare','Fuori dal GS']);
  const legacy=balance.evaluateMonster(find(m2014,'Troll'),'2014');assert.match(balance.balanceBoxHtml(legacy),/mostri SRD 2014/);
  assert.equal(balance.balanceBoxHtml(balance.evaluateMonster({...empty,nome:'<img onerror=x>',id:'x'},'2024')).includes('<img'),false,'names are escaped');
+ assert.match(balance.balanceBoxHtml(balance.evaluateMonster({...base,azioni:base.azioni+gaze},'2024')),/data-balance-warning="controllo:paralizzato"/);
  assert.equal(balance.balanceEdition({homebrew_edizione:'entrambe'},false),'2024');assert.equal(balance.balanceEdition({homebrew_edizione:'2014'},false),'2014');assert.equal(balance.balanceEdition({},true),'2014');
 
  // The data file is the one the script makes (same seed): checked again by scripts/build-monster-balance.mjs --check.
  const data=JSON.parse(fs.readFileSync('lib/data/monster-balance-srd.json','utf8'));
- assert.equal(data.fights,800);assert.ok(data.editions['2014'].length>300&&data.editions['2024'].length>300,'animals 5.2.1 count with 2024');
+ assert.equal(data.fights,800);assert.equal(data.stressFights,300);assert.deepEqual(data.tactics,TACTICS);assert.deepEqual(data.stress,STRESS.map(x=>x.key));
+ assert.ok(data.editions['2014'].length>300&&data.editions['2024'].length>300,'animals 5.2.1 count with 2024');
  assert.ok(data.editions['2024'].some(row=>row.id==='lupo'||row.id==='orso-bruno'));
+ for(const row of [...data.editions['2014'],...data.editions['2024']]){assert.deepEqual(Object.keys(row.tactics),TACTICS,row.id);assert.deepEqual(Object.keys(row.stress),STRESS.map(x=>x.key),row.id);}
 
  // Only on our sheets (PROMPT 12): homebrew and sheets made here; never SRD 5.1, SRD 5.2.1, animals, edited SRD or NO SRD from a manual.
  assert.equal(balanceApplies({fonte_scheda:'Homebrew'}),true);assert.equal(balanceApplies({homebrew_edizione:'2014'}),true);
@@ -172,5 +269,5 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  const page=fs.readFileSync('app/mostro/[id]/page.tsx','utf8');assert.doesNotMatch(page,/monster-balance|balanceBoxHtml/);assert.match(page,/\{balanceApplies\(monster\) && <AdminMonsterPanel id=\{monster\.id\} \/>\}/);
  for(const file of ['app/api/catalogo/bestiario/route.ts','lib/sw/service-worker.js','lib/search-index.ts'])assert.doesNotMatch(fs.readFileSync(file,'utf8'),/monster-balance|pannello-mostro/,file);
  assert.match(fs.readFileSync('scripts/check-client-bundle.mjs','utf8'),/BILANCIAMENTO/);
- console.log('Bilanciamento: sheets read (2024 and 2014, regeneration), group, seeded fights under 1 s, comparison with the SRD of the same CR and edition (10–90, three verdicts), box, only our sheets, administrator only.');
+ console.log('Bilanciamento: sheets read (2024 and 2014, regeneration), group, seeded fights with three tactics and 7 test situations under 2 s per sheet (cached per version), comparison with the SRD of the same CR, edition and tactic (10–90, three verdicts, the worst tactic), warnings a–e, box, only our sheets, administrator only.');
 })().catch(error=>{console.error(error);process.exit(1);});
