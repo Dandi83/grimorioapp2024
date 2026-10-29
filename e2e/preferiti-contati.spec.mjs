@@ -79,8 +79,10 @@ test("a star on a card and in a list: the card in «I più salvati» and «★ 1
   await page.setViewportSize({ width: 390, height: 844 });
   await login(page);
   await page.goto("/admin/statistiche");
+  // «Il resto» (PROMPT 16): the item opened with a tap.
+  await page.locator('[data-rest-item="salvati"] > summary').click();
   const block = page.locator("[data-most-saved]");
-  await expect(block.getByRole("heading", { name: "I più salvati" })).toBeVisible();
+  await expect(page.locator('[data-rest-item="salvati"] > summary')).toHaveText(/^I più salvati/);
   await expect(block.locator('[data-saved-card="incantesimo:palla-di-fuoco"] [data-saved-people]')).toHaveText("1");
   await expect(block.locator(`[data-saved-card="mostro:${monsterId}"] [data-saved-people]`)).toHaveText("1");
   await expect(block.locator("[data-saves-note]")).toHaveText("Conteggio dal 28 ottobre 2026: i preferiti salvati prima non sono noti.");

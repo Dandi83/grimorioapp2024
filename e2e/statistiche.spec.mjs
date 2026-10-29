@@ -28,6 +28,10 @@ async function seed() {
   add(a, sessions[a][1], 0, "card_open", { path: "/spell/palla-di-fuoco", kind: "spell", card: "palla-di-fuoco", title: "Palla di fuoco" });
   add(b, sessions[b][0], 1, "page_view", { origin: "instagram", device: "android", installed: false, path: "/bestiario" });
   add(b, sessions[b][0], 1, "card_open", { path: "/mostro/lich-2014", kind: "monster", card: "lich-2014", title: "Lich" });
+  // One card read under its old id and its current one (a duplicate merged into the kept row): one line, 3 readings.
+  add(b, sessions[b][0], 1, "card_open", { path: "/spell/i-re-spirare-sott-acqua", kind: "spell", card: "i-re-spirare-sott-acqua", title: "Respirare sott'acqua" });
+  add(c, sessions[c][0], 0, "card_open", { path: "/spell/i-re-spirare-sott-acqua-2", kind: "spell", card: "i-re-spirare-sott-acqua-2", title: "Respirare sott'acqua" });
+  add(d, sessions[d][0], 0, "card_open", { path: "/spell/i-re-spirare-sott-acqua-2", kind: "spell", card: "i-re-spirare-sott-acqua-2", title: "Respirare sott'acqua" });
   add(c, sessions[c][0], 0, "page_view", { origin: "google", device: "computer", installed: false, path: "/compendio/condizioni" });
   add(d, sessions[d][0], 0, "page_view", { origin: "diretto", device: "iphone", installed: false, path: "/" });
   for (const visitor of [a, b, c]) add(visitor, sessions[visitor][0], 0, "search", { query: "drago rossa", results: 0 });
@@ -60,22 +64,67 @@ test("statistics: the administrator sees the questions with charts and marked ev
   await seed();
   await page.goto("/admin/statistiche?periodo=7");
   await expect(page.getByRole("combobox", { name: "Periodo" })).toHaveValue("7");
-  await expect(page.locator("[data-in-breve]")).toContainText("Questa settimana 4 persone hanno usato il Grimorio.");
-  await expect(page.locator("[data-people]")).toHaveText("4");
+  // «Quattro tessere» (PROMPT 16): 2×2 on the phone.
+  const tile = name => page.locator(`[data-tile="${name}"]`);
+  await expect(page.locator("[data-tile]")).toHaveCount(4);
+  await expect(tile("persone").locator("h2")).toHaveText("Persone");
+  await expect(tile("persone").locator("[data-tile-value]")).toHaveText("4");
+  await expect(tile("persone")).toHaveCSS("background-color", "rgb(43, 33, 24)");
+  await expect(tile("persone").locator("[data-tile-value]")).toHaveCSS("font-size", "46px");
+  await expect(tile("persone").locator('svg[data-chart="persone"]')).toHaveAttribute("aria-label", /^Persone al giorno dal .*: (\d+, )*\d+\.$/);
+  await expect(tile("persone").locator("[data-tile-detail]")).toContainText(/^giorno migliore: \d+ \S+, 3$/);
+  // No period before with people: no arrow, and no «nessun confronto» in the tiles.
+  await expect(page.locator("[data-tiles] [data-arrow]")).toHaveCount(0);
+  await expect(page.locator("[data-tiles]")).not.toContainText("confronto");
+  await expect(tile("tornano").locator("[data-tile-value]")).toHaveText("25%");
+  await expect(tile("tornano").locator('svg[data-chart="anello"]')).toHaveAttribute("aria-label", /^25% delle persone è tornato .*: 1 su 4\.$/);
+  await expect(tile("tornano").locator("[data-tile-detail]")).toHaveText("1 su 4 sono tornate almeno una volta");
+  await expect(tile("app").locator("h2")).toHaveText("Usano l’app");
+  await expect(tile("app").locator("[data-tile-value]")).toHaveText("1");
+  await expect(tile("app").locator("[data-tile-value]")).toHaveCSS("color", "rgb(31, 107, 69)");
+  await expect(tile("provenienza").locator("h2")).toHaveText("Da Instagram");
+  await expect(tile("provenienza").locator("h2")).toHaveCSS("text-transform", "uppercase");
+  await expect(tile("provenienza").locator("[data-tile-value]")).toHaveText("50%");
+  await expect(tile("provenienza").locator("[data-tile-detail]")).toHaveText("diretto 25% · Google 25%");
+  await expect(tile("provenienza").locator('[data-chart="provenienze"]')).toHaveAttribute("aria-label", "Provenienza di 4 persone: Instagram 50%, Diretto 25%, Google 25%, Link condivisi 0%, Altro 0%.");
+  await expect(page.locator("[data-tiles-note]")).toHaveText("Ultimi 7 giorni · i tuoi dispositivi non contano");
+  const box = async name => (await tile(name).boundingBox());
+  expect((await box("persone")).y).toBe((await box("tornano")).y);
+  expect((await box("app")).y).toBeGreaterThan((await box("persone")).y);
+  // «Il resto»: every item closed; opened, it stays open after a reload.
+  const items = page.locator("[data-rest-item]");
+  await expect(items).toHaveCount(7);
+  await expect(page.locator("[data-rest-item][open]")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Tornano?" })).toHaveCount(0);
   const daily = page.locator('svg[data-chart="giorni"]');
+  await expect(daily).toBeHidden();
+  await page.locator('[data-rest-item="andamento"] > summary').click();
+  await page.locator('[data-rest-item="usano"] > summary').click();
+  await expect(daily).toBeVisible();
+  await page.reload();
+  await expect(page.locator('[data-rest-item="andamento"]')).toHaveAttribute("open", "");
+  await expect(page.locator('[data-rest-item="usano"]')).toHaveAttribute("open", "");
+  await expect(page.locator('[data-rest-item="arrivano"]')).not.toHaveAttribute("open", "");
+  await page.locator('[data-rest-item="arrivano"] > summary').click();
   await expect(daily).toHaveAttribute("aria-label", /Persone al giorno dal .* massimo 3/);
-  await expect(page.locator('svg[data-chart="anello"]')).toHaveAttribute("aria-label", /^25% delle persone è tornato .*: 1 su 4\.$/);
-  await expect(page.locator("[data-installed]")).toContainText("Usano l’app installata: 1 persona nel periodo");
   await expect(page.locator('svg[data-chart="barre"]')).toHaveAttribute("aria-label", "Provenienza di 4 persone: Instagram 50%, Diretto 25%, Google 25%, Link condivisi 0%, Altro 0%.");
   await expect(page.locator("[data-devices]")).toHaveText("Su iPhone 50% · Android 25% · computer 25%");
   await expect(page.locator('[data-area="Incantesimi"]')).toContainText("50%");
-  await expect(page.locator("[data-top-cards] li").first()).toContainText("Palla di fuoco");
+  // Merged, «Respirare sott'acqua» (1 + 2 readings) comes before «Palla di fuoco» (2).
+  await expect(page.locator("[data-top-cards] li").nth(0)).toContainText("Respirare sott'acqua");
+  await expect(page.locator("[data-top-cards] li").nth(1)).toContainText("Palla di fuoco");
   await expect(page.locator("[data-top-cards] li").filter({ hasText: "Lich" })).toContainText("2014");
+  // The duplicate merged into the kept card: one line with the readings of both ids.
+  await expect(page.locator("[data-top-cards] li").filter({ hasText: "Respirare sott'acqua" })).toHaveCount(1);
+  await expect(page.locator('[data-top-card="spell:i-re-spirare-sott-acqua-2"] [data-top-card-opens]')).toHaveText("3");
   await expect(page.locator("[data-not-found]")).toContainText("«drago rossa» × 3");
-  await expect(page.getByRole("link", { name: "Totale di tutti i visitatori su Vercel Analytics" })).toHaveAttribute("href", "https://vercel.com/grimorio-app/grimorioapp2024/analytics");
+  await expect(page.getByRole("link", { name: "Totale di tutti i visitatori su Vercel Analytics", includeHidden: true })).toHaveAttribute("href", "https://vercel.com/grimorio-app/grimorioapp2024/analytics");
   // The period menu: «Da quando c’è Instagram», with the dashed line of the opening on the chart.
   await page.getByRole("combobox", { name: "Periodo" }).selectOption("instagram");
   await expect(page).toHaveURL(/periodo=instagram/);
+  // The period changes everything: the note under the tiles too.
+  await expect(page.locator("[data-tiles-note]")).toHaveText("Da quando c’è Instagram · i tuoi dispositivi non contano");
+  await expect(page.locator('[data-rest-item="andamento"]')).toHaveAttribute("open", "");
   await expect(page.locator('svg[data-chart="giorni"] [data-marker="2026-10-26"]')).toHaveCount(1);
   await expect(daily).toHaveAttribute("aria-label", /Eventi: Apertura profilo Instagram il lunedì 26 ottobre\./);
   // «+ Segna un evento»: added on today's chart, then cancelled.
@@ -89,6 +138,14 @@ test("statistics: the administrator sees the questions with charts and marked ev
     await page.setViewportSize({ width, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth), `${width}`).toBeLessThanOrEqual(width);
   }
+  // From 1024 px the four tiles stand in one row, in this order.
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const row = await Promise.all(["persone", "tornano", "app", "provenienza"].map(box));
+  expect(new Set(row.map(tileBox => Math.round(tileBox.y))).size).toBe(1);
+  expect(row.map(tileBox => tileBox.x)).toEqual([...row.map(tileBox => tileBox.x)].sort((a, b) => a - b));
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1280);
+  if (SHOTS) await page.screenshot({ path: `${SHOTS}/statistiche-1280.png`, fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Cancella l’evento Prova evento e2e" }).click();
   await expect(page.locator("[data-marker-row]").filter({ hasText: "Prova evento e2e" })).toHaveCount(0);
 
@@ -197,11 +254,12 @@ test("the administrator's device: excluded at the login and still after «Esci»
   expect((await mark()).expires - Date.now() / 1000).toBeGreaterThan(399 * 24 * 3600);
   await page.goto("/admin/statistiche");
   await expect(page.getByText("Questo dispositivo: escluso dalle statistiche ✓")).toBeVisible();
+  await page.locator('[data-rest-item="contano"] > summary').click();
   await expect(page.getByText("Le installazioni si contano per chi non ha rinunciato alle statistiche. Su iPhone si contano al primo avvio dall’icona.")).toBeVisible();
   await expect(page.locator("[data-counting-since]")).toHaveText("Dal 28 ottobre 2026 si contano tutti i visitatori tranne chi rinuncia (prima solo chi accettava).");
-  await expect(page.locator("[data-installs]")).toContainText("Nuove installazioni nel periodo:");
-  await expect(page.locator("[data-installs-detail]")).toContainText(/Android e computer: \d+ confermate · iPhone: \d+ al primo avvio dall’icona/);
-  await expect(page.locator("[data-installed]")).toContainText(/Usano l’app installata: \d+ person[ae] nel periodo/);
+  await expect(page.locator("[data-installs]")).toContainText(/^\d+ nuov[ae] installazion[ei]$/);
+  await expect(page.locator("[data-installs-detail]")).toContainText(/^Android \d+ · iPhone \d+$/);
+  await expect(page.locator('[data-tile="app"] [data-tile-value]')).toHaveText(/^\d+$/);
   // «Esci»: the session ends, the device stays excluded.
   await page.goto("/admin");
   await page.getByRole("button", { name: "Esci", exact: true }).click();

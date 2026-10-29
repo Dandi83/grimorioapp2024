@@ -115,3 +115,22 @@ export function areaOf(path: string): "incantesimi" | "bestiario" | "compendio" 
   if (/^\/(?:compendio|regole\/|oggetti-magici|equipaggiamento|manuale\/)/.test(path)) return "compendio";
   return null;
 }
+
+export type CardOpens = { kind: string; id: string; title: string; opens: number };
+
+/**
+ * «Le schede più aperte»: the readings of one card stored under several ids (the address of a spell renamed in
+ * PROMPT 8, a duplicate row merged into the kept one) add up on the id of the current card; then the first `limit`,
+ * by readings and name. currentId: the id a stored id stands for today (itself when nothing changed).
+ */
+export function mergeCardOpens(rows: CardOpens[], currentId: (kind: string, id: string) => string, limit = 10): CardOpens[] {
+  const merged = new Map<string, CardOpens>();
+  for (const row of rows) {
+    const id = currentId(row.kind, row.id), key = `${row.kind}:${id}`;
+    const seen = merged.get(key);
+    // The title of the current id wins over the one stored with an old address.
+    if (seen) merged.set(key, { ...seen, opens: seen.opens + row.opens, title: row.id === id ? row.title : seen.title });
+    else merged.set(key, { ...row, id });
+  }
+  return [...merged.values()].sort((a, b) => b.opens - a.opens || a.title.localeCompare(b.title, "it")).slice(0, limit);
+}

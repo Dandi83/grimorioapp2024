@@ -289,11 +289,15 @@ async function login(page) {
 
 test("«Come si trovano?»: the number below 5 answers, the percentages from 5, the weeks, the comments, «Passaparola»; administrator only", async ({ page, browser }) => {
   test.setTimeout(120_000);
+  // The items of «Il resto» start closed on every visit here (none remembered on this device).
+  await page.addInitScript(() => { try { localStorage.removeItem("grimorio.statistiche-aperte"); } catch { /* no storage */ } });
   for (const width of [390, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     if (width === 390) await login(page);
     await page.goto("/admin/statistiche");
-    await page.getByRole("link", { name: /Come si trovano\?/ }).click();
+    // «Il resto» (PROMPT 16): «Come si trovano?» opens with a tap, then its link.
+    await page.locator('[data-rest-item="valutazione"] > summary').click();
+    await page.locator("[data-rating-link]").click();
     await expect(page).toHaveURL(/\/admin\/statistiche\/valutazione$/);
   }
   await page.setViewportSize({ width: 390, height: 844 });
