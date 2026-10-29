@@ -46,7 +46,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       rights: report.tipo === "diritti" && (report.stato === "nuova" || report.stato === "letta"),
     }))),
     ...(filter === "segnalazioni" ? [] : [...toReview, ...approved.slice(0, 30), ...refused.slice(0, 30)].map((proposal): Notice => ({
-      id: `p-${proposal.id}`, href: `/admin/proposte/${proposal.id}`, label: proposal.stato === "da-vedere" ? "Proposta homebrew" : proposal.stato === "approvata" ? "Proposta approvata" : "Proposta rifiutata",
+      id: `p-${proposal.id}`, href: `/admin/proposte/${proposal.id}`, label: proposal.stato === "da-vedere" ? "Proposta di mostro" : proposal.stato === "approvata" ? "Proposta approvata" : "Proposta rifiutata",
       text: `«${proposal.scheda.nome}», proposta da ${proposal.nickname}`, about: `Bestiario ${HOMEBREW_EDITION_LABEL[proposal.scheda.edizione]}`,
       when: new Date(proposal.creata_il), unread: proposal.stato === "da-vedere", rights: false,
     }))),

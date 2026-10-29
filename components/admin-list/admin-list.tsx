@@ -237,10 +237,10 @@ function AdminListView({ data, create }: { data: AdminListData; create?: "spell"
 
       {creating === "choose" && (
         <Sheet title="Nuova creatura" onClose={() => setCreating(null)}>
-          <p className="text-[15px] text-[#5E4E3E]">Scheda o Homebrew?</p>
+          <p className="text-[15px] text-[#5E4E3E]">Scheda o «Creati da voi»?</p>
           <div className="mt-3 flex flex-col gap-2">
             <button type="button" onClick={() => setCreating("monster")} className="min-h-12 rounded-[14px] bg-[#7A1F2B] text-[16px] font-bold text-[#FFFBF0]">Scheda</button>
-            <button type="button" onClick={() => setCreating("homebrew")} className="min-h-12 rounded-[14px] border-[1.5px] border-[#E0A21A] bg-[#FCEFD0] text-[16px] font-bold text-[#7A4E00]">Homebrew</button>
+            <button type="button" onClick={() => setCreating("homebrew")} className="min-h-12 rounded-[14px] border-[1.5px] border-[#E0A21A] bg-[#FCEFD0] text-[16px] font-bold text-[#7A4E00]">Creati da voi</button>
           </div>
         </Sheet>
       )}

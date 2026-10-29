@@ -3,7 +3,8 @@ import { test, expect } from "@playwright/test";
 import pg from "pg";
 import { TEST_DATABASE_URL } from "./test-db.mjs";
 
-// Homebrew creatures: proposals of the community, approval, the Homebrew collection. Local test database only.
+// «I mostri creati da voi» (the old Homebrew collection): proposals of the community in four steps, approval, the
+// section. Run with the switch on (e2e/run.mjs, second pass: GRIMORIO_COMMUNITY_TEST_PUBLIC=on). Local test database only.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     try {
@@ -19,8 +20,17 @@ const LICENSE = "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.it";
 const SHOTS = process.env.HOMEBREW_SHOTS;
 const LICENSE_BOX = /^Pubblico la creatura con licenza CC BY-NC-SA 4\.0 e autorizzo Il Grimorio\.App a pubblicarla e a modificarla, come spiegato nei Termini d’uso/;
 
-async function propose(page, { nome, edizione, azione, nickname, email }) {
+/** The four steps of «Proponi un mostro», from an empty draft. */
+async function openForm(page) {
   await page.goto("/bestiario/proponi");
+  await page.evaluate(() => localStorage.removeItem("grimorio.proposta-bozza"));
+  await page.reload();
+  await expect(page.locator("[data-proposal-step]")).toHaveAttribute("data-proposal-step", "1");
+}
+const next = (page, step) => page.getByRole("button", { name: `Avanti: ${step}` }).click();
+
+async function propose(page, { nome, edizione, azione, nickname, email }) {
+  await openForm(page);
   await page.getByRole("group", { name: "Edizione della scheda" }).getByRole("button", { name: edizione, exact: true }).click();
   await page.locator("#hb-nome").fill(nome);
   await page.locator("#hb-taglia").selectOption("Grande");
@@ -29,8 +39,11 @@ async function propose(page, { nome, edizione, azione, nickname, email }) {
   await page.locator("#hb-pf").fill("110");
   await page.locator("#hb-dadi").fill("13d10 + 39");
   await page.locator("#hb-gs").selectOption("7");
+  await next(page, "Difese e sensi");
+  await next(page, "Azioni");
   await page.locator("#hb-azioni-0-nome").fill("Morso");
   await page.locator("#hb-azioni-0-testo").fill(azione);
+  await next(page, "Invio");
   await page.getByLabel("Nickname *").fill(nickname);
   if (email) await page.getByLabel("Email (facoltativa)").fill(email);
   await page.getByLabel("È una mia creazione originale, non copiata da manuali o siti.").check();
@@ -50,29 +63,39 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   const before = { api: await (await request.get("/api/catalogo/bestiario")).text(), index: await (await request.get("/ricerca-indice.json")).text() };
   expect(JSON.parse(before.api).monsters.some(monster => monster.homebrew)).toBe(false);
 
-  // No homebrew creature published yet: no empty «Homebrew» filter, the way to propose one is under the list.
+  // No creature published yet: no empty «Creati da voi» filter; the card of the Bestiario has only «Proponi il tuo».
   await page.goto("/bestiario");
   await page.getByRole("button", { name: /^Filtri/ }).click();
   await expect(page.getByRole("dialog").getByRole("button", { name: /^Mostra \d+ risultat/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Homebrew", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Creati da voi", exact: true })).toHaveCount(0);
   await page.keyboard.press("Escape");
-  await page.locator("[data-propose-homebrew]").getByRole("link", { name: "Proponila per la raccolta Homebrew" }).click();
+  await expect(page.locator("[data-community-invite]")).toHaveAttribute("data-community-invite", "0");
+  await page.locator("[data-community-invite]").getByRole("link", { name: "Proponi il tuo" }).click();
   await expect(page).toHaveURL("/bestiario/proponi");
+  await page.evaluate(() => localStorage.removeItem("grimorio.proposta-bozza"));
+  await page.reload();
 
   // The form adapts to the edition and suggests the other format, never blocking.
   await page.getByRole("group", { name: "Edizione della scheda" }).getByRole("button", { name: "2014", exact: true }).click();
   await expect(page.locator("[data-initiative]")).toHaveCount(0);
+  await page.locator("#hb-nome").fill("Senza licenza");
+  await next(page, "Difese e sensi");
+  await next(page, "Azioni");
   await page.locator("#hb-azioni-0-testo").fill("Tiro per colpire in mischia: +7, portata 3 m. Colpito: 15 (2d10 + 4) danni perforanti.");
   await expect(page.locator("[data-format-hint]")).toContainText("«Tiro per colpire in mischia»: è il formato del 2024");
   await page.locator("[data-format-hint]").getByRole("button", { name: "Passa a 2024" }).click();
   await expect(page.locator("[data-format-hint]")).toHaveCount(0);
-  await expect(page.locator("[data-initiative]")).toContainText("+0 (10)");
   await expect(page.locator("[data-cr-check]")).toBeVisible();
+  await page.locator("[data-step-back]").click();
+  await page.locator("[data-step-back]").click();
+  await expect(page.locator("[data-initiative]")).toContainText("+0 (10)");
+  await next(page, "Difese e sensi");
+  await next(page, "Azioni");
 
   // Without the box of the licence the form is not sent (checked in the browser and again by the server).
-  await page.locator("#hb-nome").fill("Senza licenza");
   await page.locator("#hb-azioni-0-nome").fill("Morso");
   await page.locator("#hb-azioni-0-testo").fill("Tiro per colpire in mischia: +4, portata 1,5 m. Colpito: 7 (2d4 + 2) danni perforanti.");
+  await next(page, "Invio");
   await page.getByLabel("Nickname *").fill("Lia");
   await page.getByLabel("È una mia creazione originale, non copiata da manuali o siti.").check();
   await expect(page.getByLabel(LICENSE_BOX)).not.toBeChecked();
@@ -103,7 +126,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
   await page.getByRole("button", { name: "Entra" }).click();
-  await expect(page.locator('[data-due="proposte"]')).toHaveText("Valuta 3 proposte homebrew");
+  await expect(page.locator('[data-due="proposte"]')).toHaveText("Valuta 3 proposte di mostri");
   await page.goto("/admin/proposte");
   await expect(page.getByText("Comune alle due edizioni")).toBeVisible();
   await expect(page.locator("[data-homebrew-section]")).toContainText("Visibile al pubblico");
@@ -122,8 +145,8 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await card("Drago di nebbia").getByRole("link", { name: "Anteprima" }).click();
   await expect(page.getByRole("heading", { name: "Drago di nebbia", level: 1 })).toBeVisible();
   await expect(page.getByText("Proposta da Master Ombra")).toBeVisible();
-  await expect(page.locator("[data-homebrew-license]")).toHaveText("Licenza CC BY-NC-SA 4.0");
-  await expect(page.getByText("Creatura homebrew, non ufficiale. Non fa parte dell’SRD e non è materiale Wizards of the Coast.")).toBeVisible();
+  await expect(page.locator("[data-homebrew-license]")).toHaveText("Licenza CC BY-NC-SA 4.0 · controllata dal Grimorio");
+  await expect(page.getByText("Creatura di «I mostri creati da voi», non ufficiale. Non fa parte dell’SRD e non è materiale Wizards of the Coast.")).toBeVisible();
   await page.getByRole("link", { name: "‹ Proposte" }).click();
   // Correggi: the editor already filled in.
   await card("Drago di nebbia").getByRole("button", { name: "Correggi" }).click();
@@ -171,7 +194,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(visitor.locator("[data-homebrew-pill]")).toBeVisible();
   await expect(visitor.getByText("Proposta da Master Ombra")).toBeVisible();
   // The licence, small, under the author, with its link.
-  await expect(visitor.locator("[data-homebrew-license]")).toHaveText("Licenza CC BY-NC-SA 4.0");
+  await expect(visitor.locator("[data-homebrew-license]")).toHaveText("Licenza CC BY-NC-SA 4.0 · controllata dal Grimorio");
   // Homebrew keeps its own box: no NO SRD origin box (components/card-origin-box.tsx).
   await expect(visitor.locator("[data-card-origin]")).toHaveCount(0);
   await expect(visitor.locator("[data-homebrew-license] a")).toHaveAttribute("href", LICENSE);
@@ -186,14 +209,14 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
     await visitor.getByRole("searchbox", { name: "Cerca una creatura" }).fill("drago di nebbia");
     await expect(visitor.locator(`a[href="${CARD}"]`), `${edition}: not among the SRD creatures`).toHaveCount(0);
     await visitor.getByRole("button", { name: /^Filtri/ }).click();
-    await visitor.getByRole("button", { name: "Homebrew", exact: true }).click();
+    await visitor.getByRole("button", { name: "Creati da voi", exact: true }).click();
     await visitor.getByRole("button", { name: /^Mostra \d+ risultat/ }).click();
-    // With a published creature the filter is back, with the amber box and «Proponi una creatura».
-    await expect(visitor.getByText("Creature create dai master della community. Non sono ufficiali e non fanno parte dell’SRD.")).toBeVisible();
-    await expect(visitor.getByRole("link", { name: "Proponi una creatura" })).toHaveAttribute("href", "/bestiario/proponi");
+    // «Creati da voi» leads to the section, with its header and «Proponi un mostro».
+    await expect(visitor).toHaveURL(/\/bestiario\/creati-da-voi$/);
+    await expect(visitor.getByRole("link", { name: "Proponi un mostro" })).toHaveAttribute("href", "/bestiario/proponi");
     const row = visitor.locator("li.catalog-row").filter({ has: visitor.locator(`a[href="${CARD}"]`) });
     await expect(row, `${edition}: «Entrambe» in both editions`).toHaveCount(1);
-    await expect(row).toContainText("Homebrew");
+    await expect(row).toContainText("Creato da voi");
     await expect(row).toContainText("2014 e 2024");
     await expect(row).toContainText("di Master Ombra");
   }
@@ -212,7 +235,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(page.getByTestId("admin-edition-band")).toHaveText("2024");
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("drago di nebbia");
   const adminRow = page.locator("main ul li[data-card-row]").filter({ hasText: "Drago di nebbia" });
-  await expect(adminRow.locator("[data-row-pill]")).toHaveText("Homebrew");
+  await expect(adminRow.locator("[data-row-pill]")).toHaveText("Creati da voi");
   await adminRow.getByRole("switch", { name: "Visibile sul sito: Drago di nebbia" }).click();
   await expect.poll(async () => (await request.get(CARD)).status()).toBe(404);
   await adminRow.getByRole("switch", { name: "Visibile sul sito: Drago di nebbia" }).click();
@@ -220,7 +243,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
 
   // The section eye of /admin/proposte: the whole collection away from the public, then back.
   await page.goto("/admin/proposte");
-  await page.getByRole("button", { name: "Nascondi la sezione Homebrew al pubblico" }).click();
+  await page.getByRole("button", { name: "Nascondi «I mostri creati da voi» al pubblico" }).click();
   await expect(page.locator("[data-homebrew-section]")).toContainText("Nascosta al pubblico");
   await expect.poll(async () => (await request.get(CARD)).status()).toBe(404);
   expect((await request.get("/bestiario/proponi")).status()).toBe(404);
@@ -229,19 +252,19 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect.poll(async () => (await request.get("/ricerca-indice.json")).text()).not.toContain(`"${CARD}"`);
   await visitor.goto("/bestiario");
   await visitor.getByRole("button", { name: /^Filtri/ }).click();
-  await expect(visitor.getByRole("button", { name: "Homebrew", exact: true })).toHaveCount(0);
+  await expect(visitor.getByRole("button", { name: "Creati da voi", exact: true })).toHaveCount(0);
   await page.goto("/admin/proposte");
-  await page.getByRole("button", { name: "Mostra la sezione Homebrew al pubblico" }).click();
+  await page.getByRole("button", { name: "Mostra «I mostri creati da voi» al pubblico" }).click();
   await expect(page.locator("[data-homebrew-section]")).toContainText("Visibile al pubblico");
   await expect.poll(async () => (await request.get(CARD)).status()).toBe(200);
 
-  // «+ Nuova homebrew» of the administrator: «del Grimorio», 2014 only; the bin removes it.
+  // «Creati da voi» of the administrator: «Creato dal Grimorio», 2014 only; the bin removes it.
   await page.goto("/admin/mostri");
   await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2014" }).click();
   await expect(page.getByTestId("admin-edition-band")).toHaveText("2014");
   await expect(page.locator("main[data-admin-list]")).toHaveAttribute("data-edition", "2014");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
-  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Homebrew", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
   const editor = page.getByRole("dialog");
   await expect(editor.getByRole("group", { name: "Edizione della scheda" }).getByRole("button", { name: "2014", exact: true })).toHaveAttribute("aria-pressed", "true");
   await editor.locator("#admin-hb-nome").fill("Guardiano di sale");
@@ -251,8 +274,8 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(editor).toHaveCount(0);
   await expect.poll(async () => (await request.get("/mostro/homebrew-guardiano-di-sale")).status()).toBe(200);
   await visitor.goto("/mostro/homebrew-guardiano-di-sale");
-  await expect(visitor.getByText("Creata dal Grimorio")).toBeVisible();
-  await expect(visitor.locator("[data-homebrew-license]"), "the Grimorio's own homebrew: the same licence").toHaveText("Licenza CC BY-NC-SA 4.0");
+  await expect(visitor.locator("[data-homebrew-pill=grimorio]")).toHaveText("Creato dal Grimorio");
+  await expect(visitor.locator("[data-homebrew-byline=grimorio]")).toHaveText("Mostro originale, bilanciato sui mostri ufficiali dello stesso GS");
   // As on the SRD 2014 sheets: the initiative box comes from Dexterity, not from the sheet.
   await expect(visitor.getByText("dalla Destrezza").first()).toBeVisible();
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("guardiano di sale");

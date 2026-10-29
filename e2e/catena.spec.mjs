@@ -160,7 +160,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   // A homebrew of the Grimorio (published as an approved proposal): the same chain.
   await openAdmin(page, "/admin/mostri");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
-  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Homebrew", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
   editor = page.getByRole("dialog");
   await editor.locator("#admin-hb-nome").fill("Spirito di cenere");
   await editor.locator("#admin-hb-azioni-0-nome").fill("Vampa");
@@ -168,12 +168,12 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   await editor.getByRole("button", { name: "Salva" }).click();
   await expect(editor).toHaveCount(0);
   const brewPath = "/mostro/homebrew-spirito-di-cenere";
-  await expect.poll(async () => (await request.get(brewPath)).status()).toBe(200);
-  visitor = await publicPage(browser, brewPath);
-  await expect(visitor.getByRole("link", { name: "Fiamma del Grimorio" })).toHaveAttribute("href", spellPath);
-  await expect(visitor.getByRole("link", { name: "accecato" })).toHaveAttribute("href", "/manuale/condizioni-accecato");
-  await expect(visitor.locator('[data-damage-type="fire"]')).toHaveCount(1);
-  await visitor.context().close();
+  // «I mostri creati da voi» is switched off (lib/community.ts): the sheet is seen by the administrator, «Nascosta».
+  await expect.poll(async () => (await page.request.get(brewPath)).status()).toBe(200);
+  await page.goto(brewPath);
+  await expect(page.locator("main").getByRole("link", { name: "Fiamma del Grimorio" })).toHaveAttribute("href", spellPath);
+  await expect(page.locator("main").getByRole("link", { name: "accecato" })).toHaveAttribute("href", "/manuale/condizioni-accecato");
+  await expect(page.locator('main [data-damage-type="fire"]')).toHaveCount(1);
 
   // Clean up: the homebrew, the creature and the spell.
   await page.goto("/admin/mostri");

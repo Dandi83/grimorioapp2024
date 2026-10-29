@@ -26,7 +26,7 @@ import { collectionOf, typeCategory } from "./monsters-types";
 import { getSpellIndex } from "./spell-index";
 import { spellName } from "./spell-name";
 import { toolListRows } from "./tools-editions";
-import { HOMEBREW_LABEL, fold, type SearchIndex, type SearchSectionKey } from "./search";
+import { GRIMORIO_LABEL, HOMEBREW_LABEL, fold, type SearchIndex, type SearchSectionKey } from "./search";
 import { isHiddenPath, partId, sectionOfPath } from "./public-sections";
 import { spellHref } from "./spell-public-id";
 
@@ -60,10 +60,10 @@ export const SEARCH_SOURCES: SearchSource[] = [
   },
   {
     section: "mostri", title: "Mostri",
-    // Homebrew creatures: «Homebrew» first in the label (the panel shows it as the amber pill); «Entrambe» belongs to no single edition.
+    // «I mostri creati da voi»: «Creato da voi» or «Creato dal Grimorio» first in the label (the panel shows the pill); «Entrambe» belongs to no single edition.
     rows: async () => (await getMonsterListIndex()).map(monster => ({
       nome: monster.nome,
-      label: [monster.homebrew ? HOMEBREW_LABEL : "", typeCategory(monster.tipo) || monster.tipo, monster.grado_sfida ? `GS ${monster.grado_sfida}` : ""].filter(Boolean).join(" · "),
+      label: [monster.homebrew ? (monster.autore ? HOMEBREW_LABEL : GRIMORIO_LABEL) : "", typeCategory(monster.tipo) || monster.tipo, monster.grado_sfida ? `GS ${monster.grado_sfida}` : ""].filter(Boolean).join(" · "),
       href: `/mostro/${monster.id}`, ...(monster.entrambe ? {} : { edizione: monster.edizione }), parte: collectionOf(monster),
     })),
   },

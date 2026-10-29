@@ -25,7 +25,7 @@ import { readFavoriteCounts } from "./analytics";
 
 type Pill = AdminRow["pill"];
 const pillOf = (source: CardSource | string | undefined, homebrew = false): Pill =>
-  homebrew ? "Homebrew" : source === "Sintesi originale" ? "Sintesi" : source === "Aggiunta da te" ? "Aggiunta da te" : undefined;
+  homebrew ? "Creati da voi" : source === "Sintesi originale" ? "Sintesi" : source === "Aggiunta da te" ? "Aggiunta da te" : undefined;
 
 async function checks() {
   const [modified, names, hidden, saves] = await Promise.all([
@@ -106,7 +106,7 @@ export async function editableEntries(edition: AdminEdition): Promise<{ name: st
   const [spells, monsters] = await Promise.all([spellList(edition).catch(() => null), monsterList(edition).catch(() => null)]);
   return [
     ...(spells?.rows ?? []).map(row => ({ name: row.name, kind: `Incantesimo · ${row.sub}`, href: row.editHref })),
-    ...(monsters?.rows ?? []).map(row => ({ name: row.name, kind: `${row.pill === "Homebrew" ? "Homebrew" : "Mostro"} · ${row.group.label}`, href: row.editHref })),
+    ...(monsters?.rows ?? []).map(row => ({ name: row.name, kind: `${row.pill === "Creati da voi" ? "Creati da voi" : "Mostro"} · ${row.group.label}`, href: row.editHref })),
     ...CONTENT_SECTIONS.filter(section => section.editions.includes(edition)).flatMap(section => section.items(edition).map(item => ({
       name: item.nome, kind: `${section.title}${item.etichetta ? ` · ${item.etichetta}` : ""}`, href: `/admin/contenuti/${section.key}/${encodeURIComponent(item.id)}?edizione=${edition}`,
     }))),

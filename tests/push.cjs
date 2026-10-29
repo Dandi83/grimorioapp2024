@@ -104,7 +104,7 @@ function load(relative) {
   await actions.setNotificationTypeAction('segnalazioni', true);
   assert.deepEqual(push.NOTIFICATION_TYPES.map(t => [t.key, t.default]), [['segnalazioni', true], ['proposte', true]], 'Segnalazioni and Nuova proposta homebrew, on by default');
   const proposal = push.proposalPayload({id: 'p1', nickname: 'Master Ombra', scheda: {nome: 'Drago di nebbia', grado_sfida: '5', edizione: 'entrambe'}}, 3);
-  assert.deepEqual(proposal, {title: 'Nuova proposta homebrew', body: 'Drago di nebbia · GS 5 · 2014 e 2024\ndi Master Ombra', url: '/admin/proposte', tag: 'proposta-p1', badge: 3});
+  assert.deepEqual(proposal, {title: 'Nuova proposta di mostro', body: 'Drago di nebbia · GS 5 · 2014 e 2024\ndi Master Ombra', url: '/admin/proposte', tag: 'proposta-p1', badge: 3});
 
   // Removal: by this device's address and by id from the list.
   assert.deepEqual(await actions.removeDeviceAction({endpoint: 'https://push.esempio.it/quattro'}), {ok: true});

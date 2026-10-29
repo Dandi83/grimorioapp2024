@@ -56,6 +56,9 @@ export async function sectionClosed(section: PublicSectionKey): Promise<boolean>
 /** The title of a card page while its section is closed to the public: nothing of the card (name, description). */
 export const CLOSED_METADATA = { title: "Sezione momentaneamente in costruzione — Il Grimorio.App", robots: { index: false, follow: false } };
 
+/** The title of a page of a part closed to the public (as the 404 page says): nothing of the part. */
+export const CLOSED_PART_METADATA = { title: "Pagina non disponibile — Il Grimorio.App", robots: { index: false, follow: false } };
+
 /** Sections to leave out of this page: none for the administrator. */
 export async function sectionsOut(): Promise<PublicSectionKey[]> {
   const view = await sectionView();

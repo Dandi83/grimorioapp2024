@@ -97,19 +97,20 @@ function filtersFromParams(params: URLSearchParams): MonsterFilters {
   };
 }
 
-export function BestiarioWithFilters({ monsters, pane }: { monsters: MonsterListItem[]; pane?: ListPane }) {
+export function BestiarioWithFilters({ monsters, pane, community }: { monsters: MonsterListItem[]; pane?: ListPane; community?: boolean }) {
   const { params, search } = useCatalogSearch(pane ? "/bestiario" : undefined);
   const filters = filtersFromParams(params);
   const requested = params.get("edizione");
   const { edition: userEdition, ready } = useUserEdition();
   const edizione = isEdition(requested) ? requested : userEdition;
   const restored = useRestoredList<MonsterListState>("bestiario", search, pane);
-  const restoredFilters: MonsterFilters | null = restored && Array.isArray(restored.gs)
+  // The section «I mostri creati da voi» keeps no state of the Bestiario list.
+  const restoredFilters: MonsterFilters | null = !community && restored && Array.isArray(restored.gs)
     ? { categoria: restored.categoria, gs: restored.gs, tipo: currentTypeNames(restored.tipo ?? []), taglia: restored.taglia, habitat: restored.habitat }
     : null;
   return <BestiarioBrowser key={JSON.stringify([filters, !!restoredFilters])}
     monsters={monsters} initialFilters={restoredFilters ?? filters}
     initialEdizione={restoredFilters ? restored!.edizione : edizione} edizione={edizione} editionReady={ready}
     initialQuery={restoredFilters ? restored!.q : undefined} initialLimit={restoredFilters ? restored!.limit : undefined}
-    initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} />;
+    initialScroll={restoredFilters ? restored!.scroll : undefined} pane={pane} community={community} />;
 }

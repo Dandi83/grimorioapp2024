@@ -6,6 +6,8 @@ import { SoonTag } from "@/components/sections/soon-tag";
 import { SoonBlock } from "@/components/sections/soon-block";
 import { partId, sectionParts, type PublicSectionKey } from "@/lib/public-sections";
 import { partState, sectionView } from "@/lib/section-view";
+import { COMMUNITY_PART } from "@/lib/section-visibility";
+import { communityPublic } from "@/lib/community";
 
 /**
  * A part of a page that can be hidden from /admin/sezioni (a block, a comparison box): not drawn for
@@ -25,8 +27,18 @@ export async function PartBlock({ section, part, children, className }: { sectio
   );
 }
 
-/** «Nascosta» (or «In arrivo») and «Mostra» above a part the public does not see, for the administrator. */
+/**
+ * «Nascosta» (or «In arrivo») and «Mostra» above a part the public does not see, for the administrator. «I mostri
+ * creati da voi» while the switch of lib/community.ts is off: «Nascosta», no «Mostra» (only a new deploy turns it on).
+ */
 export async function HiddenPartBar({ id }: { id: string }) {
+  if (id === COMMUNITY_PART && !communityPublic()) {
+    return (
+      <p className="flex min-h-11 flex-wrap items-center gap-2 text-[14px] text-muted" data-community-switch="off">
+        <HiddenTag />Spenta dall’interruttore: i visitatori non la vedono.
+      </p>
+    );
+  }
   const { soon } = await sectionView();
   return (
     <form action={showPartAction} className="flex items-center gap-2">

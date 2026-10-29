@@ -6,7 +6,7 @@ import { HomebrewPill } from "@/components/homebrew-pill";
 import { ChevronRight, Search } from "lucide-react";
 
 import { useUserEdition } from "@/components/edition/edition-provider";
-import { HOMEBREW_LABEL, rowHref, rowsOf, search, splitByEdition, suggestionOf, type SearchGroup, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
+import { GRIMORIO_LABEL, HOMEBREW_LABEL, rowHref, rowsOf, search, splitByEdition, suggestionOf, type SearchGroup, type SearchIndex, type SearchMatch, type SearchSectionKey } from "@/lib/search";
 import { otherEdition } from "@/lib/user-edition";
 import { useReportSearch } from "@/components/statistics/use-report-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
@@ -61,8 +61,8 @@ function Groups({ groups, query, edition, prefix, onExpand }: {
             <Link href={rowHref(row, edition)} prefetch={false} className="flex min-h-[52px] items-center gap-2.5 px-3.5 py-1.5">
               <span className="min-w-0 flex-1">
                 <span className="block text-base leading-tight text-foreground"><Highlighted row={row} length={query.trim().replace(/\s+/g, " ").length} /></span>
-                {row.label.startsWith(`${HOMEBREW_LABEL} · `)
-                  ? <span className="flex flex-wrap items-center gap-1.5 text-[14px] text-muted"><HomebrewPill />{row.label.slice(HOMEBREW_LABEL.length + 3)}</span>
+                {[HOMEBREW_LABEL, GRIMORIO_LABEL].some(label => row.label.startsWith(`${label} · `))
+                  ? <span className="flex flex-wrap items-center gap-1.5 text-[14px] text-muted"><HomebrewPill ours={row.label.startsWith(`${GRIMORIO_LABEL} · `)} />{row.label.slice(row.label.indexOf(" · ") + 3)}</span>
                   : <span className="block text-[14px] text-muted">{row.label}</span>}
               </span>
               <ChevronRight size={16} strokeWidth={2.4} className="shrink-0 text-[#B9A57C]" aria-hidden="true" />

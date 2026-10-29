@@ -61,7 +61,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
   await page.goto("/admin/registro?sezione=sezioni&stato=tutte");
   await expect(page.getByRole("heading", { level: 1, name: "Registro" })).toBeVisible();
-  const logBefore = await page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]").filter({ hasNotText: "Raccolta Homebrew" }).count();
+  const logBefore = await page.getByRole("list", { name: "Modifiche" }).locator("[data-log-entry]").filter({ hasNotText: "I mostri creati da voi" }).count();
   await page.goto("/admin");
   await page.getByRole("link", { name: /^Sezioni\s*Cosa vedono gli utenti/ }).click();
   await expect(page).toHaveURL(/\/admin\/sezioni$/);
@@ -241,7 +241,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await expect(log.first()).toContainText("Visibile");
   // 10 sections hidden and shown again, 8 hidden together, Classi shown from the band (the Homebrew collection,
   // hidden and shown by e2e/homebrew.spec.mjs on the same database, has its own rows), after the rows of before.
-  await expect(log.filter({ hasNotText: "Raccolta Homebrew" })).toHaveCount(logBefore + 29);
+  await expect(log.filter({ hasNotText: "I mostri creati da voi" })).toHaveCount(logBefore + 29);
 
   // Back to the start: every section visible.
   for (const title of ["Incantesimi", "Condizioni", "Armi", "Armature", "Equipaggiamento d’avventura", "Strumenti", "Bestiario"]) await toggle(title, false);

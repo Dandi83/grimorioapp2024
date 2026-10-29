@@ -29,12 +29,30 @@ function run(command, args, env) {
 rmSync(".next/cache/fetch-cache", { recursive: true, force: true });
 const database = await startTestDatabase();
 console.log(`[e2e] Test database ready with ${database.spells} spells.`);
+// «I mostri creati da voi» is switched off in the site (lib/community.ts). These specs check what the visitors will see
+// once it is on: they run in a second pass, on a build made with the switch on for the tests only (never on Vercel).
+export const COMMUNITY_SPECS = ["homebrew.spec.mjs", "creati-da-voi-pubblico.spec.mjs"];
+const args = process.argv.slice(2).filter(arg => arg !== "--skip-build");
+const files = args.filter(arg => arg.endsWith(".mjs"));
+const isCommunity = file => COMMUNITY_SPECS.some(name => file.endsWith(name));
+const firstPass = !files.length || files.some(file => !isCommunity(file));
+const secondPass = !files.length || files.some(isCommunity);
+const skipBuild = process.argv.includes("--skip-build");
 let code = 1;
 try {
-  code = process.argv.includes("--skip-build") ? 0 : await run("npx", ["next", "build"], E2E_ENV);
-  // Same guard as `npm run build` on Vercel: no full creature sheets in the browser code.
-  if (code === 0) code = await run("node", ["scripts/check-client-bundle.mjs"], {});
-  if (code === 0) code = await run("npx", ["playwright", "test", ...process.argv.slice(2).filter(arg => arg !== "--skip-build")], E2E_ENV);
+  code = 0;
+  if (firstPass) {
+    code = skipBuild ? 0 : await run("npx", ["next", "build"], E2E_ENV);
+    // Same guard as `npm run build` on Vercel: no full creature sheets in the browser code.
+    if (code === 0) code = await run("node", ["scripts/check-client-bundle.mjs"], {});
+    if (code === 0) code = await run("npx", ["playwright", "test", ...args.filter(arg => !isCommunity(arg)), "--pass-with-no-tests"], E2E_ENV);
+  }
+  if (code === 0 && secondPass) {
+    const PUBLIC_ENV = { ...E2E_ENV, GRIMORIO_COMMUNITY_TEST_PUBLIC: "on" };
+    // A build of its own: the pages built with the switch off would still show the section closed.
+    code = skipBuild && !firstPass ? 0 : await run("npx", ["next", "build"], PUBLIC_ENV);
+    if (code === 0) code = await run("npx", ["playwright", "test", ...args.filter(arg => !arg.endsWith(".mjs") || isCommunity(arg)), "--pass-with-no-tests"], PUBLIC_ENV);
+  }
 } finally {
   await database.stop();
 }

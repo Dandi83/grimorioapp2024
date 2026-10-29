@@ -14,6 +14,8 @@ import { SIZES } from "@/lib/monsters-types";
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
 import { useCardDisplay } from "@/components/card-display-context";
 import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
+import { CONDITIONS_BY_EDITION, DAMAGE_TYPES, LANGUAGES_BY_EDITION, passivePerception } from "@/lib/homebrew-fields";
+import { ChipField, LanguagesField, SensesField } from "./chip-fields";
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 
 const inputClass = "w-full min-w-0 rounded-lg border border-border bg-card px-3 py-2.5 text-base text-foreground outline-none focus:border-primary";
@@ -77,12 +79,21 @@ function NumberField({ id, label, value, min, max, onChange }: { id: string; lab
   );
 }
 
+/** The steps of the form «Proponi un mostro» (PROMPT 13); the fourth, «Invio», is the form's own. */
+export type EditorStep = 1 | 2 | 3;
+
 /**
- * The guided editor of a homebrew creature: the fields the creature sheet can show, adapted to the chosen
- * edition, with the format hint and the challenge check. Used by /bestiario/proponi and by the admin area.
+ * The guided editor of a creature of «I mostri creati da voi»: the fields the creature sheet can show, adapted to the
+ * chosen edition, with the format hint and the challenge check. Used by /bestiario/proponi (one step at a time,
+ * `step`, with the preview opened by the form) and by the admin area (everything, with its own preview button).
  */
-export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: HomebrewDraft; onChange: (draft: HomebrewDraft) => void; idPrefix?: string }) {
-  const [preview, setPreview] = useState(false);
+export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview: shownPreview }: {
+  value: HomebrewDraft; onChange: (draft: HomebrewDraft) => void; idPrefix?: string; step?: EditorStep; preview?: boolean;
+}) {
+  const [ownPreview, setPreview] = useState(false);
+  const stepped = step !== undefined;
+  const preview = stepped ? !!shownPreview : ownPreview;
+  const shows = (part: EditorStep) => !stepped || step === part;
   const set = <K extends keyof HomebrewDraft>(key: K, next: HomebrewDraft[K]) => onChange({ ...value, [key]: next });
   const id = (name: string) => `${idPrefix}-${name}`;
   const format = value.edizione === "2014" ? "2014" : "2024";
@@ -102,7 +113,7 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
 
   return (
     <div className="space-y-4">
-      <Section title="Edizione">
+      {(!preview && shows(1)) && <Section title="Edizione">
         <div role="group" aria-label="Edizione della scheda" className="grid grid-cols-3 gap-1 rounded-[10px] border border-border bg-elevated p-1">
           {HOMEBREW_EDITIONS.map(edition => (
             <button key={edition} type="button" aria-pressed={value.edizione === edition} onClick={() => set("edizione", edition)}
@@ -112,9 +123,9 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
           ))}
         </div>
         <p className="text-[13px] leading-5 text-muted" data-edition-hint="">{EDITION_HINT[value.edizione]}</p>
-      </Section>
+      </Section>}
 
-      {mismatch && (
+      {mismatch && (!stepped || step === 3) && (
         <div role="note" className="rounded-[14px] border-[1.5px] border-[#2D4C7A] bg-[#E8EEF7] p-4 text-[15px] leading-6 text-[#1E3557]" data-format-hint="">
           <p>Nelle azioni hai scritto {formatWords(text, mismatch).map(word => `«${word}»`).join(", ")}: è il formato del {mismatch}. {mismatch === "2024" ? "Vuoi passare al 2024 o a Entrambe?" : "Vuoi passare al 2014?"}</p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -127,14 +138,14 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
         </div>
       )}
 
-      <div className="flex justify-end">
+      {!stepped && <div className="flex justify-end">
         <button type="button" onClick={() => setPreview(open => !open)} className="flex min-h-11 items-center gap-2 rounded-[8px] border border-border bg-card px-4 text-[15px] font-semibold">
           {preview ? <Pencil size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}{preview ? "Torna al modulo" : "Anteprima della scheda"}
         </button>
-      </div>
+      </div>}
 
       {preview ? (
-        <article className="monster-sheet min-w-0 rounded-xl border border-primary/20 bg-background py-5" aria-label="Anteprima della scheda">
+        <article className="monster-sheet min-w-0 rounded-xl border border-primary/20 bg-background py-5" aria-label="Anteprima della scheda" data-homebrew-preview="">
           <MonsterSheetTitle monster={sheet} label={
             <span className="flex flex-wrap items-center justify-end gap-1.5"><HomebrewPill />{value.edizione === "entrambe" ? <BothEditionsPill /> : <MonsterProvenanceBadge edition={format} variant="dark" />}</span>
           } />
@@ -142,6 +153,7 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
         </article>
       ) : (
         <>
+          {shows(1) && <>
           <Section title="Identità">
             <Text id={id("nome")} label="Nome *" value={value.nome} max={LIMITS.nome} onChange={next => set("nome", next)} placeholder="Es. Guardiano delle rovine" />
             <div className="grid gap-3 sm:grid-cols-3">
@@ -191,16 +203,17 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
             </div>
           </Section>
 
-          <Section title="Abilità, difese e sensi" hint="Facoltativi. La Percezione passiva è calcolata dalla Saggezza (o dalla Percezione scritta nelle abilità).">
+          </>}
+
+          {shows(2) && <>
+          <Section title="Difese e sensi" hint="Facoltativi: un tocco sceglie, un altro toglie. La Percezione passiva è calcolata dalla Saggezza (o dalla Percezione scritta nelle abilità).">
             <Text id={id("abilita")} label="Abilità" value={value.abilita} onChange={next => set("abilita", next)} placeholder="Es. Percezione +4, Furtività +6" />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Text id={id("vulnerabilita")} label="Vulnerabilità" value={value.vulnerabilita} onChange={next => set("vulnerabilita", next)} placeholder="Es. fuoco" />
-              <Text id={id("resistenze")} label="Resistenze" value={value.resistenze} onChange={next => set("resistenze", next)} placeholder="Es. freddo, fulmine" />
-              <Text id={id("immunita-danni")} label="Immunità ai danni" value={value.immunita_danni} onChange={next => set("immunita_danni", next)} placeholder="Es. veleno" />
-              <Text id={id("immunita-condizioni")} label="Immunità alle condizioni" value={value.immunita_condizioni} onChange={next => set("immunita_condizioni", next)} placeholder="Es. avvelenato" />
-            </div>
-            <Text id={id("sensi")} label="Sensi speciali" value={value.sensi} onChange={next => set("sensi", next)} placeholder="Es. scurovisione 18 m" />
-            <Text id={id("linguaggi")} label="Linguaggi" value={value.linguaggi} onChange={next => set("linguaggi", next)} placeholder="Es. Comune, Draconico" />
+            <ChipField id={id("vulnerabilita")} label="Vulnerabilità" value={value.vulnerabilita} options={DAMAGE_TYPES} onChange={next => set("vulnerabilita", next)} />
+            <ChipField id={id("resistenze")} label="Resistenze" value={value.resistenze} options={DAMAGE_TYPES} onChange={next => set("resistenze", next)} />
+            <ChipField id={id("immunita-danni")} label="Immunità ai danni" value={value.immunita_danni} options={DAMAGE_TYPES} onChange={next => set("immunita_danni", next)} />
+            <ChipField id={id("immunita-condizioni")} label="Immunità alle condizioni" value={value.immunita_condizioni} options={CONDITIONS_BY_EDITION[format]} onChange={next => set("immunita_condizioni", next)} />
+            <SensesField id={id("sensi")} value={value.sensi} passive={passivePerception(value.saggezza, value.abilita)} onChange={next => set("sensi", next)} />
+            <LanguagesField id={id("linguaggi")} value={value.linguaggi} options={LANGUAGES_BY_EDITION[format]} onChange={next => set("linguaggi", next)} />
             <fieldset>
               <legend className={labelClass}>Habitat</legend>
               <div className="flex flex-wrap gap-2">
@@ -215,7 +228,9 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
             </fieldset>
           </Section>
 
-          {blocksOf(value.edizione).map(block => (
+          </>}
+
+          {shows(3) && blocksOf(value.edizione).map(block => (
             <Section key={block} title={BLOCK_LABEL[block].title} hint={block === "azioni_leggendarie" ? "Lascia vuoto il nome della prima voce per l’introduzione (quante azioni a round)." : undefined}>
               {value[block].map((entry, index) => (
                 <div key={index} className="space-y-2 rounded-[10px] border border-primary/20 bg-background p-3">
@@ -245,7 +260,7 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb" }: { value: Ho
         </>
       )}
 
-      {check && <ChallengeCheck check={check} declared={value.grado_sfida} />}
+      {check && (!stepped || step === 3) && <ChallengeCheck check={check} declared={value.grado_sfida} />}
     </div>
   );
 }
