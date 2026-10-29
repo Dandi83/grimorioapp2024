@@ -161,17 +161,18 @@ function load(relative) {
   assert.equal((await attempt('passcode-di-prova','203.0.113.61')).ok,true);
   assert.deepEqual(await sections.setPartVisibilityAction('classi:tab-tabella',true),{ok:true,hidden:true});
   assert.deepEqual(await sections.setPartVisibilityAction('classi:inventata',true),{ok:false,error:'Parte sconosciuta.'});
-  // «I mostri creati da voi» is off (lib/community.ts): its part counts as hidden whatever the switches say.
-  assert.deepEqual((await visibility.visibilityState()).parts,['bestiario:homebrew','classi:tab-tabella']);
+  // «I mostri creati da voi»: while off (lib/community.ts) its part counts as hidden whatever the switches say; on, it follows them.
+  const switchedOff = require('../lib/community.ts').COMMUNITY_PUBLIC ? [] : ['bestiario:homebrew'];
+  assert.deepEqual((await visibility.visibilityState()).parts,[...switchedOff,'classi:tab-tabella']);
   await sections.setPartVisibilityAction('avanzamento:tabella',true);
   for (const part of ['punti-ferita','talenti','calcolatore']) await sections.setPartVisibilityAction(`avanzamento:${part}`,true);
   // «Mostra» on a page hidden through all its blocks shows those blocks again.
   const showAll = new FormData(); showAll.set('sezione','avanzamento');
   await sections.showSectionAction(showAll);
-  assert.deepEqual((await visibility.visibilityState()).parts,['bestiario:homebrew','classi:tab-tabella']);
+  assert.deepEqual((await visibility.visibilityState()).parts,[...switchedOff,'classi:tab-tabella']);
   const partShow = new FormData(); partShow.set('parte','classi:tab-tabella');
   await sections.showPartAction(partShow);
-  assert.deepEqual((await visibility.visibilityState()).parts,['bestiario:homebrew']);
+  assert.deepEqual((await visibility.visibilityState()).parts,switchedOff);
   assert.deepEqual(visibility.withCommunitySwitch({sections:[],parts:[],cards:[],soon:[]},true).parts,[],'switched on: nothing added');
   assert.deepEqual(visibility.withCommunitySwitch({sections:[],parts:[],cards:[],soon:['bestiario:homebrew']},false),{sections:[],parts:['bestiario:homebrew'],cards:[],soon:[]},'off: hidden outright, never «In arrivo»');
   const partLog = (await visibility.allSectionLog()).filter(row=>row.parte);
