@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-action-helpers";
 import { getMonsterById } from "@/lib/monsters";
 import { parseGs } from "@/lib/monsters-types";
-import { balanceBoxHtml, balanceEdition, evaluateMonster, type BalanceEdition } from "@/lib/monster-balance";
+import { balanceApplies, balanceBoxHtml, balanceEdition, evaluateMonster, NOT_FOR_OFFICIAL, type BalanceEdition } from "@/lib/monster-balance";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +13,7 @@ const denied = () => NextResponse.json({ error: "Non autorizzato" }, { status: 4
 
 /**
  * The box of the administrator under a monster sheet (PROMPT 11): drawn here, on the server, and sent only after the
- * session check, never stored by a browser or a cache. GET ?id=: a sheet of the catalog or a homebrew (the public page
+ * session check, never stored by a browser or a cache. GET ?id=: a homebrew or a sheet made here (PROMPT 12: never an official one) (the public page
  * asks for it after /api/admin/sessione said yes). Read only: nothing is written.
  */
 export async function GET(request: NextRequest) {
@@ -22,6 +22,8 @@ export async function GET(request: NextRequest) {
   if (!/^[a-z0-9][a-z0-9-]{0,119}$/.test(id)) return NextResponse.json({ error: "Scheda non valida" }, { status: 400, headers: PRIVATE });
   const monster = await getMonsterById(id);
   if (!monster) return NextResponse.json({ error: "Scheda non trovata" }, { status: 404, headers: PRIVATE });
+  // The official sheets (SRD, its animals, NO SRD from a manual) are only the reference group: nothing is computed.
+  if (!balanceApplies(monster)) return NextResponse.json({ error: NOT_FOR_OFFICIAL }, { status: 422, headers: PRIVATE });
   const result = evaluateMonster(monster, balanceEdition(monster, usesLegacyMonsterRules(monster)));
   return NextResponse.json({ html: balanceBoxHtml(result) }, { headers: PRIVATE });
 }

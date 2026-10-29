@@ -16,6 +16,7 @@ import { EyeButton } from "./admin-card-eye";
 import { HiddenTag } from "./sections/hidden-tag";
 import { useEditorFrame } from "./admin-editor-frame";
 import { EditorMonsterPanel } from "./admin-edit/admin-monster-panel";
+import { balanceApplies } from "@/lib/balance-scope";
 
 type Field = { name: keyof Monster; label: string; placeholder?: string };
 const IDENTITY: Field[] = [
@@ -141,6 +142,7 @@ export function MonsterEditor({
     toTop();
   }
 
+  const ownSheet = !monster || balanceApplies(monster);
   /** The sheet as written now, for the Bilanciamento box (nothing is saved). */
   function balanceSheet(): Record<string, unknown> | null {
     if (!form.current) return null;
@@ -293,11 +295,12 @@ export function MonsterEditor({
                 descriptionOnly={block.name === "descrizione"}
               />
             ))}
-            {/* Bilanciamento (PROMPT 11): the sheet as written now against the SRD monsters of its CR; only on «Ricalcola». */}
-            <section className="rounded-xl border border-border p-4" data-editor-balance="">
+            {/* Bilanciamento (PROMPT 11, 12): the sheet as written now against the SRD monsters of its CR; only on «Ricalcola»,
+                only for a new sheet or one of ours (never an official one). */}
+            {ownSheet && <section className="rounded-xl border border-border p-4" data-editor-balance="">
               <h3 className="mb-2 font-serif text-xl text-primary">Bilanciamento</h3>
               <EditorMonsterPanel sheet={balanceSheet} label="Ricalcola" />
-            </section>
+            </section>}
           </div>
           {preview && (
             <div
@@ -312,7 +315,7 @@ export function MonsterEditor({
                   (!preview.edizione && monster?.provenienza?.edition === "2014")
                 }
               />
-              <EditorMonsterPanel sheet={balanceSheet} label="Ricalcola" />
+              {ownSheet && <EditorMonsterPanel sheet={balanceSheet} label="Ricalcola" />}
               <p className="mt-3 text-xs text-muted-foreground">
                 Anteprima locale al modulo. I collegamenti sono mostrati senza lasciare l’editor.
               </p>

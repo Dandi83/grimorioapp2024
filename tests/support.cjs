@@ -6,6 +6,9 @@ const support=load('lib/support.ts');
 assert.equal(support.SUPPORT_URL,'https://ko-fi.com/ilgrimorioapp');
 assert.equal(support.supportUrl(),'https://ko-fi.com/ilgrimorioapp');
 assert.equal(support.supportUrl(''),'','empty: no link, no card, no page');
+// The description of /sostieni (previews of Google, WhatsApp…) and the texts of the page and of the occasional card: never «gratuito»/«gratis».
+assert.equal(load('app/sostieni/page.tsx',{'next/navigation':{notFound(){}},'@/components/support/support-page':{SupportPage:()=>null},'@/lib/support':support}).metadata.description,'Se Il Grimorio.App ti è utile al tavolo, puoi aiutarlo a crescere con un contributo libero su Ko-fi.');
+for(const file of ['app/sostieni/page.tsx','components/support/support-page.tsx','components/support/support-card.tsx'])assert.doesNotMatch(fs.readFileSync(file,'utf8'),/gratuit|gratis/i,file);
 // /sostieni without the address: the generic 404.
 let missing=0;
 const page=load('app/sostieni/page.tsx',{'next/navigation':{notFound:()=>{missing++;throw new Error('NEXT_NOT_FOUND');}},'@/components/support/support-page':{SupportPage:()=>null},'@/lib/support':{...support,supportUrl:()=>''}});

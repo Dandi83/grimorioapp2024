@@ -1,6 +1,6 @@
 import "server-only";
 import data from "../data/monster-balance-srd.json";
-import { compare, type Comparison, type ReferenceRow } from "./compare";
+import { compare, type Comparison, type Level, type ReferenceRow } from "./compare";
 import { readMonster, type MonsterModel, type SheetFields } from "./parse";
 import { levelOf } from "./party";
 import { simulate, type BalanceMetrics } from "./simulate";
@@ -9,6 +9,7 @@ import { simulate, type BalanceMetrics } from "./simulate";
  * Bilanciamento (PROMPT 11), administrator only: a monster against the SRD monsters of its CR and edition. Read only:
  * nothing is written anywhere. The SRD measures come from lib/data/monster-balance-srd.json (scripts/build-monster-balance.mjs).
  */
+export { balanceApplies, NOT_FOR_OFFICIAL } from "../balance-scope";
 export const FIGHTS = 3000;
 export type BalanceEdition = "2014" | "2024";
 export type BalanceResult = {
@@ -44,6 +45,18 @@ function pill(verdict: string) {
   return `<span data-balance-verdict="${verdict}" style="display:inline-block;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;${green ? "background:#DCEFE2;color:#1F6B45" : "background:#F6D58A;color:#6B4300"}">${verdict}</span>`;
 }
 
+/** The final verdict: label and colours (green, amber, bordeaux). */
+export const LEVELS: Record<Level, { label: string; slug: string; style: string }> = {
+  "in linea": { label: "In linea", slug: "in-linea", style: "background:#1F6B45;color:#FFFFFF" },
+  "da controllare": { label: "Da controllare", slug: "da-controllare", style: "background:#FCEFD0;color:#7A4E00;border:1px solid #7A4E00" },
+  fuori: { label: "Fuori dal GS", slug: "fuori", style: "background:#7A1F2B;color:#FFFFFF" },
+};
+
+/** The sentence beside the verdict: which measure is out and which way. */
+export function levelSentence(comparison: Comparison): string {
+  return comparison.level === "in linea" ? "Danni e resistenza nella fascia dei mostri del suo GS." : `${comparison.outside.join("; ")}.`;
+}
+
 /**
  * The «Bilanciamento» box as HTML, drawn on the server for the administrator (the public page, the editor and the
  * proposals receive only this text through /api/admin/pannello-mostro): never in a public page or in the browser code.
@@ -67,12 +80,14 @@ export function balanceBoxHtml(result: BalanceResult): string {
     for (const [key, label, row, format] of rows) {
       parts.push(`<div data-balance-row="${key}" style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;border-bottom:1px solid #E8D3A0;padding-bottom:6px">`
         + `<dt style="flex:1 1 170px;font-weight:700">${label}</dt>`
-        + `<dd style="margin:0;flex:1 1 220px">${format(row.value)} <span style="color:#6B5B48">· mediana SRD ${format(row.band.median)} · fascia ${format(row.band.low)}–${format(row.band.high)}</span></dd>`
+        + `<dd style="margin:0;flex:1 1 220px">${format(row.value)} <span style="color:#6B5B48">· mediana SRD ${format(row.band.median)} · fascia 10–90: ${format(row.band.low)}–${format(row.band.high)}</span></dd>`
         + `<dd style="margin:0">${pill(row.verdict)}</dd></div>`);
     }
     parts.push(`</dl>`);
-    const verdict = c.inLine ? "In linea con il GS" : `Fuori dal GS: ${c.outside.join("; ")}`;
-    parts.push(`<p data-balance-result="${c.inLine ? "in-linea" : "fuori"}" style="margin:10px 0 2px;font-weight:800">${escape(verdict)}.</p>`);
+    const level = LEVELS[c.level];
+    parts.push(`<p data-balance-result="${level.slug}" style="margin:10px 0 2px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px">`
+      + `<span data-balance-level="" style="display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:800;${level.style}">${level.label}</span>`
+      + `<span style="font-weight:600">${escape(levelSentence(c))}</span></p>`);
   }
   parts.push(`<p style="margin:0 0 10px;color:#6B5B48;font-size:13px">Simulazione contro 4 PG di livello ${result.level}; confronto con ${c.group.length} mostri SRD ${editionLabel} ${c.widened ? `di GS vicino (${crText})` : `dello stesso GS (${crLabel(model.cr)})`}.</p>`);
   const own: [string, number | null, number | null][] = [

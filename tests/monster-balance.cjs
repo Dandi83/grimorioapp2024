@@ -1,12 +1,13 @@
-// Bilanciamento (PROMPT 11): the reading of the sheets, the fights, the comparison, the box; administrator only.
+// Bilanciamento (PROMPT 11, 12): the reading of the sheets, the fights, the comparison, the box; administrator only.
 // Run: NODE_OPTIONS=--require=./tests/register-ts.cjs node tests/monster-balance.cjs
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),ts=require('typescript');
 const {createRequire}=require('node:module');
 require.cache[require.resolve('server-only')]={exports:{}};
-const {readMonster,multiattackCount,damageDice,entries}=require('../lib/monster-balance/parse.ts');
+const {readMonster,multiattackCount,damageDice,entries,regeneration}=require('../lib/monster-balance/parse.ts');
 const {simulate}=require('../lib/monster-balance/simulate.ts');
 const {party,levelOf,heroDc,wizard,fighter,cleric}=require('../lib/monster-balance/party.ts');
-const {compare,band,referenceGroup,gapFromCr}=require('../lib/monster-balance/compare.ts');
+const {compare,band,referenceGroup,gapFromCr,levelOf:verdictOf,BAND,CHECK_LIMIT}=require('../lib/monster-balance/compare.ts');
+const {balanceApplies}=require('../lib/balance-scope.ts');
 const balance=require('../lib/monster-balance/index.ts');
 const sheets=file=>JSON.parse(fs.readFileSync(`lib/data/${file}`,'utf8')).records.map(record=>record.monster);
 const m2024=sheets('srd-monsters-5.2.1-it.json'),m2014=sheets('srd-monsters-5.1-it.json');
@@ -38,6 +39,15 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal(troll.multiattack,3);assert.equal(troll.hp,94);
  assert.equal(troll14.multiattack,3);assert.deepEqual(troll14.attacks.map(a=>[a.name,a.bonus,a.average]),[['Artiglio',7,11],['Morso',7,7]]);
  assert.equal(troll14.ac,15);
+ // Regeneration (PROMPT 12): Troll 2024 15, Troll 2014 10 (the reference group only: never shown on their pages).
+ assert.equal(troll.regeneration,15);assert.equal(troll14.regeneration,10);
+ assert.equal(readMonster(find(m2024,'Oni')).regeneration,10);assert.equal(readMonster(find(m2024,'Drago nero adulto')).regeneration,0,'«recupera tutti gli utilizzi» is not hit points');
+ assert.equal(regeneration("Il mostro riguadagna 7 punti ferita all'inizio del suo turno."),7,'2014: «riguadagna»');
+ assert.equal(regeneration('Il vampiro recupera punti ferita pari a quell’ammontare.'),0);
+ const noRegen=simulate({...troll,regeneration:0},3000),withRegen=simulate(troll,3000);
+ assert.ok(withRegen.rounds>noRegen.rounds,`regeneration makes it last longer: ${withRegen.rounds} > ${noRegen.rounds}`);
+ // Never beyond the maximum: once it heals to full every turn, a larger regeneration changes nothing.
+ assert.deepEqual(simulate({...troll,regeneration:500},500),simulate({...troll,regeneration:5000},500));
  // Mummy 2014: one attack with the gaze; resistance to non-magical weapons counts; the curse dice are not damage.
  const mummy14=readMonster(find(m2014,'Mummia')),mummy=readMonster(find(m2024,'Mummia'));
  assert.equal(mummy14.multiattack,1);assert.equal(mummy14.weaponResistance,true);
@@ -85,15 +95,29 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  // Under 1 second on the server for one sheet (3000 fights), the slowest kind: legendary, recharge, multiattack.
  for(const name of ['Drago nero adulto','Tarrasque','Lich']){const start=Date.now();balance.evaluateMonster(find(m2024,name),'2024');assert.ok(Date.now()-start<1000,`${name}: ${Date.now()-start} ms`);}
 
- // The comparison: bands, widening to at least 6 SRD monsters, verdicts, distance.
- assert.deepEqual(band([1,2,3,4,5]),{median:3,low:2,high:4});
+ // The comparison: the band from the 10th to the 90th percentile, widening to at least 6 SRD monsters, three verdicts.
+ assert.deepEqual(BAND,{low:0.1,high:0.9});assert.equal(CHECK_LIMIT,25);
+ assert.deepEqual(band([0,1,2,3,4,5,6,7,8,9,10]),{median:5,low:1,high:9});
  const rows=[0,1,2,3,4,5,6,7].map(i=>({id:`m${i}`,name:`M${i}`,cr:i<3?5:9,damagePerRound:10+i,rounds:3,downPct:i*10,wipePct:0,ac:15,hp:100,toHit:7,dc:15}));
  assert.equal(referenceGroup(5,rows).widened,4,'3 at CR 5: widened until 6');
  const metrics={damagePerRound:40,rounds:3,downPct:50,wipePct:0};
  const cmp=compare(metrics,9,rows);
- assert.equal(cmp.damage.verdict,'sopra');assert.equal(cmp.rounds.verdict,'in linea');assert.equal(cmp.inLine,false);
- assert.match(cmp.outside[0],/^Danni ai PG per round sopra la fascia \(\+\d+%\)$/);assert.ok(gapFromCr(cmp)>0);
- assert.equal(compare({...metrics,damagePerRound:15},9,rows).inLine,true);
+ assert.equal(cmp.damage.verdict,'sopra');assert.equal(cmp.rounds.verdict,'in linea');assert.equal(cmp.level,'fuori');
+ assert.match(cmp.outside[0],/^Picchia più dei mostri del suo GS \(\+\d+%\)$/);assert.ok(gapFromCr(cmp)>0);
+ assert.equal(compare({...metrics,damagePerRound:15},9,rows).level,'in linea');
+ // The limits of the three levels: a group whose band is exactly 8 damage and 4 rounds.
+ const flat=[0,1,2,3,4,5].map(i=>({id:`f${i}`,name:`F${i}`,cr:3,damagePerRound:8,rounds:4,downPct:20,wipePct:0,ac:13,hp:60,toHit:5,dc:13}));
+ const level=(damagePerRound,rounds)=>compare({damagePerRound,rounds,downPct:20,wipePct:0},3,flat);
+ assert.equal(level(8,4).level,'in linea');assert.deepEqual(level(8,4).outside,[]);
+ assert.equal(level(10,4).level,'da controllare','+25% exactly: still to check');
+ assert.equal(level(10.1,4).level,'fuori','+26%: out of the CR');
+ assert.equal(level(6,4).level,'da controllare','−25% exactly');assert.equal(level(5.9,4).level,'fuori');
+ assert.equal(level(8,5).level,'da controllare');assert.equal(level(8,3).level,'da controllare');assert.equal(level(8,2.9).level,'fuori');
+ assert.equal(level(9,5).level,'fuori','both out, even by little');
+ assert.deepEqual(level(10,4).outside,['Picchia più dei mostri del suo GS (+25%)']);
+ assert.deepEqual(level(8,3).outside,['Cade prima dei mostri del suo GS (−25%)']);
+ assert.deepEqual(level(6,5).outside,['Picchia meno dei mostri del suo GS (−25%)','Resiste più a lungo dei mostri del suo GS (+25%)']);
+ assert.equal(verdictOf(level(10,4).damage,level(10,4).rounds),'da controllare');
  // A sheet against the SRD file of its edition (never against itself).
  const result=balance.evaluateMonster(find(m2024,'Drago nero adulto'),'2024');
  assert.ok(result.comparison.group.length>=6);assert.ok(result.comparison.group.every(row=>row.id!=='drago-nero-adulto'&&Math.abs(row.cr-14)<=result.comparison.widened));
@@ -101,6 +125,12 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  for(const text of ['BILANCIAMENTO','Danni ai PG per round','Round che resiste','PG a terra (% scontri)','mediana SRD','Simulazione contro 4 PG di livello 14','mostri SRD 2024','Valori tipici per questo GS'])assert.ok(html.includes(text),text);
  assert.match(html,/border:1\.5px dashed #7A4E00;background:#FCEFD0/);
  assert.equal((html.match(/data-balance-verdict=/g)||[]).length,3);
+ assert.ok(html.includes('fascia 10–90:'),'the band column says 10–90');
+ assert.match(html,new RegExp(`data-balance-result="${balance.LEVELS[result.comparison.level].slug}"`));
+ assert.ok(html.includes(balance.LEVELS[result.comparison.level].label));
+ // The pills of the three verdicts: green, amber, bordeaux.
+ assert.match(balance.LEVELS['in linea'].style,/#1F6B45/);assert.match(balance.LEVELS['da controllare'].style,/color:#7A4E00/);assert.match(balance.LEVELS['da controllare'].style,/#FCEFD0/);assert.match(balance.LEVELS.fuori.style,/background:#7A1F2B;color:#FFFFFF/);
+ assert.deepEqual(Object.values(balance.LEVELS).map(l=>l.label),['In linea','Da controllare','Fuori dal GS']);
  const legacy=balance.evaluateMonster(find(m2014,'Troll'),'2014');assert.match(balance.balanceBoxHtml(legacy),/mostri SRD 2014/);
  assert.equal(balance.balanceBoxHtml(balance.evaluateMonster({...empty,nome:'<img onerror=x>',id:'x'},'2024')).includes('<img'),false,'names are escaped');
  assert.equal(balance.balanceEdition({homebrew_edizione:'entrambe'},false),'2024');assert.equal(balance.balanceEdition({homebrew_edizione:'2014'},false),'2014');assert.equal(balance.balanceEdition({},true),'2014');
@@ -110,17 +140,23 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal(data.fights,800);assert.ok(data.editions['2014'].length>300&&data.editions['2024'].length>300,'animals 5.2.1 count with 2024');
  assert.ok(data.editions['2024'].some(row=>row.id==='lupo'||row.id==='orso-bruno'));
 
+ // Only on our sheets (PROMPT 12): homebrew and sheets made here; never SRD 5.1, SRD 5.2.1, animals, edited SRD or NO SRD from a manual.
+ assert.equal(balanceApplies({fonte_scheda:'Homebrew'}),true);assert.equal(balanceApplies({homebrew_edizione:'2014'}),true);
+ assert.equal(balanceApplies({fonte_scheda:'Aggiunta da te'}),true);
+ for(const sheet of [{fonte_scheda:'SRD 5.2.1'},{fonte_scheda:'SRD 5.1'},{},{fonte_scheda:'Sintesi originale'},{fonte_scheda:'Aggiunta da te',provenienza:{document:'SRD 5.2.1'}}])assert.equal(balanceApplies(sheet),false,JSON.stringify(sheet));
+
  // Administrator only: the API answers 401 to anyone else, private and never stored; the box comes only from it.
  const {NextRequest}=require('next/server');
  let admin=false;
  const route=load('app/api/admin/pannello-mostro/route.ts',{'@/lib/admin-action-helpers':{requireAdmin:async()=>{if(!admin)throw new Error('no');}},
-  '@/lib/monsters':{getMonsterById:async id=>id==='drago-nero-adulto'?find(m2024,'Drago nero adulto'):undefined},'@/lib/monsters-types':require('../lib/monsters-types.ts'),
+  '@/lib/monsters':{getMonsterById:async id=>id==='drago-nero-adulto'?{...find(m2024,'Drago nero adulto'),fonte_scheda:'SRD 5.2.1'}:id==='troll'?{...find(m2014,'Troll'),fonte_scheda:'SRD 5.1'}:id==='hb-drago'?{...find(m2024,'Drago nero adulto'),id:'hb-drago',fonte_scheda:'Homebrew',homebrew_edizione:'2024'}:id==='creata'?{...find(m2024,'Troll'),id:'creata',fonte_scheda:'Aggiunta da te'}:undefined},'@/lib/monsters-types':require('../lib/monsters-types.ts'),
   '@/lib/monster-balance':balance,'@/lib/srd-monsters':{usesLegacyMonsterRules:()=>false}});
  const get=id=>route.GET(new NextRequest(`https://ilgrimorio.app/api/admin/pannello-mostro?id=${id}`));
  const refused=await get('drago-nero-adulto');assert.equal(refused.status,401);assert.equal(refused.headers.get('cache-control'),'private, no-store');
  assert.doesNotMatch(await refused.text(),/BILANCIAMENTO/);
  admin=true;
- const ok=await get('drago-nero-adulto');assert.equal(ok.status,200);assert.equal(ok.headers.get('cache-control'),'private, no-store');assert.match((await ok.json()).html,/BILANCIAMENTO/);
+ for(const id of ['drago-nero-adulto','troll']){const official=await get(id);assert.equal(official.status,422,id);assert.equal(official.headers.get('cache-control'),'private, no-store');const body=await official.json();assert.equal(body.error,'Non previsto per le schede ufficiali');assert.equal(body.html,undefined);}
+ for(const id of ['hb-drago','creata']){const ok=await get(id);assert.equal(ok.status,200,id);assert.equal(ok.headers.get('cache-control'),'private, no-store');assert.match((await ok.json()).html,/BILANCIAMENTO/);}
  assert.equal((await get('nessuno')).status,404);assert.equal((await get('..%2Fx')).status,400);
  const post=(body,origin='https://ilgrimorio.app')=>route.POST(new NextRequest('https://ilgrimorio.app/api/admin/pannello-mostro',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify(body)}));
  const preview=await post({nome:'Bozza',grado_sfida:'2',classe_armatura:'13',punti_ferita:'45',forza:'14',azioni:'<strong>Morso.</strong> <em>Tiro per colpire in mischia:</em> +4, portata 1,5 m. <em>Colpito:</em> 9 (2d6 + 2) danni perforanti.',edizione:'2014'});
@@ -133,8 +169,8 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  for(const dir of ['app','components'])(function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const full=path.join(d,e.name);if(e.isDirectory())walk(full);else if(/\.tsx?$/.test(e.name)&&/^["']use client["']/.test(fs.readFileSync(full,'utf8')))clientFiles.push(full);}})(dir);
  for(const file of clientFiles){const code=fs.readFileSync(file,'utf8');assert.doesNotMatch(code,/monster-balance|monster-balance-srd/,file);}
  assert.doesNotMatch(fs.readFileSync('components/admin-edit/admin-monster-panel.tsx','utf8'),/Bilanciamento|BILANCIAMENTO/i,'the panel of the public page carries no text of the box');
- const page=fs.readFileSync('app/mostro/[id]/page.tsx','utf8');assert.doesNotMatch(page,/monster-balance|balanceBoxHtml/);assert.match(page,/<AdminMonsterPanel id=\{monster\.id\} \/>/);
+ const page=fs.readFileSync('app/mostro/[id]/page.tsx','utf8');assert.doesNotMatch(page,/monster-balance|balanceBoxHtml/);assert.match(page,/\{balanceApplies\(monster\) && <AdminMonsterPanel id=\{monster\.id\} \/>\}/);
  for(const file of ['app/api/catalogo/bestiario/route.ts','lib/sw/service-worker.js','lib/search-index.ts'])assert.doesNotMatch(fs.readFileSync(file,'utf8'),/monster-balance|pannello-mostro/,file);
  assert.match(fs.readFileSync('scripts/check-client-bundle.mjs','utf8'),/BILANCIAMENTO/);
- console.log('Bilanciamento: sheets read (2024 and 2014), group, seeded fights under 1 s, comparison with the SRD of the same CR and edition, box, administrator only.');
+ console.log('Bilanciamento: sheets read (2024 and 2014, regeneration), group, seeded fights under 1 s, comparison with the SRD of the same CR and edition (10–90, three verdicts), box, only our sheets, administrator only.');
 })().catch(error=>{console.error(error);process.exit(1);});

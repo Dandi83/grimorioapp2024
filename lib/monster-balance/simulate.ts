@@ -78,6 +78,8 @@ function fight(model: MonsterModel, level: number, random: Random) {
     }
   };
   const monsterTurn = () => {
+    // Regeneration: at the start of its turn, only while it still has hit points, never beyond its maximum.
+    if (model.regeneration && monster > 0) monster = Math.min(model.hp, monster + model.regeneration);
     legendary = model.legendary.uses;
     usedOnce = new Set();
     model.abilities.forEach((ability, i) => { if (!ready[i] && ability.recharge && roll(random, 6) >= ability.recharge) ready[i] = true; });
