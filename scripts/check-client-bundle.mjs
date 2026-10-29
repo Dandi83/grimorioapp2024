@@ -78,8 +78,11 @@ export function findIndexLeaks(file = SEARCH_INDEX_FILE, prints = sheetFingerpri
 
 /** Server-only names and, when set during the build, their values: never in the browser code. */
 export const SECRET_ENV = ['RESEND_API_KEY', 'FEEDBACK_TO_EMAIL', 'FEEDBACK_FROM_EMAIL', 'TURNSTILE_SECRET_KEY', 'ADMIN_PASSCODE', 'ANALYTICS_SECRET', 'FEEDBACK_SECRET', 'DATABASE_URL', 'VAPID_PRIVATE_KEY'];
-/** Server code that must never reach the browser: the email service and the push library that signs with the private key. */
-const SERVER_ONLY_MARKERS = ['api.resend.com', 'generateVAPIDKeys'];
+/**
+ * Server code that must never reach the browser: the email service, the push library that signs with the private key,
+ * and the Bilanciamento of the administrator (PROMPT 11: its box, drawn on the server, and the SRD measures).
+ */
+const SERVER_ONLY_MARKERS = ['api.resend.com', 'generateVAPIDKeys', 'BILANCIAMENTO', 'Danni ai PG per round', 'misure simulate dei mostri SRD'];
 
 export function findSecretLeaks(clientDir, env = process.env) {
   const needles = [

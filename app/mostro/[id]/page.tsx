@@ -8,6 +8,7 @@ import { getMonsterById } from "@/lib/monsters";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
+import { AdminMonsterPanel } from "@/components/admin-edit/admin-monster-panel";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
 import { cardHidden, editionCard, linksOut, partState, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
@@ -117,6 +118,8 @@ export default async function MonsterDetailPage({
         byline={homebrew ? <HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} /> : undefined}
       />
       <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} catalog={await getSpellReferenceCatalog()} />
+      {/* The administrator's box under the sheet (PROMPT 11), asked for in the browser after the session check: never in this HTML. */}
+      <AdminMonsterPanel id={monster.id} />
       {source && (
         <aside aria-label="Fonte della scheda" data-source-box="" className="mx-6 mb-8 rounded-xl border border-border bg-card p-4 text-sm leading-6 text-muted">
           <p>Testo integrale: {source.document} italiano — {source.sourceName}.</p>

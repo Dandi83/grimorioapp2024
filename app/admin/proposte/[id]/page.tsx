@@ -9,6 +9,7 @@ import reference from "@/lib/data/gs-riferimento.json";
 import { getProposal } from "@/lib/homebrew";
 import { estimateChallenge, statsOf, type CrReference } from "@/lib/homebrew-cr";
 import { draftToMonster } from "@/lib/homebrew-types";
+import { balanceBoxHtml, balanceEdition, evaluateMonster } from "@/lib/monster-balance";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { publicLinksOut } from "@/lib/section-view";
 
@@ -29,6 +30,8 @@ export default async function ProposalPreview({ params }: { params: Promise<{ id
       </div>
       <HomebrewSheet monster={monster} context={{ catalog: await getSpellReferenceCatalog(), hidden: await publicLinksOut() }} />
       <div className="mx-6"><ChallengeCheck check={estimateChallenge(statsOf(monster), reference as CrReference)} declared={proposal.scheda.grado_sfida} /></div>
+      {/* Bilanciamento (PROMPT 11): the proposal against the SRD monsters of its CR and edition. */}
+      <div className="mx-6" dangerouslySetInnerHTML={{ __html: balanceBoxHtml(evaluateMonster(monster, balanceEdition(monster, false))) }} />
     </div>
   );
 }
