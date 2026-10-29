@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { BackButton } from "@/components/back-button";
 import { ProposalForm } from "@/components/homebrew/proposal-form";
+import { BetaPill } from "@/components/homebrew/beta-pill";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { turnstileConfigured } from "@/lib/feedback";
 import { partId } from "@/lib/public-sections";
@@ -31,7 +32,7 @@ export default async function ProposePage() {
     <div className="mx-auto max-w-2xl px-4 pb-8 pt-4">
       {state.hidden && <HiddenPartBar id={partId("bestiario", "homebrew")} />}
       <BackButton fallback="/bestiario/creati-da-voi" label="I mostri creati da voi" />
-      <h1 className="mt-2 font-serif text-[32px] font-bold leading-tight text-foreground">Proponi un mostro</h1>
+      <h1 className="mt-2 font-serif text-[32px] font-bold leading-tight text-foreground">Proponi un mostro <BetaPill /></h1>
       <p className="mt-1 text-[15px] leading-6 text-muted">
         Compila la scheda in quattro passi, con l’anteprima dal vivo. La controlliamo prima di pubblicarla tra «I mostri creati da voi», con il tuo nome.
       </p>

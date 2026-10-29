@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft, PenLine } from "lucide-react";
 
 import { HiddenTag } from "@/components/sections/hidden-tag";
+import { BetaPill } from "./beta-pill";
 
 /** Where the form and the section are (the internal addresses keep «homebrew» elsewhere). */
 export const COMMUNITY_HREF = "/bestiario/creati-da-voi";
@@ -18,7 +19,7 @@ export function CommunityInvite({ count, hidden = false }: { count: number; hidd
       <PenLine aria-hidden="true" size={120} strokeWidth={1.2} className="pointer-events-none absolute -right-5 -top-5 text-[#E0A21A] opacity-15" />
       {hidden && <HiddenTag className="relative mb-2 !bg-[#FFFBF0] !text-[#2B2118]" />}
       <p className="relative text-[12px] font-bold uppercase tracking-[0.12em] text-[#E0A21A]">Dalla community</p>
-      <h2 id="community-invite-title" className="relative mt-1 font-serif text-[26px] font-bold leading-tight">I mostri creati da voi</h2>
+      <h2 id="community-invite-title" className="relative mt-1 font-serif text-[26px] font-bold leading-tight">I mostri creati da voi <BetaPill tone="dark" /></h2>
       <p className="relative mt-1 text-[15px] leading-6 text-[#F1E6CC]">
         {count > 0
           ? "Creature inventate dai master del Grimorio, controllate da noi prima di pubblicarle."
@@ -52,7 +53,7 @@ export function CommunityHeader({ children }: { children?: React.ReactNode }) {
         <ChevronLeft size={22} aria-hidden="true" />Bestiario
       </Link>
       <div className="mt-1 flex items-start justify-between gap-3">
-        <h1 className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground">I mostri creati da voi</h1>
+        <h1 className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground">I mostri creati da voi <BetaPill /></h1>
         {children}
       </div>
       <p className="mt-2 text-[15px] leading-6 text-muted">

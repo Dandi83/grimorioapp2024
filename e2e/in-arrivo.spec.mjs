@@ -1,3 +1,4 @@
+import { hiddenPartsText } from "./community-switch.mjs";
 import { test, expect } from "@playwright/test";
 
 // «Visibile · In arrivo · Nascosta» (/admin/sezioni): a section and a part in each state, as a visitor and as the
@@ -76,8 +77,8 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await expect(page.getByText("2 in arrivo")).toBeVisible();
   await expect(page.getByText("1 nascosta", { exact: true })).toBeVisible();
   await expect(page.getByText("2 parti in arrivo")).toBeVisible();
-  // Plus «I mostri creati da voi», hidden by the switch of lib/community.ts.
-  await expect(page.getByText("2 parti nascoste")).toBeVisible();
+  // Plus «I mostri creati da voi» while the switch of lib/community.ts is off.
+  await expect(page.getByText(hiddenPartsText(1))).toBeVisible();
 
   // Visitor, phone.
   const guest = await visitor(browser);

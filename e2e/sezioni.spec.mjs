@@ -1,3 +1,4 @@
+import { COMMUNITY_ON, hiddenPartsText } from "./community-switch.mjs";
 import { test, expect, devices } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
@@ -347,8 +348,8 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await pub.goto("/grimorio");
   await pub.evaluate(() => window.localStorage.setItem("grimorio.edizione", "2014"));
   await togglePart("incantesimi", "Edizione 2014", true);
-  // Plus «I mostri creati da voi», hidden by the switch of lib/community.ts.
-  await expect(page.getByText("2 parti nascoste")).toBeVisible();
+  // Plus «I mostri creati da voi» while the switch of lib/community.ts is off.
+  await expect(page.getByText(hiddenPartsText(1))).toBeVisible();
   await pub.goto("/grimorio");
   await expect(pill(pub)).toHaveCount(0);
   await expect(pub.locator('main a[href^="/spell/"]').first()).toBeAttached();
@@ -493,8 +494,9 @@ test("parts of the sections: every part in its page, editions, collections, clas
   // Everything visible again; the pages built meanwhile are built again for the next server (see the sections test).
   await page.goto("/admin/sezioni");
   await expect(page.getByText("10 visibili")).toBeVisible();
-  // Only «I mostri creati da voi» stays hidden: the switch of lib/community.ts.
-  await expect(page.getByText(/part[ei] nascost/)).toHaveText("1 parte nascosta");
+  // Nothing hidden, except «I mostri creati da voi» while the switch of lib/community.ts is off.
+  if (COMMUNITY_ON) await expect(page.getByText(/part[ei] nascost/)).toHaveCount(0);
+  else await expect(page.getByText(/part[ei] nascost/)).toHaveText(hiddenPartsText(0));
   for (const path of ["/", "/grimorio", "/spell/palla-di-fuoco", "/spell/palla-di-fuoco-2014", "/bestiario", "/mostro/alce", "/classi", "/classi/mago", "/compendio", "/compendio/condizioni",
     "/manuale/condizioni-accecato", "/equipaggiamento/armi", "/equipaggiamento/armi/tridente", "/equipaggiamento/avventura", "/avanzamento", "/preferiti", "/ricerca-indice.json"]) {
     expect((await pub.request.get(path)).status(), path).toBe(200);
@@ -543,8 +545,9 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
   // Everything visible again; the pages built meanwhile are built again for the next server.
   for (const key of sections) await toggle2014(key, false);
   await page.goto("/admin/sezioni");
-  // Only «I mostri creati da voi» stays hidden: the switch of lib/community.ts.
-  await expect(page.getByText(/part[ei] nascost/)).toHaveText("1 parte nascosta");
+  // Nothing hidden, except «I mostri creati da voi» while the switch of lib/community.ts is off.
+  if (COMMUNITY_ON) await expect(page.getByText(/part[ei] nascost/)).toHaveCount(0);
+  else await expect(page.getByText(/part[ei] nascost/)).toHaveText(hiddenPartsText(0));
   for (const path of ["/", "/grimorio", "/bestiario", "/classi", "/classi/mago", "/oggetti-magici", "/compendio/condizioni", "/equipaggiamento/armi", "/equipaggiamento/armature",
     "/equipaggiamento/avventura", "/equipaggiamento/strumenti", "/ricerca-indice.json"]) {
     expect((await page.request.get(path)).status(), path).toBe(200);

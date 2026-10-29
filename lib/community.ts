@@ -6,9 +6,9 @@
  * section (no card in the Bestiario, no category, no rows in the lists, the search and Preferiti; the section, the form
  * and the sheets answer 404; the proposals API answers 403). The administrator sees everything, with the «Nascosta» bar.
  * It acts as the part «bestiario:homebrew» hidden (lib/section-visibility.ts), so every place that already hides a
- * hidden part follows it. Turned on with a new deploy, by Daniele.
+ * hidden part follows it. Turned on with a new deploy, by Daniele: on since 29 October 2026 (PROMPT 15, «Beta»).
  */
-export const COMMUNITY_PUBLIC = false;
+export const COMMUNITY_PUBLIC = true;
 
 /**
  * The switch in use. The browser tests only (never on Vercel) can turn it on with GRIMORIO_COMMUNITY_TEST_PUBLIC=on

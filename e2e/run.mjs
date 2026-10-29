@@ -1,7 +1,7 @@
 // Browser tests against a production build backed by the in-memory test database.
 // Usage: npm run test:e2e   (set PW_CHROMIUM_PATH to reuse a preinstalled Chromium)
 import { spawn } from "node:child_process";
-import { rmSync } from "node:fs";
+import { readFileSync, rmSync } from "node:fs";
 import { startTestDatabase, TEST_DATABASE_URL } from "./test-db.mjs";
 
 export const E2E_ENV = {
@@ -34,9 +34,11 @@ console.log(`[e2e] Test database ready with ${database.spells} spells.`);
 export const COMMUNITY_SPECS = ["homebrew.spec.mjs", "creati-da-voi-pubblico.spec.mjs"];
 const args = process.argv.slice(2).filter(arg => arg !== "--skip-build");
 const files = args.filter(arg => arg.endsWith(".mjs"));
-const isCommunity = file => COMMUNITY_SPECS.some(name => file.endsWith(name));
+// Switched on in the code (lib/community.ts): one pass runs every spec, no second build.
+const communityInCode = /COMMUNITY_PUBLIC = true;/.test(readFileSync("lib/community.ts", "utf8"));
+const isCommunity = file => !communityInCode && COMMUNITY_SPECS.some(name => file.endsWith(name));
 const firstPass = !files.length || files.some(file => !isCommunity(file));
-const secondPass = !files.length || files.some(isCommunity);
+const secondPass = !communityInCode && (!files.length || files.some(isCommunity));
 const skipBuild = process.argv.includes("--skip-build");
 let code = 1;
 try {
