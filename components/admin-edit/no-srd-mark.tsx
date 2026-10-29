@@ -3,15 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { useAdminSession } from "@/components/admin-edit/admin-session";
-import type { ProvenanceIds } from "@/lib/provenance";
 
 type NoSrdKind = "incantesimi" | "mostri";
-type NoSrdData = Record<NoSrdKind, string[]> & { sintesi?: Record<NoSrdKind, string[]>; modificate?: Record<NoSrdKind, string[]> };
+type NoSrdData = Record<NoSrdKind, string[]>;
 
 /**
  * The NO SRD cards of a list, for the administrator only: like «Modifica», asked after the session check
  * (/api/admin/sessione) from /api/admin/no-srd, never part of the page, its offline copy or the catalog data.
- * Visitors never ask; after «Esci» the data are gone, and the asterisks and the «Provenienza» filter with them.
+ * Visitors never ask; after «Esci» the data are gone, and the asterisks with them.
  */
 function useNoSrdData(): NoSrdData | null {
   const admin = useAdminSession();
@@ -29,22 +28,10 @@ function useNoSrdData(): NoSrdData | null {
   return admin ? data : null;
 }
 
-export interface NoSrdView { ids: ReadonlySet<string>; provenance: ProvenanceIds }
-
-/** The NO SRD ids of a list (the «*») and the split for the «Provenienza» filter; null for visitors. */
-export function useNoSrd(kind: NoSrdKind): NoSrdView | null {
-  const data = useNoSrdData();
-  return useMemo(() => {
-    if (!data) return null;
-    const ids = new Set(data[kind]);
-    const sintesi = new Set(data.sintesi?.[kind] ?? []);
-    return { ids, provenance: { sintesi, aggiunte: new Set([...ids].filter(id => !sintesi.has(id))), modificate: new Set(data.modificate?.[kind] ?? []) } };
-  }, [data, kind]);
-}
-
-/** Only the ids (the «*» after the names). */
+/** The NO SRD ids of a list: the «*» after the names; null for visitors. */
 export function useNoSrdIds(kind: NoSrdKind): ReadonlySet<string> | null {
-  return useNoSrd(kind)?.ids ?? null;
+  const data = useNoSrdData();
+  return useMemo(() => (data ? new Set(data[kind]) : null), [data, kind]);
 }
 
 /** «*» after the name in the lists: small, bordeaux, on the line of the name (the row keeps its height). */
