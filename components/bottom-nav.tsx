@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { notePathChange } from "@/components/navigation-memory";
 import { visibleNavItems } from "@/components/nav-items";
 import { soonHref } from "@/lib/public-sections";
+import { bottomBarShift, editingElement } from "@/lib/viewport-anchor";
 
 const NONE: readonly string[] = [];
 /** Prepared while the phone is idle after the start: the two lists, the most opened sections. */
@@ -50,12 +51,43 @@ export function BottomNav({ hidden = NONE, admin: adminView = false, soon = NONE
     return () => window.clearTimeout(handle);
   }, [prepare, admin, items]);
 
+  // iPhone (PROMPT 23): the bar follows the bottom of what is visible when iOS leaves the visible area shifted from the
+  // one fixed elements are placed in (lib/viewport-anchor.ts); measured on every scroll and resize of the visible area.
+  const bar = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (admin || !viewport) return;
+    let frame = 0;
+    const place = () => {
+      frame = 0;
+      const shift = bottomBarShift({ layoutHeight: window.innerHeight, visualHeight: viewport.height, visualTop: viewport.offsetTop, editing: editingElement(document.activeElement) });
+      if (bar.current) bar.current.style.transform = shift ? `translate3d(0, ${shift}px, 0)` : "";
+    };
+    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(place); };
+    viewport.addEventListener("resize", schedule);
+    viewport.addEventListener("scroll", schedule);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("focusin", schedule);
+    window.addEventListener("focusout", schedule);
+    schedule();
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      viewport.removeEventListener("resize", schedule);
+      viewport.removeEventListener("scroll", schedule);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("focusin", schedule);
+      window.removeEventListener("focusout", schedule);
+    };
+  }, [admin]);
+
   // L'area riservata non fa parte della navigazione pubblica.
   if (admin) return null;
 
   return (
     <nav
+      ref={bar}
       aria-label="Navigazione principale"
+      data-bottom-nav=""
       className="fixed inset-x-0 bottom-0 z-50 mx-auto h-[calc(80px+env(safe-area-inset-bottom,0px))] w-full max-w-2xl border-t border-border bg-nav pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)] md:max-w-[620px] lg:hidden"
     >
       <ul className="flex h-[80px] items-stretch">
