@@ -65,6 +65,17 @@ assert.equal(types.parseDraft(draft({descrizione: '  Vive nella nebbia.\r\n\r\n\
 assert.equal(types.draftToMonster({...ok.draft, descrizione: 'Vive nella nebbia.\n\nCaccia di notte & all’alba.\nMai di giorno.'}, 'x').descrizione, 'Vive nella nebbia.<br><br>Caccia di notte &amp; all’alba.<br>Mai di giorno.');
 assert.equal(types.draftToMonster(ok.draft, 'x').descrizione, '', 'an older card: no description');
 
+// The typographic minus «−» of the SRD sheets (PROMPT 22), only when drawn: the draft keeps what was written.
+const low = {...ok.draft, destrezza: 6, intelligenza: 3, abilita: 'Furtività -1, Percezione -2'};
+const lowSheet = types.draftToMonster(low, 'x');
+assert.match(lowSheet.iniziativa, /^−2 \(8\)$/);
+assert.match(lowSheet.tiri_salvezza, /Int −4/);
+assert.doesNotMatch(lowSheet.tiri_salvezza + lowSheet.iniziativa + lowSheet.abilita, /-\d/);
+assert.equal(lowSheet.abilita, 'Furtività −1, Percezione −2');
+assert.match(lowSheet.sensi, /Percezione passiva 8/, 'the passive Perception still read from «-2»');
+assert.equal(low.abilita, 'Furtività -1, Percezione -2', 'the draft unchanged');
+assert.equal(types.typographicMinus('CA 12-14, Furtività -1 (x -2)'), 'CA 12-14, Furtività −1 (x −2)', 'only before a number, not inside ranges');
+
 // The sheet in the format of each edition, as the SRD sheets of that edition.
 const sheet2024 = types.draftToMonster(ok.draft, 'homebrew-drago-di-nebbia');
 assert.equal(sheet2024.sottotitolo_fonte, 'Drago Grande, caotico neutrale');

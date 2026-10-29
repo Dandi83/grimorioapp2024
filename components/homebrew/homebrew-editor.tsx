@@ -88,8 +88,10 @@ export type EditorStep = 1 | 2 | 3;
  * chosen edition, with the format hint and the challenge check. Used by /bestiario/proponi (one step at a time,
  * `step`, with the preview opened by the form) and by the admin area (everything, with its own preview button).
  */
-export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview: shownPreview }: {
+export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview: shownPreview, ours = false }: {
   value: HomebrewDraft; onChange: (draft: HomebrewDraft) => void; idPrefix?: string; step?: EditorStep; preview?: boolean;
+  /** A creature «Creato dal Grimorio» (made or edited in the reserved area, no author): its pill in the preview. */
+  ours?: boolean;
 }) {
   const [ownPreview, setPreview] = useState(false);
   const stepped = step !== undefined;
@@ -148,8 +150,8 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
       {preview ? (
         <article className="monster-sheet min-w-0 rounded-xl border border-primary/20 bg-background py-5" aria-label="Anteprima della scheda" data-homebrew-preview="">
           <MonsterSheetTitle monster={sheet} label={
-            <span className="flex flex-wrap items-center justify-end gap-1.5"><HomebrewPill />{value.edizione === "entrambe" ? <><BothEditionsPill /><ChosenEditionBadge /></> : <MonsterProvenanceBadge edition={format} variant="dark" />}</span>
-          } />
+            <span className="flex flex-wrap items-center justify-end gap-1.5"><HomebrewPill ours={ours} />{value.edizione === "entrambe" ? <><BothEditionsPill /><ChosenEditionBadge /></> : <MonsterProvenanceBadge edition={format} variant="dark" />}</span>
+          } labelBelow />
           <MonsterSheetBody monster={{ ...sheet, fonte_scheda: "Homebrew" }} legacy={value.edizione === "2014"} catalog={display.catalog} hidden={display.hidden} descriptionFirst />
         </article>
       ) : (

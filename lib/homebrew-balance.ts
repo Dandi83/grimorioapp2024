@@ -1,6 +1,6 @@
 import "server-only";
 import { draftToMonster, type HomebrewDraft } from "./homebrew-types";
-import { balanceEdition, evaluateMonster } from "./monster-balance";
+import { balanceEditions, evaluateMonster, overallLevel } from "./monster-balance";
 import type { Level } from "./monster-balance/compare";
 
 /**
@@ -9,6 +9,6 @@ import type { Level } from "./monster-balance/compare";
  */
 export function homebrewVerdict(draft: HomebrewDraft): Level | null {
   const monster = { ...draftToMonster(draft, "verifica"), homebrew_edizione: draft.edizione };
-  const result = evaluateMonster(monster, balanceEdition(monster, false));
-  return result.measures ? result.comparison.level : null;
+  // «2014 e 2024»: in line only when it is against both SRD (PROMPT 22).
+  return overallLevel(balanceEditions(monster, false).map(edition => evaluateMonster(monster, edition)));
 }

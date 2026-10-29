@@ -72,7 +72,7 @@ export async function monsterList(edition: AdminEdition): Promise<AdminListData>
     return {
       id: monster.id, name: monster.nome, sub: [typeCategory(monster.tipo) || monster.tipo, monster.taglia].filter(Boolean).join(" · "),
       lead: monster.grado_sfida || "?", group: challengeGroup(monster.grado_sfida, monster.gs_num),
-      source: modified || isHomebrew || isNoSrdSource(monster.fonte_scheda) ? "nosrd" : "srd", pill: modified ? undefined : pillOf(monster.fonte_scheda, isHomebrew),
+      source: isHomebrew ? "creati" : modified || isNoSrdSource(monster.fonte_scheda) ? "nosrd" : "srd", pill: modified ? undefined : pillOf(monster.fonte_scheda, isHomebrew),
       modified, reviewNames: namesOf.get(key), hidden: hidden.has(`/mostro/${monster.id}`),
       editHref: `/admin/mostri/${encodeURIComponent(monster.id)}?ritorno=%2Fadmin%2Fmostri`, publicHref: `/mostro/${monster.id}`,
       ...(savesOf.get(key) ? { saves: savesOf.get(key) } : {}),

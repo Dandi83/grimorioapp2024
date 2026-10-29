@@ -266,6 +266,25 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  for(const dir of ['app','components'])(function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const full=path.join(d,e.name);if(e.isDirectory())walk(full);else if(/\.tsx?$/.test(e.name)&&/^["']use client["']/.test(fs.readFileSync(full,'utf8')))clientFiles.push(full);}})(dir);
  for(const file of clientFiles){const code=fs.readFileSync(file,'utf8');assert.doesNotMatch(code,/monster-balance|monster-balance-srd/,file);}
  assert.doesNotMatch(fs.readFileSync('components/admin-edit/admin-monster-panel.tsx','utf8'),/Bilanciamento|BILANCIAMENTO/i,'the panel of the public page carries no text of the box');
+ // A creature «2014 e 2024» (PROMPT 22): two checks, one per edition, overall «in linea» only when both are.
+ assert.deepEqual(balance.balanceEditions({homebrew_edizione:'entrambe'},false),['2024','2014']);
+ assert.deepEqual(balance.balanceEditions({homebrew_edizione:'2014'},false),['2014']);
+ assert.deepEqual(balance.balanceEditions({},true),['2014']);
+ const both=['2024','2014'].map(edition=>balance.evaluateMonster({...sheet,id:'due-edizioni'},edition));
+ assert.equal(both[0].edition,'2024');assert.equal(both[1].edition,'2014');
+ const fake=(level)=>({measures:{},comparison:{level}});
+ assert.equal(balance.overallLevel([fake('in linea'),fake('in linea')]),'in linea');
+ assert.equal(balance.overallLevel([fake('in linea'),fake('da controllare')]),'da controllare');
+ assert.equal(balance.overallLevel([fake('fuori'),fake('da controllare')]),'fuori');
+ assert.equal(balance.overallLevel([fake('in linea'),{comparison:{level:'in linea'}}]),null,'one not simulable: none');
+ const twoHtml=balance.balanceBoxHtml(both);
+ assert.equal((twoHtml.match(/data-balance-box=/g)||[]).length,1,'one box');
+ assert.match(twoHtml,/data-balance-edition="2024"[\s\S]*Edizione 2024 \(SRD 5\.2\.1\)[\s\S]*data-balance-edition="2014"[\s\S]*Edizione 2014 \(SRD 5\.1\)/);
+ assert.equal((twoHtml.match(/data-balance-tactics=/g)||[]).length,2,'tactics for both editions');
+ assert.equal((twoHtml.match(/data-balance-stress=/g)||[]).length,2,'test situations for both editions');
+ assert.match(twoHtml,new RegExp(`data-balance-overall="${balance.LEVELS[balance.overallLevel(both)].slug}"`));
+ assert.equal(balance.balanceBoxHtml(both[0]),balance.balanceBoxHtml([both[0]]),'one edition: the same box as before');
+ assert.doesNotMatch(balance.balanceBoxHtml(both[0]),/data-balance-edition|data-balance-overall/);
  const page=fs.readFileSync('app/mostro/[id]/page.tsx','utf8');assert.doesNotMatch(page,/monster-balance|balanceBoxHtml/);assert.match(page,/\{balanceApplies\(monster\) && <AdminMonsterPanel id=\{monster\.id\} \/>\}/);
  for(const file of ['app/api/catalogo/bestiario/route.ts','lib/sw/service-worker.js','lib/search-index.ts'])assert.doesNotMatch(fs.readFileSync(file,'utf8'),/monster-balance|pannello-mostro/,file);
  assert.match(fs.readFileSync('scripts/check-client-bundle.mjs','utf8'),/BILANCIAMENTO/);

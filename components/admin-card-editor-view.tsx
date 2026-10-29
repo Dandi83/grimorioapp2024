@@ -44,7 +44,7 @@ export async function AdminCardEditorView({ kind, id, searchParams }: { kind: "i
       card = { kind, monster };
       wanted = usesLegacyMonsterRules(monster) ? "2014" : "2024";
     } else if (brew) {
-      card = { kind: "homebrew", id, nome: brew.scheda.nome, draft: brew.scheda };
+      card = { kind: "homebrew", id, nome: brew.scheda.nome, draft: brew.scheda, ours: !brew.autore };
       if (brew.edizione !== "entrambe") wanted = brew.edizione;
     } else notFound();
   }

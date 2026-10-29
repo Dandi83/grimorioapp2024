@@ -91,14 +91,18 @@ function Section({ title, html, context }: { title: string; html?: string; conte
 
 /** Title, edition label, 4 px rule and the italic type line. */
 /** byline: the author line of a homebrew creature («Proposta da …»), under the type line. */
-export function MonsterSheetTitle({ monster, label, before, byline }: { monster: Partial<Monster>; label?: ReactNode; before?: ReactNode; byline?: ReactNode }) {
+/**
+ * labelBelow: the pills of «I mostri creati da voi» (PROMPT 22) on their own row under the name, and the name never
+ * broken inside a word (only between words when longer than the line); the official sheets keep the label beside it.
+ */
+export function MonsterSheetTitle({ monster, label, before, byline, labelBelow = false }: { monster: Partial<Monster>; label?: ReactNode; before?: ReactNode; byline?: ReactNode; labelBelow?: boolean }) {
   const sottotitolo = monster.sottotitolo_fonte || [monster.taglia, monster.tipo, monster.allineamento].filter(Boolean).join(" · ");
   return (
     <header className="px-6">
       {before}
-      <div className="flex items-start justify-between gap-3 border-b-4 border-primary pb-2">
-        <h1 className="min-w-0 break-words font-serif text-[42px] font-bold leading-[1.05] text-foreground lg:text-[46px]">{monster.nome || "Nome del mostro"}</h1>
-        {label && <div className="max-w-[55%] shrink-0 pt-3">{label}</div>}
+      <div className={`flex items-start justify-between gap-3 ${labelBelow ? "" : "border-b-4 border-primary pb-2"}`}>
+        <h1 className={`min-w-0 font-serif text-[42px] font-bold leading-[1.05] text-foreground lg:text-[46px] ${labelBelow ? "[hyphens:none] [overflow-wrap:normal] [word-break:normal]" : "break-words"}`} data-sheet-name="">{monster.nome || "Nome del mostro"}</h1>
+        {label && !labelBelow && <div className="max-w-[55%] shrink-0 pt-3">{label}</div>}
         {/* Computer: GS and PE as a bordeaux pill at the top right. */}
         {monster.grado_sfida && (
           <span className="mt-3 hidden shrink-0 items-center rounded-full bg-primary px-3.5 py-1 font-serif text-[17px] font-bold text-primary-foreground lg:inline-flex">
@@ -106,6 +110,7 @@ export function MonsterSheetTitle({ monster, label, before, byline }: { monster:
           </span>
         )}
       </div>
+      {label && labelBelow && <div className="flex border-b-4 border-primary pb-2 pt-2 [&>*]:justify-start" data-sheet-labels="">{label}</div>}
       {sottotitolo && <p className="mt-2 font-serif text-[19px] italic text-muted">{sottotitolo}</p>}
       {byline && <p className="mt-1 text-[15px] text-muted">{byline}</p>}
       {/* Where the sheet comes from (a homebrew already says it next to the title). */}
@@ -124,13 +129,15 @@ export function MonsterSheetTitle({ monster, label, before, byline }: { monster:
  */
 export function MonsterSheetBody({ monster, legacy, hidden = [], catalog, descriptionFirst = false }: { monster: Partial<Monster>; legacy: boolean; hidden?: readonly string[]; catalog?: SpellReferenceCatalog; descriptionFirst?: boolean }) {
   const context: SheetContext = { legacy, hidden, catalog, source: monster.fonte_scheda };
+  // «I mostri creati da voi»: the typographic minus «−», as in the texts of the SRD sheets (PROMPT 22).
+  const modifier = (score: number) => (monster.fonte_scheda === "Homebrew" ? abilityMod(score).replace("-", "−") : abilityMod(score));
   const ca = splitBoxValue(monster.classe_armatura);
   const pf = splitBoxValue(monster.punti_ferita);
   // The official initiative keeps its passive value in brackets: "+17" and "(27)" below.
   const official = splitBoxValue(monster.iniziativa);
   const ini = monster.iniziativa
     ? { value: official.value, note: official.note && `(${official.note})` }
-    : legacy ? { value: abilityMod(monster.destrezza ?? 10), note: "dalla Destrezza" } : null;
+    : legacy ? { value: modifier(monster.destrezza ?? 10), note: "dalla Destrezza" } : null;
   const { tratti, azioni } = legacy ? placeLegacySpellcasting(monster.tratti || "", monster.azioni || "") : { tratti: monster.tratti, azioni: monster.azioni };
   const gs = monster.grado_sfida;
   const details = challengeDetails({ px: monster.px || "", bonus_competenza: monster.bonus_competenza, gs_num: monster.gs_num ?? -1 }, legacy);
@@ -162,7 +169,7 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog, descri
               <div key={key} className="flex min-w-0 flex-col items-center overflow-hidden rounded-[8px] border border-border bg-card pb-2" data-ability="">
                 <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-muted">{label}</span>
                 <span className="font-serif text-[24px] font-bold leading-7 text-foreground">{score}</span>
-                <span className="text-[13px] font-semibold text-muted">{abilityMod(score)}</span>
+                <span className="text-[13px] font-semibold text-muted">{modifier(score)}</span>
               </div>
             );
           })}
