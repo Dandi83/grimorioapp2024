@@ -110,3 +110,21 @@ test("switch on: a visitor sees the card, the category, the section, the form an
   await expect.poll(async () => (await (await request.get("/api/catalogo/bestiario")).json()).monsters.some(monster => monster.homebrew)).toBe(false);
   await adminContext.close();
 });
+
+test("switch on: in /admin/sezioni «I mostri creati da voi» has its usual state and working buttons", async ({ page }) => {
+  await login(page);
+  await page.goto("/admin/sezioni");
+  const bestiario = page.locator('[data-section-row="bestiario"]');
+  await bestiario.locator("[data-parts-summary]").click();
+  const row = page.locator('[data-part-row="bestiario:homebrew"]');
+  await expect(row).toContainText("Visibile");
+  await expect(row.locator("[data-switch-off]")).toHaveCount(0);
+  const group = row.getByRole("radiogroup", { name: "Stato di I mostri creati da voi" });
+  await expect(group).not.toHaveAttribute("aria-disabled", "true");
+  for (const label of ["Visibile", "In arrivo", "Nascosta"]) await expect(group.getByRole("radio", { name: label })).toBeEnabled();
+  // A real change, then back.
+  await group.getByRole("radio", { name: "Nascosta" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "I mostri creati da voi ora è nascosta" })).toBeVisible();
+  await group.getByRole("radio", { name: "Visibile" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "I mostri creati da voi ora è visibile" })).toBeVisible();
+});

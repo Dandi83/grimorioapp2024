@@ -5,7 +5,8 @@ import { draftMode } from "next/headers";
 
 import { requireAdmin } from "@/lib/admin-action-helpers";
 import { isPartId, isPublicSectionKey, sectionParts, type PublicSectionKey } from "@/lib/public-sections";
-import { SECTIONS_TAG, hiddenPartIds, isSectionState, setPartState, setSectionState, type SectionState } from "@/lib/section-visibility";
+import { communityPublic } from "@/lib/community";
+import { COMMUNITY_PART, SECTIONS_TAG, hiddenPartIds, isSectionState, setPartState, setSectionState, type SectionState } from "@/lib/section-visibility";
 
 type SectionSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
 type SectionStateResult = { ok: true; state: SectionState } | { ok: false; error: string };
@@ -30,6 +31,8 @@ export async function setSectionStateAction(key: string, state: string): Promise
 export async function setPartStateAction(id: string, state: string): Promise<SectionStateResult> {
   await requireAdmin();
   if (!isPartId(id) || !isSectionState(state)) return { ok: false, error: "Parte sconosciuta." };
+  // «I mostri creati da voi» while lib/community.ts is off: only a new deploy turns it on.
+  if (id === COMMUNITY_PART && !communityPublic()) return { ok: false, error: "Spenta dall’interruttore: si accende solo con un nuovo deploy." };
   const [section, part] = id.split(":");
   try {
     await setPartState(section as PublicSectionKey, part, state);

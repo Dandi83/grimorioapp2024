@@ -256,3 +256,31 @@ for (const [width, edition] of [[390, "2024"], [1280, "2014"], [390, "2014"], [1
     expect(saved.rows[0].scheda.sensi).toMatch(/^scurovisione 36 m, (vista cieca|percezione tellurica|vista pura) 18 m$/);
   });
 }
+
+test("/admin/sezioni: «I mostri creati da voi» shows its real state, «Spenta dall’interruttore», buttons locked, counted as hidden", async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page);
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/admin/sezioni");
+    const bestiario = page.locator('[data-section-row="bestiario"]');
+    // The summary of the Bestiario and the count at the top take it as hidden.
+    await expect(bestiario.locator("[data-parts-summary]")).toContainText("1 parte non visibile: I mostri creati da voi");
+    await expect(page.getByText(/^\d+ (parte nascosta|parti nascoste)$/)).toBeVisible();
+    await bestiario.locator("[data-parts-summary]").click();
+    const row = page.locator('[data-part-row="bestiario:homebrew"]');
+    await expect(row).toContainText("I mostri creati da voi");
+    await expect(row.locator("[data-switch-off]")).toHaveText("Spenta dall’interruttore");
+    await expect(row.locator("[data-switch-off]")).toHaveCSS("background-color", "rgb(228, 224, 219)");
+    await expect(row).toContainText("Si accende solo con un nuovo deploy: chiedi il prompt di accensione");
+    const group = row.getByRole("radiogroup", { name: "Stato di I mostri creati da voi" });
+    await expect(group).toHaveAttribute("aria-disabled", "true");
+    for (const label of ["Visibile", "In arrivo", "Nascosta"]) {
+      await expect(group.getByRole("radio", { name: label })).toBeDisabled();
+      await expect(group.getByRole("radio", { name: label })).toHaveAttribute("aria-disabled", "true");
+    }
+    // The other parts of the Bestiario keep working buttons.
+    await expect(page.locator('[data-part-row="bestiario:animali"]').getByRole("radio", { name: "Nascosta" })).toBeEnabled();
+    if (SHOTS) await page.screenshot({ path: `${SHOTS}/5-sezioni-${width}.png`, fullPage: width === 390 });
+  }
+});

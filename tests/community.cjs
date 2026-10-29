@@ -45,8 +45,18 @@ const community=require('../lib/community.ts');
  assert.deepEqual(f.readLanguages('Comune, Draconico, telepatia 36 m',L),{selected:['Comune','Draconico'],extra:'telepatia 36 m',understandsOnly:false});
  assert.equal(f.writeLanguages(f.readLanguages('Comune, Draconico, telepatia 36 m',L),L),'Comune, Draconico, telepatia 36 m');
  assert.deepEqual(f.readLanguages('capisce il Comune e il Draconico ma non lo parla',L14),{selected:['Comune','Draconico'],extra:'',understandsOnly:true},'the SRD form');
- assert.equal(f.writeLanguages({selected:['Draconico','Comune'],extra:'',understandsOnly:true},L),'capisce Comune, Draconico ma non può parlare');
- assert.deepEqual(f.readLanguages('capisce Comune, Draconico ma non può parlare',L).understandsOnly,true,'what the form writes reads back');
+ // «Capisce ma non può parlare»: written as the SRD sheets do (PROMPT 14), with the articles and lo/li.
+ assert.equal(f.writeLanguages({selected:['Comune'],extra:'',understandsOnly:true},L),'capisce il Comune ma non lo parla');
+ assert.equal(f.writeLanguages({selected:['Silvano','Comune'],extra:'',understandsOnly:true},L),'capisce il Comune e il Silvano ma non li parla');
+ assert.equal(f.writeLanguages({selected:['Comune','Elfico','Gnomesco'],extra:'telepatia 36 m',understandsOnly:true},L),"capisce il Comune, l'Elfico e lo Gnomesco ma non li parla, telepatia 36 m");
+ assert.deepEqual([f.withArticle('Abissale'),f.withArticle('Halfling'),f.withArticle('Gnomesco'),f.withArticle('Sottocomune'),f.withArticle('Draconico')],["l'Abissale","l'Halfling",'lo Gnomesco','il Sottocomune','il Draconico']);
+ for(const text of ['capisce il Comune ma non lo parla','capisce il Comune e il Silvano ma non li parla, telepatia 36 m',"capisce l'Abissale ma non lo parla"])
+  assert.equal(f.writeLanguages(f.readLanguages(text,L),L),text,`read and written back: ${text}`);
+ // Proposals saved with the text of the first version of the form still read well, and are written in the SRD form.
+ assert.deepEqual(f.readLanguages('capisce Comune, Draconico ma non può parlare',L),{selected:['Comune','Draconico'],extra:'',understandsOnly:true});
+ assert.equal(f.writeLanguages(f.readLanguages('capisce Comune, Draconico ma non può parlare',L),L),'capisce il Comune e il Draconico ma non li parla');
+ // A sentence with something that is not a language of the menu stays word for word.
+ assert.equal(f.writeLanguages(f.readLanguages("capisce il Comune più un'altra lingua ma non le parla",L),L),"capisce il Comune più un'altra lingua ma non le parla");
  assert.deepEqual(f.readLanguages('—',L),{selected:[],extra:'',understandsOnly:false});
  assert.equal(f.readLanguages("Comune più un'altra lingua",L).extra,"Comune più un'altra lingua");
 
