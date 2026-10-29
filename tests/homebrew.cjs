@@ -53,6 +53,10 @@ for (const [over, error] of [
 }
 assert.deepEqual(types.parseDraft(draft({edizione: '2014', azioni_bonus: [{nome: 'Scatto', testo: 'Si muove.'}]})).draft.azioni_bonus, [], 'the 2014 sheets have no bonus actions');
 
+// The description at the top of the sheet (PROMPT 20): paragraphs apart, escaped; none on the older cards.
+assert.equal(types.draftToMonster({...ok.draft, descrizione: 'Vive nella nebbia.\n\nCaccia di notte & all’alba.\nMai di giorno.'}, 'x').descrizione, 'Vive nella nebbia.<br><br>Caccia di notte &amp; all’alba.<br>Mai di giorno.');
+assert.equal(types.draftToMonster(ok.draft, 'x').descrizione, '', 'an older card: no description');
+
 // The sheet in the format of each edition, as the SRD sheets of that edition.
 const sheet2024 = types.draftToMonster(ok.draft, 'homebrew-drago-di-nebbia');
 assert.equal(sheet2024.sottotitolo_fonte, 'Drago Grande, caotico neutrale');

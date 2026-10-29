@@ -17,6 +17,7 @@ import { BothEditionsPill, HomebrewPill } from "@/components/homebrew-pill";
 import { CONDITIONS_BY_EDITION, DAMAGE_TYPES, LANGUAGES_BY_EDITION, passivePerception } from "@/lib/homebrew-fields";
 import { ChipField, LanguagesField, SensesField } from "./chip-fields";
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
+import { ChosenEditionBadge } from "./chosen-edition-badge";
 
 const inputClass = "w-full min-w-0 rounded-lg border border-border bg-card px-3 py-2.5 text-base text-foreground outline-none focus:border-primary";
 const labelClass = "mb-1.5 block text-sm font-semibold text-foreground";
@@ -147,9 +148,9 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
       {preview ? (
         <article className="monster-sheet min-w-0 rounded-xl border border-primary/20 bg-background py-5" aria-label="Anteprima della scheda" data-homebrew-preview="">
           <MonsterSheetTitle monster={sheet} label={
-            <span className="flex flex-wrap items-center justify-end gap-1.5"><HomebrewPill />{value.edizione === "entrambe" ? <BothEditionsPill /> : <MonsterProvenanceBadge edition={format} variant="dark" />}</span>
+            <span className="flex flex-wrap items-center justify-end gap-1.5"><HomebrewPill />{value.edizione === "entrambe" ? <><BothEditionsPill /><ChosenEditionBadge /></> : <MonsterProvenanceBadge edition={format} variant="dark" />}</span>
           } />
-          <MonsterSheetBody monster={{ ...sheet, fonte_scheda: "Homebrew" }} legacy={value.edizione === "2014"} catalog={display.catalog} hidden={display.hidden} />
+          <MonsterSheetBody monster={{ ...sheet, fonte_scheda: "Homebrew" }} legacy={value.edizione === "2014"} catalog={display.catalog} hidden={display.hidden} descriptionFirst />
         </article>
       ) : (
         <>
