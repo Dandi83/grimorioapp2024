@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, BookOpen, ChevronRight, Eye, History, LogOut, TriangleAlert } from "lucide-react";
+import { BarChart3, BookOpen, ChevronRight, Eye, History, LogOut, Scale, TriangleAlert } from "lucide-react";
 
 import { logoutAction } from "@/app/actions/admin";
 import { AdminGlobalSearch } from "@/components/admin-home/global-search";
@@ -75,6 +75,11 @@ export default async function AdminPage() {
           <span><span className="block font-serif text-[22px] font-bold leading-tight">Registro</span><span className="text-[14px] text-[#5E4E3E]">Ultime modifiche</span></span>
         </Link>
       </nav>
+      {/* Bilanciamento (PROMPT 11): a tool of the administrator, under the four sections. */}
+      <Link href="/admin/bilanciamento" prefetch={false} data-balance-link="" className="mt-3 flex min-h-[72px] items-center gap-3 rounded-[18px] border-[1.5px] border-dashed border-[#7A4E00] bg-[#FCEFD0] p-4 text-[#2B2118] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#E0A21A]">
+        <Scale size={26} strokeWidth={1.8} className="text-[#7A4E00]" aria-hidden="true" />
+        <span><span className="block font-serif text-[22px] font-bold leading-tight">Bilanciamento</span><span className="text-[14px] text-[#5E4E3E]">Mostri originali rispetto al loro GS</span></span>
+      </Link>
 
       <div className="mt-4 flex items-center justify-between border-t border-[#DDCFAE] pt-3 lg:hidden">
         <Link href="/" className="inline-flex min-h-11 items-center text-[14px] text-[#5E4E3E]">‹ Torna al sito</Link>
