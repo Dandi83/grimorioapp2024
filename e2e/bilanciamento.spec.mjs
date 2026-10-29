@@ -150,7 +150,8 @@ test("administrator: /admin/bilanciamento by verdict with its filter, and the ed
   await expect(section.locator("[data-balance-box]")).toBeVisible();
   await expect(section.locator("[data-balance-box]")).toContainText("Simulazione contro 4 PG di livello 2");
   // A change in the form, then «Ricalcola» again: a CR of 10 is compared with level 10.
-  await page.locator("#grado_sfida").selectOption("10");
+  // The editor can be in the page twice for a moment (as the section above): the visible field.
+  await page.locator("#grado_sfida").filter({ visible: true }).first().selectOption("10");
   await section.getByRole("button", { name: "Ricalcola" }).click();
   await expect(section.locator("[data-balance-box]")).toContainText("Simulazione contro 4 PG di livello 10");
   // Nothing was saved: the page of the sheet still shows CR 2.
