@@ -51,8 +51,8 @@ export function BottomNav({ hidden = NONE, admin: adminView = false, soon = NONE
     return () => window.clearTimeout(handle);
   }, [prepare, admin, items]);
 
-  // iPhone (PROMPT 23): the bar follows the bottom of what is visible when iOS leaves the visible area shifted from the
-  // one fixed elements are placed in (lib/viewport-anchor.ts); measured on every scroll and resize of the visible area.
+  // iPhone (PROMPT 23, 27): only when the visible area changes size (the keyboard closing), never on scroll: the bar goes
+  // down to the bottom edge if iOS leaves the visible area lower than the layout viewport (lib/viewport-anchor.ts).
   const bar = useRef<HTMLElement>(null);
   useEffect(() => {
     const viewport = window.visualViewport;
@@ -60,23 +60,17 @@ export function BottomNav({ hidden = NONE, admin: adminView = false, soon = NONE
     let frame = 0;
     const place = () => {
       frame = 0;
-      const shift = bottomBarShift({ layoutHeight: window.innerHeight, visualHeight: viewport.height, visualTop: viewport.offsetTop, editing: editingElement(document.activeElement) });
-      if (bar.current) bar.current.style.transform = shift ? `translate3d(0, ${shift}px, 0)` : "";
+      const shift = bottomBarShift({
+        layoutHeight: window.innerHeight, visualHeight: viewport.height, visualTop: viewport.offsetTop, editing: editingElement(document.activeElement),
+        scrollY: window.scrollY, maxScroll: document.documentElement.scrollHeight - window.innerHeight,
+      });
+      if (shift !== null && bar.current) bar.current.style.transform = shift ? `translate3d(0, ${shift}px, 0)` : "";
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(place); };
     viewport.addEventListener("resize", schedule);
-    viewport.addEventListener("scroll", schedule);
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("focusin", schedule);
-    window.addEventListener("focusout", schedule);
-    schedule();
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
       viewport.removeEventListener("resize", schedule);
-      viewport.removeEventListener("scroll", schedule);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("focusin", schedule);
-      window.removeEventListener("focusout", schedule);
     };
   }, [admin]);
 

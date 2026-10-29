@@ -43,12 +43,16 @@
     border-color: var(--color-border);
   }
 
+  /* No elastic bounce at the top or bottom of the page (PROMPT 27): the page stops like a native app, so the fixed
+     bottom bar never moves with it; no «pull to refresh». */
   html {
     background-color: var(--color-background);
     -webkit-text-size-adjust: 100%;
+    overscroll-behavior-y: none;
   }
 
   body {
+    overscroll-behavior-y: none;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
