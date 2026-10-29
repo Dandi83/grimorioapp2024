@@ -76,6 +76,23 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  const split=require('../lib/analytics-stats.ts').appSplit(apps.installedDevices,apps.installed);
  assert.equal(split.androidLabel,'Android e computer');
  assert.equal(split.android+split.iphone+split.altro,apps.installed,'the parts add up to the big number');
+ // «Adesso» (PROMPT 18): different people with an event in the last 5 minutes; test visits, the administrator's devices
+ // and old events left out. «No» sends nothing, so it never reaches the table.
+ const nowBefore=await analytics.readNow();
+ const [n1,n2,n3,n4,n5]=[randomUUID(),randomUUID(),randomUUID(),randomUUID(),randomUUID()];
+ for(const visitor of [n1,n1,n2])assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('page_view',{path:'/'})),visitor),true);
+ assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('page_view',{path:'/',test:true})),n3),true);
+ assert.equal(await analytics.readNow()-nowBefore,2,'two people, the test visit left out');
+ await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '6 minutes' WHERE visitor_id=$1",[n2]);
+ assert.equal(await analytics.readNow()-nowBefore,1,'6 minutes ago: no longer «adesso»');
+ await pg.query("UPDATE grimorio_analytics_events SET received_at=now()-interval '4 minutes' WHERE visitor_id=$1",[n2]);
+ assert.equal(await analytics.readNow()-nowBefore,2,'4 minutes ago: still «adesso»');
+ await analytics.excludeVisitor(n4);
+ await pg.query("INSERT INTO grimorio_analytics_events (id,visitor_id,session_id,view_id,event_name,path,source,is_test) VALUES ($1,$2,$3,$4,'page_view','/','direct',false)",[randomUUID(),n4,randomUUID(),randomUUID()]);
+ assert.equal(await analytics.readNow()-nowBefore,2,'an administrator device never counts, even with a row');
+ assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('page_view',{path:'/'})),n4),false);
+ assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_analytics_events WHERE visitor_id=$1',[n5])).rows[0].n,0,'«No»: nothing stored');
+ await pg.query('DELETE FROM grimorio_analytics_events WHERE visitor_id = ANY($1)',[[n1,n2,n3,n4]]);
  // The searched words and categories only: the row keeps no referrer, address or user agent.
  const columns=(await pg.query("SELECT column_name FROM information_schema.columns WHERE table_name='grimorio_analytics_events'")).rows.map(r=>r.column_name);
  assert.ok(!columns.some(name=>/referr|agent|ip|address|url/.test(name)),columns.join());
@@ -262,5 +279,24 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  const LoginForm=()=>null;
  const statistics=load('app/admin/statistiche/page.tsx',{'@/lib/spell-index':{getSpellIndex:async()=>{throw new Error('private data leaked')}},'@/lib/monster-index':{getMonsterListIndex:async()=>{throw new Error('private data leaked')}},'@/lib/admin-auth':{isAdmin:async()=>false},'@/components/admin-login':{AdminLogin:LoginForm},'@/lib/analytics':{readStatistics:async()=>{throw new Error('private data leaked')},VERCEL_ANALYTICS_URL:''},'@/app/actions/admin-statistics':{deleteMarkerAction(){},excludeDeviceAction(){}},'@/lib/analytics-exclusion':{deviceExcluded:async()=>false},'@/components/statistics/marker-form':{MarkerForm:()=>null},'@/components/statistics/period-select':{PeriodSelect:()=>null}});
  assert.equal((await statistics.default({searchParams:Promise.resolve({})})).type,LoginForm,'without login only the login form is shown');
+ // /api/admin/riepilogo (PROMPT 18): 401 without the session, private and never stored; the numbers only for the administrator.
+ {
+  let allowed=false,asked=0;
+  const summaryRoute=load('app/api/admin/riepilogo/route.ts',{'@/lib/admin-action-helpers':{requireAdmin:async()=>{if(!allowed)throw new Error('Non autorizzato');}},
+   '@/lib/admin-summary':{readAdminSummary:async()=>{asked++;return {adesso:2,persone:40,tornano:25,app:6};}},'@/lib/analytics':{readNow:async()=>{asked++;return 3;}}});
+  const {NextRequest}=require('next/server');
+  const get=query=>summaryRoute.GET(new NextRequest(`https://ilgrimorio.app/api/admin/riepilogo${query}`));
+  for(const query of ['','?adesso=1']){
+   const denied=await get(query);
+   assert.equal(denied.status,401);assert.equal(denied.headers.get('cache-control'),'private, no-store');
+   assert.ok(!/\d/.test(JSON.stringify(await denied.json())),'no number without the session');
+  }
+  assert.equal(asked,0,'nothing read for a visitor');
+  allowed=true;
+  const full=await get('');
+  assert.equal(full.headers.get('cache-control'),'private, no-store');
+  assert.deepEqual(await full.json(),{adesso:2,persone:40,tornano:25,app:6});
+  assert.deepEqual(await (await get('?adesso=1')).json(),{adesso:3},'every 30 seconds: «adesso» only');
+ }
  await pg.close();console.log('Analytics: counted by default with «No» excluding, signed IDs, admin exclusion, validation, unique counts, duplicate events, PostgreSQL aggregates, first party only and retention passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

@@ -6,6 +6,7 @@ import { HomeSearch } from "@/components/search/home-search";
 import { EditionPill } from "@/components/edition/edition-pill";
 import { FirstLaunch } from "@/components/edition/first-launch";
 import { HomeExtras } from "@/components/home/home-extras";
+import { AdminStrip } from "@/components/home/admin-strip";
 import { CupIcon } from "@/components/support/cup-icon";
 import { SupportLink } from "@/components/support/support-link";
 import { supportUrl } from "@/lib/support";
@@ -59,6 +60,8 @@ export default async function HomePage() {
           <Link href="/admin" prefetch={false}><Lock size={16} strokeWidth={2} aria-hidden="true" />Area riservata</Link>
         </nav>
       </header>
+      {/* The administrator only, drawn in the browser after the session check (PROMPT 18): nothing in this cached HTML. */}
+      <AdminStrip />
 
       <section className={styles.library} aria-labelledby="home-quote">
         <Image
