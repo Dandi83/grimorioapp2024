@@ -1,6 +1,6 @@
 import { test, expect, devices } from "@playwright/test";
 
-// PROMPT 23: the bottom bar stays at the bottom while a long list scrolls down and up, slowly and fast, in WebKit (the
+// PROMPT 23, 27: no elastic bounce (overscroll-behavior-y: none on html and body); the bottom bar stays at the bottom while a long list scrolls down and up, slowly and fast, in WebKit (the
 // engine of every browser on iPhone) at 390 × 844; the last row of the list stays readable above it; on a computer
 // there is no bar, as before. Not a real iPhone: Safari's toolbar, the app installed on the Home screen and the iOS
 // bug of the shifted visible area cannot be reproduced here (tests/viewport-anchor.cjs checks the computed move).
@@ -27,12 +27,20 @@ async function bar(page) {
   return box && { top: Math.round(box.y), bottom: Math.round(box.y + box.height) };
 }
 
-for (const edition of ["2024", "2014"]) {
+/** The app installed on the Home screen: «display-mode: standalone» and navigator.standalone, as iOS reports them. */
+function standalone() {
+  const query = window.matchMedia.bind(window);
+  window.matchMedia = media => (/display-mode:\s*standalone/.test(media) ? { ...query("(min-width: 0px)"), media, matches: true } : query(media));
+  Object.defineProperty(navigator, "standalone", { get: () => true });
+}
+
+for (const mode of ["Safari", "app installata"]) for (const edition of ["2024", "2014"]) {
   for (const path of ["/bestiario", "/grimorio"]) {
-    test(`${path} (${edition}), iPhone 390 × 844 in WebKit: the bar stays put while scrolling; the last row above it`, async ({ browser }) => {
+    test(`${path} (${edition}, ${mode}), iPhone 390 × 844 in WebKit: no bounce, the bar stays put while scrolling and past the top; the last row above it`, async ({ browser }) => {
       test.setTimeout(120_000);
       const context = await browser.newContext({ ...IPHONE, baseURL: base() });
       await context.addInitScript(value => { try { localStorage.setItem("grimorio.edizione", value); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } }, edition);
+      if (mode === "app installata") await context.addInitScript(standalone);
       await plainHttp(context);
       const page = await context.newPage();
       await page.goto(path);
@@ -42,6 +50,14 @@ for (const edition of ["2024", "2014"]) {
       expect(start.bottom).toBe(844);
       const seen = [start];
       const check = async () => seen.push(await bar(page));
+      if (mode === "app installata") expect(await page.evaluate(() => window.matchMedia("(display-mode: standalone)").matches)).toBe(true);
+      // No elastic bounce: the page stops at its edges.
+      expect(await page.evaluate(() => [getComputedStyle(document.documentElement).overscrollBehaviorY, getComputedStyle(document.body).overscrollBehaviorY])).toEqual(["none", "none"]);
+      // Pulled past the top: the page stays at 0, the bar where it was; the scroll events do not move it.
+      await page.evaluate(() => { window.scrollTo(0, -300); window.scrollBy(0, -400); window.visualViewport?.dispatchEvent(new Event("scroll")); window.dispatchEvent(new Event("scroll")); });
+      await page.waitForTimeout(100);
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
+      await check();
 
       // The whole list, as after «Mostra altri» pressed until the end (322 creatures in the Bestiario of the site).
       const more = page.getByRole("button", { name: /^Mostra altri/ });
@@ -81,6 +97,11 @@ for (const edition of ["2024", "2014"]) {
       }));
       expect(frames.length).toBeGreaterThan(10);
       for (const [top, bottom] of frames) seen.push({ top, bottom });
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await check();
+      // Past the bottom too, then back to the top.
+      await page.evaluate(() => { window.scrollTo(0, document.documentElement.scrollHeight + 500); window.scrollBy(0, 800); });
+      await check();
       await page.evaluate(() => window.scrollTo(0, 0));
       await check();
       for (const position of seen) expect(position).toEqual(start);
