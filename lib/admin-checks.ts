@@ -24,7 +24,7 @@ const many = (count: number, one: string, more: string) => `${count} ${count ===
 export const ADMIN_CHECKS: readonly AdminCheck[] = [
   { key: "diritti", count: countOpenRightsRequests, label: n => `Gestisci ${many(n, "richiesta", "richieste")} per diritti d’autore o marchi`, href: "/admin/notifiche?tipo=segnalazioni", urgent: true },
   { key: "segnalazioni", count: countNewFeedback, label: n => `Leggi ${many(n, "segnalazione nuova", "segnalazioni nuove")}`, href: "/admin/notifiche?tipo=segnalazioni" },
-  { key: "proposte", count: countProposalsToReview, label: n => `Valuta ${many(n, "proposta homebrew", "proposte homebrew")}`, href: "/admin/notifiche?tipo=proposte" },
+  { key: "proposte", count: countProposalsToReview, label: n => `Valuta ${many(n, "proposta di mostro", "proposte di mostri")}`, href: "/admin/notifiche?tipo=proposte" },
   { key: "srd-modificate", count: () => getSrdModifiedCards().then(cards => cards.length), label: n => `Controlla ${many(n, "scheda SRD modificata", "schede SRD modificate")}`, href: "/admin/srd-modificate" },
   { key: "nomi-da-rivedere", count: () => getReviewNameCards().then(cards => cards.length), label: n => `Rivedi ${many(n, "nome a rischio", "nomi a rischio")}`, href: "/admin/nomi-da-rivedere" },
 ];

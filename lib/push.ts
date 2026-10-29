@@ -17,7 +17,7 @@ import { pool } from "./db";
 
 export const NOTIFICATION_TYPES = [
   { key: "segnalazioni", title: "Segnalazioni", hint: "Una notifica per ogni nuova segnalazione da /segnala.", default: true },
-  { key: "proposte", title: "Nuova proposta homebrew", hint: "Una notifica per ogni creatura proposta da /bestiario/proponi.", default: true },
+  { key: "proposte", title: "Nuova proposta di mostro", hint: "Una notifica per ogni creatura proposta da /bestiario/proponi.", default: true },
 ] as const;
 
 type NotificationType = (typeof NOTIFICATION_TYPES)[number]["key"];
@@ -171,7 +171,7 @@ export function feedbackPayload(report: { id: string; tipo: string; messaggio: s
 export function proposalPayload(proposal: { id: string; nickname: string; scheda: { nome: string; grado_sfida: string; edizione: string } }, badge?: number | null): PushPayload {
   const edition = proposal.scheda.edizione === "entrambe" ? "2014 e 2024" : proposal.scheda.edizione;
   return {
-    title: "Nuova proposta homebrew",
+    title: "Nuova proposta di mostro",
     body: `${proposal.scheda.nome} · GS ${proposal.scheda.grado_sfida} · ${edition}\ndi ${proposal.nickname}`,
     url: "/admin/proposte",
     tag: `proposta-${proposal.id}`,

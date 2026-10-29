@@ -112,8 +112,8 @@ test("Provenienza: visitors never see it; the administrator filters SRD / NO SRD
   await page.getByRole("searchbox", { name: "Cerca in Incantesimi" }).fill("");
   await page.goto("/admin/edizione?valore=2024&poi=%2Fadmin%2Fmostri");
   const base2024Monsters = await adminNoSrd(page);
-  // In the reserved area the published homebrew creatures are NO SRD too; the site lists them under «Homebrew».
-  const homebrew2024 = await page.locator('main ul li[data-card-row]:has([data-row-pill="Homebrew"])').count();
+  // In the reserved area the published homebrew creatures are NO SRD too; the site lists them under «Creati da voi».
+  const homebrew2024 = await page.locator('main ul li[data-card-row]:has([data-row-pill="Creati da voi"])').count();
   await page.locator("[data-create-button]").click();
   await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Scheda", exact: true }).click();
   await page.getByRole("dialog").locator("#nome").fill(CREATURE);

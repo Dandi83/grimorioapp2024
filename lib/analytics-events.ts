@@ -93,7 +93,7 @@ const SEGMENT = "[a-z0-9][a-z0-9-]{0,119}";
  * /avanzamento and /termini were refused with 400 until 28 October 2026).
  */
 export const ANALYTICS_PATH = new RegExp(
-  `^/(?:$|grimorio$|bestiario(?:/proponi)?$|preferiti$|fonti$|privacy$|info$|termini$|sostieni$|installa$|segnala$|avanzamento$|dadi$|classi(?:/${SEGMENT})?$|in-arrivo/${SEGMENT}$|compendio(?:/${SEGMENT})?$|regole/${SEGMENT}$|oggi/${SEGMENT}$|oggetti-magici(?:/${SEGMENT})?$|equipaggiamento(?:/${SEGMENT}(?:/${SEGMENT})?)?$|manuale(?:/[^/?#]+)?$|spell/[^/?#]+$|mostro/[^/?#]+$)`,
+  `^/(?:$|grimorio$|bestiario(?:/proponi|/creati-da-voi)?$|preferiti$|fonti$|privacy$|info$|termini$|sostieni$|installa$|segnala$|avanzamento$|dadi$|classi(?:/${SEGMENT})?$|in-arrivo/${SEGMENT}$|compendio(?:/${SEGMENT})?$|regole/${SEGMENT}$|oggi/${SEGMENT}$|oggetti-magici(?:/${SEGMENT})?$|equipaggiamento(?:/${SEGMENT}(?:/${SEGMENT})?)?$|manuale(?:/[^/?#]+)?$|spell/[^/?#]+$|mostro/[^/?#]+$)`,
 );
 export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (!raw || typeof raw !== "object") return;

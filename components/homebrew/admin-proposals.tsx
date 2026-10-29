@@ -12,8 +12,11 @@ import { EMPTY_DRAFT, parseDraft, type HomebrewDraft } from "@/lib/homebrew-type
 import { HomebrewEditor } from "./homebrew-editor";
 import { useEditorFrame } from "../admin-editor-frame";
 
-/** «Sezione Homebrew · Visibile al pubblico»: the same switch as the collection in /admin/sezioni. */
-export function HomebrewSectionEye({ hidden: initial }: { hidden: boolean }) {
+/**
+ * «I mostri creati da voi · Visibile al pubblico»: the same switch as the collection in /admin/sezioni. switchedOff: the
+ * switch of lib/community.ts keeps it hidden from the visitors whatever this eye says (on with a new deploy).
+ */
+export function HomebrewSectionEye({ hidden: initial, switchedOff = false }: { hidden: boolean; switchedOff?: boolean }) {
   const [hidden, setHidden] = useState(initial);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
@@ -25,12 +28,14 @@ export function HomebrewSectionEye({ hidden: initial }: { hidden: boolean }) {
   return (
     <div className="flex items-center gap-3 rounded-[14px] border-[1.5px] border-border bg-card px-3.5 py-2.5" data-homebrew-section="">
       <div className="min-w-0 flex-1">
-        <p className="font-serif text-xl font-bold text-primary">Sezione Homebrew</p>
-        <p className="text-[13px] text-muted">{hidden ? "Nascosta al pubblico: linguetta, schede, modulo e ricerca. La vedi solo tu." : "Visibile al pubblico"}</p>
+        <p className="font-serif text-xl font-bold text-primary">I mostri creati da voi</p>
+        <p className="text-[13px] text-muted">{switchedOff
+          ? "Spenta dall’interruttore: i visitatori non vedono card, sezione, modulo, schede e ricerca. La vedi solo tu, con «Nascosta»; si accende con una nuova pubblicazione del sito."
+          : hidden ? "Nascosta al pubblico: card, sezione, schede, modulo e ricerca. La vedi solo tu." : "Visibile al pubblico"}</p>
         {error && <p role="alert" className="text-[13px] font-semibold text-primary">{error}</p>}
       </div>
       <button type="button" onClick={toggle} disabled={pending} aria-pressed={hidden}
-        aria-label={hidden ? "Mostra la sezione Homebrew al pubblico" : "Nascondi la sezione Homebrew al pubblico"}
+        aria-label={hidden ? "Mostra «I mostri creati da voi» al pubblico" : "Nascondi «I mostri creati da voi» al pubblico"}
         className={`grid size-11 shrink-0 place-items-center rounded-md ${hidden ? "text-primary" : "text-muted"}`}>
         {hidden ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
       </button>
@@ -198,9 +203,9 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="flex min-h-11 items-center justify-center gap-2 rounded-lg border-[1.5px] border-[#E0A21A] bg-[#F6E3B0] px-4 py-2.5 font-semibold text-[#5C3F00]">
-        + Nuova homebrew
+        + Nuovo «Creato dal Grimorio»
       </button>
-      {open && <HomebrewEditorDialog title="Nuova homebrew" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={() => setOpen(false)}
+      {open && <HomebrewEditorDialog title="Nuovo «Creato dal Grimorio»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={() => setOpen(false)}
         onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />}
     </>
   );
@@ -209,7 +214,7 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
 /** «+» of /admin/mostri, «Homebrew»: the guided editor of a new homebrew creature, already open. */
 export function NewHomebrewDialog({ edition, onClose }: { edition: "2014" | "2024"; onClose: () => void }) {
   const router = useRouter();
-  return <HomebrewEditorDialog title="Nuova homebrew" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
+  return <HomebrewEditorDialog title="Nuovo «Creato dal Grimorio»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
     onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />;
 }
 

@@ -4,6 +4,7 @@ import { unstable_cache } from "next/cache";
 import { pool } from "./db";
 import { PUBLIC_SECTIONS, isPartId, type PublicSectionKey } from "./public-sections";
 import { publicSpellId } from "./spell-public-id";
+import { communityPublic } from "./community";
 
 /**
  * Which public sections are hidden (/admin/sezioni). One row per section that was ever switched;
@@ -35,7 +36,7 @@ interface CardLogRow { id: string; tipo: CardKind; scheda: string; nome: string;
  * Hidden sections, parts ("<section>:<part>") and cards (their addresses: "/spell/<id>", "/mostro/<id>", "/sottoclassi/<id>");
  * soon: the sections and parts among them that are «In arrivo».
  */
-interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards: string[]; soon: string[] }
+export interface VisibilityState { sections: PublicSectionKey[]; parts: string[]; cards: string[]; soon: string[] }
 
 /** The address of a card, which is also how a hidden card is named in the lists of hidden things. */
 // An added subclass has no page of its own (it is shown in the sheet of its class): "/sottoclassi/<id>" only names it.
@@ -138,12 +139,22 @@ const cachedState = unstable_cache(readState, ["section-visibility-state"], { ta
  * visible (and a warning is logged): a switch never makes the site fail.
  */
 export async function visibilityState(): Promise<VisibilityState> {
+  let state: VisibilityState;
   try {
-    return await cachedState();
+    state = await cachedState();
   } catch {
     console.warn("[sezioni] Database non leggibile: tutte le sezioni restano visibili.");
-    return { sections: [], parts: [], cards: [], soon: [] };
+    state = { sections: [], parts: [], cards: [], soon: [] };
   }
+  return withCommunitySwitch(state);
+}
+
+/** «I mostri creati da voi» while lib/community.ts is off: the part «bestiario:homebrew» hidden, whatever its switch says. */
+export const COMMUNITY_PART = "bestiario:homebrew";
+export function withCommunitySwitch(state: VisibilityState, open: boolean = communityPublic()): VisibilityState {
+  if (open) return state;
+  // Hidden outright, never «In arrivo»: the visitors get no entry to it either.
+  return { ...state, parts: [...new Set([...state.parts, COMMUNITY_PART])].sort(), soon: state.soon.filter(id => id !== COMMUNITY_PART) };
 }
 
 /** The hidden sections only (the 404 page and the search index use the effective list, see section-view). */

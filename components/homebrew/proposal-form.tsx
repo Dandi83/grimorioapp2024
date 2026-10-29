@@ -2,16 +2,30 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Eye, PenLine, Pencil } from "lucide-react";
 
 import { MIN_FILL_MS } from "@/lib/feedback-input";
 import { EMPTY_DRAFT, HOMEBREW_LICENSE, HOMEBREW_LICENSE_URL, LIMITS, parseProposal, type HomebrewDraft } from "@/lib/homebrew-types";
-import { HomebrewEditor } from "./homebrew-editor";
+import { HomebrewEditor, type EditorStep } from "./homebrew-editor";
 import { FormUnavailable } from "@/components/feedback/form-unavailable";
 
 const OFFLINE = "Invio non riuscito: sei offline o la connessione non risponde. La scheda è ancora qui: riprova quando torni online.";
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const inputClass = "w-full min-w-0 rounded-lg border border-border bg-card px-3 py-2.5 text-base text-foreground outline-none focus:border-primary";
+
+/** The four steps of «Proponi un mostro» (PROMPT 13). */
+export const STEPS = ["Identità", "Difese e sensi", "Azioni", "Invio"] as const;
+type Step = 1 | 2 | 3 | 4;
+/** The draft kept on this device until it is sent (never the email): name, sheet, choices and step. */
+export const DRAFT_KEY = "grimorio.proposta-bozza";
+type SavedDraft = { draft: HomebrewDraft; nickname: string; originale: boolean; autorizza: boolean; step: Step };
+
+function readSaved(): SavedDraft | null {
+  try {
+    const saved = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null") as SavedDraft | null;
+    return saved && typeof saved === "object" && saved.draft ? { ...saved, draft: { ...EMPTY_DRAFT, ...saved.draft } } : null;
+  } catch { return null; }
+}
 
 /**
  * «Proponi una creatura»: no account. The same protections as «Segnala» (signed time stamp, invisible
@@ -19,6 +33,9 @@ const inputClass = "w-full min-w-0 rounded-lg border border-border bg-card px-3 
  */
 export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }) {
   const [draft, setDraft] = useState<HomebrewDraft>(EMPTY_DRAFT);
+  const [step, setStep] = useState<Step>(1);
+  const [preview, setPreview] = useState(false);
+  const [restored, setRestored] = useState(false);
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [originale, setOriginale] = useState(false);
@@ -44,8 +61,37 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
     fetchToken().catch(() => undefined);
   }, []);
 
+  // The draft saved on this device: back after a reload or another visit, until it is sent.
+  useEffect(() => {
+    const saved = readSaved();
+    /* eslint-disable react-hooks/set-state-in-effect -- read once from the device after the first render */
+    if (saved) {
+      setDraft(saved.draft); setNickname(saved.nickname || ""); setOriginale(!!saved.originale); setAutorizza(!!saved.autorizza);
+      setStep([1, 2, 3, 4].includes(saved.step) ? saved.step : 1);
+    }
+    setRestored(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
+  useEffect(() => {
+    if (!restored || sent) return;
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ draft, nickname, originale, autorizza, step } satisfies SavedDraft)); } catch {}
+  }, [restored, sent, draft, nickname, originale, autorizza, step]);
+
+  function go(next: Step) {
+    setError("");
+    setPreview(false);
+    setStep(next);
+    window.scrollTo(0, 0);
+  }
+  function forward() {
+    if (step === 1 && !draft.nome.trim()) { setError("Scrivi il nome della creatura."); return; }
+    go((step + 1) as Step);
+  }
+
   useEffect(() => {
     if (!turnstileSiteKey) return;
+    // The widget lives in the last step: drawn again each time the step opens.
+    if (step !== 4) { turnstile.current = { token: "" }; return; }
     const render = () => {
       if (!window.turnstile || !turnstileBox.current || turnstile.current.id) return;
       turnstile.current.id = window.turnstile.render(turnstileBox.current, {
@@ -62,7 +108,7 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
       script.onload = render;
       document.head.appendChild(script);
     }
-  }, [turnstileSiteKey]);
+  }, [turnstileSiteKey, step]);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -92,6 +138,7 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
         result = (await response.json().catch(() => ({}))) as typeof result;
       }
       if (response.ok && result.ok) {
+        try { localStorage.removeItem(DRAFT_KEY); } catch {}
         setSent(true);
         window.scrollTo(0, 0);
       } else if (response.status === 503) {
@@ -114,15 +161,52 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3.5 px-4 text-center" role="status">
         <Check size={42} strokeWidth={2.4} className="text-primary" aria-hidden="true" />
         <p className="font-serif text-2xl font-bold">Grazie! L’amministratore la guarderà presto.</p>
-        <p className="text-[15px] text-muted">Se viene approvata, comparirà nella raccolta Homebrew del Bestiario.</p>
+        <p className="text-[15px] text-muted">Se viene approvata, comparirà tra «I mostri creati da voi», con il tuo nome.</p>
         <Link href="/bestiario" className="mt-2 inline-flex min-h-11 items-center rounded-[8px] bg-primary px-5 text-[15px] font-bold text-primary-foreground">Torna al Bestiario</Link>
       </div>
     );
   }
 
+  const summary: [string, string][] = [
+    ["Nome", draft.nome || "—"], ["Edizione", draft.edizione === "entrambe" ? "2014 e 2024" : draft.edizione],
+    ["Taglia e tipo", `${draft.taglia} · ${draft.tipo}`], ["Grado di sfida", draft.grado_sfida],
+    ["CA e PF", `${Number.isFinite(draft.ca) ? draft.ca : "—"} · ${Number.isFinite(draft.pf) ? draft.pf : "—"}`],
+    ["Azioni", String(draft.azioni.filter(entry => entry.nome.trim() || entry.testo.trim()).length)],
+  ];
   return (
-    <form onSubmit={submit} noValidate className="space-y-4">
-      <HomebrewEditor value={draft} onChange={setDraft} />
+    <form onSubmit={submit} noValidate className="space-y-4" data-proposal-step={step}>
+      {/* Four segments: the steps done and the current one in bordeaux. */}
+      <div>
+        <ol className="grid grid-cols-4 gap-1.5" aria-label={`Passo ${step} di 4: ${STEPS[step - 1]}`} data-progress="">
+          {STEPS.map((label, index) => (
+            <li key={label} className={`h-1.5 rounded-full ${index < step ? "bg-[#7A1F2B]" : "bg-[#DDCFAE]"}`} data-progress-done={index < step ? "" : undefined}><span className="sr-only">{label}</span></li>
+          ))}
+        </ol>
+        <div className="mt-2 flex min-h-11 items-center justify-between gap-2">
+          {step > 1 ? (
+            <button type="button" onClick={() => go((step - 1) as Step)} className="-ml-2 flex min-h-11 items-center gap-1 px-2 text-[15px] font-bold text-primary" data-step-back="">
+              <ChevronLeft size={18} aria-hidden="true" />{STEPS[step - 2]}
+            </button>
+          ) : <span />}
+          <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">Passo {step} di 4 · {STEPS[step - 1]}</p>
+        </div>
+      </div>
+
+      {step < 4 && <HomebrewEditor value={draft} onChange={setDraft} step={step as EditorStep} preview={preview} />}
+      {step === 4 && preview && <HomebrewEditor value={draft} onChange={setDraft} step={3} preview />}
+
+      {step === 4 && !preview && <>
+      <section className="rounded-[14px] border-[1.5px] border-border bg-card p-4" data-proposal-summary="">
+        <h2 className="font-serif text-xl font-bold text-primary">Riepilogo</h2>
+        <dl className="mt-2 divide-y divide-border text-[15px]">
+          {summary.map(([label, value]) => (
+            <div key={label} className="flex justify-between gap-3 py-2"><dt className="text-muted">{label}</dt><dd className="text-right font-semibold">{value}</dd></div>
+          ))}
+        </dl>
+        <button type="button" onClick={() => go(1)} className="mt-2 flex min-h-11 items-center gap-2 text-[15px] font-semibold text-primary">
+          <Pencil size={16} aria-hidden="true" />Modifica la scheda
+        </button>
+      </section>
       <section className="rounded-[14px] border-[1.5px] border-border bg-card p-4">
         <h2 className="font-serif text-xl font-bold text-primary">Chi la propone</h2>
         <div className="mt-3 space-y-3">
@@ -156,11 +240,27 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
         <label>Sito web <input ref={honeypot} type="text" name="sito" tabIndex={-1} autoComplete="off" /></label>
       </div>
       {turnstileSiteKey && <div ref={turnstileBox} />}
+      <p className="text-center text-[13px] text-muted">Niente viene pubblicato subito: controlliamo ogni proposta prima di pubblicarla.</p>
+      </>}
+
       {error && <p role="alert" className="rounded-[10px] border border-primary/40 bg-card px-4 py-3 text-[15px] font-semibold text-primary">{error}</p>}
-      <button type="submit" disabled={sending} className="min-h-12 w-full rounded-[8px] bg-primary px-4 text-base font-bold text-primary-foreground disabled:opacity-60">
-        {sending ? "Invio…" : "Invia la proposta"}
-      </button>
-      <p className="text-center text-[13px] text-muted">Niente viene pubblicato subito: l’amministratore guarda ogni proposta.</p>
+
+      {/* Fixed at the bottom, above the navigation bar: the preview of the sheet and the next step (or the sending). */}
+      <div className="sticky bottom-[calc(80px+env(safe-area-inset-bottom,0px))] z-30 -mx-4 grid grid-cols-[auto_minmax(0,1fr)] gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur lg:bottom-0" data-proposal-bar="">
+        <button type="button" onClick={() => { setPreview(open => !open); window.scrollTo(0, 0); }} aria-pressed={preview} data-proposal-preview=""
+          className="flex min-h-12 items-center gap-2 rounded-[8px] border border-border bg-card px-4 text-[15px] font-semibold">
+          {preview ? <Pencil size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}{preview ? "Modulo" : "Anteprima"}
+        </button>
+        {step < 4 ? (
+          <button type="button" onClick={forward} data-proposal-next="" className="flex min-h-12 min-w-0 items-center justify-center gap-1 rounded-[8px] bg-primary px-4 text-base font-bold text-primary-foreground">
+            <span className="truncate">Avanti: {STEPS[step as 1 | 2 | 3]}</span><ChevronRight size={18} aria-hidden="true" className="shrink-0" />
+          </button>
+        ) : (
+          <button type="submit" disabled={sending} className="flex min-h-12 items-center justify-center gap-2 rounded-[8px] bg-primary px-4 text-base font-bold text-primary-foreground disabled:opacity-60">
+            <PenLine size={17} aria-hidden="true" />{sending ? "Invio…" : "Invia la proposta"}
+          </button>
+        )}
+      </div>
     </form>
   );
 }

@@ -18,7 +18,7 @@ export interface AdminRow {
   /** SRD: transcribed from the SRD and unchanged; NO SRD: original summaries, cards added here, homebrew, SRD cards modified. */
   source: "srd" | "nosrd";
   /** The pill of a NO SRD card. */
-  pill?: "Sintesi" | "Aggiunta da te" | "Homebrew";
+  pill?: "Sintesi" | "Aggiunta da te" | "Creati da voi";
   /** «SRD modificata»: the fields that no longer match the SRD, for «Ripristina testo SRD». */
   modified?: { label: string; diff: DiffPart[] }[];
   /** «Nome da rivedere»: the names of lib/data/nomi-da-rivedere.json found in the card. */

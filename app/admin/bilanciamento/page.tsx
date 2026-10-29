@@ -35,7 +35,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
   const made = monsters.filter(monster => !monster.homebrew_edizione && balanceApplies(monster));
   const all = [
     ...made.map(monster => ({ monster, kind: "Creata qui", edition: balanceEdition(monster, usesLegacyMonsterRules(monster)) })),
-    ...homebrew.map(row => { const monster = homebrewMonster(row); return { monster, kind: "Homebrew", edition: balanceEdition(monster, false) }; }),
+    ...homebrew.map(row => { const monster = homebrewMonster(row); return { monster, kind: "Creati da voi", edition: balanceEdition(monster, false) }; }),
   ].map(row => {
     const result = evaluateMonster(row.monster, row.edition, LIST_FIGHTS);
     const level: Level | "non simulabile" = result.metrics ? result.comparison.level : "non simulabile";
@@ -48,7 +48,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
       <Link href="/admin" className="inline-flex min-h-11 items-center text-[15px] font-bold text-[#7A1F2B]">‹ Area riservata</Link>
       <h1 className="font-serif text-[34px] font-bold leading-tight text-[#7A1F2B]">Bilanciamento</h1>
       <p className="mt-1 text-[15px] leading-6 text-[#5E4E3E]">
-        Homebrew e schede create nell’area riservata, confrontate con i mostri SRD dello stesso GS e della stessa edizione (fascia dal 10° al 90° percentile). Prima i «Fuori dal GS», poi «Da controllare», poi «In linea».
+        «I mostri creati da voi» e schede create nell’area riservata, confrontate con i mostri SRD dello stesso GS e della stessa edizione (fascia dal 10° al 90° percentile). Prima i «Fuori dal GS», poi «Da controllare», poi «In linea».
       </p>
       <nav aria-label="Filtra per giudizio" className="mt-3 flex flex-wrap gap-2" data-balance-filters="">
         {FILTERS.map(item => {

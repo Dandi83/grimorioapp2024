@@ -1,3 +1,4 @@
+import { communityPublic } from "@/lib/community";
 import Link from "next/link";
 
 import { AdminLogin } from "@/components/admin-login";
@@ -15,7 +16,7 @@ import { CardDisplayProvider } from "@/components/card-display-context";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Proposte homebrew — Il Grimorio.App", robots: { index: false, follow: false } };
+export const metadata = { title: "Proposte «Creati da voi» — Il Grimorio.App", robots: { index: false, follow: false } };
 
 const TABS: [ProposalState, string][] = [["da-vedere", "Da vedere"], ["approvata", "Approvate"], ["rifiutata", "Rifiutate"]];
 
@@ -49,8 +50,8 @@ export default async function ProposalsPage({ searchParams }: { searchParams: Pr
     <CardDisplayProvider value={display}>
     <div className="mx-auto flex max-w-2xl flex-col gap-3 px-4 pb-8 pt-4 lg:max-w-[1200px]">
       <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-primary">‹ Amministrazione</Link>
-      <h1 className="font-serif text-[30px] font-bold text-primary">Proposte homebrew</h1>
-      <HomebrewSectionEye hidden={parts.includes("bestiario:homebrew")} />
+      <h1 className="font-serif text-[30px] font-bold text-primary">Proposte «Creati da voi»</h1>
+      <HomebrewSectionEye hidden={parts.includes("bestiario:homebrew")} switchedOff={!communityPublic()} />
       <nav aria-label="Stato delle proposte" className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
         {TABS.map(([key, label]) => (
           <Link key={key} href={key === "da-vedere" ? "/admin/proposte" : `/admin/proposte?stato=${key}`} aria-current={stato === key ? "page" : undefined} className={tab(stato === key)}>

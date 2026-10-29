@@ -9,6 +9,8 @@ import { partId } from "@/lib/public-sections";
 import { proposalPayload, sendPush } from "@/lib/push";
 import { visibilityState } from "@/lib/section-visibility";
 import { effectiveHidden } from "@/lib/public-sections";
+import { communityPublic } from "@/lib/community";
+import { isAdmin } from "@/lib/admin-auth";
 
 // Creatures proposed from /bestiario/proponi: the same protections as the reports (app/api/segnalazioni):
 // same-site origin, signed time stamp, honeypot, Turnstile when configured, send limits per device.
@@ -19,14 +21,21 @@ function reply(value: object, status = 200) {
   return NextResponse.json(value, { status, headers: { "Cache-Control": "no-store" } });
 }
 
-/** Closed while the Bestiario or its Homebrew collection is hidden from the public. */
-async function closed(): Promise<boolean> {
+/**
+ * «forbidden» while «I mostri creati da voi» is switched off (lib/community.ts) and the sender is not the
+ * administrator (403); «closed» while the Bestiario or the section is hidden from /admin/sezioni (404).
+ */
+async function access(): Promise<"open" | "closed" | "forbidden"> {
+  if (!communityPublic()) return (await isAdmin()) ? "open" : "forbidden";
   const state = await visibilityState();
-  return effectiveHidden(state.sections, state.parts).includes("bestiario") || state.parts.includes(partId("bestiario", "homebrew"));
+  return effectiveHidden(state.sections, state.parts).includes("bestiario") || state.parts.includes(partId("bestiario", "homebrew")) ? "closed" : "open";
 }
+const SWITCHED_OFF = "Le proposte non sono aperte in questo momento.";
 
 export async function GET() {
-  if (await closed()) return reply({ error: "Non disponibile." }, 404);
+  const state = await access();
+  if (state === "forbidden") return reply({ error: SWITCHED_OFF }, 403);
+  if (state === "closed") return reply({ error: "Non disponibile." }, 404);
   const token = issueFormToken();
   if (!token) return reply({ error: FORM_UNAVAILABLE, unavailable: true }, 503);
   return reply({ token });
@@ -47,7 +56,9 @@ export async function POST(request: NextRequest) {
   if (!sameSite(request)) return reply({ error: "Origine non valida." }, 403);
   if (!request.headers.get("content-type")?.startsWith("application/json")) return reply({ error: "Richiesta non valida." }, 415);
   if (Number(request.headers.get("content-length") || 0) > PROPOSAL_MAX_BYTES) return reply({ error: "Scheda troppo lunga." }, 413);
-  if (await closed()) return reply({ error: "Le proposte non sono aperte in questo momento." }, 404);
+  const state = await access();
+  if (state === "forbidden") return reply({ error: SWITCHED_OFF }, 403);
+  if (state === "closed") return reply({ error: SWITCHED_OFF }, 404);
   let body: unknown;
   try {
     const text = await request.text();

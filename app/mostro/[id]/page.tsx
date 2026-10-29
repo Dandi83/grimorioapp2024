@@ -105,7 +105,8 @@ export default async function MonsterDetailPage({
         monster={monster}
         before={
           <div className="flex min-h-11 items-center justify-between pb-2">
-            <BackButton fallback="/bestiario" label="Bestiario" />
+            {/* «I mostri creati da voi»: back to the section (PROMPT 13). */}
+            {homebrew ? <BackButton fallback="/bestiario/creati-da-voi" label="I mostri creati da voi" /> : <BackButton fallback="/bestiario" label="Bestiario" />}
             <div className="flex items-center">
               {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
               <AdminEditButton target={{ kind: "mostro", id: monster.id, edition: homebrew ? (monster.homebrew_edizione === "entrambe" ? undefined : monster.homebrew_edizione) : legacy ? "2014" : "2024" }} desktop="lg:static lg:mr-2" />
@@ -114,8 +115,8 @@ export default async function MonsterDetailPage({
             </div>
           </div>
         }
-        // Homebrew: the amber pill next to the edition label, where the sheets show their labels.
-        label={homebrew ? <HomebrewLabel edizione={monster.homebrew_edizione!} /> : <MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
+        // «I mostri creati da voi»: the pill next to the edition label, where the sheets show their labels.
+        label={homebrew ? <HomebrewLabel edizione={monster.homebrew_edizione!} ours={!monster.homebrew_autore} /> : <MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
         byline={homebrew ? <HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} /> : undefined}
       />
       <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} catalog={await getSpellReferenceCatalog()} />

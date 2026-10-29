@@ -192,7 +192,7 @@ test("Lists: the switch of a row, the selection of 2 cards, Provenienza and Da c
     expect(values).toEqual([...values].sort((a, b) => a - b));
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/area-mostri-390.png` });
     await page.locator("[data-create-button]").click();
-    await expect(page.getByRole("dialog", { name: "Nuova creatura" })).toContainText("Scheda o Homebrew?");
+    await expect(page.getByRole("dialog", { name: "Nuova creatura" })).toContainText("Scheda o «Creati da voi»?");
     await page.keyboard.press("Escape");
 
     // Computer: filters open on the left, the rows in a table with the menu ⋯.
@@ -222,7 +222,7 @@ test("Contenuti, a content list, Sezioni: phone and computer", async ({ page }) 
   await login(page);
   await page.goto("/admin/contenuti");
   for (const group of ["Schede", "Equipaggiamento", "Regole"]) await expect(page.getByRole("heading", { level: 2, name: group })).toBeVisible();
-  await expect(page.locator('[data-content-row="mostri"]')).toContainText("con le homebrew");
+  await expect(page.locator('[data-content-row="mostri"]')).toContainText("con i Creati da voi");
   await page.locator('[data-content-row="armi"]').click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Armi");
   await expect(page.locator("section[data-list-group]").first()).toBeVisible();

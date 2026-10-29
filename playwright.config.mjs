@@ -1,9 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const port = 3100;
+// e2e/run.mjs: the specs of «I mostri creati da voi» with the switch on run apart, on their own build.
+const COMMUNITY_SPECS = ["**/homebrew.spec.mjs", "**/creati-da-voi-pubblico.spec.mjs"];
+const communityOn = process.env.GRIMORIO_COMMUNITY_TEST_PUBLIC === "on";
 
 export default defineConfig({
   testDir: "./e2e",
+  ...(communityOn ? { testMatch: COMMUNITY_SPECS } : { testIgnore: COMMUNITY_SPECS }),
   timeout: 60_000,
   retries: 0,
   workers: 1,
