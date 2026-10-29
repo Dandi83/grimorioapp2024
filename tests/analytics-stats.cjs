@@ -61,4 +61,19 @@ assert.ok(odd);assert.equal(odd.origin,undefined);assert.equal(odd.device,undefi
 assert.deepEqual((({query,results})=>({query,results}))(parseAnalyticsInput(event('search',{query:'  Mente  SCHEGGIA ',results:0}))),{query:'mente scheggia',results:0});
 for(const bad of [event('search',{results:2}),event('search',{query:'?',results:2}),event('search',{query:'lich',results:-1}),event('search',{query:'lich'})])assert.equal(parseAnalyticsInput(bad),undefined);
 assert.equal(parseAnalyticsInput(event('card_open',{path:'/compendio'})),undefined,'card events only on cards');
+// «Le schede più aperte» (PROMPT 16): the readings of one card under an old id and its current one make one line.
+{
+  const current=(kind,id)=>kind==='spell'?({'i-re-spirare-sott-acqua':'i-re-spirare-sott-acqua-2','sfera-elastica':'sfera-elastica-di-0tiluke'}[id]??id):id;
+  const rows=[
+    {kind:'spell',id:'amicizia',title:'Amicizia',opens:16},{kind:'spell',id:'amicizia-2',title:'Amicizia',opens:10},
+    {kind:'spell',id:'i-re-spirare-sott-acqua',title:"Respirare sott'acqua",opens:4},{kind:'spell',id:'i-re-spirare-sott-acqua-2',title:"Respirare sott'acqua",opens:9},
+    {kind:'spell',id:'sfera-elastica',title:'Sfera elastica',opens:2},{kind:'spell',id:'sfera-elastica-di-0tiluke',title:'Sfera elastica di Otiluke',opens:1},
+    {kind:'monster',id:'lich',title:'Lich',opens:5},{kind:'monster',id:'lich-2014',title:'Lich',opens:5},
+  ];
+  const merged=s.mergeCardOpens(rows,current);
+  assert.deepEqual(merged.map(row=>[row.id,row.opens]),[['amicizia',16],["i-re-spirare-sott-acqua-2",13],['amicizia-2',10],['lich',5],['lich-2014',5],['sfera-elastica-di-0tiluke',3]],
+    'old + new id = one line, on the current id; two different cards with the same name stay two lines');
+  assert.equal(merged.find(row=>row.id==='sfera-elastica-di-0tiluke').title,'Sfera elastica di Otiluke','the title of the current id');
+  assert.equal(s.mergeCardOpens(rows,current,2).length,2);
+}
 console.log('Analytics stats: origins and devices by category only, searched words cleaned, periods and the previous ones, changes, shares, summary sentences, counted pages and new fields validated.');

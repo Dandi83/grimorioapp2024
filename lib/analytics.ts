@@ -2,7 +2,16 @@ import "server-only";
 import { createHmac, randomUUID } from "node:crypto";
 import { pool } from "./db";
 import type { AnalyticsInput, FavoritePeriod, Vote } from "./analytics-events";
-import { INSTAGRAM_START, ORIGINS, DEVICES, type Origin, type Device } from "./analytics-stats";
+import { INSTAGRAM_START, ORIGINS, DEVICES, mergeCardOpens, type Origin, type Device } from "./analytics-stats";
+import { MERGED_SPELL_IDS } from "./monster-id-aliases";
+import { storedSpellId } from "./spell-public-id";
+
+/** The id a card read under an old id stands for today: a spell's address of before PROMPT 8, a merged duplicate. */
+export function currentCardId(kind: string, id: string): string {
+  if (kind !== "spell") return id;
+  const stored = storedSpellId(id);
+  return MERGED_SPELL_IDS[stored] ?? stored;
+}
 /** The panel of Vercel Analytics: every visitor, without the consent details. */
 export const VERCEL_ANALYTICS_URL = "https://vercel.com/grimorio-app/grimorioapp2024/analytics";
 let warned = false;
@@ -279,6 +288,8 @@ export type Statistics = {
   previousPeople: number;
   days: { day: string; visitors: number }[];
   returning: number;
+  /** The same in the previous period (the arrow of «Tornano»). */
+  previousReturning: number;
   /** People who opened the site as the installed app in the period, and in the previous one. */
   installed: number;
   previousInstalled: number;
@@ -293,7 +304,7 @@ export type Statistics = {
   markers: StatisticsMarker[];
 };
 const empty = (): Statistics => ({
-  people: 0, previousPeople: 0, days: [], returning: 0, installed: 0, previousInstalled: 0,
+  people: 0, previousPeople: 0, days: [], returning: 0, previousReturning: 0, installed: 0, previousInstalled: 0,
   installs: { total: 0, confirmed: 0, firstOpen: 0 }, previousInstalls: 0,
   origins: Object.fromEntries(ORIGINS.map(key => [key, 0])) as Record<Origin, number>,
   devices: Object.fromEntries(DEVICES.map(key => [key, 0])) as Record<Device, number>,
@@ -314,10 +325,12 @@ const IN_PERIOD = "first_at>=($1::date::timestamp AT TIME ZONE 'Europe/Rome') AN
 export async function readStatistics(range: { from: string; to: string; prevFrom: string; prevTo: string }): Promise<Statistics> {
   await ensureSchema();
   const period = [range.from, range.to];
-  const [installs, previousInstalls, previousInstalled] = await Promise.all([
+  const [installs, previousInstalls, previousInstalled, previousReturning] = await Promise.all([
     pool.query(`SELECT count(*)::int AS total, count(*) FILTER (WHERE confirmed)::int AS confirmed FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, period),
     pool.query(`SELECT count(*)::int AS total FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, [range.prevFrom, range.prevTo]),
     pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view' AND installed=true`, [range.prevFrom, range.prevTo]),
+    pool.query(`SELECT count(*)::int AS n FROM (SELECT visitor_id FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'
+      GROUP BY visitor_id HAVING count(DISTINCT session_id)>=2) AS back`, [range.prevFrom, range.prevTo]),
   ]);
   const [people, previous, days, returning, installed, origins, devices, areas, cards, notFound, markers] = await Promise.all([
     pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'`, period),
@@ -338,7 +351,7 @@ export async function readStatistics(range: { from: string; to: string; prevFrom
       count(*) FILTER (WHERE path ~ '^/(compendio|regole/|oggetti-magici|equipaggiamento|manuale/)')::int AS compendio
       FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'`, period),
     pool.query(`SELECT card_kind AS kind, card_id AS id, max(title) AS title, count(*)::int AS opens FROM grimorio_analytics_events
-      WHERE ${RANGE} AND event_name='card_open' AND card_id IS NOT NULL GROUP BY card_kind, card_id ORDER BY opens DESC, title ASC LIMIT 10`, period),
+      WHERE ${RANGE} AND event_name='card_open' AND card_id IS NOT NULL GROUP BY card_kind, card_id ORDER BY opens DESC, title ASC LIMIT 60`, period),
     // Searched at least twice with no result.
     pool.query(`SELECT search_query AS query, count(*)::int AS times FROM grimorio_analytics_events
       WHERE ${RANGE} AND event_name='search' AND search_results=0 AND search_query IS NOT NULL
@@ -350,6 +363,7 @@ export async function readStatistics(range: { from: string; to: string; prevFrom
   result.previousPeople = previous.rows[0]?.n ?? 0;
   result.days = days.rows;
   result.returning = returning.rows[0]?.n ?? 0;
+  result.previousReturning = previousReturning.rows[0]?.n ?? 0;
   result.installed = installed.rows[0]?.n ?? 0;
   result.previousInstalled = previousInstalled.rows[0]?.n ?? 0;
   const total = installs.rows[0]?.total ?? 0, confirmed = installs.rows[0]?.confirmed ?? 0;
@@ -358,7 +372,8 @@ export async function readStatistics(range: { from: string; to: string; prevFrom
   for (const row of origins.rows) if (row.origin in result.origins) result.origins[row.origin as Origin] = row.n;
   for (const row of devices.rows) if (row.device in result.devices) result.devices[row.device as Device] = row.n;
   result.areas = areas.rows[0] ?? result.areas;
-  result.cards = cards.rows;
+  // The readings of one card under an old id add up on the current one (lib/analytics-stats.ts mergeCardOpens).
+  result.cards = mergeCardOpens(cards.rows, currentCardId);
   result.notFound = notFound.rows;
   result.markers = markers.rows;
   return result;

@@ -231,8 +231,10 @@ test("«Sostegno» in Statistiche: people who opened the page and tapped the but
       await db.query(`INSERT INTO grimorio_analytics_events (id, visitor_id, session_id, view_id, event_name, path, source, amount)
         VALUES ($1, $2, $3, $4, $5, '/sostieni', 'direct', $6)`, [randomUUID(), `prova-sostieni-${who}`, randomUUID(), randomUUID(), name, amount]);
     await page.goto("/admin/statistiche?periodo=7");
+    // «Il resto» (PROMPT 16): the item opened with a tap.
+    await page.locator('[data-rest-item="sostegno"] > summary').click();
     const block = page.locator("[data-support-stats]");
-    await expect(block.getByRole("heading", { name: "Sostegno" })).toBeVisible();
+    await expect(page.locator('[data-rest-item="sostegno"] > summary')).toHaveText(/^Sostegno/);
     await expect(block.locator("[data-support-opened]")).toHaveText("2");
     await expect(block.locator("[data-support-clicked]")).toHaveText("3");
     await expect(block.locator('[data-support-amount="1"]')).toHaveText("0");
