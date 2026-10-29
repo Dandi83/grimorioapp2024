@@ -76,4 +76,15 @@ assert.equal(parseAnalyticsInput(event('card_open',{path:'/compendio'})),undefin
   assert.equal(merged.find(row=>row.id==='sfera-elastica-di-0tiluke').title,'Sfera elastica di Otiluke','the title of the current id');
   assert.equal(s.mergeCardOpens(rows,current,2).length,2);
 }
+// «Usano l’app» (PROMPT 17): Android with the computers, iPhone, «altro»; always the people of the big number.
+for (const [devices,people,expected] of [
+  [{iphone:2,android:3,computer:0,altro:0},5,{android:3,iphone:2,altro:0,androidLabel:'Android'}],
+  [{iphone:1,android:1,computer:2,altro:1},6,{android:3,iphone:1,altro:2,androidLabel:'Android e computer'}],
+  [{},4,{android:0,iphone:0,altro:4,androidLabel:'Android'}],
+  [{iphone:0,android:0,computer:0,altro:0},0,{android:0,iphone:0,altro:0,androidLabel:'Android'}],
+]) {
+  const split=s.appSplit(devices,people);
+  assert.deepEqual(split,expected);
+  assert.equal(split.android+split.iphone+split.altro,people,'the segments add up to the big number');
+}
 console.log('Analytics stats: origins and devices by category only, searched words cleaned, periods and the previous ones, changes, shares, summary sentences, counted pages and new fields validated.');

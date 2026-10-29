@@ -9,7 +9,7 @@ import { getSpellIndex } from "@/lib/spell-index";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { spellName } from "@/lib/spell-name";
 import { publicSpellId, spellHref } from "@/lib/spell-public-id";
-import { bestDay, dayLabel, fillDays, percentChange, periodOf, periodRange, share, PERIODS } from "@/lib/analytics-stats";
+import { appSplit, bestDay, dayLabel, fillDays, percentChange, periodOf, periodRange, share, PERIODS } from "@/lib/analytics-stats";
 import { Bars, DailyChart } from "@/components/statistics/charts";
 import { Arrow, SmallRing, Sparkline, SplitBar, Tile } from "@/components/statistics/tiles";
 import { RestItem } from "@/components/statistics/rest-item";
@@ -53,6 +53,8 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   };
   const days = fillDays(range.from, range.to, data.days);
   const change = percentChange(data.people, data.previousPeople);
+  // «Usano l’app»: the bar and its line divide the people of the big number (PROMPT 17).
+  const app = appSplit(data.installedDevices, data.installed);
   const best = bestDay(days);
   const markersInPeriod = data.markers.filter(marker => marker.giorno >= range.from && marker.giorno <= range.to);
   const returning = share(data.returning, data.people);
@@ -91,9 +93,11 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
           detail={<>{number(data.returning)} su {number(data.people)} sono tornate almeno una volta</>} />
         <Tile name="app" label="Usano l’app" value={number(data.installed)} valueColor="#1F6B45" arrow={<Arrow change={percentChange(data.installed, data.previousInstalled)} />}
           chart={<div className="space-y-1 pt-2">
-            <SplitBar name="installazioni" parts={[{ value: data.installs.confirmed, color: "#1F6B45" }, { value: data.installs.firstOpen, color: "#9CC5AE" }]}
-              label={`Nuove installazioni: Android e computer ${data.installs.confirmed}, iPhone ${data.installs.firstOpen}.`} />
-            <p className="text-[12px] text-[#5E4E3E]" data-installs-detail="">Android {number(data.installs.confirmed)} · iPhone {number(data.installs.firstOpen)}</p>
+            <SplitBar name="installazioni" parts={[{ value: app.android, color: "#1F6B45" }, { value: app.iphone, color: "#9CC5AE" }, { value: app.altro, color: "#CDBB96" }]}
+              label={`Persone che usano l’app per sistema: ${app.androidLabel} ${app.android}, iPhone ${app.iphone}${app.altro ? `, altro ${app.altro}` : ""}.`} />
+            <p className="text-[12px] text-[#5E4E3E]" data-app-split="">
+              {app.androidLabel} {number(app.android)} · iPhone {number(app.iphone)}{app.altro > 0 && <> · altro {number(app.altro)}</>}
+            </p>
           </div>}
           detail={<span data-installs={data.installs.total}>{number(data.installs.total)} {data.installs.total === 1 ? "nuova installazione" : "nuove installazioni"}</span>} />
         <Tile name="provenienza" label={`Da ${ORIGIN_LABEL[first.key]}`} value={`${share(first.value, known)}%`} valueColor="#7A4E00"

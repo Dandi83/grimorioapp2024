@@ -293,6 +293,8 @@ export type Statistics = {
   /** People who opened the site as the installed app in the period, and in the previous one. */
   installed: number;
   previousInstalled: number;
+  /** The same people of «installed», by the device of their last opening of the app (none known: not counted here). */
+  installedDevices: Record<Device, number>;
   /** New installations: people whose first installation event falls in the period (confirmed by the browser, or first opening from the icon). */
   installs: { total: number; confirmed: number; firstOpen: number };
   previousInstalls: number;
@@ -304,7 +306,7 @@ export type Statistics = {
   markers: StatisticsMarker[];
 };
 const empty = (): Statistics => ({
-  people: 0, previousPeople: 0, days: [], returning: 0, previousReturning: 0, installed: 0, previousInstalled: 0,
+  people: 0, previousPeople: 0, days: [], returning: 0, previousReturning: 0, installed: 0, previousInstalled: 0, installedDevices: Object.fromEntries(DEVICES.map(key => [key, 0])) as Record<Device, number>,
   installs: { total: 0, confirmed: 0, firstOpen: 0 }, previousInstalls: 0,
   origins: Object.fromEntries(ORIGINS.map(key => [key, 0])) as Record<Origin, number>,
   devices: Object.fromEntries(DEVICES.map(key => [key, 0])) as Record<Device, number>,
@@ -325,12 +327,15 @@ const IN_PERIOD = "first_at>=($1::date::timestamp AT TIME ZONE 'Europe/Rome') AN
 export async function readStatistics(range: { from: string; to: string; prevFrom: string; prevTo: string }): Promise<Statistics> {
   await ensureSchema();
   const period = [range.from, range.to];
-  const [installs, previousInstalls, previousInstalled, previousReturning] = await Promise.all([
+  const [installs, previousInstalls, previousInstalled, previousReturning, installedDevices] = await Promise.all([
     pool.query(`SELECT count(*)::int AS total, count(*) FILTER (WHERE confirmed)::int AS confirmed FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, period),
     pool.query(`SELECT count(*)::int AS total FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, [range.prevFrom, range.prevTo]),
     pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view' AND installed=true`, [range.prevFrom, range.prevTo]),
     pool.query(`SELECT count(*)::int AS n FROM (SELECT visitor_id FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'
       GROUP BY visitor_id HAVING count(DISTINCT session_id)>=2) AS back`, [range.prevFrom, range.prevTo]),
+    // «Usano l’app» by system: each person of the big number once, with the device of the last opening of the app.
+    pool.query(`SELECT device, count(*)::int AS n FROM (SELECT DISTINCT ON (visitor_id) visitor_id, device FROM grimorio_analytics_events
+      WHERE ${RANGE} AND event_name='page_view' AND installed=true AND device IS NOT NULL ORDER BY visitor_id, received_at DESC) AS lasts GROUP BY device`, period),
   ]);
   const [people, previous, days, returning, installed, origins, devices, areas, cards, notFound, markers] = await Promise.all([
     pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'`, period),
@@ -366,6 +371,7 @@ export async function readStatistics(range: { from: string; to: string; prevFrom
   result.previousReturning = previousReturning.rows[0]?.n ?? 0;
   result.installed = installed.rows[0]?.n ?? 0;
   result.previousInstalled = previousInstalled.rows[0]?.n ?? 0;
+  for (const row of installedDevices.rows) if (row.device in result.installedDevices) result.installedDevices[row.device as Device] = row.n;
   const total = installs.rows[0]?.total ?? 0, confirmed = installs.rows[0]?.confirmed ?? 0;
   result.installs = { total, confirmed, firstOpen: total - confirmed };
   result.previousInstalls = previousInstalls.rows[0]?.total ?? 0;

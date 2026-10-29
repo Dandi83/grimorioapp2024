@@ -134,3 +134,15 @@ export function mergeCardOpens(rows: CardOpens[], currentId: (kind: string, id: 
   }
   return [...merged.values()].sort((a, b) => b.opens - a.opens || a.title.localeCompare(b.title, "it")).slice(0, limit);
 }
+
+export type AppSplit = { android: number; iphone: number; altro: number; androidLabel: "Android" | "Android e computer" };
+
+/**
+ * «Usano l’app» (PROMPT 17): the same people as the big number, by system. The computers count with Android (both
+ * confirm the installation the same way), named in the label when there are some; tablets and unknown systems
+ * are «altro». The three parts always add up to the people of the tile.
+ */
+export function appSplit(devices: Partial<Record<Device, number>>, people: number): AppSplit {
+  const computer = devices.computer ?? 0, android = (devices.android ?? 0) + computer, iphone = devices.iphone ?? 0;
+  return { android, iphone, altro: Math.max(0, people - android - iphone), androidLabel: computer > 0 ? "Android e computer" : "Android" };
+}

@@ -63,6 +63,19 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.deepEqual(marked.markers.map(m=>m.etichetta),['Apertura profilo Instagram','Post sul gruppo']);
  for(const marker of marked.markers)await analytics.deleteMarker(marker.id);
  assert.deepEqual((await analytics.readStatistics(range(today))).markers,[],'deleted events are not created again');
+ // «Usano l’app» by system (PROMPT 17): the people of the big number, each once with the device of the last opening
+ // of the app; a computer counts with Android, an unknown system is «altro»: the parts add up to the number.
+ const appUser=async(visitor,device,installed=true)=>assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('page_view',{path:'/',device,installed})),visitor),true);
+ const [u1,u2,u3,u4]=[randomUUID(),randomUUID(),randomUUID(),randomUUID()];
+ const before=await analytics.readStatistics(range(today));
+ await appUser(u1,'iphone');await appUser(u1,'iphone');await appUser(u2,'computer');await appUser(u3,undefined);await appUser(u4,'android',false);
+ const apps=await analytics.readStatistics(range(today));
+ assert.equal(apps.installed-before.installed,3,'u4 used the site, not the app');
+ assert.equal(apps.installedDevices.iphone-before.installedDevices.iphone,1);assert.equal(apps.installedDevices.computer-before.installedDevices.computer,1);
+ assert.equal(apps.installedDevices.android,before.installedDevices.android);assert.equal(apps.installedDevices.altro,before.installedDevices.altro);
+ const split=require('../lib/analytics-stats.ts').appSplit(apps.installedDevices,apps.installed);
+ assert.equal(split.androidLabel,'Android e computer');
+ assert.equal(split.android+split.iphone+split.altro,apps.installed,'the parts add up to the big number');
  // The searched words and categories only: the row keeps no referrer, address or user agent.
  const columns=(await pg.query("SELECT column_name FROM information_schema.columns WHERE table_name='grimorio_analytics_events'")).rows.map(r=>r.column_name);
  assert.ok(!columns.some(name=>/referr|agent|ip|address|url/.test(name)),columns.join());
