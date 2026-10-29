@@ -70,13 +70,15 @@ export interface HomebrewDraft {
   azioni_bonus: HomebrewEntry[];
   reazioni: HomebrewEntry[];
   azioni_leggendarie: HomebrewEntry[];
+  /** What the creature is and how it behaves, at the top of the sheet (PROMPT 20); optional, absent on older cards. */
+  descrizione?: string;
 }
 
 export const EMPTY_DRAFT: HomebrewDraft = {
   edizione: "2024", nome: "", taglia: "Media", tipo: "Mostruosità", allineamento: "neutrale", ca: 12, ca_nota: "", pf: 10, dadi_vita: "3d8",
   velocita: "9 m", forza: 10, destrezza: 10, costituzione: 10, intelligenza: 10, saggezza: 10, carisma: 10, ts_competenti: [],
   abilita: "", vulnerabilita: "", resistenze: "", immunita_danni: "", immunita_condizioni: "", sensi: "", linguaggi: "", habitat: [],
-  grado_sfida: "1", tratti: [], azioni: [{ nome: "", testo: "" }], azioni_bonus: [], reazioni: [], azioni_leggendarie: [],
+  grado_sfida: "1", tratti: [], azioni: [{ nome: "", testo: "" }], azioni_bonus: [], reazioni: [], azioni_leggendarie: [], descrizione: "",
 };
 
 export const LIMITS = { nome: 60, short: 160, entryName: 60, entryText: 1500, entries: 12, nickname: 40, motivo: 500 } as const;
@@ -206,6 +208,11 @@ export function entriesHtml(entries: readonly HomebrewEntry[]): string {
   }).join("<br><br>");
 }
 
+/** The description: plain text, paragraphs apart. */
+export function descriptionHtml(text: string | undefined): string {
+  return text ? escape(text).split(/\n{2,}/).map(part => part.replace(/\n/g, "<br>")).join("<br><br>") : "";
+}
+
 const signed = (n: number) => (n >= 0 ? `+${n}` : `${n}`);
 
 /** The sheet of a draft, in the format of its edition («Entrambe» uses the 2024 one). */
@@ -232,7 +239,7 @@ export function draftToMonster(draft: HomebrewDraft, id: string): Monster {
     ...(legacy ? {} : { immunita: immunities, iniziativa: `${signed(dex)} (${10 + dex})`, bonus_competenza: signed(prof), azioni_bonus: entriesHtml(draft.azioni_bonus) }),
     sensi, linguaggi: draft.linguaggi || "—",
     tratti: entriesHtml(draft.tratti), azioni: entriesHtml(draft.azioni), reazioni: entriesHtml(draft.reazioni), azioni_leggendarie: entriesHtml(draft.azioni_leggendarie),
-    descrizione: "", habitat: draft.habitat, edizione: legacy ? "2014" : "2024",
+    descrizione: descriptionHtml(draft.descrizione), habitat: draft.habitat, edizione: legacy ? "2014" : "2024",
   };
 }
 

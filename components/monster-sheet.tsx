@@ -5,6 +5,7 @@ import { abilityMod, type Monster } from "@/lib/monsters-types";
 import { conditionLinks, prepareMonsterText, type CardSource } from "@/lib/card-display";
 import { damageLineHref, damageRuleLinks } from "@/lib/damage-rule-link";
 import type { SpellReferenceCatalog } from "@/lib/spell-references";
+import { DescriptionLead } from "@/components/description-lead";
 
 /**
  * One creature sheet for every source: 2024 and 2014 SRD sheets, sheets made in the
@@ -117,7 +118,11 @@ export function MonsterSheetTitle({ monster, label, before, byline }: { monster:
  * hidden: what the texts may not link (hidden sections, parts and cards, linksOut); catalog: the spells they
  * link (lib/spell-reference-catalog.ts; the SRD names of the files when missing).
  */
-export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { monster: Partial<Monster>; legacy: boolean; hidden?: readonly string[]; catalog?: SpellReferenceCatalog }) {
+/**
+ * descriptionFirst: the sheets of «I mostri creati da voi» (PROMPT 20) open with their description, in italics and with no
+ * title, above the ink strip; the official sheets keep it at the bottom.
+ */
+export function MonsterSheetBody({ monster, legacy, hidden = [], catalog, descriptionFirst = false }: { monster: Partial<Monster>; legacy: boolean; hidden?: readonly string[]; catalog?: SpellReferenceCatalog; descriptionFirst?: boolean }) {
   const context: SheetContext = { legacy, hidden, catalog, source: monster.fonte_scheda };
   const ca = splitBoxValue(monster.classe_armatura);
   const pf = splitBoxValue(monster.punti_ferita);
@@ -131,8 +136,11 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
   const details = challengeDetails({ px: monster.px || "", bonus_competenza: monster.bonus_competenza, gs_num: monster.gs_num ?? -1 }, legacy);
   // Wide card (≥820 px of room, a computer): two columns, statistics and traits on the left, actions on the
   // right; the page width decides, so the phone and the editor preview keep one column.
+  // The description of a homebrew is plain text made into paragraphs by lib/homebrew-types.ts (escaped there).
+  const lead = descriptionFirst ? (monster.descrizione || "").split(/(?:<br\s*\/?>\s*){2,}/i).filter(part => part.replace(/<[^>]+>/g, "").trim()) : [];
   return (
     <div className="@container">
+    {lead.length > 0 && <DescriptionLead>{lead.map((part, index) => <p key={index} className={index ? "mt-3" : undefined} dangerouslySetInnerHTML={{ __html: part }} />)}</DescriptionLead>}
     {/* CA, PF, initiative and challenge in an ink strip that stays at the top while the sheet scrolls (the page
         on the phone, the card column next to the list on the computer): the numbers needed at the table in sight. */}
     <dl className="sticky top-0 z-20 mx-4 mt-4 grid grid-cols-4 overflow-hidden rounded-[12px] bg-foreground pt-[env(safe-area-inset-top,0px)] text-card shadow-[0_6px_16px_rgb(43_33_24_/_22%)]" data-monster-strip="">
@@ -191,7 +199,7 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog }: { mo
       <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} context={context} />
     </div>
     </div>
-      <Section title="Descrizione" html={monster.descrizione} context={context} />
+      {!descriptionFirst && <Section title="Descrizione" html={monster.descrizione} context={context} />}
     </div>
   );
 }

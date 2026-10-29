@@ -6,14 +6,18 @@ import { HOMEBREW_LICENSE_URL, authorLine } from "@/lib/homebrew-types";
 import type { Monster } from "@/lib/monsters-types";
 import type { CardDisplayContext } from "@/lib/card-display";
 import { BothEditionsPill, HomebrewPill, VerifiedPill } from "@/components/homebrew-pill";
+import { ChosenEditionBadge } from "./chosen-edition-badge";
 
-/** The label of a sheet of «I mostri creati da voi»: the pill («Creato da voi» or «Creato dal Grimorio»), then the edition (or «2014 e 2024»). */
+/**
+ * The label of a sheet of «I mostri creati da voi»: the pill («Creato da voi» or «Creato dal Grimorio»), then the edition;
+ * a creature «2014 e 2024» keeps that pill and the dark label follows the edition chosen by the user.
+ */
 export function HomebrewLabel({ edizione, ours = false, verified = false }: { edizione: "2014" | "2024" | "entrambe"; ours?: boolean; verified?: boolean }) {
   return (
     <span className="flex flex-wrap items-center justify-end gap-1.5">
       <HomebrewPill ours={ours} />
       {verified && <VerifiedPill />}
-      {edizione === "entrambe" ? <BothEditionsPill /> : <MonsterProvenanceBadge edition={edizione} variant="dark" />}
+      {edizione === "entrambe" ? <><BothEditionsPill /><ChosenEditionBadge /></> : <MonsterProvenanceBadge edition={edizione} variant="dark" />}
     </span>
   );
 }
@@ -52,7 +56,7 @@ export function HomebrewSheet({ monster, before, context = {} }: { monster: Mons
   return (
     <article className="monster-sheet relative pb-2 pt-4">
       <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} ours={!monster.homebrew_autore} verified={!!monster.homebrew_verificato} />} byline={<HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} />} />
-      <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} />
+      <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} descriptionFirst />
       <HomebrewNote />
     </article>
   );
