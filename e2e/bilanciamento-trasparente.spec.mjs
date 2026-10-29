@@ -147,19 +147,20 @@ test("administrator: «Mostra Bilanciamento verificato» at the approval, ticked
   await page.goto("/admin/bilanciamento");
   const item = page.locator(`[data-balance-item="${VERIFIED}"]`);
   await expect(item.locator("[data-verified-state]")).toHaveAttribute("data-verified-state", "si");
-  await item.getByRole("button", { name: "Togli la pillola" }).click();
+  await item.getByRole("checkbox", { name: /Mostra «Bilanciamento verificato»/ }).uncheck();
   await expect(item.locator("[data-verified-state]")).toHaveAttribute("data-verified-state", "no");
   const guest = await page.context().browser().newContext({ baseURL: test.info().project.use.baseURL });
   const visitorPage = await guest.newPage();
-  await visitorPage.goto(`/mostro/${VERIFIED}`);
-  await expect(visitorPage.locator("[data-verified-pill]")).toHaveCount(0);
-  await item.getByRole("button", { name: "Mostra la pillola" }).click();
+  await expect.poll(async () => { await visitorPage.goto(`/mostro/${VERIFIED}`); return visitorPage.locator("[data-verified-pill]").count(); }).toBe(0);
+  await item.getByRole("checkbox", { name: /Mostra «Bilanciamento verificato»/ }).check();
   await expect(item.locator("[data-verified-state]")).toHaveAttribute("data-verified-state", "si");
-  await visitorPage.goto(`/mostro/${VERIFIED}`);
-  await expect(visitorPage.locator("[data-verified-pill]")).toBeVisible();
+  // The box follows the click at once; the pill comes back once the server has saved it.
+  await expect.poll(async () => { await visitorPage.goto(`/mostro/${VERIFIED}`); return visitorPage.locator("[data-verified-pill]").count(); }).toBeGreaterThan(0);
   await guest.close();
   // A card out of line: no pill to show.
-  await expect(page.locator(`[data-balance-item="${UNVERIFIED}"] [data-verified-state]`)).toContainText("non prevista");
+  const unverified = page.locator(`[data-balance-item="${UNVERIFIED}"]`);
+  await expect(unverified.locator("[data-verified-state]")).toContainText("solo con il giudizio salvato «In linea»");
+  await expect(unverified.getByRole("checkbox", { name: /Mostra «Bilanciamento verificato»/ })).toBeDisabled();
 });
 
 test("visitor: the page of the method from its links, the pill only where due, never a number of the simulator", async ({ browser }) => {

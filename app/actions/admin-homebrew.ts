@@ -4,7 +4,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { headers } from "next/headers";
 
 import { requireAdmin } from "@/lib/admin-action-helpers";
-import { approveProposal, createHomebrew, deleteHomebrew, getHomebrew, getProposal, refuseProposal, sendPublishedEmail, setHomebrewVerified, updateHomebrew, updateProposal } from "@/lib/homebrew";
+import { approveProposal, createHomebrew, deleteHomebrew, getHomebrew, getProposal, refuseProposal, saveHomebrewVerdict, sendPublishedEmail, setHomebrewVerified, updateHomebrew, updateProposal } from "@/lib/homebrew";
 import { homebrewVerdict } from "@/lib/homebrew-balance";
 import { HOMEBREW_LICENSE, LIMITS, parseDraft, plainText } from "@/lib/homebrew-types";
 
@@ -69,12 +69,13 @@ export async function createHomebrewAction(draft: unknown): Promise<HomebrewResu
   return { ok: true, id };
 }
 
-export async function updateHomebrewAction(id: string, draft: unknown): Promise<HomebrewResult> {
+/** verified: the box «Mostra "Bilanciamento verificato"» of the editor (PROMPT 26); undefined: the pill as it was. */
+export async function updateHomebrewAction(id: string, draft: unknown, verified?: boolean): Promise<HomebrewResult> {
   await requireAdmin();
   const checked = parseDraft(draft);
   if (!checked.ok) return checked;
   if (!(await getHomebrew(String(id)))) return { ok: false, error: "Creatura homebrew non trovata." };
-  await updateHomebrew(String(id), checked.draft, homebrewVerdict(checked.draft));
+  await updateHomebrew(String(id), checked.draft, homebrewVerdict(checked.draft), typeof verified === "boolean" ? verified : undefined);
   refresh();
   return { ok: true, id: String(id) };
 }
@@ -86,6 +87,17 @@ export async function deleteHomebrewAction(formData: FormData): Promise<{ ok: tr
   if (typeof id !== "string" || !(await deleteHomebrew(id))) return { ok: false, error: "Creatura homebrew non trovata." };
   refresh();
   return { ok: true };
+}
+
+/** «Ricalcola» (PROMPT 26): the verdict of the sheet computed again and saved; the pill stays an administrator's choice. */
+export async function recalculateVerdictAction(id: string): Promise<{ ok: true; giudizio: string | null } | { ok: false; error: string }> {
+  await requireAdmin();
+  const row = await getHomebrew(String(id));
+  if (!row) return { ok: false, error: "Creatura homebrew non trovata." };
+  const giudizio = homebrewVerdict(row.scheda);
+  if (!(await saveHomebrewVerdict(String(id), giudizio))) return { ok: false, error: "Creatura homebrew non trovata." };
+  refresh();
+  return { ok: true, giudizio };
 }
 
 /** /admin/bilanciamento: the green pill «Bilanciamento verificato» on a card, or taken away. */

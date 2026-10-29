@@ -93,7 +93,7 @@ test("administrator: the box under our sheets, a homebrew and a sheet made here,
       for (const label of ["Danni a round", "Round", "PG a terra", "Ottimale", "A caso", "Prudente", "SITUAZIONI DI PROVA", "AVVISI"]) await expect(box).toContainText(label);
       await expect(box.locator("[data-balance-verdict]")).toHaveCount(9);
       await expect(box.locator("[data-balance-situation]")).toHaveCount(7);
-      await expect(box).toContainText("Fascia 10–90 dei mostri SRD");
+      await expect(box).toContainText("Fascia 5–95 dei mostri SRD");
       await expect(box.locator("[data-balance-note]")).toContainText(`Simulazione: 11.100 combattimenti contro 4 PG di livello ${level}`);
       await expect(box.locator("[data-balance-note]")).toContainText("scenari: base + 7 di prova");
       await expect(box).toContainText("mostri SRD 2024");

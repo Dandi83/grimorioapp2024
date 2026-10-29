@@ -55,7 +55,9 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
     const both = results.length > 1;
     const warnings = results.flatMap(result => result.warnings.map(warning => ({ ...warning, text: both ? `${result.edition}: ${warning.text}` : warning.text })));
     const edition = both ? "2014 e 2024" : item.editions[0] as BalanceEdition | string;
-    return { ...item, edition, result: { ...worst, warnings }, level, gap: overall ? Math.max(...results.map(result => gapFromCr(result.comparison))) : -1 };
+    // «2014: In linea · 2024: In linea» (PROMPT 26): each edition's own verdict, 2014 first; filters and counts use the worse.
+    const perEdition = both ? [...results].sort((a, b) => a.edition.localeCompare(b.edition)).map(result => ({ edition: result.edition, level: result.measures ? result.comparison.level : null })) : [];
+    return { ...item, edition, perEdition, result: { ...worst, warnings }, level, gap: overall ? Math.max(...results.map(result => gapFromCr(result.comparison))) : -1 };
   }).sort((a, b) => ORDER[a.level] - ORDER[b.level] || b.gap - a.gap || a.monster.nome.localeCompare(b.monster.nome, "it"));
   const matches = (item: (typeof all)[number], key: (typeof FILTERS)[number]["key"]) =>
     key === "tutti" ? true : key === "con-avvisi" ? item.result.warnings.length > 0 : item.level !== "non simulabile" && LEVELS[item.level].slug === key;
@@ -66,7 +68,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
       <Link href="/admin" className="inline-flex min-h-11 items-center text-[15px] font-bold text-[#7A1F2B]">‹ Area riservata</Link>
       <h1 className="font-serif text-[34px] font-bold leading-tight text-[#7A1F2B]">Bilanciamento</h1>
       <p className="mt-1 text-[15px] leading-6 text-[#5E4E3E]">
-        «I mostri creati da voi» e schede create nell’area riservata, confrontate con i mostri SRD dello stesso GS e della stessa edizione (fascia dal 10° al 90° percentile), con tre modi di giocarle: ottimale, a caso, prudente. Prima i «Fuori dal GS», poi «Da controllare», poi «In linea».
+        «I mostri creati da voi» e schede create nell’area riservata, confrontate con i mostri SRD dello stesso GS e della stessa edizione (fascia dal 5° al 95° percentile), con tre modi di giocarle: ottimale, a caso, prudente. In linea con al massimo 2 misure su 6 fuori fascia; fuori dal GS con almeno 2 misure fuori di oltre il 50%. Le creature «2014 e 2024» hanno un giudizio per edizione: filtri e conteggi usano il peggiore. Prima i «Fuori dal GS», poi «Da controllare», poi «In linea».
       </p>
       <nav aria-label="Filtra per giudizio" className="mt-3 flex flex-wrap gap-2" data-balance-filters="">
         {FILTERS.map(item => {
@@ -82,7 +84,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
       </nav>
       {shown.length ? (
         <ol className="mt-4 divide-y divide-[#E8D3A0] overflow-hidden rounded-[14px] border-[1.5px] border-dashed border-[#7A4E00] bg-[#FCEFD0]" data-balance-list="">
-          {shown.map(({ monster, kind, edition, result, level, gap, row }) => (
+          {shown.map(({ monster, kind, edition, perEdition, result, level, gap, row }) => (
             <li key={monster.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3" data-balance-item={monster.id}>
               <Link href={`/mostro/${encodeURIComponent(monster.id)}`} className="min-w-0 flex-1 text-[16px] font-semibold underline-offset-4 hover:underline">{monster.nome}</Link>
               <span className="text-[13px] text-[#5E4E3E]">{kind} · GS {monster.grado_sfida || "?"} · {edition}</span>
@@ -93,6 +95,15 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
                   {gap > 0 && <span className="text-[#6B4300]">distanza {gap}%</span>}
                 </>}
               </span>
+              {perEdition.length > 0 && (
+                <span className="w-full text-[14px] font-semibold" data-balance-editions={monster.id}>
+                  {perEdition.map(({ edition: name, level: one }, index) => (
+                    <span key={name} data-balance-edition-verdict={name} data-level={one ? LEVELS[one].slug : "non-simulabile"}>
+                      {index > 0 ? " · " : ""}{name}: {one ? LEVELS[one].label : "Non simulabile"}
+                    </span>
+                  ))}
+                </span>
+              )}
               {/* Avvisi: the checks the CR does not measure and the test situations. */}
               <span className="w-full text-[13px]" data-balance-warning-count={result.warnings.length}>
                 {result.warnings.length
@@ -101,7 +112,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
               </span>
               {/* Al tavolo: the votes of the masters beside the simulator (only the cards of «I mostri creati da voi» have them). */}
               {row && <span className="w-full text-[13px]" data-balance-table={monster.id}>{tableLine(votes.get(monster.id))}</span>}
-              {row && <span className="w-full"><VerifiedToggle id={monster.id} shown={verifiedPill(row)} possible={row.bilanciamento === "in linea"} /></span>}
+              {row && <span className="w-full"><VerifiedToggle key={`${verifiedPill(row)}-${row.bilanciamento}`} id={monster.id} shown={verifiedPill(row)} saved={row.bilanciamento ?? null} /></span>}
             </li>
           ))}
         </ol>
