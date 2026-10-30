@@ -47,12 +47,21 @@ export function HomebrewSectionEye({ hidden: initial, switchedOff = false }: { h
  * The guided editor in a dialog: «Correggi» of a proposal, «+ Nuova homebrew», «Modifica» of a published
  * homebrew. page: the editor is the page («Modifica» on the public card), not a dialog over the list.
  */
-function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false, ours = false }: {
+/** The saved verdict and the pill of a published homebrew, for the box of the editor (PROMPT 26). */
+export type VerifiedBox = { saved: "in linea" | "da controllare" | "fuori" | null; shown: boolean };
+const SAVED_LABEL = { "in linea": "In linea", "da controllare": "Da controllare", fuori: "Fuori dal GS" } as const;
+
+function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false, ours = false, verifiedBox }: {
   title: string;
+  /**
+   * The box «Mostra "Bilanciamento verificato"»: enabled only with the saved verdict «In linea» (for «2014 e 2024», in
+   * line in both editions); a new creature has none yet. Absent: no box (the proposals have their own).
+   */
+  verifiedBox?: VerifiedBox | "new";
   /** «Dalla redazione» (no author): the pill of the preview. */
   ours?: boolean;
   initial: HomebrewDraft;
-  onSave: (draft: HomebrewDraft) => Promise<{ ok: true } | { ok: false; error: string }>;
+  onSave: (draft: HomebrewDraft, verified: boolean) => Promise<{ ok: true } | { ok: false; error: string }>;
   /** saved: true after a successful save. */
   onClose: (saved?: boolean) => void;
   page?: boolean;
@@ -61,6 +70,8 @@ function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false, o
   const [draft, setDraft] = useState(initial);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const canVerify = typeof verifiedBox === "object" && verifiedBox.saved === "in linea";
+  const [verified, setVerified] = useState(typeof verifiedBox === "object" && verifiedBox.shown);
   async function save() {
     const checked = parseDraft(draft);
     if (!checked.ok) {
@@ -69,7 +80,7 @@ function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false, o
     }
     setSaving(true);
     setError("");
-    const result = await onSave(checked.draft).catch(() => ({ ok: false as const, error: "Salvataggio non riuscito. Riprova." }));
+    const result = await onSave(checked.draft, canVerify && verified).catch(() => ({ ok: false as const, error: "Salvataggio non riuscito. Riprova." }));
     setSaving(false);
     if (result.ok) onClose(true); else setError(result.error);
   }
@@ -82,6 +93,14 @@ function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false, o
       </header>
       <div className="p-4"><HomebrewEditor value={draft} onChange={setDraft} idPrefix="admin-hb" ours={ours} /></div>
       <footer className="sticky bottom-0 z-10 border-t border-border bg-card px-4 py-3">
+        {verifiedBox && (
+          <label className="mb-2 flex min-h-11 items-center gap-2.5 text-[14px]" data-editor-verified={typeof verifiedBox === "object" ? verifiedBox.saved ?? "non-simulabile" : "nuova"}>
+            <input type="checkbox" className="size-5 accent-[#1F6B45]" checked={canVerify && verified} disabled={!canVerify || saving} onChange={event => setVerified(event.target.checked)} />
+            <span>Mostra «Bilanciamento verificato» <span className="text-muted">· {verifiedBox === "new"
+              ? "attivabile dopo il salvataggio, se il giudizio è «In linea»"
+              : `giudizio salvato: ${verifiedBox.saved ? SAVED_LABEL[verifiedBox.saved] : "nessuno (premi «Ricalcola» in /admin/bilanciamento)"}`}</span></span>
+          </label>
+        )}
         {error && <p role="alert" className="mb-2 text-sm font-semibold text-primary">{error}</p>}
         <button type="button" onClick={save} disabled={saving} className="min-h-11 w-full rounded-lg bg-primary px-3 text-[15px] font-bold text-primary-foreground disabled:opacity-60">
           {saving ? "Salvataggio…" : "Salva"}
@@ -217,7 +236,7 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
       <button type="button" onClick={() => setOpen(true)} className="flex min-h-11 items-center justify-center gap-2 rounded-lg border-[1.5px] border-[#E0A21A] bg-[#F6E3B0] px-4 py-2.5 font-semibold text-[#5C3F00]">
         + Nuovo «Dalla redazione»
       </button>
-      {open && <HomebrewEditorDialog ours title="Nuovo «Dalla redazione»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={() => setOpen(false)}
+      {open && <HomebrewEditorDialog ours verifiedBox="new" title="Nuovo «Dalla redazione»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={() => setOpen(false)}
         onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />}
     </>
   );
@@ -226,13 +245,15 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
 /** «+» of /admin/mostri, «Homebrew»: the guided editor of a new homebrew creature, already open. */
 export function NewHomebrewDialog({ edition, onClose }: { edition: "2014" | "2024"; onClose: () => void }) {
   const router = useRouter();
-  return <HomebrewEditorDialog ours title="Nuovo «Dalla redazione»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
+  return <HomebrewEditorDialog ours verifiedBox="new" title="Nuovo «Dalla redazione»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
     onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />;
 }
 
 /** «Modifica» of a published homebrew in /admin/mostri. */
-export function EditHomebrewDialog({ id, nome, draft, ours = false, onClose, page }: { id: string; nome: string; draft: HomebrewDraft; ours?: boolean; onClose: (saved?: boolean) => void; page?: boolean }) {
+export function EditHomebrewDialog({ id, nome, draft, ours = false, verifiedBox, onClose, page }: {
+  id: string; nome: string; draft: HomebrewDraft; ours?: boolean; verifiedBox?: VerifiedBox; onClose: (saved?: boolean) => void; page?: boolean;
+}) {
   const router = useRouter();
-  return <HomebrewEditorDialog title={`Modifica «${nome}»`} initial={draft} onClose={onClose} page={page} ours={ours}
-    onSave={async next => { const result = await updateHomebrewAction(id, next); if (result.ok) router.refresh(); return result; }} />;
+  return <HomebrewEditorDialog title={`Modifica «${nome}»`} initial={draft} onClose={onClose} page={page} ours={ours} verifiedBox={verifiedBox}
+    onSave={async (next, verified) => { const result = await updateHomebrewAction(id, next, verifiedBox ? verified : undefined); if (result.ok) router.refresh(); return result; }} />;
 }

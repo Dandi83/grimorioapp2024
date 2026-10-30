@@ -11,12 +11,21 @@ import { CLOSED_PART_METADATA, partState, sectionPage } from "@/lib/section-view
 
 export const revalidate = 300;
 
-/** While the section is closed to the visitors, nothing of it in the title either (lib/community.ts). */
+/**
+ * Open while at least one group of original creatures is (PROMPT 26): «I mostri creati da voi» or «Mostri del
+ * Grimorio»; the administrator sees it anyway, with the bar while neither is visible to the public.
+ */
+async function groups() {
+  const [community, grimorio] = await Promise.all([partState("bestiario", "homebrew"), partState("bestiario", "grimorio")]);
+  const open = (state: typeof community) => state.shown && !state.hidden;
+  return { community, grimorio, shown: community.shown || grimorio.shown, closed: !open(community) && !open(grimorio), back: open(community) || !open(grimorio) ? "community" : "grimorio" } as const;
+}
+
+/** While both groups are closed to the visitors, nothing of them in the title either. */
 export async function generateMetadata() {
-  const state = await partState("bestiario", "homebrew");
-  return state.shown ? {
+  return (await groups()).shown ? {
     title: `${METHOD_TITLE} — I mostri creati da voi · Il Grimorio.App`,
-    description: "Come mettiamo alla prova le creature della community: migliaia di combattimenti, tre modi di giocarle, gruppi diversi e la prova del tavolo.",
+    description: "Come mettiamo alla prova le creature originali, della community e della redazione: migliaia di combattimenti, tre modi di giocarle, gruppi diversi e la prova del tavolo.",
   } : CLOSED_PART_METADATA;
 }
 
@@ -26,13 +35,15 @@ export async function generateMetadata() {
  */
 export default async function BalanceMethodPage() {
   await sectionPage("bestiario");
-  const state = await partState("bestiario", "homebrew");
+  const state = await groups();
   if (!state.shown) notFound();
   const table = referenceTable();
   return (
     <div className="mx-auto max-w-2xl px-4 pb-10 pt-4 text-[#2B2118]" data-method-page="">
-      {state.hidden && <div className="pb-2"><HiddenPartBar id={partId("bestiario", "homebrew")} /></div>}
-      <Link href="/bestiario/creati-da-voi" className="-ml-2 inline-flex min-h-11 items-center px-2 text-base font-bold text-[#7A1F2B]">‹ I mostri creati da voi</Link>
+      {state.closed && <div className="pb-2"><HiddenPartBar id={partId("bestiario", "homebrew")} /></div>}
+      {state.back === "community"
+        ? <Link href="/bestiario/creati-da-voi" className="-ml-2 inline-flex min-h-11 items-center px-2 text-base font-bold text-[#7A1F2B]">‹ I mostri creati da voi</Link>
+        : <Link href="/bestiario/del-grimorio" className="-ml-2 inline-flex min-h-11 items-center px-2 text-base font-bold text-[#7A1F2B]">‹ Mostri del Grimorio</Link>}
       <h1 className="mt-1 font-serif text-[34px] font-bold leading-tight">{METHOD_TITLE}</h1>
       <p className="mt-2 text-[16px] leading-7 text-[#3D3128]">{METHOD_INTRO}</p>
 

@@ -151,22 +151,28 @@ async function log(homebrewIdValue: string, nome: string, edizione: string, azio
   await pool.query("INSERT INTO grimorio_homebrew_log (id, homebrew_id, nome, edizione, azione) VALUES ($1, $2, $3, $4, $5)", [randomUUID(), homebrewIdValue, nome, edizione, azione]);
 }
 
-/** A homebrew made in the admin area («del Grimorio»): the same licence as the proposed ones. */
+/**
+ * A homebrew made in the admin area («Dalla redazione»): the same licence as the proposed ones, the verdict of the
+ * Bilanciamento saved with it. The pill starts off: the administrator turns it on (editor or /admin/bilanciamento) once
+ * the saved verdict is «in linea» (PROMPT 26).
+ */
 export async function createHomebrew(draft: HomebrewDraft, giudizio: string | null = null): Promise<string> {
   await ensureHomebrewTables();
   const id = await freeId(draft.nome);
-  // The pill starts off: the administrator turns it on from /admin/bilanciamento when the verdict is «in linea».
   await pool.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, licenza, bilanciamento) VALUES ($1, $2, $3, NULL, $4, $5)", [id, JSON.stringify(draft), draft.edizione, HOMEBREW_LICENSE, giudizio]);
   await log(id, draft.nome, draft.edizione, "creata");
   return id;
 }
 
-/** Corrections of a published homebrew (the address stays the same). */
-export async function updateHomebrew(id: string, draft: HomebrewDraft, giudizio: string | null = null): Promise<boolean> {
+/**
+ * Corrections of a published homebrew (the address stays the same), with the verdict of the corrected sheet. verified:
+ * the box «Mostra "Bilanciamento verificato"» of the editor (PROMPT 26); left out, the pill keeps its state. Either way
+ * it stays only while the verdict is «in linea».
+ */
+export async function updateHomebrew(id: string, draft: HomebrewDraft, giudizio: string | null = null, verified?: boolean): Promise<boolean> {
   await ensureHomebrewTables();
-  // The verdict of the corrected sheet: the pill stays only while it is «in linea».
-  const result = await pool.query("UPDATE grimorio_homebrew SET scheda = $2, edizione = $3, aggiornata_il = now(), bilanciamento = $4, verificato = verificato AND $4 = 'in linea' WHERE id = $1",
-    [id, JSON.stringify(draft), draft.edizione, giudizio]);
+  const result = await pool.query("UPDATE grimorio_homebrew SET scheda = $2, edizione = $3, aggiornata_il = now(), bilanciamento = $4, verificato = COALESCE($5, verificato) AND $4 = 'in linea' WHERE id = $1",
+    [id, JSON.stringify(draft), draft.edizione, giudizio, verified ?? null]);
   if (!result.rowCount) return false;
   await log(id, draft.nome, draft.edizione, "corretta");
   return true;
@@ -179,6 +185,13 @@ export async function deleteHomebrew(id: string): Promise<boolean> {
   await deleteTableVotes(id);
   await log(id, rows[0].scheda.nome, rows[0].edizione, "eliminata");
   return true;
+}
+
+/** «Ricalcola» (/admin/bilanciamento, PROMPT 26): the verdict of the sheet as it is now, saved; the pill stays only if «in linea». */
+export async function saveHomebrewVerdict(id: string, giudizio: string | null): Promise<boolean> {
+  await ensureHomebrewTables();
+  const result = await pool.query("UPDATE grimorio_homebrew SET bilanciamento = $2, verificato = verificato AND $2 = 'in linea' WHERE id = $1", [id, giudizio]);
+  return !!result.rowCount;
 }
 
 /** The green pill on or off (/admin/bilanciamento): on only while the saved verdict is «in linea». */

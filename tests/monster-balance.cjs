@@ -8,7 +8,7 @@ const {simulate,TACTICS,levelFor}=require('../lib/monster-balance/simulate.ts');
 const {STRESS,measure,fightsOfASheet}=require('../lib/monster-balance/scenarios.ts');
 const {heavyControl,conditionImmunities}=require('../lib/monster-balance/checks.ts');
 const {party,levelOf,heroDc,wizard,fighter,cleric}=require('../lib/monster-balance/party.ts');
-const {compare,band,referenceGroup,gapFromCr,levelOf:verdictOf,BAND,CHECK_LIMIT}=require('../lib/monster-balance/compare.ts');
+const {compare,band,referenceGroup,gapFromCr,verdictOf,BAND,MAX_OUT,FAR_LIMIT,FAR_COUNT}=require('../lib/monster-balance/compare.ts');
 const {balanceApplies}=require('../lib/balance-scope.ts');
 const balance=require('../lib/monster-balance/index.ts');
 const sheets=file=>JSON.parse(fs.readFileSync(`lib/data/${file}`,'utf8')).records.map(record=>record.monster);
@@ -133,9 +133,9 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.notEqual(balance.evaluateMonster(sheet,'2014'),first,'another edition, another result');
  assert.equal(balance.cacheKey(sheet,'2024',3000),balance.cacheKey({...sheet},'2024',3000));
 
- // The comparison: the band from the 10th to the 90th percentile, widening to at least 6 SRD monsters, three verdicts, the worst tactic.
- assert.deepEqual(BAND,{low:0.1,high:0.9});assert.equal(CHECK_LIMIT,25);
- assert.deepEqual(band([0,1,2,3,4,5,6,7,8,9,10]),{median:5,low:1,high:9});
+ // The comparison (PROMPT 26): the band from the 5th to the 95th percentile, widening to at least 6 SRD monsters, six measures.
+ assert.deepEqual(BAND,{low:0.05,high:0.95});assert.equal(MAX_OUT,2);assert.equal(FAR_LIMIT,50);assert.equal(FAR_COUNT,2);
+ assert.deepEqual(band([0,1,2,3,4,5,6,7,8,9,10]),{median:5,low:0.5,high:9.5});
  const metricsOf=(d,r,down=20,extra={})=>({damagePerRound:d,rounds:r,downPct:down,wipePct:0,winPct:100,oneShotPct:0,...extra});
  const stressOf=()=>Object.fromEntries(STRESS.map(x=>[x.key,{rounds:4,wipePct:10,winPct:80}]));
  const rowOf=(id,cr,d,r,down=20,extra={})=>({id,name:id,cr,ac:13,hp:60,toHit:5,dc:13,tactics:Object.fromEntries(TACTICS.map(t=>[t,metricsOf(d,r,down,extra)])),stress:stressOf()});
@@ -144,32 +144,37 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal(referenceGroup(5,rows).widened,4,'3 at CR 5: widened until 6');
  const cmp=compare(allTactics(40,3),9,rows);
  assert.equal(cmp.tactics.ottimale.damage.verdict,'sopra');assert.equal(cmp.tactics.ottimale.rounds.verdict,'in linea');assert.equal(cmp.level,'fuori');
- assert.match(cmp.sentence,/^Con un master che gioca al meglio picchia troppo forte \(\+\d+%\)\.$/);assert.ok(gapFromCr(cmp)>0);
+ assert.equal(cmp.out,3);assert.equal(cmp.far,3);
+ assert.match(cmp.sentence,/^Con un master che gioca al meglio picchia troppo forte \(\+\d+%\) \(3 misure su 6 fuori fascia, 3 di oltre il 50%\)\.$/);assert.ok(gapFromCr(cmp)>0);
  assert.equal(compare(allTactics(15,3),9,rows).level,'in linea');
  assert.equal(compare(allTactics(15,3),9,rows).sentence,'Danni e resistenza nella fascia dei mostri del suo GS con tutti e tre i modi di giocarlo.');
  // The limits of the three levels: a group whose band is exactly 8 damage and 4 rounds.
  const flat=[0,1,2,3,4,5].map(i=>rowOf(`f${i}`,3,8,4));
  const level=(d,r)=>compare(allTactics(d,r),3,flat);
- assert.equal(level(8,4).level,'in linea');assert.equal(level(8,4).worst,null);
- assert.equal(level(10,4).level,'da controllare','+25% exactly: still to check');
- assert.equal(level(10.1,4).level,'fuori','+26%: out of the CR');
- assert.equal(level(6,4).level,'da controllare','−25% exactly');assert.equal(level(5.9,4).level,'fuori');
- assert.equal(level(8,5).level,'da controllare');assert.equal(level(8,3).level,'da controllare');assert.equal(level(8,2.9).level,'fuori');
- assert.equal(level(9,5).level,'fuori','both out, even by little');
+ assert.equal(level(8,4).level,'in linea');assert.equal(level(8,4).worst,null);assert.equal(level(8,4).out,0);
+ assert.equal(level(10,4).level,'da controllare','three measures out by 25%: to check');assert.equal(level(10,4).out,3);
+ assert.equal(level(12,4).level,'da controllare','+50% exactly: not far yet');
+ assert.equal(level(12.1,4).level,'fuori','+51% in three tactics: out of the CR');
+ assert.equal(level(3.9,4).level,'fuori');assert.equal(level(8,1.9).level,'fuori');
+ assert.equal(level(8,5).level,'da controllare');assert.equal(level(9,5).level,'da controllare','six measures out, all near');
  assert.deepEqual(level(8,3).tactics.ottimale.outside,['cade troppo presto (−25%)']);
  assert.deepEqual(level(6,5).tactics.ottimale.outside,['picchia troppo piano (−25%)','resiste troppo a lungo (+25%)']);
- assert.equal(verdictOf(level(10,4).tactics.ottimale.damage,level(10,4).tactics.ottimale.rounds),'da controllare');
- // «In linea» only when all three tactics are: the worst one decides, and the sentence says which and what.
+ const two=level(10,4).tactics.ottimale;
+ assert.deepEqual(verdictOf([two.damage,two.rounds]),{level:'in linea',out:1,far:0});
+ // Up to two measures out of six: still in line, with the sentence of the margin.
  const randomShort=compare(allTactics(8,4,{caso:metricsOf(8,2)}),3,flat);
- assert.equal(randomShort.tactics.ottimale.level,'in linea');assert.equal(randomShort.tactics.caso.level,'fuori');
- assert.equal(randomShort.level,'fuori');assert.equal(randomShort.worst,'caso');
- assert.equal(randomShort.sentence,'Con un master che sceglie a caso cade troppo presto (−50%).');
- const prudentCheck=compare(allTactics(8,4,{prudente:metricsOf(6.5,4)}),3,flat);
- assert.equal(prudentCheck.level,'da controllare');assert.match(prudentCheck.sentence,/^Con un master prudente picchia troppo piano/);
+ assert.equal(randomShort.tactics.ottimale.level,'in linea');assert.equal(randomShort.tactics.caso.level,'da controllare');
+ assert.equal(randomShort.level,'in linea');assert.equal(randomShort.worst,'caso');
+ assert.equal(randomShort.sentence,'Con un master che sceglie a caso cade troppo presto (−50%): entro il margine (al massimo 2 misure su 6 fuori fascia, come i mostri ufficiali).');
+ const randomFar=compare(allTactics(8,4,{caso:metricsOf(20,1.9)}),3,flat);
+ assert.equal(randomFar.tactics.caso.level,'fuori');assert.equal(randomFar.level,'fuori','two measures far out, even in one tactic');assert.equal(randomFar.worst,'caso');
+ const prudentCheck=compare(allTactics(6.5,4,{}),3,flat);
+ assert.equal(prudentCheck.level,'da controllare');assert.match(prudentCheck.sentence,/picchia troppo piano \(−19%\) \(3 misure su 6 fuori fascia\)\.$/);
+ assert.equal(compare(allTactics(6.5,4,{caso:metricsOf(8,4)}),3,flat).level,'in linea','two out of six');
  // Each tactic against the same tactic of the SRD monsters.
  const split=[0,1,2,3,4,5].map(i=>({...rowOf(`s${i}`,3,8,4),tactics:{ottimale:metricsOf(8,4),caso:metricsOf(4,4),prudente:metricsOf(8,4)}}));
  assert.equal(compare(allTactics(8,4,{caso:metricsOf(4,4)}),3,split).level,'in linea','4 damage is normal for a master who plays at random');
- // The test situations: warnings over the 90th percentile of wipes and rounds, under the 10th of the characters' wins.
+ // The test situations: warnings over the 95th percentile of wipes and rounds, under the 5th of the characters' wins.
  const stressed=compare({...allTactics(8,4),stress:{...stressOf(),tre:{rounds:9,wipePct:60,winPct:30}}},3,flat);
  assert.deepEqual(stressed.stress.find(x=>x.key==='tre').warnings.length,3);
  assert.equal(stressed.stress.find(x=>x.key==='cinque').warnings.length,0);
@@ -288,5 +293,5 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  const page=fs.readFileSync('app/mostro/[id]/page.tsx','utf8');assert.doesNotMatch(page,/monster-balance|balanceBoxHtml/);assert.match(page,/\{balanceApplies\(monster\) && <AdminMonsterPanel id=\{monster\.id\} \/>\}/);
  for(const file of ['app/api/catalogo/bestiario/route.ts','lib/sw/service-worker.js','lib/search-index.ts'])assert.doesNotMatch(fs.readFileSync(file,'utf8'),/monster-balance|pannello-mostro/,file);
  assert.match(fs.readFileSync('scripts/check-client-bundle.mjs','utf8'),/BILANCIAMENTO/);
- console.log('Bilanciamento: sheets read (2024 and 2014, regeneration), group, seeded fights with three tactics and 7 test situations under 2 s per sheet (cached per version), comparison with the SRD of the same CR, edition and tactic (10–90, three verdicts, the worst tactic), warnings a–e, box, only our sheets, administrator only.');
+ console.log('Bilanciamento: sheets read (2024 and 2014, regeneration), group, seeded fights with three tactics and 7 test situations under 2 s per sheet (cached per version), comparison with the SRD of the same CR, edition and tactic (5–95, six measures, three verdicts), warnings a–e, box, only our sheets, administrator only.');
 })().catch(error=>{console.error(error);process.exit(1);});

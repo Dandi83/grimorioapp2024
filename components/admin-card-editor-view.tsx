@@ -10,7 +10,7 @@ import { adminEdition } from "@/lib/admin-edition-server";
 import { safeReturnPath } from "@/lib/admin-edit-link";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import { hiddenCardPaths } from "@/lib/section-visibility";
-import { publishedHomebrew } from "@/lib/homebrew";
+import { publishedHomebrew, verifiedPill } from "@/lib/homebrew";
 import { publicLinksOut } from "@/lib/section-view";
 import { CardDisplayProvider } from "@/components/card-display-context";
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
@@ -44,7 +44,9 @@ export async function AdminCardEditorView({ kind, id, searchParams }: { kind: "i
       card = { kind, monster };
       wanted = usesLegacyMonsterRules(monster) ? "2014" : "2024";
     } else if (brew) {
-      card = { kind: "homebrew", id, nome: brew.scheda.nome, draft: brew.scheda, ours: !brew.autore };
+      // The saved verdict and the pill: the box «Mostra "Bilanciamento verificato"» of the editor (PROMPT 26).
+      const saved = brew.bilanciamento === "in linea" || brew.bilanciamento === "da controllare" || brew.bilanciamento === "fuori" ? brew.bilanciamento : null;
+      card = { kind: "homebrew", id, nome: brew.scheda.nome, draft: brew.scheda, ours: !brew.autore, verifiedBox: { saved, shown: verifiedPill(brew) } };
       if (brew.edizione !== "entrambe") wanted = brew.edizione;
     } else notFound();
   }
