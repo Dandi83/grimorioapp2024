@@ -126,7 +126,7 @@ test("leaving the editor, «indietro» on the card leads to the list, never to t
   // A homebrew of the Grimorio: its guided editor, closed with X.
   await page.goto("/admin/mostri");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
-  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Nuovo mostro della redazione", exact: true }).click();
   const brew = page.getByRole("dialog");
   await brew.locator("#admin-hb-nome").fill("Ombra del ritorno");
   await brew.locator("#admin-hb-azioni-0-nome").fill("Tocco");

@@ -17,9 +17,10 @@ export interface AdminRow {
   group: { key: string; label: string; order: number };
   /**
    * SRD: transcribed from the SRD and unchanged; NO SRD: original summaries, cards added here, SRD cards modified;
-   * creati: «I mostri creati da voi» (PROMPT 22: not NO SRD, which means cards from manuals outside the SRD).
+   * redazione / community: the original creatures of the editorial staff and of the community (PROMPT 29; until then
+   * one «Creati da voi»): not NO SRD, which means cards from manuals outside the SRD.
    */
-  source: "srd" | "nosrd" | "creati";
+  source: "srd" | "nosrd" | "redazione" | "community";
   /** The pill of a NO SRD card. */
   pill?: "Sintesi" | "Aggiunta da te" | "Dalla redazione" | "Dalla community";
   /** «SRD modificata»: the fields that no longer match the SRD, for «Ripristina testo SRD». */
@@ -46,7 +47,7 @@ export interface AdminListData {
 }
 
 export type VisibilityFilter = "tutte" | "visibili" | "nascoste";
-export type SourceFilter = "tutte" | "srd" | "nosrd" | "creati";
+export type SourceFilter = "tutte" | "srd" | "nosrd" | "redazione" | "community";
 export interface ListFilters { visibility: VisibilityFilter; source: SourceFilter; modified: boolean; reviewNames: boolean }
 export const NO_FILTERS: ListFilters = { visibility: "tutte", source: "tutte", modified: false, reviewNames: false };
 
@@ -75,7 +76,8 @@ export function filterCounts(rows: readonly AdminRow[], isHidden: (row: AdminRow
     hidden: rows.filter(row => row.hidden !== null && isHidden(row)).length,
     srd: rows.filter(row => row.source === "srd").length,
     nosrd: rows.filter(row => row.source === "nosrd").length,
-    creati: rows.filter(row => row.source === "creati").length,
+    redazione: rows.filter(row => row.source === "redazione").length,
+    community: rows.filter(row => row.source === "community").length,
     modified: rows.filter(row => !!row.modified?.length).length,
     reviewNames: rows.filter(row => !!row.reviewNames?.length).length,
   };

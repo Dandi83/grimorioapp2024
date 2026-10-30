@@ -50,7 +50,7 @@ interface LogItem {
 }
 
 const SUBCLASS_ACTIONS: Record<string, string> = { creata: "Creata (nascosta)", corretta: "Corretta", eliminata: "Eliminata" };
-const HOMEBREW_ACTIONS: Record<string, string> = { pubblicata: "Pubblicata", creata: "Creata dal Grimorio", corretta: "Corretta", eliminata: "Eliminata", rifiutata: "Proposta rifiutata" };
+const HOMEBREW_ACTIONS: Record<string, string> = { pubblicata: "Pubblicata", creata: "Creata dalla redazione", corretta: "Corretta", eliminata: "Eliminata", rifiutata: "Proposta rifiutata" };
 
 const EDITOR_TITLES: Record<EditorSection, string> = { incantesimi: "Incantesimi", mostri: "Mostri" };
 

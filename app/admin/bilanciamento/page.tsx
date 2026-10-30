@@ -4,10 +4,11 @@ import { AdminLogin } from "@/components/admin-login";
 import { VerifiedToggle } from "@/components/admin-balance/verified-toggle";
 import { isAdmin } from "@/lib/admin-auth";
 import { publishedHomebrew, homebrewMonster, verifiedPill } from "@/lib/homebrew";
+import { homebrewVerdict } from "@/lib/homebrew-balance";
 import { getAllMonsters } from "@/lib/monsters";
 import { balanceApplies, balanceEditions, evaluateMonster, LEVELS, levelSentence, overallLevel, type BalanceEdition } from "@/lib/monster-balance";
 import type { Level } from "@/lib/monster-balance/compare";
-import { gapFromCr } from "@/lib/monster-balance/compare";
+import { gapFromCr, MAX_OUT, MEASURES, TOLERANCE } from "@/lib/monster-balance/compare";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import { readAllTableCounts, type TableCounts } from "@/lib/table-votes";
 
@@ -57,7 +58,9 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
     const edition = both ? "2014 e 2024" : item.editions[0] as BalanceEdition | string;
     // «2014: In linea · 2024: In linea» (PROMPT 26): each edition's own verdict, 2014 first; filters and counts use the worse.
     const perEdition = both ? [...results].sort((a, b) => a.edition.localeCompare(b.edition)).map(result => ({ edition: result.edition, level: result.measures ? result.comparison.level : null })) : [];
-    return { ...item, edition, perEdition, result: { ...worst, warnings }, level, gap: overall ? Math.max(...results.map(result => gapFromCr(result.comparison))) : -1 };
+    // A pill already on (PROMPT 29): the verdict of today, with the fights of the saved one; not «In linea» → the notice.
+    const changed = item.row && verifiedPill(item.row) ? homebrewVerdict(item.row.scheda) : null;
+    return { ...item, edition, perEdition, result: { ...worst, warnings }, level, changed: changed === "in linea" ? null : changed, gap: overall ? Math.max(...results.map(result => gapFromCr(result.comparison))) : -1 };
   }).sort((a, b) => ORDER[a.level] - ORDER[b.level] || b.gap - a.gap || a.monster.nome.localeCompare(b.monster.nome, "it"));
   const matches = (item: (typeof all)[number], key: (typeof FILTERS)[number]["key"]) =>
     key === "tutti" ? true : key === "con-avvisi" ? item.result.warnings.length > 0 : item.level !== "non simulabile" && LEVELS[item.level].slug === key;
@@ -68,7 +71,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
       <Link href="/admin" className="inline-flex min-h-11 items-center text-[15px] font-bold text-[#7A1F2B]">‹ Area riservata</Link>
       <h1 className="font-serif text-[34px] font-bold leading-tight text-[#7A1F2B]">Bilanciamento</h1>
       <p className="mt-1 text-[15px] leading-6 text-[#5E4E3E]">
-        «I mostri creati da voi» e schede create nell’area riservata, confrontate con i mostri SRD dello stesso GS e della stessa edizione (fascia dal 5° al 95° percentile), con tre modi di giocarle: ottimale, a caso, prudente. In linea con al massimo 2 misure su 6 fuori fascia; fuori dal GS con almeno 2 misure fuori di oltre il 50%. Le creature «2014 e 2024» hanno un giudizio per edizione: filtri e conteggi usano il peggiore. Prima i «Fuori dal GS», poi «Da controllare», poi «In linea».
+        «I mostri creati da voi» e schede create nell’area riservata, confrontate con i mostri SRD dello stesso GS e della stessa edizione (fascia dal 5° al 95° percentile), con tre modi di giocarle: ottimale, a caso, prudente. Sette misure: danni e round per ogni modo, più i PG a terra con il modo ottimale. In linea con al massimo {MAX_OUT} misure su {MEASURES} fuori fascia, ciascuna di non più del {TOLERANCE}%; fuori dal GS con almeno 2 misure fuori di oltre il 50% o una di oltre il 100%. Una pillola già attiva non si toglie da sola: se il giudizio di oggi non è più «In linea», accanto alla casella compare «Giudizio cambiato: ricontrolla». Le creature «2014 e 2024» hanno un giudizio per edizione: filtri e conteggi usano il peggiore. Prima i «Fuori dal GS», poi «Da controllare», poi «In linea».
       </p>
       <nav aria-label="Filtra per giudizio" className="mt-3 flex flex-wrap gap-2" data-balance-filters="">
         {FILTERS.map(item => {
@@ -84,7 +87,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
       </nav>
       {shown.length ? (
         <ol className="mt-4 divide-y divide-[#E8D3A0] overflow-hidden rounded-[14px] border-[1.5px] border-dashed border-[#7A4E00] bg-[#FCEFD0]" data-balance-list="">
-          {shown.map(({ monster, kind, edition, perEdition, result, level, gap, row }) => (
+          {shown.map(({ monster, kind, edition, perEdition, result, level, gap, row, changed }) => (
             <li key={monster.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3" data-balance-item={monster.id}>
               <Link href={`/mostro/${encodeURIComponent(monster.id)}`} className="min-w-0 flex-1 text-[16px] font-semibold underline-offset-4 hover:underline">{monster.nome}</Link>
               <span className="text-[13px] text-[#5E4E3E]">{kind} · GS {monster.grado_sfida || "?"} · {edition}</span>
@@ -112,7 +115,7 @@ export default async function BalancePage({ searchParams }: { searchParams: Prom
               </span>
               {/* Al tavolo: the votes of the masters beside the simulator (only the cards of «I mostri creati da voi» have them). */}
               {row && <span className="w-full text-[13px]" data-balance-table={monster.id}>{tableLine(votes.get(monster.id))}</span>}
-              {row && <span className="w-full"><VerifiedToggle key={`${verifiedPill(row)}-${row.bilanciamento}`} id={monster.id} shown={verifiedPill(row)} saved={row.bilanciamento ?? null} /></span>}
+              {row && <span className="w-full"><VerifiedToggle key={`${verifiedPill(row)}-${row.bilanciamento}`} id={monster.id} shown={verifiedPill(row)} saved={row.bilanciamento ?? null} changed={changed} /></span>}
             </li>
           ))}
         </ol>

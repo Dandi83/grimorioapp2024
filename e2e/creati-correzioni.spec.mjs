@@ -101,28 +101,35 @@ for (const width of [390, 1280]) {
       test.setTimeout(180_000);
       const { context, page } = await admin(browser, width, edition);
 
-      // Contenuti → Mostri: «Creati da voi N» beside «NO SRD»; the creatures of «Creati da voi» not in «NO SRD».
+      // Contenuti → Mostri (PROMPT 29): «Dalla redazione N» and «Dalla community N» beside «NO SRD»; neither in «NO SRD».
       await page.goto("/admin/mostri");
       await page.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: edition }).click();
       await expect(page.getByTestId("admin-edition-band")).toHaveText(edition);
       const mine = edition === "2014" ? [OURS_NAME, THEIRS_NAME] : [OURS_NAME];
-      const creati = page.locator("[data-counter='creati']");
-      await expect(creati).toContainText("Creati da voi");
-      await expect(creati).toContainText(String(mine.length));
+      const ours = page.locator("[data-counter='redazione']"), theirs = page.locator("[data-counter='community']");
+      await expect(ours).toContainText("Dalla redazione");
+      await expect(ours).toContainText("1");
+      await expect(theirs).toContainText("Dalla community");
+      await expect(theirs).toContainText(String(mine.length - 1));
+      await expect(page.locator("main[data-admin-list]")).not.toContainText("Creati da voi");
       const rows = page.locator("main ul li[data-card-row]");
       await page.locator("[data-counter='nosrd']").click();
       for (const name of mine) await expect(rows.filter({ hasText: name })).toHaveCount(0);
       const nosrd = Number((await page.locator("[data-counter='nosrd']").textContent()).match(/\d+/)[0]);
       await expect(rows).toHaveCount(nosrd);
       await page.locator("[data-counter='nosrd']").click();
-      await creati.click();
-      await expect(rows).toHaveCount(mine.length);
-      for (const name of mine) await expect(rows.filter({ hasText: name })).toHaveCount(1);
-      await creati.click();
+      await ours.click();
+      await expect(rows).toHaveCount(1);
+      await expect(rows.filter({ hasText: OURS_NAME })).toHaveCount(1);
+      await ours.click();
+      await theirs.click();
+      await expect(rows).toHaveCount(mine.length - 1);
+      if (edition === "2014") await expect(rows.filter({ hasText: THEIRS_NAME })).toHaveCount(1);
+      await theirs.click();
 
-      // «Nuovo "Dalla redazione"»: the preview with the bordeaux pill, the long name whole, the pills under it.
+      // «Nuovo mostro della redazione»: the preview with the bordeaux pill, the long name whole, the pills under it.
       await page.getByRole("button", { name: "Nuovo", exact: true }).click();
-      await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
+      await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Nuovo mostro della redazione", exact: true }).click();
       let editor = page.getByRole("dialog");
       await editor.locator("#admin-hb-nome").fill("Cineraio dell’abisso profondissimo");
       await editor.getByRole("button", { name: "Anteprima della scheda" }).click();

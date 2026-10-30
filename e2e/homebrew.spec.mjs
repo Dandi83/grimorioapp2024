@@ -269,7 +269,7 @@ test("homebrew: proposal sent, reviewed and approved or refused, Homebrew collec
   await expect(page.getByTestId("admin-edition-band")).toHaveText("2014");
   await expect(page.locator("main[data-admin-list]")).toHaveAttribute("data-edition", "2014");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
-  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Nuovo mostro della redazione", exact: true }).click();
   const editor = page.getByRole("dialog");
   await expect(editor.getByRole("group", { name: "Edizione della scheda" }).getByRole("button", { name: "2014", exact: true })).toHaveAttribute("aria-pressed", "true");
   await editor.locator("#admin-hb-nome").fill("Guardiano di sale");

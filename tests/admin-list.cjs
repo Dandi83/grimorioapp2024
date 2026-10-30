@@ -42,15 +42,17 @@ assert.deepEqual(ids({modified:true,reviewNames:true}),['b','c'],'both checks: t
 assert.deepEqual(ids({source:'nosrd',visibility:'visibili',reviewNames:true}),['b']);
 assert.equal(list.activeFilterCount({visibility:'nascoste',source:'srd',modified:true,reviewNames:false}),3);
 assert.equal(list.activeFilterCount(list.NO_FILTERS),0);
-// Counts of the panel and of the counters: SRD + NO SRD + «Creati da voi» = all.
+// Counts of the panel and of the counters: SRD + NO SRD + «Dalla redazione» + «Dalla community» = all.
 const counts=list.filterCounts(rows,isHidden);
-assert.deepEqual(counts,{all:5,hidden:1,srd:3,nosrd:2,creati:0,modified:1,reviewNames:1});
-assert.equal(counts.srd+counts.nosrd+counts.creati,counts.all);
-// «Creati da voi» (PROMPT 22): its own source, never counted in «NO SRD».
-const brewed=[...rows,{...rows[0],id:'h',source:'creati',hidden:false}];
+assert.deepEqual(counts,{all:5,hidden:1,srd:3,nosrd:2,redazione:0,community:0,modified:1,reviewNames:1});
+assert.equal(counts.srd+counts.nosrd+counts.redazione+counts.community,counts.all);
+// The original creatures (PROMPT 29, one «Creati da voi» until then): two sources of their own, never in «NO SRD».
+const brewed=[...rows,{...rows[0],id:'h',source:'redazione',hidden:false},{...rows[0],id:'k',source:'community',hidden:false},{...rows[0],id:'j',source:'community',hidden:false}];
 assert.deepEqual(list.filterCounts(brewed,isHidden).nosrd,2);
-assert.deepEqual(list.filterCounts(brewed,isHidden).creati,1);
-assert.deepEqual(list.filterRows(brewed,{...list.NO_FILTERS,source:'creati'},isHidden).map(row=>row.id),['h']);
+assert.deepEqual(list.filterCounts(brewed,isHidden).redazione,1);
+assert.deepEqual(list.filterCounts(brewed,isHidden).community,2);
+assert.deepEqual(list.filterRows(brewed,{...list.NO_FILTERS,source:'redazione'},isHidden).map(row=>row.id),['h']);
+assert.deepEqual(list.filterRows(brewed,{...list.NO_FILTERS,source:'community'},isHidden).map(row=>row.id),['k','j']);
 assert.ok(!list.filterRows(brewed,{...list.NO_FILTERS,source:'nosrd'},isHidden).some(row=>row.id==='h'));
 
 // Groups: spells by level, creatures by challenge rating in numeric order, other contents by their kind or letter.

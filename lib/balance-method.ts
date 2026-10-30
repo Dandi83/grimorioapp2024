@@ -1,4 +1,4 @@
-import { BAND, FAR_COUNT, FAR_LIMIT, MAX_OUT, MIN_GROUP } from "./monster-balance/compare";
+import { BAND, FAR_COUNT, FAR_LIMIT, MAX_OUT, MEASURES, MIN_GROUP, TOLERANCE, VERY_FAR_LIMIT } from "./monster-balance/compare";
 import { cleric, fighter, heroDc, party, rogue, wizard } from "./monster-balance/party";
 import { BASE_FIGHTS, REFERENCE_FIGHTS, STRESS, STRESS_FIGHTS } from "./monster-balance/scenarios";
 import { TACTICS } from "./monster-balance/simulate";
@@ -14,13 +14,13 @@ const inTen = Math.round((BAND.high - BAND.low) * 10);
 const percentile = (fraction: number) => `${Math.round(fraction * 100)}°`;
 
 /**
- * The calibration (PROMPT 26): the SRD monsters judged with the rule, each against its group without itself. Written
+ * The calibration (PROMPT 26, rule of PROMPT 29): the SRD monsters judged with the rule, each against its group without itself. Written
  * here because the page never reads the data of the monsters; tests/balance-calibration.cjs checks these numbers
  * against lib/monster-balance/calibration.ts and fails when the data or the rule change them.
  */
 export const CALIBRATION = {
-  2014: { total: 319, inLine: 266, check: 43, out: 10 },
-  2024: { total: 328, inLine: 267, check: 60, out: 1 },
+  2014: { total: 319, inLine: 240, check: 66, out: 13 },
+  2024: { total: 328, inLine: 247, check: 75, out: 6 },
 } as const;
 const share = ({ inLine, total }: { inLine: number; total: number }) => `${inLine} su ${total} (${Math.round((inLine / total) * 100)}%)`;
 
@@ -38,7 +38,7 @@ export const METHOD_STEPS: { title: string; text: string }[] = [
   },
   {
     title: "Tre modi di giocarlo",
-    text: `Un mostro deve restare del suo GS qualunque scelta faccia il master. Lo proviamo con ${TACTICS.length} stili: ottimale (sceglie sempre la mossa che fa più danni), a caso (sceglie a caso tra le azioni disponibili) e prudente (preferisce il multiattacco e usa le capacità a ricarica una volta su due). Il giudizio guarda i tre stili insieme: sei misure in tutto, danni e round per ognuno. È «in linea» con al massimo ${MAX_OUT} misure fuori dalla fascia, come capita anche ai mostri ufficiali.`,
+    text: `Un mostro deve restare del suo GS qualunque scelta faccia il master. Lo proviamo con ${TACTICS.length} stili: ottimale (sceglie sempre la mossa che fa più danni), a caso (sceglie a caso tra le azioni disponibili) e prudente (preferisce il multiattacco e usa le capacità a ricarica una volta su due). Il giudizio guarda i tre stili insieme: danni e round per ognuno, più quanto spesso un personaggio finisce a terra con il master che gioca al meglio, sette misure in tutto. È «in linea» se al massimo ${MAX_OUT} misure escono dalla fascia e nessuna di più del ${TOLERANCE}%, come capita anche ai mostri ufficiali: un mostro che picchia molto più forte dei mostri del suo GS non è mai «in linea».`,
   },
   {
     title: "Gruppi diversi e controlli extra",
@@ -65,9 +65,10 @@ export const METHOD_DETAILS_TITLE = "Per chi vuole i dettagli";
 /** The thresholds of the verdict, in words. */
 export const METHOD_THRESHOLDS: string[] = [
   `La fascia: dal ${percentile(BAND.low)} al ${percentile(BAND.high)} percentile dei mostri ufficiali dello stesso GS, della stessa edizione e con lo stesso modo di giocare (${inTen} su 10).`,
-  `Le misure: danni a round e round di resistenza, per ciascuno dei tre modi di giocare; sei in tutto.`,
-  `In linea: al massimo ${MAX_OUT} misure su 6 fuori dalla fascia.`,
-  `Fuori dal GS: almeno ${FAR_COUNT} misure fuori dalla fascia di più del ${FAR_LIMIT}%.`,
+  `Le misure: danni a round e round di resistenza, per ciascuno dei tre modi di giocare, più i PG a terra (% dei combattimenti con almeno un personaggio a 0 punti ferita) con il modo ottimale; ${MEASURES} in tutto.`,
+  `Quanto è fuori una misura: la distanza dal bordo più vicino della fascia, in percentuale del bordo (con la fascia fino a 10 danni, 12 danni sono il 20% in più).`,
+  `In linea: al massimo ${MAX_OUT} misure su ${MEASURES} fuori dalla fascia, ciascuna di non più del ${TOLERANCE}%.`,
+  `Fuori dal GS: almeno ${FAR_COUNT} misure fuori dalla fascia di più del ${FAR_LIMIT}%, oppure una sola di più del ${VERY_FAR_LIMIT}%.`,
   "Da controllare: tutti gli altri casi.",
   `Taratura sui mostri ufficiali: ognuno, confrontato con il suo gruppo senza sé stesso, riceve il giudizio come una creatura nuova. Con questa regola risultano «in linea» ${share(CALIBRATION[2014])} nel 2014 e ${share(CALIBRATION[2024])} nel 2024; «fuori dal GS» ${CALIBRATION[2014].out} nel 2014 e ${CALIBRATION[2024].out} nel 2024. La stessa regola vale per tutti, senza eccezioni per singoli mostri.`,
   `Gruppo di confronto: almeno ${MIN_GROUP} mostri ufficiali dello stesso GS e della stessa edizione; se sono meno, si aggiungono quelli dei GS vicini.`,

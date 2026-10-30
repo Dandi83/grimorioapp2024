@@ -10,9 +10,11 @@ const SAVED_LABEL: Record<string, string> = { "in linea": "In linea", "da contro
 /**
  * /admin/bilanciamento (PROMPT 26), for each homebrew: the saved verdict, «Ricalcola» (the verdict of the sheet as it is
  * now, saved) and the box «Mostra "Bilanciamento verificato"», enabled only with the saved verdict «In linea» (for
- * «2014 e 2024», in line in both editions). The pill stays a choice of the administrator.
+ * «2014 e 2024», in line in both editions). The pill stays a choice of the administrator. `changed` (PROMPT 29): the
+ * pill is on but the verdict of today is no longer «In linea» (a stricter rule, new SRD data): «Giudizio cambiato:
+ * ricontrolla» beside the box; nothing changes by itself.
  */
-export function VerifiedToggle({ id, shown, saved }: { id: string; shown: boolean; saved: string | null }) {
+export function VerifiedToggle({ id, shown, saved, changed = null }: { id: string; shown: boolean; saved: string | null; changed?: string | null }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
@@ -36,6 +38,11 @@ export function VerifiedToggle({ id, shown, saved }: { id: string; shown: boolea
           onChange={event => { const next = event.target.checked; setChecked(next); run(() => setVerifiedAction(id, next)); }} />
         <span>Mostra «Bilanciamento verificato»{!possible && !shown ? <span className="text-[#5E4E3E]"> · solo con il giudizio salvato «In linea»</span> : null}</span>
       </label>
+      {changed && checked && (
+        <span className="rounded-[10px] border border-[#7A4E00] bg-white px-2.5 py-1 font-bold text-[#7A4E00]" data-verdict-changed={changed}>
+          ⚠ Giudizio cambiato: ricontrolla<span className="font-normal"> · oggi «{SAVED_LABEL[changed] ?? changed}»</span>
+        </span>
+      )}
       {error && <span role="status" className="font-semibold text-[#7A1F2B]">{error}</span>}
     </span>
   );

@@ -13,7 +13,7 @@ export type ReferenceRow = {
 export type Band = { median: number; low: number; high: number };
 export type Verdict = "in linea" | "sopra" | "sotto";
 export type MetricResult = { value: number; band: Band; percentile: number; verdict: Verdict };
-/** The verdict (PROMPT 26): see verdictOf. */
+/** The verdict (PROMPT 26, stricter in PROMPT 29): see verdictOf. */
 export type Level = "in linea" | "da controllare" | "fuori";
 export type TacticResult = {
   tactic: Tactic; damage: MetricResult; rounds: MetricResult; down: MetricResult; level: Level;
@@ -28,10 +28,10 @@ export type Comparison = {
   /** 0: the same CR; 1, 2…: CR ± that much, to reach at least 6 SRD monsters. */
   widened: number;
   tactics: Record<Tactic, TacticResult>;
-  /** The verdict of the six measures (verdictOf). */
+  /** The verdict of the seven measures (verdictOf). */
   level: Level;
-  /** Measures out of the band, of six; of them, out by more than FAR_LIMIT. */
-  out: number; far: number;
+  /** Measures out of the band, of seven; of them, out by more than TOLERANCE, FAR_LIMIT and VERY_FAR_LIMIT. */
+  out: number; wide: number; far: number; veryFar: number;
   /** The tactic the sentence speaks of (null when all three are in line). */
   worst: Tactic | null;
   sentence: string;
@@ -47,12 +47,21 @@ export const MIN_GROUP = 6;
 export const BAND = { low: 0.05, high: 0.95 } as const;
 /**
  * The verdict, calibrated on the SRD monsters (each against its group without itself, docs/metodo-bilanciamento.md):
- * six measures, damage and rounds for each of the three tactics. «In linea»: at most MAX_OUT out of the band; «Fuori
- * dal GS»: at least FAR_COUNT out by more than FAR_LIMIT %; «Da controllare» the rest.
+ * seven measures, damage and rounds for each of the three tactics and the fights with a character down with the
+ * optimal tactic (PROMPT 29). «In linea»: at most MAX_OUT out of the band, each by TOLERANCE % at most; «Fuori dal GS»:
+ * at least FAR_COUNT out by more than FAR_LIMIT %, or one by more than VERY_FAR_LIMIT %; «Da controllare» the rest.
+ * The distance is relative to the nearest edge of the band (distance).
+ */
+export const MEASURES = 7;
+/**
+ * TOLERANCE: 15% asked by PROMPT 29, raised by steps of 5% (25% at most) until the SRD monsters are 75–85% «In linea»:
+ * with 15% they were 73.4% (2014) and 73.8% (2024), with 20% 75.2% and 75.3% (tests/balance-calibration.cjs).
  */
 export const MAX_OUT = 2;
+export const TOLERANCE = 20;
 export const FAR_LIMIT = 50;
 export const FAR_COUNT = 2;
+export const VERY_FAR_LIMIT = 100;
 
 export const TACTIC_LABEL: Record<Tactic, string> = { ottimale: "Ottimale", caso: "A caso", prudente: "Prudente" };
 /** Who plays the monster, at the start of the sentence of the verdict. */
@@ -94,6 +103,7 @@ export function metric(value: number, values: number[]): MetricResult {
 const PHRASES = {
   damage: { sopra: "picchia troppo forte", sotto: "picchia troppo piano" },
   rounds: { sopra: "resiste troppo a lungo", sotto: "cade troppo presto" },
+  down: { sopra: "manda a terra troppi PG", sotto: "manda a terra troppo pochi PG" },
 } as const;
 
 /** How far a value is from its band, in % of the nearest edge (not rounded: the 25% limit is exact). */
@@ -103,20 +113,29 @@ export function distance(result: MetricResult): number {
   return edge ? ((result.value - edge) / edge) * 100 : 100;
 }
 
-const isFar = (result: MetricResult) => result.verdict !== "in linea" && Math.abs(distance(result)) > FAR_LIMIT;
+const beyond = (limit: number) => (result: MetricResult) => result.verdict !== "in linea" && Math.abs(distance(result)) > limit;
+const isFar = beyond(FAR_LIMIT);
 
-/** The verdict of measures (six for a monster, two for one tactic): how many are out of the band, how many far out. */
-export function verdictOf(measures: MetricResult[]): { level: Level; out: number; far: number } {
-  const out = measures.filter(result => result.verdict !== "in linea").length, far = measures.filter(isFar).length;
-  return { level: far >= FAR_COUNT ? "fuori" : out <= MAX_OUT ? "in linea" : "da controllare", out, far };
+/**
+ * The verdict of the measures of a monster (seven): how many are out of the band, out by more than TOLERANCE, more
+ * than FAR_LIMIT, more than VERY_FAR_LIMIT; the level by the rule above.
+ */
+export function verdictOf(measures: MetricResult[], tolerance = TOLERANCE): { level: Level; out: number; wide: number; far: number; veryFar: number } {
+  const count = (test: (result: MetricResult) => boolean) => measures.filter(test).length;
+  const out = count(result => result.verdict !== "in linea"), wide = count(beyond(tolerance)), far = count(isFar), veryFar = count(beyond(VERY_FAR_LIMIT));
+  const level: Level = far >= FAR_COUNT || veryFar > 0 ? "fuori" : out <= MAX_OUT && !wide ? "in linea" : "da controllare";
+  return { level, out, wide, far, veryFar };
 }
 
-/** One tactic, for the table of the box: in line with both measures in the band; out with one far out; to check otherwise. */
-export function levelOf(damage: MetricResult, rounds: MetricResult): Level {
-  const out = [damage, rounds].filter(result => result.verdict !== "in linea");
+/** One tactic, for the table of the box: in line with its measures in the band; out with one far out; to check otherwise. */
+export function levelOf(...measures: MetricResult[]): Level {
+  const out = measures.filter(result => result.verdict !== "in linea");
   if (!out.length) return "in linea";
   return out.some(isFar) ? "fuori" : "da controllare";
 }
+
+/** The measures of the verdict, in order: damage and rounds of each tactic, then the characters down with the optimal one. */
+export const verdictMeasures = (tactics: Record<Tactic, TacticResult>) => [...TACTICS.flatMap(tactic => [tactics[tactic].damage, tactics[tactic].rounds]), tactics.ottimale.down];
 
 const percent = (gap: number) => (Math.round(gap) === 0 ? "di poco" : `${gap > 0 ? "+" : "−"}${Math.abs(Math.round(gap))}%`);
 const RANK: Record<Level, number> = { "in linea": 0, "da controllare": 1, fuori: 2 };
@@ -127,12 +146,15 @@ export function compareTactic(tactic: Tactic, metrics: BalanceMetrics, group: Re
   const damage = metric(metrics.damagePerRound, values("damagePerRound"));
   const rounds = metric(metrics.rounds, values("rounds"));
   const down = metric(metrics.downPct, values("downPct"));
-  const outside = (["damage", "rounds"] as const).flatMap(key => {
-    const result = ({ damage, rounds })[key];
+  // «PG a terra» enters the verdict with the optimal tactic only (PROMPT 29).
+  const judged: Partial<Record<keyof typeof PHRASES, MetricResult>> = tactic === "ottimale" ? { damage, rounds, down } : { damage, rounds };
+  const outside = (Object.keys(judged) as (keyof typeof PHRASES)[]).flatMap(key => {
+    const result = judged[key]!;
     return result.verdict === "in linea" ? [] : [`${PHRASES[key][result.verdict]} (${percent(distance(result))})`];
   });
-  const gap = Math.round(Math.max(...[damage, rounds].map(result => Math.abs(distance(result)))));
-  return { tactic, damage, rounds, down, level: levelOf(damage, rounds), outside, gap };
+  const measures = Object.values(judged) as MetricResult[];
+  const gap = Math.round(Math.max(...measures.map(result => Math.abs(distance(result)))));
+  return { tactic, damage, rounds, down, level: levelOf(...measures), outside, gap };
 }
 
 const number = (value: number) => value.toLocaleString("it-IT", { maximumFractionDigits: 1 });
@@ -149,26 +171,26 @@ export function compareStress(key: StressKey, metrics: StressRow, group: Referen
   return { key, label: scenario.label, metrics, warnings };
 }
 
-export function compare(measures: Measures, cr: number, rows: ReferenceRow[], ownId?: string): Comparison {
+export function compare(measures: Measures, cr: number, rows: ReferenceRow[], ownId?: string, tolerance = TOLERANCE): Comparison {
   const { group, widened } = referenceGroup(cr, rows, ownId);
   const tactics = Object.fromEntries(TACTICS.map(tactic => [tactic, compareTactic(tactic, measures.tactics[tactic], group)])) as Record<Tactic, TacticResult>;
-  const { level, out, far } = verdictOf(TACTICS.flatMap(tactic => [tactics[tactic].damage, tactics[tactic].rounds]));
+  const { level, out, wide, far, veryFar } = verdictOf(verdictMeasures(tactics), tolerance);
   // The sentence speaks of the worst tactic: the higher level, then the one further from its band.
   const worstResult = TACTICS.map(tactic => tactics[tactic]).reduce((top, result) =>
     (RANK[result.level] > RANK[top.level] || (RANK[result.level] === RANK[top.level] && result.gap > top.gap) ? result : top));
   const worst = out ? worstResult.tactic : null;
-  const margin = `al massimo ${MAX_OUT} misure su 6 fuori fascia, come i mostri ufficiali`;
+  const margin = `al massimo ${MAX_OUT} misure su ${MEASURES} fuori fascia, ciascuna di non più del ${TOLERANCE}%, come i mostri ufficiali`;
   const sentence = !worst
     ? "Danni e resistenza nella fascia dei mostri del suo GS con tutti e tre i modi di giocarlo."
     : level === "in linea"
       ? `${TACTIC_WHO[worst]} ${worstResult.outside.join(" e ")}: entro il margine (${margin}).`
-      : `${TACTIC_WHO[worst]} ${worstResult.outside.join(" e ")} (${out} misure su 6 fuori fascia${far ? `, ${far} di oltre il ${FAR_LIMIT}%` : ""}).`;
+      : `${TACTIC_WHO[worst]} ${worstResult.outside.join(" e ")} (${out} ${out === 1 ? "misura" : "misure"} su ${MEASURES} fuori fascia${veryFar ? `, ${veryFar} di oltre il ${VERY_FAR_LIMIT}%` : far ? `, ${far} di oltre il ${FAR_LIMIT}%` : wide ? `, ${wide} di oltre il ${TOLERANCE}%` : ""}).`;
   const typical = (key: "ac" | "hp" | "toHit" | "dc") => {
     const values = group.map(row => row[key]).filter((value): value is number => typeof value === "number");
     return values.length ? Math.round(quantile([...values].sort((a, b) => a - b), 0.5)) : null;
   };
   return {
-    group, widened, tactics, level, out, far, worst, sentence,
+    group, widened, tactics, level, out, wide, far, veryFar, worst, sentence,
     stress: STRESS.map(scenario => compareStress(scenario.key, measures.stress[scenario.key], group)),
     typical: { ac: typical("ac") ?? 0, hp: typical("hp") ?? 0, toHit: typical("toHit"), dc: typical("dc") },
   };

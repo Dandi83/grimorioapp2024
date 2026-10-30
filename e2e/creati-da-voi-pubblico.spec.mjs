@@ -68,7 +68,7 @@ test("switch on: a visitor sees the card, the category, the section, the form an
   await admin.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
   await expect(admin.getByTestId("admin-edition-band")).toHaveText("2024");
   await admin.getByRole("button", { name: "Nuovo", exact: true }).click();
-  await admin.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
+  await admin.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Nuovo mostro della redazione", exact: true }).click();
   const editor = admin.getByRole("dialog");
   await editor.locator("#admin-hb-nome").fill("Custode pubblico");
   await editor.locator("#admin-hb-gs").selectOption("3");
