@@ -14,6 +14,8 @@ import { readMonster, type SheetFields } from "./parse";
  */
 export type CalibrationEdition = "2014" | "2024";
 export const CALIBRATION_LIMITS = { inLineLow: 75, inLineHigh: 85, outHigh: 5, warningHigh: 10 } as const;
+/** The tolerance of «In linea» (PROMPT 29): from 15%, by steps of 5%, to 25% at most, the first that fits the limits. */
+export const TOLERANCE_STEPS = { start: 15, step: 5, max: 25 } as const;
 /** The fixed checks (heavy control, resistance to every weapon at a low CR, magic resistance with legendary ones): no limit. */
 export const FIXED_WARNING = /^(controllo|contromosse:armi$|contromosse:magia$)/;
 
@@ -28,7 +30,7 @@ type Records = { records: { monster: SheetFields & { id: string } }[] };
 const sheets = (...files: Records[]) => new Map(files.flatMap(file => file.records.map(({ monster }) => [monster.id, monster] as const)));
 const SHEETS = { 2014: () => sheets(srd51 as unknown as Records), 2024: () => sheets(srd521 as unknown as Records, animals521 as unknown as Records) };
 
-export function calibrate(edition: CalibrationEdition): Calibration {
+export function calibrate(edition: CalibrationEdition, tolerance?: number): Calibration {
   const rows = (data.editions as unknown as Record<CalibrationEdition, ReferenceRow[]>)[edition];
   const byId = SHEETS[edition]();
   const levels: Record<Level, number> = { "in linea": 0, "da controllare": 0, fuori: 0 };
@@ -36,11 +38,24 @@ export function calibrate(edition: CalibrationEdition): Calibration {
   for (const row of rows) {
     const sheet = byId.get(row.id)!;
     const measures = { tactics: row.tactics, stress: row.stress as never };
-    const comparison = compare(measures, row.cr, rows, row.id);
+    const comparison = compare(measures, row.cr, rows, row.id, tolerance);
     levels[comparison.level]++;
     for (const key of new Set(balanceWarnings(sheet, readMonster(sheet), comparison, measures).map(warning => warning.key))) warnings[key] = (warnings[key] ?? 0) + 1;
   }
   return { edition, total: rows.length, levels, warnings };
+}
+
+/** The first tolerance of TOLERANCE_STEPS with both editions within the limits (null: none). */
+export function chooseTolerance(): number | null {
+  for (let tolerance: number = TOLERANCE_STEPS.start; tolerance <= TOLERANCE_STEPS.max; tolerance += TOLERANCE_STEPS.step) {
+    const fits = (["2014", "2024"] as const).every(edition => {
+      const { total, levels } = calibrate(edition, tolerance);
+      const inLine = percent(levels["in linea"], total);
+      return inLine >= CALIBRATION_LIMITS.inLineLow && inLine <= CALIBRATION_LIMITS.inLineHigh && percent(levels.fuori, total) <= CALIBRATION_LIMITS.outHigh;
+    });
+    if (fits) return tolerance;
+  }
+  return null;
 }
 
 export const percent = (count: number, total: number) => Math.round((count / total) * 1000) / 10;

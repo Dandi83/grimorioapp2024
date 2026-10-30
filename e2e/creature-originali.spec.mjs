@@ -66,7 +66,7 @@ test.beforeAll(async ({ browser }) => {
   await admin.getByRole("group", { name: "Edizione dell’area riservata" }).getByRole("button", { name: "2024" }).click();
   await expect(admin.getByTestId("admin-edition-band")).toHaveText("2024");
   await admin.getByRole("button", { name: "Nuovo", exact: true }).click();
-  await admin.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
+  await admin.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Nuovo mostro della redazione", exact: true }).click();
   const editor = admin.getByRole("dialog");
   await editor.locator("#admin-hb-nome").fill(OURS_NAME);
   await editor.locator("#admin-hb-azioni-0-nome").fill("Artiglio");

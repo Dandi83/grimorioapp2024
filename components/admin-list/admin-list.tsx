@@ -23,6 +23,7 @@ import { fold } from "@/lib/search";
 import { SEARCH_INPUT } from "@/lib/search-input";
 
 const AMBER_PILL = "inline-flex items-center rounded-full bg-[#FCEFD0] px-2 text-[12px] font-bold leading-5 text-[#7A4E00]";
+const SOURCE_LABEL: Record<Exclude<SourceFilter, "tutte">, string> = { srd: "SRD", nosrd: "NO SRD", redazione: "Dalla redazione", community: "Dalla community" };
 const SOURCE_PILL = "inline-flex items-center rounded-full border border-[#DDCFAE] bg-[#F6EFDF] px-2 text-[12px] font-semibold leading-5 text-[#5E4E3E]";
 
 /**
@@ -82,14 +83,14 @@ function AdminListView({ data, create }: { data: AdminListData; create?: "spell"
 
   const activeChips: { label: string; clear: () => void }[] = [
     ...(filters.visibility !== "tutte" ? [{ label: filters.visibility === "nascoste" ? "Nascoste" : "Visibili", clear: () => setFilters(f => ({ ...f, visibility: "tutte" as const })) }] : []),
-    ...(filters.source !== "tutte" ? [{ label: filters.source === "srd" ? "SRD" : filters.source === "creati" ? "Creati da voi" : "NO SRD", clear: () => setFilters(f => ({ ...f, source: "tutte" as const })) }] : []),
+    ...(filters.source !== "tutte" ? [{ label: SOURCE_LABEL[filters.source], clear: () => setFilters(f => ({ ...f, source: "tutte" as const })) }] : []),
     ...(filters.modified ? [{ label: "SRD modificate", clear: () => setFilters(f => ({ ...f, modified: false })) }] : []),
     ...(filters.reviewNames ? [{ label: "Nomi da rivedere", clear: () => setFilters(f => ({ ...f, reviewNames: false })) }] : []),
   ];
   const counters: { label: string; n: number; on: boolean; apply: () => void; key: string }[] = [
     ...(hideable ? [{ key: "nosrd", label: "NO SRD", n: counts.nosrd, on: filters.source === "nosrd", apply: () => setFilters(f => ({ ...f, source: f.source === "nosrd" ? "tutte" : "nosrd" })) }] : []),
-    // «Creati da voi» beside «NO SRD» (PROMPT 22): only on the list that has them.
-    ...(data.kind === "mostro" ? [{ key: "creati", label: "Creati da voi", n: counts.creati, on: filters.source === "creati", apply: () => setFilters(f => ({ ...f, source: f.source === "creati" ? "tutte" : "creati" })) }] : []),
+    // «Dalla redazione» and «Dalla community» beside «NO SRD» (PROMPT 29, one «Creati da voi» before): only on the list of the creatures.
+    ...(data.kind === "mostro" ? (["redazione", "community"] as const).map(key => ({ key, label: SOURCE_LABEL[key], n: counts[key], on: filters.source === key, apply: () => setFilters(f => ({ ...f, source: f.source === key ? "tutte" : key })) })) : []),
     { key: "modificate", label: "SRD modificate", n: counts.modified, on: filters.modified, apply: () => setFilters(f => ({ ...f, modified: !f.modified })) },
     ...(hideable ? [{ key: "nascoste", label: "Nascoste", n: counts.hidden, on: filters.visibility === "nascoste", apply: () => setFilters(f => ({ ...f, visibility: f.visibility === "nascoste" ? "tutte" : "nascoste" })) }] : []),
   ];
@@ -239,10 +240,10 @@ function AdminListView({ data, create }: { data: AdminListData; create?: "spell"
 
       {creating === "choose" && (
         <Sheet title="Nuova creatura" onClose={() => setCreating(null)}>
-          <p className="text-[15px] text-[#5E4E3E]">Scheda o «Creati da voi»?</p>
+          <p className="text-[15px] text-[#5E4E3E]">Una scheda o un mostro originale della redazione?</p>
           <div className="mt-3 flex flex-col gap-2">
             <button type="button" onClick={() => setCreating("monster")} className="min-h-12 rounded-[14px] bg-[#7A1F2B] text-[16px] font-bold text-[#FFFBF0]">Scheda</button>
-            <button type="button" onClick={() => setCreating("homebrew")} className="min-h-12 rounded-[14px] border-[1.5px] border-[#E0A21A] bg-[#FCEFD0] text-[16px] font-bold text-[#7A4E00]">Creati da voi</button>
+            <button type="button" onClick={() => setCreating("homebrew")} className="min-h-12 rounded-[14px] border-[1.5px] border-[#E0A21A] bg-[#FCEFD0] text-[16px] font-bold text-[#7A4E00]">Nuovo mostro della redazione</button>
           </div>
         </Sheet>
       )}
@@ -423,7 +424,7 @@ function FilterPanel({ value, onChange, counts, hideable }: {
   const chip = (on: boolean, amber = false) => `inline-flex min-h-11 items-center rounded-full border-[1.5px] px-3.5 text-[14px] font-semibold ${on ? (amber ? "border-[#7A4E00] bg-[#7A4E00] text-[#FFFBF0]" : "border-[#7A1F2B] bg-[#7A1F2B] text-[#FFFBF0]") : amber ? "border-[#E0A21A] bg-[#FCEFD0] text-[#7A4E00]" : "border-[#DDCFAE] bg-[#FFFBF0] text-[#2B2118]"}`;
   const label = "mb-2 text-[13px] font-bold uppercase tracking-[0.1em]";
   const visibility: [VisibilityFilter, string][] = [["tutte", "Tutte"], ["visibili", "Visibili"], ["nascoste", `Nascoste (${counts.hidden})`]];
-  const source: [SourceFilter, string][] = [["tutte", `Tutte (${counts.all})`], ["srd", `SRD (${counts.srd})`], ["nosrd", `NO SRD (${counts.nosrd})`], ...(counts.creati ? [["creati", `Creati da voi (${counts.creati})`] as [SourceFilter, string]] : [])];
+  const source: [SourceFilter, string][] = [["tutte", `Tutte (${counts.all})`], ["srd", `SRD (${counts.srd})`], ["nosrd", `NO SRD (${counts.nosrd})`], ...(["redazione", "community"] as const).filter(key => counts[key]).map((key): [SourceFilter, string] => [key, `${SOURCE_LABEL[key]} (${counts[key]})`])];
   return (
     <div className="flex flex-col gap-4" data-filter-panel="">
       {hideable && (

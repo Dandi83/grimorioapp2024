@@ -46,7 +46,7 @@ for (const width of [390, 1280]) {
 
     // A new creature «2014 e 2024» of the editorial staff: the box waits for the first save.
     await page.getByRole("button", { name: "Nuovo", exact: true }).click();
-    await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
+    await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Nuovo mostro della redazione", exact: true }).click();
     const editor = page.getByRole("dialog");
     const newBox = editor.locator("[data-editor-verified]");
     await expect(newBox).toHaveAttribute("data-editor-verified", "nuova");
@@ -134,13 +134,17 @@ for (const width of [390, 1280]) {
   });
 }
 
-test("the page of the method: the rule after the calibration and its real numbers; open while one group of original creatures is", async ({ browser, request }) => {
+test("the page of the method: the rule after the calibration (PROMPT 29) and its real numbers; open while one group of original creatures is", async ({ browser, request }) => {
   test.setTimeout(120_000);
   const html = await (await request.get("/bestiario/creati-da-voi/bilanciamento")).text();
   expect(html).toContain("Con questa regola, circa 8 mostri ufficiali su 10 risultano &quot;in linea&quot;");
-  expect(html).toContain("266 su 319 (83%) nel 2014");
-  expect(html).toContain("267 su 328 (81%) nel 2024");
-  expect(html).toContain("al massimo 2 misure su 6 fuori dalla fascia");
+  // The rule of PROMPT 29 and its numbers: seven measures, tolerance 20%.
+  expect(html).toContain("240 su 319 (75%) nel 2014");
+  expect(html).toContain("247 su 328 (75%) nel 2024");
+  expect(html).toContain("al massimo 2 misure su 7 fuori dalla fascia, ciascuna di non più del 20%");
+  expect(html).toContain("oppure una sola di più del 100%");
+  expect(html).toContain("più i PG a terra");
+  expect(html).not.toContain("266 su 319");
   expect(html).toContain("dal 5° al 95° percentile");
   // Never a number of a creature or of the box of the reserved area.
   expect(html).not.toMatch(/data-balance|monster-balance-srd/);

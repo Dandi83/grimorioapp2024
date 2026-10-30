@@ -160,7 +160,7 @@ test("cards written in the reserved area: links, icons, labels, search, filters 
   // A homebrew of the Grimorio (published as an approved proposal): the same chain.
   await openAdmin(page, "/admin/mostri");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
-  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Nuovo mostro della redazione", exact: true }).click();
   editor = page.getByRole("dialog");
   await editor.locator("#admin-hb-nome").fill("Spirito di cenere");
   await editor.locator("#admin-hb-azioni-0-nome").fill("Vampa");

@@ -61,7 +61,7 @@ test("administrator: «Modifica» opens the editor of the card and comes back; a
   await page.getByPlaceholder("Cerca per nome o tipo…").fill("scheda di prova modifica");
   const added = await page.locator("main ul li[data-card-row]").filter({ hasText: "Scheda di prova Modifica" }).first().getAttribute("data-public-href");
   await page.getByRole("button", { name: "Nuovo", exact: true }).click();
-  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Creati da voi", exact: true }).click();
+  await page.getByRole("dialog", { name: "Nuova creatura" }).getByRole("button", { name: "Nuovo mostro della redazione", exact: true }).click();
   editor = page.getByRole("dialog");
   await editor.locator("#admin-hb-nome").fill("Lupo di cenere");
   await editor.locator("#admin-hb-azioni-0-nome").fill("Morso");

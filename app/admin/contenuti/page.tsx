@@ -12,7 +12,8 @@ import { CONTENT_SECTIONS } from "@/lib/content-sections";
 import { homebrewMonster, publishedHomebrew } from "@/lib/homebrew";
 import { getAllMonsters } from "@/lib/monsters";
 import { partId, PUBLIC_SECTIONS, type PublicSectionKey } from "@/lib/public-sections";
-import { allSectionStates, type SectionState } from "@/lib/section-visibility";
+import { allSectionStates, COMMUNITY_PART, type SectionState } from "@/lib/section-visibility";
+import { communityPublic } from "@/lib/community";
 import { getAdminSpells } from "@/lib/spells";
 import { usesLegacyMonsterRules } from "@/lib/srd-monsters";
 
@@ -54,14 +55,18 @@ export default async function ContentsPage() {
     return section && section.editions.includes(edition) ? section.items(edition).length : null;
   };
   const href = (key: string) => (key === "incantesimi" ? "/admin/incantesimi" : key === "mostri" ? "/admin/mostri" : `/admin/contenuti/${key}`);
-  // What the visitors see: the section, else «Parti nascoste» when some of its parts are hidden or coming.
+  // What the visitors see: the section, else its parts «in arrivo» and «nascoste», counted apart (PROMPT 29); the part
+  // of the community closed by the switch of lib/community.ts is hidden whatever its state.
   const note = (section?: PublicSectionKey): string | undefined => {
     if (!section) return undefined;
     const state = states[section] ?? "visibile";
     if (state !== "visibile") return STATE_NOTE[state];
     const spec = PUBLIC_SECTIONS.find(item => item.key === section);
-    const parts = (spec?.parts ?? []).filter(part => (states[partId(section, part.key)] ?? "visibile") !== "visibile").length;
-    return parts ? `${parts} ${parts === 1 ? "parte nascosta" : "parti nascoste"} per gli utenti` : undefined;
+    const partState = (id: string): SectionState => (id === COMMUNITY_PART && !communityPublic() ? "nascosta" : states[id] ?? "visibile");
+    const ids = (spec?.parts ?? []).map(part => partId(section, part.key));
+    const soon = ids.filter(id => partState(id) === "in-arrivo").length, hidden = ids.filter(id => partState(id) === "nascosta").length;
+    const said = [soon ? `${soon} ${soon === 1 ? "parte in arrivo" : "parti in arrivo"}` : "", hidden ? `${hidden} ${hidden === 1 ? "parte nascosta" : "parti nascoste"}` : ""].filter(Boolean);
+    return said.length ? `${said.join(" · ")} per gli utenti` : undefined;
   };
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-4 px-4 pb-10 pt-3 lg:max-w-[960px]">

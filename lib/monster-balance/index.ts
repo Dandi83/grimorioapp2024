@@ -1,7 +1,7 @@
 import "server-only";
 import data from "../data/monster-balance-srd.json";
 import { balanceWarnings, type BalanceWarning } from "./checks";
-import { compare, TACTIC_LABEL, type Comparison, type Level, type MetricResult, type ReferenceRow } from "./compare";
+import { compare, MAX_OUT, MEASURES, TACTIC_LABEL, TOLERANCE, type Comparison, type Level, type MetricResult, type ReferenceRow } from "./compare";
 import { readMonster, type MonsterModel, type SheetFields } from "./parse";
 import { levelOf } from "./party";
 import { BASE_FIGHTS, fightsOfASheet, measure, STRESS, STRESS_FIGHTS, type Measures } from "./scenarios";
@@ -156,7 +156,7 @@ function checkHtml(result: BalanceResult): string {
           + cell("damage", row.damage, number) + cell("rounds", row.rounds, number) + cell("down", row.down, value => `${number(value)}%`) + `</tr>`;
       }).join("")
       + `</tbody></table></div>`);
-    parts.push(`<p style="margin:4px 0 0;color:#6B5B48;font-size:12px">Fascia 5–95 dei mostri SRD con lo stesso modo di giocare (in linea con al massimo 2 misure su 6 fuori fascia): ${TACTICS.map(tactic => `${TACTIC_LABEL[tactic]} ${number(c.tactics[tactic].damage.band.low)}–${number(c.tactics[tactic].damage.band.high)} danni, ${number(c.tactics[tactic].rounds.band.low)}–${number(c.tactics[tactic].rounds.band.high)} round`).join(" · ")}.</p>`);
+    parts.push(`<p style="margin:4px 0 0;color:#6B5B48;font-size:12px">Fascia 5–95 dei mostri SRD con lo stesso modo di giocare (in linea con al massimo ${MAX_OUT} misure su ${MEASURES} fuori fascia, ciascuna di non più del ${TOLERANCE}%; PG a terra con il modo ottimale: ${number(c.tactics.ottimale.down.band.low)}–${number(c.tactics.ottimale.down.band.high)}%): ${TACTICS.map(tactic => `${TACTIC_LABEL[tactic]} ${number(c.tactics[tactic].damage.band.low)}–${number(c.tactics[tactic].damage.band.high)} danni, ${number(c.tactics[tactic].rounds.band.low)}–${number(c.tactics[tactic].rounds.band.high)} round`).join(" · ")}.</p>`);
     // The test situations: ✓ or ⚠ with the data.
     parts.push(h("SITUAZIONI DI PROVA"));
     parts.push(`<ul data-balance-stress="" style="margin:0;padding:0;list-style:none;display:grid;gap:4px">`

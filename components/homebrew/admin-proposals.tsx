@@ -234,9 +234,9 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="flex min-h-11 items-center justify-center gap-2 rounded-lg border-[1.5px] border-[#E0A21A] bg-[#F6E3B0] px-4 py-2.5 font-semibold text-[#5C3F00]">
-        + Nuovo «Dalla redazione»
+        + Nuovo mostro della redazione
       </button>
-      {open && <HomebrewEditorDialog ours verifiedBox="new" title="Nuovo «Dalla redazione»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={() => setOpen(false)}
+      {open && <HomebrewEditorDialog ours verifiedBox="new" title="Nuovo mostro della redazione" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={() => setOpen(false)}
         onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />}
     </>
   );
@@ -245,7 +245,7 @@ export function NewHomebrewButton({ edition }: { edition: "2014" | "2024" }) {
 /** «+» of /admin/mostri, «Homebrew»: the guided editor of a new homebrew creature, already open. */
 export function NewHomebrewDialog({ edition, onClose }: { edition: "2014" | "2024"; onClose: () => void }) {
   const router = useRouter();
-  return <HomebrewEditorDialog ours verifiedBox="new" title="Nuovo «Dalla redazione»" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
+  return <HomebrewEditorDialog ours verifiedBox="new" title="Nuovo mostro della redazione" initial={{ ...EMPTY_DRAFT, edizione: edition }} onClose={onClose}
     onSave={async draft => { const result = await createHomebrewAction(draft); if (result.ok) router.refresh(); return result; }} />;
 }
 
