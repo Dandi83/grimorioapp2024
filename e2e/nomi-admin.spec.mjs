@@ -50,6 +50,11 @@ test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
   await database(async client => {
+    await client.query(`CREATE TABLE IF NOT EXISTS grimorio_homebrew (id text PRIMARY KEY, scheda jsonb NOT NULL,
+      edizione text NOT NULL CHECK (edizione IN ('2014', '2024', 'entrambe')), autore text, proposta_id uuid,
+      pubblicata_il timestamptz NOT NULL DEFAULT now(), aggiornata_il timestamptz NOT NULL DEFAULT now(), licenza text)`);
+    await client.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS bilanciamento text");
+    await client.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS verificato boolean NOT NULL DEFAULT false");
     const insert = "INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, licenza) VALUES ($1, $2, '2024', $3, $4) ON CONFLICT (id) DO NOTHING";
     await client.query(insert, [OURS, JSON.stringify(draft("Lince dei nomi nuovi")), null, null]);
     for (const [index, id] of THEIRS.entries()) await client.query(insert, [id, JSON.stringify(draft(`Lince della community ${index + 1}`)), "Lia", "CC BY-NC-SA 4.0"]);

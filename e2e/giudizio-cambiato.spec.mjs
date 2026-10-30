@@ -38,8 +38,11 @@ test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async () => {
   await database(async client => {
-    await client.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS bilanciamento text").catch(() => {});
-    await client.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS verificato boolean NOT NULL DEFAULT false").catch(() => {});
+    await client.query(`CREATE TABLE IF NOT EXISTS grimorio_homebrew (id text PRIMARY KEY, scheda jsonb NOT NULL,
+      edizione text NOT NULL CHECK (edizione IN ('2014', '2024', 'entrambe')), autore text, proposta_id uuid,
+      pubblicata_il timestamptz NOT NULL DEFAULT now(), aggiornata_il timestamptz NOT NULL DEFAULT now(), licenza text)`);
+    await client.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS bilanciamento text");
+    await client.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS verificato boolean NOT NULL DEFAULT false");
     const insert = "INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, licenza, bilanciamento, verificato) VALUES ($1, $2, $3, NULL, NULL, 'in linea', true) ON CONFLICT (id) DO UPDATE SET bilanciamento = 'in linea', verificato = true";
     await client.query(insert, [CHANGED, JSON.stringify(draft("Lince del giudizio cambiato", "1", 13, 22, "4d8 + 4", "Tiro per colpire in mischia: +4, portata 1,5 m. Colpito: 7 (2d4 + 2) danni perforanti.")), "entrambe"]);
     await client.query(insert, [STEADY, JSON.stringify(draft("Sentinella del giudizio fermo", "3", 14, 60, "8d10 + 16", "Tiro per colpire in mischia: +5, portata 1,5 m. Colpito: 20 (3d10 + 4) danni taglienti.")), "entrambe"]);
