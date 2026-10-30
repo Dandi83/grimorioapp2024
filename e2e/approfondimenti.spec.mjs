@@ -164,7 +164,7 @@ test("at 1280: the four cards under the tiles, before «Il resto», numbers on t
   const top = async selector => (await page.locator(selector).first().boundingBox()).y;
   expect(await top("[data-insights]")).toBeGreaterThan(await top("[data-tiles]"));
   expect(await top("[data-rest]")).toBeGreaterThan(await top("[data-insights]"));
-  await expect(page.locator("[data-insights] > details")).toHaveCount(4);
+  await expect(page.locator("[data-insights] > details")).toHaveCount(7);
   await expect(page.locator('[data-rest-item="ricerche"] > summary')).toHaveCSS("text-transform", "uppercase");
   await expect(page.locator('[data-rest-item="ricerche"] > summary')).toHaveCSS("color", "rgb(122, 31, 43)");
   // The number of a row on the right of its label.

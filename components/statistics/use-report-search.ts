@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { FilterGroup, SearchArea } from "@/lib/analytics-stats";
+import type { FilterGroup, SearchArea, UseSignal } from "@/lib/analytics-stats";
 
 /**
  * A search for the statistics: once the visitor stops typing for 1.5 s, the word, how many results it gave and where
@@ -41,4 +41,13 @@ export function useReportFilters(active: FilterGroup[]) {
       sessionStorage.setItem(PENDING_FILTERS, JSON.stringify([...new Set([...pending, ...added])]));
     } catch { /* no storage: not counted */ }
   }, [key]);
+}
+
+/** The uses not sent yet (PROMPT 32, lib/analytics-stats.ts USE_SIGNALS): they leave with the next event too. */
+export const PENDING_USES = "grimorio_statistics_uses";
+export function queueUse(use: UseSignal) {
+  try {
+    const pending = JSON.parse(sessionStorage.getItem(PENDING_USES) || "[]") as string[];
+    if (!pending.includes(use)) sessionStorage.setItem(PENDING_USES, JSON.stringify([...pending, use]));
+  } catch { /* no storage: not counted */ }
 }

@@ -6,6 +6,7 @@ import { rowsOf } from "@/lib/search";
 import { addSynonymAction, addTodoAction, deleteSynonymAction, deleteTodoAction } from "@/app/actions/admin-statistics";
 import { DailyChart, HourlyChart } from "./charts";
 import { CopyLink } from "./copy-link";
+import { InsightsMore } from "./insights-more";
 import { RestItem } from "./rest-item";
 
 const SOFT = "text-[15px] leading-6 text-[#5E4E3E]";
@@ -166,6 +167,8 @@ export async function Insights({ range, hourly, from, to, today, markers }: {
         </div>
         <p className="mt-2 text-[12px] text-[#5E4E3E]">Ultime 8 settimane d’arrivo (lunedì–domenica, ora italiana), qualunque periodo sia scelto sopra. «—»: settimana non ancora passata o nessun arrivo.</p>
       </RestItem>
+
+      <InsightsMore range={range} hourly={!!hourly} />
     </section>
   );
 }

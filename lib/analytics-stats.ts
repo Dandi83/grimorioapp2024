@@ -302,3 +302,53 @@ export function reasonLabel(reason: SearchReason | null): string {
   return reason.kind === "non-srd" ? "mostro non SRD" : reason.kind === "in-arrivo" ? "sezione in arrivo"
     : reason.kind === "manca" ? `manca in ${reason.edition}` : `errore? → ${reason.suggestion}`;
 }
+
+/*
+ * Insight 2/2 (PROMPT 32). The uses that ride in the events already sent (page view, search, installation): the
+ * name only, from this fixed list; the server keeps one row per use.
+ */
+export const USE_SIGNALS = ["edition_change", "proposal_start", "proposal_sent", "install_prompt_shown", "install_prompt_accepted"] as const;
+export type UseSignal = (typeof USE_SIGNALS)[number];
+
+/** «Giorni e ore»: 7 days (Monday first) × 8 bands of 3 hours, Rome time. */
+export const WEEK_DAYS = ["lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato", "domenica"] as const;
+export const HEAT_COLORS = ["#F6EFDF", "#EBCFB0", "#D49A84", "#A8505A", "#7A1F2B"] as const;
+export const bandLabel = (band: number) => `${band * 3}–${band * 3 + 3}`;
+/** The visits of each cell (day 0–6 from Monday, band 0–7), its colour and the two cells with the most visits. */
+export function heatmap(rows: { day: number; band: number; visits: number }[]) {
+  const grid = Array.from({ length: 7 }, () => Array.from({ length: 8 }, () => 0));
+  for (const row of rows) if (row.day >= 0 && row.day < 7 && row.band >= 0 && row.band < 8) grid[row.day][row.band] += row.visits;
+  const max = Math.max(0, ...grid.flat());
+  const color = (visits: number) => HEAT_COLORS[visits && max ? Math.min(4, Math.ceil((visits / max) * 4)) : 0];
+  const peaks = grid.flatMap((bands, day) => bands.map((visits, band) => ({ day, band, visits })))
+    .filter(cell => cell.visits > 0).sort((a, b) => b.visits - a.visits || a.day - b.day || a.band - b.band).slice(0, 2);
+  return { grid, max, color, peak: peaks.length ? `Picco: ${peaks.map(cell => `${WEEK_DAYS[cell.day]} ${bandLabel(cell.band)}`).join(" · ")}` : "" };
+}
+
+/** The median of some numbers (the mean of the two in the middle when even); null without any. */
+export function median(values: number[]): number | null {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b), middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+export const SLOW_LCP_MS = 2500;
+export const SLOW_MIN_MEASURES = 3;
+/** «Lenta»: the pages whose median LCP on a phone is over 2.5 s, with at least 3 measures; the slowest first. */
+export function slowPages(rows: { path: string; values: number[] }[]) {
+  return rows.filter(row => row.values.length >= SLOW_MIN_MEASURES)
+    .map(row => ({ path: row.path, median: median(row.values)!, measures: row.values.length }))
+    .filter(row => row.median > SLOW_LCP_MS).sort((a, b) => b.median - a.median || a.path.localeCompare(b.path));
+}
+/** «1,2 s» */
+export const seconds = (ms: number) => `${(Math.round(ms / 100) / 10).toLocaleString("it-IT")} s`;
+
+/** A two-step funnel: how many started, how many finished, the share. */
+export const twoSteps = (from: number, to: number) => ({ from, to, percent: share(to, from) });
+
+/** «Non trovata»: the path asked, without parameters; only plain characters, never a page of the reserved area. */
+export function cleanNotFoundPath(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  const path = raw.split(/[?#]/)[0];
+  if (!/^\/[A-Za-z0-9/_.~%-]{0,199}$/.test(path) || /^\/(?:admin|api|_next)(?:\/|$)/.test(path)) return null;
+  return path;
+}

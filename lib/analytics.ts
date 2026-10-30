@@ -66,7 +66,7 @@ async function ensureSchema() {
           "CREATE UNIQUE INDEX IF NOT EXISTS grimorio_analytics_view_idx ON grimorio_analytics_events (visitor_id, view_id, event_name) WHERE event_name IN ('page_view','card_open','card_read')",
         );
         // PROMPT 31: where a search was typed, the arrival from the link of the bio, the group of a filter.
-        for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer", "share_from text", "amount integer", "search_area text", "entry text", "filter_group text"])
+        for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer", "share_from text", "amount integer", "search_area text", "entry text", "filter_group text", "metric_ms integer"])
           await client.query(`ALTER TABLE grimorio_analytics_events ADD COLUMN IF NOT EXISTS ${column}`);
         // The answers of «Come ti trovi con il Grimorio?» (28 October 2026): the vote, the day and the kind of device.
         // chiave: a keyed hash of the visitor ID, only to refuse a second vote within 4 months, emptied after them.
@@ -167,11 +167,16 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
     ],
   );
   const stored = result.rows.length > 0;
-  // The filters applied since the last event (PROMPT 31): one «filter_apply» per group, in the same request.
-  if (stored && input.filters?.length)
-    for (const group of input.filters)
-      await pool.query(`INSERT INTO grimorio_analytics_events (id,visitor_id,session_id,view_id,event_name,path,source,is_test,filter_group)
-        VALUES ($1,$2,$3,$4,'filter_apply',$5,$6,$7,$8) ON CONFLICT DO NOTHING`, [randomUUID(), visitor, input.session, input.view, input.path, input.source, input.test, group]);
+  // What rode in the same request: the filters applied since the last event (PROMPT 31), one «filter_apply» per
+  // group; the uses (PROMPT 32), one row each with their name; the LCP measured, on the page it was measured on.
+  const extra = (name: string, path: string, group: string | null, ms: number | null) =>
+    pool.query(`INSERT INTO grimorio_analytics_events (id,visitor_id,session_id,view_id,event_name,path,source,is_test,filter_group,metric_ms,device)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT DO NOTHING`, [randomUUID(), visitor, input.session, input.view, name, path, input.source, input.test, group, ms, input.device ?? null]);
+  if (stored) {
+    for (const group of input.filters ?? []) await extra("filter_apply", input.path, group, null);
+    for (const use of input.uses ?? []) await extra(use, input.path, null, null);
+    if (input.lcp) await extra("lcp", input.lcp.path, null, input.lcp.ms);
+  }
   return stored;
 }
 /**
@@ -598,5 +603,56 @@ export async function readCohortPeople(): Promise<{ week: string; instagram: boo
       AND e.is_test=false AND e.received_at>f.received_at
     WHERE f.received_at>=now()-interval '63 days'
     GROUP BY f.visitor_id, f.received_at, f.origin`);
+  return rows;
+}
+
+/*
+ * Insight 2/2 (PROMPT 32), read only when the administrator opens the page: the visits by day and band of 3 hours,
+ * the uses of the functions, the pages not found and the slow ones (LCP on a phone).
+ */
+/** The visits (sessions) of the period by Rome day of the week (0 Monday) and band of 3 hours. */
+export async function readHeatmap(range: StatisticsRange): Promise<{ day: number; band: number; visits: number }[]> {
+  await ensureSchema();
+  const { where, period } = rangeSql(range);
+  const local = "received_at AT TIME ZONE 'Europe/Rome'";
+  const { rows } = await pool.query(`SELECT (extract(isodow FROM ${local})::int - 1) AS day, floor(extract(hour FROM ${local}) / 3)::int AS band,
+      count(DISTINCT session_id)::int AS visits
+    FROM grimorio_analytics_events WHERE ${where} AND event_name='page_view' GROUP BY day, band`, period);
+  return rows;
+}
+
+export type FunctionUses = { people: number; filtri: number; edizione: number; preferiti: number; condivisione: number;
+  proposalStart: number; proposalSent: number; installShown: number; installAccepted: number };
+/** The people of the period who used each function (each person once), and the two small funnels. */
+export async function readFunctions(range: StatisticsRange): Promise<FunctionUses> {
+  await ensureSchema();
+  const { where, period } = rangeSql(range);
+  const people = (names: string) => `count(DISTINCT visitor_id) FILTER (WHERE event_name IN (${names}))::int`;
+  const { rows } = await pool.query(`SELECT ${people("'page_view'")} AS people, ${people("'filter_apply'")} AS filtri,
+      ${people("'edition_change'")} AS edizione, ${people("'favorite_add'")} AS preferiti,
+      ${people("'share_click','share_native','share_copy'")} AS condivisione,
+      ${people("'proposal_start'")} AS proposal_start, ${people("'proposal_sent'")} AS proposal_sent,
+      ${people("'install_prompt_shown'")} AS install_shown, ${people("'install_prompt_accepted'")} AS install_accepted
+    FROM grimorio_analytics_events WHERE ${where}`, period);
+  const row = rows[0] ?? {};
+  return { people: row.people ?? 0, filtri: row.filtri ?? 0, edizione: row.edizione ?? 0, preferiti: row.preferiti ?? 0, condivisione: row.condivisione ?? 0,
+    proposalStart: row.proposal_start ?? 0, proposalSent: row.proposal_sent ?? 0, installShown: row.install_shown ?? 0, installAccepted: row.install_accepted ?? 0 };
+}
+
+/** «Non trovata»: the paths asked that do not exist, the most frequent first. */
+export async function readNotFound(range: StatisticsRange, limit = 15): Promise<{ path: string; times: number; people: number }[]> {
+  await ensureSchema();
+  const { where, period } = rangeSql(range);
+  const { rows } = await pool.query(`SELECT path, count(*)::int AS times, count(DISTINCT visitor_id)::int AS people FROM grimorio_analytics_events
+    WHERE ${where} AND event_name='not_found' GROUP BY path ORDER BY times DESC, path ASC LIMIT ${Number(limit)}`, period);
+  return rows;
+}
+
+/** «Lenta»: the LCP measured on phones in the period, by page (lib/analytics-stats.ts slowPages keeps the slow ones). */
+export async function readLcp(range: StatisticsRange): Promise<{ path: string; values: number[] }[]> {
+  await ensureSchema();
+  const { where, period } = rangeSql(range);
+  const { rows } = await pool.query(`SELECT path, array_agg(metric_ms ORDER BY metric_ms) AS values FROM grimorio_analytics_events
+    WHERE ${where} AND event_name='lcp' AND metric_ms IS NOT NULL AND device IN ('iphone','android') GROUP BY path`, period);
   return rows;
 }

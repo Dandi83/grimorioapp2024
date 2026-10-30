@@ -125,6 +125,8 @@ export const analyticsEvents = pgTable("grimorio_analytics_events", {
   search_area: text("search_area"),
   entry: text("entry"),
   filter_group: text("filter_group"),
+  // PROMPT 32: the LCP of a page in milliseconds (event «lcp»).
+  metric_ms: integer("metric_ms"),
 });
 
 /**

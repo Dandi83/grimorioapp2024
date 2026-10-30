@@ -1,4 +1,4 @@
-import { DEVICES, FILTER_GROUPS, ORIGINS, SEARCH_AREAS, cleanSearchQuery, type Device, type FilterGroup, type Origin, type SearchArea } from "./analytics-stats";
+import { DEVICES, FILTER_GROUPS, ORIGINS, SEARCH_AREAS, USE_SIGNALS, cleanNotFoundPath, cleanSearchQuery, type Device, type FilterGroup, type Origin, type SearchArea, type UseSignal } from "./analytics-stats";
 
 export const ANALYTICS_EVENTS = [
   "page_view",
@@ -33,6 +33,8 @@ export const ANALYTICS_EVENTS = [
   // «L'hai provato al tavolo?» (PROMPT 19) under a sheet of «I mostri creati da voi»: easy, right or hard for its CR.
   // One vote per device and card, changeable, kept in its own table (lib/table-votes.ts), never with the events.
   "prova_tavolo",
+  // A page that does not exist (PROMPT 32): sent instead of the page view, with the path asked only.
+  "not_found",
 ] as const;
 /** The kinds of cards with a star: spells and creatures (the animals are creatures of the Bestiario). */
 export const FAVORITE_KINDS = ["incantesimo", "mostro"] as const;
@@ -88,6 +90,10 @@ export type AnalyticsInput = {
    * own: the server keeps one «filter_apply» per group, with the same visitor and session.
    */
   filters?: FilterGroup[];
+  /** page_view, search and the installation (PROMPT 32): the uses since the last event (USE_SIGNALS), names only. */
+  uses?: UseSignal[];
+  /** page_view only: the LCP of a page measured on 1 visit in 10 (ms, and the page it was measured on). */
+  lcp?: { ms: number; path: string };
   /** share_tap, share_sent, share_cancel of the whole app (the card of the Home, the invite after «Bene», /sostieni);
    * support_link: where the link to /sostieni was tapped. */
   from?: ShareFrom | (typeof SUPPORT_FROM)[number];
@@ -119,7 +125,8 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
     ![r.id, r.view, r.session].every((v) => typeof v === "string" && UUID.test(v))
   )
     return;
-  if (typeof r.path !== "string" || r.path.length > 260 || !ANALYTICS_PATH.test(r.path)) return;
+  // «Non trovata»: any plain path but the reserved area, without parameters; the others only the public pages.
+  if (typeof r.path !== "string" || (r.event === "not_found" ? cleanNotFoundPath(r.path) !== r.path : r.path.length > 260 || !ANALYTICS_PATH.test(r.path))) return;
   const activeSeconds = typeof r.activeSeconds === "number" ? Math.floor(r.activeSeconds) : 0;
   const scrollPercent = typeof r.scrollPercent === "number" ? Math.floor(r.scrollPercent) : 0;
   if (
@@ -136,7 +143,7 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   const from = SHARE_FROM.includes(r.from as ShareFrom) ? (r.from as ShareFrom) : undefined;
   // The whole app is shared from the Home (or another public page); the cards keep their own share events.
   const appShare = (HOME_EVENTS as readonly string[]).includes(r.event as string) || (r.event === "share_cancel" && !!from);
-  if (r.event !== "page_view" && r.event !== "search" && !install && !appShare && !/^\/(spell|mostro)\//.test(r.path)) return;
+  if (r.event !== "page_view" && r.event !== "search" && r.event !== "not_found" && !install && !appShare && !/^\/(spell|mostro)\//.test(r.path)) return;
   if ((r.event === "share_tap" || r.event === "share_sent") && !from) return;
   if (r.event === "valutazione" && !VOTES.includes(r.vote as Vote)) return;
   if (r.event === "support_link" && !SUPPORT_FROM.includes(r.from as (typeof SUPPORT_FROM)[number])) return;
@@ -160,6 +167,15 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
     if (typeof r.installed === "boolean") input.installed = r.installed;
     if (r.bio === true) input.bio = true;
   }
+  if ((input.event === "page_view" || input.event === "search" || install) && Array.isArray(r.uses)) {
+    const uses = [...new Set(r.uses.filter((use): use is UseSignal => USE_SIGNALS.includes(use as UseSignal)))];
+    if (uses.length) input.uses = uses;
+  }
+  const lcp = r.lcp as { ms?: unknown; path?: unknown } | undefined;
+  // With the page view only: it carries the kind of device («Lenta» counts the phones).
+  if (input.event === "page_view" && lcp && typeof lcp.ms === "number" && Number.isFinite(lcp.ms) && lcp.ms >= 0 && lcp.ms <= 60000
+    && typeof lcp.path === "string" && lcp.path.length <= 260 && ANALYTICS_PATH.test(lcp.path))
+    input.lcp = { ms: Math.round(lcp.ms), path: lcp.path };
   if ((input.event === "page_view" || input.event === "search") && Array.isArray(r.filters)) {
     // Only the known groups, once each: never a value typed by the visitor.
     const groups = [...new Set(r.filters.filter((group): group is FilterGroup => FILTER_GROUPS.includes(group as FilterGroup)))];

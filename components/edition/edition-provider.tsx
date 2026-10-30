@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 
 import type { Edition } from "@/lib/public-sections";
 import { USER_EDITION_KEY, isEdition, storedEdition } from "@/lib/user-edition";
+import { queueUse } from "@/components/statistics/use-report-search";
 
 interface UserEdition {
   /** The edition every public section starts from: 2024 until the device is read (server rendering, first paint). */
@@ -93,6 +94,9 @@ export function EditionProvider({ forced, children }: { forced?: Edition; childr
   // Said to screen readers after a choice: the panels close at once, so the line lives here, on every page.
   const [said, setSaid] = useState("");
   const choose = useCallback((value: Edition) => {
+    // A change of the edition already chosen (PROMPT 32), not the first choice: sent with the next event.
+    const before = read(USER_EDITION_KEY);
+    if (before && before !== value) queueUse("edition_change");
     write(value);
     setState(current => ({ ...current, edition: value, chosen: true }));
     setSaid(`Ora tutta l’app parte dal ${value}.`);

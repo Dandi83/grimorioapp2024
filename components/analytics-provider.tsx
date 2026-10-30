@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import type { AnalyticsEvent, AnalyticsInput } from "@/lib/analytics-events";
 import { BIO_VALUE, deviceOf, originOf, type Origin } from "@/lib/analytics-stats";
-import { PENDING_FILTERS } from "@/components/statistics/use-report-search";
+import { PENDING_FILTERS, PENDING_USES } from "@/components/statistics/use-report-search";
 import { useUserEdition } from "@/components/edition/edition-provider";
 import { setAdminDevice, setStatisticsCounted, setStatisticsNotice } from "@/components/statistics/notice";
 import { recordVisitDay } from "@/components/home/rating-store";
@@ -15,6 +15,38 @@ type Status = { enabled: boolean; excluded: boolean; consent: Consent | null };
 /** A choice made elsewhere (the switch of /privacy): the provider follows it at once. */
 export const CHOICE_EVENT = "grimorio:analytics-choice";
 const SESSION = "grimorio_statistics_session";
+/** The LCP measured (PROMPT 32), waiting for the next page view; whether this visit is in the sample of 1 in 10. */
+const PENDING_LCP = "grimorio_statistics_lcp";
+const LCP_SAMPLE = "grimorio_statistics_lcp_sample";
+/** Reads and empties a list kept for the next event. */
+function take(key: string) {
+  try {
+    const value = JSON.parse(sessionStorage.getItem(key) || "null");
+    sessionStorage.removeItem(key);
+    return value;
+  } catch { return null; }
+}
+/**
+ * «Lenta» (PROMPT 32): on 1 visit in 10, the LCP of the first page with the browser's own PerformanceObserver, kept
+ * when the visitor first touches the page or leaves it; it rides with the next page view, no request of its own.
+ */
+function measureLcp() {
+  try {
+    let sampled = sessionStorage.getItem(LCP_SAMPLE);
+    if (sampled === null) sessionStorage.setItem(LCP_SAMPLE, (sampled = Math.random() < 0.1 ? "1" : "0"));
+    if (sampled !== "1" || !PerformanceObserver.supportedEntryTypes?.includes("largest-contentful-paint")) return;
+  } catch { return; }
+  const path = window.location.pathname;
+  let last = 0;
+  const observer = new PerformanceObserver(list => { for (const entry of list.getEntries()) last = entry.startTime; });
+  observer.observe({ type: "largest-contentful-paint", buffered: true });
+  const keep = () => {
+    observer.disconnect();
+    for (const name of ["pointerdown", "keydown", "visibilitychange"]) window.removeEventListener(name, keep, true);
+    try { if (last) sessionStorage.setItem(PENDING_LCP, JSON.stringify({ ms: Math.round(last), path })); } catch {}
+  };
+  for (const name of ["pointerdown", "keydown", "visibilitychange"]) window.addEventListener(name, keep, { capture: true, once: true });
+}
 /** The first opening of the installed app was sent from this browser (the server keeps it once per visitor too). */
 const APP_OPENED = "grimorio_statistics_app_opened";
 
@@ -53,6 +85,7 @@ export function AnalyticsProvider() {
     [saving, setSaving] = useState(false),
     [error, setError] = useState("");
   const enabled = useRef(false);
+  const measuring = useRef(false);
   useEffect(() => {
     // The days the site was opened, on this browser only: the question of the Home comes from the 3rd.
     recordVisitDay();
@@ -72,7 +105,8 @@ export function AnalyticsProvider() {
       if (consent === "rejected") {
         enabled.current = false;
         try {
-          sessionStorage.removeItem(SESSION);
+          // The session and everything waiting for the next event go away with it.
+          for (const key of [SESSION, PENDING_FILTERS, PENDING_USES, PENDING_LCP, LCP_SAMPLE]) sessionStorage.removeItem(key);
         } catch {}
       }
     };
@@ -101,6 +135,11 @@ export function AnalyticsProvider() {
       path.startsWith("/personaggi")
     )
       return;
+    // The LCP of the first page, only for a counted visit (buffered: what happened before the answer is not lost).
+    if (!measuring.current) {
+      measuring.current = true;
+      measureLcp();
+    }
     const view = crypto.randomUUID();
     let session: string,
       isTest = false,
@@ -148,12 +187,11 @@ export function AnalyticsProvider() {
     function send(event: AnalyticsEvent, extra: Partial<AnalyticsInput> = {}) {
       if (!enabled.current || !live) return Promise.resolve(false);
       // The groups of filters applied since the last event (components/statistics/use-report-search.ts) ride along.
-      let filters: AnalyticsInput["filters"];
-      if (event === "page_view" || event === "search")
-        try {
-          filters = JSON.parse(sessionStorage.getItem(PENDING_FILTERS) || "[]");
-          sessionStorage.removeItem(PENDING_FILTERS);
-        } catch {}
+      const carries = event === "page_view" || event === "search";
+      const filters: AnalyticsInput["filters"] = carries ? take(PENDING_FILTERS) : undefined;
+      // The uses (PROMPT 32) also with the installation; the LCP with the page view only.
+      const uses: AnalyticsInput["uses"] = carries || event === "app_installed" ? take(PENDING_USES) : undefined;
+      const lcp: AnalyticsInput["lcp"] = event === "page_view" ? take(PENDING_LCP) : undefined;
       const body: AnalyticsInput = {
         event,
         id: crypto.randomUUID(),
@@ -166,6 +204,8 @@ export function AnalyticsProvider() {
         scrollPercent: Math.floor(scroll),
         ...(event === "page_view" ? { origin, device, installed, ...(bio ? { bio: true as const } : {}) } : {}),
         ...(filters?.length ? { filters } : {}),
+        ...(uses?.length ? { uses } : {}),
+        ...(lcp ? { lcp } : {}),
         ...(event === "app_installed" || event === "first_standalone_open" ? { device } : {}),
         ...extra,
       };
@@ -214,8 +254,12 @@ export function AnalyticsProvider() {
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
       else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results, area: detail.area });
     };
-    void send("page_view");
-    if (card) void send("card_open");
+    // A page that does not exist (PROMPT 32): «not_found» in place of the page view, with the path asked only.
+    if (document.querySelector("[data-not-found]")) void send("not_found");
+    else {
+      void send("page_view");
+      if (card) void send("card_open");
+    }
     // /sostieni opened (canvas «Sostieni il Grimorio»): sent here, with the page view, so it is never lost.
     if (path === "/sostieni") void send("support_page", { device });
     // Arrived from a friend's link (?da=amico): counted once per person by the server, then the mark goes away.

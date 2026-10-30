@@ -84,4 +84,37 @@ assert.equal(withSynonyms(pub,[]),pub,'no synonyms: the same index');
 const found=search(withSyn,rowsOf(withSyn),'fireball').flatMap(group=>group.rows);
 assert.equal(found.length,1);assert.equal(found[0].nome,'Palla di fuoco');assert.equal(found[0].href,'/spell/palla-di-fuoco');assert.equal(found[0].start,-1);
 assert.equal(search(withSyn,rowsOf(withSyn),'palla').flatMap(group=>group.rows).filter(row=>row.href==='/spell/palla-di-fuoco').length,1,'found by its name: once');
-console.log('Approfondimenti: percorso e calo più grande, settimane di chi resta, link in bio e Instagram (altro), filtri e sezioni delle ricerche, motivi delle ricerche senza risultato, sinonimi nell\'indice.');
+// PROMPT 32. The map of days and bands: the colour by the share of the busiest cell, the two peaks.
+{
+ const heat=s.heatmap([{day:4,band:7,visits:12},{day:6,band:5,visits:9},{day:0,band:2,visits:1},{day:9,band:0,visits:50}]);
+ assert.equal(heat.max,12);assert.equal(heat.peak,'Picco: venerdì 21–24 · domenica 15–18');
+ assert.equal(heat.color(0),s.HEAT_COLORS[0]);assert.equal(heat.color(12),s.HEAT_COLORS[4]);assert.equal(heat.color(1),s.HEAT_COLORS[1]);
+ assert.equal(heat.color(7),s.HEAT_COLORS[3]);assert.equal(s.HEAT_COLORS.length,5);
+ assert.deepEqual([0,1,7].map(s.bandLabel),['0–3','3–6','21–24']);
+ assert.equal(s.heatmap([]).peak,'');assert.equal(s.heatmap([{day:2,band:3,visits:4}]).peak,'Picco: mercoledì 9–12');
+}
+// The functions: shares of the people of the period; the two-step funnels.
+assert.deepEqual(s.twoSteps(8,2),{from:8,to:2,percent:25});assert.deepEqual(s.twoSteps(0,0),{from:0,to:0,percent:0});
+assert.equal(s.share(3,40),8);
+// The uses: names of the fixed list only, with a page view, a search or the installation; never from a card event.
+assert.deepEqual(parseAnalyticsInput(event('page_view',{uses:['edition_change','edition_change','qualcosa']})).uses,['edition_change']);
+assert.deepEqual(parseAnalyticsInput(event('app_installed',{uses:['install_prompt_accepted']})).uses,['install_prompt_accepted']);
+assert.equal(parseAnalyticsInput(event('card_open',{path:'/spell/luce',uses:['proposal_sent']})).uses,undefined);
+// «Lenta»: median, at least 3 measures, over 2.5 s; the LCP of a public page, with the page view only.
+assert.equal(s.median([3,1,2]),2);assert.equal(s.median([4,1,3,2]),2.5);assert.equal(s.median([]),null);
+assert.deepEqual(s.slowPages([{path:'/grimorio',values:[2400,3000,3200]},{path:'/bestiario',values:[9000,9000]},{path:'/compendio',values:[1000,1200,8000]},{path:'/',values:[2600,2600,2600,2400]}]),
+ [{path:'/grimorio',median:3000,measures:3},{path:'/',median:2600,measures:4}]);
+assert.deepEqual(s.slowPages([{path:'/x',values:[2500,2500,2500]}]),[],'2.5 s exactly is not slow');
+assert.equal(s.seconds(3240),'3,2 s');
+assert.deepEqual(parseAnalyticsInput(event('page_view',{lcp:{ms:2345.6,path:'/grimorio'}})).lcp,{ms:2346,path:'/grimorio'});
+assert.equal(parseAnalyticsInput(event('page_view',{lcp:{ms:2345,path:'/admin'}})).lcp,undefined);
+assert.equal(parseAnalyticsInput(event('page_view',{lcp:{ms:-1,path:'/grimorio'}})).lcp,undefined);
+assert.equal(parseAnalyticsInput(event('search',{query:'drago',results:1,lcp:{ms:3000,path:'/grimorio'}})).lcp,undefined);
+// «Non trovata»: the path only, without parameters, never the reserved area.
+assert.equal(s.cleanNotFoundPath('/mostro/drago-viola?da=bio#x'),'/mostro/drago-viola');
+assert.equal(s.cleanNotFoundPath('/admin/segreto'),null);assert.equal(s.cleanNotFoundPath('/api/x'),null);assert.equal(s.cleanNotFoundPath('http://x'),null);
+assert.equal(s.cleanNotFoundPath('/con spazio'),null);assert.equal(s.cleanNotFoundPath(5),null);
+assert.equal(parseAnalyticsInput(event('not_found',{path:'/mostro/drago-viola'})).path,'/mostro/drago-viola');
+assert.equal(parseAnalyticsInput(event('not_found',{path:'/mostro/drago-viola?x=1'})),undefined,'parameters are taken off by the browser');
+assert.equal(parseAnalyticsInput(event('not_found',{path:'/admin/x'})),undefined);
+console.log('Approfondimenti: percorso e calo più grande, settimane di chi resta, link in bio e Instagram (altro), filtri e sezioni delle ricerche, motivi delle ricerche senza risultato, sinonimi nell\'indice; giorni e ore, funzioni, pagine non trovate e lente.');
