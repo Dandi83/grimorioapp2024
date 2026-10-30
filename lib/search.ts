@@ -12,11 +12,14 @@ export interface SearchIndex {
    * page (else empty), the only edition the result exists in (none: both editions, or edition-free)].
    */
   rows: [number, string, string, string, string?, ("2024" | "2014")?][];
+  /** Synonyms of the reserved area (PROMPT 31): [the word searched, the position of the row it finds]. */
+  syn?: [string, number][];
 }
 
 export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "manuale";
 
-interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014" }
+/** alias: a synonym the row is found by (the name shown stays its own). */
+interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014"; alias?: string }
 
 /** start: where the query starts in the name, -1 for an approximate match (a typo, lib/fuzzy-search.ts). */
 export interface SearchMatch extends SearchRow { start: number; kind: MatchKind; typos: number; length?: number }
@@ -46,9 +49,10 @@ export function matchStart(name: string, query: string): number {
 }
 
 export function rowsOf(index: SearchIndex): SearchRow[] {
-  return index.rows.map(([section, nome, label, href, href2014, solo]) => ({
+  const rows: SearchRow[] = index.rows.map(([section, nome, label, href, href2014, solo]) => ({
     section: index.sections[section].k, nome, label, href, ...(href2014 ? { href2014 } : {}), ...(solo === "2024" || solo === "2014" ? { solo } : {}),
   }));
+  return [...rows, ...(index.syn ?? []).flatMap(([alias, at]) => (rows[at] ? [{ ...rows[at], alias }] : []))];
 }
 
 /**
@@ -73,10 +77,15 @@ export function search(index: SearchIndex, rows: SearchRow[], query: string, opt
   const found = new Map<SearchSectionKey, SearchMatch[]>();
   for (const row of rows) {
     if (options.section && row.section !== options.section) continue;
-    const match = matchName(row.nome, query, { wordStart: true, settled: options.settled });
+    const match = matchName(row.alias ?? row.nome, query, { wordStart: true, settled: options.settled });
     if (!match) continue;
     const list = found.get(row.section) ?? [];
-    list.push({ ...row, ...match });
+    // A row found by its name and by a synonym: once, the better match.
+    // A synonym marks nothing in the name shown.
+    const hit = { ...row, ...match, ...(row.alias ? { start: -1 } : {}) };
+    const twin = list.findIndex(other => other.href === row.href);
+    if (twin >= 0) { if (match.kind < list[twin].kind) list[twin] = hit; continue; }
+    list.push(hit);
     found.set(row.section, list);
   }
   // The similar ones (typos) only when no section of the filter has a row found exactly, starts with or contains.

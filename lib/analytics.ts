@@ -65,7 +65,8 @@ async function ensureSchema() {
         await client.query(
           "CREATE UNIQUE INDEX IF NOT EXISTS grimorio_analytics_view_idx ON grimorio_analytics_events (visitor_id, view_id, event_name) WHERE event_name IN ('page_view','card_open','card_read')",
         );
-        for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer", "share_from text", "amount integer"])
+        // PROMPT 31: where a search was typed, the arrival from the link of the bio, the group of a filter.
+        for (const column of ["origin text", "device text", "installed boolean", "search_query text", "search_results integer", "share_from text", "amount integer", "search_area text", "entry text", "filter_group text"])
           await client.query(`ALTER TABLE grimorio_analytics_events ADD COLUMN IF NOT EXISTS ${column}`);
         // The answers of «Come ti trovi con il Grimorio?» (28 October 2026): the vote, the day and the kind of device.
         // chiave: a keyed hash of the visitor ID, only to refuse a second vote within 4 months, emptied after them.
@@ -133,8 +134,8 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
   await ensureSchema();
   const result = await pool.query(
     `INSERT INTO grimorio_analytics_events
-    (id,visitor_id,session_id,view_id,event_name,path,card_kind,card_id,title,source,is_test,active_seconds,scroll_percent,origin,device,installed,search_query,search_results,share_from,amount)
-    SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20
+    (id,visitor_id,session_id,view_id,event_name,path,card_kind,card_id,title,source,is_test,active_seconds,scroll_percent,origin,device,installed,search_query,search_results,share_from,amount,search_area,entry)
+    SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22
     WHERE (SELECT count(*) FROM grimorio_analytics_events WHERE visitor_id=$2 AND received_at>now()-interval '1 minute')<90
       AND NOT EXISTS (SELECT 1 FROM grimorio_analytics_excluded WHERE visitor_id=$2)
       AND ($5 NOT IN ('app_installed','first_standalone_open','arrivo_da_amico')
@@ -161,9 +162,17 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
       input.results ?? null,
       input.from ?? null,
       input.amount ?? null,
+      input.area ?? null,
+      input.bio ? "bio" : null,
     ],
   );
-  return result.rows.length > 0;
+  const stored = result.rows.length > 0;
+  // The filters applied since the last event (PROMPT 31): one «filter_apply» per group, in the same request.
+  if (stored && input.filters?.length)
+    for (const group of input.filters)
+      await pool.query(`INSERT INTO grimorio_analytics_events (id,visitor_id,session_id,view_id,event_name,path,source,is_test,filter_group)
+        VALUES ($1,$2,$3,$4,'filter_apply',$5,$6,$7,$8) ON CONFLICT DO NOTHING`, [randomUUID(), visitor, input.session, input.view, input.path, input.source, input.test, group]);
+  return stored;
 }
 /**
  * The limits that keep the numbers honest, besides the 90 events a minute of one visitor (storeAnalyticsEvent):
@@ -509,4 +518,85 @@ export async function readSupport(range: StatisticsRange): Promise<SupportStats>
       WHERE ${RANGE} AND event_name='support_click' AND amount IS NOT NULL GROUP BY amount ORDER BY amount`, period),
   ]);
   return { opened: people.rows[0]?.opened ?? 0, clicked: people.rows[0]?.clicked ?? 0, byAmount: amounts.rows };
+}
+
+/*
+ * Insight (PROMPT 31): read only when the administrator opens /admin/statistiche, on the period chosen; the same
+ * index on received_at, and the one on (visitor_id, received_at) for the steps of each person.
+ */
+export type SearchMiss = { query: string; times: number; people: number; areas: string[] };
+/** The searches with no result of the period, the most frequent first. */
+export async function readSearchMisses(range: StatisticsRange, limit = 15): Promise<SearchMiss[]> {
+  await ensureSchema();
+  const { where, period } = rangeSql(range);
+  const { rows } = await pool.query(`SELECT search_query AS query, count(*)::int AS times, count(DISTINCT visitor_id)::int AS people,
+      array_remove(array_agg(DISTINCT search_area), NULL) AS areas
+    FROM grimorio_analytics_events WHERE ${where} AND event_name='search' AND search_results=0 AND search_query IS NOT NULL
+    GROUP BY search_query ORDER BY times DESC, query ASC LIMIT ${Number(limit)}`, period);
+  return rows;
+}
+
+/** «Il percorso»: the people of the period at each step (each person once per step). */
+export async function readFunnel(range: StatisticsRange): Promise<Record<"arrivano" | "scheda" | "cercano" | "preferito" | "installano" | "tornano", number>> {
+  await ensureSchema();
+  const { where, period } = rangeSql(range);
+  const { rows } = await pool.query(`WITH firsts AS (
+      SELECT DISTINCT ON (visitor_id) visitor_id, session_id, received_at FROM grimorio_analytics_events
+      WHERE ${where} AND event_name='page_view' ORDER BY visitor_id, received_at),
+    steps AS (
+      SELECT visitor_id, bool_or(event_name='card_open') AS scheda, bool_or(event_name IN ('search','filter_apply')) AS cercano,
+        bool_or(event_name='favorite_add') AS preferito, bool_or(event_name IN ('app_installed','first_standalone_open')) AS installano
+      FROM grimorio_analytics_events WHERE ${where} GROUP BY visitor_id)
+    SELECT count(*)::int AS arrivano, count(*) FILTER (WHERE steps.scheda)::int AS scheda, count(*) FILTER (WHERE steps.cercano)::int AS cercano,
+      count(*) FILTER (WHERE steps.preferito)::int AS preferito, count(*) FILTER (WHERE steps.installano)::int AS installano,
+      count(*) FILTER (WHERE EXISTS (SELECT 1 FROM grimorio_analytics_events AS later WHERE later.visitor_id=firsts.visitor_id
+        AND later.event_name='page_view' AND later.is_test=false AND later.session_id<>firsts.session_id
+        AND later.received_at>firsts.received_at AND later.received_at<=firsts.received_at+interval '7 days'))::int AS tornano
+    FROM firsts LEFT JOIN steps USING (visitor_id)`, period);
+  const row = rows[0] ?? {};
+  return { arrivano: row.arrivano ?? 0, scheda: row.scheda ?? 0, cercano: row.cercano ?? 0, preferito: row.preferito ?? 0, installano: row.installano ?? 0, tornano: row.tornano ?? 0 };
+}
+
+export type InstagramArrivals = { bio: { people: number; back: number }; other: { people: number; back: number }; bioBuckets: { day: string; visitors: number }[] };
+/**
+ * «Da Instagram»: the people arrived from the link of the bio (?da=bio, their first such arrival of the period) and
+ * the other arrivals recognised as Instagram (stories, ads, messages), each with how many came back within 7 days
+ * in another session; the arrivals from the bio by day (by bar of 60 minutes for «Ultime 24 ore»).
+ */
+export async function readInstagram(range: StatisticsRange): Promise<InstagramArrivals> {
+  await ensureSchema();
+  const { where, period, bucket } = rangeSql(range);
+  const arrivals = (filter: string) => `SELECT DISTINCT ON (visitor_id) visitor_id, session_id, received_at FROM grimorio_analytics_events
+    WHERE ${where} AND event_name='page_view' AND ${filter} ORDER BY visitor_id, received_at`;
+  const bio = arrivals("entry='bio'");
+  const other = `SELECT * FROM (${arrivals("origin='instagram' AND entry IS NULL")}) AS ig WHERE visitor_id NOT IN (SELECT visitor_id FROM (${bio}) AS b)`;
+  const back = `EXISTS (SELECT 1 FROM grimorio_analytics_events AS later WHERE later.visitor_id=a.visitor_id AND later.event_name='page_view'
+    AND later.is_test=false AND later.session_id<>a.session_id AND later.received_at>a.received_at AND later.received_at<=a.received_at+interval '7 days')`;
+  const [counts, buckets] = await Promise.all([
+    pool.query(`SELECT (SELECT count(*) FROM (${bio}) AS a)::int AS bio, (SELECT count(*) FROM (${bio}) AS a WHERE ${back})::int AS bio_back,
+      (SELECT count(*) FROM (${other}) AS a)::int AS other, (SELECT count(*) FROM (${other}) AS a WHERE ${back})::int AS other_back`, period),
+    pool.query(`SELECT ${bucket} AS day, count(*)::int AS visitors FROM (${bio}) AS arrivals GROUP BY day ORDER BY day`, period),
+  ]);
+  const row = counts.rows[0] ?? {};
+  return { bio: { people: row.bio ?? 0, back: row.bio_back ?? 0 }, other: { people: row.other ?? 0, back: row.other_back ?? 0 }, bioBuckets: buckets.rows };
+}
+
+/**
+ * «Chi resta davvero»: each person arrived in the last 9 weeks (first page view kept, 90 days at most), the Monday of
+ * the week of arrival (Rome), whether the first visit came from Instagram, the Mondays of the weeks they came back.
+ * lib/analytics-stats.ts cohorts() makes the table.
+ */
+export async function readCohortPeople(): Promise<{ week: string; instagram: boolean; back: string[] }[]> {
+  await ensureSchema();
+  const week = (column: string) => `to_char(date_trunc('week', ${column} AT TIME ZONE 'Europe/Rome'),'YYYY-MM-DD')`;
+  const { rows } = await pool.query(`WITH firsts AS (
+      SELECT DISTINCT ON (visitor_id) visitor_id, received_at, origin FROM grimorio_analytics_events
+      WHERE is_test=false AND event_name='page_view' ORDER BY visitor_id, received_at)
+    SELECT ${week("f.received_at")} AS week, coalesce(f.origin='instagram', false) AS instagram,
+      coalesce(array_agg(DISTINCT ${week("e.received_at")}) FILTER (WHERE e.visitor_id IS NOT NULL), '{}') AS back
+    FROM firsts AS f LEFT JOIN grimorio_analytics_events AS e ON e.visitor_id=f.visitor_id AND e.event_name='page_view'
+      AND e.is_test=false AND e.received_at>f.received_at
+    WHERE f.received_at>=now()-interval '63 days'
+    GROUP BY f.visitor_id, f.received_at, f.origin`);
+  return rows;
 }

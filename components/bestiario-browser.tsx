@@ -21,7 +21,7 @@ import { authorLine } from "@/lib/homebrew-types";
 import { COMMUNITY_HREF, CommunityHeader, GrimorioHeader, OriginalsBlock, OriginalsHeader, ProposeButton } from "@/components/homebrew/community-ui";
 import { SectionEditionPill } from "@/components/edition/edition-pill";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
-import { useReportSearch } from "@/components/statistics/use-report-search";
+import { useReportFilters, useReportSearch } from "@/components/statistics/use-report-search";
 import { searchList } from "@/lib/fuzzy-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 
@@ -147,7 +147,9 @@ export function BestiarioBrowser({
   const found = useMemo(() => searchList(byChallenge, deferredQ, m => m.nome, { settled }), [byChallenge, deferredQ, settled]);
   const searched = useMemo(() => [...found.exact, ...found.approximate], [found]);
   // The searched name and how many creatures of the edition have it exactly (statistics, only with the consent).
-  useReportSearch(deferredQ, found.exact.length);
+  useReportSearch(deferredQ, found.exact.length, true, "bestiario");
+  // The groups of filters turned on (statistics, only the names of the groups): they leave with the next event.
+  useReportFilters([...(filters.categoria !== "tutti" ? ["categoria" as const] : []), ...(["gs", "tipo", "taglia", "habitat"] as const).filter(group => filters[group].length > 0)]);
 
   const matches = useCallback((m: MonsterListItem) => matchesFilters(m, filters, section)
     && (section !== "originali" || who === "tutti" || whoOf(m) === who), [filters, section, who]);

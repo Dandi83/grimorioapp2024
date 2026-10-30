@@ -129,7 +129,7 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
   const typed = query.trim().length;
   // Counted only with the consent to the statistics: the word and the results of the site (both editions).
   // Only the exact results: a search found only with typos still counts as «cercano senza trovare».
-  useReportSearch(query, exactOf(ownGroups) + exactOf(otherGroups), !!index);
+  useReportSearch(query, exactOf(ownGroups) + exactOf(otherGroups), !!index, "globale");
   const choose = (value: string) => { setQuery(value); setExpanded([]); input.current?.focus(); };
   const suggestion = suggestionOf(groups) ?? (!groups.length && alsoOther ? suggestionOf(otherGroups) : null);
 

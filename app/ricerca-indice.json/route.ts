@@ -1,4 +1,6 @@
 import { buildSearchIndex } from "@/lib/search-index";
+import { withSynonyms } from "@/lib/search-insights";
+import { readSynonyms } from "@/lib/search-insights-server";
 import { effectiveHidden } from "@/lib/public-sections";
 import { visibilityState } from "@/lib/section-visibility";
 
@@ -12,7 +14,9 @@ async function hiddenForSearch() {
 }
 
 export async function GET() {
-  return new Response(JSON.stringify(await buildSearchIndex(undefined, undefined, await hiddenForSearch())), {
+  // The synonyms of the reserved area (PROMPT 31) ride in the same file: nothing more for who never searches.
+  const index = withSynonyms(await buildSearchIndex(undefined, undefined, await hiddenForSearch()), await readSynonyms().catch(() => []));
+  return new Response(JSON.stringify(index), {
     headers: { "Content-Type": "application/json; charset=utf-8" },
   });
 }

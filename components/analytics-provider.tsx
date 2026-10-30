@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import type { AnalyticsEvent, AnalyticsInput } from "@/lib/analytics-events";
-import { deviceOf, originOf, type Origin } from "@/lib/analytics-stats";
+import { BIO_VALUE, deviceOf, originOf, type Origin } from "@/lib/analytics-stats";
+import { PENDING_FILTERS } from "@/components/statistics/use-report-search";
 import { useUserEdition } from "@/components/edition/edition-provider";
 import { setAdminDevice, setStatisticsCounted, setStatisticsNotice } from "@/components/statistics/notice";
 import { recordVisitDay } from "@/components/home/rating-store";
@@ -17,10 +18,10 @@ const SESSION = "grimorio_statistics_session";
 /** The first opening of the installed app was sent from this browser (the server keeps it once per visitor too). */
 const APP_OPENED = "grimorio_statistics_app_opened";
 
-/** «?da=amico» leaves the address once read: a link shared again, or saved in the favourites, does not carry it. */
+/** «?da=amico» and «?da=bio» leave the address once read: a link shared again, or saved in the favourites, does not carry them. */
 function dropFriendMark() {
   const url = new URL(window.location.href);
-  if (url.searchParams.get(FRIEND_PARAM) !== FRIEND_VALUE) return;
+  if (![FRIEND_VALUE, BIO_VALUE].includes(url.searchParams.get(FRIEND_PARAM) ?? "")) return;
   url.searchParams.delete(FRIEND_PARAM);
   window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
 }
@@ -142,8 +143,17 @@ export function AnalyticsProvider() {
     // Kind of device and app opened from the Home screen: categories only, never the user agent.
     const device = deviceOf(navigator.userAgent, navigator.maxTouchPoints);
     const installed = window.matchMedia?.("(display-mode: standalone)").matches === true || (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    // Arrived from the link of the Instagram bio (?da=bio): said with the first page view, then the mark goes away.
+    const bio = new URLSearchParams(window.location.search).get(FRIEND_PARAM) === BIO_VALUE;
     function send(event: AnalyticsEvent, extra: Partial<AnalyticsInput> = {}) {
       if (!enabled.current || !live) return Promise.resolve(false);
+      // The groups of filters applied since the last event (components/statistics/use-report-search.ts) ride along.
+      let filters: AnalyticsInput["filters"];
+      if (event === "page_view" || event === "search")
+        try {
+          filters = JSON.parse(sessionStorage.getItem(PENDING_FILTERS) || "[]");
+          sessionStorage.removeItem(PENDING_FILTERS);
+        } catch {}
       const body: AnalyticsInput = {
         event,
         id: crypto.randomUUID(),
@@ -154,7 +164,8 @@ export function AnalyticsProvider() {
         source,
         activeSeconds: Math.floor(seconds),
         scrollPercent: Math.floor(scroll),
-        ...(event === "page_view" ? { origin, device, installed } : {}),
+        ...(event === "page_view" ? { origin, device, installed, ...(bio ? { bio: true as const } : {}) } : {}),
+        ...(filters?.length ? { filters } : {}),
         ...(event === "app_installed" || event === "first_standalone_open" ? { device } : {}),
         ...extra,
       };
@@ -201,7 +212,7 @@ export function AnalyticsProvider() {
       else if (name === "prova_tavolo" && ["facile", "giusto", "difficile"].includes(detail.vote))
         void send("prova_tavolo", { tableVote: detail.vote }).then(ok => window.dispatchEvent(new CustomEvent("grimorio:prova-tavolo-salvata", { detail: { ok } })));
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
-      else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results });
+      else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results, area: detail.area });
     };
     void send("page_view");
     if (card) void send("card_open");
@@ -212,6 +223,7 @@ export function AnalyticsProvider() {
       void send("arrivo_da_amico", { device });
       dropFriendMark();
     }
+    if (bio) dropFriendMark();
     // Installations: the browser says so (Android, Chrome and Edge on a computer); on iPhone, where Safari says
     // nothing, the first opening from the icon. Once per device here, once per visitor on the server.
     const appInstalled = () => void send("app_installed");
