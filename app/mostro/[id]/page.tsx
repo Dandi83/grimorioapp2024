@@ -120,7 +120,7 @@ export default async function MonsterDetailPage({
         }
         // «I mostri creati da voi»: the pill next to the edition label, where the sheets show their labels.
         label={homebrew ? <HomebrewLabel edizione={monster.homebrew_edizione!} ours={!monster.homebrew_autore} verified={!!monster.homebrew_verificato} /> : <MonsterProvenanceBadge source={source} edition={monster.edizione ?? (legacy ? "2014" : undefined)} linked variant="dark" />}
-        byline={homebrew ? <HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} /> : undefined}
+        byline={homebrew ? <HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} verified={!!monster.homebrew_verificato} /> : undefined}
         labelBelow={homebrew}
       />
       <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} catalog={await getSpellReferenceCatalog()} descriptionFirst={homebrew} />

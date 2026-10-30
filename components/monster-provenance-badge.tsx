@@ -2,6 +2,18 @@ import { BookOpen } from "lucide-react";
 import type { MonsterProvenance } from "../lib/monsters-types";
 
 /** Source is checked on the server; the catalog never imports the full SRD. */
+/**
+ * A creature «2014 e 2024» (PROMPT 28): one dark label, as the edition label of the SRD sheets, «📖 2014 e 2024»,
+ * whatever edition the user chose.
+ */
+export function BothEditionsBadge() {
+  return (
+    <span data-edition-pill="entrambe" aria-label="D&D 2014 e 2024: la creatura vale per entrambe le edizioni" className="inline-flex items-center gap-1 rounded-full bg-foreground px-2.5 py-1 text-[13px] font-bold leading-4 text-card">
+      <BookOpen size={12} className="shrink-0" aria-hidden="true" /><span className="whitespace-nowrap">2014 e 2024</span>
+    </span>
+  );
+}
+
 export function MonsterProvenanceBadge({
   source,
   edition,

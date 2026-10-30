@@ -1,33 +1,34 @@
 import type { ReactNode } from "react";
 
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
-import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
+import { BothEditionsBadge, MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { HOMEBREW_LICENSE_URL, authorLine } from "@/lib/homebrew-types";
 import type { Monster } from "@/lib/monsters-types";
 import type { CardDisplayContext } from "@/lib/card-display";
-import { BothEditionsPill, HomebrewPill, VerifiedPill } from "@/components/homebrew-pill";
-import { ChosenEditionBadge } from "./chosen-edition-badge";
+import { HomebrewPill, VerifiedPill } from "@/components/homebrew-pill";
 
 /**
- * The label of a sheet of «I mostri creati da voi»: the pill («Dalla community» or «Dalla redazione»), then the edition;
- * a creature «2014 e 2024» keeps that pill and the dark label follows the edition chosen by the user.
+ * The label of a sheet of «I mostri creati da voi»: the pill («Dalla community» or «Dalla redazione»), then the edition:
+ * one dark label, «📖 2014 e 2024» for a creature of both editions (PROMPT 28), the year otherwise.
  */
 export function HomebrewLabel({ edizione, ours = false, verified = false }: { edizione: "2014" | "2024" | "entrambe"; ours?: boolean; verified?: boolean }) {
   return (
     <span className="flex flex-wrap items-center justify-end gap-1.5">
       <HomebrewPill ours={ours} />
       {verified && <VerifiedPill />}
-      {edizione === "entrambe" ? <><BothEditionsPill /><ChosenEditionBadge /></> : <MonsterProvenanceBadge edition={edizione} variant="dark" />}
+      {edizione === "entrambe" ? <BothEditionsBadge /> : <MonsterProvenanceBadge edition={edizione} variant="dark" />}
     </span>
   );
 }
 
 /**
  * Under the title: «Proposta da <nickname>» in bold, then in small print the licence and «controllata dal Grimorio»;
- * ours: «Mostro originale, bilanciato sui mostri ufficiali dello stesso GS» (the pill already says «Dalla redazione»).
+ * ours: «Mostro originale, bilanciato sui mostri ufficiali dello stesso GS» (the pill already says «Dalla redazione»),
+ * only while «✓ Bilanciamento verificato» is off: with it, the line would say the same thing twice (PROMPT 28).
  */
-export function HomebrewByline({ autore, licenza }: { autore: string | null | undefined; licenza: string | null | undefined }) {
+export function HomebrewByline({ autore, licenza, verified = false }: { autore: string | null | undefined; licenza: string | null | undefined; verified?: boolean }) {
   if (!autore) {
+    if (verified) return null;
     return <span className="block text-[13px] leading-5" data-homebrew-byline="grimorio">Mostro originale, bilanciato sui mostri ufficiali dello stesso GS</span>;
   }
   return (
@@ -57,7 +58,7 @@ export function HomebrewSheet({ monster, before, context = {} }: { monster: Mons
   const edizione = monster.homebrew_edizione ?? "2024";
   return (
     <article className="monster-sheet relative pb-2 pt-4">
-      <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} ours={!monster.homebrew_autore} verified={!!monster.homebrew_verificato} />} byline={<HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} />} labelBelow />
+      <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} ours={!monster.homebrew_autore} verified={!!monster.homebrew_verificato} />} byline={<HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} verified={!!monster.homebrew_verificato} />} labelBelow />
       <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} descriptionFirst />
       <HomebrewNote ours={!monster.homebrew_autore} />
     </article>
