@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { addMarkerAction, type MarkerResult } from "@/app/actions/admin-statistics";
 
-/** «+ Segna un evento»: opens a small form (day and short text) under the chart. */
+/** «+ Segna un evento»: opens a small form (day, hour if known, short text) under the chart. */
 export function MarkerForm({ today }: { today: string }) {
   const [open, setOpen] = useState(false);
   const [state, action, pending] = useActionState<MarkerResult | null, FormData>(addMarkerAction, null);
@@ -23,6 +23,13 @@ export function MarkerForm({ today }: { today: string }) {
       <label className="block text-sm font-semibold text-[#2B2118]">
         Giorno
         <input type="date" name="giorno" required defaultValue={today} max={today} className="mt-1 block min-h-11 w-full rounded-lg border border-[#DDCFAE] bg-[#FFFBF0] px-3 text-base" />
+      </label>
+      <label className="block text-sm font-semibold text-[#2B2118]">
+        Ora (facoltativa)
+        <select name="ora" defaultValue="" className="mt-1 block min-h-11 w-full rounded-lg border border-[#DDCFAE] bg-[#FFFBF0] px-3 text-base">
+          <option value="">Non so / tutto il giorno</option>
+          {Array.from({ length: 24 }, (_, hour) => <option key={hour} value={hour}>{`${String(hour).padStart(2, "0")}:00`}</option>)}
+        </select>
       </label>
       <label className="block text-sm font-semibold text-[#2B2118]">
         Cosa è successo

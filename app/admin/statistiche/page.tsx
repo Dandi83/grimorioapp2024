@@ -12,8 +12,8 @@ import { getSpellIndex } from "@/lib/spell-index";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { spellName } from "@/lib/spell-name";
 import { publicSpellId, spellHref } from "@/lib/spell-public-id";
-import { appSplit, bestDay, dayLabel, fillDays, percentChange, periodOf, periodRange, share, PERIODS } from "@/lib/analytics-stats";
-import { Bars, DailyChart } from "@/components/statistics/charts";
+import { appSplit, barOf, bestDay, bestHour, dayLabel, fillDays, fillHours, hourWindow, markerTime, percentChange, periodOf, periodRange, share, PERIODS } from "@/lib/analytics-stats";
+import { Bars, DailyChart, HourlyChart } from "@/components/statistics/charts";
 import { Arrow, SmallRing, Sparkline, SplitBar, Tile } from "@/components/statistics/tiles";
 import { RestItem } from "@/components/statistics/rest-item";
 import { PeriodSelect } from "@/components/statistics/period-select";
@@ -38,7 +38,10 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const period = periodOf(params.periodo);
   const saved = rankingFilterOf(params);
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
-  const range = periodRange(period, today);
+  // «Ultime 24 ore» (PROMPT 30): a moving window up to now, with the 24 hours before; the others are days of the calendar.
+  const hourly = period === "24h" ? hourWindow(new Date()) : null;
+  const dayRange = period === "24h" ? null : periodRange(period, today);
+  const range = hourly ? { hours: true as const, start: hourly.start, end: hourly.end, prevStart: hourly.prevStart, prevEnd: hourly.prevEnd } : dayRange!;
   const [data, excluded, support, counts, spells, monsters, now, tableVotes, homebrew] = await Promise.all([
     readStatistics(range), deviceExcluded(), readSupport(range), readFavoriteCounts(saved.period).catch(() => []),
     getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []), readNow(),
@@ -59,12 +62,17 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
     const next = { periodo: period, salvati_tipo: saved.kind, salvati_edizione: saved.edition, salvati_periodo: saved.period, ...change };
     return `/admin/statistiche?${new URLSearchParams(next)}#salvati`;
   };
-  const days = fillDays(range.from, range.to, data.days);
+  const days = dayRange ? fillDays(dayRange.from, dayRange.to, data.days) : [];
+  const bars = hourly ? fillHours(hourly, data.days) : [];
   const change = percentChange(data.people, data.previousPeople);
   // «Usano l’app»: the bar and its line divide the people of the big number (PROMPT 17).
   const app = appSplit(data.installedDevices, data.installed);
-  const best = bestDay(days);
-  const markersInPeriod = data.markers.filter(marker => marker.giorno >= range.from && marker.giorno <= range.to);
+  const best = bestDay(days), bestOfHours = bestHour(bars);
+  const markersInPeriod = dayRange ? data.markers.filter(marker => marker.giorno >= dayRange.from && marker.giorno <= dayRange.to) : [];
+  const markersOnHours = hourly ? data.markers.map(marker => ({ bar: barOf(hourly, markerTime(marker)), etichetta: marker.etichetta })).filter(marker => marker.bar >= 0) : [];
+  const bestText = hourly
+    ? (bestOfHours ? <>ora migliore: {bestOfHours.label}, {number(bestOfHours.visitors)}</> : "nessuna visita nel periodo")
+    : (best && best.visitors > 0 ? <>giorno migliore: {dayLabel(best.day).replace(/^\S+ /, "")}, {number(best.visitors)}</> : "nessuna visita nel periodo");
   const returning = share(data.returning, data.people);
   // «Tornano»: the change of the share in points, only when the period before had people to compare with.
   const returningChange = data.previousPeople ? returning - share(data.previousReturning, data.previousPeople) : null;
@@ -98,8 +106,10 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
       {/* «Quattro tessere» (canvas «Statistiche che contano», proposal A, PROMPT 16). */}
       <div className="grid grid-cols-2 gap-[10px] lg:grid-cols-4" data-tiles="">
         <Tile name="persone" label="Persone" dark value={number(data.people)} valueColor="#FFFBF0" arrow={<Arrow change={change} dark />}
-          chart={<Sparkline days={days} />}
-          detail={best && best.visitors > 0 ? <>giorno migliore: {dayLabel(best.day).replace(/^\S+ /, "")}, {number(best.visitors)}</> : "nessuna visita nel periodo"} />
+          chart={hourly
+            ? <Sparkline days={bars.map(row => ({ day: row.hour, visitors: row.visitors }))} label={`Persone ora per ora dalle ${bars[0].label.slice(0, 5)}: ${bars.map(row => row.visitors).join(", ")}.`} />
+            : <Sparkline days={days} />}
+          detail={bestText} />
         <Tile name="tornano" label="Tornano" value={`${returning}%`} valueColor="#7A1F2B" arrow={<Arrow change={returningChange} unit=" pt" />}
           chart={<SmallRing percent={returning} label={`${returning}% delle persone è tornato almeno una seconda volta: ${data.returning} su ${data.people}.`} />}
           detail={<>{number(data.returning)} su {number(data.people)} sono tornate almeno una volta</>} />
@@ -121,13 +131,13 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
 
       <h2 className="pt-2 font-serif text-[22px] font-bold leading-tight text-[#2B2118]">Il resto</h2>
       <div className="overflow-hidden rounded-2xl border border-[#DDCFAE] bg-[#FFFBF0]" data-rest="">
-        <RestItem id="andamento" title="Andamento giorno per giorno">
-          <DailyChart days={days} markers={markersInPeriod} />
+        <RestItem id="andamento" title={hourly ? "Andamento ora per ora" : "Andamento giorno per giorno"}>
+          {hourly ? <HourlyChart bars={bars} markers={markersOnHours} /> : <DailyChart days={days} markers={markersInPeriod} />}
           <ul className="mt-3 space-y-1" aria-label="Eventi segnati">
             {data.markers.map(marker => (
               <li key={marker.id} className="flex items-center gap-2 text-sm text-[#5E4E3E]" data-marker-row="">
                 <span className="h-3 w-0 border-l-2 border-dashed border-[#E0A21A]" aria-hidden="true" />
-                <span className="min-w-0 flex-1"><b className="text-[#2B2118]">{marker.etichetta}</b> · {dayLabel(marker.giorno)}</span>
+                <span className="min-w-0 flex-1"><b className="text-[#2B2118]">{marker.etichetta}</b> · {dayLabel(marker.giorno)}{typeof marker.ora === "number" && <> alle {String(marker.ora).padStart(2, "0")}:00</>}</span>
                 <form action={deleteMarkerAction}>
                   <input type="hidden" name="id" value={marker.id} />
                   <button type="submit" className="min-h-11 px-2 text-sm font-semibold text-[#7A1F2B]" aria-label={`Cancella l’evento ${marker.etichetta}`}>Cancella</button>
@@ -259,7 +269,11 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
           <a href={VERCEL_ANALYTICS_URL} target="_blank" rel="noreferrer" className="mt-1 inline-flex min-h-11 items-center text-[15px] font-bold text-[#7A1F2B] underline underline-offset-4">
             Totale di tutti i visitatori su Vercel Analytics
           </a>
-          <p className="text-xs text-[#5E4E3E]">Periodo: {PERIODS[period].charAt(0).toLowerCase() + PERIODS[period].slice(1)} (dal {dayLabel(range.from)}), fuso orario italiano.</p>
+          <p className="text-xs text-[#5E4E3E]" data-period-line="">
+            {dayRange
+              ? <>Periodo: {PERIODS[period].charAt(0).toLowerCase() + PERIODS[period].slice(1)} (dal {dayLabel(dayRange.from)}), fuso orario italiano.</>
+              : <>Periodo: ultime 24 ore fino ad adesso, confrontate con le 24 ore prima; ore del fuso orario italiano.</>}
+          </p>
         </RestItem>
       </div>
 

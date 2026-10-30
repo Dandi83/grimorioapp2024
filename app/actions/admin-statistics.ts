@@ -7,14 +7,16 @@ import { excludeThisDevice } from "@/lib/analytics-exclusion";
 
 export type MarkerResult = { ok: true } | { ok: false; error: string };
 
-/** «+ Segna un evento»: a day and a short text on the statistics chart. Administrator only. */
+/** «+ Segna un evento»: a day, an optional hour (Rome, 0–23) and a short text on the statistics chart. Administrator only. */
 export async function addMarkerAction(_: MarkerResult | null, form: FormData): Promise<MarkerResult> {
   await requireAdmin();
   const giorno = clean(form.get("giorno"));
   const etichetta = clean(form.get("etichetta")).replace(/\s+/g, " ");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(giorno) || new Date(`${giorno}T12:00:00Z`).toISOString().slice(0, 10) !== giorno) return { ok: false, error: "Data non valida." };
   if (etichetta.length < 2 || etichetta.length > 60) return { ok: false, error: "Scrivi un testo breve (da 2 a 60 caratteri)." };
-  await addMarker(giorno, etichetta);
+  const hour = clean(form.get("ora"));
+  if (hour && !/^(?:[01]?\d|2[0-3])$/.test(hour)) return { ok: false, error: "Ora non valida." };
+  await addMarker(giorno, etichetta, hour ? Number(hour) : null);
   revalidatePath("/admin/statistiche");
   return { ok: true };
 }

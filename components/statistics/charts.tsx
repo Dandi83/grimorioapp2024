@@ -1,4 +1,4 @@
-import { shortDay, dayLabel } from "@/lib/analytics-stats";
+import { shortDay, dayLabel, type HourBar } from "@/lib/analytics-stats";
 
 // Charts of /admin/statistiche, drawn on the server as SVG: no chart library, nothing loaded from elsewhere.
 // Each one has an accessible label with the summary of its numbers.
@@ -47,6 +47,51 @@ export function DailyChart({ days, markers }: { days: { day: string; visitors: n
           <text x={x(days.length - 1)} y={height - 6} textAnchor="end" fontSize="9" fill={MUTED}>{shortDay(days[days.length - 1].day)}</text>
         </>
       )}
+    </svg>
+  );
+}
+
+/**
+ * «Andamento ora per ora» (PROMPT 30): the 24 bars of «Ultime 24 ore», 60 minutes each, the clock every 4 bars,
+ * and a dashed amber line on the hour of each marked event (markers: the index of its bar and its text).
+ */
+export function HourlyChart({ bars, markers }: { bars: HourBar[]; markers: { bar: number; etichetta: string }[] }) {
+  const width = 340, height = 180, left = 28, right = 8, top = 34, bottom = 22;
+  const max = Math.max(1, ...bars.map(row => row.visitors));
+  const slot = (width - left - right) / Math.max(1, bars.length), gap = 2;
+  const x = (index: number) => left + index * slot;
+  const y = (value: number) => top + (height - top - bottom) * (1 - value / max);
+  const peak = bars.reduce<HourBar | null>((best, row) => (row.visitors > (best?.visitors ?? 0) ? row : best), null);
+  const shown = markers.filter(marker => marker.bar >= 0 && marker.bar < bars.length);
+  const label = bars.length
+    ? `Persone ora per ora dalle ${bars[0].label.slice(0, 5)} alle ${bars[bars.length - 1].label.slice(6, 11)}: ${peak ? `massimo ${peak.visitors} tra le ${peak.label}` : "nessuna visita"}.${shown.length ? ` Eventi: ${shown.map(marker => `${marker.etichetta} tra le ${bars[marker.bar].label}`).join("; ")}.` : ""}`
+    : "Nessun dato nel periodo.";
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label} data-chart="ore" className="block h-auto w-full">
+      <title>{label}</title>
+      {[0, 0.5, 1].map(part => (
+        <g key={part}>
+          <line x1={left} x2={width - right} y1={y(max * part)} y2={y(max * part)} stroke={LINE} strokeWidth="1" />
+          <text x={left - 4} y={y(max * part) + 3} textAnchor="end" fontSize="9" fill={MUTED}>{Math.round(max * part)}</text>
+        </g>
+      ))}
+      {bars.map((row, index) => (
+        <rect key={row.hour} x={x(index) + gap / 2} width={Math.max(1, slot - gap)} y={y(row.visitors)} height={Math.max(0, height - bottom - y(row.visitors))}
+          fill={BORDEAUX} fillOpacity={row.visitors ? 0.85 : 0} data-hour-bar={row.label} data-visitors={row.visitors} />
+      ))}
+      {shown.map((marker, index) => {
+        const at = x(marker.bar) + slot / 2;
+        const text = marker.etichetta.length > 26 ? `${marker.etichetta.slice(0, 25)}…` : marker.etichetta;
+        return (
+          <g key={`${marker.bar}-${index}`} data-marker={bars[marker.bar].label}>
+            <line x1={at} x2={at} y1={top - 6} y2={height - bottom} stroke={AMBER} strokeWidth="1.6" strokeDasharray="4 3" />
+            <text x={Math.min(Math.max(at, left + 40), width - right - 40)} y={10 + (index % 2) * 11} textAnchor="middle" fontSize="9" fontWeight="700" fill={DARK}>{text}</text>
+          </g>
+        );
+      })}
+      {bars.map((row, index) => index % 4 === 0 && (
+        <text key={`t-${row.hour}`} x={x(index) + slot / 2} y={height - 6} textAnchor="middle" fontSize="8" fill={MUTED} data-hour-tick="">{row.label.slice(0, 5)}</text>
+      ))}
     </svg>
   );
 }

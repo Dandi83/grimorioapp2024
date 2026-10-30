@@ -43,15 +43,15 @@ export function Arrow({ change, unit = "%", dark = false }: { change: number | n
 }
 
 /** People per day as a small area (amber line, amber area at 25%). */
-export function Sparkline({ days }: { days: { day: string; visitors: number }[] }) {
+export function Sparkline({ days, label: given }: { days: { day: string; visitors: number }[]; label?: string }) {
   const width = 160, height = 38;
   const max = Math.max(1, ...days.map(row => row.visitors));
   const x = (index: number) => (days.length > 1 ? (index * width) / (days.length - 1) : width / 2);
   const y = (value: number) => 3 + (height - 6) * (1 - value / max);
   const points = days.map((row, index) => `${x(index).toFixed(1)},${y(row.visitors).toFixed(1)}`);
-  const label = days.length
+  const label = given ?? (days.length
     ? `Persone al giorno dal ${dayLabel(days[0].day)} al ${dayLabel(days[days.length - 1].day)}: ${days.map(row => row.visitors).join(", ")}.`
-    : "Nessun dato nel periodo.";
+    : "Nessun dato nel periodo.");
   return (
     <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label} data-chart="persone" preserveAspectRatio="none" className="block h-[38px] w-full">
       {points.length > 1 && <path d={`M0,${height} L${points.join(" L")} L${width},${height} Z`} fill={AMBER} fillOpacity="0.25" />}

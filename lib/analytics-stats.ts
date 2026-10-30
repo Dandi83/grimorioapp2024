@@ -43,8 +43,11 @@ export function cleanSearchQuery(raw: unknown): string | null {
   return text.length >= 2 ? text : null;
 }
 
-export const PERIODS = { "7": "Ultimi 7 giorni", "30": "Ultimi 30 giorni", "90": "Ultimi 90 giorni", instagram: "Da quando c’è Instagram" } as const;
+export const PERIODS = { "24h": "Ultime 24 ore", "7": "Ultimi 7 giorni", "30": "Ultimi 30 giorni", "90": "Ultimi 90 giorni", instagram: "Da quando c’è Instagram" } as const;
 export type Period = keyof typeof PERIODS;
+/** The order of the menu: «Ultime 24 ore» first (PROMPT 30); an object puts the keys that look like numbers first. */
+export const PERIOD_ORDER: readonly Period[] = ["24h", "7", "30", "90", "instagram"];
+export type DayPeriod = Exclude<Period, "24h">;
 /** The day the Instagram profile opened: the start of «Da quando c’è Instagram». */
 export const INSTAGRAM_START = "2026-10-26";
 
@@ -56,11 +59,11 @@ const shiftDay = (day: string, days: number) => {
 const daysBetween = (from: string, to: string) => Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86400000) + 1;
 
 export function periodOf(value: unknown): Period {
-  return value === "7" || value === "90" || value === "instagram" ? value : "30";
+  return value === "24h" || value === "7" || value === "90" || value === "instagram" ? value : "30";
 }
 
 /** The days of the period (today included) and of the previous period of the same length, just before it. */
-export function periodRange(period: Period, today: string) {
+export function periodRange(period: DayPeriod, today: string) {
   const from = period === "instagram" ? (INSTAGRAM_START <= today ? INSTAGRAM_START : today) : shiftDay(today, -(Number(period) - 1));
   const length = daysBetween(from, today);
   return { from, to: today, length, prevFrom: shiftDay(from, -length), prevTo: shiftDay(from, -1) };
@@ -90,7 +93,7 @@ export const signed = (value: number) => `${value > 0 ? "+" : value < 0 ? "−" 
 /** «Questa settimana …», «Negli ultimi 30 giorni …»: the first sentence of «In breve». */
 export function summarySentence(period: Period, people: number, change: number | null, length: number): string {
   const who = `${people.toLocaleString("it-IT")} ${people === 1 ? "persona ha" : "persone hanno"} usato il Grimorio`;
-  const [now, before] = period === "7" ? ["Questa settimana", "alla settimana prima"]
+  const [now, before] = period === "24h" ? ["Nelle ultime 24 ore", "alle 24 ore prima"] : period === "7" ? ["Questa settimana", "alla settimana prima"]
     : period === "instagram" ? ["Da quando c’è Instagram", `ai ${length} giorni prima`]
     : [`Negli ultimi ${period} giorni`, `ai ${period} giorni prima`];
   return change === null ? `${now} ${who}.` : `${now} ${who}: ${signed(change)} rispetto ${before}.`;
@@ -145,4 +148,79 @@ export type AppSplit = { android: number; iphone: number; altro: number; android
 export function appSplit(devices: Partial<Record<Device, number>>, people: number): AppSplit {
   const computer = devices.computer ?? 0, android = (devices.android ?? 0) + computer, iphone = devices.iphone ?? 0;
   return { android, iphone, altro: Math.max(0, people - android - iphone), androidLabel: computer > 0 ? "Android e computer" : "Android" };
+}
+
+/*
+ * «Ultime 24 ore» (PROMPT 30): a moving window of 24 hours up to now, never days of the calendar, and the 24 hours just
+ * before for the comparison. The 24 bars are slices of exactly 60 minutes counted from the start of the window
+ * (at 14:20 the bars are 14:20–15:20 … 13:20–14:20): every visit of the window is in one bar, and a night with a
+ * change of time keeps its real hours. Labels in the Rome time zone.
+ */
+const HOUR = 3600000;
+export type HourWindow = { start: string; end: string; prevStart: string; prevEnd: string; bars: string[] };
+/** The window of 24 hours ending now (to the minute); bars: the start of each bar, as ISO strings in UTC. */
+export function hourWindow(now: Date): HourWindow {
+  const end = Math.floor(now.getTime() / 60000) * 60000, start = end - 24 * HOUR;
+  const iso = (time: number) => new Date(time).toISOString();
+  return { start: iso(start), end: iso(end), prevStart: iso(start - 24 * HOUR), prevEnd: iso(start), bars: Array.from({ length: 24 }, (_, index) => iso(start + index * HOUR)) };
+}
+
+const ROME_PARTS = new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZoneName: "short" });
+const ROME_DAY = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" });
+const romeClock = (time: number) => {
+  const parts = Object.fromEntries(ROME_PARTS.formatToParts(new Date(time)).map(part => [part.type, part.value]));
+  return { clock: `${parts.hour}:${parts.minute}`, summer: parts.timeZoneName === "CEST" || parts.timeZoneName === "GMT+2" };
+};
+
+/** «15:00–16:00» in Rome; on the night the clock goes back, the two bars with the same clock get «ora legale» / «ora solare». */
+export function hourLabels(bars: string[]): string[] {
+  const starts = bars.map(bar => romeClock(Date.parse(bar)));
+  return bars.map((bar, index) => {
+    const start = starts[index];
+    if (starts.filter(other => other.clock === start.clock).length === 1) return `${start.clock}–${romeClock(Date.parse(bar) + HOUR).clock}`;
+    const next = `${String((Number(start.clock.slice(0, 2)) + 1) % 24).padStart(2, "0")}${start.clock.slice(2)}`;
+    return `${start.clock}–${next} (${start.summer ? "ora legale" : "ora solare"})`;
+  });
+}
+
+export type HourBar = { hour: string; label: string; visitors: number };
+/** Every bar of the window with its people (0 where nothing was counted); counts keyed by the index of the bar (0–23). */
+export function fillHours(window: HourWindow, counts: { day: string | number; visitors: number }[]): HourBar[] {
+  const byBar = new Map(counts.map(row => [Number(row.day), row.visitors]));
+  const labels = hourLabels(window.bars);
+  return window.bars.map((hour, index) => ({ hour, label: labels[index], visitors: byBar.get(index) ?? 0 }));
+}
+
+/** The hour with the most people (the first of them when equal); null without any. */
+export function bestHour(bars: HourBar[]): HourBar | null {
+  return bars.reduce<HourBar | null>((best, row) => (row.visitors > (best?.visitors ?? 0) ? row : best), null);
+}
+
+/** The UTC instant of a wall time of Rome (a day and a whole hour): the first one when the clock goes back. */
+export function romeInstant(day: string, hour: number): number {
+  const wall = Date.parse(`${day}T${String(hour).padStart(2, "0")}:00:00Z`), clock = `${String(hour).padStart(2, "0")}:00`;
+  // Rome is two (summer) or one hour ahead of UTC: the earlier moment whose Rome clock and day are those.
+  for (const offset of [2, 1]) {
+    const time = wall - offset * HOUR;
+    if (romeClock(time).clock === clock && ROME_DAY.format(new Date(time)) === day) return time;
+  }
+  // An hour the clock skips (02:00 on the night of the summer time): the moment it jumps to.
+  return wall - HOUR;
+}
+
+/**
+ * Where a marked event goes on the chart of the hours: its hour when the administrator gave one; else the moment it
+ * was saved, when that was on its day; else the start of its day.
+ */
+export function markerTime(marker: { giorno: string; ora?: number | null; creato_il?: string | Date | null }): number {
+  if (typeof marker.ora === "number") return romeInstant(marker.giorno, marker.ora);
+  const saved = marker.creato_il ? new Date(marker.creato_il).getTime() : NaN;
+  if (Number.isFinite(saved) && ROME_DAY.format(new Date(saved)) === marker.giorno) return saved;
+  return romeInstant(marker.giorno, 0);
+}
+
+/** The bar a moment falls in (its index), or -1 outside the window. */
+export function barOf(window: HourWindow, time: number): number {
+  const start = Date.parse(window.start);
+  return time < start || time >= Date.parse(window.end) ? -1 : Math.floor((time - start) / HOUR);
 }
