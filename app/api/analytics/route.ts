@@ -186,14 +186,16 @@ export async function POST(request: NextRequest) {
   // A malformed escape (e.g. "%E0") is a bad request, not a server failure.
   let cardId: string | undefined;
   try {
-    if (/^\/(?:spell|mostro)\//.test(input.path))
+    // A page not found (PROMPT 32) is never a card, even under /spell/ or /mostro/.
+    if (input.event !== "not_found" && /^\/(?:spell|mostro)\//.test(input.path))
       cardId = decodeURIComponent(input.path.slice(input.path.indexOf("/", 1) + 1));
   } catch {
     return response({ error: "Evento non valido" }, 400);
   }
   let card: CardInfo | undefined;
   try {
-    if (input.path.startsWith("/spell/")) {
+    if (input.event === "not_found") card = undefined;
+    else if (input.path.startsWith("/spell/")) {
       // The stored id (lib/spell-public-id.ts): the readings of the old and new address of a card add up.
       const record = await getSpellById(cardId!);
       if (!record) return response({ ignored: true });

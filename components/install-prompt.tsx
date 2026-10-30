@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Copy, Download, X } from "lucide-react";
 
 import { copyLink, dismissInvite, promptInstall, useDeviceAdvice, useInstallEvent } from "@/components/install/install-events";
+import { queueUse } from "@/components/statistics/use-report-search";
 import { useUserEdition } from "@/components/edition/edition-provider";
 import { setInstallInvite, useRatingShown, useStatisticsNotice } from "@/components/statistics/notice";
 
@@ -46,6 +47,9 @@ export function InstallPrompt() {
     : !guide || closed || pathname === "/installa" || (!button && guide.kind === "button") ? "none"
       : free && (button || late) ? "shown" : "waiting";
   useEffect(() => { setInstallInvite(inviteState); }, [inviteState]);
+  // The invite seen and accepted (PROMPT 32): names only, sent with the next event.
+  const seen = inviteState === "shown" && !rating;
+  useEffect(() => { if (seen) queueUse("install_prompt_shown"); }, [seen]);
 
   if (!guide || !free || rating || closed || pathname === "/installa") return null;
   if (!button && (guide.kind === "button" || !late)) return null;
@@ -81,7 +85,7 @@ export function InstallPrompt() {
         </div>
 
         {button ? (
-          <button type="button" onClick={() => { setClosed(true); void promptInstall(); }}
+          <button type="button" onClick={() => { setClosed(true); void promptInstall().then(accepted => { if (accepted) queueUse("install_prompt_accepted"); }); }}
             className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground transition-opacity active:opacity-80">
             <Download size={18} />
             Installa l&apos;app

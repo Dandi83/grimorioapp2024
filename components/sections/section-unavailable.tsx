@@ -33,7 +33,7 @@ export function NotFoundView({ hidden, soon = [] }: { hidden: string[]; soon?: r
   const unavailable = isHiddenPath(pathname, hidden) || (pathname === "/equipaggiamento" && EQUIPMENT_SECTIONS.every(key => hidden.includes(key)));
   const coming = pathname === "/equipaggiamento" && EQUIPMENT_SECTIONS.every(key => soon.includes(key)) ? "Equipaggiamento" : soonOfPath(pathname, soon);
   return unavailable ? <UnderConstruction soon={coming} /> : (
-    <div className="flex flex-col items-center px-6 pb-10 pt-16 text-center">
+    <div className="flex flex-col items-center px-6 pb-10 pt-16 text-center" data-not-found="">
       <span className="grid size-16 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
         <BookOpen size={30} aria-hidden="true" />
       </span>

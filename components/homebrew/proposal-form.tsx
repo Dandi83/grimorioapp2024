@@ -8,6 +8,7 @@ import { MIN_FILL_MS } from "@/lib/feedback-input";
 import { EMPTY_DRAFT, HOMEBREW_LICENSE, HOMEBREW_LICENSE_URL, LIMITS, parseProposal, type HomebrewDraft } from "@/lib/homebrew-types";
 import { HomebrewEditor, type EditorStep } from "./homebrew-editor";
 import { FormUnavailable } from "@/components/feedback/form-unavailable";
+import { queueUse } from "@/components/statistics/use-report-search";
 
 const OFFLINE = "Invio non riuscito: sei offline o la connessione non risponde. La scheda è ancora qui: riprova quando torni online.";
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -59,6 +60,8 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
 
   useEffect(() => {
     fetchToken().catch(() => undefined);
+    // «Proponi il tuo» opened (PROMPT 32): the name only, sent with the next event.
+    queueUse("proposal_start");
   }, []);
 
   // The draft saved on this device: back after a reload or another visit, until it is sent.
@@ -139,6 +142,7 @@ export function ProposalForm({ turnstileSiteKey }: { turnstileSiteKey?: string }
       }
       if (response.ok && result.ok) {
         try { localStorage.removeItem(DRAFT_KEY); } catch {}
+        queueUse("proposal_sent");
         setSent(true);
         window.scrollTo(0, 0);
       } else if (response.status === 503) {

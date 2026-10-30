@@ -59,6 +59,35 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  for(const name of ['page_view','first_standalone_open'])assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(event(name,{path:'/'})),ex),false,`an excluded device saves no ${name}`);
  assert.equal((await analytics.readStatistics(range(today))).people,3,'the excluded device is not counted');
  await analytics.addMarker('2026-10-30','Post sul gruppo');
+ // PROMPT 32: the uses and the LCP ride in a page view and become their own rows; the visits by day and band of 3 hours,
+ // Rome time, also on the night the clock goes back; the pages not found; the LCP on phones only.
+ {
+  const visitor=randomUUID(),session=randomUUID();
+  const withUses=parseAnalyticsInput(event('page_view',{session,device:'iphone',uses:['edition_change','proposal_start'],lcp:{ms:3100,path:'/grimorio'}}));
+  assert.equal(await analytics.storeAnalyticsEvent(withUses,visitor),true);
+  const uses=(await pg.query("SELECT event_name,path,metric_ms,device FROM grimorio_analytics_events WHERE visitor_id=$1 ORDER BY event_name",[visitor])).rows;
+  assert.deepEqual(uses.map(r=>r.event_name),['edition_change','lcp','page_view','proposal_start']);
+  assert.deepEqual(uses.find(r=>r.event_name==='lcp'),{event_name:'lcp',path:'/grimorio',metric_ms:3100,device:'iphone'});
+  const at=(iso,id=randomUUID())=>pg.query(`INSERT INTO grimorio_analytics_events (id,visitor_id,session_id,view_id,event_name,path,source,received_at) VALUES ($1,'heat',$2,$1,'page_view','/','direct',$3)`,[id,randomUUID(),iso]);
+  // Sunday 25 October 2026: 02:30 summer time, 02:30 winter time (the hour again), 03:00: the first two in 0–3.
+  await at('2026-10-25T00:30:00Z');await at('2026-10-25T01:30:00Z');await at('2026-10-25T02:00:00Z');
+  // Friday 23 October 2026, 23:59 and 21:00 summer time: 21–24; Saturday 00:00: 0–3 of Saturday.
+  await at('2026-10-23T21:59:00Z');await at('2026-10-23T19:00:00Z');await at('2026-10-23T22:00:00Z');
+  const cells=await analytics.readHeatmap({from:'2026-10-23',to:'2026-10-25',prevFrom:'2000-01-01',prevTo:'2000-01-01'});
+  const cell=(day,band)=>cells.find(c=>c.day===day&&c.band===band)?.visits??0;
+  assert.equal(cell(6,0),2,'Sunday 0–3: 02:30 twice');assert.equal(cell(6,1),1,'Sunday 3–6');
+  assert.equal(cell(4,7),2,'Friday 21–24');assert.equal(cell(5,0),1,'Saturday 0–3');
+  await pg.query("DELETE FROM grimorio_analytics_events WHERE visitor_id='heat'");
+  const nf=parseAnalyticsInput(event('not_found',{path:'/pagina-che-non-esiste'}));
+  assert.equal(await analytics.storeAnalyticsEvent(nf,visitor),true);
+  assert.deepEqual((await analytics.readNotFound(range(today))).map(r=>[r.path,r.times]),[['/pagina-che-non-esiste',1]]);
+  const computer=parseAnalyticsInput(event('page_view',{session,device:'computer',lcp:{ms:9000,path:'/grimorio'}}));
+  assert.equal(await analytics.storeAnalyticsEvent(computer,randomUUID()),true);
+  assert.deepEqual(await analytics.readLcp(range(today)),[{path:'/grimorio',values:[3100]}],'phones only');
+  const uses2=await analytics.readFunctions(range(today));
+  assert.equal(uses2.edizione,1);assert.equal(uses2.proposalStart,1);assert.equal(uses2.proposalSent,0);
+  await pg.query("DELETE FROM grimorio_analytics_events WHERE visitor_id=$1 OR event_name='lcp'",[visitor]);
+ }
  const marked=await analytics.readStatistics(range(today));
  assert.deepEqual(marked.markers.map(m=>m.etichetta),['Apertura profilo Instagram','Post sul gruppo']);
  for(const marker of marked.markers)await analytics.deleteMarker(marker.id);
