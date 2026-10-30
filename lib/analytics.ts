@@ -92,6 +92,8 @@ async function ensureSchema() {
         const { rows: existing } = await client.query("SELECT to_regclass('grimorio_analytics_markers') AS name");
         await client.query(`CREATE TABLE IF NOT EXISTS grimorio_analytics_markers (
         id uuid PRIMARY KEY, giorno text NOT NULL, etichetta text NOT NULL, creato_il timestamptz NOT NULL DEFAULT now())`);
+        // The hour of an event (PROMPT 30), optional: where it goes on the chart of «Ultime 24 ore».
+        await client.query("ALTER TABLE grimorio_analytics_markers ADD COLUMN IF NOT EXISTS ora integer");
         if (!existing[0]?.name)
           await client.query("INSERT INTO grimorio_analytics_markers (id, giorno, etichetta) VALUES ($1, $2, $3)", [randomUUID(), INSTAGRAM_START, "Apertura profilo Instagram"]);
         await client.query("COMMIT");
@@ -303,7 +305,8 @@ export async function purgeAnalytics() {
     }
   }
 }
-export type StatisticsMarker = { id: string; giorno: string; etichetta: string };
+/** ora: the Rome hour (0–23) the administrator gave, for the chart of «Ultime 24 ore»; null when only the day. */
+export type StatisticsMarker = { id: string; giorno: string; etichetta: string; ora?: number | null; creato_il?: string | Date | null };
 export type StatisticsCard = { kind: string; id: string; title: string; opens: number };
 export type Statistics = {
   people: number;
@@ -334,7 +337,28 @@ const empty = (): Statistics => ({
   devices: Object.fromEntries(DEVICES.map(key => [key, 0])) as Record<Device, number>,
   areas: { incantesimi: 0, bestiario: 0, compendio: 0 }, cards: [], notFound: [], markers: [],
 });
-const RANGE = "is_test=false AND received_at>=($1::date::timestamp AT TIME ZONE 'Europe/Rome') AND received_at<(($2::date+1)::timestamp AT TIME ZONE 'Europe/Rome')";
+/**
+ * A period of /admin/statistiche: days of the Rome calendar (from, to: YYYY-MM-DD), or the moving window of
+ * «Ultime 24 ore» (PROMPT 30: start, end as instants; the previous 24 hours just before).
+ */
+export type StatisticsRange =
+  | { from: string; to: string; prevFrom: string; prevTo: string }
+  | { hours: true; start: string; end: string; prevStart: string; prevEnd: string };
+const DAYS_RANGE = (column: string) => `${column}>=($1::date::timestamp AT TIME ZONE 'Europe/Rome') AND ${column}<(($2::date+1)::timestamp AT TIME ZONE 'Europe/Rome')`;
+const HOURS_RANGE = (column: string) => `${column}>=$1::timestamptz AND ${column}<$2::timestamptz`;
+/** The SQL of a period on one column, its two values and those of the previous one; the same index on received_at. */
+function rangeSql(range: StatisticsRange) {
+  const hours = "hours" in range;
+  return {
+    hours,
+    where: `is_test=false AND ${hours ? HOURS_RANGE("received_at") : DAYS_RANGE("received_at")}`,
+    firsts: hours ? HOURS_RANGE("first_at") : DAYS_RANGE("first_at"),
+    period: hours ? [range.start, range.end] : [range.from, range.to],
+    previous: hours ? [range.prevStart, range.prevEnd] : [range.prevFrom, range.prevTo],
+    // The chart: the people of each Rome day, or of each slice of 60 minutes from the start of the window (0–23).
+    bucket: hours ? `floor(extract(epoch FROM (received_at - $1::timestamptz)) / 3600)::int` : `to_char(received_at AT TIME ZONE 'Europe/Rome','YYYY-MM-DD')`,
+  };
+}
 
 /**
  * The numbers of /admin/statistiche for a period (days in the Rome time zone) and the people of the previous one.
@@ -344,25 +368,23 @@ const RANGE = "is_test=false AND received_at>=($1::date::timestamp AT TIME ZONE 
 // installation per visitor, confirmed when the browser said so.
 const INSTALLS = `SELECT visitor_id, min(received_at) AS first_at, bool_or(event_name='app_installed') AS confirmed
   FROM grimorio_analytics_events WHERE is_test=false AND event_name IN ('app_installed','first_standalone_open') GROUP BY visitor_id`;
-const IN_PERIOD = "first_at>=($1::date::timestamp AT TIME ZONE 'Europe/Rome') AND first_at<(($2::date+1)::timestamp AT TIME ZONE 'Europe/Rome')";
-
-export async function readStatistics(range: { from: string; to: string; prevFrom: string; prevTo: string }): Promise<Statistics> {
+export async function readStatistics(range: StatisticsRange): Promise<Statistics> {
   await ensureSchema();
-  const period = [range.from, range.to];
+  const { where: RANGE, firsts: IN_PERIOD, period, previous: before, bucket } = rangeSql(range);
   const [installs, previousInstalls, previousInstalled, previousReturning, installedDevices] = await Promise.all([
     pool.query(`SELECT count(*)::int AS total, count(*) FILTER (WHERE confirmed)::int AS confirmed FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, period),
-    pool.query(`SELECT count(*)::int AS total FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, [range.prevFrom, range.prevTo]),
-    pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view' AND installed=true`, [range.prevFrom, range.prevTo]),
+    pool.query(`SELECT count(*)::int AS total FROM (${INSTALLS}) AS firsts WHERE ${IN_PERIOD}`, before),
+    pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view' AND installed=true`, before),
     pool.query(`SELECT count(*)::int AS n FROM (SELECT visitor_id FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'
-      GROUP BY visitor_id HAVING count(DISTINCT session_id)>=2) AS back`, [range.prevFrom, range.prevTo]),
+      GROUP BY visitor_id HAVING count(DISTINCT session_id)>=2) AS back`, before),
     // «Usano l’app» by system: each person of the big number once, with the device of the last opening of the app.
     pool.query(`SELECT device, count(*)::int AS n FROM (SELECT DISTINCT ON (visitor_id) visitor_id, device FROM grimorio_analytics_events
       WHERE ${RANGE} AND event_name='page_view' AND installed=true AND device IS NOT NULL ORDER BY visitor_id, received_at DESC) AS lasts GROUP BY device`, period),
   ]);
   const [people, previous, days, returning, installed, origins, devices, areas, cards, notFound, markers] = await Promise.all([
     pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'`, period),
-    pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'`, [range.prevFrom, range.prevTo]),
-    pool.query(`SELECT to_char(received_at AT TIME ZONE 'Europe/Rome','YYYY-MM-DD') AS day, count(DISTINCT visitor_id)::int AS visitors
+    pool.query(`SELECT count(DISTINCT visitor_id)::int AS n FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'`, before),
+    pool.query(`SELECT ${bucket} AS day, count(DISTINCT visitor_id)::int AS visitors
       FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view' GROUP BY day ORDER BY day`, period),
     // Back at least a second time: page views in two or more sessions of the period.
     pool.query(`SELECT count(*)::int AS n FROM (SELECT visitor_id FROM grimorio_analytics_events WHERE ${RANGE} AND event_name='page_view'
@@ -383,7 +405,7 @@ export async function readStatistics(range: { from: string; to: string; prevFrom
     pool.query(`SELECT search_query AS query, count(*)::int AS times FROM grimorio_analytics_events
       WHERE ${RANGE} AND event_name='search' AND search_results=0 AND search_query IS NOT NULL
       GROUP BY search_query HAVING count(*)>=2 ORDER BY times DESC, query ASC LIMIT 10`, period),
-    pool.query("SELECT id, giorno, etichetta FROM grimorio_analytics_markers ORDER BY giorno, creato_il"),
+    pool.query("SELECT id, giorno, etichetta, ora, creato_il FROM grimorio_analytics_markers ORDER BY giorno, ora NULLS FIRST, creato_il"),
   ]);
   const result = empty();
   result.people = people.rows[0]?.n ?? 0;
@@ -408,9 +430,9 @@ export async function readStatistics(range: { from: string; to: string; prevFrom
 }
 
 /** A day (YYYY-MM-DD) and a short text, from the administrator only (app/actions/admin-statistics.ts). */
-export async function addMarker(giorno: string, etichetta: string): Promise<void> {
+export async function addMarker(giorno: string, etichetta: string, ora: number | null = null): Promise<void> {
   await ensureSchema();
-  await pool.query("INSERT INTO grimorio_analytics_markers (id, giorno, etichetta) VALUES ($1, $2, $3)", [randomUUID(), giorno, etichetta]);
+  await pool.query("INSERT INTO grimorio_analytics_markers (id, giorno, etichetta, ora) VALUES ($1, $2, $3, $4)", [randomUUID(), giorno, etichetta, ora]);
 }
 
 export async function deleteMarker(id: string): Promise<void> {
@@ -476,9 +498,9 @@ export type SupportStats = { opened: number; clicked: number; byAmount: { amount
  * «Sostegno» of /admin/statistiche: different people who opened /sostieni and who tapped the Ko-fi button, by
  * amount. The contributions themselves are seen only on Ko-fi.
  */
-export async function readSupport(range: { from: string; to: string }): Promise<SupportStats> {
+export async function readSupport(range: StatisticsRange): Promise<SupportStats> {
   await ensureSchema();
-  const period = [range.from, range.to];
+  const { where: RANGE, period } = rangeSql(range);
   const [people, amounts] = await Promise.all([
     pool.query(`SELECT count(DISTINCT visitor_id) FILTER (WHERE event_name='support_page')::int AS opened,
       count(DISTINCT visitor_id) FILTER (WHERE event_name='support_click')::int AS clicked
