@@ -1,4 +1,4 @@
-import { DEVICES, ORIGINS, cleanSearchQuery, type Device, type Origin } from "./analytics-stats";
+import { DEVICES, FILTER_GROUPS, ORIGINS, SEARCH_AREAS, cleanSearchQuery, type Device, type FilterGroup, type Origin, type SearchArea } from "./analytics-stats";
 
 export const ANALYTICS_EVENTS = [
   "page_view",
@@ -77,9 +77,17 @@ export type AnalyticsInput = {
   origin?: Origin;
   device?: Device;
   installed?: boolean;
-  /** search only: the cleaned word (lib/analytics-stats.ts) and how many results it gave. */
+  /** search only: the cleaned word (lib/analytics-stats.ts), how many results it gave, where it was typed. */
   query?: string;
   results?: number;
+  area?: SearchArea;
+  /** page_view only: arrived from the link of the Instagram bio (?da=bio, PROMPT 31). */
+  bio?: true;
+  /**
+   * page_view and search: the groups of filters applied since the last event sent (PROMPT 31). No request of its
+   * own: the server keeps one «filter_apply» per group, with the same visitor and session.
+   */
+  filters?: FilterGroup[];
   /** share_tap, share_sent, share_cancel of the whole app (the card of the Home, the invite after «Bene», /sostieni);
    * support_link: where the link to /sostieni was tapped. */
   from?: ShareFrom | (typeof SUPPORT_FROM)[number];
@@ -150,6 +158,12 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   if (input.event === "page_view") {
     if (ORIGINS.includes(r.origin as Origin)) input.origin = r.origin as Origin;
     if (typeof r.installed === "boolean") input.installed = r.installed;
+    if (r.bio === true) input.bio = true;
+  }
+  if ((input.event === "page_view" || input.event === "search") && Array.isArray(r.filters)) {
+    // Only the known groups, once each: never a value typed by the visitor.
+    const groups = [...new Set(r.filters.filter((group): group is FilterGroup => FILTER_GROUPS.includes(group as FilterGroup)))];
+    if (groups.length) input.filters = groups;
   }
   if ((input.event === "page_view" || install || appShare) && DEVICES.includes(r.device as Device)) input.device = r.device as Device;
   if (appShare && from && ["share_tap", "share_sent", "share_cancel"].includes(input.event)) input.from = from;
@@ -167,6 +181,7 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
     if (!query || !Number.isFinite(results) || results < 0 || results > 100000) return;
     input.query = query;
     input.results = results;
+    if (SEARCH_AREAS.includes(r.area as SearchArea)) input.area = r.area as SearchArea;
   }
   return input;
 }

@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { clean, requireAdmin } from "@/lib/admin-action-helpers";
 import { addMarker, deleteMarker } from "@/lib/analytics";
 import { excludeThisDevice } from "@/lib/analytics-exclusion";
+import { addSynonym, addTodo, deleteSynonym, deleteTodo, searchWorld } from "@/lib/search-insights-server";
+import { fold, rowsOf } from "@/lib/search";
 
 export type MarkerResult = { ok: true } | { ok: false; error: string };
 
@@ -35,5 +37,39 @@ export async function deleteMarkerAction(form: FormData): Promise<void> {
 export async function excludeDeviceAction(): Promise<void> {
   await requireAdmin();
   await excludeThisDevice();
+  revalidatePath("/admin/statistiche");
+}
+
+/*
+ * «Ricerche senza risultato» (PROMPT 31): a synonym (the word searched → a card, by its name in the public search)
+ * and the list «Da fare». Administrator only; a synonym refreshes the index of the public search.
+ */
+export async function addSynonymAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  const query = clean(form.get("query"));
+  const name = clean(form.get("scheda"));
+  const { publicIndex } = await searchWorld();
+  const target = rowsOf(publicIndex).find(row => !row.alias && fold(row.nome) === fold(name));
+  if (target) await addSynonym(query, target.href);
+  revalidatePath("/admin/statistiche");
+  revalidatePath("/ricerca-indice.json");
+}
+
+export async function deleteSynonymAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  await deleteSynonym(clean(form.get("query")));
+  revalidatePath("/admin/statistiche");
+  revalidatePath("/ricerca-indice.json");
+}
+
+export async function addTodoAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  await addTodo(clean(form.get("query")));
+  revalidatePath("/admin/statistiche");
+}
+
+export async function deleteTodoAction(form: FormData): Promise<void> {
+  await requireAdmin();
+  await deleteTodo(clean(form.get("query")));
   revalidatePath("/admin/statistiche");
 }

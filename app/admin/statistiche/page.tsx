@@ -20,6 +20,7 @@ import { PeriodSelect } from "@/components/statistics/period-select";
 import { MarkerForm } from "@/components/statistics/marker-form";
 import { deleteMarkerAction, excludeDeviceAction } from "@/app/actions/admin-statistics";
 import { deviceExcluded } from "@/lib/analytics-exclusion";
+import { Insights } from "@/components/statistics/insights";
 
 // Administrator only, drawn on every request: never in a cached page or a saved copy of the service worker.
 export const dynamic = "force-dynamic";
@@ -128,6 +129,9 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
           detail={ranked.slice(1, 3).map(row => `${ORIGIN_LABEL[row.key]} ${share(row.value, known)}%`).join(" · ")} />
       </div>
       <p className="text-[12px] text-[#5E4E3E]" data-tiles-note="">{PERIODS[period]} · i tuoi dispositivi non contano</p>
+
+      {/* «Approfondimenti» (PROMPT 31): four cards that follow the period, under the tiles. */}
+      <Insights range={range} hourly={hourly} from={dayRange?.from ?? null} to={dayRange?.to ?? null} today={today} markers={data.markers} />
 
       <h2 className="pt-2 font-serif text-[22px] font-bold leading-tight text-[#2B2118]">Il resto</h2>
       <div className="overflow-hidden rounded-2xl border border-[#DDCFAE] bg-[#FFFBF0]" data-rest="">

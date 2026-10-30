@@ -12,6 +12,8 @@ export type Device = (typeof DEVICES)[number];
  */
 export function originOf(referrer: string, search: string, own: string): Origin {
   const params = new URLSearchParams(search);
+  // The link of the Instagram bio (PROMPT 31): an arrival from Instagram, whatever the in-app browser says.
+  if (params.get("da") === BIO_VALUE) return "instagram";
   const utm = `${params.get("utm_source") ?? ""} ${params.get("utm_medium") ?? ""}`.toLowerCase();
   if (/instagram|\big\b/.test(utm)) return "instagram";
   if (params.get("ref") === "share" || /share|condivis/.test(utm)) return "condiviso";
@@ -223,4 +225,80 @@ export function markerTime(marker: { giorno: string; ora?: number | null; creato
 export function barOf(window: HourWindow, time: number): number {
   const start = Date.parse(window.start);
   return time < start || time >= Date.parse(window.end) ? -1 : Math.floor((time - start) / HOUR);
+}
+
+/*
+ * Insight (PROMPT 31). The link of the Instagram bio: one fixed address, ilgrimorio.app/?da=bio, read on the first
+ * page and taken off the address (as ?da=amico); its arrival travels in the page_view already sent.
+ */
+export const BIO_VALUE = "bio";
+export const BIO_LINK = "ilgrimorio.app/?da=bio";
+/** Where a search was typed: the list of the spells, the Bestiario, the search of the Home. */
+export const SEARCH_AREAS = ["incantesimi", "bestiario", "globale"] as const;
+export type SearchArea = (typeof SEARCH_AREAS)[number];
+/** The groups of the filters of the lists (only the group, never a value): spells, then the Bestiario. */
+export const FILTER_GROUPS = ["livello", "scuola", "classe", "tempo", "concentrazione", "rituale", "categoria", "gs", "tipo", "taglia", "habitat"] as const;
+export type FilterGroup = (typeof FILTER_GROUPS)[number];
+
+/** «Il percorso»: the steps, in order, and the largest drop between two following steps. */
+export const FUNNEL_STEPS = [
+  { key: "arrivano", label: "Arrivano" }, { key: "scheda", label: "Aprono una scheda" }, { key: "cercano", label: "Cercano o filtrano" },
+  { key: "preferito", label: "Salvano un preferito" }, { key: "installano", label: "Installano l’app" }, { key: "tornano", label: "Tornano entro 7 giorni" },
+] as const;
+export type FunnelKey = (typeof FUNNEL_STEPS)[number]["key"];
+export type FunnelRow = { key: FunnelKey; label: string; people: number; percent: number };
+export function funnel(counts: Record<FunnelKey, number>): { rows: FunnelRow[]; drop: { from: string; to: string; percent: number } | null } {
+  const arrived = counts.arrivano;
+  const rows = FUNNEL_STEPS.map(step => ({ key: step.key, label: step.label, people: counts[step.key], percent: share(counts[step.key], arrived) }));
+  let drop: { from: string; to: string; percent: number } | null = null;
+  for (let index = 1; index < rows.length; index++) {
+    const before = rows[index - 1], after = rows[index];
+    if (!before.people || after.people >= before.people) continue;
+    const percent = Math.round(((before.people - after.people) / before.people) * 100);
+    if (!drop || percent > drop.percent) drop = { from: before.label, to: after.label, percent };
+  }
+  return { rows, drop };
+}
+
+/** The Monday (YYYY-MM-DD) of the week of a day. */
+export function weekOf(day: string): string {
+  const date = new Date(`${day}T12:00:00Z`);
+  return shiftDay(day, -((date.getUTCDay() + 6) % 7));
+}
+export const COHORT_WEEKS = 8;
+export const COHORT_AFTER = [1, 2, 4] as const;
+export type CohortRow = { week: string; group: "instagram" | "altre"; people: number; after: (number | null)[] };
+/**
+ * «Chi resta davvero»: the weeks of arrival (Monday to Sunday, Rome), the last 8, for Instagram and the other
+ * sources; for each, the share of the people back 1, 2 and 4 weeks later; null («—») while that week has not ended.
+ * arrivals: one row per person, the Monday of the arrival week; returns: the Mondays of the weeks they came back.
+ */
+export function cohorts(today: string, people: { week: string; instagram: boolean; back: string[] }[]): CohortRow[] {
+  const thisWeek = weekOf(today);
+  const weeks = Array.from({ length: COHORT_WEEKS }, (_, index) => shiftDay(thisWeek, -7 * (COHORT_WEEKS - 1 - index)));
+  return weeks.flatMap(week => (["instagram", "altre"] as const).map(group => {
+    const members = people.filter(person => person.week === week && person.instagram === (group === "instagram"));
+    const after = COHORT_AFTER.map(gap => {
+      const target = shiftDay(week, 7 * gap);
+      // The week «gap» after has ended only when its Sunday is before today.
+      if (shiftDay(target, 6) >= today) return null;
+      return members.length ? share(members.filter(person => person.back.includes(target)).length, members.length) : null;
+    });
+    return { week, group, people: members.length, after };
+  }));
+}
+/** The green of a cell: darker for higher values (0–100). */
+export function cohortShade(percent: number | null): string {
+  if (percent === null) return "transparent";
+  const steps = ["#EEF5F0", "#D3E7DA", "#A9D0B7", "#6FAE88", "#1F6B45"];
+  return steps[Math.min(steps.length - 1, Math.floor(percent / 20))];
+}
+
+/** Why a search found nothing, when it can be told (PROMPT 31). */
+export type SearchReason =
+  | { kind: "non-srd" } | { kind: "in-arrivo" } | { kind: "manca"; edition: "2014" | "2024" } | { kind: "errore"; suggestion: string };
+export function reasonLabel(reason: SearchReason | null): string {
+  if (!reason) return "";
+  return reason.kind === "non-srd" ? "mostro non SRD" : reason.kind === "in-arrivo" ? "sezione in arrivo"
+    : reason.kind === "manca" ? `manca in ${reason.edition}` : `errore? → ${reason.suggestion}`;
 }

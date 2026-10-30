@@ -5,7 +5,7 @@ import { shortDay, dayLabel, type HourBar } from "@/lib/analytics-stats";
 const BORDEAUX = "#7A1F2B", AMBER = "#E0A21A", DARK = "#2B2118", MUTED = "#5E4E3E", LINE = "#DDCFAE";
 
 /** People per day, the area under the line, and a dashed amber line for each marked event of the period. */
-export function DailyChart({ days, markers }: { days: { day: string; visitors: number }[]; markers: { giorno: string; etichetta: string }[] }) {
+export function DailyChart({ days, markers, name = "giorni", what = "Persone" }: { days: { day: string; visitors: number }[]; markers: { giorno: string; etichetta: string }[]; name?: string; what?: string }) {
   const width = 340, height = 180, left = 28, right = 8, top = 34, bottom = 22;
   const max = Math.max(1, ...days.map(row => row.visitors));
   const step = days.length > 1 ? (width - left - right) / (days.length - 1) : 0;
@@ -17,10 +17,10 @@ export function DailyChart({ days, markers }: { days: { day: string; visitors: n
   const shown = markers.filter(marker => days.some(row => row.day === marker.giorno));
   const peak = days.reduce((best, row) => (row.visitors > best.visitors ? row : best), days[0] ?? { day: "", visitors: 0 });
   const label = days.length
-    ? `Persone al giorno dal ${dayLabel(days[0].day)} al ${dayLabel(days[days.length - 1].day)}: massimo ${peak.visitors} ${peak.visitors ? `il ${dayLabel(peak.day)}` : ""}.${shown.length ? ` Eventi: ${shown.map(marker => `${marker.etichetta} il ${dayLabel(marker.giorno)}`).join("; ")}.` : ""}`
+    ? `${what} al giorno dal ${dayLabel(days[0].day)} al ${dayLabel(days[days.length - 1].day)}: massimo ${peak.visitors} ${peak.visitors ? `il ${dayLabel(peak.day)}` : ""}.${shown.length ? ` Eventi: ${shown.map(marker => `${marker.etichetta} il ${dayLabel(marker.giorno)}`).join("; ")}.` : ""}`
     : "Nessun dato nel periodo.";
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label} data-chart="giorni" className="block h-auto w-full">
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label} data-chart={name} className="block h-auto w-full">
       <title>{label}</title>
       {[0, 0.5, 1].map(part => (
         <g key={part}>
@@ -55,7 +55,7 @@ export function DailyChart({ days, markers }: { days: { day: string; visitors: n
  * «Andamento ora per ora» (PROMPT 30): the 24 bars of «Ultime 24 ore», 60 minutes each, the clock every 4 bars,
  * and a dashed amber line on the hour of each marked event (markers: the index of its bar and its text).
  */
-export function HourlyChart({ bars, markers }: { bars: HourBar[]; markers: { bar: number; etichetta: string }[] }) {
+export function HourlyChart({ bars, markers, name = "ore", what = "Persone" }: { bars: HourBar[]; markers: { bar: number; etichetta: string }[]; name?: string; what?: string }) {
   const width = 340, height = 180, left = 28, right = 8, top = 34, bottom = 22;
   const max = Math.max(1, ...bars.map(row => row.visitors));
   const slot = (width - left - right) / Math.max(1, bars.length), gap = 2;
@@ -64,10 +64,10 @@ export function HourlyChart({ bars, markers }: { bars: HourBar[]; markers: { bar
   const peak = bars.reduce<HourBar | null>((best, row) => (row.visitors > (best?.visitors ?? 0) ? row : best), null);
   const shown = markers.filter(marker => marker.bar >= 0 && marker.bar < bars.length);
   const label = bars.length
-    ? `Persone ora per ora dalle ${bars[0].label.slice(0, 5)} alle ${bars[bars.length - 1].label.slice(6, 11)}: ${peak ? `massimo ${peak.visitors} tra le ${peak.label}` : "nessuna visita"}.${shown.length ? ` Eventi: ${shown.map(marker => `${marker.etichetta} tra le ${bars[marker.bar].label}`).join("; ")}.` : ""}`
+    ? `${what} ora per ora dalle ${bars[0].label.slice(0, 5)} alle ${bars[bars.length - 1].label.slice(6, 11)}: ${peak ? `massimo ${peak.visitors} tra le ${peak.label}` : "nessuna visita"}.${shown.length ? ` Eventi: ${shown.map(marker => `${marker.etichetta} tra le ${bars[marker.bar].label}`).join("; ")}.` : ""}`
     : "Nessun dato nel periodo.";
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label} data-chart="ore" className="block h-auto w-full">
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={label} data-chart={name} className="block h-auto w-full">
       <title>{label}</title>
       {[0, 0.5, 1].map(part => (
         <g key={part}>

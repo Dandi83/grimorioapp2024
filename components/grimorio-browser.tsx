@@ -16,7 +16,7 @@ import { useFollowEdition } from "@/components/edition/use-follow-edition";
 import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, castingTimeShort, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
-import { useReportSearch } from "@/components/statistics/use-report-search";
+import { useReportFilters, useReportSearch } from "@/components/statistics/use-report-search";
 import { searchList } from "@/lib/fuzzy-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 import { spellHref } from "@/lib/spell-public-id";
@@ -101,7 +101,12 @@ export function GrimorioBrowser({
   const found = useMemo(() => searchList(sorted, deferredQ, s => s.nome_italiano, { groupOf: s => s.livello_num, settled }), [sorted, deferredQ, settled]);
   const searched = useMemo(() => [...found.exact, ...found.approximate], [found]);
   // The searched name and how many spells of the edition have it exactly (statistics, only with the consent).
-  useReportSearch(deferredQ, found.exact.length);
+  useReportSearch(deferredQ, found.exact.length, true, "incantesimi");
+  // The groups of filters turned on (statistics, only the names of the groups): they leave with the next event.
+  useReportFilters((["livello", "scuola", "classe", "tempo", "concentrazione", "rituale"] as const).filter(group => {
+    const value = filters[group];
+    return Array.isArray(value) ? value.length > 0 : value;
+  }));
   usePreparedNames(() => sorted.map(s => s.nome_italiano), sorted);
   const matches = useCallback((s: SpellListItem) => matchesSpellFilters(s, filters), [filters]);
   const results = useMemo(() => searched.filter(matches), [searched, matches]);

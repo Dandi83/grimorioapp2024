@@ -120,6 +120,11 @@ export const analyticsEvents = pgTable("grimorio_analytics_events", {
   share_from: text("share_from"),
   // support_click: the amount chosen on /sostieni (1, 3 or 5 euro).
   amount: integer("amount"),
+  // PROMPT 31: where a search was typed (incantesimi, bestiario, globale); "bio" on the page view of an arrival from
+  // the link of the Instagram bio; the group of a filter (filter_apply, written by the server).
+  search_area: text("search_area"),
+  entry: text("entry"),
+  filter_group: text("filter_group"),
 });
 
 /**
@@ -149,6 +154,21 @@ export const analyticsMarkers = pgTable("grimorio_analytics_markers", {
   id: uuid("id").primaryKey(),
   giorno: text("giorno").notNull(),
   etichetta: text("etichetta").notNull(),
+  creato_il: timestamp("creato_il", { withTimezone: true }).notNull().defaultNow(),
+  // PROMPT 30: the Rome hour (0–23), optional, for the chart of «Ultime 24 ore».
+  ora: integer("ora"),
+});
+
+/** «Ricerche senza risultato» (PROMPT 31, lib/search-insights-server.ts): a word searched → the address of a card. */
+export const searchSynonyms = pgTable("grimorio_search_synonyms", {
+  query: text("query").primaryKey(),
+  href: text("href").notNull(),
+  creato_il: timestamp("creato_il", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** «Da fare» of «Ricerche senza risultato»: the words the administrator wants to deal with. */
+export const searchTodo = pgTable("grimorio_search_todo", {
+  query: text("query").primaryKey(),
   creato_il: timestamp("creato_il", { withTimezone: true }).notNull().defaultNow(),
 });
 
