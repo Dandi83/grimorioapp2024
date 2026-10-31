@@ -32,6 +32,11 @@ const nextConfig = {
         source: "/bestiario/creati-da-voi", has: [{ type: "query", key, value }], destination: "/bestiario/del-grimorio", permanent: true }))),
     ];
   },
+  // PROMPT 34: the short link of the Instagram bio also in capitals (ilgrimorio.app/IG): the same answer as /ig
+  // (app/ig/route.ts), without a second hop.
+  async rewrites() {
+    return ["/IG", "/Ig", "/iG"].map(source => ({ source, destination: "/ig" }));
+  },
   async headers() {
     return [
       {

@@ -1,5 +1,5 @@
 import { readCohortPeople, readFunnel, readInstagram, readSearchMisses, type StatisticsMarker, type StatisticsRange } from "@/lib/analytics";
-import { barOf, BIO_LINK, cohorts, cohortShade, COHORT_AFTER, fillDays, fillHours, funnel, markerTime, reasonLabel, share, shortDay, type HourWindow } from "@/lib/analytics-stats";
+import { barOf, BIO_LINK, BIO_LONG_LINK, cohorts, cohortShade, COHORT_AFTER, fillDays, fillHours, funnel, markerTime, reasonLabel, share, shortDay, type HourWindow } from "@/lib/analytics-stats";
 import { classifySearch, foundInEnglish } from "@/lib/search-insights";
 import { readSynonyms, readTodo, searchWorld } from "@/lib/search-insights-server";
 import { rowsOf } from "@/lib/search";
@@ -132,6 +132,7 @@ export async function Insights({ range, hourly, from, to, today, markers }: {
       <RestItem card id="instagram" title="Da Instagram">
         <p className="text-[13px] text-[#5E4E3E]">Il link da mettere una volta per sempre nella bio:</p>
         <div className="mt-1"><CopyLink text={BIO_LINK} /></div>
+        <p className="mt-1 text-[12px] text-[#5E4E3E]" data-bio-long="">funziona anche {BIO_LONG_LINK}</p>
         <ul className="mt-3 divide-y divide-[#DDCFAE]" data-instagram="">
           <Row name="bio" label="Link in bio" value={`${number(instagram.bio.people)} · tornati ${share(instagram.bio.back, instagram.bio.people)}%`} />
           <Row name="altro" label="Instagram (altro)" value={`${number(instagram.other.people)} · tornati ${share(instagram.other.back, instagram.other.people)}%`} />

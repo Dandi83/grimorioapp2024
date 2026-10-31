@@ -232,7 +232,9 @@ export function barOf(window: HourWindow, time: number): number {
  * page and taken off the address (as ?da=amico); its arrival travels in the page_view already sent.
  */
 export const BIO_VALUE = "bio";
-export const BIO_LINK = "ilgrimorio.app/?da=bio";
+/** PROMPT 34: the short link to copy in the bio (a 307 to /?da=bio, next.config.mjs); the long one still works. */
+export const BIO_LINK = "ilgrimorio.app/ig";
+export const BIO_LONG_LINK = "ilgrimorio.app/?da=bio";
 /** Where a search was typed: the list of the spells, the Bestiario, the search of the Home. */
 export const SEARCH_AREAS = ["incantesimi", "bestiario", "globale"] as const;
 export type SearchArea = (typeof SEARCH_AREAS)[number];
