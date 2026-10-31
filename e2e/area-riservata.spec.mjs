@@ -23,6 +23,9 @@ async function withDb(work) {
   try { return await work(db); } finally { await db.end(); }
 }
 
+/** Rows of the eye's table, none while it is not made yet (it comes with the first switch of the run). */
+const visibilityRows = (sql, params) => withDb(db => db.query(sql, params)).then(result => result.rows, () => []);
+
 /** The number in the label of a counter or a filter: «NO SRD 12», «SRD (310)». */
 const numberIn = async locator => Number((await locator.innerText()).match(/(\d+)\)?\s*$/)[1]);
 const resultCount = async page => Number(await page.locator("[data-result-count]").getAttribute("data-result-count"));
@@ -146,10 +149,10 @@ test("Lists: the switch of a row, the selection of 2 cards, Provenienza and Da c
     await switchOf(alfa).click();
     await expect(switchOf(alfa)).toHaveAttribute("aria-checked", "false");
     await expect(alfa).toHaveAttribute("data-hidden", "");
-    await expect.poll(async () => (await withDb(db => db.query("SELECT nascosta FROM grimorio_card_visibility WHERE tipo = 'incantesimo' AND scheda = $1", [CARDS[0]]))).rows[0]?.nascosta).toBe(true);
+    await expect.poll(async () => (await visibilityRows("SELECT nascosta FROM grimorio_card_visibility WHERE tipo = 'incantesimo' AND scheda = $1", [CARDS[0]]))[0]?.nascosta).toBe(true);
     await switchOf(alfa).click();
     await expect(switchOf(alfa)).toHaveAttribute("aria-checked", "true");
-    await expect.poll(async () => (await withDb(db => db.query("SELECT nascosta FROM grimorio_card_visibility WHERE tipo = 'incantesimo' AND scheda = $1", [CARDS[0]]))).rows[0]?.nascosta).toBe(false);
+    await expect.poll(async () => (await visibilityRows("SELECT nascosta FROM grimorio_card_visibility WHERE tipo = 'incantesimo' AND scheda = $1", [CARDS[0]]))[0]?.nascosta).toBe(false);
 
     // Selection: 2 cards hidden at once, each one in the Registro.
     await page.getByRole("button", { name: "Seleziona" }).click();
@@ -158,7 +161,7 @@ test("Lists: the switch of a row, the selection of 2 cards, Provenienza and Da c
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/area-selezione-390.png` });
     await page.getByRole("button", { name: "Nascondi 2" }).click();
     for (const card of CARDS) await expect(page.locator(`li[data-card-row="${card}"]`)).toHaveAttribute("data-hidden", "");
-    await expect.poll(async () => (await withDb(db => db.query("SELECT count(*)::int AS n FROM grimorio_card_visibility WHERE tipo = 'incantesimo' AND scheda = ANY($1) AND nascosta", [CARDS]))).rows[0].n).toBe(2);
+    await expect.poll(async () => (await visibilityRows("SELECT count(*)::int AS n FROM grimorio_card_visibility WHERE tipo = 'incantesimo' AND scheda = ANY($1) AND nascosta", [CARDS]))[0]?.n).toBe(2);
     await page.goto("/admin/registro");
     await expect(page.locator("[data-log-entry]").filter({ hasText: "Hai nascosto «Prova area beta»" })).toHaveCount(1);
     await expect(page.locator("[data-log-entry]").filter({ hasText: "Hai nascosto «Prova area alfa»" }).first()).toBeVisible();
@@ -170,7 +173,7 @@ test("Lists: the switch of a row, the selection of 2 cards, Provenienza and Da c
     await page.getByRole("searchbox", { name: "Cerca in Incantesimi" }).fill("prova area");
     await page.getByRole("button", { name: "Tutte", exact: true }).click();
     await page.getByRole("button", { name: "Mostra 2" }).click();
-    await expect.poll(async () => (await withDb(db => db.query("SELECT count(*)::int AS n FROM grimorio_card_visibility WHERE tipo = 'incantesimo' AND scheda = ANY($1) AND nascosta", [CARDS]))).rows[0].n).toBe(0);
+    await expect.poll(async () => (await visibilityRows("SELECT count(*)::int AS n FROM grimorio_card_visibility WHERE tipo = 'incantesimo' AND scheda = ANY($1) AND nascosta", [CARDS]))[0]?.n).toBe(0);
     await page.getByRole("searchbox", { name: "Cerca in Incantesimi" }).fill("");
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/area-incantesimi-390.png` });
 

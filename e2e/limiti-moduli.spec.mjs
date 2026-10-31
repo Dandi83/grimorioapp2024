@@ -17,7 +17,9 @@ test("a report during a peak: saved, «ok» for the visitor, marked «arrivata d
   try {
     await page.goto("/segnala");
     await expect(page.getByRole("heading", { name: "Segnala" })).toBeVisible();
-    // 60 reports from other addresses in the last hour: the ceiling of the site.
+    // 60 reports from other addresses in the last hour: the ceiling of the site. The table as lib/feedback.ts makes it
+    // at the first report: this test may run before any other report of the run (the order of the CI shards).
+    await db.query("CREATE TABLE IF NOT EXISTS grimorio_feedback_limits (device_hash text NOT NULL, sent_at timestamptz NOT NULL DEFAULT now())");
     await db.query("DELETE FROM grimorio_feedback_limits");
     await db.query("INSERT INTO grimorio_feedback_limits (device_hash) SELECT 'altro-' || n FROM generate_series(1, 60) AS n");
     await page.getByLabel("Messaggio").fill(message);
@@ -35,8 +37,8 @@ test("a report during a peak: saved, «ok» for the visitor, marked «arrivata d
     await expect(row.locator("[data-picco]")).toHaveText("Arrivata durante un picco (senza email né notifica)");
     await expect(row.getByText("Email di avviso non inviata")).toHaveCount(0);
   } finally {
-    await db.query("DELETE FROM grimorio_feedback_limits");
-    await db.query("DELETE FROM grimorio_feedback_reports WHERE messaggio = $1", [message]);
+    await db.query("DELETE FROM grimorio_feedback_limits").catch(() => {});
+    await db.query("DELETE FROM grimorio_feedback_reports WHERE messaggio = $1", [message]).catch(() => {});
     await db.end();
   }
 });
