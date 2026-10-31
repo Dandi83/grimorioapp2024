@@ -19,6 +19,8 @@ import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, c
 import { useReportFilters, useReportSearch } from "@/components/statistics/use-report-search";
 import { englishShown, namesOf, type EnglishShown } from "@/lib/english-match";
 import { InEnglish } from "@/components/search/in-english";
+import { FoundName } from "@/components/search/found-name";
+import { nameMark } from "@/lib/highlight";
 import { searchList } from "@/lib/fuzzy-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 import { spellHref } from "@/lib/spell-public-id";
@@ -132,6 +134,8 @@ export function GrimorioBrowser({
   const visible = useMemo(() => results.slice(0, limit), [results, limit]);
   // The line «in inglese» of each row shown, kept between renders (a star toggled re-renders one row only).
   const englishById = useMemo(() => new Map(visible.map(spell => [spell.id, englishShown(spell.nome_italiano, spell.en, deferredQ, { settled })])), [visible, deferredQ, settled]);
+  // The letters found in the Italian name (PROMPT 38), as in the search of the Home.
+  const markById = useMemo(() => new Map(visible.map(spell => [spell.id, nameMark(spellName(spell.nome_italiano, spell.edizione), deferredQ, { settled })])), [visible, deferredQ, settled]);
 
   // Computer column: a card opened from a direct link shows its row, in its edition and page.
   const selectedId = pane?.selectedId;
@@ -188,7 +192,7 @@ export function GrimorioBrowser({
     <div ref={root}>
       <div className="px-6 pb-2 pt-8">
         <CatalogTitle section="incantesimi" title="Incantesimi" edition={edizione} onEdition={hasLegacy ? chooseEdition : undefined} />
-        <SearchAndFilters query={q} onQuery={setQ} label="Cerca un incantesimo" active={active.length} onOpen={() => setDraft(filters)} />
+        <SearchAndFilters query={q} onQuery={setQ} label="Cerca un incantesimo" compact={!!pane} active={active.length} onOpen={() => setDraft(filters)} />
         <ActiveFilters filters={active} />
       </div>
 
@@ -240,7 +244,7 @@ export function GrimorioBrowser({
                     <span className="text-[15px] text-muted">{count} {count === 1 ? "incantesimo" : "incantesimi"}</span>
                   </div>
                 )}
-                <GrimorioRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggleFavorite} selected={pane?.selectedId === spell.id} noSrd={noSrd?.has(spell.id) ?? false} english={englishById.get(spell.id)} />
+                <GrimorioRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggleFavorite} selected={pane?.selectedId === spell.id} noSrd={noSrd?.has(spell.id) ?? false} english={englishById.get(spell.id)} mark={markById.get(spell.id)} />
               </li>
             );
           })}
@@ -263,14 +267,14 @@ export function GrimorioBrowser({
 
 // Memoized: toggling one star re-renders only that row.
 /** noSrd: the administrator sees «*» after the name of a NO SRD card (components/admin-edit/no-srd-mark.tsx). */
-const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false, noSrd = false, english }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean; noSrd?: boolean; english?: EnglishShown }) {
+const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false, noSrd = false, english, mark = null }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean; noSrd?: boolean; english?: EnglishShown; mark?: { start: number; length: number } | null }) {
   const href = spellHref(spell.id);
   const prefetch = useIntentPrefetch(href);
   const details = [spell.scuola, castingTimeShort(spell.tempo_di_lancio)].filter(Boolean).join(" · ");
   return (
     <div className={`flex min-h-[62px] items-center gap-2 border-b border-divider${selected ? " -mx-3 rounded-[10px] bg-primary-faint px-3 shadow-[inset_3px_0_0_var(--color-primary)]" : ""}`}>
       <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="min-w-0 flex-1 py-2.5">
-        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{spellName(spell.nome_italiano, spell.edizione)}{noSrd && <NoSrdMark />}{spell.nascosta && <> <HiddenTag /></>}</span>
+        <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground"><FoundName name={spellName(spell.nome_italiano, spell.edizione)} mark={mark} />{noSrd && <NoSrdMark />}{spell.nascosta && <> <HiddenTag /></>}</span>
         <InEnglish shown={english} />
         {details && <span className="block text-[15px] text-muted">{details}</span>}
         {(spell.concentrazione || spell.rituale) && (

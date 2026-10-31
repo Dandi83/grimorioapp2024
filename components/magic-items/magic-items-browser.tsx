@@ -2,6 +2,7 @@
 
 import { englishShown } from "@/lib/english-match";
 import { InEnglish } from "@/components/search/in-english";
+import { FoundName } from "@/components/search/found-name";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
@@ -28,7 +29,7 @@ function ItemRow({ row, query, settled }: { row: MagicItemListRow; query: string
     <li className="border-b border-divider last:border-b-0">
       <Link href={row.href} prefetch={false} className="flex min-h-14 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
-          <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <span className="block font-serif text-xl font-bold leading-tight"><FoundName name={row.nome} query={query} settled={settled} /></span>
           <InEnglish shown={englishShown(row.nome, row.en, query, { settled })} className="mt-0.5" />
           <span className="mt-1 flex flex-wrap items-center gap-1.5">
             <span className="text-[14px] text-muted">{row.tipo}</span>

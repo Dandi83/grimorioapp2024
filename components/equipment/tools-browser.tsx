@@ -15,20 +15,21 @@ import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
 import { ListSearch } from "@/components/equipment/list-search";
 import { englishShown, namesOf, type EnglishShown } from "@/lib/english-match";
 import { InEnglish } from "@/components/search/in-english";
+import { FoundName } from "@/components/search/found-name";
 
 const GROUPS: Record<EquipmentEdition, [string, string][]> = {
   "2024": [["artigiano", "Strumenti da artigiano"], ["altri", "Altri strumenti"]],
   "2014": [["artigiano", "Strumenti da artigiano"], ["giochi", "Giochi"], ["musicali", "Strumenti musicali"], ["altri", "Altri strumenti"]],
 };
 
-function ToolRow({ row, edition, english }: { row: ToolListRow; edition: EquipmentEdition; english?: EnglishShown }) {
+function ToolRow({ row, edition, english, query, settled }: { row: ToolListRow; edition: EquipmentEdition; english?: EnglishShown; query: string; settled: boolean }) {
   return (
     <li className="flex items-center border-b border-divider last:border-b-0">
       {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
       <AdminEditPencil target={{ kind: "contenuto", section: "strumenti", id: row.id, edition }} name={row.nome} />
       <Link href={row.href} prefetch={false} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
-          <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <span className="block font-serif text-xl font-bold leading-tight"><FoundName name={row.nome} query={query} settled={settled} /></span>
           <InEnglish shown={english} className="mt-0.5" />
           <span className="block text-[14px] text-muted">{row.peso === "—" ? "peso trascurabile" : row.peso}</span>
         </span>
@@ -75,7 +76,7 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
       <p className="mt-3 text-[15px] text-muted">{items.length} strumenti · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}</p>
       {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo strumento non c’è nel {missing}.</p>}
       <div className="mt-3">{intro[edition]}</div>
-      <ListSearch label="Cerca uno strumento" placeholder="Cerca: liuto, scasso…" value={query} onChange={setQuery} />
+      <ListSearch label="Cerca uno strumento" value={query} onChange={setQuery} />
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "strumento trovato" : "strumenti trovati"}`}</p>
       {result.suggestion && <DidYouMean name={result.suggestion.nome} onPick={setQuery} className="mt-2" />}
       {found.length === 0 && <p className="mt-3 text-[15px]">Nessuno strumento con questo nome.</p>}
@@ -88,7 +89,7 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
               <h2 id={`gruppo-${key}`} className="border-b-2 border-primary px-0.5 pb-1.5 font-serif text-[22px] font-bold text-primary">{title}</h2>
               {!needle && groupTexts[edition][key]}
               <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-                {group.map(row => <ToolRow key={row.href} row={row} edition={edition} english={englishShown(row.nome, row.en, query, { settled })} />)}
+                {group.map(row => <ToolRow key={row.href} row={row} edition={edition} query={query} settled={settled} english={englishShown(row.nome, row.en, query, { settled })} />)}
               </ul>
             </section>
           );

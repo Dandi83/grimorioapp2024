@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Filter, Search, X } from "lucide-react";
 
 import { SectionEditionPill } from "@/components/edition/edition-pill";
-import { SEARCH_INPUT } from "@/lib/search-input";
+import { LIST_SEARCH_PLACEHOLDER, SEARCH_INPUT } from "@/lib/search-input";
 
 /**
  * Shared catalog header: serif title, 2024 | 2014 edition selector and a 4 px bordeaux rule.
@@ -25,13 +25,14 @@ export function CatalogTitle({ title, section, edition, onEdition }: {
 }
 
 /** Search field and "Filtri" button; the button turns bordeaux with an amber count when filters are active. */
-export function SearchAndFilters({ query, onQuery, label, active, onOpen, placeholder = "Cerca per nome…" }: {
+export function SearchAndFilters({ query, onQuery, label, active, onOpen, compact = false }: {
   query: string;
   onQuery: (value: string) => void;
   label: string;
   active: number;
   onOpen: () => void;
-  placeholder?: string;
+  /** The narrow list column of the computer: «Filtri» as its icon only (same name for screen readers), so «Cerca per nome…» fits. */
+  compact?: boolean;
 }) {
   return (
     <div className="mt-4 flex gap-3">
@@ -42,7 +43,7 @@ export function SearchAndFilters({ query, onQuery, label, active, onOpen, placeh
           onChange={event => onQuery(event.target.value)}
           {...SEARCH_INPUT}
           aria-label={label}
-          placeholder={placeholder}
+          placeholder={LIST_SEARCH_PLACEHOLDER}
           className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted"
         />
         {query.length > 0 && (
@@ -56,10 +57,10 @@ export function SearchAndFilters({ query, onQuery, label, active, onOpen, placeh
         onClick={onOpen}
         aria-haspopup="dialog"
         aria-label={active ? `Filtri, ${active} ${active === 1 ? "attivo" : "attivi"}` : "Filtri"}
-        className={`flex min-h-12 shrink-0 items-center gap-2 rounded-[8px] border px-4 text-base font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-elevated text-foreground"}`}
+        className={`flex min-h-12 shrink-0 items-center gap-2 rounded-[8px] border ${compact ? "px-3" : "px-4"} text-base font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-elevated text-foreground"}`}
       >
         <Filter size={18} aria-hidden="true" />
-        Filtri
+        {!compact && "Filtri"}
         {active > 0 && <span aria-hidden="true" className="grid size-6 place-items-center rounded-full bg-amber text-[13px] font-bold text-foreground">{active}</span>}
       </button>
     </div>

@@ -8,6 +8,7 @@ import habitats from "./data/habitat-mostri.json";
 import editionLinks from "./data/monster-edition-links.json";
 import animalIds from "./data/srd-animal-ids.json";
 import { englishName } from "./english-names";
+import { approvedEnglishNames } from "./search-english-server";
 
 /**
  * Changes whenever the project files change what the list shows (new SRD sheets,
@@ -32,11 +33,11 @@ function projectCatalogVersion(): string {
 // Homebrew creatures (lib/homebrew.ts) follow the SRD ones; before the first one the list is the SRD catalog alone.
 export const getMonsterListIndex = unstable_cache(
   async (): Promise<MonsterListItem[]> => {
-    const [monsters, homebrew] = await Promise.all([getAllMonsters(), publishedHomebrew()]);
+    const [monsters, homebrew, approved] = await Promise.all([getAllMonsters(), publishedHomebrew(), approvedEnglishNames("mostro")]);
     return [
       ...monsters.map(monster => {
         const edizione = usesLegacyMonsterRules(monster) ? "2014" : "2024";
-        return toMonsterListItem({ ...monster, edizione, en: englishName("mostri", edizione, monster.id) });
+        return toMonsterListItem({ ...monster, edizione, en: englishName("mostri", edizione, monster.id) ?? approved.get(monster.id) });
       }),
       ...homebrew.map(homebrewListItem),
     ];

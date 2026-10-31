@@ -5,7 +5,8 @@ import { Search, ArrowRight, BookOpen } from "lucide-react";
 import { MANUAL_CATEGORIES, type ManualCategory } from "@/lib/manual-types";
 import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
 import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
-import { SEARCH_INPUT } from "@/lib/search-input";
+import { FoundName } from "@/components/search/found-name";
+import { LIST_SEARCH_PLACEHOLDER, SEARCH_INPUT } from "@/lib/search-input";
 interface ManualIndexEntry {
   id: string;
   title: string;
@@ -74,7 +75,7 @@ export function ManualBrowser({
             className="h-12 min-w-0 flex-1 bg-transparent text-base outline-none"
             {...SEARCH_INPUT}
             aria-label="Cerca nel Manuale"
-            placeholder="Cerca nel Manuale..."
+            placeholder={LIST_SEARCH_PLACEHOLDER}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
@@ -105,7 +106,7 @@ export function ManualBrowser({
             <Link href={`/manuale/${entry.id}`} className="flex items-center gap-3 py-4">
               <BookOpen size={20} className="shrink-0 text-primary" />
               <span className="min-w-0 flex-1">
-                <span className="block font-serif text-lg font-semibold">{entry.title}</span>
+                <span className="block font-serif text-lg font-semibold"><FoundName name={entry.title} query={query} settled={settled} /></span>
                 <span className="text-xs text-muted">
                   {MANUAL_CATEGORIES[entry.category]}
                   {entry.category === "creazione" ? ` · ${entry.subgroup}` : ""} · p. {entry.page}

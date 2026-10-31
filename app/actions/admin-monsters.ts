@@ -1,6 +1,7 @@
 "use server";
 
 import { editorSearchEnglish } from "@/lib/search-english-server";
+import { refreshEnglishNames } from "@/lib/search-english-refresh";
 import { revalidatePath, updateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 
@@ -87,7 +88,7 @@ export async function createMonsterAction(_prev: unknown, formData: FormData) {
   });
   if (!result.ok) return result;
   revalidateMonster(id);
-  if (await english.apply("mostro", id)) refreshSearchIndex();
+  if (await english.apply("mostro", id)) refreshEnglishNames("mostro");
   return { ok: true as const, error: null, id };
 }
 
@@ -119,7 +120,7 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     const saved = await saveAdminContent("monster", id, formData, projectEdition, database => saveMonsterHabitats(database, id, habitats));
     if (!saved.ok) return saved;
     revalidateMonster(id);
-    if (await english.apply("mostro", id)) refreshSearchIndex();
+    if (await english.apply("mostro", id)) refreshEnglishNames("mostro");
     return { ok: true as const, error: null, id };
   }
   if (!stored) return { ok: false as const, error: "Scheda non trovata." };
@@ -153,7 +154,7 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
   });
   if (!result.ok) return result;
   revalidateMonster(id);
-  if (await english.apply("mostro", id)) refreshSearchIndex();
+  if (await english.apply("mostro", id)) refreshEnglishNames("mostro");
   return { ok: true as const, error: null, id };
 }
 
@@ -173,10 +174,4 @@ export async function deleteMonsterAction(formData: FormData): Promise<DeleteRes
   }
   revalidateMonster(id);
   return { ok: true };
-}
-
-/** The search index and «Nomi inglesi da verificare» after a change of the English name «solo ricerca». */
-function refreshSearchIndex() {
-  revalidatePath("/ricerca-indice.json");
-  revalidatePath("/admin/contenuti/nomi-inglesi");
 }

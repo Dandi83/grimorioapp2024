@@ -3,18 +3,26 @@
 import { useActionState } from "react";
 import { approveSearchEnglishAction, discardSearchEnglishAction } from "@/app/actions/admin-search-english";
 import type { SearchEnglishKind } from "@/lib/search-english";
+import { RulesEditionBadge } from "@/components/rules-edition-badge";
 
-/** One card of «Nomi inglesi da verificare»: the Italian name, the English name proposed or approved, Approva / Modifica / Scarta. */
-export function SearchEnglishRow({ kind, id, nome, inglese, approved, href }: { kind: SearchEnglishKind; id: string; nome: string; inglese: string; approved: boolean; href: string }) {
+/**
+ * One card of «Nomi inglesi da verificare»: the Italian name with its edition pill and what the lists say of it
+ * («Invocazione · liv. 3», «Aberrazione · GS 14»), the English name proposed or approved, Approva / Modifica / Scarta.
+ */
+export function SearchEnglishRow({ kind, id, nome, inglese, approved, href, edizione, etichetta }: { kind: SearchEnglishKind; id: string; nome: string; inglese: string; approved: boolean; href: string; edizione: "2014" | "2024"; etichetta: string }) {
   const [approval, approve, approving] = useActionState(approveSearchEnglishAction, null);
   const [, discard, discarding] = useActionState(discardSearchEnglishAction, null);
   const busy = approving || discarding;
   return (
     <li data-search-english={`${kind}:${id}`} className="px-4 py-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-        <a href={href} className="font-serif text-[19px] font-bold leading-tight text-[#2B2118] underline-offset-4 hover:underline">{nome}</a>
+        <span className="flex flex-wrap items-center gap-x-2">
+          <a href={href} className="font-serif text-[19px] font-bold leading-tight text-[#2B2118] underline-offset-4 hover:underline">{nome}</a>
+          <span data-search-english-edition=""><RulesEditionBadge edition={edizione} variant="dark" /></span>
+        </span>
         <span className="text-[13px] font-semibold text-[#5E4E3E]">{kind === "incantesimo" ? "Incantesimo" : "Mostro"}{approved ? " · approvato" : " · da verificare"}</span>
       </div>
+      {etichetta && <p data-search-english-label="" className="text-[14px] text-[#5E4E3E]">{etichetta}</p>}
       <p className="mt-0.5 text-[15px]">
         <span className="text-[#5E4E3E]">{approved ? "Nome inglese: " : "Proposta: "}</span>
         <b lang="en" data-search-english-name="">{inglese}</b>

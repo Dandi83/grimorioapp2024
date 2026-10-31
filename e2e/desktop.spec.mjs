@@ -157,7 +157,7 @@ test("computer: a card opened from a direct link shows its row in the list colum
   await expect(tarrasque).toHaveAttribute("href", "/mostro/tarrasque");
   await expect.poll(() => inView(creatures, tarrasque)).toBe(true);
   const search = creatures.getByRole("searchbox", { name: "Cerca una creatura" });
-  await expect(search).toHaveAttribute("placeholder", "Cerca…");
+  await expect(search).toHaveAttribute("placeholder", "Cerca per nome…");
   expect(await search.evaluate(input => {
     const probe = document.createElement("span");
     probe.style.font = getComputedStyle(input).font;

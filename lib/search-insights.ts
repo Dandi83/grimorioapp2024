@@ -24,7 +24,7 @@ function exactRows(index: SearchIndex, query: string) {
  * also with the searches of before (they were made when the English names were not in the index).
  */
 export function foundInEnglish(query: string, index: SearchIndex): boolean {
-  return exactRows(index, query).some(row => row.english || row.hidden);
+  return exactRows(index, query).some(row => row.english);
 }
 
 /**
@@ -61,20 +61,5 @@ export function withSynonyms(index: SearchIndex, synonyms: { query: string; href
   if (!syn.length) return index;
   const words = new Set(syn.map(([query]) => fold(query).trim()));
   const en = index.en?.filter(([name]) => !words.has(fold(name).trim()));
-  const k = index.k?.filter(([key]) => !words.has(fold(key).trim()));
-  return { ...index, syn, ...(en ? { en } : {}), ...(k ? { k } : {}) };
-}
-
-/**
- * The English names «solo ricerca» approved in the reserved area (PROMPT 37), on the rows of their cards (by the
- * address: a spell or a creature, either edition): only the normalized key, never the name as written. A card not in
- * the index (hidden, of a hidden section) gets nothing.
- */
-export function withSearchKeys(index: SearchIndex, keys: { href: string; key: string }[]): SearchIndex {
-  const k: [string, number][] = [];
-  for (const { href, key } of keys) {
-    const at = index.rows.findIndex(row => row[3] === href || row[4] === href || row[3] === `${href}?edizione=2014`);
-    if (at >= 0 && key && !k.some(([other, place]) => other === key && place === at)) k.push([key, at]);
-  }
-  return k.length ? { ...index, k } : index;
+  return { ...index, syn, ...(en ? { en } : {}) };
 }

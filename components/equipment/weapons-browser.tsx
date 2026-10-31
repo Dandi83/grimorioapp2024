@@ -7,7 +7,7 @@ import { ChevronRight, Coins, Weight, ArrowRight } from "lucide-react";
 
 import { CatalogTitle } from "@/components/catalog-ui";
 import { ListSearch } from "@/components/equipment/list-search";
-import { FoundName } from "@/components/equipment/found-name";
+import { FoundName } from "@/components/search/found-name";
 import { InEnglish } from "@/components/search/in-english";
 import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
 import { useReportSearch } from "@/components/statistics/use-report-search";
@@ -77,7 +77,7 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
           <span className="inline-block size-2.5 rounded-full bg-amber" aria-hidden="true" />cambia tra le edizioni
         </span>
       </div>
-      <ListSearch label="Cerca un’arma" placeholder="Cerca per nome…" value={query} onChange={setQuery} />
+      <ListSearch label="Cerca un’arma" value={query} onChange={setQuery} />
       <p role="status" className="mt-2 text-sm text-muted">{searching ? `${found.length} ${found.length === 1 ? "arma trovata" : "armi trovate"}` : ""}</p>
       {result.suggestion && <DidYouMean name={result.suggestion.editions[edition]!.nome} onPick={setQuery} className="mt-2" />}
       {searching && found.length === 0 && <p className="mt-3 text-[15px]">Nessuna arma con questo nome.</p>}
