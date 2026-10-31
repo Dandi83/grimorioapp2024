@@ -20,6 +20,14 @@ function exactRows(index: SearchIndex, query: string) {
 }
 
 /**
+ * A search that now finds a card by its official English name (PROMPT 33): it leaves «Ricerche senza risultato»,
+ * also with the searches of before (they were made when the English names were not in the index).
+ */
+export function foundInEnglish(query: string, index: SearchIndex): boolean {
+  return exactRows(index, query).some(row => row.english);
+}
+
+/**
  * Why a search gave 0 results, when it can be told, in this order: a hidden NO SRD creature («mostro non SRD»); a
  * section or part not open yet («sezione in arrivo»); a name of one edition only («manca in 2014» / «manca in 2024»,
  * the lists of one edition say 0); a typo with «Forse cercavi» («errore? → …»). null: no reason found.
@@ -40,12 +48,18 @@ export function classifySearch(query: string, world: SearchWorld): SearchReason 
   return null;
 }
 
-/** The synonyms in the index served to the public: each word on the row of its card (by its address). */
+/**
+ * The synonyms in the index served to the public: each word on the row of its card (by its address). A synonym wins
+ * over an English name written the same way (PROMPT 33): that English name leaves the index.
+ */
 export function withSynonyms(index: SearchIndex, synonyms: { query: string; href: string }[]): SearchIndex {
   const syn: [string, number][] = [];
   for (const { query, href } of synonyms) {
     const at = index.rows.findIndex(row => row[3] === href || row[4] === href);
     if (at >= 0) syn.push([query, at]);
   }
-  return syn.length ? { ...index, syn } : index;
+  if (!syn.length) return index;
+  const words = new Set(syn.map(([query]) => fold(query).trim()));
+  const en = index.en?.filter(([name]) => !words.has(fold(name).trim()));
+  return { ...index, syn, ...(en ? { en } : {}) };
 }

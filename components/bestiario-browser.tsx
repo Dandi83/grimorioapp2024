@@ -22,6 +22,8 @@ import { COMMUNITY_HREF, CommunityHeader, GrimorioHeader, OriginalsBlock, Origin
 import { SectionEditionPill } from "@/components/edition/edition-pill";
 import { HABITATS, matchesHabitats } from "@/lib/habitats";
 import { useReportFilters, useReportSearch } from "@/components/statistics/use-report-search";
+import { englishShown, namesOf } from "@/lib/english-match";
+import { InEnglish } from "@/components/search/in-english";
 import { searchList } from "@/lib/fuzzy-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 
@@ -140,11 +142,11 @@ export function BestiarioBrowser({
   const meta = useMemo(() => computeMonstersMeta(editionMonsters), [editionMonsters]);
   // By challenge rating, then by name; «Creature originali» in alphabetical order.
   const byChallenge = useMemo(() => [...editionMonsters].sort((a, b) => (section === "originali" ? 0 : a.gs_num - b.gs_num) || a.nome.localeCompare(b.nome, "it")), [editionMonsters, section]);
-  usePreparedNames(() => byChallenge.map(m => m.nome), byChallenge);
+  usePreparedNames(() => byChallenge.flatMap(m => (m.en ? [m.nome, m.en] : [m.nome])), byChallenge);
   // Accents, capitals and typos ignored (lib/fuzzy-search.ts): exact, starts with, contains (each by challenge), then
   // the approximate ones under «Risultati simili».
   const settled = useSettledQuery(deferredQ);
-  const found = useMemo(() => searchList(byChallenge, deferredQ, m => m.nome, { settled }), [byChallenge, deferredQ, settled]);
+  const found = useMemo(() => searchList(byChallenge, deferredQ, m => namesOf(m.nome, m.en), { settled }), [byChallenge, deferredQ, settled]);
   const searched = useMemo(() => [...found.exact, ...found.approximate], [found]);
   // The searched name and how many creatures of the edition have it exactly (statistics, only with the consent).
   useReportSearch(deferredQ, found.exact.length, true, "bestiario");
@@ -305,8 +307,8 @@ export function BestiarioBrowser({
               <li key={monster.id} className="catalog-row border-b border-divider">
                 {i === approximateFrom && <SimilarResultsHeading className={i > 0 ? "" : "!mt-3"} />}
                 {pane
-                  ? <PaneRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} selected={pane.selectedId === monster.id} noSrd={noSrd?.has(monster.id) ?? false} />
-                  : <BestiaryRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} noSrd={noSrd?.has(monster.id) ?? false} />}
+                  ? <PaneRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} selected={pane.selectedId === monster.id} noSrd={noSrd?.has(monster.id) ?? false} english={englishShown(monster.nome, monster.en, deferredQ, { settled })} />
+                  : <BestiaryRow monster={monster} fav={isFavorite(`mostro:${monster.id}`)} onToggle={toggleFavorite} noSrd={noSrd?.has(monster.id) ?? false} english={englishShown(monster.nome, monster.en, deferredQ, { settled })} />}
               </li>
             ))}
           </ul>
@@ -330,7 +332,7 @@ export function BestiarioBrowser({
 
 // Memoized: toggling one star re-renders only that row.
 /** noSrd: the administrator sees «*» after the name of a NO SRD card (components/admin-edit/no-srd-mark.tsx). */
-const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle, noSrd = false }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void; noSrd?: boolean }) {
+const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle, noSrd = false, english }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void; noSrd?: boolean; english?: string }) {
   const favId = `mostro:${monster.id}`;
   const href = `/mostro/${monster.id}`;
   const prefetch = useIntentPrefetch(href);
@@ -345,6 +347,7 @@ const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle, noSrd = 
       >
         <span className="min-w-0">
           <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{monster.nome}{noSrd && <NoSrdMark />}{monster.nascosta && <> <HiddenTag /></>}</span>
+          <InEnglish name={english} />
           <span className="block truncate text-[15px] text-muted">{monster.taglia}</span>
           {monster.homebrew && <HomebrewLine monster={monster} />}
         </span>
@@ -365,7 +368,7 @@ const BestiaryRow = memo(function BestiaryRow({ monster, fav, onToggle, noSrd = 
 });
 
 // The list column of the computer (320 px): GS badge on the left, name, type.
-const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected, noSrd = false }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void; selected: boolean; noSrd?: boolean }) {
+const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected, noSrd = false, english }: { monster: MonsterListItem; fav: boolean; onToggle: (id: string) => void; selected: boolean; noSrd?: boolean; english?: string }) {
   const favId = `mostro:${monster.id}`;
   const href = `/mostro/${monster.id}`;
   const prefetch = useIntentPrefetch(href);
@@ -375,6 +378,7 @@ const PaneRow = memo(function PaneRow({ monster, fav, onToggle, selected, noSrd 
         <span className="grid h-9 min-w-10 shrink-0 place-items-center rounded-[8px] bg-primary px-1.5 font-serif text-[15px] font-bold tabular-nums text-primary-foreground">{monster.grado_sfida || "—"}</span>
         <span className="min-w-0">
           <span className="block truncate font-serif text-[19px] font-bold leading-tight text-foreground">{monster.nome}{noSrd && <NoSrdMark />}</span>
+          <InEnglish name={english} className="truncate" />
           <span className="block truncate text-[14px] text-muted">{typeCategory(monster.tipo)}</span>
           {monster.homebrew && <HomebrewLine monster={monster} />}
           {monster.nascosta && <HiddenTag />}

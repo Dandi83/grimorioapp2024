@@ -29,6 +29,7 @@ import { toolListRows } from "./tools-editions";
 import { GRIMORIO_LABEL, HOMEBREW_LABEL, fold, type SearchIndex, type SearchSectionKey } from "./search";
 import { isHiddenPath, partId, sectionOfPath } from "./public-sections";
 import { spellHref } from "./spell-public-id";
+import { englishName } from "./english-names";
 
 /** A row of a hidden section, or of a hidden edition, collection or tab (hidden: sections and part ids). */
 function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
@@ -37,8 +38,11 @@ function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
   return section !== undefined && [row.edizione, row.parte].some(part => part !== undefined && hidden.includes(partId(section, part)));
 }
 
-/** parte: the part of its section the row belongs to (a collection, a tab), hidden with it from /admin/sezioni. */
-interface SourceRow { nome: string; label: string; href: string; edizione?: EquipmentEdition; parte?: string }
+/**
+ * parte: the part of its section the row belongs to (a collection, a tab), hidden with it from /admin/sezioni.
+ * en: the official English name of an SRD card (lib/english-names.ts), searched too and shown «in inglese».
+ */
+interface SourceRow { nome: string; label: string; href: string; edizione?: EquipmentEdition; parte?: string; en?: string }
 
 interface SearchSource {
   section: SearchSectionKey;
@@ -55,7 +59,7 @@ export const SEARCH_SOURCES: SearchSource[] = [
     rows: async () => (await getSpellIndex()).map(spell => ({
       nome: spellName(spell.nome_italiano, spell.edizione),
       label: [spell.scuola, spell.livello_num === 0 ? "trucchetto" : spell.livello_num > 0 ? `liv. ${spell.livello_num}` : ""].filter(Boolean).join(" · "),
-      href: spellHref(spell.id), edizione: spell.edizione ?? "2024",
+      href: spellHref(spell.id), edizione: spell.edizione ?? "2024", en: spell.en,
     })),
   },
   {
@@ -64,7 +68,7 @@ export const SEARCH_SOURCES: SearchSource[] = [
     rows: async () => (await getMonsterListIndex()).map(monster => ({
       nome: monster.nome,
       label: [monster.homebrew ? (monster.autore ? HOMEBREW_LABEL : GRIMORIO_LABEL) : "", typeCategory(monster.tipo) || monster.tipo, monster.grado_sfida ? `GS ${monster.grado_sfida}` : ""].filter(Boolean).join(" · "),
-      href: `/mostro/${monster.id}`, ...(monster.entrambe ? {} : { edizione: monster.edizione }), parte: collectionOf(monster),
+      href: `/mostro/${monster.id}`, ...(monster.entrambe ? {} : { edizione: monster.edizione }), parte: collectionOf(monster), en: monster.en,
     })),
   },
   {
@@ -74,8 +78,8 @@ export const SEARCH_SOURCES: SearchSource[] = [
       const card = entry.editions[edition];
       const page = `${classHref(entry.id)}${edition === "2014" ? "?edizione=2014" : ""}`;
       return card ? [
-        { nome: card.nome, label: `Classe · ${hitDie(card)}`, href: page, edizione: edition },
-        { nome: card.sottoclasse.nome, label: `Sottoclasse ${ofClass(card.nome)}`, href: `${page}#sottoclasse`, edizione: edition, parte: "tab-sottoclasse" },
+        { nome: card.nome, label: `Classe · ${hitDie(card)}`, href: page, edizione: edition, en: englishName("classi", edition, entry.id) },
+        { nome: card.sottoclasse.nome, label: `Sottoclasse ${ofClass(card.nome)}`, href: `${page}#sottoclasse`, edizione: edition, parte: "tab-sottoclasse", en: englishName("sottoclassi", edition, entry.id) },
       ] : [];
     })),
   },
@@ -106,11 +110,11 @@ export const SEARCH_SOURCES: SearchSource[] = [
   },
   {
     section: "oggetti-magici", title: "Oggetti magici",
-    rows: async () => bothEditions(magicItemEditionRows((await getCorrectedMagicItems()).list), (row, edition) => ({ nome: row.nome, label: `${row.tipo} · ${row.rarita}`, href: row.href, edizione: edition })),
+    rows: async () => bothEditions(magicItemEditionRows((await getCorrectedMagicItems()).list), (row, edition) => ({ nome: row.nome, label: `${row.tipo} · ${row.rarita}`, href: row.href, edizione: edition, en: row.en })),
   },
   {
     section: "condizioni", title: "Condizioni",
-    rows: async () => bothEditions(conditionRows((await getCorrectedConditions()).list), (row, edition) => ({ nome: row.nome, label: "Condizione", href: row.href, edizione: edition })),
+    rows: async () => bothEditions(conditionRows((await getCorrectedConditions()).list), (row, edition) => ({ nome: row.nome, label: "Condizione", href: row.href, edizione: edition, en: englishName("condizioni", edition, row.id) })),
   },
   {
     // Only where the Manual is published (preview); its condition pages are already under Condizioni.
@@ -125,7 +129,8 @@ export const SEARCH_SOURCES: SearchSource[] = [
 ];
 
 /** A result of the index: solo, the only edition it exists in (none when in both, or edition-free). */
-interface MergedRow { nome: string; label: string; href: string; href2014?: string; solo?: EquipmentEdition }
+interface MergedRow { nome: string; label: string; href: string; href2014?: string; solo?: EquipmentEdition; en: string[] }
+const englishOf = (row: SourceRow) => (row.en ? [row.en] : []);
 
 /**
  * One result per name and source: a 2024 row and a 2014 row with the same name become one row with
@@ -135,7 +140,7 @@ function mergeEditions(rows: SourceRow[]): MergedRow[] {
   const out: MergedRow[] = [];
   const open2024 = new Map<string, MergedRow[]>();
   for (const row of rows.filter(r => r.edizione !== "2014")) {
-    const merged: MergedRow = { nome: row.nome, label: row.label, href: row.href };
+    const merged: MergedRow = { nome: row.nome, label: row.label, href: row.href, en: englishOf(row) };
     out.push(merged);
     if (row.edizione === "2024") open2024.set(fold(row.nome), [...(open2024.get(fold(row.nome)) ?? []), merged]);
   }
@@ -144,9 +149,11 @@ function mergeEditions(rows: SourceRow[]): MergedRow[] {
     const pair = open2024.get(fold(row.nome))?.shift();
     if (pair) {
       if (row.href !== pair.href) pair.href2014 = row.href;
+      // The English name of the 2014 card too, when it differs («Deck of Many Things», «Mysterious Deck»).
+      for (const en of englishOf(row)) if (!pair.en.includes(en)) pair.en.push(en);
     } else {
       // A 2014 name on a page shared with a different 2024 name: the page opens on 2014.
-      out.push({ nome: row.nome, label: `${row.label} · 2014`, href: pages2024.has(row.href) ? `${row.href}?edizione=2014` : row.href, solo: "2014" });
+      out.push({ nome: row.nome, label: `${row.label} · 2014`, href: pages2024.has(row.href) ? `${row.href}?edizione=2014` : row.href, solo: "2014", en: englishOf(row) });
     }
   }
   // 2024 rows left without a 2014 name.
@@ -166,6 +173,7 @@ export async function buildSearchIndex(environment = process.env.VERCEL_ENV, sou
     let position = index.sections.findIndex(section => section.k === source.section);
     if (position < 0) position = index.sections.push({ k: source.section, t: source.title }) - 1;
     for (const row of rows) {
+      for (const en of row.en) (index.en ??= []).push([en, index.rows.length]);
       index.rows.push(row.solo ? [position, row.nome, row.label, row.href, row.href2014 ?? "", row.solo]
         : row.href2014 ? [position, row.nome, row.label, row.href, row.href2014] : [position, row.nome, row.label, row.href]);
     }

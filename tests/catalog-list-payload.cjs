@@ -87,7 +87,7 @@ function load(relative, deps={}) {
    assert.deepEqual(values.filter(s=>s.edizione==='2014'&&s.id!=='manual-index').map(s=>s.id).sort(),environment?[...legacyIds,'manto-del-crociato-2014'].sort():[]);
    assert.equal(values.find(s=>s.id===additionId).nome_italiano,'Modifica amministrativa','virtual additions never replace an existing manual row');
    assert.deepEqual(values.find(s=>s.id==='manual-index'),{id:'manual-index',nome_italiano:'Manuale',livello_num:2,scuola:'Divinazione',classi:['mago'],tempo_di_lancio:'1 minuto o rituale',concentrazione:true,rituale:true,edizione:'2014'});
-   for(const value of values){assert.ok(!('descrizione' in value)&&!('durata' in value),'list rows carry no description or duration text');assert.ok(Object.keys(value).every(key=>['id','nome_italiano','livello_num','scuola','classi','tempo_di_lancio','concentrazione','rituale','edizione'].includes(key)));}
+   for(const value of values){assert.ok(!('descrizione' in value)&&!('durata' in value),'list rows carry no description or duration text');assert.ok(Object.keys(value).every(key=>['id','nome_italiano','livello_num','scuola','classi','tempo_di_lancio','concentrazione','rituale','edizione','en'].includes(key)));}
    assert.deepEqual(JSON.parse(JSON.stringify(values)),values,'index consists only of JSON-serializable values');
   }
  } finally {if(originalEnv===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=originalEnv;}

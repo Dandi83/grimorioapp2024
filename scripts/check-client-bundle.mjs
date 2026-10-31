@@ -73,6 +73,10 @@ export function findIndexLeaks(file = SEARCH_INDEX_FILE, prints = sheetFingerpri
   for (const row of index.rows) {
     if (row.length > 6 || row.slice(1).some(cell => typeof cell !== 'string' || cell.length > 120) || (row.length === 6 && !['2024', '2014'].includes(row[5]))) leaks.push({ path: file, id: String(row[1]), file: 'search index', fragment: 'row too long' });
   }
+  // The English names (PROMPT 33): [a short name, the position of its row], never a text.
+  for (const entry of index.en ?? []) {
+    if (entry.length !== 2 || typeof entry[0] !== 'string' || entry[0].length > 60 || !Number.isInteger(entry[1]) || !index.rows[entry[1]]) leaks.push({ path: file, id: String(entry[0]), file: 'search index', fragment: 'English name not a name' });
+  }
   return leaks;
 }
 
@@ -82,7 +86,9 @@ export const SECRET_ENV = ['RESEND_API_KEY', 'FEEDBACK_TO_EMAIL', 'FEEDBACK_FROM
  * Server code that must never reach the browser: the email service, the push library that signs with the private key,
  * and the Bilanciamento of the administrator (PROMPT 11: its box, drawn on the server, and the SRD measures).
  */
-const SERVER_ONLY_MARKERS = ['api.resend.com', 'generateVAPIDKeys', 'BILANCIAMENTO', 'Danni ai PG per round', 'misure simulate dei mostri SRD', 'SITUAZIONI DI PROVA', 'data-balance-tactics'];
+const SERVER_ONLY_MARKERS = ['api.resend.com', 'generateVAPIDKeys', 'BILANCIAMENTO', 'Danni ai PG per round', 'misure simulate dei mostri SRD', 'SITUAZIONI DI PROVA', 'data-balance-tactics',
+  // The table of the English names (lib/data/nomi-inglesi-srd.json): read on the server only, the browser gets the names in the index and the lists.
+  'senzaCorrispondenza'];
 
 export function findSecretLeaks(clientDir, env = process.env) {
   const needles = [

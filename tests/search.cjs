@@ -63,7 +63,10 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  // One edition for the whole app («la tua edizione»): the index no longer names a storage key per section.
  assert.ok(production.sections.every(x=>Object.keys(x).join()==='k,t'));
  assert.ok(!fs.readFileSync('components/search/search-panel.tsx','utf8').includes('localStorage'),'the panel reads the edition from the shared provider');
- const rows=s.rowsOf(production);
+ const rows=s.rowsOf(production).filter(r=>!r.english);
+ // PROMPT 33: the English names of the SRD cards ride as rows of their own, found by «bag of holding», «poisoned» (spells and creatures come from the database, in the browser tests).
+ assert.ok(production.en.length>300,String(production.en.length));const english=s.rowsOf(production).filter(r=>r.english);
+ assert.equal(english.find(r=>r.alias==="Bag of Holding").nome,"Borsa conservante");assert.equal(english.find(r=>r.alias==="Poisoned").nome,"Avvelenato");assert.equal(english.find(r=>r.alias==="Fighter").nome,"Guerriero");
  // No row without name, label or address; names, labels and addresses only.
  for(const r of production.rows){assert.ok(r[1]&&r[2]&&r[3]&&r[3].startsWith('/'),JSON.stringify(r));assert.ok(r.length<=6);if(r.length===6)assert.ok(['2024','2014'].includes(r[5]));}
  const bySection=k=>rows.filter(r=>r.section===k);

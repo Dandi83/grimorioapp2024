@@ -76,7 +76,7 @@ const index = fs.readFileSync('lib/monster-index.ts','utf8');
 assert.match(index,/import habitats from "\.\/data\/habitat-mostri\.json";/);
 assert.match(index,/const HABITAT_RULE = "2026-10-24 elenco vuoto = non impostato";/,'the rule of the empty admin lists is in the fingerprint');
 assert.match(fs.readFileSync('lib/monster-habitats.ts','utf8'),/return chosen\?\.length \? chosen : fromFile\.get\(key\) \?\? \[\];/,'HABITAT_RULE names this rule');
-assert.match(index,/JSON\.stringify\(\[listed, habitats, HABITAT_RULE, editionLinks, animalIds\]\)/,'the file and the rule of the admin habitats are in the fingerprint');
+assert.match(index,/JSON\.stringify\(\[listed, habitats, HABITAT_RULE, editionLinks, animalIds, ENGLISH_NAMES\]\)/,'the file and the rule of the admin habitats are in the fingerprint');
 assert.match(index,/\["monster-list-index", process\.env\.VERCEL_ENV \?\? "local", projectCatalogVersion\(\)\]/);
 
 console.log(`Habitat data: ${Object.keys(file).length} keys in the catalog, only the 13 habitats, all ${catalog.length} creatures (2024 and 2014) with a habitat, Palude/Artico/Qualsiasi filters, linked 2014 sheets, list cache fingerprint passed.`);
