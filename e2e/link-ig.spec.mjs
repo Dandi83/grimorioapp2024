@@ -82,5 +82,11 @@ for (const width of [390, 1280]) {
     }
     expect(errors).toEqual([]);
     await context.close();
+    // The visits of this test leave the test database: the statistics tests count the people of the period.
+    const visitors = await database(async client => (await client.query(
+      "SELECT DISTINCT visitor_id FROM grimorio_analytics_events WHERE entry='bio' AND received_at >= $1", [since])).rows.map(row => row.visitor_id));
+    expect(visitors.length).toBe(1);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await database(client => client.query("DELETE FROM grimorio_analytics_events WHERE visitor_id = ANY($1)", [visitors]));
   });
 }
