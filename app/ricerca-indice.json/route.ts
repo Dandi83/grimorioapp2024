@@ -1,6 +1,5 @@
 import { buildSearchIndex } from "@/lib/search-index";
-import { withSearchKeys, withSynonyms } from "@/lib/search-insights";
-import { searchKeysForIndex } from "@/lib/search-english-server";
+import { withSynonyms } from "@/lib/search-insights";
 import { readSynonyms } from "@/lib/search-insights-server";
 import { effectiveHidden } from "@/lib/public-sections";
 import { visibilityState } from "@/lib/section-visibility";
@@ -16,8 +15,8 @@ async function hiddenForSearch() {
 
 export async function GET() {
   // The synonyms of the reserved area (PROMPT 31) ride in the same file: nothing more for who never searches.
-  // The English names «solo ricerca» of the NO SRD cards (PROMPT 37): normalized keys only, before the synonyms (which win).
-  const index = withSynonyms(withSearchKeys(await buildSearchIndex(undefined, undefined, await hiddenForSearch()), await searchKeysForIndex()), await readSynonyms().catch(() => []));
+  // The English names approved for the NO SRD cards (PROMPT 38) come with the lists of the cards, like the SRD ones.
+  const index = withSynonyms(await buildSearchIndex(undefined, undefined, await hiddenForSearch()), await readSynonyms().catch(() => []));
   return new Response(JSON.stringify(index), {
     headers: { "Content-Type": "application/json; charset=utf-8" },
   });

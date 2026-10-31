@@ -15,12 +15,12 @@ function load(relative, deps={}) {
  const before=JSON.stringify(all);
  // The cached list index projects every record; pages pass it through unchanged.
  let indexConfigured=false,monsterKey;
- const monsterIndex=load('lib/monster-index.ts',{'server-only':{},'./homebrew':{publishedHomebrew:async()=>[],homebrewListItem:row=>row},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,'./srd-monsters':srd,
+ const monsterIndex=load('lib/monster-index.ts',{'server-only':{},'./search-english-server':{approvedEnglishNames:async()=>new Map()},'./homebrew':{publishedHomebrew:async()=>[],homebrewListItem:row=>row},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,'./srd-monsters':srd,
   'next/cache':{unstable_cache:(fn,key,options)=>{assert.equal(key[0],'monster-list-index');assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');monsterKey=key;assert.deepEqual(options,{tags:['monsters'],revalidate:3600});indexConfigured=true;return fn;}}});
  assert.ok(indexConfigured,'the monster list is cached with the tag invalidated by admin saves');
  // A new SRD sheet or habitat file changes the key, so a deployment never serves the previous list.
  let changedKey;
- load('lib/monster-index.ts',{'server-only':{},'./homebrew':{publishedHomebrew:async()=>[],homebrewListItem:row=>row},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,'./srd-monsters':srd,
+ load('lib/monster-index.ts',{'server-only':{},'./search-english-server':{approvedEnglishNames:async()=>new Map()},'./homebrew':{publishedHomebrew:async()=>[],homebrewListItem:row=>row},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,'./srd-monsters':srd,
   './data/habitat-mostri.json':{aboleth:['Sottosuolo']},'next/cache':{unstable_cache:(fn,key)=>{changedKey=key;return fn;}}});
  assert.notEqual(changedKey[2],monsterKey[2]);
  const monsterList=await monsterIndex.getMonsterListIndex();
@@ -71,7 +71,7 @@ function load(relative, deps={}) {
    if(environment===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=environment;
    let configured=false;
    const reader=load('lib/spell-index.ts',{
-    'server-only':{},
+    'server-only':{},'./search-english-server':{approvedEnglishNames:async()=>new Map()},
     'next/cache':{unstable_cache:(fn,key,options)=>{assert.deepEqual(key.slice(0,2),['spell-index',environment??'local']);assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');spellKeys.add(key[2]);assert.deepEqual(options,{tags:['spells'],revalidate:3600});configured=true;return fn;}},
     'drizzle-orm':{asc:column=>{assert.equal(column,'sort_key');return column;}},
     './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',tempo_di_lancio:'tempo_di_lancio',durata:'durata',descrizione:'descrizione',sort_key:'sort_key'}},
@@ -94,7 +94,7 @@ function load(relative, deps={}) {
  // A new 2014 block changes the key, so a deployment never serves the previous list.
  let fewer;
  const smaller={...legacySpells,withLegacySpells:(rows,environment)=>legacySpells.withLegacySpells(rows,environment).slice(0,-1)};
- load('lib/spell-index.ts',{'server-only':{},'./db':{},'./db/schema':{spells:{}},'drizzle-orm':{asc:x=>x},'./content-editions':{},'./srd-additions':additions,'./srd-spells-2014':smaller,'./spell-catalog-repairs':repairs,'./monster-id-aliases':aliases,'./spells-types':st,
+ load('lib/spell-index.ts',{'server-only':{},'./search-english-server':{approvedEnglishNames:async()=>new Map()},'./db':{},'./db/schema':{spells:{}},'drizzle-orm':{asc:x=>x},'./content-editions':{},'./srd-additions':additions,'./srd-spells-2014':smaller,'./spell-catalog-repairs':repairs,'./monster-id-aliases':aliases,'./spells-types':st,
   'next/cache':{unstable_cache:(fn,key)=>{fewer=key[2];return fn;}}});
  assert.equal(spellKeys.size,1);assert.notEqual(fewer,[...spellKeys][0]);
  console.log('Catalog payloads: IDs, metadata, filters, animals, admin records and immutable sources preserved; full detail bodies excluded.');

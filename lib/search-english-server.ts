@@ -1,14 +1,13 @@
 import "server-only";
 import proposals from "./data/nomi-inglesi-proposte.json";
 import { pool } from "./db";
-import { searchEnglishError, searchKey, type SearchEnglishKind } from "./search-english";
-import { spellHref } from "./spell-public-id";
+import { searchEnglishError, type SearchEnglishKind } from "./search-english";
 
 /**
  * The English names «solo ricerca» of the NO SRD cards (PROMPT 37). The proposals are a file of the project
  * (lib/data/nomi-inglesi-proposte.json); the decisions of the reserved area (approved, also typed in the editor, or
- * discarded) are rows of grimorio_search_english. Only the approved names reach the public, as keys of the index
- * (app/ricerca-indice.json/route.ts): the names, the proposals and the discarded ones never.
+ * discarded) are rows of grimorio_search_english. Only the approved names reach the public (PROMPT 38: as the English
+ * name of the card in the search, «in inglese: …»): the proposals and the discarded ones never.
  */
 let ready: Promise<void> | undefined;
 function ensureTable() {
@@ -75,18 +74,14 @@ export async function saveSearchEnglishFromEditor(kind: SearchEnglishKind, id: s
   return null;
 }
 
-/** The keys of the public index: approved names only, normalized, still valid (the list of protected names may grow). */
-export async function approvedSearchKeys(): Promise<{ kind: SearchEnglishKind; id: string; key: string }[]> {
-  return (await readSearchEnglish())
-    .filter(row => row.state === "approvata" && row.name && !searchEnglishError(row.name))
-    .map(row => ({ kind: row.kind, id: row.id, key: searchKey(row.name) }))
-    .filter(row => row.key);
-}
-
-/** The approved keys on the addresses of their cards, for the public index (lib/search-insights.ts withSearchKeys). */
-export async function searchKeysForIndex(): Promise<{ href: string; key: string }[]> {
-  return (await approvedSearchKeys().catch(() => []))
-    .map(({ kind, id, key }) => ({ href: kind === "incantesimo" ? spellHref(id) : `/mostro/${id}`, key }));
+/**
+ * The approved names of one kind (PROMPT 38), still valid (the list of protected names may grow), by card id: the lists
+ * of Incantesimi and Bestiario (lib/spell-index.ts, lib/monster-index.ts) give them as the English name of the card,
+ * so the search shows them «in inglese» like the SRD names. Without the database: none.
+ */
+export async function approvedEnglishNames(kind: SearchEnglishKind): Promise<Map<string, string>> {
+  const rows = await readSearchEnglish().catch(() => []);
+  return new Map(rows.filter(row => row.kind === kind && row.state === "approvata" && row.name && !searchEnglishError(row.name)).map(row => [row.id, row.name]));
 }
 
 /**

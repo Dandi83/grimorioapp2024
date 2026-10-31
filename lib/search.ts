@@ -14,19 +14,17 @@ export interface SearchIndex {
   rows: [number, string, string, string, string?, ("2024" | "2014")?][];
   /** Synonyms of the reserved area (PROMPT 31): [the word searched, the position of the row it finds]. */
   syn?: [string, number][];
-  /** Official English names of the SRD cards (PROMPT 33): [the name, the position of its row], shown «in inglese». */
-  en?: [string, number][];
   /**
-   * English names «solo ricerca» of the NO SRD cards approved in the reserved area (PROMPT 37): [the normalized key,
-   * the position of its row]. Searched like the English names, never shown.
+   * Official English names of the SRD cards (PROMPT 33) and the names approved for the NO SRD cards (PROMPT 38):
+   * [the name, the position of its row], shown «in inglese».
    */
-  k?: [string, number][];
+  en?: [string, number][];
 }
 
 export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "manuale";
 
 /** alias: a synonym or the English name the row is found by (the name shown stays its own); english: the alias is the English name. */
-interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014"; alias?: string; english?: true; en?: string[]; hidden?: true }
+interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014"; alias?: string; english?: true; en?: string[] }
 
 /** start: where the query starts in the name, -1 for an approximate match (a typo, lib/fuzzy-search.ts). */
 export interface SearchMatch extends SearchRow { start: number; kind: MatchKind; typos: number; length?: number }
@@ -68,7 +66,6 @@ export function rowsOf(index: SearchIndex): SearchRow[] {
     ...rows,
     ...(index.syn ?? []).flatMap(([alias, at]) => (rows[at] ? [{ ...rows[at], alias }] : [])),
     ...(index.en ?? []).flatMap(([alias, at]) => (rows[at] ? [{ ...rows[at], alias, english: true as const }] : [])),
-    ...(index.k ?? []).flatMap(([alias, at]) => (rows[at] ? [{ ...rows[at], alias, hidden: true as const }] : [])),
   ];
 }
 

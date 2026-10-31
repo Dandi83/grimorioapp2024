@@ -92,3 +92,21 @@ le sintesi originali NO SRD (es. «Scheggia della mente»), homebrew, equipaggia
 - Indice: campo `k` con la sola chiave normalizzata (`synaptic static`), mai mostrata; sinonimi admin prima; una
   parola trovata così esce da «Ricerche senza risultato». Solo nella ricerca della Home: gli elenchi delle sezioni
   non ricevono la chiave (il nome inglese non deve comparire nel loro HTML).
+
+## PROMPT 38 (31 ottobre 2026): riga «in inglese» per le schede NO SRD, pagina di verifica, campi degli elenchi
+
+- I nomi APPROVATI delle schede NO SRD diventano il nome inglese della scheda negli elenchi di Incantesimi e Bestiario
+  (`lib/spell-index.ts`, `lib/monster-index.ts`, da `approvedEnglishNames` in `lib/search-english-server.ts`): nei
+  risultati compaiono come «in inglese: …» con la stessa evidenziazione e le stesse regole dei nomi SRD, nella Home e
+  negli elenchi mentre si cerca. Il campo `k` del PROMPT 37 non esiste più. Schede, liste senza ricerca e anteprime
+  non cambiano. Proposte non approvate, scartate e nomi protetti non arrivano mai al pubblico.
+- Approva / Modifica / Scarta e il campo dell'editor aggiornano subito elenchi e indice (`updateTag` di `spells` o
+  `monsters` più `/ricerca-indice.json`, in `lib/search-english-refresh.ts`): niente attesa dei 5 minuti.
+- «Nomi inglesi da verificare» e anteprima del campo nell'editor: pillola scura dell'edizione e «scuola · liv. N» /
+  «tipo · GS N» (`lib/search-english-cards.ts`), così i due «Manto del crociato» (2014 e 2024) si distinguono.
+  Nota del campo: «Compare nei risultati di ricerca come "in inglese: …"».
+- Un solo testo d'esempio «Cerca per nome…» (`LIST_SEARCH_PLACEHOLDER` in `lib/search-input.ts`) in Incantesimi,
+  Bestiario (anche nella colonna del computer), Oggetti magici, Armi, Armature, Oggetti d'avventura, Strumenti e
+  Manuale. La ricerca della Home tiene il suo.
+- Nome italiano evidenziato (`components/search/found-name.tsx`, con `Marked`) in tutti questi elenchi, anche nelle
+  righe dei gruppi 2014 di Oggetti d'avventura.

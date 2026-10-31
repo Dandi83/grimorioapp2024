@@ -7,7 +7,7 @@ import { ChevronRight } from "lucide-react";
 
 import { CatalogTitle } from "@/components/catalog-ui";
 import { ListSearch } from "@/components/equipment/list-search";
-import { FoundName } from "@/components/equipment/found-name";
+import { FoundName } from "@/components/search/found-name";
 import { InEnglish } from "@/components/search/in-english";
 import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
 import { useReportSearch } from "@/components/statistics/use-report-search";
@@ -36,7 +36,7 @@ export function ArmorBrowser({ items, times, sameNumbers }: { items: ArmorListIt
         {items.length} voci · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}
         {sameNumbers && <><br />Stesse CA, pesi e costi in entrambe le edizioni</>}
       </p>
-      <ListSearch label="Cerca un’armatura" placeholder="Cerca per nome…" value={query} onChange={setQuery} />
+      <ListSearch label="Cerca un’armatura" value={query} onChange={setQuery} />
       <p role="status" className="mt-2 text-sm text-muted">{searching ? `${found.length} ${found.length === 1 ? "armatura trovata" : "armature trovate"}` : ""}</p>
       {result.suggestion && <DidYouMean name={result.suggestion.editions[edition].nome} onPick={setQuery} className="mt-2" />}
       {searching && found.length === 0 && <p className="mt-3 text-[15px]">Nessuna armatura con questo nome.</p>}
