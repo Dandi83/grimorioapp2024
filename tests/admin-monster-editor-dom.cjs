@@ -18,6 +18,7 @@ let calls=0, closed=0, payload;
 const cache=new Map();
 const deps={
  '@/app/actions/admin-cards':{setCardVisibilityAction:async(kind,id,hidden)=>({ok:true,hidden})},
+ '@/app/actions/admin-search-english':{readSearchEnglishAction:async()=>''},
  '@/app/actions/admin-monsters':{
   createMonsterAction:async (_prev,data)=>{calls++;payload=Object.fromEntries(data.entries());return {ok:false,error:'Errore simulato'}},
   updateMonsterAction:async()=>{throw new Error('should not save existing source')},

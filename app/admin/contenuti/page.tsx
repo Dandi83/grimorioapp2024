@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Backpack, BookOpen, ChevronLeft, ChevronRight, Crown, Gem, Hammer, HeartPulse, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
+import { allProposals, readSearchEnglish } from "@/lib/search-english-server";
+import { Languages, Backpack, BookOpen, ChevronLeft, ChevronRight, Crown, Gem, Hammer, HeartPulse, Shield, Skull, Sparkles, Sword, type LucideIcon } from "lucide-react";
 
 import { AdminGlobalSearch } from "@/components/admin-home/global-search";
 import { AdminLogin } from "@/components/admin-login";
@@ -44,9 +45,13 @@ const STATE_NOTE: Record<Exclude<SectionState, "visibile">, string> = { "in-arri
 export default async function ContentsPage() {
   if (!(await isAdmin())) return <AdminLogin />;
   const edition = await adminEdition();
-  const [spells, monsters, homebrew, states, entries] = await Promise.all([
+  const [spells, monsters, homebrew, states, entries, decisions] = await Promise.all([
     getAdminSpells().catch(() => null), getAllMonsters().catch(() => null), publishedHomebrew().catch(() => []), allSectionStates().catch(() => ({} as Record<string, SectionState>)), editableEntries(edition),
+    readSearchEnglish().catch(() => null),
   ]);
+  // «Nomi inglesi da verificare» (PROMPT 37): the proposals of the project not approved or discarded yet.
+  const decided = new Set((decisions ?? []).map(row => `${row.kind}:${row.id}`));
+  const toCheck = decisions ? allProposals().filter(row => !decided.has(`${row.kind}:${row.id}`)).length : null;
   const count = (key: string): number | null => {
     if (key === "incantesimi") return spells?.filter(spell => spellEdition(spell) === edition).length ?? null;
     if (key === "mostri") return monsters ? monsters.filter(monster => (usesLegacyMonsterRules(monster) ? "2014" : "2024") === edition).length
@@ -98,6 +103,20 @@ export default async function ContentsPage() {
           </Group>
         );
       })}
+      <Group label="Ricerca">
+        <li>
+          <Link href="/admin/contenuti/nomi-inglesi" prefetch={false} data-search-english-link
+            className="flex min-h-[60px] items-center gap-3 px-4 py-2 focus-visible:outline-[3px] focus-visible:-outline-offset-[3px] focus-visible:outline-[#7A1F2B]">
+            <Languages size={22} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />
+            <span className="min-w-0 flex-1">
+              <span className="block font-serif text-[19px] font-bold leading-tight">Nomi inglesi da verificare</span>
+              <span className="block text-[13px] text-[#5E4E3E]">Solo per trovare le schede NO SRD cercando in inglese</span>
+            </span>
+            {toCheck !== null && <span className="text-[16px] font-semibold tabular-nums text-[#5E4E3E]">{toCheck}</span>}
+            <ChevronRight size={18} strokeWidth={2.2} className="shrink-0 text-[#B9A57C]" aria-hidden="true" />
+          </Link>
+        </li>
+      </Group>
     </main>
   );
 }

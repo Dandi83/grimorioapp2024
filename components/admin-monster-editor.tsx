@@ -17,6 +17,8 @@ import { HiddenTag } from "./sections/hidden-tag";
 import { useEditorFrame } from "./admin-editor-frame";
 import { EditorMonsterPanel } from "./admin-edit/admin-monster-panel";
 import { balanceApplies } from "@/lib/balance-scope";
+import { AdminSearchEnglishField } from "./admin-search-english-field";
+import { isNoSrdSource } from "@/lib/card-display";
 
 type Field = { name: keyof Monster; label: string; placeholder?: string };
 const IDENTITY: Field[] = [
@@ -226,6 +228,7 @@ export function MonsterEditor({
           <div hidden={preview !== null} className="space-y-5">
             <AdminEditionField edition={edition} source={monster?.provenienza?.document} />
             <AdminSummaryField state={summaryFieldState(monster)} initial={monster?.fonte_scheda === "Sintesi originale"} />
+            {(!monster || isNoSrdSource(monster.fonte_scheda)) && <AdminSearchEnglishField kind="mostro" id={monster?.id} />}
             <details open className="rounded-xl border border-border p-4">
               <summary className="mb-3 min-h-11 cursor-pointer font-serif text-xl text-primary">
                 Identità

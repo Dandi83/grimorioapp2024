@@ -1,5 +1,6 @@
 "use server";
 
+import { editorSearchEnglish } from "@/lib/search-english-server";
 import { revalidatePath, updateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 
@@ -71,6 +72,9 @@ function revalidateMonster(id: string) {
 
 export async function createMonsterAction(_prev: unknown, formData: FormData) {
   await requireAdmin();
+  // «Nome inglese (solo ricerca)» (PROMPT 37): a protected name refuses the whole save.
+  const english = editorSearchEnglish(formData);
+  if (english.error) return { ok: false as const, error: english.error };
   const input = fromForm(formData);
   if (!input.nome) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
@@ -83,11 +87,15 @@ export async function createMonsterAction(_prev: unknown, formData: FormData) {
   });
   if (!result.ok) return result;
   revalidateMonster(id);
+  if (await english.apply("mostro", id)) refreshSearchIndex();
   return { ok: true as const, error: null, id };
 }
 
 export async function updateMonsterAction(_prev: unknown, formData: FormData) {
   await requireAdmin();
+  // «Nome inglese (solo ricerca)» (PROMPT 37): a protected name refuses the whole save.
+  const english = editorSearchEnglish(formData);
+  if (english.error) return { ok: false as const, error: english.error };
   const id = clean(formData.get("id"));
   if (!id) return { ok: false as const, error: "ID mancante." };
   // Fields missing from the form stay as they are: only what was sent can change.
@@ -111,6 +119,7 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     const saved = await saveAdminContent("monster", id, formData, projectEdition, database => saveMonsterHabitats(database, id, habitats));
     if (!saved.ok) return saved;
     revalidateMonster(id);
+    if (await english.apply("mostro", id)) refreshSearchIndex();
     return { ok: true as const, error: null, id };
   }
   if (!stored) return { ok: false as const, error: "Scheda non trovata." };
@@ -144,6 +153,7 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
   });
   if (!result.ok) return result;
   revalidateMonster(id);
+  if (await english.apply("mostro", id)) refreshSearchIndex();
   return { ok: true as const, error: null, id };
 }
 
@@ -163,4 +173,10 @@ export async function deleteMonsterAction(formData: FormData): Promise<DeleteRes
   }
   revalidateMonster(id);
   return { ok: true };
+}
+
+/** The search index and «Nomi inglesi da verificare» after a change of the English name «solo ricerca». */
+function refreshSearchIndex() {
+  revalidatePath("/ricerca-indice.json");
+  revalidatePath("/admin/contenuti/nomi-inglesi");
 }
