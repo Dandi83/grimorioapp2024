@@ -14,6 +14,7 @@ import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { parseLivello, spellListFlags, type SpellListItem } from "./spells-types";
 import { getContentEditions } from "./content-editions";
 import { englishName } from "./english-names";
+import { approvedEnglishNames } from "./search-english-server";
 
 /**
  * Changes whenever the project files change what the list shows (new 2014 blocks, SRD additions).
@@ -30,7 +31,7 @@ function projectCatalogVersion(): string {
 
 export const getSpellIndex = unstable_cache(
   async (): Promise<SpellListItem[]> => {
-    const [rows, editions] = await Promise.all([db.select({
+    const [rows, editions, approved] = await Promise.all([db.select({
       id: spells.id,
       nome_italiano: spells.nome_italiano,
       livello: spells.livello,
@@ -38,7 +39,7 @@ export const getSpellIndex = unstable_cache(
       durata: spells.durata,
       // Read only to know whether the SRD record or the original summary still applies (the same values as the card).
       descrizione: spells.descrizione,
-    }).from(spells).orderBy(asc(spells.sort_key)), getContentEditions("spell")]);
+    }).from(spells).orderBy(asc(spells.sort_key)), getContentEditions("spell"), approvedEnglishNames("incantesimo")]);
 
     // A duplicate row merged into another card is not listed (its address redirects).
     const listed = rows.filter(row => !(row.id in MERGED_SPELL_IDS));
@@ -46,7 +47,8 @@ export const getSpellIndex = unstable_cache(
       const row = displaySpellRow(stored);
       const { livello_num, scuola, classi } = parseLivello(row.livello || "");
       const legacy = (editions.get(row.id) ?? (isLegacySpellId(row.id) ? "2014" : originalEdition(row.id))) === "2014";
-      const en = englishName("incantesimi", legacy ? "2014" : "2024", row.id);
+      // The SRD name, else the name approved for a NO SRD card (PROMPT 38, «Nomi inglesi da verificare»).
+      const en = englishName("incantesimi", legacy ? "2014" : "2024", row.id) ?? approved.get(row.id);
       return {
         id: row.id, nome_italiano: row.nome_italiano, livello_num, scuola, classi,
         tempo_di_lancio: row.tempo_di_lancio || "", ...spellListFlags(row),

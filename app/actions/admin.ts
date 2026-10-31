@@ -1,6 +1,7 @@
 "use server";
 
 import { editorSearchEnglish } from "@/lib/search-english-server";
+import { refreshEnglishNames } from "@/lib/search-english-refresh";
 import { revalidatePath, updateTag } from "next/cache";
 import { draftMode, headers } from "next/headers";
 import { eq } from "drizzle-orm";
@@ -107,7 +108,7 @@ export async function createSpellAction(_prev: unknown, formData: FormData) {
   }));
   if (!result.ok) return result;
   revalidateSpell(id);
-  if (await english.apply("incantesimo", id)) refreshSearchIndex();
+  if (await english.apply("incantesimo", id)) refreshEnglishNames("incantesimo");
   return { ok: true as const, error: null, id };
 }
 
@@ -157,7 +158,7 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   const summary = summaryFromForm(formData);
   const sameSummary = summary === undefined || summary === (await getOriginalSummaries("spell", id)).has(id);
   if (!Object.keys(changes).length && sameEdition && sameSummary) {
-    if (await english.apply("incantesimo", id)) refreshSearchIndex();
+    if (await english.apply("incantesimo", id)) refreshEnglishNames("incantesimo");
     return { ok: true as const, error: null, id };
   }
   // A change that would take the SRD box away is saved only after «Salva comunque» (the editor sends «perdi-srd»).
@@ -183,7 +184,7 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   });
   if (!result.ok) return result;
   revalidateSpell(id);
-  if (await english.apply("incantesimo", id)) refreshSearchIndex();
+  if (await english.apply("incantesimo", id)) refreshEnglishNames("incantesimo");
   return { ok: true as const, error: null, id };
 }
 
@@ -203,10 +204,4 @@ export async function deleteSpellAction(formData: FormData): Promise<DeleteResul
   }
   revalidateSpell(id);
   return { ok: true };
-}
-
-/** The search index and «Nomi inglesi da verificare» after a change of the English name «solo ricerca». */
-function refreshSearchIndex() {
-  revalidatePath("/ricerca-indice.json");
-  revalidatePath("/admin/contenuti/nomi-inglesi");
 }

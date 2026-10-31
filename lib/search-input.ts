@@ -21,3 +21,6 @@ export const SEARCH_INPUT = {
   "data-lpignore": "true",
   "data-form-type": "other",
 } as const;
+
+/** The example text of every search field of the lists (PROMPT 38): one text everywhere; the search of the Home keeps its own. */
+export const LIST_SEARCH_PLACEHOLDER = "Cerca per nome…";

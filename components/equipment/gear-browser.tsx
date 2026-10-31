@@ -18,17 +18,18 @@ import { searchList } from "@/lib/fuzzy-search";
 import { ListSearch } from "@/components/equipment/list-search";
 import { englishShown, type EnglishShown } from "@/lib/english-match";
 import { InEnglish } from "@/components/search/in-english";
+import { FoundName } from "@/components/search/found-name";
 
 const weight = (peso?: string) => (peso === "—" ? "peso trascurabile" : peso);
 
-function GearRow({ row, edition, english }: { row: GearListRow; edition: EquipmentEdition; english?: EnglishShown }) {
+function GearRow({ row, edition, english, query, settled }: { row: GearListRow; edition: EquipmentEdition; english?: EnglishShown; query: string; settled: boolean }) {
   return (
     <li className="flex items-center border-b border-divider last:border-b-0">
       {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
       <AdminEditPencil target={{ kind: "contenuto", section: "avventura", id: row.id, edition }} name={row.nome} />
       <Link href={row.href} prefetch={false} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
-          <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <span className="block font-serif text-xl font-bold leading-tight"><FoundName name={row.nome} query={query} settled={settled} /></span>
           <InEnglish shown={english} className="mt-0.5" />
           {row.peso && <span className="block text-[14px] text-muted">{weight(row.peso)}</span>}
         </span>
@@ -40,19 +41,19 @@ function GearRow({ row, edition, english }: { row: GearListRow; edition: Equipme
 }
 
 /** A 2014 group (Focus arcano, Munizioni…): its rows inside one card that opens the group sheet. */
-function GroupRow({ row, edition, english }: { row: GearListRow; edition: EquipmentEdition; english?: EnglishShown }) {
+function GroupRow({ row, edition, english, query, settled }: { row: GearListRow; edition: EquipmentEdition; english?: EnglishShown; query: string; settled: boolean }) {
   return (
     <li className="flex items-start border-b border-divider last:border-b-0">
       <span className="pt-2.5 empty:hidden"><AdminEditPencil target={{ kind: "contenuto", section: "avventura", id: row.id, edition }} name={row.nome} /></span>
       <Link href={row.href} prefetch={false} className="block min-w-0 flex-1 px-3.5 py-2">
         <span className="flex min-h-10 items-center gap-3">
-          <span className="min-w-0 flex-1"><span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span><InEnglish shown={english} className="mt-0.5" /></span>
+          <span className="min-w-0 flex-1"><span className="block font-serif text-xl font-bold leading-tight"><FoundName name={row.nome} query={query} settled={settled} /></span><InEnglish shown={english} className="mt-0.5" /></span>
           <ChevronRight size={18} className="shrink-0 text-muted" aria-hidden="true" />
         </span>
         <span className="mb-1 block overflow-hidden rounded-lg border border-divider">
           {row.righe!.map(item => (
             <span key={item.nome} className="flex items-baseline gap-3 border-b border-divider px-3 py-1.5 text-[15px] last:border-b-0">
-              <span className="min-w-0 flex-1">{item.nome}<span className="block text-[13px] text-muted">{weight(item.peso)}</span></span>
+              <span className="min-w-0 flex-1"><FoundName name={item.nome} query={query} settled={settled} /><span className="block text-[13px] text-muted">{weight(item.peso)}</span></span>
               <span className="shrink-0 font-semibold">{item.costo}</span>
             </span>
           ))}
@@ -95,7 +96,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
         <SectionEditionPill section="avventura" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} />
       </div>
       {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo oggetto non c’è nel {missing}.</p>}
-      <ListSearch label="Cerca un oggetto" placeholder="Cerca: corda, torcia…" value={query} onChange={setQuery} />
+      <ListSearch label="Cerca un oggetto" value={query} onChange={setQuery} />
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "oggetto trovato" : "oggetti trovati"}`}</p>
       {result.suggestion && <DidYouMean name={result.suggestion.nome} onPick={setQuery} className="mt-2" />}
       {packs.length > 0 && !packsPart.shown && packsPart.soon && <SoonBlock id="avventura:dotazioni" title="Dotazioni" className="mt-6" />}
@@ -106,7 +107,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
             <p className="text-sm text-muted">Pacchetti di oggetti pronti per l’avventura</p>
           </div>
           <ul className="overflow-hidden rounded-b-[14px] border-2 border-t-0 border-amber bg-card">
-            {packs.map(row => <GearRow key={row.href} row={row} edition={edition} english={englishShown(row.nome, row.en, query, { settled })} />)}
+            {packs.map(row => <GearRow key={row.href} row={row} edition={edition} query={query} settled={settled} english={englishShown(row.nome, row.en, query, { settled })} />)}
           </ul>
         </section>
       )}
@@ -115,8 +116,8 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
         {found.length ? (
           <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
             {found.map(row => (row.righe
-              ? <GroupRow key={row.href} row={row} edition={edition} english={englishShown(row.nome, row.en, query, { settled })} />
-              : <GearRow key={row.href} row={row} edition={edition} english={englishShown(row.nome, row.en, query, { settled })} />))}
+              ? <GroupRow key={row.href} row={row} edition={edition} query={query} settled={settled} english={englishShown(row.nome, row.en, query, { settled })} />
+              : <GearRow key={row.href} row={row} edition={edition} query={query} settled={settled} english={englishShown(row.nome, row.en, query, { settled })} />))}
           </ul>
         ) : (
           <p className="mt-3 text-[15px]">Nessun oggetto con questo nome.</p>

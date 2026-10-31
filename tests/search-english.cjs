@@ -4,7 +4,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const {protectedNamesIn,searchKey,searchEnglishError,PROTECTED_NAMES}=require('../lib/search-english.ts');
 const {rowsOf,search}=require('../lib/search.ts');
-const {withSearchKeys,withSynonyms,foundInEnglish}=require('../lib/search-insights.ts');
+const {withSynonyms,foundInEnglish}=require('../lib/search-insights.ts');
 const {englishOf}=require('../lib/english-match.ts');
 
 // Protected: whole words, any case, the possessive too; the free part of a name is accepted.
@@ -46,22 +46,21 @@ assert.equal(proposals.incantesimi['scossa-sinaptica'],'Synaptic Static');
 assert.equal(proposals.incantesimi['calderone-ribollente-di-tasha'],'Bubbling Cauldron');
 assert.deepEqual(proposals.senzaProposta.incantesimi.sort(),['armatura-di-agathys','braccia-di-hadar','fame-di-hadar']);
 
-// The index: the key on the row of its card (either edition), found like a name, never shown.
-const index={v:1,sections:[{k:'incantesimi',t:'Incantesimi'}],rows:[[0,'Scossa sinaptica','Ammaliamento · liv. 4','/spell/scossa-sinaptica'],[0,'Benedizione','Ammaliamento · liv. 1','/spell/benedizione','/spell/benedizione-2014'],[0,'Bestia','liv. 2','/spell/bestia']],en:[['Bless',1]]};
-const keyed=withSearchKeys(index,[{href:'/spell/scossa-sinaptica',key:'synaptic static'},{href:'/spell/nascosta',key:'hidden card'},{href:'/spell/scossa-sinaptica',key:'synaptic static'}]);
-assert.deepEqual(keyed.k,[['synaptic static',0]],'one key, only for a row of the index');
-assert.deepEqual(withSearchKeys(index,[]),index);
-const hits=query=>search(keyed,rowsOf(keyed),query,{settled:true}).flatMap(group=>group.rows);
-for(const query of ['synaptic static','synaptic','Synaptic Static','synaptc static'])
-  assert.deepEqual(hits(query).map(row=>row.nome),['Scossa sinaptica'],query);
-const hit=hits('synaptic')[0];
-assert.equal(hit.english,undefined,'not an English name to show');assert.equal(hit.hidden,true);
-assert.equal(englishOf(hit.nome,hit.en,'synaptic'),undefined,'no line «in inglese»');
-assert.equal(JSON.stringify(keyed).includes('Synaptic'),false,'only the normalized key in the index');
-// The synonyms of the reserved area first: a synonym written as a key takes it out.
-const syn=withSynonyms(keyed,[{query:'synaptic static',href:'/spell/bestia'}]);
-assert.deepEqual(syn.k,[]);
-assert.deepEqual(search(syn,rowsOf(syn),'synaptic static',{settled:true}).flatMap(group=>group.rows).map(row=>row.nome),['Bestia']);
-// «Ricerche senza risultato»: a word found by a key leaves the list.
-assert.equal(foundInEnglish('synaptic static',keyed),true);assert.equal(foundInEnglish('synaptic static',index),false);
-console.log('Search English (solo ricerca): protected names refused, normalized keys, 50 proposals (3 left empty), found and never shown, synonyms first.');
+// PROMPT 38: an approved name is the English name of its card in the index, like the SRD ones: found partially and
+// with typos, shown «in inglese» with the letters found.
+const index={v:1,sections:[{k:'incantesimi',t:'Incantesimi'}],rows:[[0,'Scossa sinaptica','Ammaliamento · liv. 5','/spell/scossa-sinaptica'],[0,'Benedizione','Ammaliamento · liv. 1','/spell/benedizione','/spell/benedizione-2014'],[0,'Bestia','liv. 2','/spell/bestia']],en:[['Bless',1],['Synaptic Static',0]]};
+const hits=(idx,query)=>search(idx,rowsOf(idx),query,{settled:true}).flatMap(group=>group.rows);
+for(const query of ['synaptic static','synaptic','Synaptic Static','synaptc static','static'])
+  assert.deepEqual(hits(index,query).map(row=>row.nome),['Scossa sinaptica'],query);
+const hit=hits(index,'synaptic')[0];
+assert.equal(hit.english,true,'an English name to show');
+assert.deepEqual(englishOf(hit.nome,hit.en,'synaptic'),englishOf('Scossa sinaptica',['Synaptic Static'],'synaptic'));
+assert.ok(englishOf(hit.nome,hit.en,'synaptic'),'the line «in inglese»');
+// The synonyms of the reserved area first: a synonym written as the name takes it out.
+const syn=withSynonyms(index,[{query:'synaptic static',href:'/spell/bestia'}]);
+assert.deepEqual(syn.en,[['Bless',1]]);
+assert.deepEqual(hits(syn,'synaptic static').map(row=>row.nome),['Bestia']);
+// «Ricerche senza risultato»: a word found by an approved name leaves the list.
+assert.equal(foundInEnglish('synaptic static',index),true);
+assert.equal(foundInEnglish('synaptic static',{...index,en:[['Bless',1]]}),false);
+console.log('Search English (NO SRD): protected names refused, 50 proposals (3 left empty), approved names found and shown «in inglese», synonyms first.');
