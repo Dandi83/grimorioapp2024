@@ -16,10 +16,12 @@ import type { EquipmentEdition } from "@/lib/equipment-types";
 import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
 import { searchList } from "@/lib/fuzzy-search";
 import { SEARCH_INPUT } from "@/lib/search-input";
+import { englishShown, type EnglishShown } from "@/lib/english-match";
+import { InEnglish } from "@/components/search/in-english";
 
 const weight = (peso?: string) => (peso === "—" ? "peso trascurabile" : peso);
 
-function GearRow({ row, edition }: { row: GearListRow; edition: EquipmentEdition }) {
+function GearRow({ row, edition, english }: { row: GearListRow; edition: EquipmentEdition; english?: EnglishShown }) {
   return (
     <li className="flex items-center border-b border-divider last:border-b-0">
       {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
@@ -27,6 +29,7 @@ function GearRow({ row, edition }: { row: GearListRow; edition: EquipmentEdition
       <Link href={row.href} prefetch={false} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
           <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <InEnglish shown={english} className="mt-0.5" />
           {row.peso && <span className="block text-[14px] text-muted">{weight(row.peso)}</span>}
         </span>
         {row.prezzo && <span className="max-w-[45%] shrink-0 text-right text-[15px] font-semibold">{row.prezzo}</span>}
@@ -37,13 +40,13 @@ function GearRow({ row, edition }: { row: GearListRow; edition: EquipmentEdition
 }
 
 /** A 2014 group (Focus arcano, Munizioni…): its rows inside one card that opens the group sheet. */
-function GroupRow({ row, edition }: { row: GearListRow; edition: EquipmentEdition }) {
+function GroupRow({ row, edition, english }: { row: GearListRow; edition: EquipmentEdition; english?: EnglishShown }) {
   return (
     <li className="flex items-start border-b border-divider last:border-b-0">
       <span className="pt-2.5 empty:hidden"><AdminEditPencil target={{ kind: "contenuto", section: "avventura", id: row.id, edition }} name={row.nome} /></span>
       <Link href={row.href} prefetch={false} className="block min-w-0 flex-1 px-3.5 py-2">
         <span className="flex min-h-10 items-center gap-3">
-          <span className="min-w-0 flex-1 font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <span className="min-w-0 flex-1"><span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span><InEnglish shown={english} className="mt-0.5" /></span>
           <ChevronRight size={18} className="shrink-0 text-muted" aria-hidden="true" />
         </span>
         <span className="mb-1 block overflow-hidden rounded-lg border border-divider">
@@ -78,7 +81,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
   const items = rows[edition];
   // A group (armi, munizioni…) is found by its own name or by one of its rows; typos are tolerated (lib/fuzzy-search.ts).
   const settled = useSettledQuery(query);
-  const result = useMemo(() => searchList(items, query, row => [row.nome, ...(row.righe?.map(item => item.nome) ?? [])], { settled }), [items, query, settled]);
+  const result = useMemo(() => searchList(items, query, row => [row.nome, ...(row.en ? [row.en] : []), ...(row.righe?.map(item => item.nome) ?? [])], { settled }), [items, query, settled]);
   const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
   const packs = found.filter(row => row.dotazione);
   const count = items.reduce((sum, row) => sum + (row.righe?.length ?? 1), 0);
@@ -108,7 +111,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
             <p className="text-sm text-muted">Pacchetti di oggetti pronti per l’avventura</p>
           </div>
           <ul className="overflow-hidden rounded-b-[14px] border-2 border-t-0 border-amber bg-card">
-            {packs.map(row => <GearRow key={row.href} row={row} edition={edition} />)}
+            {packs.map(row => <GearRow key={row.href} row={row} edition={edition} english={englishShown(row.nome, row.en, query, { settled })} />)}
           </ul>
         </section>
       )}
@@ -116,7 +119,9 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
         <h2 id="tutti" className="border-b-2 border-primary px-0.5 pb-1.5 font-serif text-[22px] font-bold text-primary">Tutti gli oggetti</h2>
         {found.length ? (
           <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-            {found.map(row => (row.righe ? <GroupRow key={row.href} row={row} edition={edition} /> : <GearRow key={row.href} row={row} edition={edition} />))}
+            {found.map(row => (row.righe
+              ? <GroupRow key={row.href} row={row} edition={edition} english={englishShown(row.nome, row.en, query, { settled })} />
+              : <GearRow key={row.href} row={row} edition={edition} english={englishShown(row.nome, row.en, query, { settled })} />))}
           </ul>
         ) : (
           <p className="mt-3 text-[15px]">Nessun oggetto con questo nome.</p>

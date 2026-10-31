@@ -5,7 +5,8 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto');
 const names=require('../lib/data/nomi-inglesi-srd.json');
 const {englishName}=require('../lib/english-names.ts');
-const {englishShown,namesOf}=require('../lib/english-match.ts');
+const {englishShown,englishOf,namesOf}=require('../lib/english-match.ts');
+const {foldIndex,markRange}=require('../lib/highlight.ts');
 const {rowsOf,search}=require('../lib/search.ts');
 const {withSynonyms,foundInEnglish}=require('../lib/search-insights.ts');
 const {searchList}=require('../lib/fuzzy-search.ts');
@@ -34,6 +35,37 @@ for(const edition of ['2014','2024'])for(const [kind,pairs] of Object.entries(SA
   assert.ok(Object.keys(pairs).length>=30,`${edition} ${kind}: at least 30 names checked by hand`);
   for(const [id,en] of Object.entries(pairs))assert.equal(englishName(kind,edition,id),en,`${edition} ${kind} ${id}`);
 }
+// Equipment (PROMPT 35): at least 30 per edition checked by hand on the tables of the English PDFs (cost, weight, damage).
+const EQUIPMENT={
+ '2014':{armi:{'spada-lunga':'Longsword','ascia':'Handaxe','ascia-bipenne':'Greataxe','ascia-da-battaglia':'Battleaxe','balestra-leggera':'Crossbow, light','balestra-a-mano':'Crossbow, hand','pugnale':'Dagger','stocco':'Rapier','mazza-chiodata':'Morningstar','falcione':'Glaive','bastone-ferrato':'Quarterstaff','rete':'Net'},
+  armature:{'cotta-di-maglia':'Chain mail','giaco-di-maglia':'Chain shirt','corazza-a-strisce':'Splint','armatura-a-piastre':'Plate','cuoio-borchiato':'Studded leather','mezza-armatura':'Half plate','scudo':'Shield'},
+  avventura:{'acciarino-con-pietra-focaia':'Tinderbox','corda':'Rope, hempen (50 feet)','corda-di-seta':'Rope, silk (50 feet)','razioni':'Rations (1 day)','dotazione-da-avventuriero':'Dungeoneer’s Pack','dotazione-da-scassinatore':'Burglar’s Pack','lanterna-schermabile':'Lantern, hooded','borsa-del-guaritore':'Healer’s kit','piede-di-porco':'Crowbar','triboli':'Caltrops (bag of 20)','gavetta':'Mess kit','chiodo-da-rocciatore':'Piton','cote-per-affilare':'Whetstone','focus-arcano':'Arcane focus'},
+  strumenti:{'arnesi-da-scasso':'Thieves’ tools','borsa-da-erborista':'Herbalism kit','trucchi-per-il-camuffamento':'Disguise kit','strumenti-da-inventore':'Tinker’s tools','ciaramella':'Shawm','viola':'Viol','dadi':'Dice set'}},
+ '2024':{armi:{'spada-lunga':'Longsword','ascia':'Handaxe','balestra-leggera':'Light Crossbow','balestra-a-mano':'Hand Crossbow','balestra-pesante':'Heavy Crossbow','piccone-da-guerra':'War Pick','martello-leggero':'Light Hammer','moschetto':'Musket','pistola':'Pistol','tridente':'Trident','cerbottana':'Blowgun'},
+  armature:{'cotta-di-maglia':'Chain Mail','imbottita':'Padded Armor','cuoio':'Leather Armor','pelle':'Hide Armor','corazza-a-strisce':'Splint Armor','armatura-a-piastre':'Plate Armor','corazza-di-piastre':'Breastplate'},
+  avventura:{'acciarino-con-pietra-focaia':'Tinderbox','corda':'Rope','razioni':'Rations','dotazione-da-avventuriero':'Dungeoneer’s Pack','pergamena-magica':'Spell Scroll','lanterna-a-lente-sporgente':'Lantern, Bullseye','spago':'String','mappa':'Map','rete':'Net','tunica':'Robe','abiti-da-viaggiatore':'Clothes, Traveler’s','pozione-di-guarigione':'Potion of Healing'},
+  strumenti:{'arnesi-da-scasso':'Thieves’ Tools','gioco':'Gaming Set','strumento-musicale':'Musical Instrument','scorte-da-alchimista':'Alchemist’s Supplies','utensili-da-cuoco':'Cook’s Utensils','sostanze-da-avvelenatore':'Poisoner’s Kit'}},
+};
+for(const edition of ['2014','2024']){
+  const pairs=Object.entries(EQUIPMENT[edition]).flatMap(([kind,table])=>Object.entries(table).map(([id,en])=>[kind,id,en]));
+  assert.ok(pairs.length>=30,`${edition} equipment: at least 30 names checked by hand`);
+  for(const [kind,id,en] of pairs)assert.equal(englishName(kind,edition,id),en,`${edition} ${kind} ${id}`);
+}
+// Equipment: only the cards of the project's SRD files, every one with its name (no mounts or vehicles: no cards).
+{
+  const weapons=read('srd-weapons-it.json').armi,armor=read('srd-armor-it.json').armature;
+  const {gearListRows}=require('../lib/adventuring-gear-editions.ts'),{toolListRows}=require('../lib/tools-editions.ts');
+  const gear=gearListRows(),tools=toolListRows();
+  for(const edition of ['2014','2024']){
+    const ids={armi:weapons.filter(w=>w[edition]).map(w=>w.id),armature:armor.filter(a=>a[edition]).map(a=>a.id),avventura:gear[edition].map(r=>r.id),strumenti:tools[edition].map(r=>r.id)};
+    for(const [kind,list] of Object.entries(ids)){
+      assert.deepEqual(Object.keys(names[edition][kind]).sort(),[...list].sort(),`${edition} ${kind}: every SRD item, nothing else`);
+    }
+    assert.ok(gear[edition].every(row=>row.en),'the rows of the list carry the English name');
+    assert.ok(tools[edition].every(row=>row.en));
+  }
+}
+
 // Conditions, classes and subclasses: all of them.
 const CONDITIONS={accecato:'Blinded',affascinato:'Charmed',afferrato:'Grappled',assordato:'Deafened',avvelenato:'Poisoned',incapacitato:'Incapacitated',indebolimento:'Exhaustion',invisibile:'Invisible',paralizzato:'Paralyzed',pietrificato:'Petrified','privo-di-sensi':'Unconscious',prono:'Prone',spaventato:'Frightened',stordito:'Stunned',trattenuto:'Restrained'};
 for(const [it,en] of Object.entries(CONDITIONS)){assert.equal(englishName('condizioni','2024',`condizioni-${it}`),en);assert.equal(englishName('condizioni','2014',`condizioni-${it}-2014`),en);}
@@ -70,17 +102,37 @@ for(const word of ['Mind Flayer','Beholder','Illithid','Tasha','Mordenkainen','B
 assert.equal(englishName('incantesimi','2024','scheggia-della-mente'),undefined,'an original summary (not SRD) has no English name');
 assert.equal(englishName('incantesimi','2014','benedizione'),undefined,'the id of the other edition gives nothing');
 assert.equal(englishName('mostri','2024','toString'),undefined,'no inherited key');
+for(const edition of ['2014','2024'])for(const kind of ['armi','armature','avventura','strumenti'])counts[`${edition} ${kind}`]=Object.keys(names[edition][kind]).length;
 console.log('English names per type and edition:',JSON.stringify(counts),'classes 12+12, subclasses 12+12');
 
 // The lists of a section: «bless» finds Benedizione and says «in inglese: Bless»; the Italian name searched says nothing.
 const spells=[{nome:'Benedizione',en:'Bless'},{nome:'Palla di fuoco',en:'Fireball'},{nome:'Vuoto mentale',en:'Mind Blank'},{nome:'Scheggia della mente'}];
 const find=query=>searchList(spells,query,row=>namesOf(row.nome,row.en),{settled:true}).exact.map(row=>row.nome);
 assert.deepEqual(find('bless'),['Benedizione']);assert.deepEqual(find('fireball'),['Palla di fuoco']);assert.deepEqual(find('mind'),['Vuoto mentale']);
-assert.equal(englishShown('Benedizione','Bless','bless'),'Bless');
-assert.equal(englishShown('Benedizione','Bless','benedizione'),undefined);
-assert.equal(englishShown('Palla di fuoco','Fireball','palla'),undefined);
+// The line «in inglese» with the letters found (PROMPT 35): start and length on the searched form of the name.
+const marked=(shown)=>{if(!shown)return undefined;const r=markRange(shown.name,shown.start,shown.length);return r?shown.name.slice(0,r[0])+'['+shown.name.slice(r[0],r[1])+']'+shown.name.slice(r[1]):shown.name;};
+assert.equal(marked(englishShown('Benedizione','Bless','bless')),'[Bless]');
+assert.equal(marked(englishShown('Dardo di fuoco','Fire Bolt','fire')),'[Fire] Bolt');
+assert.equal(marked(englishShown('Palla di fuoco','Fireball','fire')),'[Fire]ball','start of a word');
+assert.equal(marked(englishShown('Luminescenza','Faerie Fire','fire')),'Faerie [Fire]','a word in the middle');
+assert.equal(marked(englishShown('Luminescenza','Faerie Fire','fire',{wordStart:true})),'Faerie [Fire]');
+assert.equal(marked(englishShown('Palla di fuoco','Fireball','ball')),'Fire[ball]','inside a word, as the lists search');
+assert.equal(englishShown('Palla di fuoco','Fireball','ball',{wordStart:true}),undefined,'the Home: only at the start of a word');
+assert.equal(marked(englishShown('Spia','Spy','SPY')),'[Spy]','capitals ignored');
+assert.equal(marked(englishShown('Arnesi da scasso','Thieves’ Tools','thieves tools')),'[Thieves’ Tools]','apostrophe as a space');
+assert.equal(marked(englishShown('Arnesi da scasso','Thieves’ Tools','tools')),'Thieves’ [Tools]','after the apostrophe, the letters as written');
+assert.equal(marked(englishShown('Strumenti da fabbro','Smith’s Tools','smith')),'[Smith]’s Tools');
+assert.equal(marked(englishShown('Esempio','Évocation','evoc')),'[Évoc]ation','accents ignored');
+assert.equal(marked(englishShown('Spada lunga','Longsword','longsowrd',{settled:true})),'Longsword','a typo: found, nothing marked');
+assert.equal(englishShown('Palla di fuoco','Fireball','palla'),undefined,'the Italian name only');
 assert.equal(englishShown('Scheggia della mente',undefined,'mind'),undefined);
-assert.equal(englishShown('Spia','Spy','spy'),'Spy');
+assert.equal(englishShown('Lich','Lich','lich'),undefined,'the same name: no line');
+assert.equal(englishShown('Ascia','Handaxe','ascia'),undefined);
+// Both names found: the line too («cotta» → Italian; «mail» → English): a query in both languages marks both.
+assert.equal(marked(englishShown('Mail da prova','Chain mail','mail')),'Chain [mail]');
+assert.equal(marked(englishOf('Benedizione',['Bless','Blessing'],'bless')),'[Bless]','the first English name found');
+assert.deepEqual(foldIndex('Thieves’ Tools').slice(7,10),[7,9,10],'the apostrophe stands for the space, then T and o');
+assert.deepEqual(foldIndex(' A  b'),[1,2,4]);
 
 // The index of the Home: the English names are rows of their own, found and marked; a synonym of the reserved area
 // written the same way wins and the English name leaves the index.

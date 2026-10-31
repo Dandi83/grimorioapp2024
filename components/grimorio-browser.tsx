@@ -17,7 +17,7 @@ import { useEditions } from "@/components/sections/parts-context";
 import { ActiveFilters, CatalogTitle, FilterGroup, FilterSheet, SearchAndFilters, type ActiveFilter } from "@/components/catalog-ui";
 import { CASTING_TIMES, CASTING_TIME_LABEL, capitalizeWords, castingTimeGroup, castingTimeShort, type CastingTime, type SpellListItem, type SpellsMeta } from "@/lib/spells-types";
 import { useReportFilters, useReportSearch } from "@/components/statistics/use-report-search";
-import { englishShown, namesOf } from "@/lib/english-match";
+import { englishShown, namesOf, type EnglishShown } from "@/lib/english-match";
 import { InEnglish } from "@/components/search/in-english";
 import { searchList } from "@/lib/fuzzy-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
@@ -129,7 +129,9 @@ export function GrimorioBrowser({
     lastKey.current = key;
     setLimit(PAGE_SIZE);
   }, [key]);
-  const visible = results.slice(0, limit);
+  const visible = useMemo(() => results.slice(0, limit), [results, limit]);
+  // The line «in inglese» of each row shown, kept between renders (a star toggled re-renders one row only).
+  const englishById = useMemo(() => new Map(visible.map(spell => [spell.id, englishShown(spell.nome_italiano, spell.en, deferredQ, { settled })])), [visible, deferredQ, settled]);
 
   // Computer column: a card opened from a direct link shows its row, in its edition and page.
   const selectedId = pane?.selectedId;
@@ -238,7 +240,7 @@ export function GrimorioBrowser({
                     <span className="text-[15px] text-muted">{count} {count === 1 ? "incantesimo" : "incantesimi"}</span>
                   </div>
                 )}
-                <GrimorioRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggleFavorite} selected={pane?.selectedId === spell.id} noSrd={noSrd?.has(spell.id) ?? false} english={englishShown(spell.nome_italiano, spell.en, deferredQ, { settled })} />
+                <GrimorioRow spell={spell} fav={isFavorite(spell.id)} onToggle={toggleFavorite} selected={pane?.selectedId === spell.id} noSrd={noSrd?.has(spell.id) ?? false} english={englishById.get(spell.id)} />
               </li>
             );
           })}
@@ -261,7 +263,7 @@ export function GrimorioBrowser({
 
 // Memoized: toggling one star re-renders only that row.
 /** noSrd: the administrator sees «*» after the name of a NO SRD card (components/admin-edit/no-srd-mark.tsx). */
-const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false, noSrd = false, english }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean; noSrd?: boolean; english?: string }) {
+const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected = false, noSrd = false, english }: { spell: SpellListItem; fav: boolean; onToggle: (id: string) => void; selected?: boolean; noSrd?: boolean; english?: EnglishShown }) {
   const href = spellHref(spell.id);
   const prefetch = useIntentPrefetch(href);
   const details = [spell.scuola, castingTimeShort(spell.tempo_di_lancio)].filter(Boolean).join(" · ");
@@ -269,7 +271,7 @@ const GrimorioRow = memo(function GrimorioRow({ spell, fav, onToggle, selected =
     <div className={`flex min-h-[62px] items-center gap-2 border-b border-divider${selected ? " -mx-3 rounded-[10px] bg-primary-faint px-3 shadow-[inset_3px_0_0_var(--color-primary)]" : ""}`}>
       <Link href={href} prefetch={false} onTouchStart={prefetch} onMouseEnter={prefetch} aria-current={selected ? "page" : undefined} className="min-w-0 flex-1 py-2.5">
         <span className="block break-words font-serif text-[21px] font-bold leading-tight text-foreground">{spellName(spell.nome_italiano, spell.edizione)}{noSrd && <NoSrdMark />}{spell.nascosta && <> <HiddenTag /></>}</span>
-        <InEnglish name={english} />
+        <InEnglish shown={english} />
         {details && <span className="block text-[15px] text-muted">{details}</span>}
         {(spell.concentrazione || spell.rituale) && (
           <span className="mt-1 flex flex-wrap gap-1.5">
