@@ -88,25 +88,25 @@ export const SEARCH_SOURCES: SearchSource[] = [
     // Corrected names and costs (lib/corrected-content.ts): the search finds what the cards show.
     rows: async () => weaponListItems((await getCorrectedWeapons()).weapons).flatMap(weapon => (["2024", "2014"] as const).flatMap(edition => {
       const item = weapon.editions[edition];
-      return item ? [{ nome: item.nome, label: `${WEAPON_GROUP_NAMES[weapon.gruppo]} · ${item.costo}`, href: `/equipaggiamento/armi/${weapon.id}`, edizione: edition }] : [];
+      return item ? [{ nome: item.nome, label: `${WEAPON_GROUP_NAMES[weapon.gruppo]} · ${item.costo}`, href: `/equipaggiamento/armi/${weapon.id}`, edizione: edition, en: englishName("armi", edition, weapon.id) }] : [];
     })),
   },
   {
     section: "equipaggiamento", title: "Equipaggiamento",
     rows: async () => armorListItems((await getCorrectedArmors()).list).flatMap(armor => (["2024", "2014"] as const).map(edition => ({
       nome: armor.editions[edition].nome, label: `${ARMOR_CATEGORY_NAMES[armor.categoria]} · ${armor.editions[edition].costo}`,
-      href: `/equipaggiamento/armature/${armor.id}`, edizione: edition,
+      href: `/equipaggiamento/armature/${armor.id}`, edizione: edition, en: englishName("armature", edition, armor.id),
     }))),
   },
   {
     section: "equipaggiamento", title: "Equipaggiamento",
     rows: async () => bothEditions(gearListRows((await getCorrectedGear()).list), (row, edition) => ({
-      nome: row.nome, label: [row.dotazione ? "Dotazione" : "Equipaggiamento d’avventura", row.prezzo].filter(Boolean).join(" · "), href: row.href, edizione: edition,
+      nome: row.nome, label: [row.dotazione ? "Dotazione" : "Equipaggiamento d’avventura", row.prezzo].filter(Boolean).join(" · "), href: row.href, edizione: edition, en: row.en,
     })),
   },
   {
     section: "equipaggiamento", title: "Equipaggiamento",
-    rows: async () => bothEditions(toolListRows((await getCorrectedTools()).list), (row, edition) => ({ nome: row.nome, label: [row.gruppo, row.costo].filter(Boolean).join(" · "), href: row.href, edizione: edition })),
+    rows: async () => bothEditions(toolListRows((await getCorrectedTools()).list), (row, edition) => ({ nome: row.nome, label: [row.gruppo, row.costo].filter(Boolean).join(" · "), href: row.href, edizione: edition, en: row.en })),
   },
   {
     section: "oggetti-magici", title: "Oggetti magici",

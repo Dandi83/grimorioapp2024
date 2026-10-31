@@ -21,7 +21,7 @@ export interface SearchIndex {
 export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "manuale";
 
 /** alias: a synonym or the English name the row is found by (the name shown stays its own); english: the alias is the English name. */
-interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014"; alias?: string; english?: true }
+interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014"; alias?: string; english?: true; en?: string[] }
 
 /** start: where the query starts in the name, -1 for an approximate match (a typo, lib/fuzzy-search.ts). */
 export interface SearchMatch extends SearchRow { start: number; kind: MatchKind; typos: number; length?: number }
@@ -51,8 +51,13 @@ export function matchStart(name: string, query: string): number {
 }
 
 export function rowsOf(index: SearchIndex): SearchRow[] {
-  const rows: SearchRow[] = index.rows.map(([section, nome, label, href, href2014, solo]) => ({
+  // The English names of each result (PROMPT 35): the line «in inglese» marks them also when the Italian name is found.
+  // A result of both editions: the 2024 name first, then the 2014 one when it differs (lib/search-index.ts).
+  const english = new Map<number, string[]>();
+  for (const [name, at] of index.en ?? []) english.set(at, [...(english.get(at) ?? []), name]);
+  const rows: SearchRow[] = index.rows.map(([section, nome, label, href, href2014, solo], at) => ({
     section: index.sections[section].k, nome, label, href, ...(href2014 ? { href2014 } : {}), ...(solo === "2024" || solo === "2014" ? { solo } : {}),
+    ...(english.has(at) ? { en: english.get(at) } : {}),
   }));
   return [
     ...rows,

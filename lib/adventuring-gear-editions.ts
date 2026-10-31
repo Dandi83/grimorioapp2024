@@ -1,4 +1,5 @@
 import repairs from "./data/adventuring-gear-repairs-20261021.json";
+import { englishName } from "./english-names";
 import { gearItems, type GearItem } from "./adventuring-gear";
 import { gear2014Items, gearKey, type Gear2014Item } from "./adventuring-gear-2014";
 import type { EquipmentEdition } from "./equipment-types";
@@ -82,12 +83,15 @@ export interface GearListRow {
   dotazione: boolean;
   /** Rows of a 2014 group, shown inside its card. */
   righe?: { nome: string; costo: string; peso: string }[];
+  /** The official English name of the SRD item (lib/english-names.ts, PROMPT 35): found by the search, shown «in inglese». */
+  en?: string;
 }
 
 export function gearListRows(list: GearEntry[] = gearEntries): Record<EquipmentEdition, GearListRow[]> {
   const rows = (edition: EquipmentEdition) => list.filter(entry => entry.editions[edition]).map(entry => {
     const item = entry.editions[edition]!;
-    const base = { id: entry.id, href: gearHref(entry, edition), nome: item.nome, dotazione: item.dotazione };
+    const en = englishName("avventura", edition, entry.id);
+    const base = { id: entry.id, href: gearHref(entry, edition), nome: item.nome, dotazione: item.dotazione, ...(en ? { en } : {}) };
     if (edition === "2024") { const it = item as GearItem; return { ...base, prezzo: it.prezzo, ...(it.peso ? { peso: it.peso } : {}) }; }
     const it = item as Gear2014Item;
     return { ...base, ...(it.costo ? { prezzo: it.costo } : {}), ...(it.peso ? { peso: it.peso } : {}), ...(it.righe ? { righe: it.righe } : {}) };

@@ -29,7 +29,7 @@ function ItemRow({ row, query, settled }: { row: MagicItemListRow; query: string
       <Link href={row.href} prefetch={false} className="flex min-h-14 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
           <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
-          <InEnglish name={englishShown(row.nome, row.en, query, { settled })} className="mt-0.5" />
+          <InEnglish shown={englishShown(row.nome, row.en, query, { settled })} className="mt-0.5" />
           <span className="mt-1 flex flex-wrap items-center gap-1.5">
             <span className="text-[14px] text-muted">{row.tipo}</span>
             <RarityChip printed={row.rarita} categories={row.rarita_categorie} />

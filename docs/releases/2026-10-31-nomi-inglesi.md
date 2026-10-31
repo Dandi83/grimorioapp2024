@@ -52,3 +52,17 @@ le sintesi originali NO SRD (es. «Scheggia della mente»), homebrew, equipaggia
   (`foundInEnglish`), anche per le ricerche fatte prima del rilascio.
 - Controlli: `tests/english-names.cjs` (campione di almeno 30 nomi per tipo ed edizione controllati a mano, solo
   schede SRD, nessun doppione), `e2e/nomi-inglesi.spec.mjs` (390 e 1280, 2014 e 2024).
+
+## PROMPT 35 (31 ottobre 2026): evidenziazione ed equipaggiamento
+
+- La riga «in inglese» evidenzia le lettere trovate con lo stesso componente del nome italiano della Home
+  (`components/search/marked.tsx`): stesse corrispondenze (`matchName`), maiuscole, accenti, ricerca tollerante
+  (con un errore di battitura la voce è trovata ma nulla è evidenziato, come per l'italiano). Le posizioni sono
+  calcolate sul nome «cercato» e riportate sul nome scritto (`lib/highlight.ts`: «Thieves’ Tools»).
+- La riga compare quando la ricerca trova il nome inglese, anche se trova pure quello italiano (evidenziati
+  entrambi); non compare per nomi uguali nelle due lingue («Lich») né per un errore di battitura sul nome inglese se
+  l'italiano è trovato senza errori. Nella Home, per una voce delle due edizioni, prima il nome inglese dell'edizione
+  scelta.
+- Equipaggiamento: armi, armature, oggetti d'avventura e strumenti abbinati riga per riga alle tabelle dei PDF
+  (costo, peso, danni coincidenti). 2014: 37 + 13 + 94 + 35 = 179; 2024: 38 + 13 + 81 + 25 = 157. Nessuna voce senza
+  corrispondenza. Cavalcature e veicoli non hanno schede nel sito: nessun nome.

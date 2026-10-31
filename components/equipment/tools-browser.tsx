@@ -13,13 +13,15 @@ import type { EquipmentEdition } from "@/lib/equipment-types";
 import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
 import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
 import { SEARCH_INPUT } from "@/lib/search-input";
+import { englishShown, namesOf, type EnglishShown } from "@/lib/english-match";
+import { InEnglish } from "@/components/search/in-english";
 
 const GROUPS: Record<EquipmentEdition, [string, string][]> = {
   "2024": [["artigiano", "Strumenti da artigiano"], ["altri", "Altri strumenti"]],
   "2014": [["artigiano", "Strumenti da artigiano"], ["giochi", "Giochi"], ["musicali", "Strumenti musicali"], ["altri", "Altri strumenti"]],
 };
 
-function ToolRow({ row, edition }: { row: ToolListRow; edition: EquipmentEdition }) {
+function ToolRow({ row, edition, english }: { row: ToolListRow; edition: EquipmentEdition; english?: EnglishShown }) {
   return (
     <li className="flex items-center border-b border-divider last:border-b-0">
       {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
@@ -27,6 +29,7 @@ function ToolRow({ row, edition }: { row: ToolListRow; edition: EquipmentEdition
       <Link href={row.href} prefetch={false} className="flex min-h-14 min-w-0 flex-1 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
           <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <InEnglish shown={english} className="mt-0.5" />
           <span className="block text-[14px] text-muted">{row.peso === "—" ? "peso trascurabile" : row.peso}</span>
         </span>
         <span className="max-w-[40%] shrink-0 text-right text-[15px] font-semibold">{row.costo}</span>
@@ -60,7 +63,7 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
   const items = rows[edition];
   // Typos tolerated (lib/fuzzy-search.ts): the exact names first in each group, then the similar ones.
   const settled = useSettledQuery(query);
-  const result = useMemo(() => searchList(items, query, row => row.nome, { settled }), [items, query, settled]);
+  const result = useMemo(() => searchList(items, query, row => namesOf(row.nome, row.en), { settled }), [items, query, settled]);
   const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
@@ -90,7 +93,7 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
               <h2 id={`gruppo-${key}`} className="border-b-2 border-primary px-0.5 pb-1.5 font-serif text-[22px] font-bold text-primary">{title}</h2>
               {!needle && groupTexts[edition][key]}
               <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-                {group.map(row => <ToolRow key={row.href} row={row} edition={edition} />)}
+                {group.map(row => <ToolRow key={row.href} row={row} edition={edition} english={englishShown(row.nome, row.en, query, { settled })} />)}
               </ul>
             </section>
           );

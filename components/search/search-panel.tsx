@@ -12,6 +12,10 @@ import { useReportSearch } from "@/components/statistics/use-report-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 import { SEARCH_INPUT } from "@/lib/search-input";
 import { InEnglish } from "@/components/search/in-english";
+import { Marked } from "@/components/search/marked";
+import { englishOf } from "@/lib/english-match";
+import { matchName } from "@/lib/fuzzy-search";
+import { typedLength } from "@/lib/highlight";
 
 export interface SearchPanelProps {
   initialQuery: string;
@@ -29,23 +33,18 @@ const loadIndex = () => (indexPromise ??= fetch("/ricerca-indice.json").then(res
   return response.json() as Promise<SearchIndex>;
 }).catch(error => { indexPromise = undefined; throw error; }));
 
-function Highlighted({ row, length: typed }: { row: SearchMatch; length: number }) {
-  if (row.start < 0) return <>{row.nome}</>;
+/** The Italian name with the letters found marked; a result found by a synonym or an English name marks its Italian name only when the query finds it too. */
+function Highlighted({ row, query, settled }: { row: SearchMatch; query: string; settled: boolean }) {
+  const match = row.alias ? matchName(row.nome, query, { wordStart: true, settled }) : row;
   // Singular and plural: the word of the name, not the length of the typed one.
-  const length = row.length ?? typed;
-  return (
-    <>
-      {row.nome.slice(0, row.start)}
-      <mark className="rounded-[3px] bg-[#F6E2A8] font-bold text-primary">{row.nome.slice(row.start, row.start + length)}</mark>
-      {row.nome.slice(row.start + length)}
-    </>
-  );
+  return match ? <Marked text={row.nome} start={match.start} length={match.length ?? typedLength(query)} /> : <>{row.nome}</>;
 }
 
 /** Results of one list, grouped by section, each group with «Mostra tutti». */
-function Groups({ groups, query, edition, prefix, onExpand }: {
+function Groups({ groups, query, settled, edition, prefix, onExpand }: {
   groups: SearchGroup[];
   query: string;
+  settled: boolean;
   edition: string;
   prefix: string;
   onExpand: (section: SearchSectionKey) => void;
@@ -61,8 +60,8 @@ function Groups({ groups, query, edition, prefix, onExpand }: {
           <li key={row.href + row.nome} className="border-t border-divider first:border-t-0">
             <Link href={rowHref(row, edition)} prefetch={false} className="flex min-h-[52px] items-center gap-2.5 px-3.5 py-1.5">
               <span className="min-w-0 flex-1">
-                <span className="block text-base leading-tight text-foreground"><Highlighted row={row} length={query.trim().replace(/\s+/g, " ").length} /></span>
-                {row.english && <InEnglish name={row.alias} />}
+                <span className="block text-base leading-tight text-foreground"><Highlighted row={row} query={query} settled={settled} /></span>
+                <InEnglish shown={englishOf(row.nome, edition === "2014" && row.en ? [...row.en].reverse() : row.en, query, { wordStart: true, settled })} />
                 {[HOMEBREW_LABEL, GRIMORIO_LABEL].some(label => row.label.startsWith(`${label} · `))
                   ? <span className="flex flex-wrap items-center gap-1.5 text-[14px] text-muted"><HomebrewPill ours={row.label.startsWith(`${GRIMORIO_LABEL} · `)} />{row.label.slice(row.label.indexOf(" · ") + 3)}</span>
                   : <span className="block text-[14px] text-muted">{row.label}</span>}
@@ -188,7 +187,7 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
           {typed > 0 && suggestion && <DidYouMean name={suggestion} onPick={choose} className="mt-3" />}
           {/* Only similar names (no exact result in any section): never mixed with the right ones. */}
           {typed > 0 && groups.length > 0 && groups.every(group => !group.exact) && <SimilarResultsHeading className="!mt-4 !mb-0" />}
-          <Groups groups={groups} query={query} edition={edition} prefix="gruppo" onExpand={key => setExpanded(list => [...list, key])} />
+          <Groups groups={groups} query={query} settled={settled} edition={edition} prefix="gruppo" onExpand={key => setExpanded(list => [...list, key])} />
           {typed > 0 && otherTotal > 0 && !alsoOther && (
             <button type="button" onClick={() => setAlsoOther(true)}
               className="mt-4 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-[12px] border-[1.5px] border-chip-border bg-card px-4 text-[15px] font-bold text-primary">
@@ -198,7 +197,7 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
           {typed > 0 && alsoOther && otherTotal > 0 && (
             <div className="mt-6 border-t-[1.5px] border-divider pt-2">
               <p className="px-0.5 pt-2 text-[14px] font-bold uppercase tracking-[0.06em] text-muted">Solo nel {other}</p>
-              <Groups groups={otherGroups} query={query} edition={edition} prefix="altro" onExpand={key => setExpanded(list => [...list, key])} />
+              <Groups groups={otherGroups} query={query} settled={settled} edition={edition} prefix="altro" onExpand={key => setExpanded(list => [...list, key])} />
             </div>
           )}
         </div>
