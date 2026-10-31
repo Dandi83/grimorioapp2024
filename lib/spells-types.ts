@@ -127,6 +127,8 @@ export type SpellListItem = Pick<Spell, "id" | "nome_italiano" | "livello_num" |
   edizione?: "2014";
   /** Hidden from the public with the eye of the admin area: present only in the administrator's lists and in Preferiti. */
   nascosta?: true;
+  /** The official English name of an SRD spell (lib/english-names.ts): found by the search, shown «in inglese». */
+  en?: string;
 };
 
 /** Light list fields derived from the stored text (duration and casting time are not changed). */

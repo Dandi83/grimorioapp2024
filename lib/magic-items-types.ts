@@ -1,6 +1,7 @@
 // Pure types and helpers of the Oggetti magici section: safe in client components.
 // The list carries names and the printed type line only; item texts stay on the server.
 import { searchList } from "./fuzzy-search";
+import { namesOf } from "./english-match";
 
 export type MagicItemEdition = "2014" | "2024";
 
@@ -38,6 +39,8 @@ export function rarityCategories(printed: string): MagicItemRarityChip[] {
 /** Light row of the list: no texts. */
 export interface MagicItemListRow {
   id: string;
+  /** The official English name of the SRD item (lib/english-names.ts): found by the search, shown «in inglese». */
+  en?: string;
   href: string;
   nome: string;
   tipo: MagicItemType;
@@ -63,7 +66,7 @@ function matchesMagicItem(row: MagicItemListRow, filters: MagicItemFilters): boo
  * contains), the similar ones with typos apart (lib/fuzzy-search.ts), and «Forse cercavi» when none is exact.
  */
 export function findMagicItems(rows: MagicItemListRow[], query: string, filters: MagicItemFilters, settled = true) {
-  return searchList(rows.filter(row => matchesMagicItem(row, filters)), query, row => row.nome, { settled });
+  return searchList(rows.filter(row => matchesMagicItem(row, filters)), query, row => namesOf(row.nome, row.en), { settled });
 }
 
 /** The rows of the filters matching the name: exact ones first, then those with typos. */

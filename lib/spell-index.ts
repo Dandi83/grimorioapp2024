@@ -13,6 +13,7 @@ import { displaySpellRow } from "./spell-display-row";
 import { MERGED_SPELL_IDS } from "./monster-id-aliases";
 import { parseLivello, spellListFlags, type SpellListItem } from "./spells-types";
 import { getContentEditions } from "./content-editions";
+import { englishName } from "./english-names";
 
 /**
  * Changes whenever the project files change what the list shows (new 2014 blocks, SRD additions).
@@ -21,7 +22,7 @@ import { getContentEditions } from "./content-editions";
 function projectCatalogVersion(): string {
   const listed = withLegacySpells(previewSpellRows([], "production"), "production")
     .map(({ id, nome_italiano, livello, tempo_di_lancio, durata }) => [id, nome_italiano, livello, tempo_di_lancio, durata]);
-  const text = JSON.stringify([listed, catalogRepairs, MERGED_SPELL_IDS]);
+  const text = JSON.stringify([listed, catalogRepairs, MERGED_SPELL_IDS, "2026-10-31 nomi inglesi"]);
   let hash = 2166136261; // FNV-1a
   for (let i = 0; i < text.length; i++) hash = Math.imul(hash ^ text.charCodeAt(i), 16777619);
   return (hash >>> 0).toString(36);
@@ -44,10 +45,12 @@ export const getSpellIndex = unstable_cache(
     return withLegacySpells(previewSpellRows(listed, process.env.VERCEL_ENV), process.env.VERCEL_ENV).map(stored => {
       const row = displaySpellRow(stored);
       const { livello_num, scuola, classi } = parseLivello(row.livello || "");
+      const legacy = (editions.get(row.id) ?? (isLegacySpellId(row.id) ? "2014" : originalEdition(row.id))) === "2014";
+      const en = englishName("incantesimi", legacy ? "2014" : "2024", row.id);
       return {
         id: row.id, nome_italiano: row.nome_italiano, livello_num, scuola, classi,
         tempo_di_lancio: row.tempo_di_lancio || "", ...spellListFlags(row),
-        ...((editions.get(row.id) ?? (isLegacySpellId(row.id) ? "2014" : originalEdition(row.id))) === "2014" ? { edizione: "2014" as const } : {}),
+        ...(legacy ? { edizione: "2014" as const } : {}), ...(en ? { en } : {}),
       };
     });
   },

@@ -11,6 +11,7 @@ import { otherEdition } from "@/lib/user-edition";
 import { useReportSearch } from "@/components/statistics/use-report-search";
 import { DidYouMean, SimilarResultsHeading, usePreparedNames, useSettledQuery } from "@/components/search/did-you-mean";
 import { SEARCH_INPUT } from "@/lib/search-input";
+import { InEnglish } from "@/components/search/in-english";
 
 export interface SearchPanelProps {
   initialQuery: string;
@@ -61,6 +62,7 @@ function Groups({ groups, query, edition, prefix, onExpand }: {
             <Link href={rowHref(row, edition)} prefetch={false} className="flex min-h-[52px] items-center gap-2.5 px-3.5 py-1.5">
               <span className="min-w-0 flex-1">
                 <span className="block text-base leading-tight text-foreground"><Highlighted row={row} length={query.trim().replace(/\s+/g, " ").length} /></span>
+                {row.english && <InEnglish name={row.alias} />}
                 {[HOMEBREW_LABEL, GRIMORIO_LABEL].some(label => row.label.startsWith(`${label} · `))
                   ? <span className="flex flex-wrap items-center gap-1.5 text-[14px] text-muted"><HomebrewPill ours={row.label.startsWith(`${GRIMORIO_LABEL} · `)} />{row.label.slice(row.label.indexOf(" · ") + 3)}</span>
                   : <span className="block text-[14px] text-muted">{row.label}</span>}
@@ -118,7 +120,7 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
   const settled = useSettledQuery(query);
   const ownGroups = useMemo(() => (index ? search(index, rows.own, query, { section, expanded, settled }) : []), [index, rows, query, section, expanded, settled]);
   const otherGroups = useMemo(() => (index ? search(index, rows.other, query, { section, expanded, settled }) : []), [index, rows, query, section, expanded, settled]);
-  usePreparedNames(() => rows.own.concat(rows.other).map(row => row.nome), rows);
+  usePreparedNames(() => rows.own.concat(rows.other).map(row => row.alias ?? row.nome), rows);
   // A name found exactly in the other edition beats the similar ones of this edition («cesto»: Cesto in 2024, not
   // «Custodia…» in 2014): «Nessun risultato nel 2014» and «Cerca anche nel 2024», as before the typos.
   const exactOf = (list: SearchGroup[]) => list.reduce((sum, group) => sum + group.exact, 0);

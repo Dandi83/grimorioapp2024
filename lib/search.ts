@@ -14,12 +14,14 @@ export interface SearchIndex {
   rows: [number, string, string, string, string?, ("2024" | "2014")?][];
   /** Synonyms of the reserved area (PROMPT 31): [the word searched, the position of the row it finds]. */
   syn?: [string, number][];
+  /** Official English names of the SRD cards (PROMPT 33): [the name, the position of its row], shown «in inglese». */
+  en?: [string, number][];
 }
 
 export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "manuale";
 
-/** alias: a synonym the row is found by (the name shown stays its own). */
-interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014"; alias?: string }
+/** alias: a synonym or the English name the row is found by (the name shown stays its own); english: the alias is the English name. */
+interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014"; alias?: string; english?: true }
 
 /** start: where the query starts in the name, -1 for an approximate match (a typo, lib/fuzzy-search.ts). */
 export interface SearchMatch extends SearchRow { start: number; kind: MatchKind; typos: number; length?: number }
@@ -52,7 +54,11 @@ export function rowsOf(index: SearchIndex): SearchRow[] {
   const rows: SearchRow[] = index.rows.map(([section, nome, label, href, href2014, solo]) => ({
     section: index.sections[section].k, nome, label, href, ...(href2014 ? { href2014 } : {}), ...(solo === "2024" || solo === "2014" ? { solo } : {}),
   }));
-  return [...rows, ...(index.syn ?? []).flatMap(([alias, at]) => (rows[at] ? [{ ...rows[at], alias }] : []))];
+  return [
+    ...rows,
+    ...(index.syn ?? []).flatMap(([alias, at]) => (rows[at] ? [{ ...rows[at], alias }] : [])),
+    ...(index.en ?? []).flatMap(([alias, at]) => (rows[at] ? [{ ...rows[at], alias, english: true as const }] : [])),
+  ];
 }
 
 /**

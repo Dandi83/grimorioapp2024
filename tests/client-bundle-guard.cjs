@@ -29,6 +29,9 @@ const path = require('node:path');
     assert.deepEqual(findIndexLeaks(indexFile, prints), []);
     fs.writeFileSync(indexFile, JSON.stringify({ v: 1, sections: [], rows: [[0, 'Lich', leaked.fragment, '/mostro/lich'], [0, 'x', 'y'.repeat(200), '/z']] }));
     assert.deepEqual(findIndexLeaks(indexFile, prints).map(leak => leak.id), [leaked.id, 'x']);
+    // English names: a short name on an existing row passes; a text or a missing row is rejected.
+    fs.writeFileSync(indexFile, JSON.stringify({ v: 1, sections: [], rows: [[0, 'Benedizione', 'liv. 1', '/spell/benedizione']], en: [['Bless', 0], ['y'.repeat(80), 0], ['Fly', 7]] }));
+    assert.deepEqual(findIndexLeaks(indexFile, prints).map(leak => leak.id), ['y'.repeat(80), 'Fly']);
     // Server secrets: names, the Resend address and real values are rejected in the browser code.
     const { findSecretLeaks } = await import('../scripts/check-client-bundle.mjs');
     fs.writeFileSync(path.join(dir, 'chunks', 'sheet.js'), 'fetch("/api/segnalazioni")');

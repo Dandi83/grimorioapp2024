@@ -165,11 +165,13 @@ export type MonsterListItem = Pick<Monster, "id" | "nome" | "tipo" | "taglia" | 
   autore?: string | null;
   /** A homebrew for both editions: listed in 2014 and in 2024 (edizione is "2024", its format). */
   entrambe?: true;
+  /** The official English name of an SRD creature (lib/english-names.ts): found by the search, shown «in inglese». */
+  en?: string;
 };
 
 /** List rows carry only what the catalog shows and filters on, never the full sheet. */
-export function toMonsterListItem({ id, nome, tipo, taglia, grado_sfida, gs_num, habitat, edizione }: MonsterListItem): MonsterListItem {
-  return { id, nome, tipo, taglia, grado_sfida, gs_num, edizione, ...(habitat?.length ? { habitat } : {}) };
+export function toMonsterListItem({ id, nome, tipo, taglia, grado_sfida, gs_num, habitat, edizione, en }: MonsterListItem): MonsterListItem {
+  return { id, nome, tipo, taglia, grado_sfida, gs_num, edizione, ...(habitat?.length ? { habitat } : {}), ...(en ? { en } : {}) };
 }
 
 export function computeMonstersMeta(list: readonly MonsterListItem[]): MonstersMeta {
