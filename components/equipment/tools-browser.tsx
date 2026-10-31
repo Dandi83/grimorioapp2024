@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
-import { ChevronRight, Search } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import { ParentLink } from "@/components/section-tiles";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
@@ -12,7 +12,7 @@ import type { ToolListRow } from "@/lib/tools-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
 import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
-import { SEARCH_INPUT } from "@/lib/search-input";
+import { ListSearch } from "@/components/equipment/list-search";
 import { englishShown, namesOf, type EnglishShown } from "@/lib/english-match";
 import { InEnglish } from "@/components/search/in-english";
 
@@ -75,12 +75,7 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
       <p className="mt-3 text-[15px] text-muted">{items.length} strumenti · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}</p>
       {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo strumento non c’è nel {missing}.</p>}
       <div className="mt-3">{intro[edition]}</div>
-      <label className="relative mt-4 block">
-        <span className="sr-only">Cerca uno strumento</span>
-        <Search size={20} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
-        <input {...SEARCH_INPUT} value={query} onChange={event => setQuery(event.target.value)} placeholder="Cerca: liuto, scasso…"
-          className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
-      </label>
+      <ListSearch label="Cerca uno strumento" placeholder="Cerca: liuto, scasso…" value={query} onChange={setQuery} />
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "strumento trovato" : "strumenti trovati"}`}</p>
       {result.suggestion && <DidYouMean name={result.suggestion.nome} onPick={setQuery} className="mt-2" />}
       {found.length === 0 && <p className="mt-3 text-[15px]">Nessuno strumento con questo nome.</p>}

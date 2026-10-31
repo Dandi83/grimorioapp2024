@@ -6,6 +6,13 @@ import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { ChevronRight, Coins, Weight, ArrowRight } from "lucide-react";
 
 import { CatalogTitle } from "@/components/catalog-ui";
+import { ListSearch } from "@/components/equipment/list-search";
+import { FoundName } from "@/components/equipment/found-name";
+import { InEnglish } from "@/components/search/in-english";
+import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
+import { useReportSearch } from "@/components/statistics/use-report-search";
+import { englishShown, namesOf, type EnglishShown } from "@/lib/english-match";
+import { normalizeSearch, searchList } from "@/lib/fuzzy-search";
 import { ParentLink } from "@/components/section-tiles";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
 import { isMartial, isRanged, WEAPON_GROUP_TITLES, type EquipmentEdition, type WeaponListEdition, type WeaponListItem } from "@/lib/equipment-types";
@@ -38,9 +45,20 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
   };
 
   const inEdition = useMemo(() => items.filter(item => item.editions[edition]), [items, edition]);
-  const filtered = useMemo(() => inEdition.filter(item =>
+  // The search (PROMPT 36): Italian and English names, typos tolerated (lib/fuzzy-search.ts), best first in each group.
+  const [query, setQuery] = useState("");
+  const settled = useSettledQuery(query);
+  const result = useMemo(() => searchList(inEdition, query, item => namesOf(item.editions[edition]!.nome, item.editions[edition]!.en), { groupOf: item => item.gruppo, settled }), [inEdition, query, edition, settled]);
+  const found = useMemo(() => [...result.exact, ...result.approximate], [result]);
+  const searching = normalizeSearch(query) !== "";
+  useReportSearch(query, result.exact.length, true, "armi");
+  const filtered = useMemo(() => found.filter(item =>
     (kind === "tutte" || (kind === "guerra") === isMartial(item.gruppo)) &&
-    (reach === "tutte" || (reach === "distanza") === isRanged(item.gruppo))), [inEdition, kind, reach]);
+    (reach === "tutte" || (reach === "distanza") === isRanged(item.gruppo))), [found, kind, reach]);
+  const row = (item: WeaponListItem) => {
+    const weapon = item.editions[edition]!;
+    return { item, weapon, edition, query, settled, english: englishShown(weapon.nome, weapon.en, query, { settled }) };
+  };
 
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
@@ -59,11 +77,17 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
           <span className="inline-block size-2.5 rounded-full bg-amber" aria-hidden="true" />cambia tra le edizioni
         </span>
       </div>
+      <ListSearch label="Cerca un’arma" placeholder="Cerca per nome…" value={query} onChange={setQuery} />
+      <p role="status" className="mt-2 text-sm text-muted">{searching ? `${found.length} ${found.length === 1 ? "arma trovata" : "armi trovate"}` : ""}</p>
+      {result.suggestion && <DidYouMean name={result.suggestion.editions[edition]!.nome} onPick={setQuery} className="mt-2" />}
+      {searching && found.length === 0 && <p className="mt-3 text-[15px]">Nessuna arma con questo nome.</p>}
 
       {view === "elenco" ? (
         <div className="mt-3 space-y-5">
           {WEAPON_GROUP_TITLES.map((title, group) => {
-            const rows = inEdition.filter(item => item.gruppo === group);
+            const rows = found.filter(item => item.gruppo === group);
+            // While searching, the groups with no weapon found are left out.
+            if (searching && !rows.length) return null;
             return (
               <section key={title} aria-labelledby={`gruppo-${group}`}>
                 <div className="flex items-baseline justify-between border-b-2 border-primary px-0.5 pb-1.5 pt-1">
@@ -71,7 +95,7 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
                   <span className="text-sm text-muted">{plural(rows.length)}</span>
                 </div>
                 <ul className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-                  {rows.map(item => <WeaponRow key={item.id} item={item} weapon={item.editions[edition]!} edition={edition} />)}
+                  {rows.map(item => <WeaponRow key={item.id} {...row(item)} />)}
                 </ul>
               </section>
             );
@@ -87,7 +111,7 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
           </div>
           <p role="status" className="mt-3 text-sm text-muted">{plural(filtered.length)}</p>
           <ul className="mt-2 space-y-3">
-            {filtered.map(item => <WeaponCard key={item.id} item={item} weapon={item.editions[edition]!} edition={edition} />)}
+            {filtered.map(item => <WeaponCard key={item.id} {...row(item)} />)}
           </ul>
         </div>
       )}
@@ -105,7 +129,9 @@ function Chip({ pressed, onClick, dark = false, children }: { pressed: boolean; 
   );
 }
 
-function WeaponRow({ item, weapon, edition }: { item: WeaponListItem; weapon: WeaponListEdition; edition: EquipmentEdition }) {
+interface RowProps { item: WeaponListItem; weapon: WeaponListEdition; edition: EquipmentEdition; query: string; settled: boolean; english?: EnglishShown }
+
+function WeaponRow({ item, weapon, edition, query, settled, english }: RowProps) {
   return (
     <li className="flex items-center border-b border-divider last:border-b-0">
       {/* Administrator only: the pencil next to the name opens its card in /admin/contenuti. */}
@@ -113,9 +139,10 @@ function WeaponRow({ item, weapon, edition }: { item: WeaponListItem; weapon: We
       <Link href={`/equipaggiamento/armi/${item.id}`} prefetch={false} className="flex min-h-14 min-w-0 flex-1 items-center gap-2.5 px-3.5 py-2">
         <span className="min-w-0 flex-1">
           <span className="flex items-center gap-2">
-            <span className="font-serif text-xl font-bold leading-tight">{weapon.nome}</span>
+            <span className="font-serif text-xl font-bold leading-tight"><FoundName name={weapon.nome} query={query} settled={settled} /></span>
             {item.changed && <span className="size-2.5 shrink-0 rounded-full bg-amber" role="img" aria-label="Cambia tra le edizioni" />}
           </span>
+          <InEnglish shown={english} className="mt-0.5" />
           <span className="block text-[14px] text-muted">{damageType(weapon)} · {weapon.costo}</span>
         </span>
         <span className="font-serif text-2xl font-bold text-primary">{weapon.danni || "—"}</span>
@@ -125,7 +152,7 @@ function WeaponRow({ item, weapon, edition }: { item: WeaponListItem; weapon: We
   );
 }
 
-function WeaponCard({ item, weapon, edition }: { item: WeaponListItem; weapon: WeaponListEdition; edition: EquipmentEdition }) {
+function WeaponCard({ item, weapon, edition, query, settled, english }: RowProps) {
   const dice = weapon.danni || "—";
   return (
     <li className="flex items-center">
@@ -138,7 +165,10 @@ function WeaponCard({ item, weapon, edition }: { item: WeaponListItem; weapon: W
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-2 px-3.5 py-3">
           <span className="flex items-start justify-between gap-2">
-            <span className="font-serif text-[22px] font-bold leading-tight">{weapon.nome}</span>
+            <span className="min-w-0">
+              <span className="block font-serif text-[22px] font-bold leading-tight"><FoundName name={weapon.nome} query={query} settled={settled} /></span>
+              <InEnglish shown={english} className="mt-0.5" />
+            </span>
             {edition === "2024" && weapon.padronanza && (
               <span className="shrink-0 rounded-full bg-amber px-2.5 py-1 text-[12px] font-bold text-foreground">{weapon.padronanza}</span>
             )}

@@ -11,7 +11,7 @@ import { RestItem } from "./rest-item";
 
 const SOFT = "text-[15px] leading-6 text-[#5E4E3E]";
 const number = (value: number) => value.toLocaleString("it-IT");
-const AREA_LABEL: Record<string, string> = { incantesimi: "incantesimi", bestiario: "bestiario", globale: "ricerca globale" };
+const AREA_LABEL: Record<string, string> = { incantesimi: "incantesimi", bestiario: "bestiario", globale: "ricerca globale", armi: "armi", armature: "armature" };
 /** A row with its number on the right (the approved card: paper, red small capitals, numbers on the right). */
 const Row = ({ label, value, name, children }: { label: string; value: string; name: string; children?: React.ReactNode }) => (
   <li className="py-2" data-insight-row={name}>

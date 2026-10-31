@@ -20,6 +20,8 @@ export interface WeaponListEdition {
   /** Short labels: "Lancio 6/18", "Versatile (1d8)". */
   proprieta: string[];
   padronanza?: string;
+  /** The official English name (lib/english-names.ts, PROMPT 35), added by the page on the server: searched, shown «in inglese». */
+  en?: string;
 }
 
 export interface WeaponListItem {
@@ -50,6 +52,8 @@ export interface ArmorListEdition {
   chips: ArmorChip[];
   costo: string;
   peso: string;
+  /** The official English name (lib/english-names.ts, PROMPT 35), added by the page on the server. */
+  en?: string;
 }
 
 export interface ArmorListItem {

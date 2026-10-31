@@ -66,3 +66,13 @@ le sintesi originali NO SRD (es. «Scheggia della mente»), homebrew, equipaggia
 - Equipaggiamento: armi, armature, oggetti d'avventura e strumenti abbinati riga per riga alle tabelle dei PDF
   (costo, peso, danni coincidenti). 2014: 37 + 13 + 94 + 35 = 179; 2024: 38 + 13 + 81 + 25 = 157. Nessuna voce senza
   corrispondenza. Cavalcature e veicoli non hanno schede nel sito: nessun nome.
+
+## PROMPT 36 (31 ottobre 2026): ricerca negli elenchi Armi e Armature
+
+- Campo di ricerca in /equipaggiamento/armi e /equipaggiamento/armature: lo stesso componente di Oggetti d'avventura e
+  Strumenti (`components/equipment/list-search.tsx`, ora usato da tutti e quattro), segnaposto «Cerca per nome…».
+- Nome italiano e inglese, ricerca tollerante, nome italiano evidenziato (`components/equipment/found-name.tsx`) e
+  riga «in inglese» evidenziata; gruppi vuoti nascosti, conteggio «N armi trovate», «Nessuna arma con questo nome.»,
+  «Forse cercavi». La ricerca non resta salvata tornando indietro, come negli altri elenchi dell'equipaggiamento.
+- Evento «search» con area «armi» / «armature» (Approfondimenti).
+- I nomi inglesi arrivano alle pagine dal server (`app/equipaggiamento/armi|armature/page.tsx`).
