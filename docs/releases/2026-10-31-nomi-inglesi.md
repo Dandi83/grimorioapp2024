@@ -76,3 +76,19 @@ le sintesi originali NO SRD (es. «Scheggia della mente»), homebrew, equipaggia
   «Forse cercavi». La ricerca non resta salvata tornando indietro, come negli altri elenchi dell'equipaggiamento.
 - Evento «search» con area «armi» / «armature» (Approfondimenti).
 - I nomi inglesi arrivano alle pagine dal server (`app/equipaggiamento/armi|armature/page.tsx`).
+
+## PROMPT 37 (31 ottobre 2026): nomi inglesi «solo ricerca» delle schede NO SRD
+
+- Proposte: `lib/data/nomi-inglesi-proposte.json`, dal nome del manuale (`sourceName`) delle 53 sintesi originali:
+  50 proposte, 3 vuote (Hunger of Hadar, Arms of Hadar, Armor of Agathys: senza il nome proprio non resta un nome
+  utile). Per Tasha's Bubbling Cauldron, Yolande's Regal Presence e Jallarzi's Storm of Radiance solo la parte non
+  protetta. Nessuna proposta per i mostri (nessun mostro NO SRD nei file del progetto) né per le schede «Aggiunta da
+  te» (si scrivono a mano nell'editor).
+- Decisioni nella tabella `grimorio_search_english` (approvata / scartata). /admin/contenuti → «Nomi inglesi da
+  verificare»: Approva, Modifica (salva e approva), Scarta; gli approvati si possono cambiare o scartare.
+- Editor di incantesimi e mostri NO SRD: campo «Nome inglese (solo ricerca)», salvato con la scheda.
+- Nomi protetti (`lib/search-english.ts`): l'elenco di «Nomi da rivedere» più Jallarzi, Yuan-ti, Displacer Beast,
+  Carrion Crawler, Umber Hulk, Kenku, Slaad, Neogi, Kuo-toa; il salvataggio viene rifiutato con un messaggio.
+- Indice: campo `k` con la sola chiave normalizzata (`synaptic static`), mai mostrata; sinonimi admin prima; una
+  parola trovata così esce da «Ricerche senza risultato». Solo nella ricerca della Home: gli elenchi delle sezioni
+  non ricevono la chiave (il nome inglese non deve comparire nel loro HTML).

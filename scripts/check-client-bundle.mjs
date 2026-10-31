@@ -88,7 +88,9 @@ export const SECRET_ENV = ['RESEND_API_KEY', 'FEEDBACK_TO_EMAIL', 'FEEDBACK_FROM
  */
 const SERVER_ONLY_MARKERS = ['api.resend.com', 'generateVAPIDKeys', 'BILANCIAMENTO', 'Danni ai PG per round', 'misure simulate dei mostri SRD', 'SITUAZIONI DI PROVA', 'data-balance-tactics',
   // The table of the English names (lib/data/nomi-inglesi-srd.json): read on the server only, the browser gets the names in the index and the lists.
-  'senzaCorrispondenza'];
+  'senzaCorrispondenza',
+  // The proposals of the English names «solo ricerca» (lib/data/nomi-inglesi-proposte.json, PROMPT 37): reserved area only.
+  'senzaProposta'];
 
 export function findSecretLeaks(clientDir, env = process.env) {
   const needles = [

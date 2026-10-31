@@ -12,6 +12,8 @@ import { SpellClassification, SpellComponents } from "./admin-spell-fields";
 import { AdminEditionField, confirmEditionMove } from "./admin-edition-field";
 import { CardOriginBox } from "./card-origin-box";
 import { AdminSummaryField, previewSource, summaryFieldState } from "./admin-summary-field";
+import { AdminSearchEnglishField } from "./admin-search-english-field";
+import { isNoSrdSource } from "@/lib/card-display";
 import type { AdminEdition } from "@/lib/admin-edition";
 import { SpellSheetBody, SpellSheetHeading } from "./spell-sheet";
 import { useCardDisplay } from "./card-display-context";
@@ -194,6 +196,7 @@ export function SpellEditor({ spell, onClose, edition, visibility, page = false 
           <div hidden={preview !== null} className="space-y-5">
             <AdminEditionField edition={edition} source={spell?.fonte} />
             <AdminSummaryField state={summaryFieldState(spell)} initial={spell?.fonte_scheda === "Sintesi originale"} />
+            {(!spell || isNoSrdSource(spell.origine ?? spell.fonte_scheda)) && <AdminSearchEnglishField kind="incantesimo" id={spell?.id} />}
             <div>
               <label htmlFor="nome_italiano" className="mb-1.5 block text-sm text-muted-foreground">
                 Nome *

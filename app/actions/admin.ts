@@ -1,5 +1,6 @@
 "use server";
 
+import { editorSearchEnglish } from "@/lib/search-english-server";
 import { revalidatePath, updateTag } from "next/cache";
 import { draftMode, headers } from "next/headers";
 import { eq } from "drizzle-orm";
@@ -91,6 +92,9 @@ function fromForm(formData: FormData): SpellInput {
 
 export async function createSpellAction(_prev: unknown, formData: FormData) {
   await requireAdmin();
+  // «Nome inglese (solo ricerca)» (PROMPT 37): a protected name refuses the whole save.
+  const english = editorSearchEnglish(formData);
+  if (english.error) return { ok: false as const, error: english.error };
   const input = fromForm(formData);
   if (!input.nome_italiano) {
     return { ok: false as const, error: "Il nome è obbligatorio." };
@@ -103,6 +107,7 @@ export async function createSpellAction(_prev: unknown, formData: FormData) {
   }));
   if (!result.ok) return result;
   revalidateSpell(id);
+  if (await english.apply("incantesimo", id)) refreshSearchIndex();
   return { ok: true as const, error: null, id };
 }
 
@@ -120,6 +125,9 @@ function losesSrdBox(base: Parameters<typeof publicSpellOfRow>[0], changes: Part
 
 export async function updateSpellAction(_prev: unknown, formData: FormData) {
   await requireAdmin();
+  // «Nome inglese (solo ricerca)» (PROMPT 37): a protected name refuses the whole save.
+  const english = editorSearchEnglish(formData);
+  if (english.error) return { ok: false as const, error: english.error };
   const id = clean(formData.get("id"));
   if (!id) return { ok: false as const, error: "ID mancante." };
   // Fields missing from the form stay as they are: only what was sent can change.
@@ -148,7 +156,10 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   if (fileRow || spellCardSource({ id, descrizione: description }) !== "Aggiunta da te") formData.delete("sintesi-campo");
   const summary = summaryFromForm(formData);
   const sameSummary = summary === undefined || summary === (await getOriginalSummaries("spell", id)).has(id);
-  if (!Object.keys(changes).length && sameEdition && sameSummary) return { ok: true as const, error: null, id };
+  if (!Object.keys(changes).length && sameEdition && sameSummary) {
+    if (await english.apply("incantesimo", id)) refreshSearchIndex();
+    return { ok: true as const, error: null, id };
+  }
   // A change that would take the SRD box away is saved only after «Salva comunque» (the editor sends «perdi-srd»).
   if (!formData.has("perdi-srd") && Object.keys(changes).length && losesSrdBox(base, changes)) return SRD_WARNING;
   // The edition the card already has is not stored again as a manual label.
@@ -172,6 +183,7 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
   });
   if (!result.ok) return result;
   revalidateSpell(id);
+  if (await english.apply("incantesimo", id)) refreshSearchIndex();
   return { ok: true as const, error: null, id };
 }
 
@@ -191,4 +203,10 @@ export async function deleteSpellAction(formData: FormData): Promise<DeleteResul
   }
   revalidateSpell(id);
   return { ok: true };
+}
+
+/** The search index and «Nomi inglesi da verificare» after a change of the English name «solo ricerca». */
+function refreshSearchIndex() {
+  revalidatePath("/ricerca-indice.json");
+  revalidatePath("/admin/contenuti/nomi-inglesi");
 }
