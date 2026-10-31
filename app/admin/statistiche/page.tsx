@@ -7,6 +7,7 @@ import { publishedHomebrew } from "@/lib/homebrew";
 import { readAllTableCounts, type TableCounts } from "@/lib/table-votes";
 import { NowDot } from "@/components/home/admin-strip";
 import { FAVORITES_NOTE, FAVORITE_PERIODS } from "@/lib/analytics-events";
+import { srdOnlyPaths } from "@/lib/srd-only-follow";
 import { rankFavorites, rankingFilterOf, type RankingCard } from "@/lib/favorite-ranking";
 import { getSpellIndex } from "@/lib/spell-index";
 import { getMonsterListIndex } from "@/lib/monster-index";
@@ -57,7 +58,9 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
     ...spells.map(spell => ({ kind: "incantesimo" as const, id: publicSpellId(spell.id), title: spellName(spell.nome_italiano, spell.edizione), edition: spell.edizione === "2014" ? "2014" as const : "2024" as const, href: spellHref(spell.id) })),
     ...monsters.map(monster => ({ kind: "mostro" as const, id: monster.id, title: monster.nome, edition: monster.edizione, href: `/mostro/${encodeURIComponent(monster.id)}` })),
   ];
-  const mostSaved = rankFavorites(counts, catalog, saved);
+  // «Modalità solo SRD» on (PROMPT 39): the cards it hides leave «I più salvati» too.
+  const srdOnlyHidden = await srdOnlyPaths();
+  const mostSaved = rankFavorites(counts, catalog.filter(card => !srdOnlyHidden.has(card.href)), saved);
   // The address of a filter of «I più salvati», keeping the period of the page and the other two filters.
   const savedHref = (change: Record<string, string>) => {
     const next = { periodo: period, salvati_tipo: saved.kind, salvati_edizione: saved.edition, salvati_periodo: saved.period, ...change };

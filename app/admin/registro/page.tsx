@@ -21,6 +21,7 @@ import { spellName } from "@/lib/spell-name";
 const spellNameOf = (spell: { nome_italiano: string; edizione?: string } | undefined) => (spell ? spellName(spell.nome_italiano, spell.edizione) : undefined);
 import { isPublicSectionKey, publicSection, sectionParts } from "@/lib/public-sections";
 import { allCardLog, allSectionLog } from "@/lib/section-visibility";
+import { allSrdOnlyLog } from "@/lib/srd-only";
 import { allHomebrewLog } from "@/lib/homebrew";
 import { allSubclassLog } from "@/lib/subclasses";
 import { subclassClass } from "@/lib/subclass-types";
@@ -67,8 +68,9 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
   const edition = await adminEdition();
   const allEditions = query.edizioni === "tutte";
 
-  const [overrides, editorRows, sectionRows, cardRows, homebrewRows, subclassRows, spells, monsters] = await Promise.all([
+  const [overrides, editorRows, sectionRows, cardRows, homebrewRows, subclassRows, spells, monsters, srdOnlyRows] = await Promise.all([
     allOverrides(), allEditorLog(), allSectionLog(), allCardLog(), allHomebrewLog().catch(() => []), allSubclassLog().catch(() => []), getSpellIndex().catch(() => []), getMonsterListIndex().catch(() => []),
+    allSrdOnlyLog().catch(() => []),
   ]);
   const inForce = new Set([...activeOverrideMap(overrides).values()].map(row => row.id));
   const items: LogItem[] = [
@@ -113,6 +115,15 @@ export default async function LogPage({ searchParams }: { searchParams: Promise<
       // An edition hidden or shown belongs to that edition; everything else is shared.
       edition: isAdminEdition(row.parte) ? row.parte : null,
       text: `Hai reso «${[isPublicSectionKey(row.sezione) ? publicSection(row.sezione).title : row.sezione, ...(row.parte ? [sectionParts(row.sezione).find(part => part.key === row.parte)?.title ?? row.parte] : [])].join(" · ")}» ${!row.nascosta ? "visibile" : row.in_arrivo ? "in arrivo" : "nascosta"}`, icon: "section" as const,
+    })),
+    // «Modalità solo SRD» (PROMPT 39) switched on or off: when, and how many cards it hid or gave back.
+    ...srdOnlyRows.map(row => ({
+      id: row.id, editor: false, sezione: "sezioni", when: new Date(row.creata_il), undoneAt: null, inForce: true, edition: null,
+      title: "Modalità solo SRD", href: "/admin#solo-srd", card: `${row.quanti.toLocaleString("it-IT")} ${row.quanti === 1 ? "contenuto" : "contenuti"} non SRD`,
+      field: "modalità solo SRD", before: row.attiva ? "Spenta" : "Accesa", after: row.attiva ? "Accesa" : "Spenta",
+      motivo: row.attiva ? "Nascosti a tutti i visitatori: le schede e i loro dati restano salvati." : "Di nuovo come prima: le schede nascoste una per una restano nascoste.", fixed: "cambio di stato",
+      text: row.attiva ? `Hai attivato la modalità solo SRD (${row.quanti} contenuti nascosti)` : `Hai disattivato la modalità solo SRD (${row.quanti} contenuti di nuovo visibili)`,
+      icon: row.attiva ? "hide" as const : "show" as const,
     })),
     // Single cards shown or hidden with the eye: name and edition as they were at the switch.
     ...cardRows.map(row => {

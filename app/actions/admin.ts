@@ -3,6 +3,7 @@
 import { editorSearchEnglish } from "@/lib/search-english-server";
 import { refreshEnglishNames } from "@/lib/search-english-refresh";
 import { revalidatePath, updateTag } from "next/cache";
+import { HIDDEN_CARDS_TAG, followSrdOnly } from "@/lib/srd-only-follow";
 import { draftMode, headers } from "next/headers";
 import { eq } from "drizzle-orm";
 
@@ -71,12 +72,14 @@ export async function logoutAction() {
   revalidatePath("/admin");
 }
 
-function revalidateSpell(id: string) {
+async function revalidateSpell(id: string) {
   updateTag("spells");
   for (const route of ["/", "/grimorio", "/preferiti", "/admin", spellHref(id), "/ricerca-indice.json"]) revalidatePath(route);
   // Every card may name this spell (lib/spell-reference-catalog.ts): its links follow a new name, edition or card at once.
   revalidatePath("/spell/[id]", "page");
   revalidatePath("/mostro/[id]", "page");
+  // «Modalità solo SRD» on (PROMPT 39): a card that becomes or stops being NO SRD joins or leaves the hidden ones at once.
+  if (await followSrdOnly()) { updateTag(HIDDEN_CARDS_TAG); revalidatePath("/", "layout"); }
 }
 
 function fromForm(formData: FormData): SpellInput {
@@ -107,7 +110,7 @@ export async function createSpellAction(_prev: unknown, formData: FormData) {
     sort_key: input.nome_italiano.toLowerCase(),
   }));
   if (!result.ok) return result;
-  revalidateSpell(id);
+  await revalidateSpell(id);
   if (await english.apply("incantesimo", id)) refreshEnglishNames("incantesimo");
   return { ok: true as const, error: null, id };
 }
@@ -183,7 +186,7 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
     if (!updated.length) throw new Error("Scheda non trovata.");
   });
   if (!result.ok) return result;
-  revalidateSpell(id);
+  await revalidateSpell(id);
   if (await english.apply("incantesimo", id)) refreshEnglishNames("incantesimo");
   return { ok: true as const, error: null, id };
 }
@@ -202,6 +205,6 @@ export async function deleteSpellAction(formData: FormData): Promise<DeleteResul
   } catch {
     return { ok: false, error: "Eliminazione non riuscita: la scheda è ancora presente. Riprova." };
   }
-  revalidateSpell(id);
+  await revalidateSpell(id);
   return { ok: true };
 }

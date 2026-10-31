@@ -10,6 +10,9 @@ import { adminEdition } from "@/lib/admin-edition-server";
 import { editableEntries } from "@/lib/admin-lists";
 import { readStatistics } from "@/lib/analytics";
 import { periodRange } from "@/lib/analytics-stats";
+import { SrdOnlyCard } from "@/components/admin-home/srd-only-card";
+import { srdOnlyOverview } from "@/lib/srd-only";
+import { romeTime } from "@/lib/srd-only-time";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +34,7 @@ async function peopleThisWeek(): Promise<number | null> {
 export default async function AdminPage() {
   if (!(await isAdmin())) return <AdminLogin />;
   const edition = await adminEdition();
-  const [entries, due, people] = await Promise.all([editableEntries(edition), dueChecks(), peopleThisWeek()]);
+  const [entries, due, people, srdOnly] = await Promise.all([editableEntries(edition), dueChecks(), peopleThisWeek(), srdOnlyOverview().catch(() => null)]);
   const tile = "flex min-h-[132px] flex-col justify-between rounded-[18px] p-4 focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#E0A21A]";
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-5 px-4 pb-10 pt-3 lg:max-w-[960px]">
@@ -80,6 +83,8 @@ export default async function AdminPage() {
         <Scale size={26} strokeWidth={1.8} className="text-[#7A4E00]" aria-hidden="true" />
         <span><span className="block font-serif text-[22px] font-bold leading-tight">Bilanciamento</span><span className="text-[14px] text-[#5E4E3E]">Mostri originali rispetto al loro GS</span></span>
       </Link>
+      {/* «Modalità solo SRD» (PROMPT 39): the emergency switch, the last card. */}
+      {srdOnly && <SrdOnlyCard attiva={srdOnly.attiva} dal={srdOnly.dal ? romeTime(srdOnly.dal) : null} quanti={srdOnly.quanti} counts={srdOnly.counts} />}
 
       <div className="mt-4 flex items-center justify-between border-t border-[#DDCFAE] pt-3 lg:hidden">
         <Link href="/" className="inline-flex min-h-11 items-center text-[14px] text-[#5E4E3E]">‹ Torna al sito</Link>
