@@ -48,7 +48,7 @@ for (const width of [390, 1280]) {
 
     // The page, from /admin/contenuti.
     await page.goto("/admin/contenuti");
-    await page.locator('[data-content-row="nomi-inglesi"]').click();
+    await page.locator('[data-search-english-link]').click();
     await expect(page).toHaveURL(/\/admin\/contenuti\/nomi-inglesi$/);
     const row = page.locator(`[data-search-english="incantesimo:${CARD}"]`);
     await expect(row).toContainText("Scossa sinaptica");

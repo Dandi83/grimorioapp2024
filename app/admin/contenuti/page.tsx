@@ -105,7 +105,7 @@ export default async function ContentsPage() {
       })}
       <Group label="Ricerca">
         <li>
-          <Link href="/admin/contenuti/nomi-inglesi" prefetch={false} data-content-row="nomi-inglesi"
+          <Link href="/admin/contenuti/nomi-inglesi" prefetch={false} data-search-english-link
             className="flex min-h-[60px] items-center gap-3 px-4 py-2 focus-visible:outline-[3px] focus-visible:-outline-offset-[3px] focus-visible:outline-[#7A1F2B]">
             <Languages size={22} strokeWidth={1.8} color="#7A1F2B" className="shrink-0" aria-hidden="true" />
             <span className="min-w-0 flex-1">
