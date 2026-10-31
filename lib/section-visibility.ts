@@ -125,10 +125,12 @@ async function readHidden(): Promise<PublicSectionKey[]> {
 }
 
 async function readState(): Promise<VisibilityState> {
-  const [sections, parts, cards] = await Promise.all([
+  const [sections, parts, cards, srdOnly] = await Promise.all([
     readHiddenRows(),
     hiddenRows<{ sezione: string; parte: string; nascosta: boolean; in_arrivo: boolean }>(`SELECT sezione, parte, nascosta, ${SOON} FROM grimorio_section_parts t`),
     hiddenRows<{ tipo: string; scheda: string }>("SELECT tipo, scheda FROM grimorio_card_visibility WHERE nascosta"),
+    // «Modalità solo SRD» (PROMPT 39, lib/srd-only.ts): while it is on, its NO SRD cards are hidden cards like the others.
+    hiddenRows<{ schede: string[] }>("SELECT schede FROM grimorio_srd_only WHERE attiva"),
   ]);
   // Every row (the parts set back to «Visibile» too), then the parts never set with their default state.
   const saved = parts.map(row => ({ id: `${row.sezione}:${row.parte}`, state: stateOf(row) })).filter(row => isPartId(row.id));
@@ -137,7 +139,10 @@ async function readState(): Promise<VisibilityState> {
   return {
     sections: sections.map(row => row.sezione),
     parts: partRows.map(row => row.id).sort(),
-    cards: cards.filter(row => row.tipo === "incantesimo" || row.tipo === "mostro" || row.tipo === "sottoclasse").map(row => cardPath(row.tipo as CardKind, row.scheda)).sort(),
+    cards: [...new Set([
+      ...cards.filter(row => row.tipo === "incantesimo" || row.tipo === "mostro" || row.tipo === "sottoclasse").map(row => cardPath(row.tipo as CardKind, row.scheda)),
+      ...srdOnly.flatMap(row => row.schede ?? []),
+    ])].sort(),
     soon: [...sections.filter(row => row.in_arrivo).map(row => row.sezione), ...partRows.filter(row => row.soon).map(row => row.id)].sort(),
   };
 }

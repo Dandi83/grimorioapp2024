@@ -3,6 +3,7 @@
 import { editorSearchEnglish } from "@/lib/search-english-server";
 import { refreshEnglishNames } from "@/lib/search-english-refresh";
 import { revalidatePath, updateTag } from "next/cache";
+import { HIDDEN_CARDS_TAG, followSrdOnly } from "@/lib/srd-only-follow";
 import { eq } from "drizzle-orm";
 
 import { monsters } from "@/lib/db/schema";
@@ -63,12 +64,14 @@ type MonsterInput = ReturnType<typeof fromForm>;
 /** Columns written by the visual editor (blocks of traits, actions, description). */
 const MONSTER_HTML_FIELDS = ["tratti", "azioni", "reazioni", "azioni_leggendarie", "descrizione"];
 
-function revalidateMonster(id: string) {
+async function revalidateMonster(id: string) {
   updateTag("monsters");
   revalidatePath("/bestiario");
   revalidatePath("/preferiti");
   revalidatePath("/admin");
   revalidatePath(`/mostro/${id}`);
+  // «Modalità solo SRD» on (PROMPT 39): a card that becomes or stops being NO SRD joins or leaves the hidden ones at once.
+  if (await followSrdOnly()) { updateTag(HIDDEN_CARDS_TAG); revalidatePath("/", "layout"); }
 }
 
 export async function createMonsterAction(_prev: unknown, formData: FormData) {
@@ -87,7 +90,7 @@ export async function createMonsterAction(_prev: unknown, formData: FormData) {
     await saveMonsterHabitats(database, id, habitatsFromForm(formData));
   });
   if (!result.ok) return result;
-  revalidateMonster(id);
+  await revalidateMonster(id);
   if (await english.apply("mostro", id)) refreshEnglishNames("mostro");
   return { ok: true as const, error: null, id };
 }
@@ -119,7 +122,7 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     const projectEdition = usesLegacyMonsterRules({ id }) ? "2014" : "2024";
     const saved = await saveAdminContent("monster", id, formData, projectEdition, database => saveMonsterHabitats(database, id, habitats));
     if (!saved.ok) return saved;
-    revalidateMonster(id);
+    await revalidateMonster(id);
     if (await english.apply("mostro", id)) refreshEnglishNames("mostro");
     return { ok: true as const, error: null, id };
   }
@@ -153,7 +156,7 @@ export async function updateMonsterAction(_prev: unknown, formData: FormData) {
     await saveMonsterHabitats(database, id, habitats);
   });
   if (!result.ok) return result;
-  revalidateMonster(id);
+  await revalidateMonster(id);
   if (await english.apply("mostro", id)) refreshEnglishNames("mostro");
   return { ok: true as const, error: null, id };
 }
@@ -172,6 +175,6 @@ export async function deleteMonsterAction(formData: FormData): Promise<DeleteRes
   } catch {
     return { ok: false, error: "Eliminazione non riuscita: la scheda è ancora presente. Riprova." };
   }
-  revalidateMonster(id);
+  await revalidateMonster(id);
   return { ok: true };
 }
