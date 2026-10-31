@@ -1,6 +1,6 @@
 import { readCohortPeople, readFunnel, readInstagram, readSearchMisses, type StatisticsMarker, type StatisticsRange } from "@/lib/analytics";
 import { barOf, BIO_LINK, cohorts, cohortShade, COHORT_AFTER, fillDays, fillHours, funnel, markerTime, reasonLabel, share, shortDay, type HourWindow } from "@/lib/analytics-stats";
-import { classifySearch } from "@/lib/search-insights";
+import { classifySearch, foundInEnglish } from "@/lib/search-insights";
 import { readSynonyms, readTodo, searchWorld } from "@/lib/search-insights-server";
 import { rowsOf } from "@/lib/search";
 import { addSynonymAction, addTodoAction, deleteSynonymAction, deleteTodoAction } from "@/app/actions/admin-statistics";
@@ -28,9 +28,11 @@ const Row = ({ label, value, name, children }: { label: string; value: string; n
 export async function Insights({ range, hourly, from, to, today, markers }: {
   range: StatisticsRange; hourly: HourWindow | null; from: string | null; to: string | null; today: string; markers: StatisticsMarker[];
 }) {
-  const [misses, steps, instagram, people, world, synonyms, todo] = await Promise.all([
-    readSearchMisses(range), readFunnel(range), readInstagram(range), readCohortPeople(), searchWorld(), readSynonyms().catch((): Awaited<ReturnType<typeof readSynonyms>> => []), readTodo().catch((): string[] => []),
+  const [allMisses, steps, instagram, people, world, synonyms, todo] = await Promise.all([
+    readSearchMisses(range, 40), readFunnel(range), readInstagram(range), readCohortPeople(), searchWorld(), readSynonyms().catch((): Awaited<ReturnType<typeof readSynonyms>> => []), readTodo().catch((): string[] => []),
   ]);
+  // A word found now by an English name (PROMPT 33) is no longer a search with no result.
+  const misses = allMisses.filter(miss => !foundInEnglish(miss.query, world.publicIndex)).slice(0, 15);
   const names = [...new Set(rowsOf(world.publicIndex).filter(row => row.section === "incantesimi" || row.section === "mostri").map(row => row.nome))].sort((a, b) => a.localeCompare(b, "it"));
   const nameOf = new Map(rowsOf(world.publicIndex).map(row => [row.href, row.nome]));
   const path = funnel(steps);

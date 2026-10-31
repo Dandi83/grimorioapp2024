@@ -1,4 +1,5 @@
 import repairs from "./data/magic-items-repairs-20261021.json";
+import { englishName } from "./english-names";
 import { magicItemHref, magicItems, type MagicItem } from "./magic-items";
 import { rarityCategories, type MagicItemEdition, type MagicItemListRow } from "./magic-items-types";
 
@@ -86,8 +87,9 @@ export function seeAlso(entry: MagicItemEntry, list: MagicItemEntry[] = magicIte
 export function magicItemEditionRows(list: MagicItemEntry[] = magicItemEntries): Record<MagicItemEdition, MagicItemListRow[]> {
   const rows = (edition: MagicItemEdition) => list.filter(entry => entry.editions[edition]).map(entry => {
     const item = entry.editions[edition]!;
+    const en = englishName("oggetti-magici", edition, item.id);
     return {
-      id: item.id, href: magicItemEntryHref(entry, edition), nome: item.nome, tipo: item.tipo,
+      id: item.id, ...(en ? { en } : {}), href: magicItemEntryHref(entry, edition), nome: item.nome, tipo: item.tipo,
       rarita: item.rarita, rarita_categorie: rarityCategories(item.rarita), sintonia: item.sintonia,
     };
   }).sort((a, b) => a.nome.localeCompare(b.nome, "it"));

@@ -1,5 +1,7 @@
 "use client";
 
+import { englishShown } from "@/lib/english-match";
+import { InEnglish } from "@/components/search/in-english";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
@@ -21,12 +23,13 @@ const SOURCE: Record<MagicItemEdition, string> = { "2024": "SRD 5.2.1", "2014": 
 const toggle = <T,>(list: readonly T[], value: T, order: readonly T[]) =>
   list.includes(value) ? list.filter(item => item !== value) : order.filter(item => item === value || list.includes(item));
 
-function ItemRow({ row }: { row: MagicItemListRow }) {
+function ItemRow({ row, query, settled }: { row: MagicItemListRow; query: string; settled: boolean }) {
   return (
     <li className="border-b border-divider last:border-b-0">
       <Link href={row.href} prefetch={false} className="flex min-h-14 items-center gap-3 px-3.5 py-2">
         <span className="min-w-0 flex-1">
           <span className="block font-serif text-xl font-bold leading-tight">{row.nome}</span>
+          <InEnglish name={englishShown(row.nome, row.en, query, { settled })} className="mt-0.5" />
           <span className="mt-1 flex flex-wrap items-center gap-1.5">
             <span className="text-[14px] text-muted">{row.tipo}</span>
             <RarityChip printed={row.rarita} categories={row.rarita_categorie} />
@@ -128,13 +131,13 @@ export function MagicItemsBrowser({ rows: byEdition, title = "Oggetti magici", r
         <>
           {result.exact.length > 0 && (
             <ul data-exact-results="" className="overflow-hidden rounded-b-[14px] border border-t-0 border-border bg-card">
-              {result.exact.map(row => <ItemRow key={row.id} row={row} />)}
+              {result.exact.map(row => <ItemRow key={row.id} row={row} query={query} settled={settled} />)}
             </ul>
           )}
           {result.approximate.length > 0 && <>
             <SimilarResultsHeading className={result.exact.length ? "" : "!mt-3"} />
             <ul data-similar-list="" className="overflow-hidden rounded-[14px] border border-border bg-card">
-              {result.approximate.map(row => <ItemRow key={row.id} row={row} />)}
+              {result.approximate.map(row => <ItemRow key={row.id} row={row} query={query} settled={settled} />)}
             </ul>
           </>}
         </>
