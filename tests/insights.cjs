@@ -39,7 +39,7 @@ assert.equal(s.cohortShade(null),'transparent');assert.equal(s.cohortShade(100),
 assert.equal(s.originOf('','?da=bio','ilgrimorio.app'),'instagram');
 assert.equal(s.originOf('https://l.instagram.com/','','ilgrimorio.app'),'instagram','Instagram without the bio: «Instagram (altro)»');
 assert.equal(s.originOf('','?da=amico','ilgrimorio.app'),'diretto');
-assert.equal(s.BIO_LINK,'ilgrimorio.app/?da=bio');
+assert.equal(s.BIO_LINK,'ilgrimorio.app/ig');assert.equal(s.BIO_LONG_LINK,'ilgrimorio.app/?da=bio');
 const event=(name,props={})=>({event:name,id:randomUUID(),view:randomUUID(),session:randomUUID(),path:'/',test:false,source:'direct',activeSeconds:0,scrollPercent:0,...props});
 assert.equal(parseAnalyticsInput(event('page_view',{origin:'instagram',bio:true})).bio,true);
 assert.equal(parseAnalyticsInput(event('page_view',{bio:'si'})).bio,undefined);

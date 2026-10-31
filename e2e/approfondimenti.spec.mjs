@@ -96,12 +96,13 @@ test("at 390: searches with no result (reason, synonym found by the public searc
   expect(await instagramPeople(page, "bio")).toBe(bioBefore + 1);
   expect(await instagramPeople(page, "altro")).toBe(otherBefore + 1);
   await expect(page.locator('[data-insight-row="bio"]')).toContainText(/tornati \d+%/);
-  await expect(page.locator('[data-rest-item="instagram"] [data-bio-link] code')).toHaveText("ilgrimorio.app/?da=bio");
+  await expect(page.locator('[data-rest-item="instagram"] [data-bio-link] code')).toHaveText("ilgrimorio.app/ig");
+  await expect(page.locator('[data-rest-item="instagram"] [data-bio-long]')).toHaveText("funziona anche ilgrimorio.app/?da=bio");
   await expect(page.locator('svg[data-chart="bio"]')).toHaveAttribute("aria-label", /^Arrivi dal link in bio al giorno/);
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.locator('[data-rest-item="instagram"]').getByRole("button", { name: "Copia" }).click();
   await expect(page.locator('[data-rest-item="instagram"] [data-bio-link] [role="status"]')).toHaveText("Copiato");
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("ilgrimorio.app/?da=bio");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("ilgrimorio.app/ig");
 
   // «Chi resta davvero»: e, arrived three weeks ago from Instagram, back the week after, not two weeks after; four weeks
   // after has not ended yet.
