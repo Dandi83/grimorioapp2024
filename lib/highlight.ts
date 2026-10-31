@@ -1,4 +1,4 @@
-import { normalizeSearch } from "./fuzzy-search";
+import { matchName, normalizeSearch } from "./fuzzy-search";
 
 /**
  * Where each letter of the searched form of a name (normalizeSearch: lowercase, no accents, apostrophes and dashes as
@@ -31,3 +31,10 @@ export function markRange(text: string, start: number, length: number): [number,
 
 /** The length to mark when the match does not say it: the query as searched. */
 export const typedLength = (query: string) => normalizeSearch(query).length;
+
+/** The part of a list name found by the query (lib/fuzzy-search.ts, the rules of the search of the list), or null. */
+export function nameMark(name: string, query: string, options: { wordStart?: boolean; settled?: boolean } = {}): { start: number; length: number } | null {
+  if (!normalizeSearch(query)) return null;
+  const match = matchName(name, query, options);
+  return match && match.start >= 0 ? { start: match.start, length: match.length ?? typedLength(query) } : null;
+}

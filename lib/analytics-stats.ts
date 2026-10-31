@@ -236,7 +236,7 @@ export const BIO_VALUE = "bio";
 export const BIO_LINK = "ilgrimorio.app/ig";
 export const BIO_LONG_LINK = "ilgrimorio.app/?da=bio";
 /** Where a search was typed: the list of the spells, the Bestiario, the search of the Home. */
-export const SEARCH_AREAS = ["incantesimi", "bestiario", "globale"] as const;
+export const SEARCH_AREAS = ["incantesimi", "bestiario", "globale", "armi", "armature"] as const;
 export type SearchArea = (typeof SEARCH_AREAS)[number];
 /** The groups of the filters of the lists (only the group, never a value): spells, then the Bestiario. */
 export const FILTER_GROUPS = ["livello", "scuola", "classe", "tempo", "concentrazione", "rituale", "categoria", "gs", "tipo", "taglia", "habitat"] as const;

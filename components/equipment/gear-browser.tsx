@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
-import { ChevronRight, Search } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import { ParentLink } from "@/components/section-tiles";
 import { useEquipmentEdition } from "@/components/equipment/use-equipment-edition";
@@ -15,7 +15,7 @@ import type { GearListRow } from "@/lib/adventuring-gear-editions";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 import { DidYouMean, useSettledQuery } from "@/components/search/did-you-mean";
 import { searchList } from "@/lib/fuzzy-search";
-import { SEARCH_INPUT } from "@/lib/search-input";
+import { ListSearch } from "@/components/equipment/list-search";
 import { englishShown, type EnglishShown } from "@/lib/english-match";
 import { InEnglish } from "@/components/search/in-english";
 
@@ -95,12 +95,7 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
         <SectionEditionPill section="avventura" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} />
       </div>
       {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo oggetto non c’è nel {missing}.</p>}
-      <label className="relative mt-4 block">
-        <span className="sr-only">Cerca un oggetto</span>
-        <Search size={20} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
-        <input {...SEARCH_INPUT} value={query} onChange={event => setQuery(event.target.value)} placeholder="Cerca: corda, torcia…"
-          className="min-h-12 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-[17px]" />
-      </label>
+      <ListSearch label="Cerca un oggetto" placeholder="Cerca: corda, torcia…" value={query} onChange={setQuery} />
       <p role="status" className="mt-2 text-sm text-muted">{found.length === items.length ? "" : `${found.length} ${found.length === 1 ? "oggetto trovato" : "oggetti trovati"}`}</p>
       {result.suggestion && <DidYouMean name={result.suggestion.nome} onPick={setQuery} className="mt-2" />}
       {packs.length > 0 && !packsPart.shown && packsPart.soon && <SoonBlock id="avventura:dotazioni" title="Dotazioni" className="mt-6" />}
