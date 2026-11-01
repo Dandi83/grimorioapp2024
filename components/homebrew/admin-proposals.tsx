@@ -8,7 +8,9 @@ import { Check, Eye, EyeOff, FileSearch, Pencil, X } from "lucide-react";
 import { approveProposalAction, correctProposalAction, createHomebrewAction, refuseProposalAction, updateHomebrewAction } from "@/app/actions/admin-homebrew";
 import { setPartVisibilityAction } from "@/app/actions/admin-sections";
 import { BADGE_SYNC_EVENT } from "@/lib/app-badge";
+import { parseEditorialExtras } from "@/lib/editorial-draft";
 import { EMPTY_DRAFT, parseDraft, type HomebrewDraft } from "@/lib/homebrew-types";
+import { EditorialFields, SectionEye, editorialPart } from "./editorial-fields";
 import { HomebrewEditor } from "./homebrew-editor";
 import { useEditorFrame } from "../admin-editor-frame";
 
@@ -73,14 +75,20 @@ function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false, o
   const canVerify = typeof verifiedBox === "object" && verifiedBox.saved === "in linea";
   const [verified, setVerified] = useState(typeof verifiedBox === "object" && verifiedBox.shown);
   async function save() {
-    const checked = parseDraft(draft);
+    // «Dalla redazione» (PROMPT 44): the longer limits of the reserved area and its own fields, checked here too.
+    const checked = parseDraft(draft, { editorial: ours });
     if (!checked.ok) {
       setError(checked.error);
       return;
     }
+    const extras = ours ? parseEditorialExtras(editorialPart(draft)) : null;
+    if (extras && !extras.ok) {
+      setError(extras.error);
+      return;
+    }
     setSaving(true);
     setError("");
-    const result = await onSave(checked.draft, canVerify && verified).catch(() => ({ ok: false as const, error: "Salvataggio non riuscito. Riprova." }));
+    const result = await onSave(extras?.ok ? { ...checked.draft, ...extras.extras } : checked.draft, canVerify && verified).catch(() => ({ ok: false as const, error: "Salvataggio non riuscito. Riprova." }));
     setSaving(false);
     if (result.ok) onClose(true); else setError(result.error);
   }
@@ -91,7 +99,11 @@ function HomebrewEditorDialog({ title, initial, onSave, onClose, page = false, o
         <h2 ref={heading} tabIndex={-1} className="font-serif text-2xl outline-none">{title}</h2>
         <button type="button" onClick={() => onClose()} disabled={saving} aria-label="Chiudi editor" className="grid size-11 place-items-center rounded-lg text-muted"><X className="h-5 w-5" aria-hidden="true" /></button>
       </header>
-      <div className="p-4"><HomebrewEditor value={draft} onChange={setDraft} idPrefix="admin-hb" ours={ours} /></div>
+      <div className="p-4">
+        <HomebrewEditor value={draft} onChange={setDraft} idPrefix="admin-hb" ours={ours}
+          titleExtra={ours ? section => <SectionEye section={section} value={draft} onChange={setDraft} /> : undefined}
+          after={ours ? <EditorialFields value={draft} onChange={setDraft} idPrefix="admin-hb" /> : undefined} />
+      </div>
       <footer className="sticky bottom-0 z-10 border-t border-border bg-card px-4 py-3">
         {verifiedBox && (
           <label className="mb-2 flex min-h-11 items-center gap-2.5 text-[14px]" data-editor-verified={typeof verifiedBox === "object" ? verifiedBox.saved ?? "non-simulabile" : "nuova"}>

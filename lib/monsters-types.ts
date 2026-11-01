@@ -73,6 +73,18 @@ export interface Monster {
   homebrew_verificato?: boolean;
   /** The label of the card: «SRD 5.2.1», «SRD 5.1», «Aggiunta da te», «Homebrew»; none for an SRD sheet edited. */
   fonte_scheda?: CardSource;
+  /**
+   * Mostri «Dalla redazione» (PROMPT 44): the five optional sections after the legendary actions (already HTML of
+   * <strong>, <em>, <br> only, made by lib/homebrew-types.ts), the sections hidden from the public and the picture.
+   * Absent on every other sheet: SRD, NO SRD and the community's are drawn as before.
+   */
+  storia?: string;
+  tattiche?: string;
+  tana?: string;
+  agganci?: string;
+  varianti?: string;
+  sezioni_nascoste?: string[];
+  immagine?: MonsterPicture;
 }
 
 export const SIZES = [
@@ -220,3 +232,6 @@ const typeColors: Record<string, string> = {
 export function monsterColor(tipo: string): string {
   return typeColors[typeCategory(tipo)] ?? "#D4AF37";
 }
+
+/** The picture of a creature «Dalla redazione»: three WebP sizes of one version, served by /immagini-mostri. */
+export interface MonsterPicture { v: string; w: number; h: number; alt: string; crediti?: string }

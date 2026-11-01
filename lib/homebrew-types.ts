@@ -29,6 +29,12 @@ export const BLOCK_LABEL: Record<EntryBlock, { title: string; singular: string }
   reazioni: { title: "Reazioni", singular: "Reazione" },
   azioni_leggendarie: { title: "Azioni leggendarie", singular: "Azione leggendaria" },
 };
+/** Mostri «Dalla redazione» (PROMPT 44): five optional sections after the legendary actions (lib/editorial-draft.ts). */
+export const EDITORIAL_SECTIONS = ["storia", "tattiche", "tana", "agganci", "varianti"] as const;
+export type EditorialSection = (typeof EDITORIAL_SECTIONS)[number];
+/** The sections the administrator can hide one by one; head, statistics and abilities are always shown. */
+export type HideableSection = "descrizione" | EntryBlock | EditorialSection;
+
 /** Blocks of each format: the 2014 SRD sheets have no bonus actions. */
 export function blocksOf(edition: HomebrewEdition): EntryBlock[] {
   return edition === "2014" ? ENTRY_BLOCKS.filter(block => block !== "azioni_bonus") : [...ENTRY_BLOCKS];
@@ -72,6 +78,16 @@ export interface HomebrewDraft {
   azioni_leggendarie: HomebrewEntry[];
   /** What the creature is and how it behaves, at the top of the sheet (PROMPT 20); optional, absent on older cards. */
   descrizione?: string;
+  /**
+   * Only «Dalla redazione» (PROMPT 44, never from the public form): the five sections, the sections hidden from the
+   * public, the picture with its text and credits. testo_ricco: texts with **bold** and *italics* (the imported ones).
+   */
+  storia?: string; tattiche?: string; tana?: string; agganci?: string; varianti?: string;
+  sezioni_nascoste?: HideableSection[];
+  immagine?: { v: string; w: number; h: number };
+  immagine_alt?: string;
+  immagine_crediti?: string;
+  testo_ricco?: boolean;
 }
 
 export const EMPTY_DRAFT: HomebrewDraft = {
@@ -82,6 +98,7 @@ export const EMPTY_DRAFT: HomebrewDraft = {
 };
 
 export const LIMITS = { nome: 60, short: 160, entryName: 60, entryText: 1500, entries: 12, nickname: 40, motivo: 500, descrizione: 600 } as const;
+
 /** The whole JSON of a proposal: enough for a big creature, small enough for the database and the antispam. */
 export const PROPOSAL_MAX_BYTES = 48 * 1024;
 
@@ -96,15 +113,20 @@ export function plainText(value: unknown, max: number, multiline = false): strin
   return Array.from(text).length > max ? null : text;
 }
 
-function intIn(value: unknown, min: number, max: number): number | null {
+export function intIn(value: unknown, min: number, max: number): number | null {
   const n = typeof value === "number" ? value : typeof value === "string" && /^-?\d+$/.test(value.trim()) ? Number(value) : NaN;
   return Number.isInteger(n) && n >= min && n <= max ? n : null;
 }
 
 type DraftCheck = { ok: true; draft: HomebrewDraft } | { ok: false; error: string };
 
-/** The server check of a draft: lengths, numbers, choices, plain text. The first problem found is returned. */
-export function parseDraft(input: unknown): DraftCheck {
+/**
+ * The server check of a draft: lengths, numbers, choices, plain text. The first problem found is returned.
+ * editorial: the longer limits of the reserved area (EDITORIAL_LIMITS); the public form never sets it.
+ */
+export function parseDraft(input: unknown, { editorial = false }: { editorial?: boolean } = {}): DraftCheck {
+  // The longer limits of the reserved area (lib/editorial-draft.ts EDITORIAL_LIMITS).
+  const limit = editorial ? { ...LIMITS, entryText: 4000, entries: 20, descrizione: 4000 } : LIMITS;
   if (!input || typeof input !== "object") return { ok: false, error: "Scheda non valida." };
   const data = input as Record<string, unknown>;
   const fail = (error: string): DraftCheck => ({ ok: false, error });
@@ -142,12 +164,12 @@ export function parseDraft(input: unknown): DraftCheck {
   const blocks: Partial<Record<EntryBlock, HomebrewEntry[]>> = {};
   for (const block of ENTRY_BLOCKS) {
     const list = Array.isArray(data[block]) ? data[block] as unknown[] : [];
-    if (list.length > LIMITS.entries) return fail(`${BLOCK_LABEL[block].title}: al massimo ${LIMITS.entries} voci.`);
+    if (list.length > limit.entries) return fail(`${BLOCK_LABEL[block].title}: al massimo ${limit.entries} voci.`);
     const entries: HomebrewEntry[] = [];
     for (const item of list) {
       const entry = (item ?? {}) as Record<string, unknown>;
       const name = plainText(entry.nome ?? "", LIMITS.entryName);
-      const text = plainText(entry.testo ?? "", LIMITS.entryText, true);
+      const text = plainText(entry.testo ?? "", limit.entryText, true);
       if (name === null || text === null) return fail(`${BLOCK_LABEL[block].title}: testo troppo lungo o con caratteri non ammessi (< >).`);
       if (!name && !text) continue;
       if (!text) return fail(`${BLOCK_LABEL[block].title}: scrivi la descrizione di «${name}».`);
@@ -157,8 +179,8 @@ export function parseDraft(input: unknown): DraftCheck {
   }
   if (!blocks.azioni?.length) return fail("Aggiungi almeno un’azione.");
   // Optional (PROMPT 21): the cards and proposals saved before have none.
-  const descrizione = plainText(data.descrizione ?? "", LIMITS.descrizione, true);
-  if (descrizione === null) return fail(`Descrizione: al massimo ${LIMITS.descrizione} caratteri, senza < >.`);
+  const descrizione = plainText(data.descrizione ?? "", limit.descrizione, true);
+  if (descrizione === null) return fail(`Descrizione: al massimo ${limit.descrizione} caratteri, senza < >.`);
   return {
     ok: true,
     draft: {
@@ -192,7 +214,7 @@ const XP: Record<string, string> = {
   "25": "75.000", "26": "90.000", "27": "105.000", "28": "120.000", "29": "135.000", "30": "155.000",
 };
 /** Experience of a challenge rating, as printed on the SRD sheets. */
-const experienceOf = (gs: string) => XP[gs] ?? "";
+export const experienceOf = (gs: string) => XP[gs] ?? "";
 
 const FEMININE_TYPES = new Set(["Aberrazione", "Bestia", "Melma", "Mostruosità"]);
 /** «Mostruosità Grande», «Drago Medio»: the size agrees with the type, as on the SRD subtitle line. */
@@ -203,17 +225,32 @@ function sizeFor(taglia: string, tipo: string): string {
 const LABELS = /(Tiro per colpire (?:in mischia o a distanza|in mischia|a distanza):|Attacco con (?:arma|incantesimo) (?:da mischia o a distanza|da mischia|a distanza):|Colpito o mancato:|Colpito:|Mancato:|Fallimento o successo:|Fallimento:|Successo:|Primo fallimento:|Secondo fallimento:|Tiro salvezza su (?:Forza|Destrezza|Costituzione|Intelligenza|Saggezza|Carisma):)/g;
 const escape = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+/**
+ * The marks of the editorial texts (PROMPT 44), on text already escaped: **bold** and *italics*. Only on the cards that
+ * have them (testo_ricco and the five sections): the asterisks of every other card stay as written.
+ */
+export function richMarks(escaped: string): string {
+  return escaped.replace(/\*\*(?=\S)([^*\n]*?\S)\*\*/g, "<strong>$1</strong>").replace(/\*(?=\S)([^*\n]*?\S)\*/g, "<em>$1</em>");
+}
+
+/** A text of the five sections: paragraphs apart (a blank line), lines kept, **bold** and *italics*. */
+export function richHtml(text: string | undefined): string {
+  return text ? text.split(/\n{2,}/).map(part => richMarks(escape(part.trim())).replace(/\n/g, "<br>")).filter(Boolean).join("<br><br>") : "";
+}
+
 /** One block of the sheet: «<strong>Nome.</strong> testo», paragraphs apart, rule labels in italics as on the SRD sheets. */
-export function entriesHtml(entries: readonly HomebrewEntry[]): string {
+export function entriesHtml(entries: readonly HomebrewEntry[], rich = false): string {
   return entries.map(entry => {
-    const body = escape(entry.testo).replace(LABELS, "<em>$1</em>").replace(/\n+/g, "<br>");
+    const marked = rich ? richMarks(escape(entry.testo)) : escape(entry.testo);
+    const body = marked.replace(LABELS, "<em>$1</em>").replace(/\n+/g, "<br>");
     const title = entry.nome ? `<strong>${escape(entry.nome.replace(/\.\s*$/, ""))}.</strong> ` : "";
     return `${title}${body}`;
   }).join("<br><br>");
 }
 
-/** The description: plain text, paragraphs apart. */
-export function descriptionHtml(text: string | undefined): string {
+/** The description: plain text, paragraphs apart; **bold** and *italics* on an editorial text (rich). */
+export function descriptionHtml(text: string | undefined, rich = false): string {
+  if (rich) return richHtml(text);
   return text ? escape(text).split(/\n{2,}/).map(part => part.replace(/\n/g, "<br>")).join("<br><br>") : "";
 }
 
@@ -233,6 +270,7 @@ export function draftToMonster(draft: HomebrewDraft, id: string): Monster {
   const sensi = [`Percezione passiva ${passive}`, draft.sensi].filter(Boolean).join(legacy ? ", " : "; ");
   const immunities = [draft.immunita_danni, draft.immunita_condizioni].filter(Boolean).join("; ");
   const dex = mod("destrezza");
+  const rich = draft.testo_ricco === true;
   return {
     id, nome: draft.nome, tipo: draft.tipo, taglia: draft.taglia, allineamento: draft.allineamento,
     sottotitolo_fonte: `${draft.tipo} ${sizeFor(draft.taglia, draft.tipo)}, ${draft.allineamento}`,
@@ -242,10 +280,14 @@ export function draftToMonster(draft: HomebrewDraft, id: string): Monster {
     forza: draft.forza, destrezza: draft.destrezza, costituzione: draft.costituzione, intelligenza: draft.intelligenza, saggezza: draft.saggezza, carisma: draft.carisma,
     tiri_salvezza: saves, abilita: typographicMinus(draft.abilita), vulnerabilita: draft.vulnerabilita, resistenze: draft.resistenze,
     immunita_danni: legacy ? draft.immunita_danni : "", immunita_condizioni: legacy ? draft.immunita_condizioni : "",
-    ...(legacy ? {} : { immunita: immunities, iniziativa: `${signed(dex)} (${10 + dex})`, bonus_competenza: signed(prof), azioni_bonus: entriesHtml(draft.azioni_bonus) }),
+    ...(legacy ? {} : { immunita: immunities, iniziativa: `${signed(dex)} (${10 + dex})`, bonus_competenza: signed(prof), azioni_bonus: entriesHtml(draft.azioni_bonus, rich) }),
     sensi, linguaggi: draft.linguaggi || "—",
-    tratti: entriesHtml(draft.tratti), azioni: entriesHtml(draft.azioni), reazioni: entriesHtml(draft.reazioni), azioni_leggendarie: entriesHtml(draft.azioni_leggendarie),
-    descrizione: descriptionHtml(draft.descrizione), habitat: draft.habitat, edizione: legacy ? "2014" : "2024",
+    tratti: entriesHtml(draft.tratti, rich), azioni: entriesHtml(draft.azioni, rich), reazioni: entriesHtml(draft.reazioni, rich), azioni_leggendarie: entriesHtml(draft.azioni_leggendarie, rich),
+    descrizione: descriptionHtml(draft.descrizione, rich), habitat: draft.habitat, edizione: legacy ? "2014" : "2024",
+    // PROMPT 44, only on the cards that have them: every other sheet keeps exactly its keys.
+    ...Object.fromEntries(EDITORIAL_SECTIONS.filter(key => draft[key]?.trim()).map(key => [key, richHtml(draft[key])])),
+    ...(draft.sezioni_nascoste?.length ? { sezioni_nascoste: [...draft.sezioni_nascoste] } : {}),
+    ...(draft.immagine && draft.immagine_alt ? { immagine: { ...draft.immagine, alt: draft.immagine_alt, ...(draft.immagine_crediti ? { crediti: draft.immagine_crediti } : {}) } } : {}),
   };
 }
 

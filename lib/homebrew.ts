@@ -139,8 +139,7 @@ export async function getHomebrew(id: string): Promise<HomebrewRow | undefined> 
   return (await read<HomebrewRow>("SELECT * FROM grimorio_homebrew WHERE id = $1", [id]))[0];
 }
 
-async function freeId(nome: string): Promise<string> {
-  const base = homebrewId(nome);
+async function freeId(base: string): Promise<string> {
   const taken = new Set((await pool.query<{ id: string }>("SELECT id FROM grimorio_homebrew WHERE id = $1 OR id LIKE $2", [base, `${base}-%`])).rows.map(row => row.id));
   let id = base;
   for (let n = 2; taken.has(id); n++) id = `${base}-${n}`;
@@ -156,9 +155,10 @@ async function log(homebrewIdValue: string, nome: string, edizione: string, azio
  * Bilanciamento saved with it. The pill starts off: the administrator turns it on (editor or /admin/bilanciamento) once
  * the saved verdict is «in linea» (PROMPT 26).
  */
-export async function createHomebrew(draft: HomebrewDraft, giudizio: string | null = null): Promise<string> {
+/** preferredId: the address asked by «Importa mostro» (PROMPT 44), «homebrew-…»; the name's otherwise. */
+export async function createHomebrew(draft: HomebrewDraft, giudizio: string | null = null, preferredId?: string): Promise<string> {
   await ensureHomebrewTables();
-  const id = await freeId(draft.nome);
+  const id = await freeId(preferredId && isHomebrewId(preferredId) ? preferredId : homebrewId(draft.nome));
   await pool.query("INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, licenza, bilanciamento) VALUES ($1, $2, $3, NULL, $4, $5)", [id, JSON.stringify(draft), draft.edizione, HOMEBREW_LICENSE, giudizio]);
   await log(id, draft.nome, draft.edizione, "creata");
   return id;
