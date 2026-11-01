@@ -8,7 +8,14 @@ export const ABILITIES: Ability[] = ["for", "des", "cos", "int", "sag", "car"];
 
 /** A group of dice: count × dX + flat (flat alone when count is 0). */
 export type Dice = { count: number; sides: number; flat: number };
-export type Attack = { name: string; bonus: number; dice: Dice[]; average: number };
+export type Attack = {
+  name: string; bonus: number; dice: Dice[]; average: number;
+  /** PROMPT 46: «Ricarica 5–6» or «N/giorno» in the name, never the attack the multiattack repeats. */
+  recharge?: number;
+  perDay?: number;
+  /** The multiattack names it (it may replace one of its attacks when ready). */
+  inMultiattack?: boolean;
+};
 export type SaveAbility = {
   name: string; ability: Ability; dc: number; dice: Dice[]; average: number;
   /** Half the damage on a success. */
@@ -109,7 +116,11 @@ function readAttack(name: string, text: string): Attack | undefined {
   const hit = /Colpito:/i.exec(text);
   if (!hit) return undefined;
   const { dice, average } = damageDice(text.slice(hit.index));
-  return dice.length ? { name: cleanName(name), bonus, dice, average } : undefined;
+  if (!dice.length) return undefined;
+  const recharge = /ricarica\s*(\d)/i.exec(name), perDay = /(\d+)\s*\/\s*giorno/i.exec(name);
+  // «Ricarica dopo un riposo breve o lungo»: once per fight.
+  const limited = recharge ? { recharge: Number(recharge[1]) } : perDay ? { perDay: Number(perDay[1]) } : /ricarica/i.test(name) ? { perDay: 1 } : {};
+  return { name: cleanName(name), bonus, dice, average, ...limited };
 }
 
 const cleanName = (name: string) => name.replace(/\.\s*$/, "").trim();
@@ -205,6 +216,10 @@ export function readMonster(sheet: SheetFields): MonsterModel {
     .filter(({ name, text }) => !/^multiattacco/i.test(name) && attackBonus(text) === undefined)
     .map(({ name, text }) => readSave(name, text)).filter((save): save is SaveAbility => !!save);
   const multi = actions.find(({ name }) => /^multiattacco/i.test(name));
+  const multiText = normalize(multi?.text ?? "");
+  for (const attack of attacks) {
+    if ((attack.recharge || attack.perDay) && multiText.includes(normalize(attack.name.replace(/\s*\(.*\)$/, "")))) attack.inMultiattack = true;
+  }
   const traits = plain(sheet.tratti || "");
   const resistance = /Resistenza leggendaria\s*\((\d+)\s*\/\s*giorno/i.exec(traits);
   const defences = normalize(`${sheet.resistenze || ""} ${sheet.immunita_danni || ""} ${(sheet.immunita || "").split(";")[0]}`);

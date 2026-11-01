@@ -20,7 +20,7 @@ const percentile = (fraction: number) => `${Math.round(fraction * 100)}°`;
  */
 export const CALIBRATION = {
   2014: { total: 319, inLine: 240, check: 66, out: 13 },
-  2024: { total: 328, inLine: 247, check: 75, out: 6 },
+  2024: { total: 328, inLine: 246, check: 75, out: 7 },
 } as const;
 const share = ({ inLine, total }: { inLine: number; total: number }) => `${inLine} su ${total} (${Math.round((inLine / total) * 100)}%)`;
 

@@ -15,7 +15,7 @@ export interface CrReferenceRow { gs: string; n: number; pf: number; ca: number;
 export interface CrReference { metodo: string; righe: CrReferenceRow[] }
 
 interface CrInput { pf: number; ca: number; azioni: string; gs: string }
-interface CrResult {
+export interface CrResult {
   difesa: string;
   attacco: string;
   stimato: string;
@@ -59,26 +59,58 @@ export function saveDc(text: string): number | null {
 
 const isAttack = (text: string) => /Tiro per colpire|Attacco con (?:arma|incantesimo)/i.test(text);
 
-/** Damage per round: the Multiattack (named attacks × their damage, or N attacks × the best one) or the best action. */
+/** «Ricarica 5–6», «Ricarica dopo un riposo», «1/giorno», «3/Giorno»: an action that cannot be used every round. */
+const LIMITED = /ricarica|\d+\s*\/\s*giorno/i;
+const keyOf = (name: string) => name.toLowerCase().replace(/\s*\(.*\)$/, "").trim();
+const COUNT = "un|uno|una|due|tre|quattro|cinque|sei|sette|otto|\\d";
+const countOf = (word: string) => NUMBERS[word] ?? Number(word);
+const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * Damage per round (PROMPT 46): the Multiattack (named attacks × their damage, or N attacks × the best one, or «N attacchi,
+ * scegliendo in qualsiasi combinazione tra X e Y» × the stronger of X and Y) or the best action. An action with
+ * «Ricarica» or «N/giorno» never counts as the attack the Multiattack repeats: used once every 3 rounds, it adds
+ * (its damage − the attack it replaces) ÷ 3 when the Multiattack lets it replace an attack, else the round is the better
+ * of the Multiattack and the 3-round average (once the limited action, twice the Multiattack). Damage at the start of
+ * each turn is counted once, as written in the action.
+ */
 export function damagePerRound(actionsText: string): number {
-  const entries = entriesOf(actionsText);
-  const damage = new Map(entries.map(entry => [entry.nome.toLowerCase().replace(/\s*\(.*\)$/, ""), averageDamage(entry.testo)]));
-  const best = Math.max(0, ...entries.map(entry => averageDamage(entry.testo)));
-  const attacks = entries.filter(entry => isAttack(entry.testo)).map(entry => averageDamage(entry.testo));
-  const multi = entries.find(entry => /^multiattacco/i.test(entry.nome));
-  if (!multi) return best;
-  const text = multi.testo.toLowerCase();
-  let named = 0;
-  for (const [name, value] of damage) {
-    if (!name || name.startsWith("multiattacco") || !value) continue;
-    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const mention = new RegExp(`\\b(un|uno|una|due|tre|quattro|cinque|sei|sette|otto|\\d)\\s+(?:attacc[oh]i?\\s+)?(?:con\\s+(?:il\\s+|la\\s+|lo\\s+|l['’]\\s*|i\\s+|le\\s+|gli\\s+)?)?(?:[a-zà-ù]+\\s+)?${escaped}`, "i").exec(text);
-    if (mention) named += (NUMBERS[mention[1]] ?? Number(mention[1])) * value;
+  const entries = entriesOf(actionsText).map(entry => ({
+    key: keyOf(entry.nome), damage: averageDamage(entry.testo), attack: isAttack(entry.testo),
+    limited: LIMITED.test(entry.nome), multi: /^multiattacco/i.test(entry.nome),
+  }));
+  const regular = entries.filter(entry => !entry.multi && !entry.limited);
+  const limited = entries.filter(entry => !entry.multi && entry.limited && entry.damage > 0);
+  const best = Math.max(0, ...regular.map(entry => entry.damage));
+  const regularAttacks = regular.filter(entry => entry.attack).map(entry => entry.damage);
+  const bestAttack = regularAttacks.length ? Math.max(...regularAttacks) : best;
+  const multi = entriesOf(actionsText).find(entry => /^multiattacco/i.test(entry.nome));
+  const text = multi ? multi.testo.toLowerCase() : "";
+  let base = best, perAttack = bestAttack;
+  if (multi) {
+    let named = 0;
+    for (const entry of regular) {
+      if (!entry.key || !entry.damage) continue;
+      const mention = new RegExp(`\\b(${COUNT})\\s+(?:attacc[oh]i?\\s+)?(?:con\\s+(?:il\\s+|la\\s+|lo\\s+|l['’]\\s*|i\\s+|le\\s+|gli\\s+)?)?(?:[a-zà-ù]+\\s+)?${escape(entry.key)}`, "i").exec(text);
+      if (mention) named += countOf(mention[1]) * entry.damage;
+    }
+    const total = new RegExp(`\\b(${COUNT})\\s+attacchi\\b`).exec(text);
+    const count = total ? countOf(total[1]) : 0;
+    // «tre attacchi, scegliendo in qualsiasi combinazione tra Bisturi e Lancette»: the stronger of the attacks it names.
+    const choice = /\btra\s+([^.;]+)/.exec(text.slice(total ? total.index : 0));
+    const chosen = choice ? regular.filter(entry => entry.key && entry.damage && choice[1].includes(entry.key)).map(entry => entry.damage) : [];
+    if (chosen.length) perAttack = Math.max(...chosen);
+    base = Math.max(named || count * perAttack, best);
   }
-  const total = /\b(un|uno|una|due|tre|quattro|cinque|sei|sette|otto|\d)\s+attacchi\b/.exec(text);
-  const count = total ? NUMBERS[total[1]] ?? Number(total[1]) : 0;
-  const byCount = count * (attacks.length ? Math.max(...attacks) : best);
-  return Math.max(named || byCount, best);
+  let round = base;
+  for (const entry of limited) {
+    const inMulti = !!multi && !!entry.key && text.includes(entry.key);
+    const value = inMulti
+      ? base + Math.max(0, entry.damage - (/sostitu/.test(text) ? perAttack : 0)) / 3
+      : Math.max(base, (entry.damage + 2 * base) / 3);
+    round = Math.max(round, value);
+  }
+  return Math.round(round);
 }
 
 function gsNumber(gs: string): number {
@@ -133,4 +165,4 @@ export function estimateChallenge(input: CrInput, reference: CrReference): CrRes
   return { difesa, attacco, stimato, esito, spiegazione, danni, bonus, cd };
 }
 
-export const VERDICT_LABEL: Record<CrResult["esito"], string> = { "in-linea": "GS in linea", "troppo-forte": "Troppo forte", "troppo-debole": "Troppo debole" };
+export { VERDICT_LABEL } from "./homebrew-cr-labels";

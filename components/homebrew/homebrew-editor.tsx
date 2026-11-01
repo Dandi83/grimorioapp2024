@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 
-import reference from "@/lib/data/gs-riferimento.json";
 import { HABITATS } from "@/lib/habitats";
-import { estimateChallenge, statsOf, VERDICT_LABEL, type CrReference } from "@/lib/homebrew-cr";
+import type { CrResult } from "@/lib/homebrew-cr";
+import { VERDICT_LABEL } from "@/lib/homebrew-cr-labels";
 import {
   ABILITY_KEYS, ABILITY_SHORT, BLOCK_LABEL, CHALLENGE_RATINGS, HOMEBREW_ALIGNMENTS, HOMEBREW_EDITION_LABEL, HOMEBREW_EDITIONS, HOMEBREW_TYPES, LIMITS,
   blocksOf, draftActionText, draftToMonster, formatWords, mismatchedFormat, modifier, proficiency, type EntryBlock, type HideableSection, type HomebrewDraft, type HomebrewEdition,
@@ -108,10 +108,17 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
   const sheet = useMemo(() => draftToMonster(value, "anteprima"), [value]);
   // The preview links as the public sheet will (lib/card-display.ts), with the catalog set by the page.
   const display = useCardDisplay();
+  // PROMPT 46: the check and its table arrive when the editor opens, never with the page («Proponi» is fetched ahead).
+  const [checkSheet, setCheckSheet] = useState<((monster: typeof sheet) => CrResult) | null>(null);
+  useEffect(() => {
+    let live = true;
+    void import("@/lib/homebrew-cr-check").then(module => { if (live) setCheckSheet(() => module.checkSheet); });
+    return () => { live = false; };
+  }, []);
   const check = useMemo(() => {
-    if (!(value.pf > 0) || !(value.ca > 0)) return null;
-    return estimateChallenge(statsOf(sheet), reference as CrReference);
-  }, [sheet, value.pf, value.ca]);
+    if (!checkSheet || !(value.pf > 0) || !(value.ca > 0)) return null;
+    return checkSheet(sheet);
+  }, [checkSheet, sheet, value.pf, value.ca]);
   const dex = Number.isFinite(value.destrezza) ? Math.floor((value.destrezza - 10) / 2) : 0;
 
   const updateEntry = (block: EntryBlock, index: number, field: "nome" | "testo", next: string) =>
@@ -283,7 +290,7 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
 }
 
 /** The challenge check: defence, attack and estimate in three boxes, then the verdict. Only a notice, never blocking. */
-export function ChallengeCheck({ check, declared }: { check: ReturnType<typeof estimateChallenge>; declared: string }) {
+export function ChallengeCheck({ check, declared }: { check: CrResult; declared: string }) {
   return (
     <section aria-label="Controllo del grado di sfida" className="rounded-[14px] border-[1.5px] border-[#2D4C7A] bg-[#E8EEF7] p-4 text-[#1E3557]" data-cr-check={check.esito}>
       <h2 className="font-serif text-xl font-bold">Controllo del grado di sfida</h2>

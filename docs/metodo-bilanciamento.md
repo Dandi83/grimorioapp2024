@@ -12,7 +12,7 @@ Leggiamo la scheda come la leggerebbe un master: Classe Armatura, punti ferita, 
 
 ### 2. Migliaia di combattimenti
 
-La creatura affronta 3.000 volte, per ogni modo di giocarla, un gruppo di riferimento di 4 personaggi (guerriero, chierico, ladro e mago) di livello pari al suo GS, da 1 a 20. Misuriamo i danni che fa a ogni round, quanti round resiste e quanto spesso un personaggio finisce a terra. Facciamo lo stesso con i mostri ufficiali dell’SRD (5.1 per il 2014, 5.2.1 con gli animali per il 2024): per ogni misura c’è una fascia, quella dove si trovano 9 mostri ufficiali su 10 del suo GS. Con questa regola, circa 8 mostri ufficiali su 10 risultano "in linea": 240 su 319 (75%) nel 2014 e 247 su 328 (75%) nel 2024.
+La creatura affronta 3.000 volte, per ogni modo di giocarla, un gruppo di riferimento di 4 personaggi (guerriero, chierico, ladro e mago) di livello pari al suo GS, da 1 a 20. Misuriamo i danni che fa a ogni round, quanti round resiste e quanto spesso un personaggio finisce a terra. Facciamo lo stesso con i mostri ufficiali dell’SRD (5.1 per il 2014, 5.2.1 con gli animali per il 2024): per ogni misura c’è una fascia, quella dove si trovano 9 mostri ufficiali su 10 del suo GS. Con questa regola, circa 8 mostri ufficiali su 10 risultano "in linea": 240 su 319 (75%) nel 2014 e 246 su 328 (75%) nel 2024.
 
 ### 3. Tre modi di giocarlo
 
@@ -74,7 +74,7 @@ Guerriero / chierico / ladro / mago, livello pari al GS (arrotondato, da 1 a 20)
 - In linea: al massimo 2 misure su 7 fuori dalla fascia, ciascuna di non più del 20%.
 - Fuori dal GS: almeno 2 misure fuori dalla fascia di più del 50%, oppure una sola di più del 100%.
 - Da controllare: tutti gli altri casi.
-- Taratura sui mostri ufficiali: ognuno, confrontato con il suo gruppo senza sé stesso, riceve il giudizio come una creatura nuova. Con questa regola risultano «in linea» 240 su 319 (75%) nel 2014 e 247 su 328 (75%) nel 2024; «fuori dal GS» 13 nel 2014 e 6 nel 2024. La stessa regola vale per tutti, senza eccezioni per singoli mostri.
+- Taratura sui mostri ufficiali: ognuno, confrontato con il suo gruppo senza sé stesso, riceve il giudizio come una creatura nuova. Con questa regola risultano «in linea» 240 su 319 (75%) nel 2014 e 246 su 328 (75%) nel 2024; «fuori dal GS» 13 nel 2014 e 7 nel 2024. La stessa regola vale per tutti, senza eccezioni per singoli mostri.
 - Gruppo di confronto: almeno 6 mostri ufficiali dello stesso GS e della stessa edizione; se sono meno, si aggiungono quelli dei GS vicini.
 - Combattimenti: 3.000 per ogni modo di giocare e 300 per ogni situazione di prova; 800 per ogni modo di giocare dei mostri ufficiali, sempre con lo stesso seme, così il calcolo dà sempre lo stesso risultato.
 - Situazioni di prova: un avviso quando la creatura stermina il gruppo o resiste più del 95° percentile dei mostri ufficiali nella stessa situazione, o quando i personaggi vincono meno del 5° percentile. Ogni avviso scatta al massimo su 1 mostro ufficiale su 10.
@@ -93,7 +93,7 @@ I mostri ufficiali sono il riferimento: ognuno riceve il giudizio come una creat
 
 La regola in parole semplici: per ogni modo di giocare (ottimale, a caso, prudente) guardiamo i danni a round e i round di resistenza; con il modo ottimale guardiamo anche quanto spesso almeno un personaggio finisce a terra. Sono sette misure. Ogni misura ha la sua fascia, dove cadono 9 mostri ufficiali su 10 dello stesso GS (dal 5° al 95° percentile). La creatura è «in linea» se al massimo due misure su sette escono dalla fascia, e ognuna di poco: non più del 20% oltre il bordo. Basta una misura fuori di più del 20% per «da controllare». È «fuori dal GS» se almeno due misure escono di oltre la metà (50%), oppure una sola di oltre il doppio (100%).
 
-Perché il 20% (PROMPT 29): il punto di partenza era il 15%, da alzare a passi di 5% (al massimo 25%) finché i mostri ufficiali «in linea» tornano tra il 75% e l’85% in entrambe le edizioni. Con il 15% erano 234 su 319 (73,4%) nel 2014 e 242 su 328 (73,8%) nel 2024, sotto il 75%; con il 20% sono 240 (75,2%) e 247 (75,3%). Con la regola precedente (PROMPT 26: fino a 2 misure su 6 fuori senza limite di distanza, «PG a terra» escluso) erano 266 (83,4%) e 267 (81,4%). Esempio: una creatura con il 40% di danni in più del 95° percentile in due modi di giocare era «in linea»; ora è «da controllare». `tests/balance-calibration.cjs` ricalcola la scelta (`chooseTolerance`) e controlla anche questo esempio.
+Perché il 20% (PROMPT 29): il punto di partenza era il 15%, da alzare a passi di 5% (al massimo 25%) finché i mostri ufficiali «in linea» tornano tra il 75% e l’85% in entrambe le edizioni. Con il 15% erano 234 su 319 (73,4%) nel 2014 e 242 su 328 (73,8%) nel 2024, sotto il 75%; con il 20% sono 240 (75,2%) e 246 (75%). Con la regola precedente (PROMPT 26: fino a 2 misure su 6 fuori senza limite di distanza, «PG a terra» escluso) erano 266 (83,4%) e 267 (81,4%). Esempio: una creatura con il 40% di danni in più del 95° percentile in due modi di giocare era «in linea»; ora è «da controllare». `tests/balance-calibration.cjs` ricalcola la scelta (`chooseTolerance`) e controlla anche questo esempio.
 
 Pillole già attive: la regola nuova non le toglie da sola. In /admin/bilanciamento, se il giudizio ricalcolato di una creatura con la pillola attiva non è più «In linea», accanto alla casella compare «Giudizio cambiato: ricontrolla»; decide l’amministratore (togliere la casella, oppure correggere la scheda e premere «Ricalcola»).
 
@@ -102,7 +102,7 @@ Pillole già attive: la regola nuova non le toglie da sola. In /admin/bilanciame
 | Edizione | Mostri SRD | In linea | Da controllare | Fuori dal GS |
 |---|---|---|---|---|
 | 2014 | 319 | 240 (75,2%) | 66 (20,7%) | 13 (4,1%) |
-| 2024 | 328 | 247 (75,3%) | 75 (22,9%) | 6 (1,8%) |
+| 2024 | 328 | 246 (75%) | 75 (22,9%) | 7 (2,1%) |
 
 ### Avvisi sui mostri SRD (quanti mostri ne ricevono almeno uno)
 
@@ -126,7 +126,7 @@ Pillole già attive: la regola nuova non le toglie da sola. In /admin/bilanciame
 | `prova:arcano:round` | 25 (7,8%) | 24 (7,3%) |
 | `prova:arcano:sterminato` | 20 (6,3%) | 16 (4,9%) |
 | `prova:arcano:vittorie` | 20 (6,3%) | 16 (4,9%) |
-| `prova:cinque:round` | 23 (7,2%) | 22 (6,7%) |
+| `prova:cinque:round` | 23 (7,2%) | 21 (6,4%) |
 | `prova:cinque:sterminato` | 7 (2,2%) | 3 (0,9%) |
 | `prova:cinque:vittorie` | 7 (2,2%) | 3 (0,9%) |
 | `prova:marziale:round` | 23 (7,2%) | 27 (8,2%) |
@@ -142,8 +142,8 @@ Pillole già attive: la regola nuova non le toglie da sola. In /admin/bilanciame
 | `prova:sotto:sterminato` | 20 (6,3%) | 18 (5,5%) |
 | `prova:sotto:vittorie` | 19 (6%) | 18 (5,5%) |
 | `prova:tre:round` | 23 (7,2%) | 26 (7,9%) |
-| `prova:tre:sterminato` | 21 (6,6%) | 22 (6,7%) |
-| `prova:tre:vittorie` | 21 (6,6%) | 22 (6,7%) |
+| `prova:tre:sterminato` | 21 (6,6%) | 21 (6,4%) |
+| `prova:tre:vittorie` | 21 (6,6%) | 21 (6,4%) |
 
 ## Dettagli tecnici
 
