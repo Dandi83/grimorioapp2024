@@ -1,7 +1,9 @@
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { CopyrightLine } from "@/components/legal/copyright";
 import { StatisticsSwitch } from "@/components/statistics/statistics-switch";
-export const metadata={title:"Come usiamo i dati — Il Grimorio.App"};
+export const metadata = pageMetadata({ name: "Come usiamo i dati", section: "Info", path: "/privacy",
+  description: "Come Il Grimorio.App usa i dati: statistiche anonime di prima parte, cookie tecnici, moduli e come rinunciare alle statistiche." });
 /** «Come usiamo i dati»: what the statistics count, why, for how long, and the switch to be left out (28 October 2026). */
 export default function PrivacyPage() {
   return <article className="space-y-5 p-6 text-sm leading-6 text-muted">

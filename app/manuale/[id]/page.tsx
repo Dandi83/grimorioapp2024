@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { fitDescription, dndEdition, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
@@ -33,7 +35,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!entry) notFound();
   if (entry.category === "condizioni") await editionCard("condizioni", entry.edizione === "2014" ? "2014" : "2024");
   else if (!manualAvailable(process.env.VERCEL_ENV)) notFound();
-  return { title: `${entry.title} — ${entry.category === "condizioni" ? "Condizioni" : "Manuale"} · Il Grimorio.App` };
+  const edition = entry.edizione === "2014" ? "2014" : "2024";
+  const isCondition = entry.category === "condizioni";
+  return pageMetadata({ name: entry.title, section: isCondition ? "Condizioni" : "Manuale", edition: isCondition ? edition : undefined, path: `/manuale/${entry.id}`,
+    description: isCondition
+      ? fitDescription(`${entry.title}, condizione di ${dndEdition(edition)}: cosa comporta per la creatura e come si conclude, in italiano su Il Grimorio.App.`)
+      : fitDescription(`${entry.title}: voce del manuale di D&D 5e in italiano, con le regole spiegate su Il Grimorio.App.`) });
 }
 
 export default async function ManualEntryPage({ params }: { params: Promise<{ id: string }> }) {
@@ -52,6 +59,7 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
 
   return (
     <article className="min-w-0 px-6 py-7">
+      {isCondition && <Breadcrumbs crumbs={[{ name: "Compendio", path: "/compendio" }, { name: "Condizioni", path: "/compendio/condizioni" }, { name: `${entry.title}${edition === "2014" ? " (2014)" : ""}`, path: `/manuale/${entry.id}` }]} />}
       {hiddenEdition && <HiddenPartBar id={partId("condizioni", edition)} />}
       {isCondition ? (
         <div className="relative -ml-4 h-12"><BackButton /></div>

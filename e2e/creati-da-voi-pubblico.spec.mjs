@@ -181,7 +181,8 @@ test("«Beta»: on the row «Creature originali», the section and the form, wit
   await expect(note).toBeHidden();
   for (const path of ["/bestiario/creati-da-voi", "/bestiario/proponi", "/bestiario/creature-originali"]) {
     await page.goto(path);
-    const pill = page.getByRole("heading", { level: 1 }).locator("[data-beta-pill]");
+    // PROMPT 45: next to the title, out of the H1 (Google reads the name alone); the same look.
+    const pill = page.getByRole("heading", { level: 1 }).locator("xpath=..").locator("[data-beta-pill]");
     await expect(pill, path).toHaveText("Beta");
     await expect(pill).toHaveCSS("color", "rgb(122, 78, 0)");
     await expect(pill).toHaveCSS("background-color", "rgb(252, 239, 208)");

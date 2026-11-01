@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 
 import { ClassIcon } from "@/components/classes/class-icon";
@@ -8,7 +10,8 @@ import { pageEditions, sectionPage } from "@/lib/section-view";
 import { CLASS_COLORS, classHref, hitDie, primaryAbilities, type ClassEntry } from "@/lib/classes";
 import type { ClassEdition } from "@/lib/classes-types";
 
-export const metadata = { title: "Classi — Compendio — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Classi", section: "Compendio", path: "/classi",
+  description: "Le classi di D&D 5e in italiano, edizioni 2014 e 2024: privilegi per livello, sottoclassi e tabelle, dal Barbaro al Mago." });
 // Manual corrections from the admin area appear within five minutes (at once after saving).
 export const revalidate = 300;
 
@@ -47,6 +50,8 @@ export default async function ClassesPage() {
   // An edition hidden from /admin/sezioni is not in the page.
   const shown = await pageEditions("classi");
   return (
+    <>
+      <Breadcrumbs crumbs={[{ name: "Compendio", path: "/compendio" }, { name: "Classi", path: "/classi" }]} />
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/compendio" label="Compendio" />
       <ClassListEditions
@@ -59,5 +64,6 @@ export default async function ClassesPage() {
         }}
       />
     </div>
+    </>
   );
 }

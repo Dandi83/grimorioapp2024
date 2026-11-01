@@ -1,9 +1,11 @@
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
 import { CopyrightLine, CopyrightTerms } from "@/components/legal/copyright";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
 
-export const metadata = { title: "Termini d’uso — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Termini d’uso", section: "Info", path: "/termini",
+  description: "I termini d’uso di Il Grimorio.App: come si usa l’app, le regole per le creature proposte e per le segnalazioni, i limiti." });
 
 /** Last update of the text below: change it with every change of the terms. */
 const UPDATED = "28 ottobre 2026";

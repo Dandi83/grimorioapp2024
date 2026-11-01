@@ -80,6 +80,7 @@ async function refreshPages() {
   updateTag(SECTIONS_TAG);
   revalidatePath("/", "layout");
   revalidatePath("/ricerca-indice.json");
+  revalidatePath("/sitemap.xml");
 }
 
 /**

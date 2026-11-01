@@ -96,7 +96,8 @@ export function CommunityHeader({ children }: { children?: React.ReactNode }) {
     <div data-community-header="">
       <BackButton fallback="/bestiario" label="Bestiario" />
       <div className="mt-1 flex items-start justify-between gap-3">
-        <h1 className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground">I mostri creati da voi <BetaPill /></h1>
+        {/* PROMPT 45: only the name in the H1; «Beta» next to it, the same look. */}
+        <div className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground"><h1 className="inline">I mostri creati da voi</h1> <BetaPill /></div>
         {children}
       </div>
       <p className="mt-2 text-[15px] leading-6 text-muted">
@@ -144,7 +145,8 @@ export function OriginalsHeader({ children }: { children?: React.ReactNode }) {
     <div data-originals-header="">
       <BackButton fallback="/bestiario" label="Bestiario" />
       <div className="mt-1 flex items-start justify-between gap-3">
-        <h1 className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground">Creature originali <BetaPill /></h1>
+        {/* PROMPT 45: only the name in the H1; «Beta» next to it, the same look. */}
+        <div className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground"><h1 className="inline">Creature originali</h1> <BetaPill /></div>
         {children}
       </div>
       <p className="mt-2 text-[15px] leading-6 text-muted">Le creature della redazione e quelle della community, tutte insieme. Non fanno parte dei manuali.</p>

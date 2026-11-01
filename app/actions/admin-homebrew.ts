@@ -16,6 +16,7 @@ function refresh() {
   updateTag("monsters");
   revalidatePath("/", "layout");
   revalidatePath("/ricerca-indice.json");
+  revalidatePath("/sitemap.xml");
 }
 
 async function siteOrigin(): Promise<string> {

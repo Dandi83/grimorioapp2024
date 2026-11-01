@@ -28,5 +28,6 @@ export async function setSrdOnlyAction(_prev: SrdOnlyResult, form: FormData): Pr
   updateTag("monsters");
   revalidatePath("/", "layout");
   revalidatePath("/ricerca-indice.json");
+  revalidatePath("/sitemap.xml");
   return { ok: true, attiva, quanti };
 }

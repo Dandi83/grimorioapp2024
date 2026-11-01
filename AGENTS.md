@@ -65,6 +65,7 @@ Regola esplicita di Daniele del 18 ottobre 2026: evitare sovrapposizioni tra que
   - «Importa mostro» in `/admin/mostri/importa`: salva nascosto, non sovrascrive senza conferma;
   - immagini WebP (3 misure, ≤ 150 KB) nella tabella `grimorio_monster_images`, servite da `/immagini-mostri/` solo se la scheda è visibile.
   Dettagli in `docs/releases/2026-11-01-importa-mostro.md`.
+- Google (PROMPT 45, 1 novembre 2026): `/robots.txt` e `/sitemap.xml` generati (`app/robots.ts`, `app/sitemap.ts`, `lib/sitemap.ts`, rivalidazione 24 ore + `revalidatePath("/sitemap.xml")` nelle azioni di visibilità); la sitemap segue le stesse esclusioni della ricerca (nascoste, «In arrivo», noindex). Titoli, descrizioni, canonical, Open Graph e JSON-LD solo da `lib/seo.ts` (`pageMetadata`, `Breadcrumbs`); ogni nuova pagina pubblica usa `pageMetadata` e, se va su Google, entra in `lib/sitemap.ts`. Un solo H1 per pagina. Dettagli in `docs/releases/2026-11-01-google.md`.
 - Preferiti del browser non si trasferiscono automaticamente nell'app iOS. Il sito web ha un service worker (`app/sw.js/route.ts`, `lib/sw/service-worker.js`) che rende disponibili offline le pagine pubbliche già aperte, con avviso «copia salvata»; interruttore di emergenza `GRIMORIO_SERVICE_WORKER=off` su Vercel. Riguarda solo il sito nel browser: l'app iOS non ha ancora offline né Universal Links.
 
 ## Comunicazione

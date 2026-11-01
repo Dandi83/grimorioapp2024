@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -23,10 +24,8 @@ async function groups() {
 
 /** While both groups are closed to the visitors, nothing of them in the title either. */
 export async function generateMetadata() {
-  return (await groups()).shown ? {
-    title: `${METHOD_TITLE} — I mostri creati da voi · Il Grimorio.App`,
-    description: "Come mettiamo alla prova le creature originali, della community e della redazione: migliaia di combattimenti, tre modi di giocarle, gruppi diversi e la prova del tavolo.",
-  } : CLOSED_PART_METADATA;
+  return (await groups()).shown ? pageMetadata({ name: METHOD_TITLE, section: "I mostri creati da voi", path: "/bestiario/creati-da-voi/bilanciamento",
+    description: "Come mettiamo alla prova le creature originali della community e della redazione: migliaia di combattimenti simulati e la prova del tavolo." }) : CLOSED_PART_METADATA;
 }
 
 /**

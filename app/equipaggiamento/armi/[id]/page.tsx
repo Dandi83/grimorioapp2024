@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -28,7 +30,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const shown = await pageEditions("armi");
   const name = weapon && (["2024", "2014"] as const).filter(edition => shown.includes(edition)).map(edition => weapon.editions[edition]).find(Boolean)?.nome;
   if (!name) notFound();
-  return { title: `${name} — Armi — Il Grimorio.App` };
+  const edition = editionOfPage(weapon.editions, shown);
+  return pageMetadata({ name, section: "Armi", edition, path: `/equipaggiamento/armi/${weapon.id}`,
+    description: itemDescription(name, WEAPON_GROUP_NAMES[weapon.gruppo].toLowerCase(), edition, "Danni, proprietà, costo e padronanza") });
 }
 
 const FIELD_LABELS: Record<string, string> = { nome: "Nome", danni: "Danni", tipoDanno: "Tipo di danno", costo: "Costo", peso: "Peso", proprieta: "Proprietà", padronanza: "Padronanza" };
@@ -42,7 +46,8 @@ function Cell({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Sheet({ weapon, group, corrections }: { weapon: WeaponEditionView; group: number; corrections?: ContentOverride[] }) {
+/** heading: one H1 per page (PROMPT 45): the second edition panel has the same title as an H2, same look. */
+function Sheet({ weapon, group, corrections, heading: Heading = "h1" }: { weapon: WeaponEditionView; group: number; corrections?: ContentOverride[]; heading?: "h1" | "h2" }) {
   const source = weaponSources[weapon.edition];
   const cards = propertyCards(weapon);
   const special = specialRule(weapon);
@@ -54,7 +59,7 @@ function Sheet({ weapon, group, corrections }: { weapon: WeaponEditionView; grou
           <span className="font-serif text-[52px] font-bold leading-none text-primary">{weapon.danni || "—"}</span>
           <span className="text-sm font-semibold text-muted">{weapon.tipoDanno || "nessun danno"}</span>
         </div>
-        <h1 className="mt-3 font-serif text-4xl font-bold leading-tight">{weapon.nome}</h1>
+        <Heading className="mt-3 font-serif text-4xl font-bold leading-tight">{weapon.nome}</Heading>
         <p className="text-[15px] text-muted">{WEAPON_GROUP_NAMES[group]}</p>
       </div>
       <div className="grid grid-cols-3 rounded-[14px] border border-border bg-card">
@@ -115,13 +120,14 @@ export default async function WeaponPage({ params }: { params: Promise<{ id: str
   // An edition hidden from /admin/sezioni is not in the page; a weapon printed only there is not found.
   const shown = await pageEditions("armi");
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
-  for (const edition of ["2014", "2024"] as const) {
+  for (const edition of ["2024", "2014"] as const) {
     const view = weapon.editions[edition];
-    if (view && shown.includes(edition)) panels[edition] = <Sheet weapon={view} group={weapon.gruppo} corrections={corrections?.[edition]} />;
+    if (view && shown.includes(edition)) panels[edition] = <Sheet weapon={view} group={weapon.gruppo} corrections={corrections?.[edition]} heading={Object.keys(panels).length ? "h2" : "h1"} />;
   }
   if (!Object.keys(panels).length) notFound();
   return (
     <article className="px-4 pb-8 pt-4 sm:px-6">
+      <Breadcrumbs crumbs={[{ name: "Equipaggiamento", path: "/equipaggiamento" }, { name: "Armi", path: "/equipaggiamento/armi" }, { name: (weapon.editions["2024"] ?? weapon.editions["2014"])!.nome, path: `/equipaggiamento/armi/${weapon.id}` }]} />
       <BackButton fallback="/equipaggiamento/armi" label="Tutte le armi" />
       <EditionPanels section="armi" panels={panels} missing={{ "2024": "Non presente nella tabella 2024", "2014": "Nuova nel 2024" }} />
       {(compare.rows.length > 0 || compare.note) && shown.length === 2 && (

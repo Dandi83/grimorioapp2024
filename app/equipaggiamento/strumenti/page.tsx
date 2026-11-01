@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { ToolsBrowser } from "@/components/equipment/tools-browser";
 import { toolsSection } from "@/lib/tools";
 import { tools2014GroupText, tools2014Intro } from "@/lib/tools-2014";
@@ -5,7 +7,8 @@ import { toolListRows } from "@/lib/tools-editions";
 import { getCorrectedTools } from "@/lib/corrected-content";
 import { sectionPage } from "@/lib/section-view";
 
-export const metadata = { title: "Strumenti — Equipaggiamento — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Strumenti", section: "Equipaggiamento", path: "/equipaggiamento/strumenti",
+  description: "Gli strumenti di D&D 5e in italiano, 2014 e 2024: da artigiano, giochi e strumenti musicali, con costo, peso e uso al tavolo." });
 
 function Folded({ title, paragraphs }: { title: string; paragraphs: string[] }) {
   return (
@@ -26,6 +29,8 @@ export default async function ToolsPage() {
   await sectionPage("strumenti");
   const rows = toolListRows((await getCorrectedTools()).list);
   return (
+    <>
+      <Breadcrumbs crumbs={[{ name: "Equipaggiamento", path: "/equipaggiamento" }, { name: "Strumenti", path: "/equipaggiamento/strumenti" }]} />
     <ToolsBrowser
       rows={rows}
       intro={{
@@ -37,5 +42,6 @@ export default async function ToolsPage() {
         "2014": { artigiano: groupText(tools2014GroupText.artigiano), giochi: groupText(tools2014GroupText.giochi), musicali: groupText(tools2014GroupText.musicali) },
       }}
     />
+    </>
   );
 }

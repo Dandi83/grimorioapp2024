@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -27,7 +29,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const shown = await pageEditions("armature");
   const name = armor && (["2024", "2014"] as const).filter(edition => shown.includes(edition)).map(edition => armor.editions[edition]).find(Boolean)?.nome;
   if (!name) notFound();
-  return { title: `${name} — Armature — Il Grimorio.App` };
+  const edition = editionOfPage(armor.editions, shown);
+  return pageMetadata({ name, section: "Armature", edition, path: `/equipaggiamento/armature/${armor.id}`,
+    description: itemDescription(name, ARMOR_CATEGORY_NAMES[armor.categoria].toLowerCase(), edition, "Classe Armatura, Forza, Furtività, peso e costo") });
 }
 
 function Cell({ label, value }: { label: string; value: string }) {
@@ -39,7 +43,8 @@ function Cell({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Sheet({ armor, category }: { armor: ArmorEditionView; category: ArmorCategory }) {
+/** heading: one H1 per page (PROMPT 45): the second edition panel has the same title as an H2, same look. */
+function Sheet({ armor, category, heading: Heading = "h1" }: { armor: ArmorEditionView; category: ArmorCategory; heading?: "h1" | "h2" }) {
   const source = armorSources[armor.edition];
   const badge = armorBadge(armor);
   const description = armorDescription(armor);
@@ -47,7 +52,7 @@ function Sheet({ armor, category }: { armor: ArmorEditionView; category: ArmorCa
     <div className="space-y-5">
       <div className="flex flex-col items-center gap-1.5 pt-4 text-center">
         <ArmorBadge ca={badge.ca} note={["CA"]} size="sheet" />
-        <h1 className="mt-2 font-serif text-4xl font-bold leading-tight">{armor.nome}</h1>
+        <Heading className="mt-2 font-serif text-4xl font-bold leading-tight">{armor.nome}</Heading>
         <p className="text-[15px] text-muted">{ARMOR_CATEGORY_NAMES[category]}</p>
         {armorClassRest(armor) && <p className="mt-1 font-serif text-xl font-bold text-primary">{armorClassRest(armor)}</p>}
       </div>
@@ -91,12 +96,13 @@ export default async function ArmorSheetPage({ params }: { params: Promise<{ id:
   const shown = await pageEditions("armature");
   const panel = (edition: "2014" | "2024") => (
     <>
-      <Sheet armor={armor.editions[edition]} category={armor.categoria} />
+      <Sheet armor={armor.editions[edition]} category={armor.categoria} heading={edition === "2014" && shown.includes("2024") ? "h2" : "h1"} />
       <div className="mt-5"><SectionCorrectionNote section="armature" id={id} edition={edition} corrections={corrections?.[edition]} /></div>
     </>
   );
   return (
     <article className="px-4 pb-8 pt-4 sm:px-6">
+      <Breadcrumbs crumbs={[{ name: "Equipaggiamento", path: "/equipaggiamento" }, { name: "Armature", path: "/equipaggiamento/armature" }, { name: (armor.editions["2024"] ?? armor.editions["2014"]).nome, path: `/equipaggiamento/armature/${armor.id}` }]} />
       <BackButton fallback="/equipaggiamento/armature" label="Tutte le armature" />
       <EditionPanels
         section="armature"

@@ -13,6 +13,8 @@ const spellAddress = id => publicSpellIds[id] ?? id;
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // PROMPT 45 (C1): no «x-powered-by: Next.js» in the answers.
+  poweredByHeader: false,
   experimental: {
     staleTimes: { dynamic: 300, static: 300 },
   },

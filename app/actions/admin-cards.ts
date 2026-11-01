@@ -47,6 +47,7 @@ export async function setCardVisibilityAction(kind: string, id: string, hidden: 
   updateTag(SECTIONS_TAG);
   revalidatePath("/", "layout");
   revalidatePath("/ricerca-indice.json");
+  revalidatePath("/sitemap.xml");
   return { ok: true, hidden };
 }
 

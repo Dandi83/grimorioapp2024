@@ -27,7 +27,7 @@ function load(relative, deps={}) {
  assert.deepEqual((await monsterIndex.getMonsterIdIndex()).map(m=>m.id),all.map(m=>m.id),'static generation keeps every creature ID');
  const page=load('app/bestiario/page.tsx',{'@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l,sectionPage:async()=>{},sectionClosed:async()=>false,CLOSED_METADATA:{}},'@/components/catalog-browsers':{BestiarioWithFilters:'test-browser'},'@/components/layout/catalog-split':{EmptyCard:'empty-card'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList}}).default;
  // Phone: the list itself (in a block hidden only on a computer, where it is in the left column); then the empty card of the computer.
- const listOf=fragment=>{const [phone,empty]=fragment.props.children;assert.equal(phone.props.className,'lg:hidden');assert.equal(empty.type,'empty-card');return phone.props.children;};
+ const listOf=fragment=>{const [phone,empty]=[].concat(fragment.props.children).filter(child=>child&&!child.props?.crumbs);assert.equal(phone.props.className,'lg:hidden');assert.equal(empty.type,'empty-card');return phone.props.children;};
  const element=listOf(await page());
  assert.equal(element.type,'test-browser','The static page renders the catalog directly, without a Suspense fallback');
  const list=element.props.monsters;

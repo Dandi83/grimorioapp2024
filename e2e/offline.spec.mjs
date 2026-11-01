@@ -55,7 +55,7 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   await page.goto(base + "/equipaggiamento/avventura/munizioni");
   await expect(page.getByRole("heading", { level: 1 }).first()).toHaveText("Munizioni");
   await page.goto(base + "/equipaggiamento/avventura/canestro");
-  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Canestro");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 2 }).first()).toHaveText("Canestro");
   await page.goto(base + "/equipaggiamento/strumenti/liuto");
   await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Liuto");
   await page.goto(base + "/avanzamento");
@@ -97,7 +97,7 @@ test("offline: visited pages open from the saved copy with a notice, others say 
   // A 2014 adventuring gear sheet with its own address, after a reload.
   await page.goto(base + "/equipaggiamento/avventura/canestro");
   await page.reload();
-  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Canestro");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 2 }).first()).toHaveText("Canestro");
   // An adventuring gear sheet, with its table, after a reload.
   await page.goto(base + "/equipaggiamento/avventura/munizioni");
   await page.reload();
