@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { chooseEdition, editionPill } from "./edition-pill.mjs";
 
 const banner = page => page.getByRole("status").filter({ hasText: "Sei offline" });

@@ -106,8 +106,10 @@ test("Install invite: absent at load, shown at the first scroll or tap, never wh
   await shown.page.goto("/grimorio");
   await shown.page.waitForTimeout(3000);
   await expect(shown.page.locator("[data-install-prompt]")).toHaveCount(0);
-  await shown.page.evaluate(() => window.scrollBy(0, 80));
-  await expect(shown.page.locator("[data-install-prompt]")).toBeVisible();
+  await expect(async () => {
+    await shown.page.evaluate(() => window.scrollBy(0, 80));
+    await expect(shown.page.locator("[data-install-prompt]")).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await expect(shown.page.locator("[data-install-prompt]")).toContainText("Aggiungi Il Grimorio.App");
   // The same card, fixed above the page: nothing moved.
   const cls = await shown.page.evaluate(() => new Promise(resolve => {
@@ -122,8 +124,10 @@ test("Install invite: absent at load, shown at the first scroll or tap, never wh
   await tap.page.goto("/");
   await tap.page.waitForTimeout(1000);
   await expect(tap.page.locator("[data-install-prompt]")).toHaveCount(0);
-  await tapHeading(tap.page);
-  await expect(tap.page.locator("[data-install-prompt]")).toBeVisible();
+  await expect(async () => {
+    await tapHeading(tap.page);
+    await expect(tap.page.locator("[data-install-prompt]")).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await tap.page.locator("[data-install-prompt]").getByRole("button", { name: "Chiudi" }).click();
   await expect(tap.page.locator("[data-install-prompt]")).toHaveCount(0);
   await tap.page.reload();

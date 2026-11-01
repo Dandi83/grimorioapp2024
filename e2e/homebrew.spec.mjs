@@ -1,5 +1,5 @@
 import { chooseEdition, editionPill } from "./edition-pill.mjs";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import pg from "pg";
 import { TEST_DATABASE_URL } from "./test-db.mjs";
 import { GRIMORIO_TITLE, setBestiaryPart } from "./originals-parts.mjs";

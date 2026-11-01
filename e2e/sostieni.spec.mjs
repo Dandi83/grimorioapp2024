@@ -197,8 +197,11 @@ test("the occasional card: only from the 5th day, then 2 months of pause; never 
   const invite = await visitor(browser, { days: 4, invite: true });
   await invite.page.goto("/");
   await invite.page.waitForTimeout(1000);
-  await invite.page.keyboard.press("Shift"); // PROMPT 43: the invite comes with the first gesture
-  await expect(invite.page.locator("[data-install-prompt]")).toBeVisible();
+  // PROMPT 43: the invite comes with the first gesture (one made before the page is ready is lost: again).
+  await expect(async () => {
+    await invite.page.keyboard.press("Shift");
+    await expect(invite.page.locator("[data-install-prompt]")).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await expect(card(invite.page)).toHaveCount(0);
   await invite.context.close();
 

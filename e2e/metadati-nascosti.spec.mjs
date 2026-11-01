@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // A card hidden with the eye, or a card of a hidden edition, leaks nothing to visitors: the 404 has the generic title
 // and metadata of any missing page (no name, description, og:/twitter: tags or canonical). Local test database only:

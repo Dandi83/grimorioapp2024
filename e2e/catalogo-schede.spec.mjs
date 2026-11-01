@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // Every spell of the public list (both editions) has the level and school its card shows: the list and the card
 // read the same values (lib/spell-display-row.ts), so the filters by school never lose a card.

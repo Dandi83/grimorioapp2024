@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // «*» after the NO SRD cards in the lists, for the administrator only: asked from /api/admin/no-srd (401 without
 // a session, never stored) after the session check, never in the pages, their data or /api/catalogo/*.

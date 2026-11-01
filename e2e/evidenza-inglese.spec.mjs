@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // PROMPT 35: the line «in inglese» marks the letters found, as the Italian name in the search of the Home; the English
 // names of the equipment. The visitor at 390 and 1280, in 2024 and 2014. Local test database only.

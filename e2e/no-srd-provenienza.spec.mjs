@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // NO SRD cards: the box at the bottom (components/card-origin-box.tsx) in the place of the SRD source, and the
 // «Sintesi originale» switch of the editor (lib/content-editions.ts). Original summaries: «Sintesi originale del

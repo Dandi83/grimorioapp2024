@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // Every search field, public and reserved: the attributes that keep Safari on iPhone from offering «Inserisci info»
 // and the saved addresses over the keyboard (lib/search-input.ts), never inside a <form>; the search still works.

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import pg from "pg";

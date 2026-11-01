@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // PROMPT 31, the visitor: an arrival from the link of the Instagram bio (?da=bio) said with the first page view and
 // taken off the address; navigation, search and filters with no request more than before: the search where it was

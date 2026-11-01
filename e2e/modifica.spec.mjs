@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // «Modifica» on the public pages for the administrator: never for visitors (nor in the server HTML),
 // the editor of the card opened directly, back to the page after closing or saving. Local test database only.

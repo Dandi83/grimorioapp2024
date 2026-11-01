@@ -1,5 +1,5 @@
 import { COMMUNITY_ON, hiddenPartsText } from "./community-switch.mjs";
-import { test, expect, devices } from "@playwright/test";
+import { test, expect, devices } from "./fixtures.mjs";
 import { readFileSync } from "node:fs";
 
 /** The «Visibile · In arrivo · Nascosta» choice of a section or part in /admin/sezioni. */

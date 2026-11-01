@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // «Aggiunta da te» and «Sintesi originale» are for the administrator only: drawn in the browser after
 // /api/admin/sessione, like «Modifica»; never in the page or the data served to visitors (lists, search,

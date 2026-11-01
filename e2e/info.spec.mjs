@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // Home with only «Area riservata» at the top and «Info e note legali» at the foot; the /info page and its tiles.
 test.beforeEach(async ({ page }) => {

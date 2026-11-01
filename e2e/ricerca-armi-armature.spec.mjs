@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // PROMPT 36: the search field in Armi and Armature, the same as in Strumenti; Italian and English names, the groups
 // with nothing found left out, «Nessuna … con questo nome». The visitor at 390 and 1280, in 2024 and 2014.

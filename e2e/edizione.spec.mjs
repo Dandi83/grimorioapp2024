@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { chooseEdition, editionPill, expectEdition } from "./edition-pill.mjs";
 
 // «La tua edizione»: one edition for the whole app, chosen at the first launch (only over the Home),

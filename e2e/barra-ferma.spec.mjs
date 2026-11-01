@@ -1,4 +1,4 @@
-import { test, expect, devices } from "@playwright/test";
+import { test, expect, devices } from "./fixtures.mjs";
 
 // PROMPT 23, 27: no elastic bounce (overscroll-behavior-y: none on html and body); the bottom bar stays at the bottom while a long list scrolls down and up, slowly and fast, in WebKit (the
 // engine of every browser on iPhone) at 390 × 844; the last row of the list stays readable above it; on a computer

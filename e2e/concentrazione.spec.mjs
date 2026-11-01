@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // Concentration on the spell cards: no «Concentrazione» label under the name, the source label in its place;
 // the word in the Durata box links, like a condition, to the rule of the edition of the card (SRD 5.2.1 glossary
