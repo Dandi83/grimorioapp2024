@@ -50,10 +50,15 @@ const text=r=>r.text();
 
 (async()=>{
  const sw=worker();
- // Install saves the five main sections; activate keeps only this version's pages.
+ // Install saves the Home; activate keeps only this version's pages.
  sw.store.set('grimorio-pages-v1',new Map());sw.store.set('grimorio-static',new Map([['https://ilgrimorio.app/_next/static/old.js',new Response('old')],...['/icon-512.png','/icon-install.webp','/manifest.webmanifest'].map(p=>[ORIGIN+p,new Response('vecchia')])]));
  await sw.lifecycle('install');
- assert.deepEqual([...sw.store.get('grimorio-pages-v2').keys()].sort(),['/','/bestiario','/compendio','/grimorio','/preferiti','/ricerca-indice.json'].map(p=>ORIGIN+p).sort());
+ // PROMPT 43: the install saves the Home only; Preferiti is never saved in advance.
+ assert.deepEqual([...sw.store.get('grimorio-pages-2-v2').keys()].sort(),['/'].map(p=>ORIGIN+p));
+ // «warm» (sent by the page when the browser is idle): the lists and the search index, still never Preferiti.
+ await sw.message({type:'warm'});
+ assert.deepEqual([...sw.store.get('grimorio-pages-2-v2').keys()].sort(),['/','/bestiario','/compendio','/grimorio','/ricerca-indice.json'].map(p=>ORIGIN+p).sort());
+ assert.equal(sw.store.get('grimorio-pages-2-v2').has(ORIGIN+'/preferiti'),false,'Preferiti is not saved in advance');
  await sw.lifecycle('activate');
  assert.equal(sw.store.has('grimorio-pages-v1'),false,'pages of the previous version are deleted');
  assert.equal(sw.store.has('grimorio-static'),true,'program files survive a new version (older pages may still need them)');
@@ -115,7 +120,7 @@ const text=r=>r.text();
  ({response}=await sw.fetchEvent(sw.request('/manca-pagina')));
  assert.equal(response,undefined);
  ({response}=await sw.fetchEvent(sw.request('/spell/manca',{})));
- assert.equal(sw.store.get('grimorio-pages-v2').has(ORIGIN+'/spell/manca'),false,'error pages are not saved');
+ assert.equal(sw.store.get('grimorio-pages-2-v2').has(ORIGIN+'/spell/manca'),false,'error pages are not saved');
 
  // Program files: from the phone once saved, also offline.
  ({response}=await sw.fetchEvent(sw.request('/_next/static/chunks/app.js',{mode:'no-cors'})));
@@ -135,7 +140,7 @@ const text=r=>r.text();
  // Hidden sections (/admin/sezioni): their saved copies are deleted and never shown, also after a restart.
  sw.network.online=true;
  for(const p of ['/classi','/classi/mago','/compendio/condizioni','/manuale/condizioni-accecato'])await sw.fetchEvent(sw.request(p));
- const pages=()=>[...sw.store.get('grimorio-pages-v2').keys()].map(u=>new URL(u).pathname);
+ const pages=()=>[...sw.store.get('grimorio-pages-2-v2').keys()].map(u=>new URL(u).pathname);
  assert.ok(pages().includes('/classi/mago'));
  await sw.message({type:'hidden-sections',paths:['/classi','/compendio/condizioni','/manuale/condizioni-']});
  assert.deepEqual(pages().filter(p=>/classi|condizioni/.test(p)),[],'saved copies of hidden sections are deleted');
@@ -146,23 +151,23 @@ const text=r=>r.text();
  ({response}=await sw.fetchEvent(sw.request('/classi')));
  assert.equal(response.status,503,'offline, a hidden page shows the offline notice, never a saved copy');
  const restarted=worker({caches:sw.store});
- restarted.store.get('grimorio-pages-v2').set(ORIGIN+'/classi/mago',new Response('copia vecchia',{headers:{'Content-Type':'text/html'}}));
+ restarted.store.get('grimorio-pages-2-v2').set(ORIGIN+'/classi/mago',new Response('copia vecchia',{headers:{'Content-Type':'text/html'}}));
  restarted.network.online=false;
  ({response}=await restarted.fetchEvent(restarted.request('/classi/mago')));
  assert.equal(response.status,503,'the hidden list survives a stopped worker');
  // A page answered 404 online (hidden while the phone did not know yet) loses its saved copy.
  restarted.network.online=true;
- restarted.store.get('grimorio-pages-v2').set(ORIGIN+'/oggetti-magici/manca-ali',new Response('copia vecchia'));
+ restarted.store.get('grimorio-pages-2-v2').set(ORIGIN+'/oggetti-magici/manca-ali',new Response('copia vecchia'));
  await restarted.fetchEvent(restarted.request('/oggetti-magici/manca-ali'));
- assert.equal(restarted.store.get('grimorio-pages-v2').has(ORIGIN+'/oggetti-magici/manca-ali'),false,'a 404 deletes the saved copy');
+ assert.equal(restarted.store.get('grimorio-pages-2-v2').has(ORIGIN+'/oggetti-magici/manca-ali'),false,'a 404 deletes the saved copy');
  await restarted.message({type:'hidden-sections',paths:[]});
  await restarted.fetchEvent(restarted.request('/classi'));
- assert.ok(restarted.store.get('grimorio-pages-v2').has(ORIGIN+'/classi'),'shown again: saved again');
+ assert.ok(restarted.store.get('grimorio-pages-2-v2').has(ORIGIN+'/classi'),'shown again: saved again');
 
  // Hidden parts (an edition, a block): the copies saved before a change of the parts are deleted, once.
  restarted.network.online=true;
  for(const p of ['/avanzamento','/oggetti-magici/ali-del-volo','/spell/scudo'])await restarted.fetchEvent(restarted.request(p));
- const saved=()=>[...restarted.store.get('grimorio-pages-v2').keys()].map(u=>new URL(u).pathname);
+ const saved=()=>[...restarted.store.get('grimorio-pages-2-v2').keys()].map(u=>new URL(u).pathname);
  await restarted.message({type:'hidden-sections',paths:[],parts:[{path:'/avanzamento',signature:'avanzamento:calcolatore'}]});
  assert.ok(!saved().includes('/avanzamento')&&saved().includes('/spell/scudo'),'a section whose parts change loses its saved copies');
  await restarted.fetchEvent(restarted.request('/avanzamento'));

@@ -25,7 +25,6 @@ import {
   Section,
   control,
   button,
-  primary,
 } from "./fields";
 export type SpellChoice = { id: string; name: string; level: number };
 export type Choices = {

@@ -196,6 +196,8 @@ test("the occasional card: only from the 5th day, then 2 months of pause; never 
   // The invite to install: the card waits.
   const invite = await visitor(browser, { days: 4, invite: true });
   await invite.page.goto("/");
+  await invite.page.waitForTimeout(1000);
+  await invite.page.keyboard.press("Shift"); // PROMPT 43: the invite comes with the first gesture
   await expect(invite.page.locator("[data-install-prompt]")).toBeVisible();
   await expect(card(invite.page)).toHaveCount(0);
   await invite.context.close();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useUserEdition } from "@/components/edition/edition-provider";
 import { GrimorioBrowser } from "@/components/grimorio-browser";
 import { BestiarioBrowser } from "@/components/bestiario-browser";
@@ -18,15 +18,19 @@ import { normalizeHabitats } from "@/lib/habitats";
 // are applied after mount, without a useSearchParams/Suspense client bailout.
 // listPath: the list column of the computer layout reads the address only while it is the list's own
 // (/grimorio, /bestiario), so opening a card keeps the filters it came with.
+// The address is read at every render (also after a same-route client navigation that renders this component)
+// and at «back»/«forward»; while it is not the list's own the last one read stays.
+const lastSearch = new Map<string, string>();
+const subscribePopstate = (onChange: () => void) => {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+};
 function useCatalogSearch(listPath?: string) {
-  const [search, setSearch] = useState("");
-  // Also sync after a same-route client navigation that renders this component.
-  useEffect(() => { if (!listPath || window.location.pathname === listPath) setSearch(window.location.search); });
-  useEffect(() => {
-    const sync = () => { if (!listPath || window.location.pathname === listPath) setSearch(window.location.search); };
-    window.addEventListener("popstate", sync);
-    return () => window.removeEventListener("popstate", sync);
-  }, [listPath]);
+  const key = listPath ?? "";
+  const search = useSyncExternalStore(subscribePopstate, () => {
+    if (!listPath || window.location.pathname === listPath) lastSearch.set(key, window.location.search);
+    return lastSearch.get(key) ?? "";
+  }, () => "");
   return { params: new URLSearchParams(search), search };
 }
 

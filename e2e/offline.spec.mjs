@@ -34,6 +34,8 @@ test.afterEach(stopServer);
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     try { if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024"); } catch { /* no storage */ }
+    // The invite to install has its own tests (e2e/app-leggera.spec.mjs): it comes with the first gesture, here closed.
+    try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
   });
 });
 

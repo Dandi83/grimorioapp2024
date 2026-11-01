@@ -83,23 +83,27 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  const match=standalone=>{window.matchMedia=()=>({matches:standalone})};
  const iphone='Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
  const wait=ms=>act(async()=>new Promise(r=>setTimeout(r,ms)));
+ // PROMPT 43: the invite comes with the first gesture of the person (no timer).
+ const gesture=async(kind='pointerdown')=>{await wait(50);await act(async()=>{window.dispatchEvent(new Event(kind));});await wait(20);};
  match(true);setUserAgent(iphone);
- await render(React.createElement(InstallPrompt,{key:'installed'}));await wait(1300);
+ await render(React.createElement(InstallPrompt,{key:'installed'}));await gesture();
  assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'installed app shows no prompt');
  match(false);window.localStorage.setItem('grimorio-install-dismissed',String(Date.now()+86400000));
- await render(React.createElement(InstallPrompt,{key:'dismissed'}));await wait(1300);
+ await render(React.createElement(InstallPrompt,{key:'dismissed'}));await gesture();
  assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'a recent dismissal is respected');
  window.localStorage.removeItem('grimorio-install-dismissed');
  // Never together with the statistics bar (components/statistics/notice.ts): it waits until the bar is closed.
  const notice=load('components/statistics/notice.ts');
  notice.setStatisticsNotice('open');
- await render(React.createElement(InstallPrompt,{key:'iphone-bar'}));await wait(1300);
+ await render(React.createElement(InstallPrompt,{key:'iphone-bar'}));await gesture();
  assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'no invite while the statistics bar is open');
  await act(async()=>notice.setStatisticsNotice('closed'));
  assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'not at once when the bar closes');
  await wait(1300);
- assert.ok(document.body.textContent.includes('Aggiungi Il Grimorio.App'),'its usual moment after the bar closes');
- await render(React.createElement(InstallPrompt,{key:'iphone'}));await wait(1300);
+ assert.equal(document.body.textContent.includes('Aggiungi Il Grimorio.App'),false,'no timer: without a gesture nothing shows');
+ await gesture('scroll');
+ assert.ok(document.body.textContent.includes('Aggiungi Il Grimorio.App'),'its moment: the first gesture after the bar closes');
+ await render(React.createElement(InstallPrompt,{key:'iphone'}));await gesture('keydown');
  assert.ok(document.body.textContent.includes('Tocca Condividi (il quadrato con la freccia), poi «Aggiungi alla schermata Home».'),'iPhone Safari shows the manual steps');
  assert.ok(document.querySelector('a[href="/installa"]'),'with the link to every step');
  await act(async()=>document.querySelector('button[aria-label="Chiudi"]').dispatchEvent(new MouseEvent('click',{bubbles:true})));
@@ -107,10 +111,10 @@ const setUserAgent=ua=>Object.defineProperty(window.navigator,'userAgent',{value
  assert.ok(Number(window.localStorage.getItem('grimorio-install-dismissed'))>Date.now()+6*86400000,'closing hides it for seven days');
  setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/130.0 Mobile/15E148 Safari/604.1');
  window.localStorage.removeItem('grimorio-install-dismissed');
- await render(React.createElement(InstallPrompt,{key:'chrome-ios'}));await wait(1300);
+ await render(React.createElement(InstallPrompt,{key:'chrome-ios'}));await gesture('keydown');
  assert.ok(document.body.textContent.includes('Tocca Condividi in alto a destra'),'since iOS 16.4 Chrome adds to Home too: its own steps');
  setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 16_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/108.0 Mobile/15E148 Safari/604.1');
- await render(React.createElement(InstallPrompt,{key:'chrome-ios-16'}));await wait(1300);
+ await render(React.createElement(InstallPrompt,{key:'chrome-ios-16'}));await gesture('keydown');
  assert.ok(document.body.textContent.includes('Su questo iPhone l’app si installa da Safari.'),'before iOS 16.4 only Safari: open the link there');
 
  // Admin delete button: confirmation first, then a clear message if the deletion fails.

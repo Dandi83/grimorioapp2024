@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { whenIdle } from "@/lib/favorite-cards";
 
 const dateFormat = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
@@ -37,10 +38,13 @@ export function ServiceWorker({ enabled, hiddenPaths = [], partPaths = [] }: { e
     const register = () => { navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {}); };
     if (document.readyState === "complete") register();
     else window.addEventListener("load", register, { once: true });
+    let stopIdle = () => {};
     void navigator.serviceWorker.ready.then(registration => {
       // Files this page loaded before the service worker could save them.
       const urls = performance.getEntriesByType("resource").map(entry => entry.name);
       registration.active?.postMessage({ type: "cache-files", urls });
+      // The lists and the search index for offline use (PROMPT 43): only when the browser has nothing else to do.
+      if (!cancelled) stopIdle = whenIdle(() => registration.active?.postMessage({ type: "warm" }), 10000);
     });
     // Was this page shown from the copy saved on the phone? The worker marks the page, so
     // the notice survives a worker stopped in the meantime. Asking is still needed: it also
@@ -53,7 +57,7 @@ export function ServiceWorker({ enabled, hiddenPaths = [], partPaths = [] }: { e
       channel.port1.onmessage = event => { if (!cancelled && event.data?.savedAt) setSavedAt(event.data.savedAt); };
       controller.postMessage({ type: "saved-copy?", path: window.location.pathname }, [channel.port2]);
     }
-    return () => { cancelled = true; window.removeEventListener("load", register); };
+    return () => { cancelled = true; stopIdle(); window.removeEventListener("load", register); };
   }, [enabled]);
 
   if (!savedAt) return null;

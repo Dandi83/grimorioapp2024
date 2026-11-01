@@ -364,7 +364,7 @@ export function CharacterDashboard({
                 <h2>Equipaggiamento</h2>
               </div>
               <div className="pg-gear-grid">
-                {digitalGroup("armor").fields.map((f, i) => (
+                {digitalGroup("armor").fields.map((f) => (
                   <div className="pg-gear" key={f.name}>
                     <Shield size={22} strokeWidth={1} />
                     <span>{f.label}</span>

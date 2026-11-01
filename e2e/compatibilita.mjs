@@ -122,6 +122,9 @@ async function runScenarios(browser, scenarios, report) {
   for (const scenario of scenarios) {
     const { context, page, errors } = await open(browser, scenario);
     await page.goto("/");
+    // PROMPT 43: the invite comes with the first gesture of the person, never with a timer.
+    await page.waitForTimeout(500);
+    await page.keyboard.press("Shift");
     if (scenario.expect === "none") {
       await page.waitForTimeout(4500);
       await expect(invite(page), scenario.name).toHaveCount(0);
@@ -199,16 +202,19 @@ export function compatibilityTest(engine) {
       const iphone = SCENARIOS[0];
       let { context, page } = await open(browser, iphone);
       await page.goto("/");
+      await page.keyboard.press("Shift");
       await invite(page).getByRole("button", { name: "Chiudi" }).click();
       await expect(invite(page)).toHaveCount(0);
       const until = Number(await page.evaluate(() => localStorage.getItem("grimorio-install-dismissed")));
       expect(Math.round((until - Date.now()) / 864e5)).toBe(7);
       await page.reload();
+      await page.keyboard.press("Shift");
       await page.waitForTimeout(2500);
       await expect(invite(page)).toHaveCount(0);
       await context.close();
       ({ context, page } = await open(browser, iphone, () => Object.defineProperty(navigator, "standalone", { get: () => true })));
       await page.goto("/");
+      await page.keyboard.press("Shift");
       await page.waitForTimeout(2500);
       await expect(invite(page)).toHaveCount(0);
       await page.goto("/installa");

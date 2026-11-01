@@ -44,18 +44,21 @@ export function CharacterWorkshop({ choices }: { choices: Choices }) {
   const c = characters.find((x) => x.id === selected);
   const isGenerated = !!c && generated?.id === c.id;
 
+  // The dialogs follow whether there is something to show, not its content.
+  const creating = !!draft;
+  const deleting = deleteName !== null;
   useEffect(() => {
-    if (draft) creationRef.current?.showModal();
+    if (creating) creationRef.current?.showModal();
     else creationRef.current?.close();
-  }, [!!draft]);
+  }, [creating]);
   useEffect(() => {
     if (history) historyRef.current?.showModal();
     else historyRef.current?.close();
   }, [history]);
   useEffect(() => {
-    if (deleteName !== null) deleteRef.current?.showModal();
+    if (deleting) deleteRef.current?.showModal();
     else deleteRef.current?.close();
-  }, [deleteName !== null]);
+  }, [deleting]);
 
   function update(patch: Partial<Character>) {
     if (!c) return;

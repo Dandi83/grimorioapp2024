@@ -110,7 +110,10 @@ test("first visit: welcome screen, then the Home with the bar and no invite; cou
   await ok.click();
   await expect(bar(page)).toHaveCount(0);
   expect(state.choices).toEqual(["accepted"]);
-  // Then the invite, at its usual moment.
+  // Then the invite, at its moment (PROMPT 43): not with the tap on «Ok», with the next gesture.
+  await page.waitForTimeout(1500);
+  await expect(invite(page)).toHaveCount(0);
+  await page.keyboard.press("Shift");
   await expect(invite(page)).toBeVisible({ timeout: 6000 });
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/invito-390.png` });
   // Still counted after «Ok»; the bar does not come back.
