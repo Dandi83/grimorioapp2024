@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 
 import reference from "@/lib/data/gs-riferimento.json";
@@ -8,7 +8,7 @@ import { HABITATS } from "@/lib/habitats";
 import { estimateChallenge, statsOf, VERDICT_LABEL, type CrReference } from "@/lib/homebrew-cr";
 import {
   ABILITY_KEYS, ABILITY_SHORT, BLOCK_LABEL, CHALLENGE_RATINGS, HOMEBREW_ALIGNMENTS, HOMEBREW_EDITION_LABEL, HOMEBREW_EDITIONS, HOMEBREW_TYPES, LIMITS,
-  blocksOf, draftActionText, draftToMonster, formatWords, mismatchedFormat, modifier, proficiency, type EntryBlock, type HomebrewDraft, type HomebrewEdition,
+  blocksOf, draftActionText, draftToMonster, formatWords, mismatchedFormat, modifier, proficiency, type EntryBlock, type HideableSection, type HomebrewDraft, type HomebrewEdition,
 } from "@/lib/homebrew-types";
 import { SIZES } from "@/lib/monsters-types";
 import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet";
@@ -39,10 +39,10 @@ const PLACEHOLDER: Partial<Record<EntryBlock, { nome: string; testo: Record<"201
   tratti: { nome: "Es. Anfibio", testo: { "2024": "La creatura può respirare aria e acqua.", "2014": "La creatura può respirare aria e acqua." } },
 };
 
-function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+function Section({ title, hint, children, extra }: { title: string; hint?: string; children: React.ReactNode; extra?: ReactNode }) {
   return (
     <section className="rounded-[14px] border-[1.5px] border-border bg-card p-4">
-      <h2 className="font-serif text-xl font-bold text-primary">{title}</h2>
+      <div className="flex items-center justify-between gap-2"><h2 className="font-serif text-xl font-bold text-primary">{title}</h2>{extra}</div>
       {hint && <p className="mt-0.5 text-[13px] leading-5 text-muted">{hint}</p>}
       <div className="mt-3 space-y-3">{children}</div>
     </section>
@@ -87,10 +87,14 @@ export type EditorStep = 1 | 2 | 3;
  * chosen edition, with the format hint and the challenge check. Used by /bestiario/proponi (one step at a time,
  * `step`, with the preview opened by the form) and by the admin area (everything, with its own preview button).
  */
-export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview: shownPreview, ours = false }: {
+export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview: shownPreview, ours = false, titleExtra, after }: {
   value: HomebrewDraft; onChange: (draft: HomebrewDraft) => void; idPrefix?: string; step?: EditorStep; preview?: boolean;
   /** A creature «Dalla redazione» (made or edited in the reserved area, no author): its pill in the preview. */
   ours?: boolean;
+  /** Reserved area only (PROMPT 44): the eye «Visibile / Nascosta» next to the title of a section. */
+  titleExtra?: (section: HideableSection) => ReactNode;
+  /** Reserved area only (PROMPT 44): the five sections and the picture, under the legendary actions. */
+  after?: ReactNode;
 }) {
   const [ownPreview, setPreview] = useState(false);
   const stepped = step !== undefined;
@@ -151,7 +155,7 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
           <MonsterSheetTitle monster={sheet} label={
             <span className="flex flex-wrap items-center justify-end gap-1.5"><HomebrewPill ours={ours} />{value.edizione === "entrambe" ? <BothEditionsBadge /> : <MonsterProvenanceBadge edition={format} variant="dark" />}</span>
           } labelBelow />
-          <MonsterSheetBody monster={{ ...sheet, fonte_scheda: "Homebrew" }} legacy={value.edizione === "2014"} catalog={display.catalog} hidden={display.hidden} descriptionFirst />
+          <MonsterSheetBody monster={{ ...sheet, fonte_scheda: "Homebrew" }} legacy={value.edizione === "2014"} catalog={display.catalog} hidden={display.hidden} descriptionFirst hiddenSections={ours ? value.sezioni_nascoste ?? [] : undefined} />
         </article>
       ) : (
         <>
@@ -165,12 +169,12 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
             </div>
             {/* Optional; on the sheet at the top, in italics (PROMPT 20, 21). */}
             <div>
-              <label htmlFor={id("descrizione")} className={labelClass}>Descrizione</label>
-              <textarea id={id("descrizione")} value={value.descrizione ?? ""} maxLength={LIMITS.descrizione} rows={3} aria-describedby={id("descrizione-aiuto")}
+              <div className="flex items-center justify-between gap-2"><label htmlFor={id("descrizione")} className={labelClass}>Descrizione</label>{titleExtra?.("descrizione")}</div>
+              <textarea id={id("descrizione")} value={value.descrizione ?? ""} maxLength={titleExtra ? undefined : LIMITS.descrizione} rows={3} aria-describedby={id("descrizione-aiuto")}
                 onChange={event => set("descrizione", event.target.value)} className={`${inputClass} min-h-24`} />
               <p id={id("descrizione-aiuto")} className="mt-1 flex justify-between gap-3 text-[13px] leading-5 text-muted">
                 <span>Com’è fatta, dove vive, come si comporta. Due o tre frasi bastano.</span>
-                <span className="shrink-0 tabular-nums" data-description-count="">{(value.descrizione ?? "").length}/{LIMITS.descrizione}</span>
+                <span className="shrink-0 tabular-nums" data-description-count="">{(value.descrizione ?? "").length}{titleExtra ? "" : `/${LIMITS.descrizione}`}</span>
               </p>
             </div>
           </Section>
@@ -243,7 +247,7 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
           </>}
 
           {shows(3) && blocksOf(value.edizione).map(block => (
-            <Section key={block} title={BLOCK_LABEL[block].title} hint={block === "azioni_leggendarie" ? "Lascia vuoto il nome della prima voce per l’introduzione (quante azioni a round)." : undefined}>
+            <Section key={block} title={BLOCK_LABEL[block].title} extra={titleExtra?.(block)} hint={block === "azioni_leggendarie" ? "Lascia vuoto il nome della prima voce per l’introduzione (quante azioni a round)." : undefined}>
               {value[block].map((entry, index) => (
                 <div key={index} className="space-y-2 rounded-[10px] border border-primary/20 bg-background p-3">
                   <div className="flex items-center justify-between gap-2">
@@ -256,12 +260,12 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
                   <Text id={id(`${block}-${index}-nome`)} label="Nome" value={entry.nome} max={LIMITS.entryName} onChange={next => updateEntry(block, index, "nome", next)} placeholder={PLACEHOLDER[block]?.nome} />
                   <div>
                     <label htmlFor={id(`${block}-${index}-testo`)} className={labelClass}>Descrizione</label>
-                    <textarea id={id(`${block}-${index}-testo`)} value={entry.testo} maxLength={LIMITS.entryText} rows={3} onChange={event => updateEntry(block, index, "testo", event.target.value)}
+                    <textarea id={id(`${block}-${index}-testo`)} value={entry.testo} maxLength={titleExtra ? undefined : LIMITS.entryText} rows={3} onChange={event => updateEntry(block, index, "testo", event.target.value)}
                       placeholder={PLACEHOLDER[block]?.testo[format]} className={`${inputClass} min-h-24`} />
                   </div>
                 </div>
               ))}
-              {value[block].length < LIMITS.entries && (
+              {value[block].length < (titleExtra ? 20 : LIMITS.entries) && (
                 <button type="button" onClick={() => set(block, [...value[block], { nome: "", testo: "" }])}
                   className="flex min-h-11 w-full items-center justify-center gap-2 rounded-[8px] border border-dashed border-primary/40 text-[15px] font-semibold text-primary">
                   <Plus size={16} aria-hidden="true" />Aggiungi {BLOCK_LABEL[block].singular.toLowerCase()}
@@ -269,6 +273,7 @@ export function HomebrewEditor({ value, onChange, idPrefix = "hb", step, preview
               )}
             </Section>
           ))}
+          {shows(3) && after}
         </>
       )}
 

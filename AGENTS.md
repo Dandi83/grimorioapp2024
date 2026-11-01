@@ -59,6 +59,12 @@ Regola esplicita di Daniele del 18 ottobre 2026: evitare sovrapposizioni tra que
 - Nomi inglesi delle schede NO SRD (PROMPT 37, PROMPT 38): proposte in `lib/data/nomi-inglesi-proposte.json`, decisioni in `grimorio_search_english`, pagina /admin/contenuti/nomi-inglesi (pillola edizione e «scuola · liv.» / «tipo · GS») e campo nell'editor; gli approvati entrano negli elenchi di Incantesimi e Bestiario come nome inglese della scheda e compaiono nei risultati di ricerca come «in inglese: …», come gli SRD (mai nelle schede); Approva/Modifica/Scarta aggiornano subito elenchi e indice; nomi propri e marchi protetti rifiutati (`lib/search-english.ts`). In produzione le approvazioni le fa Daniele dall'admin.
 - «Modalità solo SRD» (PROMPT 39): ultima card di /admin, conferma nella card, fascia bordeaux nelle pagine admin, voce nel Registro. Accesa, gli indirizzi delle schede NO SRD (regola dell'asterisco) e delle SRD modificate (`lib/srd-only.ts`) si uniscono alle schede nascoste (`grimorio_srd_only` → `lib/section-visibility.ts`); redazione, community e SRD intatti; spenta, tutto torna com'era. Parte spenta: accenderla in produzione è una decisione di Daniele (dettagli in `docs/releases/2026-10-31-solo-srd.md`).
 - Link corto della bio Instagram (PROMPT 34, 31 ottobre 2026): `ilgrimorio.app/ig` (anche /IG, riscrittura in next.config.mjs) risponde 307 no-store e noindex verso `/?da=bio` (`app/ig/route.ts`); l'arrivo conta come «Link in bio» e l'indirizzo torna pulito. `/?da=bio` resta valido.
+- Mostri «Dalla redazione» (PROMPT 44, 1 novembre 2026):
+  - campi facoltativi nella bozza (`storia`, `tattiche`, `tana`, `agganci`, `varianti`, `sezioni_nascoste`, `immagine`);
+  - sezioni nascoste tolte con `lib/public-sheet.ts` prima della pagina pubblica, mai in `/api/catalogo/*`, indice o SW;
+  - «Importa mostro» in `/admin/mostri/importa`: salva nascosto, non sovrascrive senza conferma;
+  - immagini WebP (3 misure, ≤ 150 KB) nella tabella `grimorio_monster_images`, servite da `/immagini-mostri/` solo se la scheda è visibile.
+  Dettagli in `docs/releases/2026-11-01-importa-mostro.md`.
 - Preferiti del browser non si trasferiscono automaticamente nell'app iOS. Il sito web ha un service worker (`app/sw.js/route.ts`, `lib/sw/service-worker.js`) che rende disponibili offline le pagine pubbliche già aperte, con avviso «copia salvata»; interruttore di emergenza `GRIMORIO_SERVICE_WORKER=off` su Vercel. Riguarda solo il sito nel browser: l'app iOS non ha ancora offline né Universal Links.
 
 ## Comunicazione

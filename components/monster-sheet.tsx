@@ -6,6 +6,7 @@ import { conditionLinks, prepareMonsterText, type CardSource } from "@/lib/card-
 import { damageLineHref, damageRuleLinks } from "@/lib/damage-rule-link";
 import type { SpellReferenceCatalog } from "@/lib/spell-references";
 import { DescriptionLead } from "@/components/description-lead";
+import { MonsterPictureFigure } from "@/components/monster-picture";
 
 /**
  * One creature sheet for every source: 2024 and 2014 SRD sheets, sheets made in the
@@ -76,14 +77,19 @@ function Line({ label, value, legacy, hidden, damageIcons = false }: { label: st
   );
 }
 
-type SheetContext = { legacy: boolean; hidden: readonly string[]; catalog?: SpellReferenceCatalog; source?: CardSource };
+type SheetContext = { legacy: boolean; hidden: readonly string[]; catalog?: SpellReferenceCatalog; source?: CardSource; hiddenSections?: readonly string[] };
 
-function Section({ title, html, context }: { title: string; html?: string; context: SheetContext }) {
+/** «Nascosta al pubblico» (PROMPT 44): only in the previews of the reserved area, where hidden sections are drawn. */
+function HiddenSectionTag() {
+  return <span className="ml-2 inline-block rounded-full bg-[#2B2118] px-2.5 py-0.5 align-middle font-sans text-[12px] font-bold not-italic text-[#FFFBF0]" data-hidden-section="">Nascosta al pubblico</span>;
+}
+
+function Section({ title, html, context, name }: { title: string; html?: string; context: SheetContext; name?: string }) {
   if (!html || !html.replace(/<[^>]+>/g, "").trim()) return null;
   const text = prepareMonsterText(html, context.legacy, context.source, context);
   return (
-    <section data-monster-section>
-      <h2>{title}</h2>
+    <section data-monster-section {...(name ? { "data-section": name } : {})}>
+      <h2>{title}{name && context.hiddenSections?.includes(name) && <HiddenSectionTag />}</h2>
       <MonsterText html={text.html} damageIcons references={text.references} spellReferences={text.spellReferences} rules={text.rules} />
     </section>
   );
@@ -127,8 +133,13 @@ export function MonsterSheetTitle({ monster, label, before, byline, labelBelow =
  * descriptionFirst: the sheets of «I mostri creati da voi» (PROMPT 20) open with their description, in italics and with no
  * title, above the ink strip; the official sheets keep it at the bottom.
  */
-export function MonsterSheetBody({ monster, legacy, hidden = [], catalog, descriptionFirst = false }: { monster: Partial<Monster>; legacy: boolean; hidden?: readonly string[]; catalog?: SpellReferenceCatalog; descriptionFirst?: boolean }) {
-  const context: SheetContext = { legacy, hidden, catalog, source: monster.fonte_scheda };
+/**
+ * hiddenSections: the previews of the reserved area (PROMPT 44) draw the sections hidden from the public with
+ * «Nascosta al pubblico»; the public page never has them (lib/homebrew-types.ts publicSheet).
+ */
+export function MonsterSheetBody({ monster, legacy, hidden = [], catalog, descriptionFirst = false, hiddenSections }: { monster: Partial<Monster>; legacy: boolean; hidden?: readonly string[]; catalog?: SpellReferenceCatalog; descriptionFirst?: boolean; hiddenSections?: readonly string[] }) {
+  const context: SheetContext = { legacy, hidden, catalog, source: monster.fonte_scheda, hiddenSections };
+  const tagged = (name: string) => !!hiddenSections?.includes(name);
   // «I mostri creati da voi»: the typographic minus «−», as in the texts of the SRD sheets (PROMPT 22).
   const modifier = (score: number) => (monster.fonte_scheda === "Homebrew" ? abilityMod(score).replace("-", "−") : abilityMod(score));
   const ca = splitBoxValue(monster.classe_armatura);
@@ -147,6 +158,8 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog, descri
   const lead = descriptionFirst ? (monster.descrizione || "").split(/(?:<br\s*\/?>\s*){2,}/i).filter(part => part.replace(/<[^>]+>/g, "").trim()) : [];
   return (
     <div className="@container">
+    {monster.immagine && <MonsterPictureFigure picture={monster.immagine} />}
+    {lead.length > 0 && tagged("descrizione") && <p className="px-6 pt-3"><HiddenSectionTag /></p>}
     {lead.length > 0 && <DescriptionLead>{lead.map((part, index) => <p key={index} className={index ? "mt-3" : undefined} dangerouslySetInnerHTML={{ __html: part }} />)}</DescriptionLead>}
     {/* CA, PF, initiative and challenge in an ink strip that stays at the top while the sheet scrolls (the page
         on the phone, the card column next to the list on the computer): the numbers needed at the table in sight. */}
@@ -197,15 +210,21 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog, descri
         </div>
       </section>
 
-      <Section title="Tratti" html={tratti} context={context} />
+      <Section title="Tratti" html={tratti} context={context} name={hiddenSections ? "tratti" : undefined} />
     </div>
     <div>
-      <Section title="Azioni" html={azioni} context={context} />
-      <Section title="Azioni bonus" html={monster.azioni_bonus} context={context} />
-      <Section title="Reazioni" html={monster.reazioni} context={context} />
-      <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} context={context} />
+      <Section title="Azioni" html={azioni} context={context} name={hiddenSections ? "azioni" : undefined} />
+      <Section title="Azioni bonus" html={monster.azioni_bonus} context={context} name={hiddenSections ? "azioni_bonus" : undefined} />
+      <Section title="Reazioni" html={monster.reazioni} context={context} name={hiddenSections ? "reazioni" : undefined} />
+      <Section title="Azioni leggendarie" html={monster.azioni_leggendarie} context={context} name={hiddenSections ? "azioni_leggendarie" : undefined} />
     </div>
     </div>
+      {/* Mostri «Dalla redazione» (PROMPT 44): after the legendary actions, across the whole card. */}
+      <Section title="Storia e leggenda" html={monster.storia} context={context} name="storia" />
+      <Section title="Tattiche" html={monster.tattiche} context={context} name="tattiche" />
+      <Section title="Tana" html={monster.tana} context={context} name="tana" />
+      <Section title="Agganci per l’avventura" html={monster.agganci} context={context} name="agganci" />
+      <Section title="Varianti" html={monster.varianti} context={context} name="varianti" />
       {!descriptionFirst && <Section title="Descrizione" html={monster.descrizione} context={context} />}
     </div>
   );

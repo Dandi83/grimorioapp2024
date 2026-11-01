@@ -5,6 +5,7 @@ import { FavoriteButton } from "@/components/favorite-button";
 import { ShareButton } from "@/components/share-button";
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { getMonsterById } from "@/lib/monsters";
+import { publicSheet } from "@/lib/public-sheet";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
@@ -54,7 +55,9 @@ export async function generateMetadata({
   // Hidden or «In arrivo»: no name or description of the card in the answer.
   if (await sectionClosed("bestiario")) return CLOSED_METADATA;
   const { id } = await params;
-  const monster = await getMonsterById(id);
+  // Sections hidden by the administrator (PROMPT 44): never in the metadata either.
+  const found = await getMonsterById(id);
+  const monster = found && publicSheet(found);
   // The same checks as the page (missing, hidden with the eye, of a hidden edition or collection): not found,
   // with the generic metadata of the site's 404.
   if (!monster) notFound();
@@ -84,8 +87,10 @@ export default async function MonsterDetailPage({
   // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.
   await sectionPage("bestiario");
   const { id } = await params;
-  const monster = await getMonsterById(id);
-  if (!monster) notFound();
+  // Sections hidden by the administrator (PROMPT 44) are taken away here: they never reach the HTML.
+  const found = await getMonsterById(id);
+  if (!found) notFound();
+  const monster = publicSheet(found);
   const source = getSrdMonsterSource(monster);
   const legacy = usesLegacyMonsterRules(monster);
   // A creature of an edition or a collection hidden from /admin/sezioni is not found (the administrator sees it, labelled).

@@ -133,6 +133,11 @@ function AdminListView({ data, create }: { data: AdminListData; create?: "spell"
             </button>
           </div>
 
+          {data.kind === "mostro" && (
+            <div className="mt-3 flex">
+              <Link href="/admin/mostri/importa" prefetch={false} data-import-link="" className="inline-flex min-h-11 items-center gap-1.5 rounded-full border-[1.5px] border-[#E0A21A] bg-[#FCEFD0] px-3.5 text-[14px] font-bold text-[#7A4E00]">Importa mostro</Link>
+            </div>
+          )}
           <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Contatori">
             {counters.map(counter => (
               <button key={counter.key} type="button" aria-pressed={counter.on} onClick={counter.apply} data-counter={counter.key}
@@ -244,6 +249,8 @@ function AdminListView({ data, create }: { data: AdminListData; create?: "spell"
           <div className="mt-3 flex flex-col gap-2">
             <button type="button" onClick={() => setCreating("monster")} className="min-h-12 rounded-[14px] bg-[#7A1F2B] text-[16px] font-bold text-[#FFFBF0]">Scheda</button>
             <button type="button" onClick={() => setCreating("homebrew")} className="min-h-12 rounded-[14px] border-[1.5px] border-[#E0A21A] bg-[#FCEFD0] text-[16px] font-bold text-[#7A4E00]">Nuovo mostro della redazione</button>
+            {/* PROMPT 44: a creature «Dalla redazione» from the JSON of a draft. */}
+            <Link href="/admin/mostri/importa" prefetch={false} className="flex min-h-12 items-center justify-center rounded-[14px] border-[1.5px] border-[#DDCFAE] bg-[#FFFBF0] text-[16px] font-bold text-[#2B2118]">Importa mostro</Link>
           </div>
         </Sheet>
       )}

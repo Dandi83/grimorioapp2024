@@ -54,12 +54,12 @@ export function HomebrewNote({ ours = false }: { ours?: boolean }) {
 }
 
 /** «Anteprima» of /admin/proposte: the sheet as the public will see it (same component, same order, same links). */
-export function HomebrewSheet({ monster, before, context = {} }: { monster: Monster; before?: ReactNode; context?: CardDisplayContext }) {
+export function HomebrewSheet({ monster, before, context = {}, hiddenSections }: { monster: Monster; before?: ReactNode; context?: CardDisplayContext; hiddenSections?: readonly string[] }) {
   const edizione = monster.homebrew_edizione ?? "2024";
   return (
     <article className="monster-sheet relative pb-2 pt-4">
       <MonsterSheetTitle monster={monster} before={before} label={<HomebrewLabel edizione={edizione} ours={!monster.homebrew_autore} verified={!!monster.homebrew_verificato} />} byline={<HomebrewByline autore={monster.homebrew_autore} licenza={monster.homebrew_licenza} verified={!!monster.homebrew_verificato} />} labelBelow />
-      <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} descriptionFirst />
+      <MonsterSheetBody monster={{ ...monster, fonte_scheda: "Homebrew" }} legacy={edizione === "2014"} catalog={context.catalog} hidden={context.hidden} descriptionFirst hiddenSections={hiddenSections} />
       <HomebrewNote ours={!monster.homebrew_autore} />
     </article>
   );

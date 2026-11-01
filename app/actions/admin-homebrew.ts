@@ -6,7 +6,8 @@ import { headers } from "next/headers";
 import { requireAdmin } from "@/lib/admin-action-helpers";
 import { approveProposal, createHomebrew, deleteHomebrew, getHomebrew, getProposal, refuseProposal, saveHomebrewVerdict, sendPublishedEmail, setHomebrewVerified, updateHomebrew, updateProposal } from "@/lib/homebrew";
 import { homebrewVerdict } from "@/lib/homebrew-balance";
-import { HOMEBREW_LICENSE, LIMITS, parseDraft, plainText } from "@/lib/homebrew-types";
+import { parseEditorialExtras } from "@/lib/editorial-draft";
+import { HOMEBREW_LICENSE, LIMITS, parseDraft, plainText, type HomebrewDraft } from "@/lib/homebrew-types";
 
 type HomebrewResult = { ok: true; id?: string; email?: "sent" | "not-configured" | "failed" | "none" } | { ok: false; error: string };
 
@@ -59,10 +60,22 @@ export async function correctProposalAction(id: string, draft: unknown): Promise
   return (await updateProposal(String(id), checked.draft)) ? { ok: true } : { ok: false, error: "Proposta non trovata o già decisa." };
 }
 
+/**
+ * A draft «Dalla redazione» (PROMPT 44): the longer limits of the reserved area and its own fields (the five sections,
+ * the hidden sections, the picture), never accepted for a creature of the community.
+ */
+function editorialDraft(input: unknown): { ok: true; draft: HomebrewDraft } | { ok: false; error: string } {
+  const checked = parseDraft(input, { editorial: true });
+  if (!checked.ok) return checked;
+  const extras = parseEditorialExtras(input);
+  if (!extras.ok) return extras;
+  return { ok: true, draft: { ...checked.draft, ...extras.extras } };
+}
+
 /** «+ Nuova homebrew» in /admin/mostri: published at once, «del Grimorio». */
 export async function createHomebrewAction(draft: unknown): Promise<HomebrewResult> {
   await requireAdmin();
-  const checked = parseDraft(draft);
+  const checked = editorialDraft(draft);
   if (!checked.ok) return checked;
   const id = await createHomebrew(checked.draft, homebrewVerdict(checked.draft));
   refresh();
@@ -72,9 +85,11 @@ export async function createHomebrewAction(draft: unknown): Promise<HomebrewResu
 /** verified: the box «Mostra "Bilanciamento verificato"» of the editor (PROMPT 26); undefined: the pill as it was. */
 export async function updateHomebrewAction(id: string, draft: unknown, verified?: boolean): Promise<HomebrewResult> {
   await requireAdmin();
-  const checked = parseDraft(draft);
+  const row = await getHomebrew(String(id));
+  if (!row) return { ok: false, error: "Creatura homebrew non trovata." };
+  // Ours keep their own fields (PROMPT 44); a creature of the community keeps the checks of its form.
+  const checked = row.autore ? parseDraft(draft) : editorialDraft(draft);
   if (!checked.ok) return checked;
-  if (!(await getHomebrew(String(id)))) return { ok: false, error: "Creatura homebrew non trovata." };
   await updateHomebrew(String(id), checked.draft, homebrewVerdict(checked.draft), typeof verified === "boolean" ? verified : undefined);
   refresh();
   return { ok: true, id: String(id) };
