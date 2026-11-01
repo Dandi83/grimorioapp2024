@@ -183,7 +183,13 @@ test("the question: not at the 1st and 2nd visit, from the 3rd; never with the s
   // The invite to install first: the question waits until it is closed; then the invite does not come back over it.
   const invite = await visitor(browser, { days: 2, invite: true });
   await invite.page.goto("/");
-  await expect(invite.page.locator("[data-install-prompt]")).toBeVisible();
+  await expect(question(invite.page)).toHaveCount(0);
+  await invite.page.waitForTimeout(1000);
+  // PROMPT 43: the invite comes with the first gesture (one made before the page is ready is lost: again).
+  await expect(async () => {
+    await invite.page.keyboard.press("Shift");
+    await expect(invite.page.locator("[data-install-prompt]")).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await expect(question(invite.page)).toHaveCount(0);
   await invite.page.locator("[data-install-prompt]").getByRole("button", { name: "Chiudi" }).click();
   await expect(question(invite.page)).toBeVisible();

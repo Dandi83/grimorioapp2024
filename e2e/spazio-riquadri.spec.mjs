@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { writeFileSync } from "node:fs";
 
 // The space between the end of the text of a card and the box under it (SRD source, «Scheda completa dello

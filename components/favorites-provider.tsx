@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { renameFavoriteId } from "@/lib/monster-id-aliases";
+import { favoriteCardsKept, fetchFavoriteCards, whenIdle } from "@/lib/favorite-cards";
 
 const KEY = "grimorio.favorites.v1";
 
@@ -79,6 +80,13 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore unavailable storage
     }
+  }, [favorites, loaded]);
+
+  // Preferiti offline (PROMPT 43): when the browser is idle, the rows of favorites the device does not keep yet are
+  // asked once (lib/favorite-cards.ts); online on Preferiti they come anyway. No favorite, or offline: nothing.
+  useEffect(() => {
+    if (!loaded || !favorites.length || !navigator.onLine || window.location.pathname === "/preferiti" || favoriteCardsKept(favorites)) return;
+    return whenIdle(() => { void fetchFavoriteCards(favorites); }, 8000);
   }, [favorites, loaded]);
 
   const favoriteSet = useMemo(() => new Set(favorites), [favorites]);

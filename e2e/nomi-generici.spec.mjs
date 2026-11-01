@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { chooseEdition } from "./edition-pill.mjs";
 
 // PROMPT 8: the four summaries added on 28/10/2026, «Sfera elastica» / «Sfera congelante» without the proper name,

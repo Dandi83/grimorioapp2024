@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // «Modifica» and «indietro»: leaving an editor opened from a public page never leaves the editor in the
 // history (lib/admin-edit-return.ts), so «indietro» on the card leads to its list, with its search and scroll,

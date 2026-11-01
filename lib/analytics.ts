@@ -639,6 +639,22 @@ export async function readFunctions(range: StatisticsRange): Promise<FunctionUse
     proposalStart: row.proposal_start ?? 0, proposalSent: row.proposal_sent ?? 0, installShown: row.install_shown ?? 0, installAccepted: row.install_accepted ?? 0 };
 }
 
+/**
+ * The invite «Installala» (PROMPT 43), in the last 24 hours and the last 7 days whatever the period chosen: the people
+ * who saw it, tapped it, closed it, and those who installed the app (app_installed, where the browser tells it).
+ */
+export type InstallInviteCounts = Record<"shown" | "tapped" | "closed" | "installed", { day: number; week: number }>;
+export async function readInstallInvite(): Promise<InstallInviteCounts> {
+  await ensureSchema();
+  const pair = (name: string) => `count(DISTINCT visitor_id) FILTER (WHERE event_name='${name}' AND received_at >= now() - interval '24 hours')::int AS ${name}_day,
+      count(DISTINCT visitor_id) FILTER (WHERE event_name='${name}')::int AS ${name}_week`;
+  const { rows } = await pool.query(`SELECT ${["install_prompt_shown", "install_prompt_tapped", "install_prompt_closed", "app_installed"].map(pair).join(", ")}
+    FROM grimorio_analytics_events WHERE is_test=false AND received_at >= now() - interval '7 days'`);
+  const row = rows[0] ?? {};
+  const both = (name: string) => ({ day: row[`${name}_day`] ?? 0, week: row[`${name}_week`] ?? 0 });
+  return { shown: both("install_prompt_shown"), tapped: both("install_prompt_tapped"), closed: both("install_prompt_closed"), installed: both("app_installed") };
+}
+
 /** «Non trovata»: the paths asked that do not exist, the most frequent first. */
 export async function readNotFound(range: StatisticsRange, limit = 15): Promise<{ path: string; times: number; people: number }[]> {
   await ensureSchema();

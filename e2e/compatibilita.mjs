@@ -122,10 +122,17 @@ async function runScenarios(browser, scenarios, report) {
   for (const scenario of scenarios) {
     const { context, page, errors } = await open(browser, scenario);
     await page.goto("/");
+    // PROMPT 43: the invite comes with the first gesture of the person, never with a timer.
     if (scenario.expect === "none") {
+      await page.waitForTimeout(500);
+      await page.keyboard.press("Shift");
       await page.waitForTimeout(4500);
       await expect(invite(page), scenario.name).toHaveCount(0);
     } else {
+      await expect(async () => {
+        await page.keyboard.press("Shift");
+        await expect(invite(page)).toBeVisible({ timeout: 1000 });
+      }, scenario.name).toPass({ timeout: 15_000 });
       await expect(invite(page), scenario.name).toHaveAttribute("data-install-prompt", scenario.expect, { timeout: 10_000 });
       await expect(invite(page), scenario.name).toContainText(scenario.text);
       // Above the bottom bar on the phone, never over it.
@@ -199,16 +206,23 @@ export function compatibilityTest(engine) {
       const iphone = SCENARIOS[0];
       let { context, page } = await open(browser, iphone);
       await page.goto("/");
+      // The first gesture once the page is ready (a key pressed before it is lost, as for a person).
+      await expect(async () => {
+        await page.keyboard.press("Shift");
+        await expect(invite(page)).toBeVisible({ timeout: 1000 });
+      }).toPass({ timeout: 15_000 });
       await invite(page).getByRole("button", { name: "Chiudi" }).click();
       await expect(invite(page)).toHaveCount(0);
       const until = Number(await page.evaluate(() => localStorage.getItem("grimorio-install-dismissed")));
       expect(Math.round((until - Date.now()) / 864e5)).toBe(7);
       await page.reload();
+      await page.keyboard.press("Shift");
       await page.waitForTimeout(2500);
       await expect(invite(page)).toHaveCount(0);
       await context.close();
       ({ context, page } = await open(browser, iphone, () => Object.defineProperty(navigator, "standalone", { get: () => true })));
       await page.goto("/");
+      await page.keyboard.press("Shift");
       await page.waitForTimeout(2500);
       await expect(invite(page)).toHaveCount(0);
       await page.goto("/installa");

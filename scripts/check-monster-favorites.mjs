@@ -9,7 +9,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 const require=createRequire(import.meta.url),root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const monster={...JSON.parse(readFileSync(path.join(root,'lib/data/srd-monster-sample.json'))).monster,id:'shared',nome:'Mostro salvato'};
 const spell={id:'shared',nome_italiano:'Incantesimo salvato',livello_num:1,scuola:'Evocazione'};
-let favorites=['mostro:shared'],loaded=true,out=[],parts=[];
+let favorites=['mostro:shared'],loaded=true,out=[],parts=[],snapshot={spells:[],monsters:[]};
 const state={useFavorites:()=>({favorites,loaded,isFavorite:id=>favorites.includes(id),toggle:()=>{throw Error('Rendering must not toggle favorites')}})};
 function load(file){
  if(file.endsWith('.json'))return JSON.parse(readFileSync(file));
@@ -19,6 +19,9 @@ function load(file){
   if(id==='@/lib/spell-index')return {getSpellIndex:async()=>[spell]};
   if(id==='@/lib/section-view')return {sectionPage:async()=>{},sectionClosed:async()=>false,CLOSED_METADATA:{},sectionsOut:async()=>out,partsOut:async()=>parts,markedCards:async(k,l)=>l,sectionView:async()=>({admin:false,hidden:[],hiddenParts:[],hiddenCards:[]})};
   if(id==='@/lib/monster-index')return {getMonsterListIndex:async()=>[monster]};
+  if(id==='next/server')return {NextResponse:{json:body=>body}};
+  // PROMPT 43: the rows come from /preferiti/schede through the copy kept on the device (never fetched while rendering).
+  if(id==='@/lib/favorite-cards')return {...load(path.join(root,'lib/favorite-cards.ts')),readFavoriteCards:()=>snapshot,fetchFavoriteCards:()=>new Promise(()=>{})};
   if(id==='next/navigation')return {useRouter:()=>({prefetch:()=>{}})};
   if(id==='next/link')return {__esModule:true,default:({children,prefetch,...p})=>createElement('a',p,children)};
   if(id.startsWith('@/')||id.startsWith('.')){let p=id.startsWith('@/')?path.join(root,id.slice(2)):path.resolve(path.dirname(file),id);if(!path.extname(p))p=['.tsx','.ts','.json'].map(e=>p+e).find(existsSync);return load(p);}
@@ -26,7 +29,10 @@ function load(file){
  },m,m.exports);return m.exports;
 }
 const page=load(path.join(root,'app/preferiti/page.tsx')).default;
-const render=async()=>renderToStaticMarkup(await page());
+const route=load(path.join(root,'app/preferiti/schede/route.ts')).GET;
+const cardsUrl=load(path.join(root,'lib/favorite-cards.ts')).favoriteCardsUrl;
+// The route answers with the saved cards only (same rules as before); the page shows them.
+const render=async()=>{const url=cardsUrl(favorites);snapshot=url?{...await route(new Request('http://localhost'+url)),asked:[...favorites]}:{spells:[],monsters:[]};return renderToStaticMarkup(await page());};
 let markup=await render();assert.ok(markup.includes('/mostro/shared'),'A saved monster must appear on the actual favorites page');assert.ok(!markup.includes('/spell/shared'),'Monster ID namespace must not select a spell with the same ID');
 favorites=['shared'];markup=await render();assert.ok(markup.includes('/spell/shared'));assert.ok(!markup.includes('/mostro/shared'));
 favorites=['shared','mostro:shared'];markup=await render();assert.ok(markup.includes('/spell/shared')&&markup.includes('/mostro/shared'));assert.deepEqual(favorites,['shared','mostro:shared']);
@@ -58,7 +64,7 @@ const orderedMonsters=[
 favorites=[...orderedSpells.map(s=>s.id),...orderedMonsters.map(m=>'mostro:'+m.id)];
 const originalSpells=orderedSpells.map(s=>s.id),originalMonsters=orderedMonsters.map(m=>m.id),originalFavorites=[...favorites];
 const FavoritesList=load(path.join(root,'components/favorites-list.tsx')).FavoritesList;
-markup=renderToStaticMarkup(createElement(FavoritesList,{spells:orderedSpells,monsters:orderedMonsters}));
+snapshot={spells:orderedSpells,monsters:orderedMonsters};markup=renderToStaticMarkup(createElement(FavoritesList,{}));
 assert.deepEqual([...markup.matchAll(/href="\/spell\/([^\"]+)"/g)].map(m=>m[1]),['cantrip','a2','b2','z9','unknown'],'Favorite spells must be ordered by ascending numeric level, then Italian name; unknown levels last');
 assert.deepEqual([...markup.matchAll(/href="\/mostro\/([^\"]+)"/g)].map(m=>m[1]),['eighth','quarter','ahalf','bhalf','c2','z10','unknown'],'Favorite monsters must be ordered by numeric CR including fractions, then Italian name; unknown CR last');
 assert.deepEqual(orderedSpells.map(s=>s.id),originalSpells);assert.deepEqual(orderedMonsters.map(m=>m.id),originalMonsters);assert.deepEqual(favorites,originalFavorites);

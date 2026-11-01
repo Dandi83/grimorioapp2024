@@ -1,5 +1,5 @@
 import { chooseEdition, expectEdition } from "./edition-pill.mjs";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // Tablet and computer layouts (the phone is covered by the other files, unchanged).
 test.use({ isMobile: false, hasTouch: false, viewport: { width: 1440, height: 900 } });

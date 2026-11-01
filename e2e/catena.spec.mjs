@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // Cards written in the reserved area are shown like the SRD cards (lib/card-display.ts): condition and spell
 // links, damage icons, highlighted block, labels, search and filters; the editor preview is the public card;

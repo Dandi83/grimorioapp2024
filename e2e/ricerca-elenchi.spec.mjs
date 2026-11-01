@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // PROMPT 38: one example text «Cerca per nome…» in every search field of the lists, and the Italian name marked in
 // their results as in the search of the Home (components/search/marked.tsx). The visitor at 390 and 1280.

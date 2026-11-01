@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // «Schede SRD modificate» (lib/srd-modified.ts): the list of the reserved area, the warning of the editor before a
 // save that takes the SRD box away, the «SRD modificate» quick filter of the list of the reserved area, «Ripristina testo SRD».

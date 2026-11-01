@@ -1,5 +1,5 @@
 import { hiddenPartsText } from "./community-switch.mjs";
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // «Visibile · In arrivo · Nascosta» (/admin/sezioni): a section and a part in each state, as a visitor and as the
 // administrator. «In arrivo»: the entry stays (bar, Compendio, Home, filters, blocks), attenuated with the pill,

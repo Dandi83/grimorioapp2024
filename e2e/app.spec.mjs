@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { readFileSync } from "node:fs";
 import { chooseEdition, editionPill, expectEdition } from "./edition-pill.mjs";
 

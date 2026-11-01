@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 // «Modifica» from a public page, on an iPhone-sized touch screen with a slow processor: the editor shows

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // PROMPT 24: no «Provenienza» in the Filtri panel of Incantesimi and Bestiario, for the administrator too: the same
 // groups for everyone (phone and computer, 2014 and 2024). The provenance stays in the lists of the reserved area

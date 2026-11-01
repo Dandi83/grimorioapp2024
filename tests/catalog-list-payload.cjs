@@ -54,9 +54,9 @@ function load(relative, deps={}) {
  assert.equal(JSON.stringify(spell),spellBefore);
  const favorites=load('app/preferiti/page.tsx',{'@/components/favorites-list':{FavoritesList:'test-favorites'},'@/lib/monster-index':{getMonsterListIndex:async()=>monsterList},'@/lib/spell-index':{getSpellIndex:async()=>index},'@/lib/section-view':{visibleCards:async(k,l)=>l,bestiaryList:async l=>l,sectionPage:async()=>{},markedCards:async(k,l)=>l,cardHidden:async()=>false,cardsOut:async()=>[],sectionView:async()=>({admin:false,hidden:[],hiddenParts:[],hiddenCards:[]}),sectionsOut:async()=>[],partsOut:async()=>[],linksOut:async()=>[],partState:async()=>({shown:true,hidden:false}),editionCard:async()=>false,pageEditions:async()=>['2024','2014']},'@/lib/monsters-types':{isSrdAnimal:()=>false}}).default;
  const fe=await favorites();
- assert.strictEqual(fe.props.spells,index);
- assert.ok(!fe.props.monsters.some(m=>'azioni' in m||'descrizione' in m));
- assert.deepEqual(fe.props.monsters.map(m=>m.id),all.map(m=>m.id));
+ // PROMPT 43: Preferiti no longer carries the catalog; the saved cards arrive from /preferiti/schede.
+ assert.deepEqual(Object.keys(fe.props),['unavailable']);
+ assert.strictEqual(fe.props.unavailable,true);
  // Exercise the new reader too: the page no longer performs the projection.
  const additions=load('lib/srd-additions.ts');
  const additionId=JSON.parse(fs.readFileSync('lib/data/srd-additions-20261017.json','utf8')).spells[0].id;

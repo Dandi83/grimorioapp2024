@@ -2,7 +2,7 @@
 
 import { requireAdmin } from "@/lib/admin-action-helpers";
 import {
-  isNotificationType, listDevices, removeSubscription, saveSubscription, sendPush, setNotificationType, vapidKeys,
+  isNotificationType, removeSubscription, saveSubscription, sendPush, setNotificationType, vapidKeys,
   type PushSubscriptionInput,
 } from "@/lib/push";
 

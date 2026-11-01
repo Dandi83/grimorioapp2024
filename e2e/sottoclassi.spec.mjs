@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures.mjs";
 
 // Subclasses added by the administrator: «+ Nuova sottoclasse» in the admin page of a class, features at the SRD
 // levels with name and text empty, born hidden with «NO SRD», shown with the eye, in the selector of the class

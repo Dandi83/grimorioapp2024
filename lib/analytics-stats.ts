@@ -309,7 +309,10 @@ export function reasonLabel(reason: SearchReason | null): string {
  * Insight 2/2 (PROMPT 32). The uses that ride in the events already sent (page view, search, installation): the
  * name only, from this fixed list; the server keeps one row per use.
  */
-export const USE_SIGNALS = ["edition_change", "proposal_start", "proposal_sent", "install_prompt_shown", "install_prompt_accepted"] as const;
+// The invite «Installala» (PROMPT 43): shown, tapped (its button, «Come si fa» or «Copia il link»), closed; the
+// installation itself is the event app_installed (the browser's appinstalled), already counted.
+export const USE_SIGNALS = ["edition_change", "proposal_start", "proposal_sent", "install_prompt_shown", "install_prompt_accepted",
+  "install_prompt_tapped", "install_prompt_closed"] as const;
 export type UseSignal = (typeof USE_SIGNALS)[number];
 
 /** «Giorni e ore»: 7 days (Monday first) × 8 bands of 3 hours, Rome time. */
