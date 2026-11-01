@@ -63,7 +63,16 @@ function fight(model: MonsterModel, level: number, kinds: HeroKind[], tactic: Ta
     slots: hero.kind === "mago" ? w.spells.map(spell => spell.slots) : [], shields: hero.kind === "mago" ? w.shields : 0,
     heals: hero.kind === "chierico" ? c.heals : 0,
   }));
-  const best = model.attacks.reduce<Attack | undefined>((top, attack) => (!top || attack.average > top.average ? attack : top), undefined);
+  // PROMPT 46: an attack with «Ricarica» or «N/giorno» is never the one the multiattack repeats.
+  const isLimited = (attack: Attack) => !!(attack.recharge || attack.perDay);
+  const best = model.attacks.filter(attack => !isLimited(attack))
+    .reduce<Attack | undefined>((top, attack) => (!top || attack.average > top.average ? attack : top), undefined);
+  const limited = model.attacks.filter(isLimited);
+  const limitedReady = limited.map(() => true);
+  const limitedUses = limited.map(attack => attack.perDay ?? Infinity);
+  const canUse = (k: number) => limitedReady[k] && limitedUses[k] > 0;
+  // Its turn alone (it is not in the multiattack), or the multiattack without the usual attacks.
+  const alone = limited.map((attack, k) => k).filter(k => !limited[k].inMultiattack || !best);
   const multiValue = best ? attackValue(best, model.multiattack) : 0;
   const ready = model.abilities.map(() => true);
   const usesLeft = model.abilities.map(ability => ability.perDay ?? Infinity);
@@ -114,7 +123,20 @@ function fight(model: MonsterModel, level: number, kinds: HeroKind[], tactic: Ta
     usesLeft[index]--;
     monsterSave(ability);
   };
-  const multiattack = () => { if (best) for (let i = 0; i < model.multiattack; i++) monsterAttack(best); };
+  const spendLimited = (k: number) => {
+    if (limited[k].recharge) limitedReady[k] = false;
+    limitedUses[k]--;
+    monsterAttack(limited[k]);
+  };
+  const multiattack = () => {
+    if (!best) return;
+    let times = model.multiattack;
+    // «Può sostituire uno di questi attacchi con …, se è disponibile»: once, when ready.
+    const swap = limited.map((_, k) => k).filter(k => limited[k].inMultiattack && canUse(k))
+      .sort((a, b) => limited[b].average - limited[a].average)[0];
+    if (swap !== undefined && limited[swap].average > best.average) { spendLimited(swap); times--; }
+    for (let i = 0; i < times; i++) monsterAttack(best);
+  };
   const monsterTurn = () => {
     // Regeneration: at the start of its turn, only while it still has hit points, never beyond its maximum.
     if (model.regeneration && monster > 0) monster = Math.min(model.hp, monster + model.regeneration);
@@ -122,25 +144,31 @@ function fight(model: MonsterModel, level: number, kinds: HeroKind[], tactic: Ta
     usedOnce = new Set();
     fullAtTurn = new Set(heroes.filter(hero => !hero.down && hero.current >= hero.hp));
     model.abilities.forEach((ability, i) => { if (!ready[i] && ability.recharge && roll(random, 6) >= ability.recharge) ready[i] = true; });
+    limited.forEach((attack, k) => { if (!limitedReady[k] && attack.recharge && roll(random, 6) >= attack.recharge) limitedReady[k] = true; });
     const available = model.abilities.map((_, i) => i).filter(i => ready[i] && usesLeft[i] > 0);
+    const aloneReady = alone.filter(canUse).sort((a, b) => limited[b].average - limited[a].average);
     if (tactic === "caso") {
       // One of the available actions at random: the multiattack or an ability with its saving throw ready.
-      const choices = [...(best ? [-1] : []), ...available];
+      const choices = [...(best ? [-1] : []), ...available, ...aloneReady.map(k => -2 - k)];
       if (!choices.length) return;
       const choice = choices[Math.floor(random() * choices.length)];
-      if (choice < 0) multiattack(); else castAbility(choice);
+      if (choice === -1) multiattack(); else if (choice < -1) spendLimited(-2 - choice); else castAbility(choice);
       return;
     }
     let chosen = -1, value = 0;
     for (const i of available) if (saveValue(model.abilities[i]) > value) { chosen = i; value = saveValue(model.abilities[i]); }
     if (tactic === "prudente") {
       // The multiattack first; an ability that recharges one time out of two when ready; without attacks, the best ability.
-      if (!best) { if (chosen >= 0) castAbility(chosen); return; }
+      if (!best) { if (chosen >= 0) castAbility(chosen); else if (aloneReady.length) spendLimited(aloneReady[0]); return; }
       const recharging = available.filter(i => model.abilities[i].recharge).sort((a, b) => saveValue(model.abilities[b]) - saveValue(model.abilities[a]));
-      if (recharging.length && random() < 0.5) castAbility(recharging[0]); else multiattack();
+      if (recharging.length && random() < 0.5) castAbility(recharging[0]);
+      else if (aloneReady.length && limited[aloneReady[0]].recharge && random() < 0.5) spendLimited(aloneReady[0]);
+      else multiattack();
       return;
     }
-    if (chosen >= 0 && (value >= 0.8 * multiValue || !best)) castAbility(chosen);
+    const aloneValue = aloneReady.length ? attackValue(limited[aloneReady[0]]) : 0;
+    if (aloneReady.length && aloneValue > value && (aloneValue > multiValue || !best)) spendLimited(aloneReady[0]);
+    else if (chosen >= 0 && (value >= 0.8 * multiValue || !best)) castAbility(chosen);
     else multiattack();
   };
   const legendaryAction = () => {

@@ -140,7 +140,7 @@ test("the page of the method: the rule after the calibration (PROMPT 29) and its
   expect(html).toContain("Con questa regola, circa 8 mostri ufficiali su 10 risultano &quot;in linea&quot;");
   // The rule of PROMPT 29 and its numbers: seven measures, tolerance 20%.
   expect(html).toContain("240 su 319 (75%) nel 2014");
-  expect(html).toContain("247 su 328 (75%) nel 2024");
+  expect(html).toContain("246 su 328 (75%) nel 2024");
   expect(html).toContain("al massimo 2 misure su 7 fuori dalla fascia, ciascuna di non più del 20%");
   expect(html).toContain("oppure una sola di più del 100%");
   expect(html).toContain("più i PG a terra");
