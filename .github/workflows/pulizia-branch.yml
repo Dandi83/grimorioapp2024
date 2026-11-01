@@ -1,0 +1,38 @@
+name: Pulizia branch uniti
+
+# PROMPT 42: lanciata solo a mano (Actions → «Pulizia branch uniti» → Run workflow). «prova» elenca e non tocca
+# nulla; «elimina» cancella soltanto i branch già uniti in main (mai main, mai protetti, mai con una PR aperta).
+on:
+  workflow_dispatch:
+    inputs:
+      modalita:
+        description: "«prova» elenca soltanto; «elimina» cancella i branch già uniti in main"
+        required: true
+        default: prova
+        type: choice
+        options:
+          - prova
+          - elimina
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: pulizia-branch
+  cancel-in-progress: false
+
+jobs:
+  pulizia:
+    name: Pulizia branch uniti (${{ inputs.modalita }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Controlla ed elenca (o elimina) i branch uniti
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODALITA: ${{ inputs.modalita }}
+        run: bash .github/scripts/pulizia-branch.sh
