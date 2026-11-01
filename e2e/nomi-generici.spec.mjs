@@ -55,7 +55,7 @@ test("«Otiluke» appears in no visible name: list, search index, card", async (
   await expect(page.locator("main")).not.toContainText(/tiluke/i);
   await page.goto("/spell/sfera-elastica");
   await expect(page.getByRole("heading", { level: 1, name: "Sfera elastica" })).toBeVisible();
-  expect(await page.title()).toBe("Sfera elastica — Il Grimorio.App");
+  expect(await page.title()).toBe("Sfera elastica — Incantesimi · Il Grimorio.App");
   await expect(page.locator("body")).not.toContainText(/tiluke/i);
 });
 

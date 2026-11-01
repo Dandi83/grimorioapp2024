@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { WeaponsBrowser } from "@/components/equipment/weapons-browser";
 import { getCorrectedWeapons } from "@/lib/corrected-content";
 import { weaponListItems } from "@/lib/equipment";
@@ -5,7 +7,8 @@ import { sectionPage } from "@/lib/section-view";
 import { englishName } from "@/lib/english-names";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 
-export const metadata = { title: "Armi — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Armi", section: "Equipaggiamento", path: "/equipaggiamento/armi",
+  description: "Tutte le armi di D&D 5e in italiano, 2014 e 2024: danni, proprietà, padronanze, costo e peso, con le differenze tra le edizioni." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
 export const revalidate = 300;
@@ -21,5 +24,5 @@ export default async function WeaponsPage() {
       return [edition, en ? { ...weapon, en } : weapon];
     })),
   }));
-  return <WeaponsBrowser items={items} />;
+  return <><Breadcrumbs crumbs={[{ name: "Equipaggiamento", path: "/equipaggiamento" }, { name: "Armi", path: "/equipaggiamento/armi" }]} /><WeaponsBrowser items={items} /></>;
 }

@@ -1,3 +1,5 @@
+import { JsonLd } from "@/components/seo/json-ld";
+import { pageMetadata, websiteLd } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { Lock } from "lucide-react";
@@ -19,6 +21,11 @@ import { getSpellIndex } from "@/lib/spell-index";
 import styles from "./home.module.css";
 
 export const revalidate = 300;
+
+export const metadata = pageMetadata({
+  name: "Il Grimorio.App", path: "/", title: "Il Grimorio.App — Incantesimi, mostri e regole di D&D 5e in italiano",
+  description: "Consulta, cerca e filtra incantesimi, mostri, oggetti magici e regole di D&D 5e in italiano, edizioni 2014 e 2024. Gratis, anche offline.",
+});
 
 /**
  * Shortcuts of the computer Home, with the number of cards the visitor can open in each edition
@@ -51,6 +58,8 @@ export default async function HomePage() {
   const support = !!supportUrl();
   return (
     <div className={styles.home}>
+      {/* PROMPT 45: the site and its search (/?cerca=…) for Google. */}
+      <JsonLd data={websiteLd()} />
       <header className={styles.header}>
         <div className={styles.logo}>
           Il Grimorio<span>.App</span>

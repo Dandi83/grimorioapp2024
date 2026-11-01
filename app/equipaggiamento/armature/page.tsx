@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { ArmorBrowser } from "@/components/equipment/armor-browser";
 import { armorListItems, armorTimes, sameNumbers } from "@/lib/armor";
 import { getCorrectedArmors } from "@/lib/corrected-content";
@@ -7,7 +9,8 @@ import type { EquipmentEdition } from "@/lib/equipment-types";
 
 const withEnglish = (edition: EquipmentEdition, id: string) => { const en = englishName("armature", edition, id); return en ? { en } : {}; };
 
-export const metadata = { title: "Armature — Equipaggiamento — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Armature", section: "Equipaggiamento", path: "/equipaggiamento/armature",
+  description: "Tutte le armature e lo scudo di D&D 5e in italiano, 2014 e 2024: Classe Armatura, Forza richiesta, Furtività, peso e costo." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
 export const revalidate = 300;
@@ -23,5 +26,5 @@ export default async function ArmorPage() {
       "2024": { ...item.editions["2024"], ...withEnglish("2024", item.id) },
     },
   }));
-  return <ArmorBrowser items={items} times={armorTimes} sameNumbers={sameNumbers} />;
+  return <><Breadcrumbs crumbs={[{ name: "Equipaggiamento", path: "/equipaggiamento" }, { name: "Armature", path: "/equipaggiamento/armature" }]} /><ArmorBrowser items={items} times={armorTimes} sameNumbers={sameNumbers} /></>;
 }

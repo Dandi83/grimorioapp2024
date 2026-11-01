@@ -1,3 +1,4 @@
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Source_Sans_3 } from "next/font/google";
 import type { ReactNode } from "react";
@@ -37,7 +38,9 @@ const ebGaramond = EB_Garamond({
   display: "swap",
 });
 
+// PROMPT 45: the one base address of the site; every page gives its canonical, title and description (lib/seo.ts).
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Il Grimorio.App — Incantesimi e Bestiario D&D 5e",
   description:
     "Consulta, cerca e filtra incantesimi, mostri e animali di Dungeons & Dragons 5e in italiano. Salva i preferiti. Progetto fan-made.",
@@ -64,6 +67,8 @@ export const metadata: Metadata = {
     description:
       "Consulta, cerca e filtra incantesimi, mostri e animali di D&D 5e in italiano.",
     type: "website",
+    siteName: SITE_NAME,
+    locale: "it_IT",
   },
 };
 

@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 
 import { BestiarioWithFilters } from "@/components/catalog-browsers";
@@ -12,10 +14,8 @@ async function groups() {
 }
 
 export async function generateMetadata() {
-  return (await groups()).shown ? {
-    title: "Creature originali — Bestiario Il Grimorio.App",
-    description: "Le creature originali della redazione e della community del Grimorio, in un unico elenco.",
-  } : CLOSED_PART_METADATA;
+  return (await groups()).shown ? pageMetadata({ name: "Creature originali", section: "Bestiario", path: "/bestiario/creature-originali",
+    description: "Le creature originali di Il Grimorio.App in un unico elenco: i mostri della redazione e quelli della community, per D&D 2014 e 2024." }) : CLOSED_PART_METADATA;
 }
 
 /**
@@ -27,8 +27,11 @@ export default async function OriginalsPage() {
   if (!(await groups()).shown) notFound();
   const monsters = (await bestiaryList(await visibleCards("mostro", await getMonsterListIndex()))).filter(monster => monster.homebrew);
   return (
+    <>
+      <Breadcrumbs crumbs={[{ name: "Bestiario", path: "/bestiario" }, { name: "Creature originali", path: "/bestiario/creature-originali" }]} />
     <div className="lg:mx-auto lg:max-w-2xl">
       <BestiarioWithFilters monsters={monsters} section="originali" />
     </div>
+    </>
   );
 }

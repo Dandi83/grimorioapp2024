@@ -1,12 +1,13 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { GrimorioWithFilters } from "@/components/catalog-browsers";
 import { EmptyCard } from "@/components/layout/catalog-split";
 import { visibleCards, sectionPage } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
 import { computeMeta } from "@/lib/spells-types";
 
-export const metadata = {
-  title: "Incantesimi — Cerca gli incantesimi",
-};
+export const metadata = pageMetadata({ name: "Incantesimi", path: "/grimorio",
+  description: "Tutti gli incantesimi di D&D 5e in italiano, edizioni 2014 e 2024: cerca per nome e filtra per livello, scuola, classe e tempo di lancio." });
 
 export const revalidate = 300;
 
@@ -19,6 +20,7 @@ export default async function GrimorioPage() {
   // Computer: the list is in the left column (components/layout/catalog-split.tsx), here the empty card.
   return (
     <>
+      <Breadcrumbs crumbs={[{ name: "Incantesimi", path: "/grimorio" }]} />
       <div className="lg:hidden"><GrimorioWithFilters spells={spells} meta={computeMeta(spells)} /></div>
       <EmptyCard text="Scegli un incantesimo dall’elenco" />
     </>

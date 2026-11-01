@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { srdAttribution, srdSourceUrl } from "@/lib/srd-descriptions";
 import legacyMonsters from "@/lib/data/srd-monsters-5.1-it.json";
@@ -6,7 +7,8 @@ import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
 import { CopyrightLine } from "@/components/legal/copyright";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
 
-export const metadata = { title: "Fonti e licenze — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Fonti e licenze", section: "Info", path: "/fonti",
+  description: "Fonti e licenze di Il Grimorio.App: SRD 5.2.1 e SRD 5.1 in licenza Creative Commons, attribuzioni e crediti del progetto." });
 
 export default function SourcesPage() {
   return (

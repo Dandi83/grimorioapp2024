@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -32,7 +34,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!found || (found.edition && !shown.includes(found.edition))) notFound();
   const item = (found.edition ? [found.edition] : (["2024", "2014"] as const).filter(value => shown.includes(value))).map(value => found.entry.editions[value]).find(Boolean);
   if (!item) notFound();
-  return { title: `${item.nome} — Oggetti magici — Il Grimorio.App` };
+  const edition = found.edition ?? editionOfPage(found.entry.editions, shown);
+  return pageMetadata({ name: item.nome, section: "Oggetti magici", edition, path: `/oggetti-magici/${(await params).id}`,
+    description: itemDescription(item.nome, `oggetto magico, ${item.tipo.toLowerCase()} ${item.rarita.toLowerCase()}`, edition, "Effetti, rarità e sintonia") });
 }
 
 /** "2014 → 2024": name, rarity and attunement when they change (the edition is chosen with the pill only). */
@@ -82,7 +86,7 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
       <div className="space-y-5">
         {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
         <AdminEditButton target={{ kind: "contenuto", section: "oggetti-magici", id: entry.id, edition: value }} />
-        <MagicItemSheet item={item} edition={value} hidden={hidden} />
+        <MagicItemSheet item={item} edition={value} hidden={hidden} heading={Object.keys(panels).length ? "h2" : "h1"} />
         <SectionCorrectionNote section="oggetti-magici" id={entry.id} edition={value} corrections={corrections?.[value]} />
         {changes.length > 0 && <PartBlock section="oggetti-magici" part="confronto"><Changes changes={changes} /></PartBlock>}
       </div>
@@ -90,6 +94,7 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
   }
   return (
     <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
+      <Breadcrumbs crumbs={[{ name: "Oggetti magici", path: LIST }, { name: (entry.editions[edition ?? "2024"] ?? entry.editions["2014"] ?? entry.editions["2024"])!.nome, path: magicItemEntryHref(entry, edition ?? (entry.editions["2024"] ? "2024" : "2014")) }]} />
       <BackButton fallback={LIST} label="Tutti gli oggetti magici" />
       <div>
         <GearEditionPanels section="oggetti-magici" panels={panels} hrefs={hrefs} fixed={edition} listHref={LIST} />

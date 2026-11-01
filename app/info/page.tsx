@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { BookOpen, ChevronRight, Download, FileText, MessageSquare, ShieldCheck, type LucideIcon } from "lucide-react";
 import { CopyrightLine, CopyrightSection } from "@/components/legal/copyright";
@@ -6,7 +7,8 @@ import { SupportLink } from "@/components/support/support-link";
 import { supportUrl } from "@/lib/support";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
 
-export const metadata = { title: "Info e note legali — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Info e note legali", path: "/info",
+  description: "Informazioni e note legali di Il Grimorio.App: termini d’uso, fonti e licenze, privacy, installazione dell’app e contatti." });
 
 /** The legal pages and «Installa l’app», one large tile each (the whole row is the link). */
 const TILES: { href: string; title: string; line: string; Icon: LucideIcon }[] = [

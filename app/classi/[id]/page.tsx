@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { editionOfPage, fitDescription, dndEdition, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -31,7 +33,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const shown = await pageEditions("classi");
   const view = entry && shown.map(edition => entry.editions[edition]).find(Boolean);
   if (!view) notFound();
-  return { title: `${view.nome} — Classi — Il Grimorio.App` };
+  const edition = editionOfPage(entry.editions, shown);
+  return pageMetadata({ name: view.nome, section: "Classi", edition, path: `/classi/${id}`,
+    description: fitDescription(`${view.nome}, classe di ${dndEdition(edition)}: privilegi per livello, sottoclasse e tabella della classe in italiano su Il Grimorio.App.`) });
 }
 
 export default async function ClassPage({ params }: { params: Promise<{ id: string }> }) {
@@ -61,7 +65,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
     const name = (card ?? entry.editions["2024"]!).nome;
     headers[edition] = (
       <div className="relative">
-        <ClassHeader id={id} name={name} line={card ? `Classe · ${CLASS_SOURCES[edition]}, p. ${card.pagina}` : `Classe · ${CLASS_SOURCES[edition]}`} />
+        <ClassHeader id={id} name={name} line={card ? `Classe · ${CLASS_SOURCES[edition]}, p. ${card.pagina}` : `Classe · ${CLASS_SOURCES[edition]}`} heading={Object.keys(headers).length ? "h2" : "h1"} />
         {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
         {card && <AdminEditButton target={{ kind: "contenuto", section: "classi", id, edition }} desktop="lg:absolute lg:right-6 lg:top-6" />}
       </div>
@@ -82,6 +86,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
   }
   return (
     <article className="pb-8">
+      <Breadcrumbs crumbs={[{ name: "Compendio", path: "/compendio" }, { name: "Classi", path: "/classi" }, { name: (entry.editions["2024"] ?? entry.editions["2014"])!.nome, path: `/classi/${id}` }]} />
       <ClassSheetEditions headers={headers} bodies={bodies} />
       <ReportLink edition="2024" />
     </article>

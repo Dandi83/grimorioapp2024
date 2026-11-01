@@ -32,7 +32,7 @@ import { spellHref } from "./spell-public-id";
 import { englishName } from "./english-names";
 
 /** A row of a hidden section, or of a hidden edition, collection or tab (hidden: sections and part ids). */
-function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
+export function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
   if (isHiddenPath(row.href, hidden)) return true;
   const section = sectionOfPath(row.href);
   return section !== undefined && [row.edizione, row.parte].some(part => part !== undefined && hidden.includes(partId(section, part)));
@@ -42,7 +42,7 @@ function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
  * parte: the part of its section the row belongs to (a collection, a tab), hidden with it from /admin/sezioni.
  * en: the official English name of an SRD card (lib/english-names.ts), searched too and shown «in inglese».
  */
-interface SourceRow { nome: string; label: string; href: string; edizione?: EquipmentEdition; parte?: string; en?: string }
+export interface SourceRow { nome: string; label: string; href: string; edizione?: EquipmentEdition; parte?: string; en?: string }
 
 interface SearchSource {
   section: SearchSectionKey;

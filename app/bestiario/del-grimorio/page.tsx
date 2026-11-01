@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { notFound, redirect } from "next/navigation";
 
 import { BestiarioWithFilters } from "@/components/catalog-browsers";
@@ -13,10 +15,8 @@ const PART = partId("bestiario", "grimorio");
 
 export async function generateMetadata() {
   const state = await partState("bestiario", "grimorio");
-  return state.shown ? {
-    title: "Mostri del Grimorio — Bestiario Il Grimorio.App",
-    description: "Creature originali della redazione del Grimorio, bilanciate con il nostro simulatore.",
-  } : CLOSED_PART_METADATA;
+  return state.shown ? pageMetadata({ name: "Mostri del Grimorio", section: "Bestiario", path: "/bestiario/del-grimorio",
+    description: "I mostri originali della redazione di Il Grimorio.App per D&D 2014 e 2024, bilanciati con il nostro simulatore sui mostri ufficiali." }) : CLOSED_PART_METADATA;
 }
 
 /**
@@ -32,9 +32,12 @@ export default async function GrimorioPage() {
   }
   const monsters = (await bestiaryList(await visibleCards("mostro", await getMonsterListIndex()))).filter(monster => collectionOf(monster) === "grimorio");
   return (
+    <>
+      <Breadcrumbs crumbs={[{ name: "Bestiario", path: "/bestiario" }, { name: "Mostri del Grimorio", path: "/bestiario/del-grimorio" }]} />
     <div className="lg:mx-auto lg:max-w-2xl">
       {state.hidden && <div className="px-6 pt-4"><HiddenPartBar id={PART} /></div>}
       <BestiarioWithFilters monsters={monsters} section="grimorio" />
     </div>
+    </>
   );
 }

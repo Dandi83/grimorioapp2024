@@ -1,9 +1,11 @@
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 
 import { InstallHere } from "@/components/install/install-here";
 import { OPEN_BROWSER, STEPS } from "@/lib/install-guide";
 
-export const metadata = { title: "Installa l’app — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Installa l’app", section: "Info", path: "/installa",
+  description: "Come installare Il Grimorio.App sulla schermata Home di iPhone, iPad, Android e computer, browser per browser, passo per passo." });
 
 const GROUPS: { title: string; note?: string; items: { name: string; steps: readonly string[] }[] }[] = [
   {

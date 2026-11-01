@@ -6,6 +6,8 @@ import { ShareButton } from "@/components/share-button";
 import { MonsterProvenanceBadge } from "@/components/monster-provenance-badge";
 import { getMonsterById } from "@/lib/monsters";
 import { publicSheet } from "@/lib/public-sheet";
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { monsterDescription, pageMetadata, type SeoEdition } from "@/lib/seo";
 import { getSrdMonsterSource, usesLegacyMonsterRules } from "@/lib/srd-monsters";
 import Link from "next/link";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
@@ -40,6 +42,12 @@ async function bothEditionsCard(): Promise<string[]> {
 }
 
 export const revalidate = 300;
+
+/** The edition of the page: «2014 e 2024» for a creature of both, else its own. */
+function monsterEdition(monster: { edizione?: string; homebrew_edizione?: string } & Parameters<typeof usesLegacyMonsterRules>[0]): SeoEdition {
+  if (monster.homebrew_edizione === "entrambe") return "entrambe";
+  return monster.edizione === "2014" || (!monster.edizione && usesLegacyMonsterRules(monster)) ? "2014" : "2024";
+}
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
@@ -65,18 +73,13 @@ export async function generateMetadata({
   if (monster.homebrew_edizione === "entrambe") await bothEditionsCard();
   else await editionCard("bestiario", monster.edizione === "2014" || (!monster.edizione && usesLegacyMonsterRules(monster)) ? "2014" : "2024");
   await collectionCard(collectionOf({ id: monster.id, homebrew: monster.homebrew_edizione, homebrew_autore: monster.homebrew_autore }));
-  const description = monster.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
-    `${monster.nome}, ${monster.tipo}.`;
-  const url = `https://ilgrimorio.app/mostro/${encodeURIComponent(monster.id)}`;
-  return {
-    title: `${monster.nome} — Bestiario Il Grimorio.App`,
-    description,
-    alternates: { canonical: url },
-    openGraph: {
-      title: `${monster.nome} — Il Grimorio.App`, description, url, type: "website",
-      images: [],
-    },
-  };
+  // PROMPT 45: from the head of the card only (name, type, size, CR, edition), never from its sections.
+  return pageMetadata({
+    name: monster.nome, section: "Bestiario", edition: monsterEdition(monster), path: `/mostro/${encodeURIComponent(monster.id)}`,
+    description: monsterDescription({ nome: monster.nome, tipo: monster.tipo, taglia: monster.taglia, gs: monster.grado_sfida, edizione: monsterEdition(monster),
+      origine: monster.homebrew_edizione ? (monster.homebrew_autore ? "community" : "redazione") : undefined }),
+    images: [],
+  });
 }
 
 export default async function MonsterDetailPage({
@@ -106,6 +109,7 @@ export default async function MonsterDetailPage({
 
   return (
     <article className="monster-sheet relative pb-2 pt-4">
+      <Breadcrumbs crumbs={[{ name: "Bestiario", path: "/bestiario" }, { name: `${monster.nome}${monsterEdition(monster) === "2014" ? " (2014)" : ""}`, path: `/mostro/${monster.id}` }]} />
       {hiddenParts.map(id => <div key={id} className="px-6"><HiddenPartBar id={id} /></div>)}
       {hiddenCard && <div className="px-6"><HiddenCardBar kind="mostro" id={monster.id} /></div>}
       <MonsterSheetTitle

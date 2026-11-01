@@ -30,7 +30,8 @@ const soonPlace = (parts: ClassParts, key: (typeof CLASS_PARTS)[number]) =>
   !parts[key].shown && parts[key].soon ? <SoonBlock key={key} id={`classi:${key}`} title={PART_TITLE[key]} /> : null;
 
 /** Full-width header in the colour of the class. */
-export function ClassHeader({ id, name, line }: { id: ClassId; name: string; line: string }) {
+/** heading: one H1 per page (PROMPT 45): the header of the second edition has the same name as an H2, same look. */
+export function ClassHeader({ id, name, line, heading: Heading = "h1" }: { id: ClassId; name: string; line: string; heading?: "h1" | "h2" }) {
   return (
     <header className="px-4 pb-6 pt-3 text-[#FFFBF0] sm:px-6" style={{ background: CLASS_COLORS[id] }}>
       <Link href="/classi" className="-ml-2 inline-flex min-h-11 items-center gap-1 px-2 text-base font-bold text-[#FFFBF0]">
@@ -42,7 +43,7 @@ export function ClassHeader({ id, name, line }: { id: ClassId; name: string; lin
           <ClassIcon id={id} size={32} />
         </span>
         <div className="min-w-0">
-          <h1 className="font-serif text-[38px] font-bold leading-[1.05]">{name}</h1>
+          <Heading className="font-serif text-[38px] font-bold leading-[1.05]">{name}</Heading>
           <p className="mt-1 text-[14px] font-semibold opacity-90">{line}</p>
         </div>
       </div>

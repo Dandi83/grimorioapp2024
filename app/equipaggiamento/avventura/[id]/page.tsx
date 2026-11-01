@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -33,7 +35,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!found || (found.edition && !shown.includes(found.edition))) notFound();
   const item = (found.edition ? [found.edition] : (["2024", "2014"] as const).filter(value => shown.includes(value))).map(value => found.entry.editions[value]).find(Boolean);
   if (!item) notFound();
-  return { title: `${item.nome} — Equipaggiamento d’avventura — Il Grimorio.App` };
+  const edition = found.edition ?? editionOfPage(found.entry.editions, shown);
+  return pageMetadata({ name: item.nome, section: "Equipaggiamento d’avventura", edition, path: `/equipaggiamento/avventura/${(await params).id}`,
+    description: itemDescription(item.nome, "equipaggiamento d’avventura", edition, "Costo, peso e uso") });
 }
 
 function Cell({ label, value }: { label: string; value: string }) {
@@ -66,10 +70,11 @@ function TableCards({ table }: { table: GearTable }) {
   );
 }
 
-function Heading({ nome, kind, edition }: { nome: string; kind: string; edition: EquipmentEdition }) {
+/** level: one H1 per page (PROMPT 45): the 2014 panel next to a 2024 one has the same title as an H2, same look. */
+function Heading({ nome, kind, edition, level: Title = "h1" }: { nome: string; kind: string; edition: EquipmentEdition; level?: "h1" | "h2" }) {
   return (
     <div className="text-center">
-      <h1 className="font-serif text-4xl font-bold leading-tight">{nome}</h1>
+      <Title className="font-serif text-4xl font-bold leading-tight">{nome}</Title>
       <p className="mt-1 text-[15px] text-muted">{kind} · edizione {edition}</p>
     </div>
   );
@@ -96,14 +101,14 @@ function Sheet2024({ item }: { item: GearItem }) {
   );
 }
 
-function Sheet2014({ item }: { item: Gear2014Item }) {
+function Sheet2014({ item, level }: { item: Gear2014Item; level?: "h1" | "h2" }) {
   const cells = [
     ...(item.costo ? [["COSTO", item.costo]] : []),
     ...(item.peso ? [["PESO", item.peso]] : []),
   ];
   return (
     <div className="space-y-5 pt-4">
-      <Heading nome={item.nome} kind={item.dotazione ? "Dotazione" : item.gruppo ? "Gruppo di oggetti" : "Equipaggiamento d’avventura"} edition="2014" />
+      <Heading nome={item.nome} kind={item.dotazione ? "Dotazione" : item.gruppo ? "Gruppo di oggetti" : "Equipaggiamento d’avventura"} edition="2014" level={level} />
       {cells.length > 0 && (
         <div className={`grid rounded-[14px] border border-border bg-card ${cells.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
           {cells.map(([label, value]) => <Cell key={label} label={label} value={value} />)}
@@ -145,9 +150,10 @@ export default async function GearItemPage({ params }: { params: Promise<{ id: s
   const rows = shown.length === 2 ? compareGear(entry) : [];
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
   if (has("2024")) panels["2024"] = <><Sheet2024 item={entry.editions["2024"]!} />{note("2024")}</>;
-  if (has("2014")) panels["2014"] = <><Sheet2014 item={entry.editions["2014"]!} />{note("2014")}</>;
+  if (has("2014")) panels["2014"] = <><Sheet2014 item={entry.editions["2014"]!} level={has("2024") ? "h2" : "h1"} />{note("2014")}</>;
   return (
     <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
+      <Breadcrumbs crumbs={[{ name: "Equipaggiamento", path: "/equipaggiamento" }, { name: "Equipaggiamento d’avventura", path: LIST }, { name: (entry.editions[edition ?? "2024"] ?? entry.editions["2014"] ?? entry.editions["2024"])!.nome, path: gearHref(entry, edition ?? (entry.editions["2024"] ? "2024" : "2014")) }]} />
       <BackButton fallback={LIST} label="Tutti gli oggetti" />
       <div>
         <GearEditionPanels section="avventura" panels={panels} fixed={edition} listHref={LIST}

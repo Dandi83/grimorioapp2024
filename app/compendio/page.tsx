@@ -1,9 +1,12 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata } from "@/lib/seo";
 import { Backpack, Gem, Shield, ShieldAlert, TrendingUp } from "lucide-react";
 import { SectionTiles, type SectionTile } from "@/components/section-tiles";
 import { EQUIPMENT_SECTIONS, soonHref, type PublicSectionKey } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
 
-export const metadata = { title: "Compendio — Il Grimorio.App" };
+export const metadata = pageMetadata({ name: "Compendio", path: "/compendio",
+  description: "Il compendio di D&D 5e in italiano: classi, equipaggiamento, oggetti magici, condizioni e avanzamento di livello, per il 2014 e il 2024." });
 
 type Tile = SectionTile & { sections: readonly PublicSectionKey[] };
 
@@ -37,6 +40,8 @@ export default async function CompendiumPage() {
   });
   const groups = [{ label: "Personaggi", tiles: shown(CHARACTERS) }, { label: "Regole e oggetti", tiles: shown(TILES) }].filter(group => group.tiles.length);
   return (
+    <>
+      <Breadcrumbs crumbs={[{ name: "Compendio", path: "/compendio" }]} />
     <div className="px-4 pb-8 pt-8 sm:px-6">
       <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">Compendio</h1>
       <p className="mt-3 text-[15px] leading-6 text-muted">Regole, equipaggiamento e strumenti per il tavolo</p>
@@ -47,5 +52,6 @@ export default async function CompendiumPage() {
         </section>
       ))}
     </div>
+    </>
   );
 }

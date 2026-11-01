@@ -23,6 +23,8 @@ import { getSrdSource, srdSourceUrl } from "@/lib/srd-descriptions";
 import { getOriginalSource } from "@/lib/original-descriptions";
 import { getLegacySpellSource } from "@/lib/srd-spells-2014";
 import { ReportLink } from "@/components/feedback/report-link";
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { pageMetadata, spellDescription } from "@/lib/seo";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 
 export const revalidate = 300;
@@ -48,18 +50,13 @@ export async function generateMetadata({
   await editionCard("incantesimi", spell.edizione === "2014" ? "2014" : "2024");
   await cardHidden("incantesimo", spell.id);
   const titolo = spellName(spell.nome_italiano, spell.edizione);
-  const description = spell.descrizione?.replace(/<[^>]+>/g, "").slice(0, 160) ||
-    `${titolo}, incantesimo di ${spell.scuola}.`;
-  const url = `https://ilgrimorio.app${spellHref(spell.id)}`;
-  return {
-    title: `${titolo} — Il Grimorio.App`,
-    description,
-    alternates: { canonical: url },
-    openGraph: {
-      title: `${titolo} — Il Grimorio.App`, description, url, type: "website",
-      images: [{ url: "https://ilgrimorio.app/hero-libro-og.jpg", width: 1024, height: 1024, alt: titolo }],
-    },
-  };
+  const edizione = spell.edizione === "2014" ? "2014" : "2024";
+  // PROMPT 45: a description of our own from the data (never the text of the card); the preview picture as it was.
+  return pageMetadata({
+    name: titolo, section: "Incantesimi", edition: edizione, path: spellHref(spell.id),
+    description: spellDescription({ nome: titolo, livello: spell.livello_num, scuola: spell.scuola, edizione }),
+    images: [{ url: "https://ilgrimorio.app/hero-libro-og.jpg", width: 1024, height: 1024, alt: titolo }],
+  });
 }
 
 export default async function SpellDetailPage({
@@ -88,6 +85,7 @@ export default async function SpellDetailPage({
 
   return (
     <article className="spell-sheet">
+      <Breadcrumbs crumbs={[{ name: "Incantesimi", path: "/grimorio" }, { name: `${titolo}${edition === "2014" ? " (2014)" : ""}`, path: spellHref(spell.id) }]} />
       {hiddenEdition && <div className="px-6 pt-2"><HiddenPartBar id={partId("incantesimi", edition)} /></div>}
       {hiddenCard && <div className="px-6 pt-2"><HiddenCardBar kind="incantesimo" id={spell.id} /></div>}
       {/* Hero */}

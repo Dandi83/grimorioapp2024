@@ -1,3 +1,5 @@
+import { Breadcrumbs } from "@/components/seo/json-ld";
+import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -35,7 +37,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const shown = await pageEditions("strumenti");
   const tool = entry && (["2024", "2014"] as const).filter(edition => shown.includes(edition)).map(edition => entry.editions[edition]).find(Boolean);
   if (!tool) notFound();
-  return { title: `${tool.nome} — Strumenti — Il Grimorio.App` };
+  const edition = editionOfPage(entry.editions, shown);
+  return pageMetadata({ name: tool.nome, section: "Strumenti", edition, path: `/equipaggiamento/strumenti/${entry.id}`,
+    description: itemDescription(tool.nome, (GROUP_NAMES[tool.gruppo] ?? "Strumento").toLowerCase(), edition, "Costo, peso, abilità e uso") });
 }
 
 function Cell({ label, value }: { label: string; value: string }) {
@@ -47,10 +51,11 @@ function Cell({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Heading({ nome, kind, edition }: { nome: string; kind: string; edition: EquipmentEdition }) {
+/** level: one H1 per page (PROMPT 45): the 2014 panel next to a 2024 one has the same title as an H2, same look. */
+function Heading({ nome, kind, edition, level: Title = "h1" }: { nome: string; kind: string; edition: EquipmentEdition; level?: "h1" | "h2" }) {
   return (
     <div className="text-center">
-      <h1 className="font-serif text-4xl font-bold leading-tight">{nome}</h1>
+      <Title className="font-serif text-4xl font-bold leading-tight">{nome}</Title>
       <p className="mt-1 text-[15px] text-muted">{kind} · edizione {edition}</p>
     </div>
   );
@@ -120,10 +125,10 @@ function Sheet2024({ tool }: { tool: Tool2024 }) {
   );
 }
 
-function Sheet2014({ tool }: { tool: Tool2014 }) {
+function Sheet2014({ tool, level }: { tool: Tool2014; level?: "h1" | "h2" }) {
   return (
     <div className="space-y-5 pt-4">
-      <Heading nome={tool.nome} kind={GROUP_NAMES[tool.gruppo]} edition="2014" />
+      <Heading nome={tool.nome} kind={GROUP_NAMES[tool.gruppo]} edition="2014" level={level} />
       <div className="grid grid-cols-2 rounded-[14px] border border-border bg-card">
         <Cell label="COSTO" value={tool.costo} />
         <Cell label="PESO" value={tool.peso} />
@@ -152,11 +157,12 @@ export default async function ToolPage({ params }: { params: Promise<{ id: strin
   const rows = shown.length === 2 ? compareTool(entry) : [];
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
   if (has("2024")) panels["2024"] = <><Sheet2024 tool={entry.editions["2024"]!} />{note("2024")}</>;
-  if (has("2014")) panels["2014"] = <><Sheet2014 tool={entry.editions["2014"]!} />{note("2014")}</>;
+  if (has("2014")) panels["2014"] = <><Sheet2014 tool={entry.editions["2014"]!} level={has("2024") ? "h2" : "h1"} />{note("2014")}</>;
   const current = toolHref(entry.id);
   const variant = entry.variante;
   return (
     <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
+      <Breadcrumbs crumbs={[{ name: "Equipaggiamento", path: "/equipaggiamento" }, { name: "Strumenti", path: LIST }, { name: (entry.editions["2024"] ?? entry.editions["2014"])!.nome, path: current }]} />
       <BackButton fallback={LIST} label="Tutti gli strumenti" />
       <div>
         <ToolEditionPanels section="strumenti" panels={panels} current={current} listHref={LIST}
