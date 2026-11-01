@@ -1,0 +1,20 @@
+Copyright (c) 2024-2026 Il Grimorio.App (https://ilgrimorio.app). All rights reserved.
+
+This repository is publicly visible for transparency only. No license is
+granted to copy, modify, distribute, host, or create derivative works from
+the source code, design, original texts, original monsters, images, or any
+other original content of Il Grimorio.App, in whole or in part, without
+prior written permission from the owner of Il Grimorio.App.
+
+Third-party content:
+Portions of this project include material from the System Reference Document
+5.1 and 5.2 by Wizards of the Coast LLC, licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0,
+https://creativecommons.org/licenses/by/4.0/). That material remains under
+its original license; see app/fonti/page.tsx (published at
+https://ilgrimorio.app/fonti) and the "attribution" field of
+lib/data/srd-italiano-5.2.1.json for the full attribution. Dungeons & Dragons
+is a trademark of Wizards of the Coast LLC. Il Grimorio.App is not affiliated
+with or endorsed by Wizards of the Coast.
+
+Third-party open-source dependencies are governed by their own licenses.

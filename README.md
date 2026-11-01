@@ -45,3 +45,8 @@ Lo script `scripts/seed.mjs` ripopola la tabella dal file JSON originale: **non 
 3. Se vedi la schermata di login Vercel invece del sito, disattiva la
    **Deployment Protection** nelle impostazioni del progetto (Settings →
    Deployment Protection) per rendere il sito pubblicamente accessibile.
+
+## Licenza
+
+Codice e contenuti originali: © Il Grimorio.App, tutti i diritti riservati. Il repository è visibile pubblicamente ma non è riutilizzabile senza permesso scritto (vedi LICENSE).
+I testi SRD 5.1 e 5.2 sono di Wizards of the Coast e restano sotto licenza CC BY 4.0 (vedi l'attribuzione nel sito).
