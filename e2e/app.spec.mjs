@@ -320,7 +320,7 @@ test("equipment: armor list per edition with times, sheets in both editions, no 
   }
   await chooseEdition(page, "2014");
   await page.getByRole("link", { name: /Cotta di maglia/ }).click();
-  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Cotta di maglia");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 2 }).first()).toHaveText("Cotta di maglia");
   await expect(page.locator('[data-edition="2014"]')).toContainText("For 13");
   await expect(page.locator('[data-edition="2014"]').getByText("16", { exact: true })).toHaveCount(1);
   await expect(page.locator('[data-edition="2014"]').getByText("For 13", { exact: true })).toHaveCount(1);
@@ -437,7 +437,7 @@ test("adventuring gear 2014: list with groups and packs, search, sheets, renamed
   await page.getByRole("button", { name: "Torna indietro" }).click();
   // A group sheet: Munizioni with its rows.
   await all.filter({ hasText: /^Munizioni/ }).getByRole("link").click();
-  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Munizioni");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 2 }).first()).toHaveText("Munizioni");
   await expect(page.locator('[data-edition="2014"]')).toContainText("Proiettili da fionda (20)");
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
@@ -445,7 +445,7 @@ test("adventuring gear 2014: list with groups and packs, search, sheets, renamed
   }
   // A different name: Canestro (2014) has its own address; 2024 goes to Cesto.
   await page.goto("/equipaggiamento/avventura/canestro");
-  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Canestro");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 2 }).first()).toHaveText("Canestro");
   await expect(page.locator('[data-edition="2014"]')).toContainText("2 cubi con spigolo di 30 cm/20 kg");
   for (const width of [360, 375, 390]) {
     await page.setViewportSize({ width, height: 800 });
@@ -638,7 +638,7 @@ test("magic items 2014: selector remembered, search, renamed and single-edition 
   await rows.filter({ hasText: "Pozione dell'invisibilità" }).click();
   await expect(page).toHaveURL(/\/oggetti-magici\/pozione-dell-invisibilita$/);
   const panel2014 = page.locator('[data-edition="2014"]');
-  await expect(panel2014.getByRole("heading", { level: 1 })).toHaveText("Pozione dell'invisibilità");
+  await expect(panel2014.getByRole("heading", { level: 2 }).first()).toHaveText("Pozione dell'invisibilità");
   const box = panel2014.getByRole("region", { name: "Differenze tra le edizioni" });
   await expect(box).toContainText("Molto rara");
   await expect(box).toContainText("Rara");
@@ -1028,7 +1028,7 @@ test("admin corrections: tiles, weapons list per edition, edit with reason, publ
   await expect(card.getByText("Peso: nel manuale «2 kg»")).toBeVisible();
   await expect(card.getByText("Nome: nel manuale «Tridente»")).toBeVisible();
   await page.getByRole("group", { name: "Edizione delle regole" }).getByRole("button", { name: "2014" }).click();
-  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 1 })).toHaveText("Tridente");
+  await expect(page.locator('[data-edition="2014"]').getByRole("heading", { level: 2 }).first()).toHaveText("Tridente");
   await expect(page.locator('[data-edition="2014"]').getByText("Corretto rispetto al manuale originale")).toHaveCount(0);
   // Weapons list and search use the corrected name.
   await page.goto("/equipaggiamento/armi?edizione=2024");
