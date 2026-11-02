@@ -11,6 +11,7 @@ import type { ContentOverride } from "@/lib/content-overrides-apply";
 import { compareWeapon, getWeapon, masteryText, propertyCards, specialRule, weaponSources, weapons, type WeaponEditionView } from "@/lib/equipment";
 import { WEAPON_GROUP_NAMES, type EquipmentEdition } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
+import { getMastery, masteryHref, masteryId } from "@/lib/weapon-masteries";
 import { PartBlock } from "@/components/sections/part-block";
 import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 
@@ -52,6 +53,8 @@ function Sheet({ weapon, group, corrections, heading: Heading = "h1" }: { weapon
   const cards = propertyCards(weapon);
   const special = specialRule(weapon);
   const mastery = weapon.padronanza && masteryText(weapon.padronanza);
+  // PROMPT 47: the official English name, smaller, and the page of the mastery (2024 only: 2014 has no masteries).
+  const masteryEnglish = weapon.padronanza && getMastery(masteryId(weapon.padronanza))?.en;
   return (
     <div className="space-y-5">
       <div className="flex flex-col items-center gap-1.5 pt-4 text-center">
@@ -93,8 +96,9 @@ function Sheet({ weapon, group, corrections, heading: Heading = "h1" }: { weapon
         <section className="space-y-2.5" aria-label="Padronanza">
           <h2 className="font-serif text-[22px] font-bold text-primary">Padronanza</h2>
           <div className="space-y-1.5 rounded-[14px] border-[1.5px] border-amber bg-[#FBEBC2] p-3.5">
-            <p className="font-serif text-2xl font-bold">{weapon.padronanza}</p>
+            <p className="font-serif text-2xl font-bold">{weapon.padronanza}{masteryEnglish && <span className="ml-1.5 font-sans text-[15px] font-normal italic text-muted" lang="en" data-english-name="">({masteryEnglish})</span>}</p>
             <p className="text-[15px] leading-6">{mastery}</p>
+            {masteryEnglish && <Link href={masteryHref(weapon.padronanza!)} className="inline-flex min-h-11 items-center text-[15px] font-semibold text-primary underline underline-offset-4" data-mastery-link="">Tutte le armi con {weapon.padronanza} ›</Link>}
           </div>
         </section>
       )}

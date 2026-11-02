@@ -1,5 +1,5 @@
 {
- "_nota": "Nomi ufficiali inglesi delle schede SRD, solo i nomi (mai il testo), per la ricerca (PROMPT 33, 31/10/2026). Chiave: id salvato della scheda. Abbinati scheda per scheda sui PDF inglesi indicati in «fonti» (metodo e schede senza corrispondenza in docs/releases/2026-10-31-nomi-inglesi.md): mostri per punti ferita, dadi e sei caratteristiche (CA a parità); incantesimi 2014 dal campo «en» di srd-spells-5.1-it.json con le maiuscole stampate; incantesimi 2024 per livello, scuola, classi e componenti (gittata, durata e dadi a parità); oggetti magici per tipo, rarità, sintonia e numeri del testo, i restanti controllati a mano nome per nome; condizioni, classi e sottoclassi dal PDF; equipaggiamento (PROMPT 35: armi, armature, oggetti d’avventura, strumenti) abbinato riga per riga alle tabelle del PDF con costo, peso e danni coincidenti. Controlli in tests/english-names.cjs.",
+ "_nota": "Nomi ufficiali inglesi delle schede SRD, solo i nomi (mai il testo), per la ricerca (PROMPT 33, 31/10/2026). Chiave: id salvato della scheda. Abbinati scheda per scheda sui PDF inglesi indicati in «fonti» (metodo e schede senza corrispondenza in docs/releases/2026-10-31-nomi-inglesi.md): mostri per punti ferita, dadi e sei caratteristiche (CA a parità); incantesimi 2014 dal campo «en» di srd-spells-5.1-it.json con le maiuscole stampate; incantesimi 2024 per livello, scuola, classi e componenti (gittata, durata e dadi a parità); oggetti magici per tipo, rarità, sintonia e numeri del testo, i restanti controllati a mano nome per nome; condizioni, classi e sottoclassi dal PDF; equipaggiamento (PROMPT 35: armi, armature, oggetti d’avventura, strumenti) abbinato riga per riga alle tabelle del PDF con costo, peso e danni coincidenti. Controlli in tests/english-names.cjs. Padronanze delle armi (PROMPT 47, solo 2024): voci «Mastery Properties» del PDF inglese SRD 5.2.1 a p. 90, controllate arma per arma sulla tabella delle armi a p. 91.",
  "fonti": {
   "2014": {
    "documento": "SRD 5.1",
@@ -2273,6 +2273,16 @@
    "strumento-musicale": "Musical Instrument",
    "trucchi-per-il-camuffamento": "Disguise Kit",
    "utensili-da-cuoco": "Cook’s Utensils"
+  },
+  "padronanze": {
+   "colpo-di-striscio": "Graze",
+   "doppio-fendente": "Cleave",
+   "fiaccare": "Sap",
+   "graffio": "Nick",
+   "lentezza": "Slow",
+   "rovesciamento": "Topple",
+   "spinta": "Push",
+   "vessazione": "Vex"
   }
  },
  "senzaCorrispondenza": {

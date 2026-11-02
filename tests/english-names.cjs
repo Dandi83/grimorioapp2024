@@ -152,3 +152,15 @@ assert.deepEqual(withSynonyms(index,[]),index,'no synonym, the index as it is');
 // «Ricerche senza risultato»: a word found now by an English name leaves the list; the others stay.
 assert.equal(foundInEnglish('fireball',index),true);assert.equal(foundInEnglish('zzqx',index),false);assert.equal(foundInEnglish('palla',index),false);
 console.log('English names: sample checked by hand, only SRD cards, one name per card, search of the lists and of the Home, synonyms first.');
+// PROMPT 47: the eight weapon masteries, 2024 only, checked on the English SRD 5.2.1 (p. 90, «Mastery Properties»;
+// p. 91, the weapons table: Halberd and Greataxe Cleave, Greatsword Graze, Dagger and Scimitar Nick, Warhammer Push,
+// Spear and Longsword Sap, Whip and Longbow Slow, Handaxe Vex).
+assert.deepEqual(names['2024'].padronanze,{'colpo-di-striscio':'Graze','doppio-fendente':'Cleave',fiaccare:'Sap',graffio:'Nick',lentezza:'Slow',rovesciamento:'Topple',spinta:'Push',vessazione:'Vex'});
+assert.equal(names['2014'].padronanze,undefined,'no masteries in 2014');
+assert.equal(englishName('padronanze','2014','vessazione'),undefined);
+{
+ const {masteries,weaponsWithMastery}=require('../lib/weapon-masteries.ts');
+ const byWeapon=Object.fromEntries(masteries.flatMap(m=>weaponsWithMastery(m.nome).map(w=>[w.id,m.en])));
+ for(const [id,en] of Object.entries({alabarda:'Cleave','ascia-bipenne':'Cleave',spadone:'Graze',pugnale:'Nick',scimitarra:'Nick','martello-da-guerra':'Push',lancia:'Sap','spada-lunga':'Sap',frusta:'Slow','arco-lungo':'Slow',ascia:'Vex'}))assert.equal(byWeapon[id],en,id);
+}
+console.log('Padronanze: 8 nomi inglesi (SRD 5.2.1 p. 90–91), abbinati arma per arma.');

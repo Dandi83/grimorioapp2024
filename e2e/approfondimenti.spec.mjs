@@ -1,4 +1,5 @@
 import { test, expect } from "./fixtures.mjs";
+import { expectedCohort } from "./cohort-expect.mjs";
 import { randomUUID } from "node:crypto";
 import pg from "pg";
 import { TEST_DATABASE_URL } from "./test-db.mjs";
@@ -104,14 +105,14 @@ test("at 390: searches with no result (reason, synonym found by the public searc
   await expect(page.locator('[data-rest-item="instagram"] [data-bio-link] [role="status"]')).toHaveText("Copiato");
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("ilgrimorio.app/ig");
 
-  // «Chi resta davvero»: e, arrived three weeks ago from Instagram, back the week after, not two weeks after; four weeks
-  // after has not ended yet.
+  // «Chi resta davvero»: e, arrived three weeks ago from Instagram, back two weeks ago. Which of the weeks after have
+  // ended depends on the day and the hour (Rome) of the run: the expected cells follow the rule of the table
+  // (e2e/cohort-expect.mjs, checked on fixed dates by tests/cohort-dates.cjs), never a fixed «100%, 0%, —».
   await expect(page.locator("[data-cohort]")).toHaveCount(16);
-  const arrival = new Date(Date.now() - 21 * 864e5), day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(arrival);
-  const monday = new Date(`${day}T12:00:00Z`); monday.setUTCDate(monday.getUTCDate() - ((monday.getUTCDay() + 6) % 7));
-  const row = page.locator(`[data-cohort="${monday.toISOString().slice(0, 10)}:instagram"]`);
+  const { week, cells } = expectedCohort(new Date(), 21, 14);
+  const row = page.locator(`[data-cohort="${week}:instagram"]`);
   await expect(row.locator("td").nth(2)).toHaveText("1");
-  await expect(row.locator("[data-cohort-cell]")).toHaveText(["100%", "0%", "—"]);
+  await expect(row.locator("[data-cohort-cell]")).toHaveText(cells);
   // The weeks going on: «—».
   await expect(page.locator("[data-cohort]").last().locator("[data-cohort-cell]")).toHaveText(["—", "—", "—"]);
 

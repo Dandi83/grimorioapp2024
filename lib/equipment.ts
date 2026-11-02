@@ -68,10 +68,12 @@ function view(raw: RawWeapon, edition: EquipmentEdition): WeaponEditionView {
 // 2024 rule texts: the prose under each heading of the manual entry "Armi" (sidebars excluded).
 const manualWeapons = manualData.entries.find(entry => entry.id === weaponsData.fonti["2024"].manuale)!;
 const manualSections = new Map<string, string>();
+/** The page of the Italian SRD 5.2.1 where each heading of the entry «Armi» is printed. */
+const manualPages = new Map<string, number>();
 {
   let heading: string | undefined;
   for (const block of manualWeapons.blocks) {
-    if (block.kind === "heading") heading = block.text;
+    if (block.kind === "heading") { heading = block.text; if ("page" in block && typeof block.page === "number") manualPages.set(block.text, block.page); }
     else if (block.kind === "prose" && heading) manualSections.set(heading, [manualSections.get(heading), block.text].filter(Boolean).join(" "));
   }
 }
@@ -95,6 +97,12 @@ export function propertyText(edition: EquipmentEdition, key: string): string | u
 export function masteryText(label: string): string | undefined {
   return manualSections.get(label);
 }
+/** The masteries of the 2024 rules, as titled in the manual (PROMPT 47), and the page where each is printed. */
+export const MASTERY_NAMES: readonly string[] = (() => {
+  const headings = [...manualSections.keys()];
+  return headings.slice(headings.indexOf("Proprietà di padronanza") + 1);
+})();
+export const masteryPage = (label: string) => manualPages.get(label);
 
 /** One card per property, plus "Gittata" for weapons with a range; texts of the chosen edition. */
 export function propertyCards(weapon: WeaponEditionView): RuleCard[] {

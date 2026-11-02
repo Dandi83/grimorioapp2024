@@ -769,7 +769,7 @@ test("search in Home: field only, panel with filters, results by section, back a
   expect(await input.evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(16);
   await expect(dialog.getByText("Prova a scrivere…")).toBeVisible();
   const filters = dialog.getByRole("group", { name: "Sezioni" }).getByRole("button");
-  await expect(filters).toHaveText(["Tutto", "Incantesimi", "Mostri", "Classi", "Equipaggiamento", "Oggetti magici", "Condizioni"]);
+  await expect(filters).toHaveText(["Tutto", "Incantesimi", "Mostri", "Classi", "Equipaggiamento", "Oggetti magici", "Condizioni", "Padronanze"]);
   expect(indexRequests.length).toBe(1);
   // "dra": spells and monsters while typing, the typed part highlighted.
   await input.fill("dra");
