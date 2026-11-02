@@ -1,5 +1,5 @@
 {
- "_nota": "Nomi ufficiali inglesi delle schede SRD, solo i nomi (mai il testo), per la ricerca (PROMPT 33, 31/10/2026). Chiave: id salvato della scheda. Abbinati scheda per scheda sui PDF inglesi indicati in «fonti» (metodo e schede senza corrispondenza in docs/releases/2026-10-31-nomi-inglesi.md): mostri per punti ferita, dadi e sei caratteristiche (CA a parità); incantesimi 2014 dal campo «en» di srd-spells-5.1-it.json con le maiuscole stampate; incantesimi 2024 per livello, scuola, classi e componenti (gittata, durata e dadi a parità); oggetti magici per tipo, rarità, sintonia e numeri del testo, i restanti controllati a mano nome per nome; condizioni, classi e sottoclassi dal PDF; equipaggiamento (PROMPT 35: armi, armature, oggetti d’avventura, strumenti) abbinato riga per riga alle tabelle del PDF con costo, peso e danni coincidenti. Controlli in tests/english-names.cjs. Padronanze delle armi (PROMPT 47, solo 2024): voci «Mastery Properties» del PDF inglese SRD 5.2.1 a p. 90, controllate arma per arma sulla tabella delle armi a p. 91. Proprietà delle armi (PROMPT 48): voci «Weapon Properties» del PDF inglese SRD 5.1 a p. 64–65 e «Properties» dell’SRD 5.2.1 a p. 89–90 (Special solo 2014).",
+ "_nota": "Nomi ufficiali inglesi delle schede SRD, solo i nomi (mai il testo), per la ricerca (PROMPT 33, 31/10/2026). Chiave: id salvato della scheda. Abbinati scheda per scheda sui PDF inglesi indicati in «fonti» (metodo e schede senza corrispondenza in docs/releases/2026-10-31-nomi-inglesi.md): mostri per punti ferita, dadi e sei caratteristiche (CA a parità); incantesimi 2014 dal campo «en» di srd-spells-5.1-it.json con le maiuscole stampate; incantesimi 2024 per livello, scuola, classi e componenti (gittata, durata e dadi a parità); oggetti magici per tipo, rarità, sintonia e numeri del testo, i restanti controllati a mano nome per nome; condizioni, classi e sottoclassi dal PDF; equipaggiamento (PROMPT 35: armi, armature, oggetti d’avventura, strumenti) abbinato riga per riga alle tabelle del PDF con costo, peso e danni coincidenti. Controlli in tests/english-names.cjs. Padronanze delle armi (PROMPT 47, solo 2024): voci «Mastery Properties» del PDF inglese SRD 5.2.1 a p. 90, controllate arma per arma sulla tabella delle armi a p. 91. Proprietà delle armi (PROMPT 48): voci «Weapon Properties» del PDF inglese SRD 5.1 a p. 64–65 e «Properties» dell’SRD 5.2.1 a p. 89–90 (Special solo 2014). Talenti (PROMPT 49): «Feats» dell’SRD 5.2.1 inglese a p. 87–88; «Grappler» dell’SRD 5.1 inglese a p. 75.",
  "fonti": {
   "2014": {
    "documento": "SRD 5.1",
@@ -1141,6 +1141,9 @@
    "ricarica": "Loading",
    "speciale": "Special",
    "versatile": "Versatile"
+  },
+  "talenti": {
+   "lottatore": "Grappler"
   }
  },
  "2024": {
@@ -2308,6 +2311,25 @@
    "portata": "Reach",
    "ricarica": "Loading",
    "versatile": "Versatile"
+  },
+  "talenti": {
+   "abile": "Skilled",
+   "aggressore-selvaggio": "Savage Attacker",
+   "allerta": "Alert",
+   "iniziato-alla-magia": "Magic Initiate",
+   "aumento-dei-punteggi-di-caratteristica": "Ability Score Improvement",
+   "lottatore": "Grappler",
+   "combattere-con-armi-possenti": "Great Weapon Fighting",
+   "combattere-con-due-armi": "Two-Weapon Fighting",
+   "difesa": "Defense",
+   "tiro": "Archery",
+   "dono-del-fato": "Boon of Fate",
+   "dono-della-vista-pura": "Boon of Truesight",
+   "dono-delle-abilita-di-combattimento": "Boon of Combat Prowess",
+   "dono-dell-offensiva-irresistibile": "Boon of Irresistible Offense",
+   "dono-dello-spirito-notturno": "Boon of the Night Spirit",
+   "dono-del-richiamo-degli-incantesimi": "Boon of Spell Recall",
+   "dono-del-viaggio-dimensionale": "Boon of Dimensional Travel"
   }
  },
  "senzaCorrispondenza": {

@@ -1,6 +1,6 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
 import { pageMetadata } from "@/lib/seo";
-import { Backpack, Gem, Shield, ShieldAlert, TrendingUp } from "lucide-react";
+import { Award, Backpack, Gem, Shield, ShieldAlert, TrendingUp } from "lucide-react";
 import { SectionTiles, type SectionTile } from "@/components/section-tiles";
 import { EQUIPMENT_SECTIONS, soonHref, type PublicSectionKey } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
@@ -13,6 +13,8 @@ type Tile = SectionTile & { sections: readonly PublicSectionKey[] };
 // New sections are added here when they exist (no empty tiles: Specie, Background e Talenti come later).
 const CHARACTERS: Tile[] = [
   { href: "/classi", title: "Classi", text: "Barbaro, Bardo, Chierico…", Icon: Shield, square: true, sections: ["classi"] },
+  // PROMPT 49: «In arrivo» until it is shown from /admin/sezioni.
+  { href: "/talenti", title: "Talenti", text: "Origini, Generali, Doni epici…", Icon: Award, square: true, sections: ["talenti"] },
 ];
 
 const TILES: Tile[] = [

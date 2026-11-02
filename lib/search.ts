@@ -21,7 +21,7 @@ export interface SearchIndex {
   en?: [string, number][];
 }
 
-export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "padronanze" | "proprieta" | "manuale";
+export type SearchSectionKey = "incantesimi" | "mostri" | "classi" | "equipaggiamento" | "oggetti-magici" | "condizioni" | "padronanze" | "proprieta" | "talenti" | "manuale";
 
 /** alias: a synonym or the English name the row is found by (the name shown stays its own); english: the alias is the English name. */
 interface SearchRow { section: SearchSectionKey; nome: string; label: string; href: string; href2014?: string; solo?: "2024" | "2014"; alias?: string; english?: true; en?: string[] }

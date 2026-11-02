@@ -93,6 +93,8 @@ export const PUBLIC_SECTIONS = [
     { key: "talenti", title: "Talenti bonus oltre il 20º livello", group: "blocchi", set: "blocchi", page: "/avanzamento" },
     { key: "calcolatore", title: "Calcolatore di PE", group: "blocchi", set: "blocchi", page: "/avanzamento" },
   ] },
+  // PROMPT 49: the SRD feats; the section starts «In arrivo» (lib/section-visibility.ts DEFAULT_SECTION_STATES).
+  { key: "talenti", title: "Talenti", where: "Compendio · Personaggi", paths: ["/talenti"], parts: [] },
 ] as const satisfies readonly PublicSection[];
 
 export type PublicSectionKey = (typeof PUBLIC_SECTIONS)[number]["key"];

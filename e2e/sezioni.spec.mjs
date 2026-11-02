@@ -73,7 +73,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await expect(page.getByText("Ogni cambio finisce nel Registro. Le sezioni nascoste o in arrivo restano visibili a te, con la loro etichetta.")).toBeVisible();
   await expect(page.getByText("Le singole schede si nascondono dall’interruttore nella loro lista.")).toBeVisible();
   const rows = page.getByRole("list", { name: "Sezioni" }).locator(":scope > li");
-  await expect(rows).toHaveCount(10);
+  await expect(rows).toHaveCount(11);
   await expect(rows.nth(2)).toContainText("Classi");
   await expect(rows.nth(2)).toContainText("Compendio · Personaggi · Visibile");
   for (const width of [360, 375, 390]) {
@@ -154,7 +154,9 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await expect(page.getByText("2 visibili")).toBeVisible();
   await expect(page.getByText("8 nascoste")).toBeVisible();
   await pub.goto("/compendio");
-  await expect(pub.getByRole("heading", { level: 2, name: "Personaggi" })).toHaveCount(0);
+  // «Personaggi» keeps only Talenti, «In arrivo» from the start (PROMPT 49).
+  await expect(pub.getByRole("list", { name: "Personaggi" }).getByRole("link")).toHaveCount(1);
+  await expect(pub.getByRole("list", { name: "Personaggi" }).getByRole("link")).toContainText("Talenti");
   const publicTiles = pub.getByRole("list", { name: "Regole e oggetti" }).getByRole("link");
   expect(await publicTiles.evaluateAll(links => links.map(a => a.getAttribute("href")))).toEqual(["/avanzamento", "/oggetti-magici"]);
   await unavailable("/equipaggiamento");
@@ -223,7 +225,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
 
   // The administrator sees everything, labelled «Nascosta»: Compendio tiles and bottom bar.
   await page.goto("/compendio");
-  await expect(page.getByRole("list", { name: "Personaggi" }).getByRole("link")).toContainText("Nascosta");
+  await expect(page.getByRole("list", { name: "Personaggi" }).getByRole("link").filter({ hasText: "Classi" })).toContainText("Nascosta");
   const adminNav = page.getByRole("navigation", { name: "Navigazione principale" });
   await expect(adminNav.getByRole("link", { name: /Incantesimi/ })).toContainText("Nascosta");
   // «Mostra» in the band: the section is visible again at once.

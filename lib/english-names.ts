@@ -5,7 +5,7 @@ import names from "./data/nomi-inglesi-srd.json";
  * server (the index /ricerca-indice.json and the lists of Incantesimi, Bestiario, Oggetti magici). Keyed by the stored
  * id of the card; a card without a certain match (lib/data/nomi-inglesi-srd.json, «senzaCorrispondenza») has none.
  */
-export type EnglishKind = "incantesimi" | "mostri" | "oggetti-magici" | "condizioni" | "classi" | "sottoclassi" | "armi" | "armature" | "avventura" | "strumenti" | "padronanze" | "proprieta";
+export type EnglishKind = "incantesimi" | "mostri" | "oggetti-magici" | "condizioni" | "classi" | "sottoclassi" | "armi" | "armature" | "avventura" | "strumenti" | "padronanze" | "proprieta" | "talenti";
 // «padronanze» only in 2024 (PROMPT 47): the weapon masteries are rules of the 2024 edition.
 type Table = Record<"2014" | "2024", Partial<Record<EnglishKind, Record<string, string>>>>;
 const table = names as unknown as Table;

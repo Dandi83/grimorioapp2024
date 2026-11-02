@@ -16,7 +16,7 @@ import { SUPPORT_URL } from "@/lib/support";
 const PAGES: readonly (readonly [string, string?, string?])[] = [
   ["/"], ["/grimorio"], ["/bestiario"], ["/compendio"], ["/classi"], ["/equipaggiamento"],
   ["/equipaggiamento/armi"], ["/equipaggiamento/armature"], ["/equipaggiamento/avventura"], ["/equipaggiamento/strumenti"],
-  ["/oggetti-magici"], ["/compendio/condizioni"], ["/avanzamento"],
+  ["/oggetti-magici"], ["/compendio/condizioni"], ["/avanzamento"], ["/talenti"],
   ["/bestiario/creati-da-voi", "bestiario", "homebrew"], ["/bestiario/creati-da-voi/bilanciamento", "bestiario", "homebrew"],
   ["/bestiario/del-grimorio", "bestiario", "grimorio"], ["/bestiario/creature-originali", "bestiario", "grimorio"],
   ["/info"], ["/fonti"], ["/termini"], ["/privacy"], ["/installa"],
