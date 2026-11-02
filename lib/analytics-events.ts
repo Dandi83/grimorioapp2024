@@ -1,3 +1,4 @@
+import { SHARE_FORMATS, SHARE_KINDS, type ShareFormat, type ShareKind } from "./share-card";
 import { DEVICES, FILTER_GROUPS, ORIGINS, SEARCH_AREAS, USE_SIGNALS, cleanNotFoundPath, cleanSearchQuery, type Device, type FilterGroup, type Origin, type SearchArea, type UseSignal } from "./analytics-stats";
 
 export const ANALYTICS_EVENTS = [
@@ -35,7 +36,16 @@ export const ANALYTICS_EVENTS = [
   "prova_tavolo",
   // A page that does not exist (PROMPT 32): sent instead of the page view, with the path asked only.
   "not_found",
+  // «Condividi come immagine» (PROMPT 50): the preview opened, the image shared or saved, with the format and the
+  // kind of sheet (lib/share-card.ts); the image itself never leaves the phone.
+  "share_image_open",
+  "share_image_sent",
+  "share_image_saved",
 ] as const;
+/** The image events: from any public sheet. */
+export const SHARE_IMAGE_EVENTS = ["share_image_open", "share_image_sent", "share_image_saved"] as const;
+/** The sheets with «Condividi» (PROMPT 50): the sharing of their link and of their image is counted from all of them. */
+const SHEET_PATH = /^\/(?:spell|mostro|oggetti-magici|manuale|regole|talenti|equipaggiamento\/(?:armi|armature|avventura|strumenti|padronanze|proprieta))\/[^/?#]+$/;
 /** The kinds of cards with a star: spells and creatures (the animals are creatures of the Bestiario). */
 export const FAVORITE_KINDS = ["incantesimo", "mostro"] as const;
 export type FavoriteKind = (typeof FAVORITE_KINDS)[number];
@@ -106,6 +116,9 @@ export type AnalyticsInput = {
   favoriteId?: string;
   /** prova_tavolo only: the vote; the card is the one of the path (/mostro/<id>). */
   tableVote?: TableVote;
+  /** share_image_* only (PROMPT 50): the format and the kind of sheet. */
+  imageFormat?: ShareFormat;
+  imageKind?: ShareKind;
 };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 /** One segment of an address of the site: letters, numbers and dashes. */
@@ -143,7 +156,10 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   const from = SHARE_FROM.includes(r.from as ShareFrom) ? (r.from as ShareFrom) : undefined;
   // The whole app is shared from the Home (or another public page); the cards keep their own share events.
   const appShare = (HOME_EVENTS as readonly string[]).includes(r.event as string) || (r.event === "share_cancel" && !!from);
-  if (r.event !== "page_view" && r.event !== "search" && r.event !== "not_found" && !install && !appShare && !/^\/(spell|mostro)\//.test(r.path)) return;
+  const image = (SHARE_IMAGE_EVENTS as readonly string[]).includes(r.event as string);
+  if (r.event !== "page_view" && r.event !== "search" && r.event !== "not_found" && !install && !appShare && !/^\/(spell|mostro)\//.test(r.path)
+    && !((image || ["share_click", "share_native", "share_copy", "share_cancel"].includes(r.event as string)) && SHEET_PATH.test(r.path))) return;
+  if (image && (!SHARE_FORMATS.includes(r.imageFormat as ShareFormat) || !SHARE_KINDS.includes(r.imageKind as ShareKind))) return;
   if ((r.event === "share_tap" || r.event === "share_sent") && !from) return;
   if (r.event === "valutazione" && !VOTES.includes(r.vote as Vote)) return;
   if (r.event === "support_link" && !SUPPORT_FROM.includes(r.from as (typeof SUPPORT_FROM)[number])) return;
@@ -181,12 +197,16 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
     const groups = [...new Set(r.filters.filter((group): group is FilterGroup => FILTER_GROUPS.includes(group as FilterGroup)))];
     if (groups.length) input.filters = groups;
   }
-  if ((input.event === "page_view" || install || appShare) && DEVICES.includes(r.device as Device)) input.device = r.device as Device;
+  if ((input.event === "page_view" || install || appShare || image) && DEVICES.includes(r.device as Device)) input.device = r.device as Device;
   if (appShare && from && ["share_tap", "share_sent", "share_cancel"].includes(input.event)) input.from = from;
   if (input.event === "support_link") input.from = r.from as AnalyticsInput["from"];
   if (input.event === "support_click") input.amount = r.amount as number;
   if (input.event === "valutazione") input.vote = r.vote as Vote;
   if (input.event === "prova_tavolo") input.tableVote = r.tableVote as TableVote;
+  if (image) {
+    input.imageFormat = r.imageFormat as ShareFormat;
+    input.imageKind = r.imageKind as ShareKind;
+  }
   if (favorite) {
     input.favoriteKind = r.favoriteKind as FavoriteKind;
     input.favoriteId = r.favoriteId as string;

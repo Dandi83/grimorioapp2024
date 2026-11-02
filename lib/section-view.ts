@@ -53,6 +53,11 @@ export async function sectionClosed(section: PublicSectionKey): Promise<boolean>
   return view.hidden.includes(section) && !view.admin;
 }
 
+/** True when the public sees the section (PROMPT 50: «Condividi come immagine» only there, also for the administrator). */
+export async function sectionPublic(section: PublicSectionKey): Promise<boolean> {
+  return !(await sectionView()).hidden.includes(section);
+}
+
 /** The title of a card page while its section is closed to the public: nothing of the card (name, description). */
 export const CLOSED_METADATA = { title: "Sezione momentaneamente in costruzione — Il Grimorio.App", robots: { index: false, follow: false } };
 

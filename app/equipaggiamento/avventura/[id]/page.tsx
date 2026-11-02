@@ -6,7 +6,11 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
 import { PartBlock } from "@/components/sections/part-block";
-import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { pageEditions, sectionPage, sectionPublic, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
+import { englishName } from "@/lib/english-names";
+
 import type { GearItem, GearTable } from "@/lib/adventuring-gear";
 import { gear2014Source, type Gear2014Item } from "@/lib/adventuring-gear-2014";
 import { compareGear, findGearEntry, gearEntries, gearHref } from "@/lib/adventuring-gear-editions";
@@ -149,8 +153,17 @@ export default async function GearItemPage({ params }: { params: Promise<{ id: s
   const note = (value: EquipmentEdition) => <div className="mt-5"><SectionCorrectionNote section="avventura" id={entry.id} edition={value} corrections={corrections?.[value]} /></div>;
   const rows = shown.length === 2 ? compareGear(entry) : [];
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
-  if (has("2024")) panels["2024"] = <><Sheet2024 item={entry.editions["2024"]!} />{note("2024")}</>;
-  if (has("2014")) panels["2014"] = <><Sheet2014 item={entry.editions["2014"]!} level={has("2024") ? "h2" : "h1"} />{note("2014")}</>;
+  // «Condividi come immagine» (PROMPT 50): the edition shown, its text as printed.
+  const share = await sectionPublic("avventura");
+  const shareRow = (value: EquipmentEdition) => {
+    const item = entry.editions[value]!;
+    const kind = item.dotazione ? "Dotazione" : value === "2014" && (item as Gear2014Item).gruppo ? "Gruppo di oggetti" : "Equipaggiamento d’avventura";
+    return share && <ShareRow path={gearHref(entry, value)} title={item.nome} card={ruleCard({
+      kind: "avventura", theme: "pergamena", kicker: `${kind} · ${value}`, title: item.nome, en: englishName("avventura", value, item.id), edition: value, text: item.paragraphs.join(" "),
+    })} />;
+  };
+  if (has("2024")) panels["2024"] = <>{shareRow("2024")}<Sheet2024 item={entry.editions["2024"]!} />{note("2024")}</>;
+  if (has("2014")) panels["2014"] = <>{shareRow("2014")}<Sheet2014 item={entry.editions["2014"]!} level={has("2024") ? "h2" : "h1"} />{note("2014")}</>;
   return (
     <article className="space-y-5 px-4 pb-8 pt-4 sm:px-6">
       <Breadcrumbs crumbs={[{ name: "Equipaggiamento", path: "/equipaggiamento" }, { name: "Equipaggiamento d’avventura", path: LIST }, { name: (entry.editions[edition ?? "2024"] ?? entry.editions["2014"] ?? entry.editions["2024"])!.nome, path: gearHref(entry, edition ?? (entry.editions["2024"] ? "2024" : "2014")) }]} />

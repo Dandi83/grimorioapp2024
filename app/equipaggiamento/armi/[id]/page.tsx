@@ -14,7 +14,11 @@ import { ReportLink } from "@/components/feedback/report-link";
 import { getMastery, masteryHref, masteryId } from "@/lib/weapon-masteries";
 import { getWeaponProperty, propertyHref } from "@/lib/weapon-properties";
 import { PartBlock } from "@/components/sections/part-block";
-import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { pageEditions, sectionPage, sectionPublic, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
+import { englishName } from "@/lib/english-names";
+
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
@@ -49,7 +53,7 @@ function Cell({ label, value }: { label: string; value: string }) {
 }
 
 /** heading: one H1 per page (PROMPT 45): the second edition panel has the same title as an H2, same look. */
-function Sheet({ weapon, group, corrections, heading: Heading = "h1" }: { weapon: WeaponEditionView; group: number; corrections?: ContentOverride[]; heading?: "h1" | "h2" }) {
+function Sheet({ id, weapon, group, corrections, heading: Heading = "h1", share }: { id: string; weapon: WeaponEditionView; group: number; corrections?: ContentOverride[]; heading?: "h1" | "h2"; share: boolean }) {
   const source = weaponSources[weapon.edition];
   const cards = propertyCards(weapon);
   const special = specialRule(weapon);
@@ -58,6 +62,12 @@ function Sheet({ weapon, group, corrections, heading: Heading = "h1" }: { weapon
   const masteryEnglish = weapon.padronanza && getMastery(masteryId(weapon.padronanza))?.en;
   return (
     <div className="space-y-5">
+      {/* «Condividi come immagine» (PROMPT 50): the edition shown. */}
+      {share && <ShareRow path={`/equipaggiamento/armi/${id}${weapon.edition === "2014" ? "?edizione=2014" : ""}`} title={weapon.nome} card={ruleCard({
+        kind: "arma", theme: "pergamena", kicker: `${WEAPON_GROUP_NAMES[group]} · ${weapon.edition}`, title: weapon.nome, en: englishName("armi", weapon.edition, id), edition: weapon.edition,
+        boxes: [{ label: "Danni", value: [weapon.danni, weapon.tipoDanno].filter(Boolean).join(" ") }, { label: "Proprietà", value: cards.map(card => card.label).join(", ") }],
+        text: special ?? "",
+      })} />}
       <div className="flex flex-col items-center gap-1.5 pt-4 text-center">
         <div className="flex size-[132px] flex-col items-center justify-center rounded-full border-2 border-primary bg-primary-faint shadow-[0_0_0_6px_var(--color-background),0_0_0_7px_var(--color-chip-border)]">
           <span className="font-serif text-[52px] font-bold leading-none text-primary">{weapon.danni || "—"}</span>
@@ -127,10 +137,11 @@ export default async function WeaponPage({ params }: { params: Promise<{ id: str
   const corrections = corrected.corrections.get(id);
   // An edition hidden from /admin/sezioni is not in the page; a weapon printed only there is not found.
   const shown = await pageEditions("armi");
+  const share = await sectionPublic("armi");
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
   for (const edition of ["2024", "2014"] as const) {
     const view = weapon.editions[edition];
-    if (view && shown.includes(edition)) panels[edition] = <Sheet weapon={view} group={weapon.gruppo} corrections={corrections?.[edition]} heading={Object.keys(panels).length ? "h2" : "h1"} />;
+    if (view && shown.includes(edition)) panels[edition] = <Sheet id={weapon.id} share={share} weapon={view} group={weapon.gruppo} corrections={corrections?.[edition]} heading={Object.keys(panels).length ? "h2" : "h1"} />;
   }
   if (!Object.keys(panels).length) notFound();
   return (

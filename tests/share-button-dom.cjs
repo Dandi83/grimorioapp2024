@@ -46,6 +46,19 @@ Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:
   Object.defineProperty(navigator,'share',{configurable:true,value:undefined});
   Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined});
   await click();assert.equal(document.querySelector('input[readonly]').value,'https://ilgrimorio.app/mostro/gatto?ref=share');
+  // PROMPT 50: with a card, «Condividi» opens the menu; «Invia il link» shares exactly as before.
+  Object.defineProperty(navigator,'share',{configurable:true,value:async data=>shares.push(data)});
+  const card={kind:'incantesimo',theme:'scuro',kicker:'Incantesimo · 3° livello',title:'Palla di fuoco',boxes:[],excerpt:''};
+  await act(async()=>root.render(React.createElement(ShareButton,{key:'menu',path:'/spell/palla-di-fuoco',title:'Palla di fuoco',card})));
+  const before=shares.length;
+  await click();
+  assert.equal(shares.length,before,'the first tap opens the menu, nothing shared yet');
+  assert.equal(document.querySelector('button[aria-label^="Condividi"]').getAttribute('aria-expanded'),'true');
+  const items=[...document.querySelectorAll('[data-share-menu] button')].map(item=>item.textContent);
+  assert.deepEqual(items,['🔗Invia il link','🖼️Condividi come immagine']);
+  await act(async()=>document.querySelector('[data-share-menu] button').dispatchEvent(new MouseEvent('click',{bubbles:true})));
+  assert.deepEqual(shares.at(-1),{title:'Palla di fuoco — Il Grimorio.App',url:'https://ilgrimorio.app/spell/palla-di-fuoco?ref=share'});
+  assert.equal(document.querySelector('[data-share-menu]'),null,'the menu closes');
   await act(async()=>root.unmount());
   console.log('Sharing: spells, monsters and animals, canonical public links, native share, cancellation, clipboard fallback and selectable manual copy passed.');
 })().catch(error=>{console.error(error);process.exitCode=1});

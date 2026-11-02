@@ -6,6 +6,8 @@ import { BackButton } from "@/components/back-button";
 import { RuleContent } from "@/components/rule-content";
 import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { getRule, rulePages } from "@/lib/concentration";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
 
 // A rule opened from a card (the «Concentrazione» of a Durata, a «resistenza» or «immunità»…), like a condition: text of the SRD only.
 export const dynamicParams = false;
@@ -30,6 +32,9 @@ export default async function RulePage({ params }: { params: Promise<{ id: strin
     <article className="min-w-0 px-6 py-7">
       <Breadcrumbs crumbs={[{ name: "Regole", path: `/regole/${rule.id}` }, { name: `${rule.title}${rule.edizione === "2014" ? " (2014)" : ""}`, path: `/regole/${rule.id}` }].slice(1)} />
       <div className="relative -ml-4 h-12"><BackButton fallback="/grimorio" /></div>
+      {/* «Condividi come immagine» (PROMPT 50). */}
+      <ShareRow path={`/regole/${rule.id}`} title={rule.title} card={ruleCard({ kind: "regola", kicker: `Regola · ${rule.chapter}`, title: rule.title, edition: rule.edizione,
+        text: rule.blocks.map(block => block.text).join(" ") })} />
       <header className="mb-6 mt-3 border-b border-primary/40 pb-5">
         <p className="mb-2 text-xs uppercase tracking-widest text-primary">Regole · {rule.chapter}</p>
         <h1 className="font-serif text-4xl font-bold leading-tight text-foreground">{rule.title}</h1>

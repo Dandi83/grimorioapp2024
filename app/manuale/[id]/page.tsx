@@ -3,7 +3,7 @@ import { fitDescription, dndEdition, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
-import { editionCard, CLOSED_METADATA, sectionClosed, sectionPage } from "@/lib/section-view";
+import { editionCard, CLOSED_METADATA, sectionClosed, sectionPage, sectionPublic } from "@/lib/section-view";
 import { notFound } from "next/navigation";
 import { manualAvailable, manualEntries } from "@/lib/manual";
 import { legacyConditions } from "@/lib/conditions";
@@ -15,6 +15,10 @@ import { ReportLink } from "@/components/feedback/report-link";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { getCorrectedManualEntry } from "@/lib/corrected-content";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
+import { englishName } from "@/lib/english-names";
+import { srdLine } from "@/lib/share-card";
 
 // Pages are generated at build time; manual corrections from the admin area appear within five
 // minutes (at once after saving). Production builds only public conditions; other entries stay preview-only.
@@ -63,7 +67,15 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
       {hiddenEdition && <HiddenPartBar id={partId("condizioni", edition)} />}
       {isCondition ? (
         <div className="relative -ml-4 h-12"><BackButton /></div>
-      ) : (
+      ) : null}
+      {/* «Condividi come immagine» (PROMPT 50): the conditions the public sees; never the other entries of the Manual. */}
+      {isCondition && !hiddenEdition && await sectionPublic("condizioni") && <ShareRow path={`/manuale/${entry.id}`} title={entry.title} card={{
+        ...ruleCard({ kind: "condizione", kicker: `Condizione · ${edition}`, title: entry.title, en: englishName("condizioni", edition, entry.id), edition,
+          text: entry.blocks.filter(block => block.kind === "prose").map(block => block.text).join(" ") }),
+        // The four 2014 conditions translated by us from the English SRD 5.1 (lib/manual-types.ts fonte).
+        ...(entry.fonte === "traduzione-nostra" ? { attribution: `Da SRD 5.1, traduzione nostra · CC BY 4.0 · Wizards of the Coast` } : { attribution: srdLine(edition) }),
+      }} />}
+      {!isCondition && (
         <Link href={`/manuale?sezione=${entry.category}`} className="text-sm font-semibold text-primary">← {MANUAL_CATEGORIES[entry.category]}</Link>
       )}
       <header className={isCondition ? "mb-6 mt-3 border-b border-primary/40 pb-5" : "mb-6 mt-6"}>

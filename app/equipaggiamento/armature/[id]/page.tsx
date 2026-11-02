@@ -6,12 +6,15 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { ArmorBadge } from "@/components/equipment/armor-badge";
 import { EditionPanels } from "@/components/equipment/edition-panels";
-import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { sectionPublic, pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { armorBadge, armorClassRest, armorDescription, armorRuleCards, armorSources, armors, getArmor, type ArmorEditionView } from "@/lib/armor";
 import { ARMOR_CATEGORY_NAMES, type ArmorCategory } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { getCorrectedArmors } from "@/lib/corrected-content";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
+import { englishName } from "@/lib/english-names";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
@@ -44,12 +47,18 @@ function Cell({ label, value }: { label: string; value: string }) {
 }
 
 /** heading: one H1 per page (PROMPT 45): the second edition panel has the same title as an H2, same look. */
-function Sheet({ armor, category, heading: Heading = "h1" }: { armor: ArmorEditionView; category: ArmorCategory; heading?: "h1" | "h2" }) {
+function Sheet({ id, armor, category, heading: Heading = "h1", share }: { id: string; armor: ArmorEditionView; category: ArmorCategory; heading?: "h1" | "h2"; share: boolean }) {
   const source = armorSources[armor.edition];
   const badge = armorBadge(armor);
   const description = armorDescription(armor);
   return (
     <div className="space-y-5">
+      {/* «Condividi come immagine» (PROMPT 50): the edition shown. */}
+      {share && <ShareRow path={`/equipaggiamento/armature/${id}${armor.edition === "2014" ? "?edizione=2014" : ""}`} title={armor.nome} card={ruleCard({
+        kind: "armatura", theme: "pergamena", kicker: `Armatura · ${armor.edition}`, title: armor.nome, en: englishName("armature", armor.edition, id), edition: armor.edition,
+        boxes: [{ label: "CA", value: armor.caTesto }, { label: "Categoria", value: ARMOR_CATEGORY_NAMES[category] }],
+        text: description?.testo ?? "",
+      })} />}
       <div className="flex flex-col items-center gap-1.5 pt-4 text-center">
         <ArmorBadge ca={badge.ca} note={["CA"]} size="sheet" />
         <Heading className="mt-2 font-serif text-4xl font-bold leading-tight">{armor.nome}</Heading>
@@ -94,9 +103,10 @@ export default async function ArmorSheetPage({ params }: { params: Promise<{ id:
   const corrections = corrected.corrections.get(id);
   // An edition hidden from /admin/sezioni is not in the page.
   const shown = await pageEditions("armature");
+  const share = await sectionPublic("armature");
   const panel = (edition: "2014" | "2024") => (
     <>
-      <Sheet armor={armor.editions[edition]} category={armor.categoria} heading={edition === "2014" && shown.includes("2024") ? "h2" : "h1"} />
+      <Sheet id={armor.id} share={share} armor={armor.editions[edition]} category={armor.categoria} heading={edition === "2014" && shown.includes("2024") ? "h2" : "h1"} />
       <div className="mt-5"><SectionCorrectionNote section="armature" id={id} edition={edition} corrections={corrections?.[edition]} /></div>
     </>
   );

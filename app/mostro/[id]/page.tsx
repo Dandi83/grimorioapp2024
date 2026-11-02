@@ -15,7 +15,7 @@ import { AdminMonsterPanel } from "@/components/admin-edit/admin-monster-panel";
 import { balanceApplies } from "@/lib/balance-scope";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId } from "@/lib/public-sections";
-import { cardHidden, editionCard, linksOut, partState, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { cardHidden, editionCard, linksOut, partState, sectionPage, sectionPublic, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { collectionOf, type Collection } from "@/lib/monsters-types";
 import { COMMUNITY_HREF, GRIMORIO_HREF } from "@/components/homebrew/community-ui";
@@ -26,6 +26,7 @@ import { MonsterSheetBody, MonsterSheetTitle } from "@/components/monster-sheet"
 import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { ReportLink } from "@/components/feedback/report-link";
 import { CardOriginBox } from "@/components/card-origin-box";
+import { monsterCard } from "@/lib/share-card-server";
 
 /** A creature of a hidden collection (Mostri, Animali, community, editorial staff) is not found; true when the administrator sees it hidden. */
 async function collectionCard(collection: Collection): Promise<boolean> {
@@ -106,6 +107,8 @@ export default async function MonsterDetailPage({
   const editionHidden = both ? await bothEditionsCard() : await editionCard("bestiario", edition) ? [partId("bestiario", edition)] : [];
   const hiddenParts = [...editionHidden, ...(await collectionCard(collection) ? [partId("bestiario", collection)] : [])];
   const homebrew = monster.homebrew_edizione !== undefined;
+  // «Condividi come immagine» (PROMPT 50): never on a creature the public does not see (shown to the administrator).
+  const card = hiddenCard || hiddenParts.length || !(await sectionPublic("bestiario")) ? undefined : await monsterCard(monster, edition, Boolean(source));
 
   return (
     <article className="monster-sheet relative pb-2 pt-4">
@@ -122,7 +125,7 @@ export default async function MonsterDetailPage({
             <div className="flex items-center">
               {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
               <AdminEditButton target={{ kind: "mostro", id: monster.id, edition: homebrew ? (monster.homebrew_edizione === "entrambe" ? undefined : monster.homebrew_edizione) : legacy ? "2014" : "2024" }} desktop="lg:static lg:mr-2" />
-              <ShareButton inline path={`/mostro/${encodeURIComponent(monster.id)}`} title={monster.nome} />
+              {card && <ShareButton inline path={`/mostro/${encodeURIComponent(monster.id)}`} title={monster.nome} card={card} />}
               <FavoriteButton inline id={`mostro:${monster.id}`} />
             </div>
           </div>

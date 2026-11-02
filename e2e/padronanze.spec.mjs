@@ -78,7 +78,7 @@ test("2014: the card has no mastery; the page says it is a 2024 rule", async ({ 
   await expect(page.locator('[data-edition="2014"] section[aria-label="Padronanza"]')).toHaveCount(0);
   await expect(page.locator('[data-edition="2014"] [data-mastery-link]')).toHaveCount(0);
   await page.goto("/equipaggiamento/padronanze/fiaccare");
-  await expect(page.getByRole("status")).toContainText("Regola nuova nel 2024");
+  await expect(page.getByRole("status").filter({ hasText: "Regola nuova nel 2024" })).toBeVisible();
   await expect(page.locator('[data-edition="2024"] h1')).toContainText("Fiaccare");
   expect(await noSideScroll(page)).toBe(true);
   await context.close();
