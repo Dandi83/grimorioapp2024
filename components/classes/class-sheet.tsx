@@ -9,7 +9,7 @@ import { AddedSubclassCard, SubclassCard, type AddedTextContext } from "@/compon
 import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { HiddenTag } from "@/components/sections/hidden-tag";
 import { SoonBlock } from "@/components/sections/soon-block";
-import { castsSpells, CLASS_COLORS, hitDie, levelRows, ofClass, trait, type ClassId, type LevelRow } from "@/lib/classes";
+import { castsSpells, CLASS_COLORS, hitDie, levelRows, ofClass, subclassNoteText, trait, type ClassId, type LevelRow } from "@/lib/classes";
 import type { ClassData, ClassEdition, ClassFeature } from "@/lib/classes-types";
 import { damageRuleLinks, type RuleTermLinks } from "@/lib/damage-rule-link";
 import type { SubclassDraft } from "@/lib/subclass-types";
@@ -82,7 +82,23 @@ function FeatureText({ feature, rules }: { feature: ClassFeature; rules: RuleTer
   );
 }
 
-function LevelCard({ row, subclass, rules }: { row: LevelRow; subclass: string; rules: RuleTermLinks }) {
+/**
+ * «Perché c'è una sola sottoclasse?» (PROMPT 51): under the SRD subclass, in the level where the class gets it. The title
+ * is bold text, not a heading, so the order of the headings stays the same. No name of the other subclasses anywhere.
+ */
+function SubclassNote({ id, edition }: { id: ClassId; edition: ClassEdition }) {
+  return (
+    <div role="note" data-subclass-note={edition} className="rounded-[14px] border-2 border-dashed border-amber bg-[#FBF1D6] px-3.5 py-3 text-[15px] leading-6 text-[#2B2118]">
+      <p className="font-bold">ℹ️ Perché c&apos;è una sola sottoclasse?</p>
+      <p className="mt-1">
+        {subclassNoteText(id, edition)}{" "}
+        <Link href="/fonti" className="font-semibold text-primary underline underline-offset-4">Fonti e licenza</Link>
+      </p>
+    </div>
+  );
+}
+
+function LevelCard({ row, subclass, rules, note }: { row: LevelRow; subclass: string; rules: RuleTermLinks; note?: ReactNode }) {
   const amber = row.sottoclasse.length > 0;
   const badge = (
     <span className={`grid size-10 shrink-0 place-items-center rounded-[10px] text-center leading-none ${amber ? "bg-amber text-[#2B2118]" : "bg-primary text-primary-foreground"}`}>
@@ -104,19 +120,23 @@ function LevelCard({ row, subclass, rules }: { row: LevelRow; subclass: string; 
               {row.sottoclasse.map((feature, i) => <FeatureText key={i} feature={feature} rules={rules} />)}
             </div>
           )}
+          {note}
         </div>
       </Opening>
     </li>
   );
 }
 
-function FeaturesTab({ card, id, edition, spellsLink, parts, rules }: { card: ClassData; id: ClassId; edition: ClassEdition; spellsLink: boolean; parts: ClassParts; rules: RuleTermLinks }) {
+/** subclassNote: the note of PROMPT 51 in the first level with a subclass feature (false: not shown). */
+function FeaturesTab({ card, id, edition, spellsLink, parts, rules, subclassNote = false }: { card: ClassData; id: ClassId; edition: ClassEdition; spellsLink: boolean; parts: ClassParts; rules: RuleTermLinks; subclassNote?: boolean }) {
   const rows = levelRows(card);
+  const noteLevel = subclassNote ? rows.find(row => row.sottoclasse.length)?.livello : undefined;
+  const level = (row: LevelRow) => <LevelCard key={row.livello} row={row} subclass={card.sottoclasse.nome} rules={rules} note={row.livello === noteLevel ? <SubclassNote id={id} edition={edition} /> : undefined} />;
   return (
     <div className="space-y-3">
       {card.introPrivilegi?.contenuto.length ? <div className="text-muted"><ClassBlocks blocks={card.introPrivilegi.contenuto} rules={rules} /></div> : null}
       <ol className="space-y-2" aria-label="Livelli 1–5">
-        {rows.slice(0, 5).map(row => <LevelCard key={row.livello} row={row} subclass={card.sottoclasse.nome} rules={rules} />)}
+        {rows.slice(0, 5).map(level)}
       </ol>
       <details className="group">
         <summary className="flex min-h-12 cursor-pointer list-none items-center justify-center rounded-[14px] border-2 border-dashed border-border px-3 text-[15px] font-bold text-primary [&::-webkit-details-marker]:hidden">
@@ -124,7 +144,7 @@ function FeaturesTab({ card, id, edition, spellsLink, parts, rules }: { card: Cl
           <span className="hidden group-open:inline">Nascondi i livelli 6–20</span>
         </summary>
         <ol className="mt-2 space-y-2" aria-label="Livelli 6–20">
-          {rows.slice(5).map(row => <LevelCard key={row.livello} row={row} subclass={card.sottoclasse.nome} rules={rules} />)}
+          {rows.slice(5).map(level)}
         </ol>
       </details>
       {card.opzioni.map(option => (
@@ -351,7 +371,9 @@ export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SH
         </Opening>
       )}
       <ClassTabs label={`Contenuto ${ofClass(card.nome)}`} idPrefix={`${id}-${edition}`} tabs={[
-        { key: "privilegi", label: "Privilegi", content: <FeaturesTab card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} rules={rules} /> },
+        { key: "privilegi", label: "Privilegi", content: <FeaturesTab card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} rules={rules}
+          // The note only where the public sees the subclass part, and while the SRD subclass is the only one shown.
+          subclassNote={parts["tab-sottoclasse"].shown && !parts["tab-sottoclasse"].hidden && !(added ?? []).some(item => !item.hidden)} /> },
         ...(parts["tab-tabella"].shown ? [{ key: "tabella", label: "Tabella", content: <TableTab card={card} />, part: "classi:tab-tabella", hidden: parts["tab-tabella"].hidden }] : []),
         ...(parts["tab-sottoclasse"].shown ? [{ key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} id={id} edition={edition} added={added} context={context} rules={rules} />, part: "classi:tab-sottoclasse", hidden: parts["tab-sottoclasse"].hidden }] : []),
       ]} />

@@ -83,3 +83,16 @@ export function levelRows(card: ClassData): LevelRow[] {
 
 /** «del guerriero», «dello stregone»: the article the manual uses before the class name. */
 export const ofClass = (name: string) => `${/^(?:s[^aeiou]|z|gn|ps|x)/i.test(name) ? "dello" : "del"} ${name.toLowerCase()}`;
+
+/** «Per lo stregone»: the article before the name of each class (PROMPT 51). */
+const CLASS_ARTICLE: Record<ClassId, string> = {
+  barbaro: "il barbaro", bardo: "il bardo", chierico: "il chierico", druido: "il druido", guerriero: "il guerriero", ladro: "il ladro",
+  mago: "il mago", monaco: "il monaco", paladino: "il paladino", ranger: "il ranger", stregone: "lo stregone", warlock: "il warlock",
+};
+
+/** The text of the note under the SRD subclass (PROMPT 51, texts approved by Daniele on 2 November 2026). */
+export function subclassNoteText(id: ClassId, edition: "2014" | "2024"): string {
+  return edition === "2014"
+    ? `Il Grimorio pubblica solo le regole dell'SRD 5.1, la parte che Wizards of the Coast rilascia con licenza CC BY 4.0. Per ${CLASS_ARTICLE[id]} contiene una sola sottoclasse: le altre si trovano nel Manuale del Giocatore 2014.`
+    : `Il Grimorio pubblica solo le regole dell'SRD 5.2.1, la parte che Wizards of the Coast rilascia con licenza CC BY 4.0. Per ${CLASS_ARTICLE[id]} contiene una sola sottoclasse: le altre 3 si trovano nel Manuale del Giocatore 2024.`;
+}

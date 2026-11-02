@@ -434,6 +434,8 @@ test("parts of the sections: every part in its page, editions, collections, clas
   await expect(body.getByText("Abilità ed equipaggiamento iniziale")).toHaveCount(0);
   await expect(body.getByText(/^Diventare un/)).toHaveCount(0);
   for (const key of ["abilita", "diventare", "lista-incantesimi", "incantesimi-del", "tab-tabella", "tab-sottoclasse"]) await expect(pub.locator(`[data-part="classi:${key}"]`)).toHaveCount(0);
+  // PROMPT 51: with the subclass part hidden, no note about the other subclasses either.
+  await expect(pub.locator("[data-subclass-note]")).toHaveCount(0);
   await expect(pub.getByRole("link", { name: "Incantesimi del mago →" })).toHaveCount(0);
   index = await searchIndex();
   expect(index.rows.some(row => row[3].includes("#sottoclasse"))).toBe(false);
