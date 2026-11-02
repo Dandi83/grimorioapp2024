@@ -372,8 +372,9 @@ export function ClassBody({ card, id, edition, spellsLink = true, parts = ALL_SH
       )}
       <ClassTabs label={`Contenuto ${ofClass(card.nome)}`} idPrefix={`${id}-${edition}`} tabs={[
         { key: "privilegi", label: "Privilegi", content: <FeaturesTab card={card} id={id} edition={edition} spellsLink={spellsLink} parts={parts} rules={rules}
-          // The note only where the public sees the subclass part, and while the SRD subclass is the only one shown.
-          subclassNote={parts["tab-sottoclasse"].shown && !parts["tab-sottoclasse"].hidden && !(added ?? []).some(item => !item.hidden)} /> },
+          // PROMPT 52: the note goes with the box «Privilegio della sottoclasse» of this tab (always drawn when the level has
+          // one), whatever the state of the tab «Sottoclasse»; never while added subclasses are public for this edition.
+          subclassNote={!(added ?? []).some(item => !item.hidden)} /> },
         ...(parts["tab-tabella"].shown ? [{ key: "tabella", label: "Tabella", content: <TableTab card={card} />, part: "classi:tab-tabella", hidden: parts["tab-tabella"].hidden }] : []),
         ...(parts["tab-sottoclasse"].shown ? [{ key: "sottoclasse", label: "Sottoclasse", content: <SubclassTab card={card} id={id} edition={edition} added={added} context={context} rules={rules} />, part: "classi:tab-sottoclasse", hidden: parts["tab-sottoclasse"].hidden }] : []),
       ]} />
