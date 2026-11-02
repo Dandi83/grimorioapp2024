@@ -102,6 +102,13 @@ export function ensureSectionTables() {
     .then(() => pool.query(`ALTER TABLE grimorio_section_visibility_log ADD COLUMN IF NOT EXISTS in_arrivo boolean NOT NULL DEFAULT false`))
     .then(() => pool.query(`ALTER TABLE grimorio_section_parts ADD COLUMN IF NOT EXISTS in_arrivo boolean NOT NULL DEFAULT false`))
     .then(() => pool.query(`ALTER TABLE grimorio_section_parts_log ADD COLUMN IF NOT EXISTS in_arrivo boolean NOT NULL DEFAULT false`))
+    // PROMPT 53: «Nascondi tutto» / «Nascondi tutta la sezione» keep here what they changed, for «Ripristina com'era».
+    .then(() => pool.query(`CREATE TABLE IF NOT EXISTS grimorio_section_bulk (
+      ambito text PRIMARY KEY,
+      salvato jsonb NOT NULL,
+      applicato jsonb NOT NULL,
+      creata_il timestamptz NOT NULL DEFAULT now()
+    )`))
     .then(() => undefined).catch(error => { tablesReady = undefined; throw error; });
   return tablesReady;
 }
@@ -326,4 +333,132 @@ export async function allSectionLog(): Promise<SectionLogRow[]> {
   const { rows } = await pool.query<SectionLogRow>(`SELECT id, sezione, NULL AS parte, nascosta, in_arrivo, creata_il FROM grimorio_section_visibility_log
     UNION ALL SELECT id, sezione, parte, nascosta, in_arrivo, creata_il FROM grimorio_section_parts_log ORDER BY creata_il DESC, id`);
   return rows;
+}
+
+/**
+ * «Nascondi tutto» (scope "tutto") and «Nascondi tutta la sezione» (scope: the section key), PROMPT 53. The keys
+ * changed: the section(s) and every part of them ("<section>:<part>"); never the single cards, never «I mostri creati
+ * da voi» while lib/community.ts keeps it off (its buttons are locked too).
+ */
+export const BULK_ALL = "tutto";
+export type BulkScope = typeof BULK_ALL | PublicSectionKey;
+export type BulkTarget = "nascosta" | "in-arrivo";
+export const isBulkScope = (value: unknown): value is BulkScope => value === BULK_ALL || PUBLIC_SECTIONS.some(section => section.key === value);
+
+export function bulkKeys(scope: BulkScope): string[] {
+  return PUBLIC_SECTIONS.filter(section => scope === BULK_ALL || section.key === scope)
+    .flatMap(section => [section.key, ...section.parts.map(part => `${section.key}:${part.key}`)])
+    .filter(key => key !== COMMUNITY_PART || communityPublic());
+}
+
+type Client = import("pg").PoolClient;
+type StateRow = { nascosta: boolean; in_arrivo: boolean };
+
+/** The state of a section or a part inside a transaction, its row locked. */
+async function lockedState(client: Client, key: string): Promise<SectionState> {
+  const [sezione, parte] = key.split(":");
+  const { rows } = parte === undefined
+    ? await client.query<StateRow>("SELECT nascosta, in_arrivo FROM grimorio_section_visibility WHERE sezione = $1 FOR UPDATE", [sezione])
+    : await client.query<StateRow>("SELECT nascosta, in_arrivo FROM grimorio_section_parts WHERE sezione = $1 AND parte = $2 FOR UPDATE", [sezione, parte]);
+  return parte === undefined ? sectionStateOf(sezione, rows[0]) : partStateOf(key, rows[0]);
+}
+
+/** Writes a state and its log row inside a transaction (as setSectionState and setPartState do one at a time). */
+async function writeState(client: Client, key: string, state: SectionState): Promise<void> {
+  const [sezione, parte] = key.split(":");
+  const [nascosta, inArrivo] = [state !== "visibile", state === "in-arrivo"];
+  if (parte === undefined) {
+    await client.query(`INSERT INTO grimorio_section_visibility (sezione, nascosta, in_arrivo, aggiornata_il) VALUES ($1, $2, $3, now())
+      ON CONFLICT (sezione) DO UPDATE SET nascosta = EXCLUDED.nascosta, in_arrivo = EXCLUDED.in_arrivo, aggiornata_il = now()`, [sezione, nascosta, inArrivo]);
+    await client.query("INSERT INTO grimorio_section_visibility_log (id, sezione, nascosta, in_arrivo) VALUES ($1, $2, $3, $4)", [randomUUID(), sezione, nascosta, inArrivo]);
+  } else {
+    await client.query(`INSERT INTO grimorio_section_parts (sezione, parte, nascosta, in_arrivo, aggiornata_il) VALUES ($1, $2, $3, $4, now())
+      ON CONFLICT (sezione, parte) DO UPDATE SET nascosta = EXCLUDED.nascosta, in_arrivo = EXCLUDED.in_arrivo, aggiornata_il = now()`, [sezione, parte, nascosta, inArrivo]);
+    await client.query("INSERT INTO grimorio_section_parts_log (id, sezione, parte, nascosta, in_arrivo) VALUES ($1, $2, $3, $4, $5)", [randomUUID(), sezione, parte, nascosta, inArrivo]);
+  }
+}
+
+async function inTransaction<T>(run: (client: Client) => Promise<T>): Promise<T> {
+  await ensureSectionTables();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    // One bulk change at a time: the snapshots are read and written under this lock.
+    await client.query("LOCK TABLE grimorio_section_bulk IN EXCLUSIVE MODE");
+    const result = await run(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+type Snapshot = { ambito: string; salvato: Record<string, SectionState>; applicato: Record<string, SectionState> };
+
+/**
+ * Applies «Nascosta» or «In arrivo» to every key of the scope, all or nothing. Before, the state of each key is kept
+ * (grimorio_section_bulk): the state it had, or, if an earlier bulk change still holds it, the state that change kept
+ * (each key belongs to one snapshot only, so «Ripristina com'era» always goes back to the state before the first one).
+ */
+export async function applyBulk(scope: BulkScope, target: BulkTarget): Promise<number> {
+  return inTransaction(async client => {
+    const keys = bulkKeys(scope);
+    const { rows: snapshots } = await client.query<Snapshot>("SELECT ambito, salvato, applicato FROM grimorio_section_bulk");
+    const salvato: Record<string, SectionState> = {};
+    for (const key of keys) salvato[key] = await lockedState(client, key);
+    for (const snapshot of snapshots) {
+      const taken = keys.filter(key => key in snapshot.salvato);
+      if (!taken.length) continue;
+      for (const key of taken) {
+        salvato[key] = snapshot.salvato[key];
+        delete snapshot.salvato[key];
+        delete snapshot.applicato[key];
+      }
+      if (snapshot.ambito === scope || !Object.keys(snapshot.salvato).length) await client.query("DELETE FROM grimorio_section_bulk WHERE ambito = $1", [snapshot.ambito]);
+      else await client.query("UPDATE grimorio_section_bulk SET salvato = $2, applicato = $3 WHERE ambito = $1", [snapshot.ambito, snapshot.salvato, snapshot.applicato]);
+    }
+    let changed = 0;
+    for (const key of keys) {
+      if ((await lockedState(client, key)) === target) continue;
+      await writeState(client, key, target);
+      changed++;
+    }
+    const applicato = Object.fromEntries(keys.map(key => [key, target]));
+    await client.query(`INSERT INTO grimorio_section_bulk (ambito, salvato, applicato, creata_il) VALUES ($1, $2, $3, now())
+      ON CONFLICT (ambito) DO UPDATE SET salvato = EXCLUDED.salvato, applicato = EXCLUDED.applicato, creata_il = now()`, [scope, salvato, applicato]);
+    return changed;
+  });
+}
+
+/**
+ * «Ripristina com'era»: every key of the snapshot goes back to the state kept, all or nothing, then the snapshot is
+ * deleted. A key the administrator changed by hand after the bulk change (its state is no longer the one applied)
+ * keeps the hand-made choice.
+ */
+export async function restoreBulk(scope: BulkScope): Promise<{ restored: number; kept: number } | null> {
+  return inTransaction(async client => {
+    const { rows } = await client.query<Snapshot>("SELECT ambito, salvato, applicato FROM grimorio_section_bulk WHERE ambito = $1", [scope]);
+    const snapshot = rows[0];
+    if (!snapshot) return null;
+    let restored = 0, kept = 0;
+    for (const [key, before] of Object.entries(snapshot.salvato)) {
+      // A part or section removed from lib/public-sections.ts since: nothing to put back.
+      if (!PUBLIC_SECTIONS.some(section => section.key === key) && !isPartId(key)) continue;
+      const now = await lockedState(client, key);
+      if (now !== snapshot.applicato[key]) { kept++; continue; }
+      if (now !== before) await writeState(client, key, before);
+      restored++;
+    }
+    await client.query("DELETE FROM grimorio_section_bulk WHERE ambito = $1", [scope]);
+    return { restored, kept };
+  });
+}
+
+/** The scopes with a «Ripristina com'era» waiting (admin page only). */
+export async function bulkScopes(): Promise<BulkScope[]> {
+  await ensureSectionTables();
+  return (await pool.query<{ ambito: string }>("SELECT ambito FROM grimorio_section_bulk ORDER BY ambito")).rows.map(row => row.ambito).filter(isBulkScope);
 }

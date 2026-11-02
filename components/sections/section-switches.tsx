@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { ChevronRight } from "lucide-react";
 
-import { setPartStateAction, setSectionStateAction } from "@/app/actions/admin-sections";
+import { bulkHideAction, bulkRestoreAction, setPartStateAction, setSectionStateAction } from "@/app/actions/admin-sections";
 import { PART_GROUPS, type PartGroup } from "@/lib/public-sections";
 import type { SectionState } from "@/lib/section-visibility";
 
@@ -77,8 +77,15 @@ function PartList({ row, group, pending, busy, change }: {
  * Gestisci»), which opens every part; the choice of one edition only stays in «Avanzate: scelta diversa per 2014 e
  * 2024». Same data and actions as before: only the look changed.
  */
-export function SectionSwitches({ sections }: { sections: Row[] }) {
+/** The buttons of «Nascondi tutto» and «Ripristina com'era» (PROMPT 53): the outlined ones of the admin area. */
+const BULK_BUTTON = "inline-flex min-h-11 items-center rounded-full border-[1.5px] border-[#7A1F2B] bg-[#FFFBF0] px-4 text-[14px] font-bold text-[#7A1F2B] disabled:opacity-60";
+
+export function SectionSwitches({ sections, scopes: savedScopes = [] }: { sections: Row[]; scopes?: string[] }) {
   const [rows, setRows] = useState(sections);
+  // PROMPT 53: the bulk changes with a «Ripristina com'era» waiting ("tutto" or a section key), the one being confirmed.
+  const [scopes, setScopes] = useState(savedScopes);
+  const [asking, setAsking] = useState<string | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState<string[]>([]);
   // «Avanzate» starts open where an edition already differs, then stays as the administrator leaves it.
   const [advanced, setAdvanced] = useState<string[]>(() => sections.filter(row => row.parts.some(part => part.group === "edizioni" && shown(part) !== "visibile")).map(row => row.key));
@@ -121,6 +128,62 @@ export function SectionSwitches({ sections }: { sections: Row[] }) {
     });
   }
 
+  const titleOf = (scope: string) => rows.find(row => row.key === scope)?.title ?? scope;
+  /** The states saved, for every section and part (the answer of a bulk change). */
+  const showStates = (states: Record<string, SectionState>) => setRows(list => list.map(row => ({
+    ...row, state: states[row.key] ?? "visibile", parts: row.parts.map(part => ({ ...part, state: states[part.id] ?? "visibile" })),
+  })));
+
+  function ask(scope: string) {
+    setAsking(scope);
+    dialog.current?.showModal();
+  }
+
+  /** «Metti tutto Nascosto» / «Metti tutto In arrivo»: everything of the scope at once, saved all or nothing. */
+  function bulk(target: "nascosta" | "in-arrivo") {
+    const scope = asking;
+    if (!scope) return;
+    setBusy(`bulk:${scope}`);
+    startTransition(async () => {
+      let result: Awaited<ReturnType<typeof bulkHideAction>>;
+      try {
+        result = await bulkHideAction(scope, target);
+      } catch {
+        result = { ok: false, error: "Sessione scaduta: accedi di nuovo." };
+      }
+      if (result.ok) {
+        showStates(result.states);
+        setScopes(result.scopes);
+        dialog.current?.close();
+        setToast({ text: `${scope === "tutto" ? "Tutte le sezioni e le loro parti" : `${titleOf(scope)} e le sue parti`}: ${target === "nascosta" ? "Nascoste" : "In arrivo"}`, at: Date.now() });
+      } else setToast({ text: result.error, error: true, at: Date.now() });
+      setBusy(null);
+    });
+  }
+
+  /** «Ripristina com'era»: back to the state kept, except what was changed by hand since. */
+  function restore(scope: string) {
+    setBusy(`restore:${scope}`);
+    startTransition(async () => {
+      let result: Awaited<ReturnType<typeof bulkRestoreAction>>;
+      try {
+        result = await bulkRestoreAction(scope);
+      } catch {
+        result = { ok: false, error: "Sessione scaduta: accedi di nuovo." };
+      }
+      if (result.ok) {
+        showStates(result.states);
+        setScopes(result.scopes);
+        setToast({ text: `Ripristinato com'era${result.kept ? ` (${result.kept} ${result.kept === 1 ? "voce cambiata" : "voci cambiate"} a mano dopo: lasciate come sono)` : ""}`, at: Date.now() });
+      } else setToast({ text: result.error, error: true, at: Date.now() });
+      setBusy(null);
+    });
+  }
+
+  const restoreButton = (scope: string) => scopes.includes(scope) && (
+    <button type="button" onClick={() => restore(scope)} disabled={pending} data-bulk-restore={scope} className={BULK_BUTTON}>↩︎ Ripristina com&apos;era</button>
+  );
+
   return (
     <>
       <h1 className="font-serif text-[32px] font-bold leading-tight text-[#7A1F2B]">Sezioni</h1>
@@ -133,6 +196,10 @@ export function SectionSwitches({ sections }: { sections: Row[] }) {
         {soonParts > 0 && <span className="rounded-[14px] border border-[#E0A21A] px-3 py-1 text-[13px] font-bold text-[#2B2118]">{soonParts} {soonParts === 1 ? "parte in arrivo" : "parti in arrivo"}</span>}
         {hiddenParts > 0 && <span className="rounded-[14px] border border-[#2B2118] px-3 py-1 text-[13px] font-bold text-[#2B2118]">{hiddenParts} {hiddenParts === 1 ? "parte nascosta" : "parti nascoste"}</span>}
       </p>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={() => ask("tutto")} disabled={pending} data-bulk-hide="tutto" className={BULK_BUTTON}>Nascondi tutto</button>
+        {restoreButton("tutto")}
+      </div>
       <ul aria-label="Sezioni" className="overflow-hidden rounded-[16px] border-[1.5px] border-[#DDCFAE] bg-[#FFFBF0]">
         {rows.map(row => {
           const expanded = open.includes(row.key);
@@ -148,6 +215,10 @@ export function SectionSwitches({ sections }: { sections: Row[] }) {
                   <p className="mt-0.5 text-[13px] leading-5 text-[#5E4E3E]">{row.where} · <State state={row.state} /></p>
                 </div>
                 <StateSelector title={row.title} state={row.state} disabled={pending && busy === row.key} onChange={state => change(row.key, row.title, state)} />
+                <div className="flex w-full flex-wrap gap-2">
+                  <button type="button" onClick={() => ask(row.key)} disabled={pending} data-bulk-hide={row.key} aria-label={`Nascondi tutta la sezione ${row.title}`} className={BULK_BUTTON}>Nascondi tutta la sezione</button>
+                  {restoreButton(row.key)}
+                </div>
               </div>
               {row.parts.length > 0 && (
                 <>
@@ -179,6 +250,18 @@ export function SectionSwitches({ sections }: { sections: Row[] }) {
       </ul>
       <p className="text-[14px] leading-6 text-[#5E4E3E]">Le singole schede si nascondono dall’interruttore nella loro lista.</p>
       <p className="text-[13px] leading-5 text-[#5E4E3E]">Ogni cambio finisce nel Registro. Le sezioni nascoste o in arrivo restano visibili a te, con la loro etichetta.</p>
+      <dialog ref={dialog} aria-labelledby="nascondi-tutto-titolo" onClose={() => setAsking(null)}
+        className="fixed inset-0 m-auto max-h-[85dvh] w-[calc(100%-32px)] max-w-lg overflow-y-auto rounded-2xl border border-border bg-background p-5 text-foreground shadow-2xl backdrop:bg-[#2B2118]/50">
+        <h2 id="nascondi-tutto-titolo" className="font-serif text-[22px] font-bold leading-tight">
+          {asking === "tutto" || !asking ? "Nascondere tutte le sezioni e le loro parti dal sito pubblico?" : `Nascondere tutta la sezione «${titleOf(asking)}» e le sue parti dal sito pubblico?`}
+        </h2>
+        <p className="mt-1 text-[15px] leading-snug text-muted">Le schede nascoste una per una restano come sono. Dopo puoi tornare allo stato di adesso con «↩︎ Ripristina com&apos;era».</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button type="button" disabled={pending} onClick={() => bulk("nascosta")} className="min-h-11 rounded-full bg-[#2B2118] px-5 text-sm font-bold text-white disabled:opacity-60">Metti tutto Nascosto</button>
+          <button type="button" disabled={pending} onClick={() => bulk("in-arrivo")} className="min-h-11 rounded-full bg-[#E0A21A] px-5 text-sm font-bold text-[#2B2118] disabled:opacity-60">Metti tutto In arrivo</button>
+          <button type="button" disabled={pending} onClick={() => dialog.current?.close()} className="min-h-11 rounded-full border border-border bg-card px-5 text-sm font-bold">Annulla</button>
+        </div>
+      </dialog>
       {toast && (
         <div role="status" key={toast.at} className="fixed inset-x-0 bottom-[calc(16px+env(safe-area-inset-bottom,0px))] z-50 mx-auto w-[calc(100%-32px)] max-w-md rounded-[12px] bg-[#2B2118] px-4 py-3 text-center text-[15px] font-semibold text-[#FFFBF0] shadow-lg">
           {toast.text}

@@ -1,6 +1,8 @@
 import { COMMUNITY_ON, hiddenPartsText } from "./community-switch.mjs";
 import { test, expect, devices } from "./fixtures.mjs";
 import { readFileSync } from "node:fs";
+import pg from "pg";
+import { TEST_DATABASE_URL } from "./test-db.mjs";
 
 /** The «Visibile · In arrivo · Nascosta» choice of a section or part in /admin/sezioni. */
 const stateRadio = (scope, title, label) => scope.getByRole("radiogroup", { name: `Stato di ${title}`, exact: true }).getByRole("radio", { name: label, exact: true });
@@ -557,5 +559,95 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
   for (const path of ["/", "/grimorio", "/bestiario", "/classi", "/classi/mago", "/oggetti-magici", "/compendio/condizioni", "/equipaggiamento/armi", "/equipaggiamento/armature",
     "/equipaggiamento/avventura", "/equipaggiamento/strumenti", "/ricerca-indice.json"]) {
     expect((await page.request.get(path)).status(), path).toBe(200);
+  }
+});
+
+// PROMPT 53: «Nascondi tutto» and «Nascondi tutta la sezione» with «Ripristina com'era» (test database only).
+test("«Nascondi tutto» and «Nascondi tutta la sezione»: everything Nascosto or In arrivo, nothing left in public pages and data; «Ripristina com'era» puts back the exact state", async ({ page, browser }) => {
+  test.setTimeout(300_000);
+  const client = new pg.Client({ connectionString: TEST_DATABASE_URL });
+  await client.connect();
+  // The saved state of every section and part (a key without a row has its default: visible, or the sections and parts born «In arrivo»).
+  const saved = async () => {
+    const sectionsRows = (await client.query("SELECT sezione, nascosta, in_arrivo FROM grimorio_section_visibility").catch(() => ({ rows: [] }))).rows;
+    const partsRows = (await client.query("SELECT sezione, parte, nascosta, in_arrivo FROM grimorio_section_parts").catch(() => ({ rows: [] }))).rows;
+    const state = row => (!row.nascosta ? "visibile" : row.in_arrivo ? "in-arrivo" : "nascosta");
+    // A row saying the default state is the same as no row: only what differs from the default counts.
+    const DEFAULTS = { talenti: "in-arrivo", "bestiario:grimorio": "in-arrivo" };
+    return Object.fromEntries([
+      ...sectionsRows.map(row => [row.sezione, state(row)]),
+      ...partsRows.map(row => [`${row.sezione}:${row.parte}`, state(row)]),
+    ].filter(([key, value]) => value !== (DEFAULTS[key] ?? "visibile")).sort());
+  };
+  const visitor = await browser.newContext({ baseURL: test.info().project.use.baseURL, viewport: { width: 390, height: 844 } });
+  await visitor.addInitScript(() => { try { localStorage.setItem("grimorio.edizione", "2024"); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } });
+  const pub = await visitor.newPage();
+  try {
+    // A visitor without the admin session cannot call the actions (the page asks for the passcode).
+    await pub.goto("/admin/sezioni");
+    await expect(pub.getByLabel("Passcode")).toBeVisible();
+    await expect(pub.getByRole("button", { name: "Nascondi tutto" })).toHaveCount(0);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/admin");
+    await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+    await page.getByRole("button", { name: "Entra" }).click();
+    await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
+    await page.goto("/admin/sezioni");
+    const before = await saved();
+    const restore = page.getByRole("button", { name: "↩︎ Ripristina com'era" });
+    await expect(restore).toHaveCount(0);
+
+    // «Nascondi tutto» → the confirmation with its two choices and «Annulla».
+    await page.getByRole("button", { name: "Nascondi tutto", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Nascondere tutte le sezioni e le loro parti dal sito pubblico?" });
+    await expect(dialog.getByRole("button")).toHaveText(["Metti tutto Nascosto", "Metti tutto In arrivo", "Annulla"]);
+    await dialog.getByRole("button", { name: "Annulla" }).click();
+    await expect(dialog).toBeHidden();
+    expect(await saved()).toEqual(before);
+    await page.getByRole("button", { name: "Nascondi tutto", exact: true }).click();
+    await dialog.getByRole("button", { name: "Metti tutto In arrivo" }).click();
+    await expect(page.getByRole("status")).toHaveText("Tutte le sezioni e le loro parti: In arrivo");
+    await expect(restore).toHaveCount(1);
+    await expect(page.locator('[data-section-row] [role="radiogroup"] [aria-checked="true"]').filter({ hasText: "In arrivo" })).toHaveCount(await page.locator("[data-section-row]").count());
+    // The public: every section «in costruzione», nothing of the content in the pages and the data.
+    for (const address of ["/grimorio", "/spell/palla-di-fuoco", "/bestiario", "/mostro/aboleth", "/oggetti-magici", "/equipaggiamento/armi/spada-lunga", "/classi/mago", "/compendio/condizioni"]) {
+      await expect.poll(async () => (await pub.goto(address)).status(), address).toBe(404);
+      await expect(pub.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente in costruzione");
+      expect(await pub.content(), address).not.toMatch(/Palla di fuoco|Aboleth|Spada lunga|Dado Vita/);
+    }
+    for (const address of ["/api/catalogo/incantesimi", "/api/catalogo/bestiario", "/sw.js", "/ricerca-indice.json"])
+      expect(await (await pub.request.get(address)).text(), address).not.toMatch(/Palla di fuoco|Aboleth/);
+    // The Home and the reserved area stay reachable.
+    expect((await pub.goto("/")).status()).toBe(200);
+    expect((await page.goto("/admin")).status()).toBe(200);
+    // «Ripristina com'era»: exactly the state of before, then the button goes away.
+    await page.goto("/admin/sezioni");
+    await restore.click();
+    await expect(page.getByRole("status")).toHaveText("Ripristinato com'era");
+    await expect(restore).toHaveCount(0);
+    expect(await saved()).toEqual(before);
+    await expect.poll(async () => (await pub.goto("/spell/palla-di-fuoco")).status()).toBe(200);
+
+    // One section: «Nascondi tutta la sezione» Armi → «Nascosto»; the others as they were.
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.getByRole("button", { name: "Nascondi tutta la sezione Armi" }).click();
+    const one = page.getByRole("dialog", { name: "Nascondere tutta la sezione «Armi» e le sue parti dal sito pubblico?" });
+    await one.getByRole("button", { name: "Metti tutto Nascosto" }).click();
+    await expect(page.getByRole("status")).toHaveText("Armi e le sue parti: Nascoste");
+    const hidden = await saved();
+    for (const key of ["armi", "armi:2014", "armi:2024", "armi:confronto"]) expect(hidden[key], key).toBe("nascosta");
+    expect(Object.fromEntries(Object.entries(hidden).filter(([key]) => !key.startsWith("armi")))).toEqual(Object.fromEntries(Object.entries(before).filter(([key]) => !key.startsWith("armi"))));
+    await expect.poll(async () => (await pub.goto("/equipaggiamento/armi")).status()).toBe(404);
+    expect((await pub.goto("/spell/palla-di-fuoco")).status()).toBe(200);
+    const sectionRestore = page.locator('[data-section-row="armi"]').getByRole("button", { name: "↩︎ Ripristina com'era" });
+    await sectionRestore.click();
+    await expect(sectionRestore).toHaveCount(0);
+    expect(await saved()).toEqual(before);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1280);
+  } finally {
+    await client.query("DELETE FROM grimorio_section_bulk").catch(() => undefined);
+    await client.end();
+    await visitor.close();
   }
 });

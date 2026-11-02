@@ -58,7 +58,7 @@ for (const href of [...Object.keys(cases), '/', '/compendio', '/spell', '/manual
 // Hiding is reversible and never touches content: the switches only write their own tables (sections, parts, cards).
 const store = fs.readFileSync('lib/section-visibility.ts', 'utf8');
 const written = [...store.matchAll(/(?:INSERT INTO|DELETE FROM|(?<!DO )UPDATE)\s+(\w+)/g)].map(m => m[1]);
-assert.deepEqual([...new Set(written)].sort(), ['grimorio_card_visibility', 'grimorio_card_visibility_log', 'grimorio_section_parts', 'grimorio_section_parts_log', 'grimorio_section_visibility', 'grimorio_section_visibility_log']);
+assert.deepEqual([...new Set(written)].sort(), ['grimorio_card_visibility', 'grimorio_card_visibility_log', 'grimorio_section_bulk', 'grimorio_section_parts', 'grimorio_section_parts_log', 'grimorio_section_visibility', 'grimorio_section_visibility_log']);
 const cardAction = fs.readFileSync('app/actions/admin-cards.ts', 'utf8');
 assert.ok(/export async function setCardVisibilityAction[^{]*\{\s*await requireAdmin\(\);/.test(cardAction), 'the card action starts with requireAdmin');
 // The service worker deletes the saved copy of a hidden card (its address), not the others.
