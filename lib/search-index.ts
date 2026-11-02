@@ -30,6 +30,7 @@ import { GRIMORIO_LABEL, HOMEBREW_LABEL, fold, type SearchIndex, type SearchSect
 import { isHiddenPath, partId, sectionOfPath } from "./public-sections";
 import { spellHref } from "./spell-public-id";
 import { englishName } from "./english-names";
+import { masteries } from "./weapon-masteries";
 
 /** A row of a hidden section, or of a hidden edition, collection or tab (hidden: sections and part ids). */
 export function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
@@ -115,6 +116,11 @@ export const SEARCH_SOURCES: SearchSource[] = [
   {
     section: "condizioni", title: "Condizioni",
     rows: async () => bothEditions(conditionRows((await getCorrectedConditions()).list), (row, edition) => ({ nome: row.nome, label: "Condizione", href: row.href, edizione: edition, en: englishName("condizioni", edition, row.id) })),
+  },
+  {
+    // PROMPT 47: the eight weapon masteries, 2024 only (in 2014 under «Solo nel 2024»), with their English name.
+    section: "padronanze", title: "Padronanze",
+    rows: () => masteries.map(mastery => ({ nome: mastery.nome, label: "Padronanza", href: `/equipaggiamento/padronanze/${mastery.id}`, edizione: "2024" as const, ...(mastery.en ? { en: mastery.en } : {}) })),
   },
   {
     // Only where the Manual is published (preview); its condition pages are already under Condizioni.
