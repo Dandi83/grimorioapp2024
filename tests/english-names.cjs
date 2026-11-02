@@ -164,3 +164,15 @@ assert.equal(englishName('padronanze','2014','vessazione'),undefined);
  for(const [id,en] of Object.entries({alabarda:'Cleave','ascia-bipenne':'Cleave',spadone:'Graze',pugnale:'Nick',scimitarra:'Nick','martello-da-guerra':'Push',lancia:'Sap','spada-lunga':'Sap',frusta:'Slow','arco-lungo':'Slow',ascia:'Vex'}))assert.equal(byWeapon[id],en,id);
 }
 console.log('Padronanze: 8 nomi inglesi (SRD 5.2.1 p. 90–91), abbinati arma per arma.');
+// PROMPT 48: the weapon properties, checked on the English SRD 5.1 (p. 64–65, «Weapon Properties») and SRD 5.2.1 (p. 89–90,
+// «Properties»); «Special» only in 2014; «Range» has its own rule in both.
+{
+ const both={accurata:'Finesse','due-mani':'Two-Handed',gittata:'Range',lancio:'Thrown',leggera:'Light',munizioni:'Ammunition',pesante:'Heavy',portata:'Reach',ricarica:'Loading',versatile:'Versatile'};
+ assert.deepEqual(names['2014'].proprieta,{...both,speciale:'Special'});
+ assert.deepEqual(names['2024'].proprieta,both);
+ const {weaponProperties,weaponsWithProperty}=require('../lib/weapon-properties.ts');
+ assert.equal(weaponProperties.length,11);
+ assert.deepEqual(Object.keys(weaponProperties.find(p=>p.id==='speciale').editions),['2014']);
+ for(const p of weaponProperties)for(const [edition,rule] of Object.entries(p.editions)){assert.equal(rule.en,names[edition].proprieta[p.id],`${edition} ${p.id}`);assert.ok(weaponsWithProperty(p.id,edition).length>0,`${edition} ${p.id}: weapons`);}
+ console.log('Proprietà: 11 nomi inglesi (SRD 5.1 p. 64–65, SRD 5.2.1 p. 89–90), Special solo 2014.');
+}

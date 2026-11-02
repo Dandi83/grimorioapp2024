@@ -31,6 +31,7 @@ import { isHiddenPath, partId, sectionOfPath } from "./public-sections";
 import { spellHref } from "./spell-public-id";
 import { englishName } from "./english-names";
 import { masteries } from "./weapon-masteries";
+import { weaponProperties } from "./weapon-properties";
 
 /** A row of a hidden section, or of a hidden edition, collection or tab (hidden: sections and part ids). */
 export function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
@@ -121,6 +122,14 @@ export const SEARCH_SOURCES: SearchSource[] = [
     // PROMPT 47: the eight weapon masteries, 2024 only (in 2014 under «Solo nel 2024»), with their English name.
     section: "padronanze", title: "Padronanze",
     rows: () => masteries.map(mastery => ({ nome: mastery.nome, label: "Padronanza", href: `/equipaggiamento/padronanze/${mastery.id}`, edizione: "2024" as const, ...(mastery.en ? { en: mastery.en } : {}) })),
+  },
+  {
+    // PROMPT 48: the weapon properties, by edition (the same page; «Speciale» 2014 only), with their English name.
+    section: "proprieta", title: "Proprietà delle armi",
+    rows: () => weaponProperties.flatMap(property => (["2024", "2014"] as const).flatMap(edition => {
+      const rule = property.editions[edition];
+      return rule ? [{ nome: property.nome, label: "Proprietà", href: `/equipaggiamento/proprieta/${property.id}`, edizione: edition, ...(rule.en ? { en: rule.en } : {}) }] : [];
+    })),
   },
   {
     // Only where the Manual is published (preview); its condition pages are already under Condizioni.

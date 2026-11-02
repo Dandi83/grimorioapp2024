@@ -57,8 +57,8 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  const production=await idx.buildSearchIndex('production');
  const preview=await idx.buildSearchIndex('preview');
  // Sections in order; the Manual only where it is published (its conditions are under Condizioni).
- assert.deepEqual(production.sections.map(x=>x.k),['incantesimi','mostri','classi','equipaggiamento','oggetti-magici','condizioni','padronanze']);
- assert.deepEqual(preview.sections.map(x=>x.k),['incantesimi','mostri','classi','equipaggiamento','oggetti-magici','condizioni','padronanze','manuale']);
+ assert.deepEqual(production.sections.map(x=>x.k),['incantesimi','mostri','classi','equipaggiamento','oggetti-magici','condizioni','padronanze','proprieta']);
+ assert.deepEqual(preview.sections.map(x=>x.k),['incantesimi','mostri','classi','equipaggiamento','oggetti-magici','condizioni','padronanze','proprieta','manuale']);
  assert.ok(!preview.rows.some(r=>r[3].startsWith('/manuale/condizioni-')&&preview.sections[r[0]].k==='manuale'));
  // One edition for the whole app («la tua edizione»): the index no longer names a storage key per section.
  assert.ok(production.sections.every(x=>Object.keys(x).join()==='k,t'));
@@ -136,6 +136,7 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
   if(p.startsWith('/equipaggiamento/strumenti/'))return !!getToolEntry(id);
   if(p.startsWith('/oggetti-magici/'))return !!findMagicItemEntry(id);
   if(p.startsWith('/manuale/condizioni-'))return conditionIds.has(id);
+  if(p.startsWith('/equipaggiamento/proprieta/'))return !!require('../lib/weapon-properties.ts').getWeaponProperty(id);
   if(p.startsWith('/equipaggiamento/padronanze/'))return !!require('../lib/weapon-masteries.ts').getMastery(id);
   if(p.startsWith('/classi/'))return classIds.has(id.split('#')[0]);
   if(p.startsWith('/spell/')||p.startsWith('/mostro/'))return true;
@@ -168,9 +169,9 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  // Hidden sections (/admin/sezioni) leave the index: their pages, and the section when it is empty.
  const hidden=await idx.buildSearchIndex('production',undefined,['classi','armi','condizioni']);
  assert.deepEqual(hidden.sections.map(x=>x.k),['incantesimi','mostri','equipaggiamento','oggetti-magici']);
- assert.ok(!hidden.rows.some(r=>/^\/(classi|equipaggiamento\/armi|equipaggiamento\/padronanze|compendio\/condizioni|manuale\/condizioni-)/.test(r[3])||(r[4]&&/^\/classi/.test(r[4]))),'no address of a hidden section');
+ assert.ok(!hidden.rows.some(r=>/^\/(classi|equipaggiamento\/armi|equipaggiamento\/padronanze|equipaggiamento\/proprieta|compendio\/condizioni|manuale\/condizioni-)/.test(r[3])||(r[4]&&/^\/classi/.test(r[4]))),'no address of a hidden section');
  assert.ok(hidden.rows.some(r=>r[3].startsWith('/equipaggiamento/armature/')),'the other equipment stays');
- assert.equal(production.rows.length-hidden.rows.length,production.rows.filter(r=>/^\/(classi|equipaggiamento\/armi\/|equipaggiamento\/padronanze\/|manuale\/condizioni-)/.test(r[3])).length);
+ assert.equal(production.rows.length-hidden.rows.length,production.rows.filter(r=>/^\/(classi|equipaggiamento\/armi\/|equipaggiamento\/padronanze\/|equipaggiamento\/proprieta\/|manuale\/condizioni-)/.test(r[3])).length);
  // Hidden parts: an edition, a collection, the Sottoclasse tab leave the index too.
  const parts=await idx.buildSearchIndex('production',undefined,['incantesimi:2014','bestiario:animali','classi:tab-sottoclasse','armi:2024']);
  const partRows=s.rowsOf(parts);
@@ -191,6 +192,18 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  assert.equal(s.search(production,s.rowsOf(production),'fiacc').find(g=>g.section==='padronanze').rows[0].nome,'Fiaccare');
  for(const [en,it] of [['cleave','Doppio fendente'],['sap','Fiaccare'],['graze','Colpo di striscio'],['topple','Rovesciamento'],['nick','Graffio'],['push','Spinta'],['slow','Lentezza']])
   assert.ok(s.search(production,s.rowsOf(production),en).some(g=>g.section==='padronanze'&&g.rows.some(r=>r.nome===it)),en);
+ // PROMPT 48: the properties, one result per name for both editions (the same page), «Speciale» 2014 only.
+ const props=rows.filter(r=>r.section==='proprieta');
+ assert.equal(props.length,11);
+ assert.ok(props.filter(r=>r.nome!=='Speciale').every(r=>r.href===`/equipaggiamento/proprieta/${r.href.split('/').pop()}`&&!r.solo&&!r.href2014),'both editions, one page');
+ assert.equal(props.find(r=>r.nome==='Speciale').solo,'2014');
+ assert.equal(props.find(r=>r.nome==='Leggera').href,'/equipaggiamento/proprieta/leggera');
+ const light=s.search(production,s.rowsOf(production),'light');
+ assert.ok(light.some(g=>g.section==='proprieta'&&g.rows[0].nome==='Leggera'),'light');
+ assert.equal(s.search(production,s.rowsOf(production),'legg').find(g=>g.section==='proprieta').rows[0].nome,'Leggera');
+ for(const [en,it] of [['finesse','Accurata'],['two-handed','Due mani'],['thrown','Lancio'],['ammunition','Munizioni'],['heavy','Pesante'],['reach','Portata'],['loading','Ricarica'],['versatile','Versatile'],['range','Gittata'],['special','Speciale']])
+  assert.ok(s.search(production,s.rowsOf(production),en).some(g=>g.section==='proprieta'&&g.rows.some(r=>r.nome===it)),en);
+ assert.ok(!partRows.some(r=>r.href.startsWith('/equipaggiamento/proprieta/')&&r.nome!=='Speciale'&&r.solo!=='2014'&&!r.label.endsWith('· 2014')),'without the 2024 weapons only the 2014 rules');
  // In 2014 the eight are 2024-only results, opening on 2024.
  assert.equal(s.rowHref(mastery[0],'2014'),'/equipaggiamento/padronanze/colpo-di-striscio?edizione=2024');
  // Offline: the index is saved by the service worker; the panel never reaches the admin area.
