@@ -159,5 +159,7 @@ assert.ok(!publicPage.test('/classi/a/b'));
 const compendio = fs.readFileSync('app/compendio/page.tsx', 'utf8');
 assert.ok(compendio.indexOf('{ label: "Personaggi"') < compendio.indexOf('{ label: "Regole e oggetti"'));
 assert.ok(compendio.includes('{ href: "/classi", title: "Classi", text: "Barbaro, Bardo, Chierico…", Icon: Shield, square: true, sections: ["classi"] }'));
-assert.ok(!/Specie|Background|Talenti/.test(compendio.replace(/\/\/.*$/gm, '')));
+assert.ok(!/Specie|Background/.test(compendio.replace(/\/\/.*$/gm, '')));
+// PROMPT 49: the Talenti tile after Classi, «In arrivo» until shown.
+assert.ok(compendio.includes('{ href: "/talenti", title: "Talenti"'));
 console.log('Classi pages: offline list and sheets, Compendio group «Personaggi».');

@@ -139,22 +139,32 @@ function load(relative) {
   jar.clear(); draft.on = false;
   await assert.rejects(sections.setSectionVisibilityAction('classi',true),/Non autorizzato/,'no public request can change a section');
   await assert.rejects(sections.showSectionAction((()=>{const f=new FormData();f.set('sezione','classi');return f;})()),/Non autorizzato/);
-  assert.deepEqual(await visibility.hiddenSections(),[],'every section is visible by default');
+  assert.deepEqual(await visibility.hiddenSections(),['talenti'],'every section is visible by default, «Talenti» starts «In arrivo» (PROMPT 49)');
   assert.equal((await attempt('passcode-di-prova','203.0.113.60')).ok,true);
   draft.on = false;
   assert.deepEqual(await sections.setSectionVisibilityAction('classi',true),{ok:true,hidden:true});
   assert.equal(draft.on,true,'a switch turns on the preview for the administrator');
   assert.deepEqual(await sections.setSectionVisibilityAction('classi',true),{ok:true,hidden:true},'switching to the same state logs nothing');
   assert.deepEqual(await sections.setSectionVisibilityAction('admin',true),{ok:false,error:'Sezione sconosciuta.'});
-  assert.deepEqual(await visibility.hiddenSections(),['classi']);
+  assert.deepEqual(await visibility.hiddenSections(),['classi','talenti']);
   assert.equal((await visibility.sectionStates()).classi,true);
   const show = new FormData(); show.set('sezione','classi');
   await sections.showSectionAction(show);
-  assert.deepEqual(await visibility.hiddenSections(),[]);
+  assert.deepEqual(await visibility.hiddenSections(),['talenti'],'«Talenti» stays «In arrivo» until it is set (PROMPT 49)');
   const log = await visibility.allSectionLog();
   assert.deepEqual(log.map(row=>[row.sezione,row.nascosta]).sort(),[['classi',false],['classi',true]],'one log row per change, with the new state');
   assert.ok(log.every(row=>row.creata_il),'with date and time');
   assert.equal((await pg.query('SELECT count(*)::int AS n FROM grimorio_section_visibility')).rows[0].n,1,'one record per section');
+  // PROMPT 49: «Talenti» starts «In arrivo» without a record; «Visibile» from /admin/sezioni is saved (not taken as «already so»).
+  assert.equal((await visibility.allSectionStates()).talenti,'in-arrivo');
+  assert.equal((await visibility.visibilityState()).soon.includes('talenti'),true);
+  assert.equal(await visibility.setSectionState('talenti','visibile'),true);
+  assert.deepEqual(await visibility.hiddenSections(),[]);
+  assert.equal((await visibility.allSectionStates()).talenti,'visibile');
+  assert.equal(await visibility.setSectionState('talenti','in-arrivo'),true);
+  assert.deepEqual(await visibility.hiddenSections(),['talenti']);
+  await pg.query("DELETE FROM grimorio_section_visibility WHERE sezione='talenti'");
+  await pg.query("DELETE FROM grimorio_section_visibility_log WHERE sezione='talenti'");
   // Parts (an edition, a tab, a block): same rules, their own record and log row.
   jar.clear();
   await assert.rejects(sections.setPartVisibilityAction('classi:tab-tabella',true),/Non autorizzato/,'no public request can change a part');

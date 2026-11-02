@@ -248,7 +248,7 @@ test("compendium: five-item navigation on narrow phones, Compendio active inside
   await expect(page).toHaveURL(/\/compendio$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Compendio");
   await expect(page.getByText("Regole, equipaggiamento e strumenti per il tavolo")).toBeVisible();
-  await expect(page.locator("main ul > li")).toHaveText([/Classi/, /Equipaggiamento/, /Avanzamento di livello/, /Oggetti magici/, /Condizioni/]);
+  await expect(page.locator("main ul > li")).toHaveText([/Classi/, /Talenti/, /Equipaggiamento/, /Avanzamento di livello/, /Oggetti magici/, /Condizioni/]);
   for (const path of ["/compendio", "/classi", "/classi/guerriero", "/equipaggiamento", "/equipaggiamento/armi", "/equipaggiamento/armi/pugnale", "/avanzamento", "/oggetti-magici", "/oggetti-magici/ali-del-volo", "/compendio/condizioni"]) {
     await page.goto(path);
     await expect(nav.locator('a[aria-current="page"]'), path).toHaveText("Compendio");
@@ -685,7 +685,8 @@ test("conditions: Compendio tile like the others, list per edition, note of the 
   await expect(tile).toContainText("Accecato, Avvelenato, Spaventato…");
   await expect(page.locator("main").getByText("NUOVO")).toHaveCount(0);
   // Same border and height as the other tiles.
-  const styles = await page.locator("main ul[aria-label] > li a").evaluateAll(links => links.map(a => [getComputedStyle(a).borderTopWidth, getComputedStyle(a).borderTopColor, a.className]));
+  // The tiles «In arrivo» (Talenti, PROMPT 49) are attenuated on purpose: the others alike.
+  const styles = await page.locator("main ul[aria-label] > li:not([data-soon]) a").evaluateAll(links => links.map(a => [getComputedStyle(a).borderTopWidth, getComputedStyle(a).borderTopColor, a.className]));
   for (const style of styles) expect(style).toEqual(styles[0]);
   await tile.click();
   await expect(page).toHaveURL(/\/compendio\/condizioni$/);
@@ -1476,7 +1477,8 @@ test("classes 2024 and 2014: Compendio group, list with selector, sheets with ta
   await page.goto("/compendio");
   await expect(page.getByRole("heading", { level: 2, name: "Personaggi" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Regole e oggetti" })).toBeVisible();
-  const tile = page.getByRole("list", { name: "Personaggi" }).getByRole("link");
+  // PROMPT 49: Classi and Talenti («In arrivo» from the start).
+  const tile = page.getByRole("list", { name: "Personaggi" }).getByRole("link").filter({ hasText: "Barbaro, Bardo, Chierico…" });
   await expect(tile).toHaveCount(1);
   await expect(tile).toContainText("Barbaro, Bardo, Chierico…");
   await tile.click();

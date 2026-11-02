@@ -32,6 +32,7 @@ import { spellHref } from "./spell-public-id";
 import { englishName } from "./english-names";
 import { masteries } from "./weapon-masteries";
 import { weaponProperties } from "./weapon-properties";
+import { feats } from "./feats";
 
 /** A row of a hidden section, or of a hidden edition, collection or tab (hidden: sections and part ids). */
 export function hiddenRow(row: SourceRow, hidden: readonly string[]): boolean {
@@ -129,6 +130,14 @@ export const SEARCH_SOURCES: SearchSource[] = [
     rows: () => weaponProperties.flatMap(property => (["2024", "2014"] as const).flatMap(edition => {
       const rule = property.editions[edition];
       return rule ? [{ nome: property.nome, label: "Proprietà", href: `/equipaggiamento/proprieta/${property.id}`, edizione: edition, ...(rule.en ? { en: rule.en } : {}) }] : [];
+    })),
+  },
+  {
+    // PROMPT 49: the SRD feats by edition (Lottatore in both, one page); out while the section is «In arrivo» or hidden.
+    section: "talenti", title: "Talenti",
+    rows: () => feats.flatMap(feat => (["2024", "2014"] as const).flatMap(edition => {
+      const view = feat.editions[edition];
+      return view ? [{ nome: view.nome, label: view.categoria ? `Talento ${view.categoria}` : "Talento", href: `/talenti/${feat.id}`, edizione: edition, ...(view.en ? { en: view.en } : {}) }] : [];
     })),
   },
   {

@@ -33,6 +33,13 @@ const stateOf = (row: { nascosta: boolean; in_arrivo?: boolean | null } | undefi
  * «Mostri del Grimorio»), until the administrator chooses.
  */
 export const DEFAULT_PART_STATES: Readonly<Record<string, SectionState>> = { "bestiario:grimorio": "in-arrivo" };
+/**
+ * The state of a section never set from /admin/sezioni: «Visibile», except the sections that start «In arrivo»
+ * (PROMPT 49: «Talenti»), until the administrator chooses; also while the database cannot be read.
+ */
+export const DEFAULT_SECTION_STATES: Readonly<Partial<Record<PublicSectionKey, SectionState>>> = { talenti: "in-arrivo" };
+const sectionStateOf = (key: string, row: { nascosta: boolean; in_arrivo?: boolean | null } | undefined): SectionState =>
+  row ? stateOf(row) : DEFAULT_SECTION_STATES[key as PublicSectionKey] ?? "visibile";
 const partStateOf = (id: string, row: { nascosta: boolean; in_arrivo?: boolean | null } | undefined): SectionState =>
   row ? stateOf(row) : DEFAULT_PART_STATES[id] ?? "visibile";
 
@@ -100,7 +107,6 @@ export function ensureSectionTables() {
 }
 
 const MISSING_TABLE = "42P01";
-const known = new Set<string>(PUBLIC_SECTIONS.map(section => section.key));
 
 async function hiddenRows<T>(sql: string): Promise<T[]> {
   try {
@@ -116,8 +122,17 @@ async function hiddenRows<T>(sql: string): Promise<T[]> {
 const SOON = "COALESCE((to_jsonb(t)->>'in_arrivo')::boolean, false) AS in_arrivo";
 
 async function readHiddenRows(): Promise<{ sezione: PublicSectionKey; in_arrivo: boolean }[]> {
-  const rows = await hiddenRows<{ sezione: string; in_arrivo: boolean }>(`SELECT sezione, ${SOON} FROM grimorio_section_visibility t WHERE nascosta`);
-  return rows.filter((row): row is { sezione: PublicSectionKey; in_arrivo: boolean } => known.has(row.sezione)).sort((a, b) => a.sezione.localeCompare(b.sezione));
+  const rows = await hiddenRows<{ sezione: string; nascosta: boolean; in_arrivo: boolean }>(`SELECT sezione, nascosta, ${SOON} FROM grimorio_section_visibility t`);
+  // Every saved row, then the sections never set with their default state (DEFAULT_SECTION_STATES).
+  const states = PUBLIC_SECTIONS.map(section => ({ sezione: section.key, state: sectionStateOf(section.key, rows.find(row => row.sezione === section.key)) }));
+  return states.filter(row => row.state !== "visibile").map(row => ({ sezione: row.sezione, in_arrivo: row.state === "in-arrivo" }))
+    .sort((a, b) => a.sezione.localeCompare(b.sezione));
+}
+
+/** What the public sees without the database: the default states only. */
+function defaultState(): VisibilityState {
+  const sections = Object.entries(DEFAULT_SECTION_STATES).filter(([, state]) => state !== "visibile").map(([key]) => key as PublicSectionKey);
+  return { sections, parts: [], cards: [], soon: Object.entries(DEFAULT_SECTION_STATES).filter(([, state]) => state === "in-arrivo").map(([key]) => key) };
 }
 
 async function readHidden(): Promise<PublicSectionKey[]> {
@@ -159,7 +174,8 @@ export async function visibilityState(): Promise<VisibilityState> {
     state = await cachedState();
   } catch {
     console.warn("[sezioni] Database non leggibile: tutte le sezioni restano visibili.");
-    state = { sections: [], parts: [], cards: [], soon: [] };
+    // The sections that start «In arrivo» stay so (PROMPT 49).
+    state = defaultState();
   }
   return withCommunitySwitch(state);
 }
@@ -198,6 +214,7 @@ export async function allSectionStates(): Promise<Record<string, SectionState>> 
     pool.query<{ sezione: string; parte: string; nascosta: boolean; in_arrivo: boolean }>("SELECT sezione, parte, nascosta, in_arrivo FROM grimorio_section_parts"),
   ]);
   return Object.fromEntries([
+    ...Object.entries(DEFAULT_SECTION_STATES),
     ...sections.rows.map(row => [row.sezione, stateOf(row)] as const),
     ...Object.entries(DEFAULT_PART_STATES),
     ...parts.rows.map(row => [`${row.sezione}:${row.parte}`, stateOf(row)] as const),
@@ -211,7 +228,7 @@ export async function setSectionState(key: PublicSectionKey, state: SectionState
   try {
     await client.query("BEGIN");
     const { rows } = await client.query<{ nascosta: boolean; in_arrivo: boolean }>("SELECT nascosta, in_arrivo FROM grimorio_section_visibility WHERE sezione = $1 FOR UPDATE", [key]);
-    if (stateOf(rows[0]) === state) {
+    if (sectionStateOf(key, rows[0]) === state) {
       await client.query("ROLLBACK");
       return false;
     }

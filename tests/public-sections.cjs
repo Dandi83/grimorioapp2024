@@ -11,7 +11,7 @@ new Function('require','module','exports',ts.transpileModule(fs.readFileSync('li
 const ps = mod.exports;
 
 const keys = ps.PUBLIC_SECTIONS.map(s => s.key);
-assert.deepEqual(keys, ['incantesimi','bestiario','classi','armi','armature','avventura','strumenti','oggetti-magici','condizioni','avanzamento'], 'the sections Daniele listed, in the order of the admin page');
+assert.deepEqual(keys, ['incantesimi','bestiario','classi','armi','armature','avventura','strumenti','oggetti-magici','condizioni','avanzamento','talenti'], 'the sections Daniele listed, in the order of the admin page');
 assert.equal(new Set(keys).size, keys.length);
 for (const s of ps.PUBLIC_SECTIONS) assert.ok(s.title && s.where && s.paths.length, s.key);
 
@@ -38,7 +38,7 @@ const gates = {
   'app/grimorio': 'incantesimi', 'app/spell': 'incantesimi', 'app/bestiario': 'bestiario', 'app/mostro': 'bestiario', 'app/classi': 'classi',
   'app/equipaggiamento/armi': 'armi', 'app/equipaggiamento/armature': 'armature', 'app/equipaggiamento/avventura': 'avventura',
   'app/equipaggiamento/strumenti': 'strumenti', 'app/oggetti-magici': 'oggetti-magici', 'app/compendio/condizioni': 'condizioni',
-  'app/manuale/[id]': 'condizioni', 'app/avanzamento': 'avanzamento',
+  'app/manuale/[id]': 'condizioni', 'app/avanzamento': 'avanzamento', 'app/talenti': 'talenti',
 };
 for (const [dir, key] of Object.entries(gates)) {
   const layout = fs.readFileSync(path.join(dir, 'layout.tsx'), 'utf8');

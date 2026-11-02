@@ -79,9 +79,10 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   test.setTimeout(400_000);
   await login(page);
   await page.goto("/admin/sezioni");
-  await expect(page.getByText("0 in arrivo")).toBeVisible();
+  // «Talenti» starts «In arrivo» (PROMPT 49).
+  await expect(page.getByText("1 in arrivo")).toBeVisible();
   // Every row has the three states, «Visibile» chosen (the rows of before: Visibile or Nascosta).
-  await expect(page.getByRole("radiogroup")).toHaveCount(10);
+  await expect(page.getByRole("radiogroup")).toHaveCount(11);
   await expect(page.getByRole("radio", { name: "Visibile", checked: true })).toHaveCount(10);
   // Colors of the chosen state: green, amber, black (#1F6B45, #E0A21A, #2B2118).
   for (const [label, color] of [["In arrivo", "rgb(224, 162, 26)"], ["Nascosta", "rgb(43, 33, 24)"], ["Visibile", "rgb(31, 107, 69)"]]) {
@@ -97,7 +98,7 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await setPart(page, "bestiario", "Raccolta Animali", "In arrivo");
   await setPart(page, "avanzamento", "Calcolatore di PE", "In arrivo");
   await setPart(page, "avanzamento", "Talenti bonus oltre il 20º livello", "Nascosta");
-  await expect(page.getByText("2 in arrivo")).toBeVisible();
+  await expect(page.getByText("3 in arrivo")).toBeVisible();
   await expect(page.getByText("1 nascosta", { exact: true })).toBeVisible();
   // Plus «Mostri del Grimorio», «In arrivo» from the start (PROMPT 25, lib/section-visibility.ts DEFAULT_PART_STATES).
   await expect(page.getByText("3 parti in arrivo")).toBeVisible();
@@ -134,7 +135,9 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await underConstruction(pub, undefined);
   // Compendio: Classi attenuated with the pill and «Ci stiamo lavorando»; Oggetti magici gone; the others as before.
   await pub.goto("/compendio");
-  const classes = pub.locator("main li[data-soon]");
+  // Talenti is «In arrivo» from the start (PROMPT 49).
+  await expect(pub.locator("main li[data-soon]")).toHaveCount(2);
+  const classes = pub.locator("main li[data-soon]").filter({ hasText: "Classi" });
   await expect(classes).toHaveCount(1);
   await expect(classes).toContainText("Classi");
   await expect(classes).toContainText("In arrivo");

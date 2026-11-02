@@ -1,0 +1,25 @@
+{
+ "_nota": "Talenti dell'SRD 5.1 italiano (PROMPT 49): solo «Lottatore», l'unico talento dell'SRD 5.1. Trascritto dal PDF ufficiale (pagina 84), a capo uniti, testo identico; sourceSha256 del testo: righe unite con «\\n» (paragrafi, poi voci dell'elenco).",
+ "fonte": {
+  "document": "SRD 5.1",
+  "sourceUrl": "https://media.dndbeyond.com/compendium-images/srd/5.1/SRD_CC_v5.1_IT.pdf",
+  "sourceSha256": "2ef143b8abeae9558d30b405ea48e2ee9b5d700dd11cd955e6117e61cbddd3f7",
+  "licenza": "CC BY 4.0"
+ },
+ "talenti": [
+  {
+   "id": "lottatore",
+   "nome": "Lottatore",
+   "prerequisito": "Forza 13 o superiore",
+   "paragrafi": [
+    "Il personaggio ha sviluppato le abilità necessarie per farsi valere nella lotta corpo a corpo. Ottiene i seguenti benefici:"
+   ],
+   "elenco": [
+    "Dispone di vantaggio ai tiri per colpire contro una creatura con cui sta lottando.",
+    "Può usare la sua azione per tentare di immobilizzare una creatura da lui afferrata. Per farlo deve effettuare un'altra prova di lotta. Se la supera, il personaggio e la creatura sono entrambi trattenuti fino alla fine della lotta."
+   ],
+   "page": 84,
+   "sourceSha256": "e1656b01d2aecb4f42ccd6f3b2ffe89b56fdb4ac4aefff79d1f90420bbe7abb9"
+  }
+ ]
+}
