@@ -255,7 +255,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   for (const path of [...SECTIONS.flatMap(section => [section.list, section.card]).filter(Boolean), "/", "/compendio", "/equipaggiamento", "/preferiti", "/classi/guerriero", "/ricerca-indice.json"]) {
     expect((await pub.request.get(path)).status(), path).toBe(200);
   }
-  expect((await (await pub.request.get("/ricerca-indice.json")).json()).sections).toHaveLength(6);
+  expect((await (await pub.request.get("/ricerca-indice.json")).json()).sections).toHaveLength(7);
   await publicContext.close();
   expect(errors).toEqual([]);
 });
