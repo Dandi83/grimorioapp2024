@@ -7,7 +7,9 @@ import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { Breadcrumbs } from "@/components/seo/json-ld";
 import { weaponSources } from "@/lib/equipment";
 import { WEAPON_GROUP_NAMES } from "@/lib/equipment-types";
-import { CLOSED_METADATA, pageEditions, sectionClosed, sectionPage } from "@/lib/section-view";
+import { CLOSED_METADATA, pageEditions, sectionClosed, sectionPage, sectionPublic } from "@/lib/section-view";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
 import { fitDescription, pageMetadata } from "@/lib/seo";
 import { getMastery, masteries, weaponsWithMastery } from "@/lib/weapon-masteries";
 
@@ -43,8 +45,13 @@ export default async function MasteryPage({ params }: { params: Promise<{ id: st
   if (!mastery || await closed()) notFound();
   const list = weaponsWithMastery(mastery.nome);
   const source = weaponSources["2024"];
+  const share = await sectionPublic("armi");
   const panel = (
     <div className="space-y-5">
+      {/* «Condividi come immagine» (PROMPT 50). */}
+      {share && <ShareRow path={`/equipaggiamento/padronanze/${mastery.id}`} title={mastery.nome} card={ruleCard({
+        kind: "padronanza", kicker: "Padronanza delle armi · 2024", title: mastery.nome, en: mastery.en, edition: "2024", text: mastery.testo,
+      })} />}
       <header className="flex flex-col items-center gap-1.5 pt-4 text-center">
         <h1 className="font-serif text-4xl font-bold leading-tight">
           {mastery.nome}{mastery.en && <span className="ml-2 align-middle font-sans text-[20px] font-normal italic text-muted" lang="en" data-english-name="">({mastery.en})</span>}

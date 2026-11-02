@@ -6,7 +6,11 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { ToolEditionPanels } from "@/components/equipment/tool-edition-panels";
 import { PartBlock } from "@/components/sections/part-block";
-import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { pageEditions, sectionPage, sectionPublic, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
+import { englishName } from "@/lib/english-names";
+
 import { tools2014Source, type Tool2014 } from "@/lib/tools-2014";
 import { toolsSection, type Tool2024 } from "@/lib/tools";
 import { compareTool, getToolEntry, toolEntries, toolHref, toolKey } from "@/lib/tools-editions";
@@ -156,8 +160,19 @@ export default async function ToolPage({ params }: { params: Promise<{ id: strin
   const note = (value: EquipmentEdition) => <div className="mt-5"><SectionCorrectionNote section="strumenti" id={entry.id} edition={value} corrections={corrections?.[value]} /></div>;
   const rows = shown.length === 2 ? compareTool(entry) : [];
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
-  if (has("2024")) panels["2024"] = <><Sheet2024 tool={entry.editions["2024"]!} />{note("2024")}</>;
-  if (has("2014")) panels["2014"] = <><Sheet2014 tool={entry.editions["2014"]!} level={has("2024") ? "h2" : "h1"} />{note("2014")}</>;
+  // «Condividi come immagine» (PROMPT 50): the edition shown, its text as the sheet shows it.
+  const share = await sectionPublic("strumenti");
+  const tool2024 = entry.editions["2024"], tool2014 = entry.editions["2014"];
+  const shareRow = (value: EquipmentEdition) => {
+    const nome = (value === "2024" ? tool2024 : tool2014)!.nome;
+    const card = value === "2024"
+      ? ruleCard({ kind: "strumento", theme: "pergamena", kicker: `${tool2024!.gruppo === "artigiano" ? "Strumento da artigiano" : "Strumento"} · 2024`, title: nome, en: englishName("strumenti", "2024", tool2024!.id), edition: "2024",
+        boxes: [{ label: "Caratteristica", value: tool2024!.caratteristica }], text: capitalize(tool2024!.utilizzo) })
+      : ruleCard({ kind: "strumento", theme: "pergamena", kicker: `${GROUP_NAMES[tool2014!.gruppo]} · 2014`, title: nome, en: englishName("strumenti", "2014", tool2014!.id), edition: "2014", text: tool2014!.paragraphs.join(" ") });
+    return share && <ShareRow path={value === "2024" && entry.variante ? toolHref(entry.variante.tool.id) : `${toolHref(entry.id)}${value === "2014" && has("2024") ? "?edizione=2014" : ""}`} title={nome} card={card} />;
+  };
+  if (has("2024")) panels["2024"] = <>{shareRow("2024")}<Sheet2024 tool={entry.editions["2024"]!} />{note("2024")}</>;
+  if (has("2014")) panels["2014"] = <>{shareRow("2014")}<Sheet2014 tool={entry.editions["2014"]!} level={has("2024") ? "h2" : "h1"} />{note("2014")}</>;
   const current = toolHref(entry.id);
   const variant = entry.variante;
   return (

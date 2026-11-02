@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
 import { partId, visibleLinks } from "@/lib/public-sections";
-import { cardHidden, editionCard, linksOut, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { cardHidden, editionCard, linksOut, sectionPage, sectionPublic, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { HiddenCardBar } from "@/components/sections/hidden-card-bar";
 import { notFound } from "next/navigation";
 
@@ -26,6 +26,7 @@ import { ReportLink } from "@/components/feedback/report-link";
 import { Breadcrumbs } from "@/components/seo/json-ld";
 import { pageMetadata, spellDescription } from "@/lib/seo";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
+import { spellCard } from "@/lib/share-card-server";
 
 export const revalidate = 300;
 export const dynamicParams = true;
@@ -82,6 +83,8 @@ export default async function SpellDetailPage({
   const out = await linksOut();
   // The display chain of every card (lib/card-display.ts): the spells of the catalog it links, without hidden pages.
   const context = { catalog: await getSpellReferenceCatalog(), hidden: out };
+  // «Condividi come immagine» (PROMPT 50): never on a card the public does not see (shown to the administrator).
+  const card = hiddenEdition || hiddenCard || !(await sectionPublic("incantesimi")) ? undefined : await spellCard(spell, titolo, Boolean(source || legacySource));
 
   return (
     <article className="spell-sheet">
@@ -108,7 +111,7 @@ export default async function SpellDetailPage({
           }}
         />
         <BackButton fallback="/grimorio" />
-        <ShareButton path={spellHref(spell.id)} title={titolo} />
+        {card && <ShareButton path={spellHref(spell.id)} title={titolo} card={card} />}
         <FavoriteButton id={spell.id} />
         <div className="relative px-6 pb-2 pt-[92px]">
           {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}

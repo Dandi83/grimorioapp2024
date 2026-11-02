@@ -148,7 +148,8 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
       input.view,
       input.event,
       input.path,
-      card?.kind ?? null,
+      // «Condividi come immagine» (PROMPT 50): the kind of sheet in card_kind, the format in share_from.
+      input.imageKind ?? card?.kind ?? null,
       card?.id ?? null,
       card?.title ?? null,
       input.source,
@@ -160,7 +161,7 @@ export async function storeAnalyticsEvent(input: AnalyticsInput, visitor: string
       input.installed ?? null,
       input.query ?? null,
       input.results ?? null,
-      input.from ?? null,
+      input.imageFormat ?? input.from ?? null,
       input.amount ?? null,
       input.area ?? null,
       input.bio ? "bio" : null,
@@ -653,6 +654,37 @@ export async function readInstallInvite(): Promise<InstallInviteCounts> {
   const row = rows[0] ?? {};
   const both = (name: string) => ({ day: row[`${name}_day`] ?? 0, week: row[`${name}_week`] ?? 0 });
   return { shown: both("install_prompt_shown"), tapped: both("install_prompt_tapped"), closed: both("install_prompt_closed"), installed: both("app_installed") };
+}
+
+/** One count of the last 24 hours and of the last 7 days. */
+export type DayWeek = { day: number; week: number };
+export type ShareImageRow = { open: DayWeek; sent: DayWeek; saved: DayWeek };
+export type ShareImageCounts = { formats: Record<string, ShareImageRow>; kinds: Record<string, ShareImageRow> };
+
+/**
+ * «Passaparola» of Approfondimenti (PROMPT 50): the cards made (preview opened), shared and saved, by format and by
+ * kind of sheet, in the last 24 hours and 7 days, whatever the period chosen. Events, not people.
+ */
+export async function readShareImages(): Promise<ShareImageCounts> {
+  await ensureSchema();
+  const { rows } = await pool.query<{ event_name: string; format: string | null; kind: string | null; day: number; week: number }>(
+    `SELECT event_name, share_from AS format, card_kind AS kind,
+       count(*) FILTER (WHERE received_at >= now() - interval '24 hours')::int AS day, count(*)::int AS week
+     FROM grimorio_analytics_events
+     WHERE is_test=false AND received_at >= now() - interval '7 days' AND event_name IN ('share_image_open','share_image_sent','share_image_saved')
+     GROUP BY 1, 2, 3`);
+  const empty = (): ShareImageRow => ({ open: { day: 0, week: 0 }, sent: { day: 0, week: 0 }, saved: { day: 0, week: 0 } });
+  const counts: ShareImageCounts = { formats: {}, kinds: {} };
+  for (const row of rows) {
+    const which = row.event_name === "share_image_open" ? "open" : row.event_name === "share_image_sent" ? "sent" : "saved";
+    for (const [table, key] of [[counts.formats, row.format], [counts.kinds, row.kind]] as const) {
+      if (!key) continue;
+      const entry = (table[key] ??= empty());
+      entry[which].day += row.day;
+      entry[which].week += row.week;
+    }
+  }
+  return counts;
 }
 
 /** «Non trovata»: the paths asked that do not exist, the most frequent first. */

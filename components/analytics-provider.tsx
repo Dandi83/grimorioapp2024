@@ -248,6 +248,9 @@ export function AnalyticsProvider() {
       else if ((name === "favorite_add" || name === "favorite_remove") && typeof detail.kind === "string" && typeof detail.id === "string")
         void send(name, { favoriteKind: detail.kind, favoriteId: detail.id, device });
       else if (["share_click", "share_native", "share_copy", "share_cancel"].includes(name)) void send(name);
+      // «Condividi come immagine» (components/share/share-image-dialog.tsx): the format and the kind of sheet.
+      else if (["share_image_open", "share_image_sent", "share_image_saved"].includes(name) && typeof detail.format === "string" && typeof detail.kind === "string")
+        void send(name, { imageFormat: detail.format, imageKind: detail.kind, device });
       // «L'hai provato al tavolo?» (components/homebrew/table-test.tsx): the vote of this card; the box hears back when it is saved.
       else if (name === "prova_tavolo" && ["facile", "giusto", "difficile"].includes(detail.vote))
         void send("prova_tavolo", { tableVote: detail.vote }).then(ok => window.dispatchEvent(new CustomEvent("grimorio:prova-tavolo-salvata", { detail: { ok } })));

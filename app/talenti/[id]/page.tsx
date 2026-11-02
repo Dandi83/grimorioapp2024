@@ -7,7 +7,9 @@ import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { Breadcrumbs } from "@/components/seo/json-ld";
 import { featSources, feats, getFeat, type FeatEdition } from "@/lib/feats";
 import type { EquipmentEdition } from "@/lib/equipment-types";
-import { CLOSED_METADATA, sectionClosed, sectionPage } from "@/lib/section-view";
+import { CLOSED_METADATA, sectionClosed, sectionPage, sectionPublic } from "@/lib/section-view";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
 import { dndEdition, editionOfPage, fitDescription, pageMetadata } from "@/lib/seo";
 
 /**
@@ -35,10 +37,16 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   });
 }
 
-function Panel({ view, edition, heading: Heading }: { view: FeatEdition; edition: EquipmentEdition; heading: "h1" | "h2" }) {
+function Panel({ id, view, edition, heading: Heading, share }: { id: string; view: FeatEdition; edition: EquipmentEdition; heading: "h1" | "h2"; share: boolean }) {
   const source = featSources[edition];
   return (
     <div className="space-y-5">
+      {/* «Condividi come immagine» (PROMPT 50): only when the section is visible to the public. */}
+      {share && <ShareRow path={`/talenti/${id}${edition === "2014" ? "?edizione=2014" : ""}`} title={view.nome} card={ruleCard({
+        kind: "talento", kicker: view.categoria ? `Talento ${view.categoria} · ${edition}` : `Talento · ${edition}`, title: view.nome, en: view.en, edition,
+        boxes: [{ label: "Prerequisito", value: view.prerequisito }],
+        text: [...view.paragrafi.map(paragraph => (paragraph.lead ? `${paragraph.lead}. ${paragraph.text}` : paragraph.text)), ...(view.elenco ?? [])].join(" "),
+      })} />}
       <header className="flex flex-col items-center gap-1.5 pt-4 text-center">
         <Heading className="font-serif text-4xl font-bold leading-tight">
           {view.nome}{view.en && <span className="ml-2 align-middle font-sans text-[20px] font-normal italic text-muted" lang="en" data-english-name="">({view.en})</span>}
@@ -72,7 +80,8 @@ export default async function FeatPage({ params }: { params: Promise<{ id: strin
   const feat = getFeat((await params).id);
   if (!feat) notFound();
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
-  for (const edition of editionsOf(feat.editions)) panels[edition] = <Panel view={feat.editions[edition]!} edition={edition} heading={Object.keys(panels).length ? "h2" : "h1"} />;
+  const share = await sectionPublic("talenti");
+  for (const edition of editionsOf(feat.editions)) panels[edition] = <Panel id={feat.id} view={feat.editions[edition]!} edition={edition} heading={Object.keys(panels).length ? "h2" : "h1"} share={share} />;
   const name = (feat.editions["2024"] ?? feat.editions["2014"])!.nome;
   return (
     <article className="px-4 pb-8 pt-4 sm:px-6">

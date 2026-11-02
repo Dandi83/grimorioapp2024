@@ -1,4 +1,5 @@
-import { readFunctions, readHeatmap, readInstallInvite, readLcp, readNotFound, type InstallInviteCounts, type StatisticsRange } from "@/lib/analytics";
+import { readFunctions, readHeatmap, readInstallInvite, readLcp, readNotFound, readShareImages, type InstallInviteCounts, type ShareImageCounts, type ShareImageRow, type StatisticsRange } from "@/lib/analytics";
+import { SHARE_KIND_LABELS, type ShareKind } from "@/lib/share-card";
 import { bandLabel, HEAT_COLORS, heatmap, seconds, share, slowPages, twoSteps, WEEK_DAYS } from "@/lib/analytics-stats";
 import { RestItem } from "./rest-item";
 
@@ -36,6 +37,48 @@ function InstallInvite({ counts }: { counts: InstallInviteCounts }) {
   );
 }
 
+/** «Passaparola» (PROMPT 50): the cards of «Condividi come immagine», by format and by kind of sheet, 24 hours and 7 days. */
+function ShareImages({ counts }: { counts: ShareImageCounts }) {
+  const cell = (row: ShareImageRow, period: "day" | "week", parts: ("open" | "sent" | "saved")[]) => parts.map(part => number(row[part][period])).join(" / ");
+  const formats: [string, string][] = [["storia", "Storia Instagram"], ["quadrato", "Quadrato"]];
+  const kinds = (Object.keys(counts.kinds) as ShareKind[]).sort((a, b) => counts.kinds[b].open.week - counts.kinds[a].open.week || a.localeCompare(b));
+  const empty: ShareImageRow = { open: { day: 0, week: 0 }, sent: { day: 0, week: 0 }, saved: { day: 0, week: 0 } };
+  const head = (first: string, legend: string) => (
+    <thead><tr className="text-[12px] text-[#5E4E3E]"><th scope="col" className="text-left font-semibold">{first} <span className="font-normal">({legend})</span></th><th scope="col" className="text-right font-semibold">24 ore</th><th scope="col" className="text-right font-semibold">7 giorni</th></tr></thead>
+  );
+  return (
+    <>
+      <table className="w-full text-[15px]" data-share-images="formati">
+        {head("Formato", "condivise / salvate")}
+        <tbody>
+          {formats.map(([key, label]) => (
+            <tr key={key} className="border-t border-[#DDCFAE]" data-share-format-row={key}>
+              <th scope="row" className="py-1 text-left font-normal">{label}</th>
+              <td className="py-1 text-right font-bold tabular-nums" data-day="">{cell(counts.formats[key] ?? empty, "day", ["sent", "saved"])}</td>
+              <td className="py-1 text-right font-bold tabular-nums" data-week="">{cell(counts.formats[key] ?? empty, "week", ["sent", "saved"])}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {kinds.length ? (
+        <table className="mt-3 w-full text-[15px]" data-share-images="tipi">
+          {head("Scheda", "create / condivise / salvate")}
+          <tbody>
+            {kinds.map(kind => (
+              <tr key={kind} className="border-t border-[#DDCFAE]" data-share-kind-row={kind}>
+                <th scope="row" className="py-1 text-left font-normal">{SHARE_KIND_LABELS[kind] ?? kind}</th>
+                <td className="py-1 text-right font-bold tabular-nums" data-day="">{cell(counts.kinds[kind], "day", ["open", "sent", "saved"])}</td>
+                <td className="py-1 text-right font-bold tabular-nums" data-week="">{cell(counts.kinds[kind], "week", ["open", "sent", "saved"])}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : <p className={`${SOFT} mt-2`} data-share-images="0">Nessuna card creata negli ultimi 7 giorni.</p>}
+      <p className="mt-1 text-[12px] text-[#5E4E3E]">«Condividi come immagine»: create = anteprime aperte; condivise = inviate dal menu del telefono; salvate = scaricate. Conteggi di eventi, non di persone; gli arrivi dalla didascalia del Quadrato sono contati in «arrivo da amico».</p>
+    </>
+  );
+}
+
 /** «Proponi il tuo», «Avviso di installazione»: how many started, how many finished. */
 function Steps({ name, title, from, to, labels }: { name: string; title: string; from: number; to: number; labels: [string, string] }) {
   const steps = twoSteps(from, to);
@@ -52,7 +95,8 @@ function Steps({ name, title, from, to, labels }: { name: string; title: string;
  * Read on the server when the administrator opens the page, on the period chosen; nothing reaches the public.
  */
 export async function InsightsMore({ range, hourly }: { range: StatisticsRange; hourly: boolean }) {
-  const [cells, uses, missing, lcp, invite] = await Promise.all([hourly ? Promise.resolve([]) : readHeatmap(range), readFunctions(range), readNotFound(range), readLcp(range), readInstallInvite()]);
+  const [cells, uses, missing, lcp, invite, shareImages] = await Promise.all([hourly ? Promise.resolve([]) : readHeatmap(range), readFunctions(range), readNotFound(range), readLcp(range), readInstallInvite(),
+    readShareImages().catch((): ShareImageCounts => ({ formats: {}, kinds: {} }))]);
   const heat = heatmap(cells);
   const slow = slowPages(lcp);
   return (
@@ -97,6 +141,10 @@ export async function InsightsMore({ range, hourly }: { range: StatisticsRange; 
         <Steps name="proponi" title="Proponi il tuo" from={uses.proposalStart} to={uses.proposalSent} labels={["modulo aperto", "inviato"]} />
         <Steps name="installa" title="Avviso di installazione" from={uses.installShown} to={uses.installAccepted} labels={["mostrato", "accettato"]} />
         <InstallInvite counts={invite} />
+      </RestItem>
+
+      <RestItem card id="passaparola-immagini" title="Passaparola">
+        <ShareImages counts={shareImages} />
       </RestItem>
 
       <RestItem card id="rotte" title="Pagine rotte e lente">

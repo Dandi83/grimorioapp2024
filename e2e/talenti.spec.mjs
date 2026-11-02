@@ -109,7 +109,7 @@ test("shown (test database): list, filters, sheets with the English name and the
   await expect(pub.locator('[data-edition="2014"] [data-source-box]')).toContainText("SRD 5.1 italiano");
   await expect(pub.locator('[data-edition="2024"]')).toHaveCount(1);
   await pub.goto("/talenti/allerta");
-  await expect(pub.getByRole("status")).toContainText("Talento solo nelle regole 2024");
+  await expect(pub.getByRole("status").filter({ hasText: "Talento solo nelle regole 2024" })).toBeVisible();
   // Search: «alert» with «in inglese: Alert», «lotta».
   await pub.goto("/?cerca=alert");
   const dialog = pub.getByRole("dialog", { name: "Cerca in tutto il Grimorio" });

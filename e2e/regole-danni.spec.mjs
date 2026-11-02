@@ -60,7 +60,8 @@ test("rule pills: spells, creatures, magic items, classes; the rule pages of bot
   await resistant.click();
   await expect(page).toHaveURL(/\/regole\/resistenza-vulnerabilita-2014$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Resistenza e vulnerabilità ai danni");
-  await expect(page.locator("main article > div > p")).toHaveCount(4);
+  // The paragraphs of the rule (the status line of «Condividi», PROMPT 50, left out).
+  await expect(page.locator("main article > div > p:not([role=status])")).toHaveCount(4);
   await expect(page.getByRole("complementary", { name: "Fonte della regola" })).toContainText("SRD 5.1 italiano, Combattimento");
   await expect(page.getByRole("link", { name: "Fonte ufficiale, pagina 111" })).toHaveAttribute("href", /SRD_CC_v5\.1_IT\.pdf#page=111$/);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/regola-resistenza-2014-390.png`, fullPage: true });

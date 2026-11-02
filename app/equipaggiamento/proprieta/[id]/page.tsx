@@ -7,7 +7,9 @@ import { RulesEditionBadge } from "@/components/rules-edition-badge";
 import { Breadcrumbs } from "@/components/seo/json-ld";
 import { weaponSources } from "@/lib/equipment";
 import { WEAPON_GROUP_NAMES, type EquipmentEdition } from "@/lib/equipment-types";
-import { CLOSED_METADATA, pageEditions, sectionClosed, sectionPage } from "@/lib/section-view";
+import { CLOSED_METADATA, pageEditions, sectionClosed, sectionPage, sectionPublic } from "@/lib/section-view";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
 import { dndEdition, editionOfPage, fitDescription, pageMetadata } from "@/lib/seo";
 import { getWeaponProperty, weaponProperties, weaponsWithProperty, type WeaponPropertyEntry } from "@/lib/weapon-properties";
 
@@ -47,6 +49,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
   const editions = property ? await shownEditions(property) : [];
   if (!property || !editions.length) notFound();
   const panels: Partial<Record<EquipmentEdition, React.ReactNode>> = {};
+  const share = await sectionPublic("armi");
   for (const edition of editions) {
     const rule = property.editions[edition]!;
     const source = weaponSources[edition];
@@ -54,6 +57,10 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
     const Heading = Object.keys(panels).length ? "h2" : "h1";
     panels[edition] = (
       <div className="space-y-5">
+        {/* «Condividi come immagine» (PROMPT 50): the edition shown. */}
+        {share && <ShareRow path={`/equipaggiamento/proprieta/${property.id}${edition === "2014" && editions.includes("2024") ? "?edizione=2014" : ""}`} title={property.nome} card={ruleCard({
+          kind: "proprieta", theme: "pergamena", kicker: `Proprietà delle armi · ${edition}`, title: property.nome, en: rule.en, edition, text: rule.testo,
+        })} />}
         <header className="flex flex-col items-center gap-1.5 pt-4 text-center">
           <Heading className="font-serif text-4xl font-bold leading-tight">
             {property.nome}{rule.en && <span className="ml-2 align-middle font-sans text-[20px] font-normal italic text-muted" lang="en" data-english-name="">({rule.en})</span>}

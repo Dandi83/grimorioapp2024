@@ -115,7 +115,7 @@ test("at 1280: the three cards with the others, the map whole, no side scroll", 
   test.setTimeout(120_000);
   const { context, page } = await signIn(browser, 1280);
   await open(page, "90");
-  await expect(page.locator("[data-insights] > details")).toHaveCount(7);
+  await expect(page.locator("[data-insights] > details")).toHaveCount(8);
   const table = await page.locator("[data-heatmap]").boundingBox(), card = await page.locator('[data-rest-item="giorni-ore"]').boundingBox();
   expect(table.x + table.width).toBeLessThanOrEqual(card.x + card.width);
   await expect(page.locator("[data-heat-peak]")).toHaveText("Picco: lunedì 0–3 · mercoledì 12–15");

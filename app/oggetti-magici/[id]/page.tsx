@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { BackButton } from "@/components/back-button";
 import { GearEditionPanels } from "@/components/equipment/gear-edition-panels";
 import { PartBlock } from "@/components/sections/part-block";
-import { linksOut, pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
+import { linksOut, pageEditions, sectionPage, sectionPublic, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 import { MagicItemSheet } from "@/components/magic-items/magic-item-sheet";
 import { SectionCorrectionNote } from "@/components/correction-note";
 import { getCorrectedMagicItems } from "@/lib/corrected-content";
@@ -14,6 +14,9 @@ import { compareMagicItem, findMagicItemEntry, magicItemEntries, magicItemEntryH
 import type { MagicItemEdition } from "@/lib/magic-items-types";
 import { ReportLink } from "@/components/feedback/report-link";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
+import { ShareRow } from "@/components/share/share-row";
+import { ruleCard } from "@/lib/share-card-server";
+import { englishName } from "@/lib/english-names";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
@@ -76,6 +79,7 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
   const hidden = await linksOut();
   const also = seeAlso(entry, corrected.list);
   const corrections = corrected.corrections.get(entry.id);
+  const share = await sectionPublic("oggetti-magici");
   const hrefs: Partial<Record<MagicItemEdition, string>> = {};
   const panels: Partial<Record<MagicItemEdition, React.ReactNode>> = {};
   for (const value of ["2024", "2014"] as const) {
@@ -86,6 +90,11 @@ export default async function MagicItemPage({ params }: { params: Promise<{ id: 
       <div className="space-y-5">
         {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
         <AdminEditButton target={{ kind: "contenuto", section: "oggetti-magici", id: entry.id, edition: value }} />
+        {/* «Condividi come immagine» (PROMPT 50): the edition shown, its text as printed. */}
+        {share && <ShareRow path={hrefs[value]!} title={item.nome} card={ruleCard({
+          kind: "oggetto-magico", theme: "pergamena", kicker: `${item.tipo} · ${item.rarita}`, title: item.nome, en: englishName("oggetti-magici", value, item.id), edition: value,
+          text: item.blocchi.flatMap(block => (block.kind === "p" || block.kind === "li" ? [block.label ? `${block.label} ${block.text}` : block.text] : [])).join(" "),
+        })} />}
         <MagicItemSheet item={item} edition={value} hidden={hidden} heading={Object.keys(panels).length ? "h2" : "h1"} />
         <SectionCorrectionNote section="oggetti-magici" id={entry.id} edition={value} corrections={corrections?.[value]} />
         {changes.length > 0 && <PartBlock section="oggetti-magici" part="confronto"><Changes changes={changes} /></PartBlock>}

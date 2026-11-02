@@ -76,7 +76,7 @@ test("«Speciale»: 2014 only; in 2024 the page says so", async ({ browser }) =>
   const context = await visitor(browser, 390, "2024");
   const page = await context.newPage();
   await page.goto("/equipaggiamento/proprieta/speciale");
-  await expect(page.getByRole("status")).toContainText("Proprietà solo nelle regole 2014");
+  await expect(page.getByRole("status").filter({ hasText: "Proprietà solo nelle regole 2014" })).toBeVisible();
   await expect(page.locator('[data-edition="2014"] h1')).toContainText("Speciale");
   await expect(page.locator('[data-edition="2024"]')).toHaveCount(0);
   expect(await noSideScroll(page)).toBe(true);
