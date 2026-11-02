@@ -6,7 +6,7 @@ import { draftMode } from "next/headers";
 import { requireAdmin } from "@/lib/admin-action-helpers";
 import { isPartId, isPublicSectionKey, sectionParts, type PublicSectionKey } from "@/lib/public-sections";
 import { communityPublic } from "@/lib/community";
-import { COMMUNITY_PART, SECTIONS_TAG, hiddenPartIds, isSectionState, setPartState, setSectionState, type SectionState } from "@/lib/section-visibility";
+import { COMMUNITY_PART, SECTIONS_TAG, allSectionStates, applyBulk, bulkScopes, hiddenPartIds, isBulkScope, isSectionState, restoreBulk, setPartState, setSectionState, type BulkScope, type SectionState } from "@/lib/section-visibility";
 
 type SectionSwitchResult = { ok: true; hidden: boolean } | { ok: false; error: string };
 type SectionStateResult = { ok: true; state: SectionState } | { ok: false; error: string };
@@ -72,6 +72,40 @@ export async function setPartVisibilityAction(id: string, hidden: boolean): Prom
   }
   await refreshPages();
   return { ok: true, hidden };
+}
+
+type BulkResult = { ok: true; states: Record<string, SectionState>; scopes: BulkScope[]; changed: number; kept?: number } | { ok: false; error: string };
+
+/**
+ * «Nascondi tutto» (scope "tutto") or «Nascondi tutta la sezione» (scope: a section key), PROMPT 53: «Nascosta» or
+ * «In arrivo» on the section(s) and all their parts, in one transaction; the state before is kept for «Ripristina
+ * com'era». Admin only. Never the single cards.
+ */
+export async function bulkHideAction(scope: string, target: string): Promise<BulkResult> {
+  await requireAdmin();
+  if (!isBulkScope(scope) || (target !== "nascosta" && target !== "in-arrivo")) return { ok: false, error: "Scelta sconosciuta." };
+  let changed: number;
+  try {
+    changed = await applyBulk(scope, target);
+  } catch {
+    return { ok: false, error: "Salvataggio non riuscito: non è cambiato niente. Riprova tra poco." };
+  }
+  await refreshPages();
+  return { ok: true, states: await allSectionStates(), scopes: await bulkScopes(), changed };
+}
+
+/** «Ripristina com'era»: the states kept by the bulk change of that scope, except the ones changed by hand since. Admin only. */
+export async function bulkRestoreAction(scope: string): Promise<BulkResult> {
+  await requireAdmin();
+  if (!isBulkScope(scope)) return { ok: false, error: "Scelta sconosciuta." };
+  let result: Awaited<ReturnType<typeof restoreBulk>>;
+  try {
+    result = await restoreBulk(scope);
+  } catch {
+    return { ok: false, error: "Ripristino non riuscito: non è cambiato niente. Riprova tra poco." };
+  }
+  await refreshPages();
+  return { ok: true, states: await allSectionStates(), scopes: await bulkScopes(), changed: result?.restored ?? 0, kept: result?.kept ?? 0 };
 }
 
 async function refreshPages() {

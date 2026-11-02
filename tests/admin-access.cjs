@@ -165,6 +165,71 @@ function load(relative) {
   assert.deepEqual(await visibility.hiddenSections(),['talenti']);
   await pg.query("DELETE FROM grimorio_section_visibility WHERE sezione='talenti'");
   await pg.query("DELETE FROM grimorio_section_visibility_log WHERE sezione='talenti'");
+  // PROMPT 53: «Nascondi tutto», «Nascondi tutta la sezione» and «Ripristina com'era»; admin only, all or nothing.
+  {
+    const tables = ['grimorio_section_visibility','grimorio_section_parts','grimorio_section_visibility_log','grimorio_section_parts_log'];
+    const saved = {};
+    for (const table of tables) saved[table] = (await pg.query(`SELECT * FROM ${table}`)).rows;
+    jar.clear();
+    await assert.rejects(sections.bulkHideAction('tutto','nascosta'),/Non autorizzato/,'no public request can hide everything');
+    await assert.rejects(sections.bulkRestoreAction('tutto'),/Non autorizzato/,'nor restore');
+    assert.equal((await attempt('passcode-di-prova','203.0.113.70')).ok,true);
+    const all = visibility.bulkKeys('tutto');
+    assert.ok(all.includes('incantesimi') && all.includes('classi:tab-sottoclasse') && all.includes('bestiario:grimorio') && all.includes('talenti'));
+    assert.ok(!all.some(key => key === 'home' || key.startsWith('admin')), 'the Home and the reserved area are never sections');
+    const statesOf = async keys => { const states = await visibility.allSectionStates(); return Object.fromEntries(keys.map(key => [key, states[key] ?? 'visibile'])); };
+    // A state chosen by hand before: it must come back as it was.
+    await visibility.setPartState('armi','confronto','in-arrivo');
+    const start = await statesOf(all);
+    assert.deepEqual(await sections.bulkHideAction('niente','nascosta'),{ok:false,error:'Scelta sconosciuta.'});
+    assert.deepEqual(await sections.bulkHideAction('tutto','visibile'),{ok:false,error:'Scelta sconosciuta.'},'no «Mostra tutto»');
+    const hidden = await sections.bulkHideAction('tutto','nascosta');
+    assert.equal(hidden.ok,true);
+    assert.deepEqual(hidden.scopes,['tutto']);
+    assert.ok(all.every(key => hidden.states[key] === 'nascosta'),'every section and part «Nascosta»');
+    assert.equal((await visibility.hiddenSections()).length,(await visibility.bulkKeys('tutto')).filter(key => !key.includes(':')).length,'the public sees no section');
+    const back = await sections.bulkRestoreAction('tutto');
+    assert.equal(back.ok,true);
+    assert.deepEqual(back.scopes,[],'«Ripristina com\'era» then disappears');
+    assert.equal(back.kept,0);
+    assert.deepEqual(await statesOf(all),start,'exactly the state of before');
+    // «In arrivo», then a change by hand: the restore keeps the hand-made choice, puts back the rest.
+    assert.equal((await sections.bulkHideAction('tutto','in-arrivo')).states.classi,'in-arrivo');
+    assert.equal(await visibility.setSectionState('incantesimi','visibile'),true);
+    const kept = await sections.bulkRestoreAction('tutto');
+    assert.equal(kept.kept,1);
+    assert.deepEqual(await statesOf(all),start,'Incantesimi was visible before too');
+    await visibility.setSectionState('classi','nascosta');
+    await sections.bulkHideAction('tutto','in-arrivo');
+    await visibility.setSectionState('classi','visibile');
+    const handMade = await sections.bulkRestoreAction('tutto');
+    assert.equal(handMade.kept,1);
+    assert.equal(handMade.states.classi,'visibile','changed by hand after: stays as Daniele left it (it was «Nascosta» before)');
+    await visibility.setSectionState('classi', start.classi);
+    // One section only: its section and parts, nothing else.
+    const armi = visibility.bulkKeys('armi');
+    assert.deepEqual(armi,['armi','armi:2014','armi:2024','armi:confronto']);
+    const one = await sections.bulkHideAction('armi','nascosta');
+    assert.deepEqual(one.scopes,['armi']);
+    for (const key of all) assert.equal(one.states[key] ?? 'visibile', armi.includes(key) ? 'nascosta' : start[key], key);
+    // Then everything: «Ripristina» of everything goes back to the state before the first change (armi included).
+    const both = await sections.bulkHideAction('tutto','nascosta');
+    assert.deepEqual(both.scopes,['tutto'],'the keys of «Armi» move to the newest change: one restore');
+    await sections.bulkRestoreAction('tutto');
+    assert.deepEqual(await statesOf(all),start);
+    // The single cards are never touched.
+    assert.equal((await pg.query("SELECT count(*)::int AS n FROM grimorio_card_visibility WHERE nascosta")).rows[0].n,0);
+    // Every change is in the log (one row per key changed).
+    assert.ok((await visibility.allSectionLog()).length > all.length);
+    for (const table of tables) {
+      await pg.query(`DELETE FROM ${table}`);
+      for (const row of saved[table]) {
+        const columns = Object.keys(row);
+        await pg.query(`INSERT INTO ${table} (${columns.join(',')}) VALUES (${columns.map((_, i) => `$${i + 1}`).join(',')})`, columns.map(column => row[column]));
+      }
+    }
+    await pg.query('DELETE FROM grimorio_section_bulk');
+  }
   // Parts (an edition, a tab, a block): same rules, their own record and log row.
   jar.clear();
   await assert.rejects(sections.setPartVisibilityAction('classi:tab-tabella',true),/Non autorizzato/,'no public request can change a part');
