@@ -12,6 +12,7 @@ import { compareWeapon, getWeapon, masteryText, propertyCards, specialRule, weap
 import { WEAPON_GROUP_NAMES, type EquipmentEdition } from "@/lib/equipment-types";
 import { ReportLink } from "@/components/feedback/report-link";
 import { getMastery, masteryHref, masteryId } from "@/lib/weapon-masteries";
+import { getWeaponProperty, propertyHref } from "@/lib/weapon-properties";
 import { PartBlock } from "@/components/sections/part-block";
 import { pageEditions, sectionPage, CLOSED_METADATA, sectionClosed } from "@/lib/section-view";
 
@@ -77,9 +78,12 @@ function Sheet({ weapon, group, corrections, heading: Heading = "h1" }: { weapon
             <div key={card.label} className="space-y-1.5 rounded-[14px] border border-border bg-card p-3.5">
               <p className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-chip-border bg-primary-faint px-3 py-0.5 text-sm font-bold text-primary">{card.label}</span>
+                {/* PROMPT 48: the official English name, as for the masteries. */}
+                {getWeaponProperty(card.key)?.editions[weapon.edition]?.en && <span className="text-[15px] italic text-muted" lang="en" data-english-name="">({getWeaponProperty(card.key)!.editions[weapon.edition]!.en})</span>}
                 {card.detail && <span className="text-sm text-muted">{card.detail}</span>}
               </p>
               {card.text.split("\n\n").map((paragraph, i) => <p key={i} className="text-[15px] leading-6">{paragraph}</p>)}
+              {getWeaponProperty(card.key)?.editions[weapon.edition] && <Link href={propertyHref(card.key, weapon.edition)} className="inline-flex min-h-11 items-center text-[15px] font-semibold text-primary underline underline-offset-4" data-property-link={card.key}>Tutte le armi con {getWeaponProperty(card.key)!.nome} ›</Link>}
             </div>
           ))}
         </section>

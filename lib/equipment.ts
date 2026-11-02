@@ -33,7 +33,7 @@ export interface WeaponEditionView {
   page: number;
 }
 
-interface RuleCard { label: string; detail?: string; text: string }
+interface RuleCard { key: string; label: string; detail?: string; text: string }
 
 export interface CompareRow { label: string; before: string; after: string; changed: boolean }
 
@@ -94,6 +94,11 @@ const LABEL_2014: Record<string, string> = { accurata: "Accurata", "due-mani": "
 export function propertyText(edition: EquipmentEdition, key: string): string | undefined {
   return edition === "2014" ? rules2014[LABEL_2014[key]]?.testo : manualSections.get(MANUAL_PROPERTY_HEADINGS[key]);
 }
+/** PROMPT 48: the page of the SRD where the rule of a property is printed (2014: regole2014; 2024: the heading of the manual). */
+export function propertyPage(edition: EquipmentEdition, key: string): number | undefined {
+  if (edition === "2014") return (rules2014[LABEL_2014[key]] as { page?: number } | undefined)?.page;
+  return manualPages.get(MANUAL_PROPERTY_HEADINGS[key]);
+}
 export function masteryText(label: string): string | undefined {
   return manualSections.get(label);
 }
@@ -107,11 +112,12 @@ export const masteryPage = (label: string) => manualPages.get(label);
 /** One card per property, plus "Gittata" for weapons with a range; texts of the chosen edition. */
 export function propertyCards(weapon: WeaponEditionView): RuleCard[] {
   const cards = weapon.proprieta.map(property => ({
+    key: property.key,
     label: property.label,
     detail: property.key === "versatile" ? `${property.detail} a due mani` : property.key === "lancio" || property.key === "munizioni" ? property.detail : property.detail,
     text: propertyText(weapon.edition, property.key) ?? "",
   }));
-  if (weapon.gittata) cards.push({ label: "Gittata", detail: weapon.gittata, text: propertyText(weapon.edition, "gittata") ?? "" });
+  if (weapon.gittata) cards.push({ key: "gittata", label: "Gittata", detail: weapon.gittata, text: propertyText(weapon.edition, "gittata") ?? "" });
   return cards;
 }
 

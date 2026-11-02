@@ -68,7 +68,7 @@ export const PUBLIC_SECTIONS = [
     { key: "lista-incantesimi", title: "Lista degli incantesimi", group: "raccolte", page: "/classi/mago" },
     { key: "incantesimi-del", title: "Pulsante «Incantesimi del…»", group: "raccolte", page: "/classi/mago" },
   ] },
-  { key: "armi", title: "Armi", where: "Compendio · Equipaggiamento", paths: ["/equipaggiamento/armi", "/equipaggiamento/padronanze"], parts: [
+  { key: "armi", title: "Armi", where: "Compendio · Equipaggiamento", paths: ["/equipaggiamento/armi", "/equipaggiamento/padronanze", "/equipaggiamento/proprieta"], parts: [
     ...editions("/equipaggiamento/armi"),
     { key: "confronto", title: COMPARISON, group: "raccolte", page: "/equipaggiamento/armi/tridente" },
   ] },

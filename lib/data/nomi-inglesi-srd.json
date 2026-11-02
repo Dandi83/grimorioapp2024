@@ -1,5 +1,5 @@
 {
- "_nota": "Nomi ufficiali inglesi delle schede SRD, solo i nomi (mai il testo), per la ricerca (PROMPT 33, 31/10/2026). Chiave: id salvato della scheda. Abbinati scheda per scheda sui PDF inglesi indicati in «fonti» (metodo e schede senza corrispondenza in docs/releases/2026-10-31-nomi-inglesi.md): mostri per punti ferita, dadi e sei caratteristiche (CA a parità); incantesimi 2014 dal campo «en» di srd-spells-5.1-it.json con le maiuscole stampate; incantesimi 2024 per livello, scuola, classi e componenti (gittata, durata e dadi a parità); oggetti magici per tipo, rarità, sintonia e numeri del testo, i restanti controllati a mano nome per nome; condizioni, classi e sottoclassi dal PDF; equipaggiamento (PROMPT 35: armi, armature, oggetti d’avventura, strumenti) abbinato riga per riga alle tabelle del PDF con costo, peso e danni coincidenti. Controlli in tests/english-names.cjs. Padronanze delle armi (PROMPT 47, solo 2024): voci «Mastery Properties» del PDF inglese SRD 5.2.1 a p. 90, controllate arma per arma sulla tabella delle armi a p. 91.",
+ "_nota": "Nomi ufficiali inglesi delle schede SRD, solo i nomi (mai il testo), per la ricerca (PROMPT 33, 31/10/2026). Chiave: id salvato della scheda. Abbinati scheda per scheda sui PDF inglesi indicati in «fonti» (metodo e schede senza corrispondenza in docs/releases/2026-10-31-nomi-inglesi.md): mostri per punti ferita, dadi e sei caratteristiche (CA a parità); incantesimi 2014 dal campo «en» di srd-spells-5.1-it.json con le maiuscole stampate; incantesimi 2024 per livello, scuola, classi e componenti (gittata, durata e dadi a parità); oggetti magici per tipo, rarità, sintonia e numeri del testo, i restanti controllati a mano nome per nome; condizioni, classi e sottoclassi dal PDF; equipaggiamento (PROMPT 35: armi, armature, oggetti d’avventura, strumenti) abbinato riga per riga alle tabelle del PDF con costo, peso e danni coincidenti. Controlli in tests/english-names.cjs. Padronanze delle armi (PROMPT 47, solo 2024): voci «Mastery Properties» del PDF inglese SRD 5.2.1 a p. 90, controllate arma per arma sulla tabella delle armi a p. 91. Proprietà delle armi (PROMPT 48): voci «Weapon Properties» del PDF inglese SRD 5.1 a p. 64–65 e «Properties» dell’SRD 5.2.1 a p. 89–90 (Special solo 2014).",
  "fonti": {
   "2014": {
    "documento": "SRD 5.1",
@@ -1128,6 +1128,19 @@
    "trucchi-per-il-camuffamento": "Disguise kit",
    "utensili-da-cuoco": "Cook’s utensils",
    "viola": "Viol"
+  },
+  "proprieta": {
+   "accurata": "Finesse",
+   "due-mani": "Two-Handed",
+   "gittata": "Range",
+   "lancio": "Thrown",
+   "leggera": "Light",
+   "munizioni": "Ammunition",
+   "pesante": "Heavy",
+   "portata": "Reach",
+   "ricarica": "Loading",
+   "speciale": "Special",
+   "versatile": "Versatile"
   }
  },
  "2024": {
@@ -2283,6 +2296,18 @@
    "rovesciamento": "Topple",
    "spinta": "Push",
    "vessazione": "Vex"
+  },
+  "proprieta": {
+   "accurata": "Finesse",
+   "due-mani": "Two-Handed",
+   "gittata": "Range",
+   "lancio": "Thrown",
+   "leggera": "Light",
+   "munizioni": "Ammunition",
+   "pesante": "Heavy",
+   "portata": "Reach",
+   "ricarica": "Loading",
+   "versatile": "Versatile"
   }
  },
  "senzaCorrispondenza": {
