@@ -1,6 +1,5 @@
-import { RatingBox } from "@/components/home/rating-box";
+import { LateBoxes } from "@/components/home/late-boxes";
 import { ShareCard } from "@/components/home/share-card";
-import { SupportCard } from "@/components/support/support-card";
 
 /**
  * The question (when due) or the occasional support card, then the share card: always in the Home flow, never fixed
@@ -9,8 +8,7 @@ import { SupportCard } from "@/components/support/support-card";
 export function HomeExtras({ className, support }: { className?: string; support: boolean }) {
   return (
     <div className={className} data-home-extras="">
-      <RatingBox />
-      <SupportCard enabled={support} />
+      <LateBoxes support={support} />
       <ShareCard />
     </div>
   );

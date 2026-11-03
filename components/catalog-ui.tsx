@@ -36,7 +36,8 @@ export function SearchAndFilters({ query, onQuery, label, active, onOpen, compac
 }) {
   return (
     <div className="mt-4 flex gap-3">
-      <div className="flex min-h-12 min-w-0 flex-1 items-center gap-2 rounded-[8px] border border-border-strong bg-card px-3">
+      {/* A label: a tap anywhere in the box opens the keyboard (PROMPT 57, M3). The field keeps its own name (aria-label). */}
+      <label className="flex min-h-12 min-w-0 flex-1 cursor-text items-center gap-2 rounded-[8px] border border-border-strong bg-card px-3" data-list-search-box="">
         <Search size={20} className="shrink-0 text-muted" aria-hidden="true" />
         <input
           value={query}
@@ -51,7 +52,7 @@ export function SearchAndFilters({ query, onQuery, label, active, onOpen, compac
             <X size={18} className="text-muted" aria-hidden="true" />
           </button>
         )}
-      </div>
+      </label>
       <button
         type="button"
         onClick={onOpen}

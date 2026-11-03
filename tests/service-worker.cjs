@@ -119,6 +119,17 @@ const text=r=>r.text();
  }
  ({response}=await sw.fetchEvent(sw.request('/manca-pagina')));
  assert.equal(response,undefined);
+ // PROMPT 57 (A2): the pages added since are saved too; the reserved area and the APIs never, however the address is written.
+ for(const p of ['/talenti','/talenti/allerta','/equipaggiamento/padronanze/fendente','/equipaggiamento/proprieta/versatile','/bestiario/creati-da-voi','/bestiario/del-grimorio','/bestiario/creature-originali','/installa']){
+  sw.network.pages[p]=`pagina ${p}`;
+  ({response}=await sw.fetchEvent(sw.request(p)));
+  assert.equal(await text(response),`pagina ${p}`,`${p} is handled`);
+  assert.ok(sw.store.get('grimorio-pages-2-v2').has(ORIGIN+p),`${p} saved for the offline use`);
+ }
+ for(const p of ['/admin','/Admin','//admin','/admin/','/admin/sezioni','/api/catalogo/bestiario','/api/admin/riepilogo','/preferiti/schede','/talenti/../admin','/talenti%2F..%2Fadmin','/bestiario/creati-da-voi/','/bestiario/proponi','/equipaggiamento/padronanze/x/y','/installa/','/_next/data/x.json']){
+  const req=sw.request(p);
+  assert.equal((await sw.fetchEvent(req)).response,undefined,`${new URL(req.url).pathname} goes straight to the network`);
+ }
  ({response}=await sw.fetchEvent(sw.request('/spell/manca',{})));
  assert.equal(sw.store.get('grimorio-pages-2-v2').has(ORIGIN+'/spell/manca'),false,'error pages are not saved');
 

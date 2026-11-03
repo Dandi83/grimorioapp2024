@@ -8,11 +8,9 @@ import { BottomNav } from "@/components/bottom-nav";
 import { SideNav } from "@/components/side-nav";
 import { supportUrl } from "@/lib/support";
 import { ContentFrame } from "@/components/layout/content-frame";
-import { AnalyticsProvider } from "@/components/analytics-provider";
-import { VercelAnalytics } from "@/components/vercel-analytics";
+import { LateExtras } from "@/components/layout/late-extras";
 import { InstallPrompt } from "@/components/install-prompt";
 import { ServiceWorker } from "@/components/service-worker";
-import { AppBadgeSync } from "@/components/app-badge-sync";
 import { serviceWorkerEnabled } from "@/lib/service-worker-config";
 import { PUBLIC_SECTIONS } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
@@ -113,10 +111,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <SideNav hidden={hidden} admin={admin} soon={soon} support={!!supportUrl()} />
             </div>
             <InstallPrompt />
-            <AppBadgeSync />
-            <AnalyticsProvider />
-            {/* Only where the site runs on Vercel (elsewhere /_vercel/insights does not exist). */}
-            {process.env.VERCEL === "1" && <VercelAnalytics />}
+            {/* Statistics, app badge and Vercel Analytics after the page is idle (PROMPT 57); Vercel only where the site runs on Vercel. */}
+            <LateExtras vercel={process.env.VERCEL === "1"} />
           </EditionProvider>
         </FavoritesProvider>
       </body>

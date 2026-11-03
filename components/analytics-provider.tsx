@@ -9,6 +9,7 @@ import { useUserEdition } from "@/components/edition/edition-provider";
 import { setAdminDevice, setStatisticsCounted, setStatisticsNotice } from "@/components/statistics/notice";
 import { recordVisitDay } from "@/components/home/rating-store";
 import { FRIEND_PARAM, FRIEND_VALUE } from "@/lib/share-app";
+import { releaseWhenAway } from "@/lib/page-room";
 
 type Consent = "accepted" | "rejected";
 type Status = { enabled: boolean; excluded: boolean; consent: Consent | null };
@@ -303,6 +304,8 @@ export function AnalyticsProvider() {
       window.addEventListener(name, interact, { passive: true });
     document.addEventListener("visibilitychange", visibility);
     window.addEventListener("grimorio:analytics-event", share);
+    // PROMPT 57: the provider comes after the page is idle; whoever kept the events sent before now replays them.
+    window.dispatchEvent(new Event("grimorio:analytics-ready"));
     return () => {
       live = false;
       clearInterval(timer);
@@ -320,11 +323,16 @@ export function AnalyticsProvider() {
     setStatisticsNotice(status === null ? "waiting" : due ? "open" : "closed");
   }, [status, due]);
   // While the bar is shown the page keeps room for it at the bottom (app/globals.css).
+  // PROMPT 57 (M5): the room is given back only when the reader is away from the end of the page (no jump), or on the next page.
+  const roomRelease = useRef<(() => void) | null>(null);
   useEffect(() => {
     if (!show) return;
     document.documentElement.dataset.statisticsRoom = "";
-    return () => { delete document.documentElement.dataset.statisticsRoom; };
+    return () => {
+      roomRelease.current = releaseWhenAway(() => { delete document.documentElement.dataset.statisticsRoom; roomRelease.current = null; });
+    };
   }, [show]);
+  useEffect(() => { roomRelease.current?.(); }, [path]);
   async function choose(consent: Consent) {
     setSaving(true);
     setError("");

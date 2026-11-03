@@ -1,5 +1,6 @@
 "use client";
 
+import { lockScroll } from "@/lib/scroll-lock";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { HomebrewPill } from "@/components/homebrew-pill";
@@ -104,8 +105,8 @@ export function SearchPanel({ initialQuery, initialSection, onClose }: SearchPan
     loadIndex().then(data => { if (alive) setIndex(data); }, () => { if (alive) setFailed(true); });
     const escape = (event: KeyboardEvent) => { if (event.key === "Escape") close.current(); };
     window.addEventListener("keydown", escape);
-    document.body.style.overflow = "hidden";
-    return () => { alive = false; window.removeEventListener("keydown", escape); document.body.style.overflow = ""; };
+    const unlock = lockScroll();
+    return () => { alive = false; window.removeEventListener("keydown", escape); unlock(); };
   }, []);
 
   // Text and filter stay in the address: "back" from a result comes here again.

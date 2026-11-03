@@ -99,6 +99,7 @@ export default async function SpellDetailPage({
           alt=""
           fill
           priority
+          fetchPriority="high"
           sizes="(max-width: 672px) 100vw, 672px"
           className="object-cover"
         />

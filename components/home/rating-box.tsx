@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 import { VOTES, type Vote } from "@/lib/analytics-events";
 import { shareApp } from "@/lib/share-app";
 import { setRatingShown, useHomeNotices } from "@/components/statistics/notice";
 import { Face, ShareIcon, VOTE_LABELS } from "@/components/home/faces";
 import { answer, closeRating, ratingDue, showQuestion, useRatingView } from "@/components/home/rating-store";
+import { releaseWhenAway } from "@/lib/page-room";
 
 /** «Segnala» with the type «Consiglio» chosen and the inner label «dalla valutazione: <voto>». */
 const writeHref = (vote: Vote) => `/segnala?tipo=consiglio&valutazione=${vote}`;
@@ -43,7 +44,23 @@ export function RatingBox() {
     return () => clearTimeout(timer);
   }, [note]);
 
-  if (view.step === "none") return null;
+  // PROMPT 57 (M5): when the box goes (× or after the thanks) while the page is scrolled to its end, its room stays
+  // until the reader moves away, so the share card under it does not jump up; the room is empty page background.
+  const box = useRef<HTMLDivElement>(null);
+  const lastHeight = useRef(0);
+  const [room, setRoom] = useState(0);
+  const roomRelease = useRef<(() => void) | null>(null);
+  useLayoutEffect(() => {
+    if (shown) { lastHeight.current = box.current?.offsetHeight ?? lastHeight.current; return; }
+    if (!lastHeight.current) return;
+    const height = lastHeight.current;
+    lastHeight.current = 0;
+    setRoom(height);
+    roomRelease.current = releaseWhenAway(() => { setRoom(0); roomRelease.current = null; });
+    return () => { roomRelease.current?.(); };
+  }, [shown]);
+
+  if (view.step === "none") return room ? <div style={{ height: room }} aria-hidden="true" data-rating="spazio" /> : null;
 
   if (view.step === "question") {
     const vote = (value: Vote) => {
@@ -51,7 +68,7 @@ export function RatingBox() {
       answer(value);
     };
     return (
-      <section aria-labelledby={ids.question} data-rating="domanda"
+      <div ref={box}><section aria-labelledby={ids.question} data-rating="domanda"
         className="flex flex-col gap-2.5 rounded-2xl border border-[#DDCFAE] bg-[#FFFBF0] px-3.5 pb-3 pt-3.5">
         <div className="flex items-center justify-between gap-2">
           <h2 id={ids.question} className="text-[17px] font-bold text-[#2B2118]">Come ti trovi con il Grimorio?</h2>
@@ -69,7 +86,7 @@ export function RatingBox() {
             </button>
           ))}
         </div>
-      </section>
+      </section></div>
     );
   }
 
@@ -80,7 +97,7 @@ export function RatingBox() {
     else if (result === "failed") setNote("Copia non riuscita");
   }
   return (
-    <section aria-labelledby={ids.thanks} data-rating={good ? "grazie-bene" : "grazie"}
+    <div ref={box}><section aria-labelledby={ids.thanks} data-rating={good ? "grazie-bene" : "grazie"}
       className="relative flex flex-col gap-2.5 rounded-2xl border border-[#9CC5AE] bg-[#E6F0EA] px-3.5 pb-3 pt-3.5">
       <div className="flex items-center gap-2.5">
         <Face vote="bene" size={28} />
@@ -120,6 +137,6 @@ export function RatingBox() {
         className={note ? "absolute inset-x-0 -top-10 mx-auto w-max rounded-full bg-[#2B2118] px-4 py-1.5 text-[14px] font-semibold text-[#FFFBF0] shadow-lg" : "sr-only"}>
         {note}
       </p>
-    </section>
+    </section></div>
   );
 }
