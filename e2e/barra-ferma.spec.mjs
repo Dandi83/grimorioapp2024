@@ -1,6 +1,7 @@
 import { test, expect, devices } from "./fixtures.mjs";
+import { fakeVisualViewport, movedBarComesBack, standalone } from "./barra-scenario.mjs";
 
-// PROMPT 23, 27: no elastic bounce (overscroll-behavior-y: none on html and body); the bottom bar stays at the bottom while a long list scrolls down and up, slowly and fast, in WebKit (the
+// PROMPT 23, 27, 56: no elastic bounce (overscroll-behavior-y: none on html and body); the bottom bar stays at the bottom while a long list scrolls down and up, slowly and fast, in WebKit (the
 // engine of every browser on iPhone) at 390 × 844; the last row of the list stays readable above it; on a computer
 // there is no bar, as before. Not a real iPhone: Safari's toolbar, the app installed on the Home screen and the iOS
 // bug of the shifted visible area cannot be reproduced here (tests/viewport-anchor.cjs checks the computed move).
@@ -27,12 +28,6 @@ async function bar(page) {
   return box && { top: Math.round(box.y), bottom: Math.round(box.y + box.height) };
 }
 
-/** The app installed on the Home screen: «display-mode: standalone» and navigator.standalone, as iOS reports them. */
-function standalone() {
-  const query = window.matchMedia.bind(window);
-  window.matchMedia = media => (/display-mode:\s*standalone/.test(media) ? { ...query("(min-width: 0px)"), media, matches: true } : query(media));
-  Object.defineProperty(navigator, "standalone", { get: () => true });
-}
 
 for (const mode of ["Safari", "app installata"]) for (const edition of ["2024", "2014"]) {
   for (const path of ["/bestiario", "/grimorio"]) {
@@ -139,3 +134,19 @@ test("the search field with the keyboard: the bar is not moved (as today)", asyn
   expect((await bar(page)).bottom).toBe(844);
   await context.close();
 });
+
+
+// PROMPT 56: the bar moved by iOS after the keyboard comes back with the next scroll (e2e/barra-scenario.mjs).
+for (const path of ["/", "/bestiario", "/spell/palla-di-fuoco"]) {
+  test(`${path}, app installata, iPhone 390 × 844 in WebKit: the bar moved after the keyboard comes back with the next scroll, never goes further out`, async ({ browser }) => {
+    const context = await browser.newContext({ ...IPHONE, baseURL: base() });
+    await context.addInitScript(() => { try { localStorage.setItem("grimorio.edizione", "2024"); localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ } });
+    await context.addInitScript(standalone);
+    await context.addInitScript(fakeVisualViewport);
+    await plainHttp(context);
+    const page = await context.newPage();
+    await page.goto(path);
+    await movedBarComesBack(page, 844);
+    await context.close();
+  });
+}

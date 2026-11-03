@@ -51,26 +51,44 @@ export function BottomNav({ hidden = NONE, admin: adminView = false, soon = NONE
     return () => window.clearTimeout(handle);
   }, [prepare, admin, items]);
 
-  // iPhone (PROMPT 23, 27): only when the visible area changes size (the keyboard closing), never on scroll: the bar goes
-  // down to the bottom edge if iOS leaves the visible area lower than the layout viewport (lib/viewport-anchor.ts).
+  // iPhone (PROMPT 23, 27, 56): when the visible area changes size (the keyboard closing) the bar goes down to the bottom
+  // edge if iOS leaves the visible area lower than the layout viewport (lib/viewport-anchor.ts). PROMPT 56: iOS realigns
+  // the visible area with the next scroll without a «resize»; the moved bar then stayed off the screen until the next
+  // keyboard. While the page scrolls the move is only ever reduced, back to 0: never increased, never during a bounce.
   const bar = useRef<HTMLElement>(null);
   useEffect(() => {
     const viewport = window.visualViewport;
     if (admin || !viewport) return;
     let frame = 0;
+    let current = 0;
+    const apply = (shift: number) => {
+      current = shift;
+      if (bar.current) bar.current.style.transform = shift ? `translate3d(0, ${shift}px, 0)` : "";
+    };
+    const measure = () => bottomBarShift({
+      layoutHeight: window.innerHeight, visualHeight: viewport.height, visualTop: viewport.offsetTop, editing: editingElement(document.activeElement),
+      scrollY: window.scrollY, maxScroll: document.documentElement.scrollHeight - window.innerHeight,
+    });
     const place = () => {
       frame = 0;
-      const shift = bottomBarShift({
-        layoutHeight: window.innerHeight, visualHeight: viewport.height, visualTop: viewport.offsetTop, editing: editingElement(document.activeElement),
-        scrollY: window.scrollY, maxScroll: document.documentElement.scrollHeight - window.innerHeight,
-      });
-      if (shift !== null && bar.current) bar.current.style.transform = shift ? `translate3d(0, ${shift}px, 0)` : "";
+      const shift = measure();
+      if (shift !== null) apply(shift);
     };
     const schedule = () => { if (!frame) frame = window.requestAnimationFrame(place); };
+    // Scrolling: nothing to do while the bar is in place; a moved bar comes back as far as the visible area allows.
+    const settle = () => {
+      if (!current) return;
+      const shift = measure();
+      if (shift !== null && shift < current) apply(shift);
+    };
     viewport.addEventListener("resize", schedule);
+    viewport.addEventListener("scroll", settle);
+    window.addEventListener("scroll", settle, { passive: true });
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
       viewport.removeEventListener("resize", schedule);
+      viewport.removeEventListener("scroll", settle);
+      window.removeEventListener("scroll", settle);
     };
   }, [admin]);
 
