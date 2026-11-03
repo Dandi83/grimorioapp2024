@@ -55,9 +55,17 @@ const text=r=>r.text();
  await sw.lifecycle('install');
  // PROMPT 43: the install saves the Home only; Preferiti is never saved in advance.
  assert.deepEqual([...sw.store.get('grimorio-pages-2-v2').keys()].sort(),['/'].map(p=>ORIGIN+p));
- // «warm» (sent by the page when the browser is idle): the lists and the search index, still never Preferiti.
+ // «warm» (sent by the page when the browser is idle): in a browser tab the Compendio and the search index only
+ // (PROMPT 58: the bottom bar prefetches the lists for the navigation, saving them too downloaded each list twice).
+ const callsBefore=sw.network.calls.length;
  await sw.message({type:'warm'});
+ assert.deepEqual([...sw.store.get('grimorio-pages-2-v2').keys()].sort(),['/','/compendio','/ricerca-indice.json'].map(p=>ORIGIN+p).sort());
+ assert.deepEqual(sw.network.calls.slice(callsBefore).sort(),['/compendio','/ricerca-indice.json'],'a tab never downloads the lists from the worker');
+ // In the installed app the lists too (offline promised there); what is already saved is not downloaded again.
+ const callsTab=sw.network.calls.length;
+ await sw.message({type:'warm',installed:true});
  assert.deepEqual([...sw.store.get('grimorio-pages-2-v2').keys()].sort(),['/','/bestiario','/compendio','/grimorio','/ricerca-indice.json'].map(p=>ORIGIN+p).sort());
+ assert.deepEqual(sw.network.calls.slice(callsTab).sort(),['/bestiario','/grimorio'],'only the two lists, once');
  assert.equal(sw.store.get('grimorio-pages-2-v2').has(ORIGIN+'/preferiti'),false,'Preferiti is not saved in advance');
  await sw.lifecycle('activate');
  assert.equal(sw.store.has('grimorio-pages-v1'),false,'pages of the previous version are deleted');

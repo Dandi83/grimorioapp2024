@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { whenIdle } from "@/lib/favorite-cards";
+import { isInstalled } from "@/components/install/install-events";
 
 const dateFormat = new Intl.DateTimeFormat("it-IT", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
@@ -44,7 +45,8 @@ export function ServiceWorker({ enabled, hiddenPaths = [], partPaths = [] }: { e
       const urls = performance.getEntriesByType("resource").map(entry => entry.name);
       registration.active?.postMessage({ type: "cache-files", urls });
       // The lists and the search index for offline use (PROMPT 43): only when the browser has nothing else to do.
-      if (!cancelled) stopIdle = whenIdle(() => registration.active?.postMessage({ type: "warm" }), 10000);
+      // PROMPT 58: the two lists are saved only in the installed app (in a tab the bottom bar prefetches them already).
+      if (!cancelled) stopIdle = whenIdle(() => registration.active?.postMessage({ type: "warm", installed: isInstalled() }), 10000);
     });
     // Was this page shown from the copy saved on the phone? The worker marks the page, so
     // the notice survives a worker stopped in the meantime. Asking is still needed: it also

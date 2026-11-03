@@ -31,8 +31,12 @@ async function stopServer() {
 test.afterEach(stopServer);
 
 // A visitor who has already chosen «la tua edizione» (2024): the first launch has its own test (e2e/edizione.spec.mjs).
+// PROMPT 58: the app installed on the Home screen, where the lists are saved for the offline use when idle (in a browser
+// tab only the pages opened, the Compendio and the search index are: the bottom bar prefetches the lists already).
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
+    const query = window.matchMedia.bind(window);
+    window.matchMedia = media => (/display-mode:\s*standalone/.test(media) ? { ...query("(min-width: 0px)"), media, matches: true } : query(media));
     try { if (!window.localStorage.getItem("grimorio.edizione")) window.localStorage.setItem("grimorio.edizione", "2024"); } catch { /* no storage */ }
     // The invite to install has its own tests (e2e/app-leggera.spec.mjs): it comes with the first gesture, here closed.
     try { window.localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5)); } catch { /* no storage */ }
