@@ -13,7 +13,6 @@ import type { ClassEdition } from "@/lib/classes-types";
 export const metadata = pageMetadata({ name: "Classi", section: "Compendio", path: "/classi",
   description: "Le classi di D&D 5e in italiano, edizioni 2014 e 2024: privilegi per livello, sottoclassi e tabelle, dal Barbaro al Mago." });
 // Manual corrections from the admin area appear within five minutes (at once after saving).
-export const revalidate = 300;
 
 function ClassGrid({ entries, edition }: { entries: ClassEntry[]; edition: ClassEdition }) {
   const cards = entries.flatMap(entry => (entry.editions[edition] ? [{ id: entry.id, card: entry.editions[edition]! }] : []));

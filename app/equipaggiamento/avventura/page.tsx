@@ -9,7 +9,6 @@ export const metadata = pageMetadata({ name: "Equipaggiamento d’avventura", se
   description: "L’equipaggiamento d’avventura di D&D 5e in italiano, 2014 e 2024: oggetti, dotazioni e contenitori con costo, peso e uso." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
-export const revalidate = 300;
 
 export default async function GearPage() {
   // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.

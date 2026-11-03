@@ -20,7 +20,6 @@ import { englishName } from "@/lib/english-names";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
-export const revalidate = 300;
 
 const LIST = "/oggetti-magici";
 

@@ -17,6 +17,9 @@ const nextConfig = {
   poweredByHeader: false,
   experimental: {
     staleTimes: { dynamic: 300, static: 300 },
+    // PROMPT 55: no source maps in the build (about 790 files, 43 MB in .next/server for each deployment). The site is the
+    // same; only the stack traces of the server logs point at the built files instead of the sources.
+    turbopackSourceMaps: false,
   },
   images: {
     // WebP only: AVIF made images load slower and choppier on iPhone (18 October 2026).

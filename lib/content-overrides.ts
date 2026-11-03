@@ -1,6 +1,8 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { unstable_cache } from "next/cache";
+
+import { shortLivedFallback } from "./isr-fallback";
 import { pool } from "./db";
 import type { ContentOverride } from "./content-overrides-apply";
 
@@ -43,7 +45,7 @@ async function readActive(): Promise<ContentOverride[]> {
   }
 }
 
-const cachedActive = unstable_cache(readActive, ["content-overrides-active"], { tags: [OVERRIDES_TAG], revalidate: 300 });
+const cachedActive = unstable_cache(readActive, ["content-overrides-active"], { tags: [OVERRIDES_TAG], revalidate: false });
 
 /**
  * The corrections in force, for the public pages. If the database cannot be read the pages show
@@ -55,6 +57,7 @@ export async function activeOverrides(sezione?: string): Promise<ContentOverride
     return sezione ? rows.filter(row => row.sezione === sezione) : rows;
   } catch {
     console.warn("[correzioni] Database non leggibile: mostro i valori originali.");
+    await shortLivedFallback();
     return [];
   }
 }

@@ -9,7 +9,6 @@ import { computeMeta } from "@/lib/spells-types";
 export const metadata = pageMetadata({ name: "Incantesimi", path: "/grimorio",
   description: "Tutti gli incantesimi di D&D 5e in italiano, edizioni 2014 e 2024: cerca per nome e filtra per livello, scuola, classe e tempo di lancio." });
 
-export const revalidate = 300;
 
 export default async function GrimorioPage() {
   // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.

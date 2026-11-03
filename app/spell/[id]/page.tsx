@@ -28,7 +28,6 @@ import { pageMetadata, spellDescription } from "@/lib/seo";
 import { AdminEditButton } from "@/components/admin-edit/admin-edit-button";
 import { spellCard } from "@/lib/share-card-server";
 
-export const revalidate = 300;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {

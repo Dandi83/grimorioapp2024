@@ -5,7 +5,6 @@ import { EmptyCard } from "@/components/layout/catalog-split";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { bestiaryList, visibleCards, sectionPage } from "@/lib/section-view";
 
-export const revalidate = 300;
 
 export const metadata = pageMetadata({ name: "Bestiario", path: "/bestiario",
   description: "Mostri e animali di D&D 5e in italiano, edizioni 2014 e 2024: cerca per nome e filtra per tipo, taglia, grado di sfida e habitat." });

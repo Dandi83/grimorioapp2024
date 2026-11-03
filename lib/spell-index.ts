@@ -57,5 +57,5 @@ export const getSpellIndex = unstable_cache(
     });
   },
   ["spell-index", process.env.VERCEL_ENV ?? "local", projectCatalogVersion()],
-  { tags: ["spells"], revalidate: 3600 },
+  { tags: ["spells"], revalidate: false },
 );

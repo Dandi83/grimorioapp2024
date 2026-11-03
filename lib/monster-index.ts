@@ -29,7 +29,8 @@ function projectCatalogVersion(): string {
 }
 
 // Keep the complete existing catalog, including administrative and virtual rows.
-// Admin saves invalidate the "monsters" tag; the hour is only a safety net.
+// Admin saves invalidate the "monsters" tag. No timer (PROMPT 55): a timed value here would make every page that
+// reads the list regenerate on its own (an ISR write each time).
 // Homebrew creatures (lib/homebrew.ts) follow the SRD ones; before the first one the list is the SRD catalog alone.
 export const getMonsterListIndex = unstable_cache(
   async (): Promise<MonsterListItem[]> => {
@@ -43,7 +44,7 @@ export const getMonsterListIndex = unstable_cache(
     ];
   },
   ["monster-list-index", process.env.VERCEL_ENV ?? "local", projectCatalogVersion()],
-  { tags: ["monsters"], revalidate: 3600 },
+  { tags: ["monsters"], revalidate: false },
 );
 
 // Only IDs are retained for build-time static generation.
