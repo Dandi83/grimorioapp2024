@@ -219,6 +219,7 @@ assert.equal(s.matchStart('Palla di fuoco',''),-1);
  // Offline: the index is saved by the service worker; the panel never reaches the admin area.
  const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
  // PROMPT 43: saved when the browser is idle, with the lists (never Preferiti in advance).
- assert.ok(sw.includes('const SEARCH_INDEX = "/ricerca-indice.json";')&&sw.includes('const WARM = ["/grimorio", "/bestiario", "/compendio", "/ricerca-indice.json"];'));
+ // The index is saved when idle for every visitor (PROMPT 58: the lists only in the installed app).
+ assert.ok(sw.includes('const SEARCH_INDEX = "/ricerca-indice.json";')&&sw.includes('const WARM = ["/compendio", "/ricerca-indice.json"];')&&sw.includes('const WARM_APP = ["/grimorio", "/bestiario"];'));
  console.log(`Search: ${production.rows.length} rows (stand-in spells and monsters), ${production.sections.length} public sections, every address checked.`);
 })().catch(error=>{console.error(error);process.exit(1);});

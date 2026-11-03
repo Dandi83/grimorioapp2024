@@ -182,9 +182,13 @@ test("Service worker: /preferiti never in the first copy, the lists saved when i
   const { context, page } = await visitor(browser, { favorites: SAVED, baseURL: base });
   await page.goto("/");
   await page.evaluate(() => navigator.serviceWorker.ready);
-  // At install: the Home only. Then, when the browser is idle, the lists and the search index; never Preferiti.
-  await expect.poll(() => cachedPaths(page), { timeout: 20_000 }).toEqual(expect.arrayContaining(["/", "/bestiario", "/compendio", "/grimorio", "/ricerca-indice.json"]));
+  // At install: the Home only. Then, when the browser is idle, the Compendio and the search index; never Preferiti.
+  // PROMPT 58: in a browser tab the lists are not saved by the worker (the bottom bar prefetches them already);
+  // in the installed app they are (e2e/offline.spec.mjs, e2e/precarica-una-volta.spec.mjs).
+  await expect.poll(() => cachedPaths(page), { timeout: 20_000 }).toEqual(expect.arrayContaining(["/", "/compendio", "/ricerca-indice.json"]));
   expect(await cachedPaths(page)).not.toContain("/preferiti");
+  expect(await cachedPaths(page)).not.toContain("/grimorio");
+  expect(await cachedPaths(page)).not.toContain("/bestiario");
   // A visit to Preferiti with the connection: the page and its cards are kept.
   await page.reload();
   await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
