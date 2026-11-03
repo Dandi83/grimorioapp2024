@@ -1,6 +1,7 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
 import { FeatsBrowser, type FeatGroups } from "@/components/feats/feats-browser";
-import { CATEGORY_TITLES, FEAT_CATEGORIES, feats } from "@/lib/feats";
+import { CATEGORY_TITLES, FEAT_CATEGORIES, feats, featsNoteText } from "@/lib/feats";
+import { InfoNote } from "@/components/info-note";
 import { sectionPage } from "@/lib/section-view";
 import { pageMetadata } from "@/lib/seo";
 
@@ -22,7 +23,9 @@ export default async function FeatsPage() {
   return (
     <>
       <Breadcrumbs crumbs={[{ name: "Compendio", path: "/compendio" }, { name: "Talenti", path: "/talenti" }]} />
-      <FeatsBrowser groups={groups()} />
+      {/* PROMPT 54: why the feats are few, for the edition shown. */}
+      <FeatsBrowser groups={groups()} notes={Object.fromEntries((["2024", "2014"] as const).map(edition => [edition,
+        <InfoNote key={edition} title="ℹ️ Perché non ci sono tutti i talenti?" data-feats-note={edition}>{featsNoteText(edition)}</InfoNote>]))} />
     </>
   );
 }

@@ -22,8 +22,12 @@ for (const entry of classEntries) {
 assert.match(subclassNoteText("stregone", "2014"), /Per lo stregone contiene/);
 // The note is drawn on the server (no code in the browser bundle), as a note with bold text, not a heading.
 const sheet = fs.readFileSync("components/classes/class-sheet.tsx", "utf8");
-assert.match(sheet, /role="note" data-subclass-note=\{edition\}/);
-assert.match(sheet, /<p className="font-bold">ℹ️ Perché c&apos;è una sola sottoclasse\?<\/p>/);
-assert.doesNotMatch(sheet.slice(sheet.indexOf("function SubclassNote"), sheet.indexOf("function LevelCard")), /<h[1-6]/);
+assert.match(sheet, /<InfoNote title="ℹ️ Perché c'è una sola sottoclasse\?" data-subclass-note=\{edition\}>/);
+// The box shared with /talenti (PROMPT 54): a note, bold title, no heading, link to /fonti.
+const box = fs.readFileSync("components/info-note.tsx", "utf8");
+assert.match(box, /role="note"/);
+assert.match(box, /<p className="font-bold">\{title\}<\/p>/);
+assert.match(box, /href="\/fonti"[^>]*>Fonti e licenza</);
+assert.doesNotMatch(box, /<h[1-6]|"use client"/);
 assert.doesNotMatch(sheet, /^"use client"/);
 console.log("Subclass note: exact texts and articles of the 12 classes, level of the SRD subclass in both editions passed.");

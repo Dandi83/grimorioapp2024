@@ -61,3 +61,13 @@ assert.ok(ps.isHiddenPath('/talenti/allerta',['talenti']));
 const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
 assert.ok(!new RegExp(sw.match(/const PUBLIC_PAGE = \/(.*)\/;/)[1]).test('/talenti'),'never saved offline');
 console.log(`Talenti: 17 del 2024 (${FEAT_CATEGORIES.join(', ')}) e Lottatore 2014, testi identici, nomi inglesi, «In arrivo» di partenza.`);
+// PROMPT 54: the note at the top of /talenti, with the numbers of the data.
+{
+  const { featsNoteText, feats: all } = require("../lib/feats.ts");
+  assert.equal(all.filter(feat => feat.editions["2024"]).length, 17);
+  assert.equal(featsNoteText("2024"), "Il Grimorio pubblica solo le regole dell'SRD 5.2.1, la parte che Wizards of the Coast rilascia con licenza CC BY 4.0. Contiene 17 talenti: gli altri si trovano nel Manuale del Giocatore 2024.");
+  assert.equal(featsNoteText("2014"), "Il Grimorio pubblica solo le regole dell'SRD 5.1, la parte che Wizards of the Coast rilascia con licenza CC BY 4.0. Contiene un solo talento, Lottatore: gli altri si trovano nel Manuale del Giocatore 2014.");
+  const page = require("node:fs").readFileSync("app/talenti/page.tsx", "utf8");
+  assert.match(page, /title="ℹ️ Perché non ci sono tutti i talenti\?" data-feats-note=\{edition\}/);
+  assert.doesNotMatch(require("node:fs").readFileSync("app/talenti/[id]/page.tsx", "utf8"), /featsNoteText|data-feats-note/, "not on the sheets of the single feats");
+}
