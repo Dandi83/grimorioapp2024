@@ -1,3 +1,4 @@
+import { shortLivedFallback } from "@/lib/isr-fallback";
 import { Breadcrumbs } from "@/components/seo/json-ld";
 import { editionOfPage, fitDescription, dndEdition, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
@@ -18,7 +19,6 @@ import { listSubclasses } from "@/lib/subclasses";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
-export const revalidate = 300;
 
 export function generateStaticParams() {
   return CLASS_IDS.map(id => ({ id }));
@@ -54,7 +54,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
   const parts = Object.fromEntries(await Promise.all(CLASS_PARTS.map(async key => [key, await partState("classi", key)]))) as ClassParts;
   // Subclasses added by the administrator: born hidden; a hidden one is left out for the public, labelled for the administrator.
   const view = await sectionView();
-  const added = (await listSubclasses(id).catch(() => [])).map(row => ({ id: row.id, edition: row.edizione, draft: row.scheda, hidden: view.hiddenCards.includes(cardPath("sottoclasse", row.id)) }))
+  const added = (await listSubclasses(id).catch(async () => (await shortLivedFallback(), []))).map(row => ({ id: row.id, edition: row.edizione, draft: row.scheda, hidden: view.hiddenCards.includes(cardPath("sottoclasse", row.id)) }))
     .filter(item => !item.hidden || view.admin);
   const hidden = await linksOut();
   const context = added.length ? { catalog: await getSpellReferenceCatalog(), hidden } : undefined;

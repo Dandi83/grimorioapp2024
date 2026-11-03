@@ -13,7 +13,6 @@ export const metadata = pageMetadata({ name: "Armature", section: "Equipaggiamen
   description: "Tutte le armature e lo scudo di D&D 5e in italiano, 2014 e 2024: Classe Armatura, Forza richiesta, Furtività, peso e costo." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
-export const revalidate = 300;
 
 export default async function ArmorPage() {
   // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.

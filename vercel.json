@@ -1,1 +1,1 @@
-{"$schema":"https://openapi.vercel.sh/vercel.json","crons":[{"path":"/api/analytics/maintenance","schedule":"0 4 * * *"}]}
+{"$schema":"https://openapi.vercel.sh/vercel.json","git":{"deploymentEnabled":{"**":false,"main":true}},"crons":[{"path":"/api/analytics/maintenance","schedule":"0 4 * * *"}]}

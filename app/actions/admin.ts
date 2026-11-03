@@ -72,6 +72,29 @@ export async function logoutAction() {
   revalidatePath("/admin");
 }
 
+/**
+ * PROMPT 55: a save that changes only the text of a card (description, components, range…) refreshes that card alone.
+ * The lists, the search and every card that may name the spell (the tag «spells» reaches all the spell, monster and
+ * class pages: about 1,900 pages, each a new ISR write at its next visit) are refreshed only when what they show changes:
+ * name, level, casting time, duration, edition, summary, SRD/original source, or a card added or deleted.
+ */
+async function revalidateSpellCard(id: string) {
+  revalidatePath(spellHref(id));
+  revalidatePath("/admin");
+}
+
+/** The fields the lists and the links read (lib/spell-index.ts, lib/spell-reference-catalog.ts). */
+const LISTED_SPELL_FIELDS = ["nome_italiano", "livello", "tempo_di_lancio", "durata"] as const;
+
+function changesListedSpell(id: string, before: string, after: string, changes: Partial<SpellInput>): boolean {
+  if (LISTED_SPELL_FIELDS.some(field => changes[field] !== undefined)) return true;
+  if (changes.descrizione === undefined) return false;
+  // A description that gains or loses the SRD record or the project summary changes the label, the name and the edition the lists give.
+  return Boolean(getSrdSource(id, before)) !== Boolean(getSrdSource(id, after))
+    || Boolean(getOriginalSource(id, before)) !== Boolean(getOriginalSource(id, after))
+    || spellCardSource({ id, descrizione: before }) !== spellCardSource({ id, descrizione: after });
+}
+
 async function revalidateSpell(id: string) {
   updateTag("spells");
   for (const route of ["/", "/grimorio", "/preferiti", "/admin", spellHref(id), "/ricerca-indice.json"]) revalidatePath(route);
@@ -186,7 +209,8 @@ export async function updateSpellAction(_prev: unknown, formData: FormData) {
     if (!updated.length) throw new Error("Scheda non trovata.");
   });
   if (!result.ok) return result;
-  await revalidateSpell(id);
+  if (fileRow || !sameEdition || !sameSummary || changesListedSpell(id, base.descrizione ?? "", description, changes)) await revalidateSpell(id);
+  else await revalidateSpellCard(id);
   if (await english.apply("incantesimo", id)) refreshEnglishNames("incantesimo");
   return { ok: true as const, error: null, id };
 }

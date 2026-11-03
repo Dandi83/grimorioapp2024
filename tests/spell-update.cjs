@@ -48,7 +48,8 @@ function load(relative) {
   deps['./db'] = deps['@/lib/db'] = {db:database,pool};
   deps['drizzle-orm/node-postgres'] = {drizzle:()=>database};
   deps['@/lib/admin-auth'] = {isAdmin:async()=>true};
-  deps['next/cache'] = {revalidatePath(){}, updateTag(){}};
+  const tags = [], paths = [];
+  deps['next/cache'] = {revalidatePath:(p,type)=>paths.push(type?`${p}|${type}`:p), updateTag:t=>tags.push(t)};
   const {updateSpellAction} = load('app/actions/admin.ts');
   await pg.query(`INSERT INTO spells (id,nome_italiano,livello,tempo_di_lancio,gittata,componenti,durata,descrizione,sort_key) VALUES ('palla-di-fuoco',$1,$2,$3,$4,$5,$6,$7,'palla di fuoco')`,
     [stored.nome_italiano,stored.livello,stored.tempo_di_lancio,stored.gittata,stored.componenti,stored.durata,stored.descrizione]);
@@ -67,11 +68,16 @@ function load(relative) {
   }
   const log = (await pg.query(`SELECT campo,valore_prima,valore_dopo FROM grimorio_editor_log WHERE scheda_id='palla-di-fuoco'`)).rows;
   assert.deepEqual(log,[{campo:'gittata',valore_prima:'45 metri',valore_dopo:'30 metri'}],'the log holds only the changed field');
+  // PROMPT 55: a change the lists and the links never show (the range) refreshes the card alone, no tag «spells».
+  assert.deepEqual(tags,[],'no tag for a text-only change');
+  assert.deepEqual(paths,['/spell/palla-di-fuoco','/admin'],'only the card and the admin home');
 
   // An old open editor without the description field cannot empty it.
   assert.equal((await updateSpellAction(null,form({id:'palla-di-fuoco',nome_italiano:stored.nome_italiano,durata:'1 minuto'}))).ok,true);
   const later = await row();
   assert.equal(later.durata,'1 minuto');
+  // The duration is in the lists (Concentrazione): the whole refresh, cards that name the spell included.
+  assert.ok(tags.includes('spells') && paths.includes('/spell/[id]|page') && paths.includes('/mostro/[id]|page') && paths.includes('/grimorio'),'listed field: lists and links refreshed');
   assert.ok(Buffer.from(later.descrizione).equals(Buffer.from(before.descrizione)),'description untouched');
 
   // A real change of the description is saved.

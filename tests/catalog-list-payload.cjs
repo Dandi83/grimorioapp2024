@@ -16,7 +16,7 @@ function load(relative, deps={}) {
  // The cached list index projects every record; pages pass it through unchanged.
  let indexConfigured=false,monsterKey;
  const monsterIndex=load('lib/monster-index.ts',{'server-only':{},'./search-english-server':{approvedEnglishNames:async()=>new Map()},'./homebrew':{publishedHomebrew:async()=>[],homebrewListItem:row=>row},'./monsters':{getAllMonsters:async()=>all},'./monsters-types':mt,'./srd-monsters':srd,
-  'next/cache':{unstable_cache:(fn,key,options)=>{assert.equal(key[0],'monster-list-index');assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');monsterKey=key;assert.deepEqual(options,{tags:['monsters'],revalidate:3600});indexConfigured=true;return fn;}}});
+  'next/cache':{unstable_cache:(fn,key,options)=>{assert.equal(key[0],'monster-list-index');assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');monsterKey=key;assert.deepEqual(options,{tags:['monsters'],revalidate:false});indexConfigured=true;return fn;}}});
  assert.ok(indexConfigured,'the monster list is cached with the tag invalidated by admin saves');
  // A new SRD sheet or habitat file changes the key, so a deployment never serves the previous list.
  let changedKey;
@@ -72,7 +72,7 @@ function load(relative, deps={}) {
    let configured=false;
    const reader=load('lib/spell-index.ts',{
     'server-only':{},'./search-english-server':{approvedEnglishNames:async()=>new Map()},
-    'next/cache':{unstable_cache:(fn,key,options)=>{assert.deepEqual(key.slice(0,2),['spell-index',environment??'local']);assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');spellKeys.add(key[2]);assert.deepEqual(options,{tags:['spells'],revalidate:3600});configured=true;return fn;}},
+    'next/cache':{unstable_cache:(fn,key,options)=>{assert.deepEqual(key.slice(0,2),['spell-index',environment??'local']);assert.match(key[2],/^[0-9a-z]+$/,'the key follows the project files');spellKeys.add(key[2]);assert.deepEqual(options,{tags:['spells'],revalidate:false});configured=true;return fn;}},
     'drizzle-orm':{asc:column=>{assert.equal(column,'sort_key');return column;}},
     './db/schema':{spells:{id:'id',nome_italiano:'nome_italiano',livello:'livello',tempo_di_lancio:'tempo_di_lancio',durata:'durata',descrizione:'descrizione',sort_key:'sort_key'}},
     './content-editions':{getContentEditions:async kind=>{assert.equal(kind,'spell');return new Map([['manual-index','2014']]);}},

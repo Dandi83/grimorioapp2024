@@ -21,7 +21,6 @@ import { ReportLink } from "@/components/feedback/report-link";
 
 export const dynamicParams = false;
 // Manual corrections from the admin area appear within five minutes (at once after saving).
-export const revalidate = 300;
 
 const SRD_521 = "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf";
 const LIST = "/equipaggiamento/avventura";

@@ -22,7 +22,6 @@ function Folded({ title, paragraphs }: { title: string; paragraphs: string[] }) 
 const groupText = (text?: string) => text ? <p className="border-x border-border bg-card px-3.5 py-2.5 text-[15px] leading-6 text-muted">{text}</p> : null;
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
-export const revalidate = 300;
 
 export default async function ToolsPage() {
   // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.

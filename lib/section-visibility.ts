@@ -1,6 +1,8 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { unstable_cache } from "next/cache";
+
+import { shortLivedFallback } from "./isr-fallback";
 import { pool } from "./db";
 import { PUBLIC_SECTIONS, isPartId, type PublicSectionKey } from "./public-sections";
 import { publicSpellId } from "./spell-public-id";
@@ -169,7 +171,7 @@ async function readState(): Promise<VisibilityState> {
   };
 }
 
-const cachedState = unstable_cache(readState, ["section-visibility-state"], { tags: [SECTIONS_TAG], revalidate: 300 });
+const cachedState = unstable_cache(readState, ["section-visibility-state"], { tags: [SECTIONS_TAG], revalidate: false });
 
 /**
  * Hidden sections and parts, for the public pages. If the database cannot be read everything stays
@@ -181,6 +183,7 @@ export async function visibilityState(): Promise<VisibilityState> {
     state = await cachedState();
   } catch {
     console.warn("[sezioni] Database non leggibile: tutte le sezioni restano visibili.");
+    await shortLivedFallback();
     // The sections that start «In arrivo» stay so (PROMPT 49).
     state = defaultState();
   }

@@ -10,7 +10,6 @@ import {
 import { partId } from "@/lib/public-sections";
 import { CLOSED_PART_METADATA, partState, sectionPage } from "@/lib/section-view";
 
-export const revalidate = 300;
 
 /**
  * Open while at least one group of original creatures is (PROMPT 26): «I mostri creati da voi» or «Mostri del

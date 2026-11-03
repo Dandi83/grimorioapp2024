@@ -11,12 +11,17 @@ import { HOMEBREW_LICENSE, LIMITS, parseDraft, plainText, type HomebrewDraft } f
 
 type HomebrewResult = { ok: true; id?: string; email?: "sent" | "not-configured" | "failed" | "none" } | { ok: false; error: string };
 
-/** A published homebrew changes lists, search, counts and its card: the same refresh as an admin save of a creature. */
-function refresh() {
+/**
+ * A published homebrew changes lists, search, counts and its card. PROMPT 55: the lists, the Home counts and the search
+ * read the creature list (tag «monsters»); the card is its own page. No longer the whole site («/», "layout"): the other
+ * cards never show a homebrew, and every page refreshed is a new ISR write at its next visit.
+ */
+function refresh(id?: string) {
   updateTag("monsters");
-  revalidatePath("/", "layout");
+  for (const path of ["/", "/bestiario", "/bestiario/creati-da-voi", "/bestiario/del-grimorio", "/bestiario/creature-originali", "/preferiti"]) revalidatePath(path);
   revalidatePath("/ricerca-indice.json");
   revalidatePath("/sitemap.xml");
+  if (id) revalidatePath(`/mostro/${id}`);
 }
 
 async function siteOrigin(): Promise<string> {
@@ -41,7 +46,7 @@ export async function approveProposalAction(id: string, verified = false): Promi
   }
   if (!approved) return { ok: false, error: "Proposta non trovata o già decisa." };
   if (approved === "no-license") return { ok: false, error: `Proposta arrivata prima della licenza: chiedi all’autore il consenso alla licenza ${HOMEBREW_LICENSE} prima di pubblicarla.` };
-  refresh();
+  refresh(approved.homebrewId);
   const email = approved.email ? await sendPublishedEmail(approved.email, approved.nome, `${await siteOrigin()}/mostro/${approved.homebrewId}`) : "none";
   return { ok: true, id: approved.homebrewId, email };
 }
@@ -79,7 +84,7 @@ export async function createHomebrewAction(draft: unknown): Promise<HomebrewResu
   const checked = editorialDraft(draft);
   if (!checked.ok) return checked;
   const id = await createHomebrew(checked.draft, homebrewVerdict(checked.draft));
-  refresh();
+  refresh(id);
   return { ok: true, id };
 }
 
@@ -92,7 +97,7 @@ export async function updateHomebrewAction(id: string, draft: unknown, verified?
   const checked = row.autore ? parseDraft(draft) : editorialDraft(draft);
   if (!checked.ok) return checked;
   await updateHomebrew(String(id), checked.draft, homebrewVerdict(checked.draft), typeof verified === "boolean" ? verified : undefined);
-  refresh();
+  refresh(String(id));
   return { ok: true, id: String(id) };
 }
 
@@ -101,7 +106,7 @@ export async function deleteHomebrewAction(formData: FormData): Promise<{ ok: tr
   await requireAdmin();
   const id = formData.get("id");
   if (typeof id !== "string" || !(await deleteHomebrew(id))) return { ok: false, error: "Creatura homebrew non trovata." };
-  refresh();
+  refresh(id);
   return { ok: true };
 }
 
@@ -112,7 +117,7 @@ export async function recalculateVerdictAction(id: string): Promise<{ ok: true; 
   if (!row) return { ok: false, error: "Creatura homebrew non trovata." };
   const giudizio = homebrewVerdict(row.scheda);
   if (!(await saveHomebrewVerdict(String(id), giudizio))) return { ok: false, error: "Creatura homebrew non trovata." };
-  refresh();
+  refresh(String(id));
   return { ok: true, giudizio };
 }
 
@@ -121,6 +126,6 @@ export async function setVerifiedAction(id: string, show: boolean): Promise<{ ok
   await requireAdmin();
   if (!(await getHomebrew(String(id)))) return { ok: false, error: "Creatura homebrew non trovata." };
   if (!(await setHomebrewVerified(String(id), show === true)) && show) return { ok: false, error: "La pillola compare solo con il giudizio «In linea»." };
-  refresh();
+  refresh(String(id));
   return { ok: true };
 }

@@ -20,10 +20,9 @@ import { ruleCard } from "@/lib/share-card-server";
 import { englishName } from "@/lib/english-names";
 import { srdLine } from "@/lib/share-card";
 
-// Pages are generated at build time; manual corrections from the admin area appear within five
-// minutes (at once after saving). Production builds only public conditions; other entries stay preview-only.
+// Pages are generated at build time and stay static (PROMPT 55: no timed regeneration); a manual correction from the
+// admin area refreshes its page at once (app/actions/admin-content.ts). Production builds only public conditions; other entries stay preview-only.
 export const dynamicParams = true;
-export const revalidate = 300;
 
 export function generateStaticParams() {
   const preview = manualAvailable(process.env.VERCEL_ENV);

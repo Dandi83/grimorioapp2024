@@ -1,3 +1,4 @@
+import { shortLivedFallback } from "@/lib/isr-fallback";
 import { JsonLd } from "@/components/seo/json-ld";
 import { pageMetadata, websiteLd } from "@/lib/seo";
 import Image from "next/image";
@@ -20,7 +21,6 @@ import { partsOut, sectionView, sectionsOut, visibleCards } from "@/lib/section-
 import { getSpellIndex } from "@/lib/spell-index";
 import styles from "./home.module.css";
 
-export const revalidate = 300;
 
 export const metadata = pageMetadata({
   name: "Il Grimorio.App", path: "/", title: "Il Grimorio.App — Incantesimi, mostri e regole di D&D 5e in italiano",
@@ -33,8 +33,8 @@ export const metadata = pageMetadata({
  */
 async function shortcuts(): Promise<HomeShortcut[]> {
   const [spells, monsters, out, parts] = await Promise.all([
-    getSpellIndex().catch(() => []).then(list => visibleCards("incantesimo", list)),
-    getMonsterListIndex().catch(() => []).then(list => visibleCards("mostro", list)),
+    getSpellIndex().catch(async () => (await shortLivedFallback(), [])).then(list => visibleCards("incantesimo", list)),
+    getMonsterListIndex().catch(async () => (await shortLivedFallback(), [])).then(list => visibleCards("mostro", list)),
     sectionsOut(), partsOut(),
   ]);
   const perEdition = (count: (edition: Edition) => number) => Object.fromEntries(EDITIONS.map(edition => [edition, count(edition)])) as Record<Edition, number>;

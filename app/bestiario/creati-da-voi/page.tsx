@@ -9,7 +9,6 @@ import { collectionOf } from "@/lib/monsters-types";
 import { partId, soonHref } from "@/lib/public-sections";
 import { CLOSED_PART_METADATA, bestiaryList, partState, sectionPage, visibleCards } from "@/lib/section-view";
 
-export const revalidate = 300;
 
 /** While the section is closed to the visitors, nothing of it in the title either (lib/community.ts). */
 export async function generateMetadata() {

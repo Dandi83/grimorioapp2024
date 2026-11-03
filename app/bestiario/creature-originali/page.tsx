@@ -6,7 +6,6 @@ import { BestiarioWithFilters } from "@/components/catalog-browsers";
 import { getMonsterListIndex } from "@/lib/monster-index";
 import { CLOSED_PART_METADATA, bestiaryList, partState, sectionPage, visibleCards } from "@/lib/section-view";
 
-export const revalidate = 300;
 
 async function groups() {
   const [grimorio, community] = await Promise.all([partState("bestiario", "grimorio"), partState("bestiario", "homebrew")]);

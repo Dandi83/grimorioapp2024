@@ -9,7 +9,6 @@ import { collectionOf } from "@/lib/monsters-types";
 import { partId, soonHref } from "@/lib/public-sections";
 import { CLOSED_PART_METADATA, bestiaryList, partState, sectionPage, visibleCards } from "@/lib/section-view";
 
-export const revalidate = 300;
 
 const PART = partId("bestiario", "grimorio");
 

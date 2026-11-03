@@ -11,7 +11,6 @@ export const metadata = pageMetadata({ name: "Armi", section: "Equipaggiamento",
   description: "Tutte le armi di D&D 5e in italiano, 2014 e 2024: danni, proprietà, padronanze, costo e peso, con le differenze tra le edizioni." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
-export const revalidate = 300;
 
 export default async function WeaponsPage() {
   // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.

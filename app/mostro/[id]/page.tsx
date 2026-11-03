@@ -42,7 +42,6 @@ async function bothEditionsCard(): Promise<string[]> {
   return states.filter(state => state.hidden && states.every(other => other.hidden)).map(state => partId("bestiario", state.edition));
 }
 
-export const revalidate = 300;
 
 /** The edition of the page: «2014 e 2024» for a creature of both, else its own. */
 function monsterEdition(monster: { edizione?: string; homebrew_edizione?: string } & Parameters<typeof usesLegacyMonsterRules>[0]): SeoEdition {
