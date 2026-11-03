@@ -17,14 +17,18 @@ assert.equal(at(120, 844, { scrollY: 4100 }), null, 'bouncing past the bottom: n
 assert.equal(at(120, 844, { scrollY: 0, maxScroll: 0 }), 120, 'a short page at the top: measured');
 assert.equal(bottomBarShift({ layoutHeight: 0, visualHeight: 0, visualTop: 0, editing: false, scrollY: 0, maxScroll: 0 }), 0);
 
-// The bar keeps its look; it listens to the size of the visible area only, never to the scroll; never on a computer.
+// The bar keeps its look; the move is measured when the visible area changes size; while the page scrolls it is only
+// ever reduced (PROMPT 56: iOS realigns the visible area with a scroll, no «resize»); never on a computer.
 const nav = fs.readFileSync('components/bottom-nav.tsx', 'utf8');
 assert.match(nav, /className="fixed inset-x-0 bottom-0 z-50 mx-auto h-\[calc\(80px\+env\(safe-area-inset-bottom,0px\)\)\][^"]* lg:hidden"/);
 assert.match(nav, /viewport\.addEventListener\("resize", schedule\)/);
-assert.doesNotMatch(nav, /addEventListener\("scroll"/, 'never on scroll');
+assert.match(nav, /viewport\.addEventListener\("scroll", settle\)/);
+assert.match(nav, /window\.addEventListener\("scroll", settle, \{ passive: true \}\)/);
+assert.match(nav, /if \(!current\) return;/, 'a bar in place does nothing on scroll');
+assert.match(nav, /if \(shift !== null && shift < current\) apply\(shift\);/, 'on scroll the move only shrinks, never during a bounce');
 assert.doesNotMatch(nav, /style\.transition|transition-(?:transform|all)|\btransition\b(?!-colors)/, 'no animated move');
 assert.doesNotMatch(nav, /(?:display|visibility|opacity)\s*=\s*/, 'never hidden and shown again');
 const css = fs.readFileSync('app/globals.css', 'utf8');
 assert.match(css, /html \{[^}]*overscroll-behavior-y: none;/);
 assert.match(css, /body \{[^}]*overscroll-behavior-y: none;/);
-console.log('Bottom bar: no bounce of the page, measured only when the visible area changes size, only down, never while scrolling or bouncing; look and computer unchanged.');
+console.log('Bottom bar: no bounce of the page, measured when the visible area changes size, only down; a scroll brings a moved bar back, never further out, never during a bounce; look and computer unchanged.');
