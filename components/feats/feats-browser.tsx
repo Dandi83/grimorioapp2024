@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
@@ -44,7 +44,8 @@ function Group({ title, rows, edition }: { title: string; rows: FeatRow[]; editi
 }
 
 /** The feats of the chosen edition, grouped by category, with «Cerca per nome…» and the category pills (2024). */
-export function FeatsBrowser({ groups }: { groups: FeatGroups }) {
+/** notes: the note «Perché non ci sono tutti i talenti?» of each edition (PROMPT 54), drawn on the server. */
+export function FeatsBrowser({ groups, notes = {} }: { groups: FeatGroups; notes?: Partial<Record<EquipmentEdition, ReactNode>> }) {
   const [edition, setEdition] = useEquipmentEdition("talenti");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
@@ -59,6 +60,7 @@ export function FeatsBrowser({ groups }: { groups: FeatGroups }) {
         <h1 className="min-w-0 font-serif text-[40px] font-bold leading-tight">Talenti</h1>
         <SectionEditionPill section="talenti" edition={edition} choose={setEdition} />
       </div>
+      {notes[edition] && <div className="mt-3">{notes[edition]}</div>}
       <ListSearch label="Cerca un talento" value={query} onChange={setQuery} />
       {edition === "2024" && (
         <div role="group" aria-label="Categorie" className="mt-3 flex flex-wrap gap-2">

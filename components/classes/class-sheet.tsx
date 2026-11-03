@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { InfoNote } from "@/components/info-note";
 import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -88,13 +89,7 @@ function FeatureText({ feature, rules }: { feature: ClassFeature; rules: RuleTer
  */
 function SubclassNote({ id, edition }: { id: ClassId; edition: ClassEdition }) {
   return (
-    <div role="note" data-subclass-note={edition} className="rounded-[14px] border-2 border-dashed border-amber bg-[#FBF1D6] px-3.5 py-3 text-[15px] leading-6 text-[#2B2118]">
-      <p className="font-bold">ℹ️ Perché c&apos;è una sola sottoclasse?</p>
-      <p className="mt-1">
-        {subclassNoteText(id, edition)}{" "}
-        <Link href="/fonti" className="font-semibold text-primary underline underline-offset-4">Fonti e licenza</Link>
-      </p>
-    </div>
+    <InfoNote title="ℹ️ Perché c'è una sola sottoclasse?" data-subclass-note={edition}>{subclassNoteText(id, edition)}</InfoNote>
   );
 }
 

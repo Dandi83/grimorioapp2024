@@ -83,3 +83,14 @@ export const feats: Feat[] = (() => {
 
 export const getFeat = (id: string) => feats.find(feat => feat.id === id);
 export const featSources = { "2024": { document: "SRD 5.2.1", sourceUrl: "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf" }, "2014": { document: feats2014Data.fonte.document, sourceUrl: feats2014Data.fonte.sourceUrl } } as const;
+
+/**
+ * «ℹ️ Perché non ci sono tutti i talenti?» on /talenti (PROMPT 54, texts approved by Daniele): the number of feats of each
+ * edition comes from the data, so it stays right if they change.
+ */
+export function featsNoteText(edition: "2014" | "2024"): string {
+  const count = feats.filter(feat => feat.editions[edition]).length;
+  if (edition === "2024") return `Il Grimorio pubblica solo le regole dell'SRD 5.2.1, la parte che Wizards of the Coast rilascia con licenza CC BY 4.0. Contiene ${count} talenti: gli altri si trovano nel Manuale del Giocatore 2024.`;
+  const only = feats.find(feat => feat.editions["2014"])?.editions["2014"]?.nome;
+  return `Il Grimorio pubblica solo le regole dell'SRD 5.1, la parte che Wizards of the Coast rilascia con licenza CC BY 4.0. ${count === 1 && only ? `Contiene un solo talento, ${only}` : `Contiene ${count} talenti`}: gli altri si trovano nel Manuale del Giocatore 2014.`;
+}
