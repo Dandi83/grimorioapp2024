@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import Image from "next/image";
+import dynamic from "next/dynamic";
 
 import { useUserEdition } from "@/components/edition/edition-provider";
-import { trapFocus } from "@/components/edition/edition-pill";
-import { EditionChoice } from "@/components/edition/edition-choice";
-import { EDITIONS } from "@/lib/public-sections";
+
+// The screen in its own chunk (PROMPT 57): every visit after the first never downloads it.
+const FirstLaunchScreen = dynamic(() => import("@/components/edition/first-launch-screen"), { ssr: false });
 
 /**
  * «Scegli l’edizione» with «D&D 2024» · «D&D 2014»: full screen over the library of the Home, the first time the visit
@@ -18,45 +17,4 @@ export function FirstLaunch() {
   const { firstLaunch } = useUserEdition();
   if (!firstLaunch) return null;
   return <FirstLaunchScreen />;
-}
-
-function FirstLaunchScreen() {
-  const { choose } = useUserEdition();
-  const titleId = useId();
-  const first = useRef<HTMLButtonElement>(null);
-  const chooseRef = useRef(choose);
-  useEffect(() => { chooseRef.current = choose; }, [choose]);
-  // No ring until a key is pressed: some browsers (Chromium) show it on a focus given by the page.
-  const [keys, setKeys] = useState(false);
-
-  useEffect(() => {
-    // Focus on «2024» for screen readers and keyboards, without the ring over a screen nobody has touched yet
-    // (the ring shows from the first Tab: :focus-visible).
-    first.current?.focus({ focusVisible: false } as FocusOptions);
-    const escape = (event: KeyboardEvent) => {
-      setKeys(true);
-      if (event.key === "Escape") chooseRef.current("2024");
-    };
-    window.addEventListener("keydown", escape);
-    document.body.style.overflow = "hidden";
-    return () => { window.removeEventListener("keydown", escape); document.body.style.overflow = ""; };
-  }, []);
-
-  return (
-    <div role="dialog" aria-modal="true" aria-labelledby={titleId} onKeyDown={trapFocus} data-first-launch=""
-      className={`fixed inset-0 z-[90] isolate flex flex-col overflow-y-auto ${keys ? "" : "[&_button:focus-visible]:outline-none"}`}>
-      <Image src="/hero-atmosfera.webp" alt="" fill priority sizes="100vw" className="-z-20 object-cover object-[54%_42%]" />
-      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(43_33_24_/_55%)_0%,rgb(43_33_24_/_62%)_35%,rgb(43_33_24_/_88%)_70%,rgb(43_33_24_/_96%)_100%)]" />
-      <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col px-5 pb-[calc(24px+env(safe-area-inset-bottom,0px))] pt-[calc(22px+env(safe-area-inset-top,0px))] text-card">
-        <p className="font-serif text-[28px] font-semibold leading-none">Il Grimorio<span className="text-amber">.App</span></p>
-        <div className="flex-1" />
-        <h2 id={titleId} className="font-serif text-[40px] font-semibold leading-[1.08] tracking-[-0.4px]">Scegli l’edizione</h2>
-        <div className="mt-6 flex flex-col gap-3">
-          {EDITIONS.map((edition, index) => (
-            <EditionChoice key={edition} ref={index === 0 ? first : undefined} edition={edition} onChoose={choose} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 }

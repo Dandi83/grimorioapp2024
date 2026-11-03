@@ -78,6 +78,7 @@ export default async function HomePage() {
           alt="Antica biblioteca con scaffali di libri e una scala a chiocciola"
           fill
           priority
+          fetchPriority="high"
           sizes="(max-width: 672px) 100vw, (max-width: 1023px) 896px, calc(100vw - 240px)"
           className={styles.image}
         />

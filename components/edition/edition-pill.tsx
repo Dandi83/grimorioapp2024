@@ -1,5 +1,6 @@
 "use client";
 
+import { lockScroll } from "@/lib/scroll-lock";
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type RefObject } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
@@ -54,12 +55,12 @@ function EditionPanel({ sheet, keyboard, onClose, pill, page }: { sheet: boolean
     };
     window.addEventListener("keydown", escape);
     if (!sheet) document.addEventListener("pointerdown", outside);
-    if (sheet) document.body.style.overflow = "hidden";
+    const unlock = sheet ? lockScroll() : () => undefined;
     const button = pill.current;
     return () => {
       window.removeEventListener("keydown", escape);
       document.removeEventListener("pointerdown", outside);
-      if (sheet) document.body.style.overflow = "";
+      unlock();
       button?.focus(options);
     };
   }, [sheet, keyboard, pill]);

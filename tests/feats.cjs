@@ -59,7 +59,8 @@ const ps=require('../lib/public-sections.ts');
 assert.equal(ps.sectionOfPath('/talenti/allerta'),'talenti');
 assert.ok(ps.isHiddenPath('/talenti/allerta',['talenti']));
 const sw=fs.readFileSync('lib/sw/service-worker.js','utf8');
-assert.ok(!new RegExp(sw.match(/const PUBLIC_PAGE = \/(.*)\/;/)[1]).test('/talenti'),'never saved offline');
+// PROMPT 57 (A2): the worker handles /talenti; while the section is «In arrivo» the page answers 404 and a 404 is never saved (tests/service-worker.cjs).
+assert.ok(new RegExp(sw.match(/const PUBLIC_PAGE = \/(.*)\/;/)[1]).test('/talenti'),'saved offline once the section is shown');
 console.log(`Talenti: 17 del 2024 (${FEAT_CATEGORIES.join(', ')}) e Lottatore 2014, testi identici, nomi inglesi, «In arrivo» di partenza.`);
 // PROMPT 54: the note at the top of /talenti, with the numbers of the data.
 {
