@@ -48,7 +48,7 @@ Al controllo pubblico del 18 ottobre: **389 incantesimi, 341 creature: 241 mostr
 
 Sono presenti trascrizioni e riferimenti SRD italiano 5.2.1, aggiunte e varianti SRD 5.1 del 2014, e sintesi originali di regole fuori SRD distinte esplicitamente dalle trascrizioni. Gli import applicano salvaguardie per conservare modifiche amministrative successive. Le edizioni non costituiscono una certificazione delle licenze.
 
-Esistono anche manuale/condizioni con rimandi, dadi e lavoro su schede personaggio descritto in `docs/releases/` e `docs/superpowers/`. La sessione personaggi attuale usa stato client; non promettere persistenza cloud o account funzionanti. Queste sezioni non sono automaticamente incluse nell'MVP iPhone proposto. Leggere i relativi documenti se l'utente chiede di continuarle.
+Esistono anche manuale/condizioni con rimandi e dadi, descritti in `docs/releases/` e `docs/superpowers/`. Il vecchio prototipo dei personaggi (officina, /personaggi, /account) è stato tolto il 5 novembre 2026 (PROMPT 60): i personaggi li crea Total Party Kill e il Grimorio li salverà e mostrerà in una futura pagina beta «I miei personaggi» su /personaggi. Queste sezioni non sono automaticamente incluse nell'MVP iPhone proposto. Leggere i relativi documenti se l'utente chiede di continuarle.
 
 ## Statistiche già operative
 

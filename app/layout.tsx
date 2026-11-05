@@ -19,7 +19,6 @@ import { AdminSessionProvider } from "@/components/admin-edit/admin-session";
 import { EditionProvider } from "@/components/edition/edition-provider";
 import { forcedEdition } from "@/lib/user-edition";
 import "./globals.css";
-import {CharacterSessionProvider} from "@/components/characters/session";
 
 // Variable fonts: one file per style covers every weight used (text 400/600/700,
 // titles 600/700, italic 500), lighter than one file per weight.
@@ -104,7 +103,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
               <ServiceWorker enabled={serviceWorkerEnabled()} hiddenPaths={hiddenPaths} partPaths={partPaths} />
               <main className="min-w-0 flex-1 pb-[calc(80px+env(safe-area-inset-bottom,0px))] lg:pb-0">
                 {/* AdminSessionProvider: the «Modifica» buttons, drawn in the browser after the server checks the session. */}
-                <PartsProvider hidden={hiddenParts} admin={admin} soon={soon}><AdminSessionProvider><CharacterSessionProvider><ContentFrame>{children}</ContentFrame></CharacterSessionProvider></AdminSessionProvider></PartsProvider>
+                <PartsProvider hidden={hiddenParts} admin={admin} soon={soon}><AdminSessionProvider><ContentFrame>{children}</ContentFrame></AdminSessionProvider></PartsProvider>
               </main>
               <BottomNav hidden={hidden} admin={admin} soon={soon} />
               {/* After the content in the page order (it is fixed on the left): on phones the order stays the same. */}
