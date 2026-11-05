@@ -63,7 +63,10 @@ assert.ok(read('components/home/rating-box.tsx').includes('releaseWhenAway(') &&
 // M3: the whole search box opens the keyboard.
 assert.match(read('components/catalog-ui.tsx'), /<label className="flex min-h-12 min-w-0 flex-1 cursor-text[^"]*" data-list-search-box="">/);
 // Speed: the hero pictures first; late scripts; the welcome screen apart.
-assert.ok(/priority\n\s+fetchPriority="high"/.test(read('app/page.tsx')), 'Home hero fetchPriority high');
+// PROMPT 59: the Home picture is a <picture> (components/home/hero-picture.tsx), eager, fetchPriority high and preloaded.
+assert.ok(/<HeroPicture[^>]*preloadImage/.test(read('app/page.tsx')), 'Home hero preloaded');
+{ const hero = read('components/home/hero-picture.tsx');
+  assert.ok(hero.includes('loading: "eager", fetchPriority: "high"') && (hero.match(/fetchPriority: "high", media:/g) || []).length === 2, 'Home hero fetchPriority high, preloads with media'); }
 assert.ok(/priority\n\s+fetchPriority="high"/.test(read('app/spell/[id]/page.tsx')), 'spell hero fetchPriority high');
 assert.ok(read('app/layout.tsx').includes('<LateExtras vercel={process.env.VERCEL === "1"} />') && !read('app/layout.tsx').includes('<AnalyticsProvider />'), 'statistics after idle');
 assert.ok(read('components/edition/first-launch.tsx').includes('dynamic(() => import("@/components/edition/first-launch-screen")'), 'welcome screen in its own chunk');

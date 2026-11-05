@@ -1,7 +1,7 @@
 import { shortLivedFallback } from "@/lib/isr-fallback";
 import { JsonLd } from "@/components/seo/json-ld";
 import { pageMetadata, websiteLd } from "@/lib/seo";
-import Image from "next/image";
+import { HeroPicture } from "@/components/home/hero-picture";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 
@@ -73,14 +73,12 @@ export default async function HomePage() {
       <AdminStrip />
 
       <section className={styles.library} aria-labelledby="home-quote">
-        <Image
-          src="/hero-atmosfera.webp"
+        {/* PROMPT 59: phones get a lighter file (≤ 828 px, quality 60); tablets and computers as before. */}
+        <HeroPicture
           alt="Antica biblioteca con scaffali di libri e una scala a chiocciola"
-          fill
-          priority
-          fetchPriority="high"
           sizes="(max-width: 672px) 100vw, (max-width: 1023px) 896px, calc(100vw - 240px)"
           className={styles.image}
+          preloadImage
         />
         <div className={styles.shade} aria-hidden="true" />
         {/* Phones and tablets; on computers the pill is in the side column. */}
