@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState, type ComponentType } from "react";
-import {
-  Axe, Check, ChevronLeft, ChevronRight, Cross, Eye, Flame, Hand, Leaf, Music, Shield, Swords, Target, TriangleAlert, VenetianMask, WandSparkles,
-  type LucideProps,
-} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import { Check, ChevronLeft, ChevronRight, Shield, TriangleAlert } from "lucide-react";
 
 import {
   ABILITIES, backgroundName, cardLine, className, finalAbilities, metres, modifier, newLocalId, readCharacters, sameCharacter, sheetSpells, signed,
@@ -14,26 +12,47 @@ import {
 import { decodeHash, encodePg, validaScheda, type ErroreCampo, type SchedaV1 } from "@/lib/shared/scheda-tpk-v1";
 import { spellHref, storedSpellId } from "@/lib/spell-public-id";
 import { TPK_CREATE_URL, tpkImportUrl } from "@/lib/tpk";
+import { Divisore, Timbro } from "@/components/pergamena/pergamena";
 
 const SITE = "https://ilgrimorio.app";
 const LINK_HASH = /^#(pg|pg0|party|party0)=/;
 
-/** One icon per class, from the same set as the rest of the Grimorio (lucide). */
-const CLASS_ICONS: Record<string, ComponentType<LucideProps>> = {
-  barbaro: Axe, bardo: Music, chierico: Cross, druido: Leaf, guerriero: Swords, ladro: VenetianMask,
-  mago: WandSparkles, monaco: Hand, paladino: Shield, ranger: Target, stregone: Flame, warlock: Eye,
-};
-function ClassIcon({ id, size = 26 }: { id: string; size?: number }) {
-  const Icon = CLASS_ICONS[id] ?? Shield;
+/** The 12 portraits of the classes (PROMPT 64, «grafica originale © 2026 D.d.B.», public/ritratti/classi), only on this page. */
+const PORTRAITS = new Set(["barbaro", "bardo", "chierico", "druido", "guerriero", "ladro", "mago", "monaco", "paladino", "ranger", "stregone", "warlock"]);
+/** «Ritratto del Mago», «Ritratto dello Stregone». */
+const portraitAlt = (id: string) => `Ritratto ${id === "stregone" ? "dello" : "del"} ${className(id)}`;
+
+/** The round portrait of the class: zoom 1.12, centred at 42 % in height, thin bordeaux border; loaded only when on screen. */
+function ClassPortrait({ id, size = 44 }: { id: string; size?: number }) {
+  if (!PORTRAITS.has(id)) {
+    return (
+      <span aria-hidden="true" data-class-icon={id} className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#7A1F2B] text-[#FFFBF0]" style={{ width: size, height: size }}>
+        <Shield size={Math.round(size * 0.58)} strokeWidth={1.8} />
+      </span>
+    );
+  }
   return (
-    <span aria-hidden="true" data-class-icon={id} className="inline-flex shrink-0 items-center justify-center rounded-full bg-[#7A1F2B] text-[#FFFBF0]" style={{ width: size + 18, height: size + 18 }}>
-      <Icon size={size} strokeWidth={1.8} />
+    <span data-class-portrait={id} className="inline-flex shrink-0 overflow-hidden rounded-full border-2 border-[#7A1F2B] bg-[#2B2118]" style={{ width: size, height: size }}>
+      <Image src={`/ritratti/classi/classe-${id}.webp`} alt={portraitAlt(id)} width={size} height={size} unoptimized loading="lazy" decoding="async"
+        className="h-full w-full object-cover" style={{ objectPosition: "50% 42%", transform: "scale(1.12)", transformOrigin: "50% 42%" }} />
     </span>
   );
 }
 
+/** «BETA» as a tilted stamp next to the title. */
 function BetaLabel() {
-  return <span data-beta-label="" className="ml-2 inline-flex items-center rounded-full border border-[#7A4E00] bg-[#FCEFD0] px-[7px] py-px align-middle font-sans text-[11px] font-bold leading-4 tracking-[0.08em] text-[#7A4E00]">BETA</span>;
+  return <Timbro data-beta-label="">BETA</Timbro>;
+}
+
+/** Title of the page: «LA TUA COMPAGNIA» above, capilettera, the stamp, the divider with ⚔ under it. */
+function PageTitle({ id, children }: { id: string; children: string }) {
+  return (
+    <header>
+      <p className="pg-etichetta">La tua compagnia</p>
+      <h1 id={id} className="pg-capolettera mt-1 font-serif text-[34px] font-bold leading-tight">{children}<BetaLabel /></h1>
+      <Divisore ornamento="spade" className="mt-2" />
+    </header>
+  );
 }
 
 /** The storage of this browser, or null when the page cannot use it (private window, blocked site data). */
@@ -130,7 +149,7 @@ function StorageNote({ ok }: { ok: boolean }) {
 function CharacterList({ characters, storageOk, onOpen }: { characters: SavedCharacter[]; storageOk: boolean; onOpen: (id: string) => void }) {
   return (
     <section aria-labelledby="personaggi-titolo">
-      <h1 id="personaggi-titolo" className="font-serif text-[34px] font-bold leading-tight">I miei personaggi<BetaLabel /></h1>
+      <PageTitle id="personaggi-titolo">I miei personaggi</PageTitle>
       <StorageNote ok={storageOk} />
       {characters.length === 0 ? (
         <p data-characters-empty="" className="mt-6 text-[16px] leading-7 text-muted">
@@ -141,8 +160,8 @@ function CharacterList({ characters, storageOk, onOpen }: { characters: SavedCha
           {characters.map(({ id, sheet }) => (
             <li key={id}>
               <button type="button" onClick={() => onOpen(id)} data-character-card={sheet.n}
-                className="flex w-full min-h-[72px] items-center gap-3 rounded-2xl border border-border bg-card px-3.5 py-3 text-left shadow-sm active:bg-[#F1E7D0]">
-                <ClassIcon id={sheet.c} />
+                className="pg-angoli flex w-full min-h-[72px] items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-left active:bg-[#F1E7D0]">
+                <ClassPortrait id={sheet.c} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[18px] font-bold leading-6">{sheet.n}</span>
                   <span className="block text-[14px] leading-5 text-muted">{cardLine(sheet)}</span>
@@ -199,8 +218,8 @@ function CalcTiles({ calc, note }: { calc: SchedaV1["calc"]; note: string }) {
 function Summary({ sheet, names }: { sheet: SchedaV1; names: CharacterNames }) {
   const sub = subclassName(sheet, names);
   return (
-    <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4" data-incoming-summary={sheet.n}>
-      <ClassIcon id={sheet.c} size={30} />
+    <div className="pg-angoli flex items-start gap-3 rounded-2xl border border-border bg-card p-4" data-incoming-summary={sheet.n}>
+      <ClassPortrait id={sheet.c} size={56} />
       <div className="min-w-0">
         <p className="font-serif text-[26px] font-bold leading-tight">{sheet.n}</p>
         <p className="text-[15px] leading-6">{className(sheet.c)}{sub ? ` · ${sub}` : ""}</p>
@@ -228,7 +247,7 @@ function IncomingCharacters({ sheets, party, names, saved, storageOk, onSave, on
   };
   return (
     <section aria-labelledby="ricevuto-titolo">
-      <h1 id="ricevuto-titolo" className="font-serif text-[32px] font-bold leading-tight">{party ? "Nuovo party" : "Nuovo personaggio"}<BetaLabel /></h1>
+      <PageTitle id="ricevuto-titolo">{party ? "Nuovo party" : "Nuovo personaggio"}</PageTitle>
       <p className="mt-1 text-[15px] text-muted">Arrivato da Total Party Kill</p>
       {!storageOk && <StorageNote ok={false} />}
       <div className="mt-4 flex flex-col gap-6">
@@ -285,7 +304,7 @@ function IncomingCharacters({ sheets, party, names, saved, storageOk, onSave, on
 function BrokenLink({ message, errors, onClose }: { message: string; errors: ErroreCampo[][]; onClose: () => void }) {
   return (
     <section aria-labelledby="link-rovinato" data-broken-link="">
-      <h1 id="link-rovinato" className="font-serif text-[32px] font-bold leading-tight">Link non valido<BetaLabel /></h1>
+      <PageTitle id="link-rovinato">Link non valido</PageTitle>
       <p role="alert" className="mt-3 rounded-xl border-2 border-[#7A1F2B] bg-[#F1DDD5] px-4 py-3 text-[16px] leading-6 text-[#7A1F2B]">{message}</p>
       {errors.some(list => list.length) && (
         <ul className="mt-3 list-disc pl-6 text-[15px] leading-6">
@@ -333,9 +352,9 @@ function CharacterSheet({ character, names, onBack, onDelete }: { character: Sav
         <ChevronLeft size={18} aria-hidden="true" />I miei personaggi
       </button>
       <div className="flex items-center gap-3">
-        <ClassIcon id={sheet.c} size={32} />
+        <ClassPortrait id={sheet.c} size={64} />
         <div className="min-w-0">
-          <h1 id="scheda-nome" className="font-serif text-[32px] font-bold leading-tight">{sheet.n}</h1>
+          <h1 id="scheda-nome" className="pg-capolettera font-serif text-[32px] font-bold leading-tight">{sheet.n}</h1>
           <p className="text-[15px] leading-6" data-sheet-line="">
             {sheet.l}° livello · <Link href={`/classi/${sheet.c}`} className="font-semibold text-[#7A1F2B] underline underline-offset-2">{className(sheet.c)}</Link>
             {sub ? ` (${sub})` : ""} · {speciesLabel(sheet)} · {backgroundName(sheet.bg)}

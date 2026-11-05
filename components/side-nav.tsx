@@ -10,6 +10,7 @@ import { EditionPill } from "@/components/edition/edition-pill";
 import { Lock } from "lucide-react";
 import { CupIcon } from "@/components/support/cup-icon";
 import { SupportLink } from "@/components/support/support-link";
+import { LogoGrimorio } from "@/components/pergamena/pergamena";
 
 const NONE: readonly string[] = [];
 
@@ -35,8 +36,8 @@ export function SideNav({ hidden = NONE, admin: adminView = false, soon = NONE, 
       data-side-nav=""
       className="fixed inset-y-0 left-0 z-40 hidden w-[240px] flex-col border-r border-border bg-[#EDE3CC] pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pt-[env(safe-area-inset-top,0px)] lg:flex"
     >
-      <Link href="/" className="mx-4 mt-6 mb-3 rounded-md px-2 font-serif text-[26px] font-semibold leading-tight text-primary focus-visible:outline-2 focus-visible:outline-primary">
-        Il Grimorio<span className="text-amber">.App</span>
+      <Link href="/" className="mx-4 mt-6 mb-3 rounded-md px-2 font-serif text-[26px] font-semibold leading-tight text-foreground focus-visible:outline-2 focus-visible:outline-primary">
+        <LogoGrimorio />
       </Link>
       {/* «La tua edizione», for the whole app. */}
       <EditionPill place="side" className="mx-6 mb-5" />

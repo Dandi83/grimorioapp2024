@@ -4,7 +4,6 @@
   min-height: calc(100vh - 80px - env(safe-area-inset-bottom, 0px));
   min-height: calc(100svh - 80px - env(safe-area-inset-bottom, 0px));
   flex-direction: column;
-  background: var(--color-background);
 }
 
 .header {
@@ -26,9 +25,7 @@
   white-space: nowrap;
 }
 
-.logo span {
-  color: var(--color-primary);
-}
+/* PROMPT 64: «I» and «G» bordeaux (pg-lettera), «.App» amber (components/pergamena/pergamena.tsx). */
 
 .headerLinks {
   display: flex;
@@ -94,6 +91,29 @@
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* PROMPT 64: torn paper where the picture meets the parchment: at the bottom on phones and tablets, on the right on
+   computers (one small SVG, no other file). */
+.library::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 16px;
+  background: var(--pg-strappo-sotto) center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+/* «COMPENDIO D&D 5E · SRD IN ITALIANO», light on the dark picture. */
+.label {
+  margin-bottom: 12px;
+  color: rgb(255 251 240 / 82%);
+}
+
+.divider {
+  margin: 16px auto 22px;
 }
 
 .copy {
@@ -249,6 +269,20 @@
     object-position: center 40%;
   }
 
+  .library::after {
+    top: 0;
+    right: -1px;
+    bottom: 0;
+    left: auto;
+    width: 16px;
+    height: auto;
+    background-image: var(--pg-strappo-destra);
+  }
+
+  .divider {
+    margin: 18px 0 24px;
+  }
+
   .shade {
     background: linear-gradient(90deg, rgb(43 33 24 / 88%) 0%, rgb(43 33 24 / 66%) 42%, rgb(43 33 24 / 18%) 100%);
   }
@@ -275,21 +309,24 @@
     margin-top: 18px;
   }
 
+  /* PROMPT 64: cream tags with a small ink icon. */
   .shortcuts a {
     display: inline-flex;
     min-height: 44px;
     align-items: center;
-    border: 1.5px solid rgb(255 251 240 / 55%);
-    border-radius: 22px;
-    background: rgb(255 251 240 / 12%);
-    padding: 0 18px;
-    color: var(--color-card);
+    gap: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-card);
+    box-shadow: var(--pg-ombra);
+    padding: 0 16px;
+    color: var(--color-foreground);
     font-size: 16px;
     font-weight: 600;
   }
 
   .shortcuts a:hover {
-    background: rgb(255 251 240 / 22%);
+    background: #F1E7D0;
   }
 
   .shortcuts a:focus-visible {
@@ -341,16 +378,6 @@
   .quote {
     color: var(--color-card);
     text-shadow: 0 2px 12px rgb(43 33 24 / 55%);
-  }
-
-  .quote::before {
-    content: "";
-    display: block;
-    width: 64px;
-    height: 3px;
-    margin: 0 auto 18px;
-    border-radius: 2px;
-    background: var(--color-amber);
   }
 
   .quote em {

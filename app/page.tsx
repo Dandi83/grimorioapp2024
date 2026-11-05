@@ -19,6 +19,7 @@ import { collectionOf } from "@/lib/monsters-types";
 import { EDITIONS, partId, soonHref, type Edition } from "@/lib/public-sections";
 import { partsOut, sectionView, sectionsOut, visibleCards } from "@/lib/section-view";
 import { getSpellIndex } from "@/lib/spell-index";
+import { Divisore, LogoGrimorio } from "@/components/pergamena/pergamena";
 import styles from "./home.module.css";
 
 
@@ -45,11 +46,11 @@ async function shortcuts(): Promise<HomeShortcut[]> {
   // «In arrivo»: the shortcut stays, attenuated, without the number, to the «in costruzione» page.
   const { soon } = await sectionView();
   const entry = (key: "incantesimi" | "bestiario", shortcut: HomeShortcut): HomeShortcut[] =>
-    !out.includes(key) ? [shortcut] : soon.includes(key) ? [{ href: soonHref(key), label: shortcut.label, soon: true }] : [];
+    !out.includes(key) ? [shortcut] : soon.includes(key) ? [{ href: soonHref(key), label: shortcut.label, icon: shortcut.icon, soon: true }] : [];
   return [
-    ...entry("incantesimi", { href: "/grimorio", label: "Incantesimi", section: "incantesimi", counts: spellCounts }),
-    ...entry("bestiario", { href: "/bestiario", label: "Bestiario", section: "bestiario", counts: monsterCounts }),
-    { href: "/compendio", label: "Compendio" },
+    ...entry("incantesimi", { href: "/grimorio", label: "Incantesimi", icon: "incantesimi", section: "incantesimi", counts: spellCounts }),
+    ...entry("bestiario", { href: "/bestiario", label: "Bestiario", icon: "bestiario", section: "bestiario", counts: monsterCounts }),
+    { href: "/compendio", label: "Compendio", icon: "compendio" },
   ];
 }
 
@@ -62,7 +63,7 @@ export default async function HomePage() {
       <JsonLd data={websiteLd()} />
       <header className={styles.header}>
         <div className={styles.logo}>
-          Il Grimorio<span>.App</span>
+          <LogoGrimorio />
         </div>
         <nav className={styles.headerLinks} aria-label="Area riservata">
           {/* No prefetch: visitors almost never open the reserved area, and its page is never cached. */}
@@ -84,11 +85,14 @@ export default async function HomePage() {
         {/* Phones and tablets; on computers the pill is in the side column. */}
         <EditionPill place="home" size="large" className={styles.edition} />
         <div className={styles.copy}>
+          {/* PROMPT 64: the small spaced capitals above the sentence, the divider with ✦ under it (light on the picture). */}
+          <p className={`pg-etichetta ${styles.label}`}>Compendio D&amp;D 5e · SRD in italiano</p>
           <h1 id="home-quote" className={styles.quote}>
             Il sapere è la più
             <br />
             potente delle <em>magie.</em>
           </h1>
+          <Divisore chiaro className={styles.divider} />
           <HomeSearch />
           {/* Computer only (home.module.css): the quick ways into the catalog, with the real numbers. */}
           <nav className={styles.shortcuts} aria-label="Scorciatoie">

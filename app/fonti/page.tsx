@@ -99,6 +99,10 @@ export default function SourcesPage() {
         <h2 id="no-srd-titolo" className="font-serif text-xl font-bold text-foreground">Schede NO SRD</h2>
         <p>Le schede con l’etichetta NO SRD sono state inserite dal Grimorio e non fanno parte del System Reference Document: non sono coperte dalla sua licenza CC-BY.</p>
       </section>
+      <section aria-labelledby="grafica-app" data-grafica-app="" className="space-y-3 text-sm leading-6 text-muted">
+        <h2 id="grafica-app" className="font-serif text-xl font-bold text-foreground">Grafica dell’app</h2>
+        <p data-credito-ritratti="">Ritratti delle classi: grafica originale © 2026 D.d.B.</p>
+      </section>
       <section className="space-y-3 text-sm leading-6 text-muted">
         <h2 className="font-serif text-xl font-bold text-foreground">Icone dei tipi di danno</h2>
         <p>Icone di Baldur’s Gate 3 © Larian Studios, consultate tramite BG3 Wiki. Sono elementi grafici distinti dai testi SRD; Il Grimorio.App non è affiliata a Larian Studios.</p>
