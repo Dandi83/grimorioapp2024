@@ -15,7 +15,7 @@ Passo G3 dell'integrazione con Total Party Kill (TPK): TPK crea i personaggi, il
 1. **Elenco**:
    - titolo con BETA e il riquadro tratteggiato «Salvati solo su questo telefono…»;
    - una card per personaggio: icona della classe (12 icone lucide), nome, «Classe · Specie (opzione) · N° livello», freccia;
-   - «＋ Crea il tuo personaggio» apre `https://total-party-kill.vercel.app/crea?ritorno=grimorio` in una nuova scheda;
+   - «＋ Crea il tuo personaggio» apre `https://www.totalpartykill.app/crea?ritorno=grimorio` (dominio di TPK dal PROMPT 63, `lib/tpk.ts`) in una nuova scheda;
    - se non ci sono personaggi, un breve invito a crearne uno.
 2. **Personaggio ricevuto** (`#pg=`, `#pg0=`, `#party=`, `#party0=`; letto con `decodeHash`, controllato con `validaScheda`):
    - riepilogo del personaggio e sezione «Controlli» con le spunte;

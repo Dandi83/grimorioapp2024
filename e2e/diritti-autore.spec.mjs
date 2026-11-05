@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 const SHOTS = process.env.DIRITTI_SHOTS;
-const LINE = "© 2026 D.D.B. – Il Grimorio.App · Contenuti SRD sotto licenza CC BY 4.0";
+const LINE = "© 2026 D.d.B. – Il Grimorio.App · Contenuti SRD sotto licenza CC BY 4.0";
 const DEED = "https://creativecommons.org/licenses/by/4.0/deed.it";
 const SRD52 = JSON.parse(fs.readFileSync(new URL("../lib/data/srd-italiano-5.2.1.json", import.meta.url), "utf8")).attribution;
 // sha256 of the HTML of /fonti and /info before this change (main faa4d54), copyright line and section left out.
@@ -43,7 +43,7 @@ test("«Diritti d’autore» in /info before the attributions, «Proprietà dei 
   await page.goto("/info");
   const section = page.locator("section[data-copyright]");
   await expect(section.getByRole("heading", { level: 2 })).toHaveText("Diritti d’autore");
-  await expect(section).toContainText("© 2026 D.D.B. – Il Grimorio.App. Codice, grafica, logo e testi originali dell’app (comprese le traduzioni e i contenuti scritti per Il Grimorio.App) sono opera dell’autore e non possono essere copiati o riutilizzati senza permesso.");
+  await expect(section).toContainText("© 2026 D.d.B. – Il Grimorio.App. Codice, grafica, logo e testi originali dell’app (comprese le traduzioni e i contenuti scritti per Il Grimorio.App) sono opera dell’autore e non possono essere copiati o riutilizzati senza permesso.");
   await expect(section).toContainText("I contenuti tratti dal System Reference Document (SRD 5.1 e SRD 5.2) sono usati secondo la licenza Creative Commons Attribuzione 4.0 e restano liberamente riutilizzabili alle condizioni di quella licenza: vedi le attribuzioni qui sotto e la pagina Fonti.");
   await expect(section).toContainText("Il Grimorio.App non è un prodotto ufficiale e non è affiliato a Wizards of the Coast.");
   await expect(section.getByRole("link", { name: "Fonti" })).toHaveAttribute("href", "/fonti");
@@ -59,7 +59,7 @@ test("«Diritti d’autore» in /info before the attributions, «Proprietà dei 
 
   await page.goto("/termini");
   await expect(page.getByRole("heading", { name: "Proprietà dei contenuti" })).toBeVisible();
-  await expect(page.locator("p[data-copyright]")).toContainText("© 2026 D.D.B. – Il Grimorio.App.");
+  await expect(page.locator("p[data-copyright]")).toContainText("© 2026 D.d.B. – Il Grimorio.App.");
   // The non-affiliation sentence is said once.
   await expect(page.getByText(/non è affiliat/i)).toHaveCount(1);
 
@@ -80,6 +80,6 @@ test("the SRD cards carry no ©", async ({ page }) => {
     await page.goto(address);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.locator("[data-copyright], [data-copyright-line]"), address).toHaveCount(0);
-    await expect(page.getByText("D.D.B."), address).toHaveCount(0);
+    await expect(page.getByText("D.d.B."), address).toHaveCount(0);
   }
 });

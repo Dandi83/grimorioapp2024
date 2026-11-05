@@ -13,9 +13,8 @@ import {
 } from "@/lib/characters-beta";
 import { decodeHash, encodePg, validaScheda, type ErroreCampo, type SchedaV1 } from "@/lib/shared/scheda-tpk-v1";
 import { spellHref, storedSpellId } from "@/lib/spell-public-id";
+import { TPK_CREATE_URL, tpkImportUrl } from "@/lib/tpk";
 
-const TPK = "https://total-party-kill.vercel.app";
-const CREATE_URL = `${TPK}/crea?ritorno=grimorio`;
 const SITE = "https://ilgrimorio.app";
 const LINK_HASH = /^#(pg|pg0|party|party0)=/;
 
@@ -155,7 +154,7 @@ function CharacterList({ characters, storageOk, onOpen }: { characters: SavedCha
         </ul>
       )}
       <div className="mt-7 flex flex-col items-center gap-2">
-        <a href={CREATE_URL} target="_blank" rel="noopener noreferrer" data-create-character=""
+        <a href={TPK_CREATE_URL} target="_blank" rel="noopener noreferrer" data-create-character=""
           className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#7A1F2B] px-6 text-[17px] font-bold text-[#FFFBF0] sm:w-auto">
           ＋ Crea il tuo personaggio
         </a>
@@ -310,7 +309,7 @@ function CharacterSheet({ character, names, onBack, onDelete }: { character: Sav
   const [links, setLinks] = useState<{ play: string; share: string } | null>(null);
   useEffect(() => {
     let alive = true;
-    void encodePg(sheet).then(hash => { if (alive) setLinks({ play: `${TPK}/importa${hash}`, share: `${SITE}/personaggi${hash}` }); });
+    void encodePg(sheet).then(hash => { if (alive) setLinks({ play: tpkImportUrl(hash), share: `${SITE}/personaggi${hash}` }); });
     return () => { alive = false; };
   }, [sheet]);
   const scores = finalAbilities(sheet);
@@ -396,7 +395,7 @@ function CharacterSheet({ character, names, onBack, onDelete }: { character: Sav
       )}
 
       <div className="mt-8 flex flex-col gap-2">
-        <a href={links?.play ?? `${TPK}/importa`} target="_blank" rel="noopener noreferrer" data-play=""
+        <a href={links?.play ?? tpkImportUrl("")} target="_blank" rel="noopener noreferrer" data-play=""
           className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#7A1F2B] px-6 text-[17px] font-bold text-[#FFFBF0]">🎲 Gioca in Total Party Kill</a>
         <button type="button" onClick={copy} disabled={!links} data-copy-link=""
           className="min-h-12 rounded-full border-2 border-[#7A1F2B] px-6 text-[17px] font-bold text-[#7A1F2B]">🔗 Copia il link</button>
