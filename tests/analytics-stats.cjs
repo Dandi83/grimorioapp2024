@@ -49,6 +49,15 @@ assert.deepEqual(Object.keys(s.PERIODS).sort(),[...s.PERIOD_ORDER].sort());
  // The edges: the start is in the first bar, the last minute in the last one, the end and before the start outside.
  assert.equal(s.barOf(w,Date.parse(w.start)),0);assert.equal(s.barOf(w,Date.parse(w.end)-1),23);
  assert.equal(s.barOf(w,Date.parse(w.end)),-1);assert.equal(s.barOf(w,Date.parse(w.start)-1),-1);
+ // PROMPT 62: a fixed clock in the first minute of an hour (15:00:30 in Rome). The window ends at 15:00, excluded: an event
+ // «alle 15:00» of today is not drawn yet, the one of two hours before (13:00, what e2e/statistiche-24-ore uses) is.
+ { const first=s.hourWindow(new Date('2026-11-05T14:00:30Z'));
+   assert.equal(s.barOf(first,s.markerTime({giorno:'2026-11-05',ora:15})),-1);
+   assert.equal(s.barOf(first,s.markerTime({giorno:'2026-11-05',ora:13})),22);
+   const late=s.hourWindow(new Date('2026-11-05T14:59:59Z'));
+   assert.equal(s.barOf(late,s.markerTime({giorno:'2026-11-05',ora:13})),21);
+   const night=s.hourWindow(new Date('2026-11-05T00:30:00Z'));
+   assert.equal(s.barOf(night,s.markerTime({giorno:'2026-11-04',ora:23})),21,'before 02:00 the event two hours back is yesterday\'s'); }
  assert.equal(s.barOf(w,Date.parse('2026-10-30T05:19:59Z')),14);assert.equal(s.barOf(w,Date.parse('2026-10-30T05:20:00Z')),15);
  // Rome after the summer time (UTC+1): 15:20–16:20 yesterday … 14:20–15:20 today.
  const labels=s.hourLabels(w.bars);assert.equal(labels[0],'15:20–16:20');assert.equal(labels[23],'14:20–15:20');
