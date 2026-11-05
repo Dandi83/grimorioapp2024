@@ -24,6 +24,8 @@ const nextConfig = {
   images: {
     // WebP only: AVIF made images load slower and choppier on iPhone (18 October 2026).
     formats: ["image/webp"],
+    // 75: every picture as before; 60: the Home picture on phones only (components/home/hero-picture.tsx, PROMPT 59).
+    qualities: [60, 75],
     minimumCacheTTL: 2678400,
   },
   async redirects() {

@@ -19,7 +19,8 @@ function load(relative){
  const mod={exports:{}};cache.set(filename,mod);
  const code=ts.transpileModule(fs.readFileSync(filename,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
  new Function('require','module','exports',code)(id=>{
-  if(id==='next/image')return {__esModule:true,default:props=>{const rest={...props};delete rest.fill;delete rest.priority;return React.createElement('img',rest);}};
+  // getImageProps: the Home picture (components/home/hero-picture.tsx, PROMPT 59), a srcset per quality.
+  if(id==='next/image')return {__esModule:true,default:props=>{const rest={...props};delete rest.fill;delete rest.priority;return React.createElement('img',rest);},getImageProps:props=>{const rest={...props};delete rest.fill;delete rest.quality;const q=props.quality??75;return {props:{...rest,src:`/_next/image?url=x&w=828&q=${q}`,srcSet:[640,828,1080].map(w=>`/_next/image?url=x&w=${w}&q=${q} ${w}w`).join(', ')}};}};
   if(id.startsWith('@/')||id.startsWith('.')){
    let file=id.startsWith('@/')?path.resolve(id.slice(2)):path.resolve(path.dirname(filename),id);
    if(file.endsWith('.json'))return JSON.parse(fs.readFileSync(file,'utf8'));
