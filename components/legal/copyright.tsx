@@ -16,7 +16,7 @@ export function CopyrightSection({ affiliation = true }: { affiliation?: boolean
       className="mt-5 space-y-2 rounded-[16px] border-[1.5px] border-primary/40 bg-card px-4 py-3.5 text-[16px] leading-snug text-foreground">
       <h2 id="diritti-autore" className="font-serif text-[22px] font-bold leading-tight text-primary">Diritti d’autore</h2>
       <p>
-        © 2026 D.D.B. – Il Grimorio.App. Codice, grafica, logo e testi originali dell’app (comprese le traduzioni e i contenuti
+        © 2026 D.d.B. – Il Grimorio.App. Codice, grafica, logo e testi originali dell’app (comprese le traduzioni e i contenuti
         scritti per Il Grimorio.App) sono opera dell’autore e non possono essere copiati o riutilizzati senza permesso.
       </p>
       <p>
@@ -34,7 +34,7 @@ export function CopyrightTerms() {
   return (
     <>
       <p data-copyright="">
-        © 2026 D.D.B. – Il Grimorio.App. Codice, grafica, logo e testi originali dell’app, comprese le traduzioni e i contenuti
+        © 2026 D.d.B. – Il Grimorio.App. Codice, grafica, logo e testi originali dell’app, comprese le traduzioni e i contenuti
         scritti per Il Grimorio.App, sono opera dell’autore e non possono essere copiati o riutilizzati senza permesso.
       </p>
       <p>
@@ -50,7 +50,7 @@ export function CopyrightTerms() {
 export function CopyrightLine() {
   return (
     <p data-copyright-line="" className="mt-8 border-t border-divider pt-3 text-[13px] leading-5 text-muted">
-      © 2026 D.D.B. – Il Grimorio.App · Contenuti SRD sotto licenza{" "}
+      © 2026 D.d.B. – Il Grimorio.App · Contenuti SRD sotto licenza{" "}
       <a href={CC_BY_DEED_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">CC BY 4.0</a>
     </p>
   );

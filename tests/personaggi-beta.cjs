@@ -69,5 +69,15 @@ const BRENNA = fs.readFileSync('tests/scheda-tpk-grimorio.cjs', 'utf8').match(/'
   assert.ok(provider.includes('path.startsWith("/personaggi")'), '/personaggi is not counted');
   for (const route of ['/personaggi', '/personaggi#pg=abc', '/spell/palla-di-fuoco#pg=abc', '/#party=xyz']) assert.ok(!ANALYTICS_PATH.test(route), route);
 
+  // PROMPT 63: the address of Total Party Kill lives in lib/tpk.ts only; the old Vercel address is gone from the app.
+  const tpkLinks = require('../lib/tpk.ts');
+  assert.equal(tpkLinks.TPK_URL, 'https://www.totalpartykill.app');
+  assert.equal(tpkLinks.TPK_CREATE_URL, 'https://www.totalpartykill.app/crea?ritorno=grimorio');
+  assert.equal(tpkLinks.tpkImportUrl('#pg=abc'), 'https://www.totalpartykill.app/importa#pg=abc');
+  const old = [];
+  (function walk(dir) { for (const e of fs.readdirSync(dir, { withFileTypes: true })) { const f = `${dir}/${e.name}`; if (e.isDirectory()) { if (!['node_modules', '.next', '.git', 'test-results'].includes(e.name)) walk(f); } else if (/\.(ts|tsx|js|mjs|cjs|json|md)$/.test(e.name) && fs.readFileSync(f, 'utf8').includes('total-party-kill' + '.vercel.app')) old.push(f); } })('.');
+  assert.deepEqual(old, [], 'the old address of TPK');
+  assert.ok(!/totalpartykill/.test(fs.readFileSync('lib/security-headers.mjs', 'utf8')), 'TPK is only linked: nothing in the CSP');
+
   console.log(`I miei personaggi (beta): Brenna ${c.cardLine(brenna)}, scores and modifiers, names for every id of the shared file, saving in «${c.STORAGE_KEY}» (private window handled), hidden section, statistics without «#…».`);
 })().catch(error => { console.error(error); process.exit(1); });
