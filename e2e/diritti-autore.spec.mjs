@@ -22,8 +22,9 @@ const MAIN = {
 async function legalHtml(page) {
   return page.locator("main article").first().evaluate(article => {
     const copy = article.cloneNode(true);
-    // The new parts of the page: the copyright note and «Sostieni il Grimorio» (PROMPT 7), never the attributions.
-    copy.querySelectorAll("[data-copyright], [data-copyright-line], [data-support-row]").forEach(node => node.remove());
+    // The new parts of the page: the copyright note, «Sostieni il Grimorio» (PROMPT 7) and «Grafica dell’app» (the credit
+    // of the class portraits, PROMPT 64), never the attributions.
+    copy.querySelectorAll("[data-copyright], [data-copyright-line], [data-support-row], [data-grafica-app]").forEach(node => node.remove());
     return copy.innerHTML;
   });
 }

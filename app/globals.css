@@ -314,3 +314,108 @@ html[data-statistics-room] main {
     padding-bottom: 60px;
   }
 }
+
+/*
+ * «Pergamena illustrata» (PROMPT 64, passo 1): the shared ornaments of titles, frames and buttons — never of the text
+ * of the cards. Only CSS and small SVG; the colours are those of the palette plus the copper of the corners (#9C5B35).
+ * The React pieces are in components/pergamena/pergamena.tsx.
+ */
+:root {
+  --pg-rame: #9C5B35;
+  --pg-ombra: 0 1px 2px rgb(60 40 20 / 8%), 0 6px 18px rgb(60 40 20 / 10%);
+  /* Paper: only lighter flecks over the parchment, so dark text never loses contrast; one small tile, no animation. */
+  --pg-carta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .99 0 0 0 0 .96 1.6 0 0 0 -.7'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23f)' opacity='.55'/%3E%3C/svg%3E");
+  /* The four copper corners (L with a dot), 12 px, 5 px inside the border. */
+  --pg-a1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M1 11.5V3a2 2 0 0 1 2-2h8.5' fill='none' stroke='%239C5B35' stroke-width='1.5'/%3E%3Ccircle cx='4.3' cy='4.3' r='1.1' fill='%239C5B35'/%3E%3C/svg%3E");
+  --pg-a2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M11 11.5V3a2 2 0 0 0-2-2H.5' fill='none' stroke='%239C5B35' stroke-width='1.5'/%3E%3Ccircle cx='7.7' cy='4.3' r='1.1' fill='%239C5B35'/%3E%3C/svg%3E");
+  --pg-a3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M1 .5V9a2 2 0 0 0 2 2h8.5' fill='none' stroke='%239C5B35' stroke-width='1.5'/%3E%3Ccircle cx='4.3' cy='7.7' r='1.1' fill='%239C5B35'/%3E%3C/svg%3E");
+  --pg-a4: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12'%3E%3Cpath d='M11 .5V9a2 2 0 0 1-2 2H.5' fill='none' stroke='%239C5B35' stroke-width='1.5'/%3E%3Ccircle cx='7.7' cy='7.7' r='1.1' fill='%239C5B35'/%3E%3C/svg%3E");
+  /* Torn paper: a soft irregular edge (curves, not teeth), parchment with a slightly darker rim. */
+  --pg-strappo-sotto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 20' preserveAspectRatio='none'%3E%3Cpath d='M0 20V7C18 4 30 10 47 6S77 9 96 7S126 1 148 4S183 11 205 7S236 2 258 6S290 5 311 4S345 10 366 8S392 4 400 7V20Z' fill='%23DDCFAE'/%3E%3Cpath d='M0 20V9C18 6 30 12 47 8S77 11 96 9S126 3 148 6S183 13 205 9S236 4 258 8S290 7 311 6S345 12 366 10S392 6 400 9V20Z' fill='%23F6EFDF'/%3E%3C/svg%3E");
+  --pg-strappo-destra: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 400' preserveAspectRatio='none'%3E%3Cpath d='M20 0H7C4 18 10 30 6 47S9 77 7 96S1 126 4 148S11 183 7 205S2 236 6 258S5 290 4 311S10 345 8 366S4 392 7 400H20Z' fill='%23DDCFAE'/%3E%3Cpath d='M20 0H9C6 18 12 30 8 47S11 77 9 96S3 126 6 148S13 183 9 205S4 236 8 258S7 290 6 311S12 345 10 366S6 392 9 400H20Z' fill='%23F6EFDF'/%3E%3C/svg%3E");
+}
+
+body {
+  background-image: var(--pg-carta);
+}
+
+@layer components {
+  /* Capilettera: the first letter in bordeaux, 1.35×, EB Garamond; line-height 0, so the line does not move. */
+  .pg-capolettera::first-letter,
+  .pg-lettera {
+    color: var(--color-primary);
+    font-family: var(--font-serif);
+    font-size: 1.35em;
+    line-height: 0;
+  }
+
+  /* The small spaced capitals above a title. */
+  .pg-etichetta {
+    margin: 0;
+    color: var(--color-muted);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+
+  /* Under a title: thin ink lines left and right, the small ornament in the middle. */
+  .pg-divisore {
+    display: flex;
+    width: 100%;
+    max-width: 300px;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-primary);
+  }
+  .pg-divisore::before,
+  .pg-divisore::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, rgb(43 33 24 / 55%));
+  }
+  .pg-divisore::after {
+    background: linear-gradient(90deg, rgb(43 33 24 / 55%), transparent);
+  }
+  /* Light, on the dark picture of the Home. */
+  .pg-divisore-chiaro {
+    color: var(--color-amber);
+  }
+  .pg-divisore-chiaro::before {
+    background: linear-gradient(90deg, transparent, rgb(255 251 240 / 70%));
+  }
+  .pg-divisore-chiaro::after {
+    background: linear-gradient(90deg, rgb(255 251 240 / 70%), transparent);
+  }
+
+  /* Copper corners inside the border of a card, with a warm light shadow (no glow). */
+  .pg-angoli {
+    background-image: var(--pg-a1), var(--pg-a2), var(--pg-a3), var(--pg-a4);
+    background-position: top 5px left 5px, top 5px right 5px, bottom 5px left 5px, bottom 5px right 5px;
+    background-repeat: no-repeat;
+    box-shadow: var(--pg-ombra);
+  }
+
+  /* The tilted stamp («BETA»): bordeaux border and text, small capitals, −8°. */
+  .pg-timbro {
+    display: inline-block;
+    margin-left: 0.6rem;
+    border: 2px solid var(--color-primary);
+    border-radius: 4px;
+    outline: 1px solid rgb(122 31 43 / 35%);
+    outline-offset: 2px;
+    padding: 1px 7px;
+    color: var(--color-primary);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 16px;
+    text-transform: uppercase;
+    transform: rotate(-8deg);
+    vertical-align: middle;
+  }
+}
