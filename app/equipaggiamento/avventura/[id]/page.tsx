@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -76,9 +77,12 @@ function TableCards({ table }: { table: GearTable }) {
 /** level: one H1 per page (PROMPT 45): the 2014 panel next to a 2024 one has the same title as an H2, same look. */
 function Heading({ nome, kind, edition, level: Title = "h1" }: { nome: string; kind: string; edition: EquipmentEdition; level?: "h1" | "h2" }) {
   return (
-    <div className="text-center">
-      <Title className="font-serif text-4xl font-bold leading-tight">{nome}</Title>
-      <p className="mt-1 text-[15px] text-muted">{kind} · edizione {edition}</p>
+    <div className="flex flex-col items-center gap-1.5 text-center">
+      {/* PROMPT 65: label, capilettera, divider with ✦; the line «… · edizione …» under it as before. */}
+      <Etichetta parti={["Equipaggiamento d’avventura", edition]} />
+      <Title className="pg-capolettera font-serif text-4xl font-bold leading-tight">{nome}</Title>
+      <Divisore />
+      <p className="text-[15px] text-muted">{kind} · edizione {edition}</p>
     </div>
   );
 }
@@ -87,7 +91,7 @@ function Sheet2024({ item }: { item: GearItem }) {
   return (
     <div className="space-y-5 pt-4">
       <Heading nome={item.nome} kind={item.dotazione ? "Dotazione" : "Equipaggiamento d’avventura"} edition="2024" />
-      <div className="grid grid-cols-2 rounded-[14px] border border-border bg-card">
+      <div className="pg-angoli grid grid-cols-2 rounded-[14px] border border-border bg-card">
         <Cell label="COSTO" value={item.prezzo || "non verificato"} />
         <Cell label="PESO" value={item.peso ?? "non verificato"} />
       </div>
@@ -113,7 +117,7 @@ function Sheet2014({ item, level }: { item: Gear2014Item; level?: "h1" | "h2" })
     <div className="space-y-5 pt-4">
       <Heading nome={item.nome} kind={item.dotazione ? "Dotazione" : item.gruppo ? "Gruppo di oggetti" : "Equipaggiamento d’avventura"} edition="2014" level={level} />
       {cells.length > 0 && (
-        <div className={`grid rounded-[14px] border border-border bg-card ${cells.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
+        <div className={`pg-angoli grid rounded-[14px] border border-border bg-card ${cells.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
           {cells.map(([label, value]) => <Cell key={label} label={label} value={value} />)}
         </div>
       )}

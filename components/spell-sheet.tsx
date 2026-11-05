@@ -2,6 +2,7 @@ import { AdminCardSource } from "./admin-edit/admin-card-source";
 import { adminOnlySource, LABEL_PILL, NoSrdTag, SourcePill } from "./card-source-pill";
 import { HtmlText } from "./html-text";
 import { MetaCell } from "./meta-cell";
+import { Divisore, Etichetta } from "./pergamena/pergamena";
 import { RulesEditionBadge } from "./rules-edition-badge";
 import { prepareSpellDisplay, type CardDisplayContext, type CardSource } from "../lib/card-display";
 import { capitalizeWords, type Spell } from "../lib/spells-types";
@@ -34,13 +35,16 @@ export function SpellSheetHeading({ spell, context, heading: Heading = "h1" }: {
   const view = prepareSpellDisplay(spell, context);
   return (
     <>
-      <span className="mb-3 inline-flex items-center gap-2 rounded-full border bg-elevated/70 px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-foreground" style={{ borderColor: view.color }}>
-        <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: view.color }} />
-        {view.badge}
-      </span>
-      <Heading className="font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
+      {/* PROMPT 65: «INCANTESIMO · 3° LIVELLO · INVOCAZIONE» above the name (level and school as before, with the dot
+          in the colour of the school), the name with its capilettera and the divider with ✦ under it. The label keeps a
+          parchment backing, as the pill had, so it stays readable on the dark parts of the picture (≥ 4.5:1). */}
+      <Etichetta parti={["Incantesimo"]} className="-ml-2.5 mb-1.5 inline-block rounded-full bg-background/85 px-2.5 py-1" segno={<span className="mr-2 inline-block size-2 rounded-full align-[0.1em]" style={{ backgroundColor: view.color }} aria-hidden="true" />}>
+        <span data-spell-badge="">{view.badge}</span>
+      </Etichetta>
+      <Heading className="pg-capolettera font-serif text-4xl font-bold leading-tight tracking-tight text-foreground text-balance">
         {view.title}
       </Heading>
+      <Divisore className="mt-2" />
       <RulesEditionBadge edition={spell.edizione} variant="dark" />
       <CardLabels rituale={view.rituale} source={view.source} />
     </>
@@ -53,7 +57,7 @@ export function SpellSheetBody({ spell, context }: { spell: SheetSpell; context?
   return (
     <>
       {/* The four values in one ruled panel, as wide as the card column. */}
-      <div className="mx-6 my-5 grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-card [&>*:nth-child(-n+2)]:border-b [&>*:nth-child(even)]:border-l [&>*]:border-divider">
+      <div className="pg-angoli mx-6 my-5 grid grid-cols-2 overflow-hidden rounded-xl border border-border bg-card [&>*:nth-child(-n+2)]:border-b [&>*:nth-child(even)]:border-l [&>*]:border-divider">
         <MetaCell plain label="Tempo di lancio" value={view.castingTime} />
         <MetaCell plain label="Gittata" value={spell.gittata} />
         <MetaCell plain label="Componenti" value={spell.componenti} />

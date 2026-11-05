@@ -3,16 +3,26 @@ import Link from "next/link";
 import { MagicItemText } from "@/components/magic-items/magic-item-text";
 import { damageRuleLinks } from "@/lib/damage-rule-link";
 import { RarityChip } from "@/components/magic-items/rarity-chip";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { MAGIC_ITEM_SOURCES, attunementText, magicItemsRulesHref, type MagicItem } from "@/lib/magic-items";
 import { rarityCategories, type MagicItemEdition } from "@/lib/magic-items-types";
 
 const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
+/** The rarity of the chip for the label above the name: «Raro», «Non comune – Molto raro», «Rarità variabile». */
+function rarityLabel(printed: string): string | undefined {
+  const categories = rarityCategories(printed);
+  if (!categories.length) return undefined;
+  const name = (category: string) => (category === "Variabile" ? "Rarità variabile" : category);
+  const first = categories[0], last = categories[categories.length - 1];
+  return first === last ? name(first) : `${name(first)} – ${name(last)}`;
+}
+
 /** Type, rarity and attunement read from the printed type line, as chips. */
 function Chips({ item }: { item: MagicItem }) {
   const attunement = attunementText(item);
   return (
-    <ul className="flex flex-wrap justify-center gap-2" aria-label="Tipo, rarità e sintonia">
+    <ul className="pg-angoli mx-auto flex w-fit max-w-full flex-wrap justify-center gap-2 rounded-xl border border-border bg-card/60 px-6 py-3" aria-label="Tipo, rarità e sintonia">
       <li className="inline-flex min-h-7 items-center rounded-[6px] border border-border bg-card px-2 text-[13px] font-bold">
         {item.tipo}{item.dettaglioTipo ? ` (${item.dettaglioTipo})` : ""}
       </li>
@@ -32,7 +42,12 @@ export function MagicItemSheet({ item, edition, hidden = [], heading: Heading = 
   return (
     <div className="space-y-5 pt-4">
       <div className="space-y-3 text-center">
-        <Heading className="font-serif text-4xl font-bold leading-tight">{item.nome}</Heading>
+        {/* PROMPT 65: «OGGETTO MAGICO · RARO» (the rarity of the chip), capilettera and divider; the chips in the copper frame. */}
+        <div className="flex flex-col items-center gap-1">
+          <Etichetta parti={["Oggetto magico", rarityLabel(item.rarita)]} />
+          <Heading className="pg-capolettera font-serif text-4xl font-bold leading-tight">{item.nome}</Heading>
+          <Divisore className="mt-1" />
+        </div>
         <Chips item={item} />
       </div>
       <MagicItemText blocks={item.blocchi} rules={damageRuleLinks(edition === "2014", hidden)} />

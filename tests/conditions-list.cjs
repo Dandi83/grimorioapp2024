@@ -34,7 +34,7 @@ assert.ok(rows['2014'].every(r=>r.href.endsWith('-2014')));
 for(const r of [...rows['2024'],...rows['2014']]){assert.deepEqual(Object.keys(r).sort(),['href','id','nome']);assert.equal(r.href,`/manuale/${r.id}`);}
 // Compendio: fourth tile of «Regole e oggetti» after Oggetti magici, the same style as the others (no «nuovo» label).
 const compendio=fs.readFileSync('app/compendio/page.tsx','utf8');
-assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]),['/classi','/talenti','/equipaggiamento','/avanzamento','/oggetti-magici','/compendio/condizioni']);
+assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]),['/classi','/talenti','/personaggi','/equipaggiamento','/avanzamento','/oggetti-magici','/compendio/condizioni']);
 assert.ok(compendio.includes('text: "Accecato, Avvelenato, Spaventato…"'));
 assert.ok(!/nuovo|NUOVO/.test(compendio+fs.readFileSync('components/section-tiles.tsx','utf8')));
 // Offline: the list and the condition pages are public pages of the service worker.

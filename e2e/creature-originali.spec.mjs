@@ -103,7 +103,7 @@ test("first state: «Mostri del Grimorio» in arrivo, the community visible; our
   await expect(block.locator("[data-originals-row]")).toBeVisible();
   await expect(block.locator("[data-originals-all]")).toHaveAttribute("data-originals-all", "1");
   await expect(block.locator("[data-originals-tile=grimorio]")).toHaveAttribute("data-tile-state", "in-arrivo");
-  await expect(block.locator("[data-originals-tile=grimorio] [data-soon-tag]")).toHaveText("In arrivo");
+  await expect(block.locator("[data-originals-tile=grimorio] [data-soon-tag]")).toHaveText("Presto");
   await expect(block.locator("[data-originals-tile=grimorio] [data-originals-count]")).toHaveCount(0);
   await expect(block.locator("[data-originals-link=grimorio]")).toHaveAttribute("href", "/in-arrivo/bestiario%3Agrimorio");
   await expect(page.locator(`a[href="/mostro/${OURS}"]`)).toHaveCount(0);

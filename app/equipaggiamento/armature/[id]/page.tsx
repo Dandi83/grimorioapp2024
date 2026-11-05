@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -60,11 +61,14 @@ function Sheet({ id, armor, category, heading: Heading = "h1", share }: { id: st
       })} />}
       <div className="flex flex-col items-center gap-1.5 pt-4 text-center">
         <ArmorBadge ca={badge.ca} note={["CA"]} size="sheet" />
-        <Heading className="mt-2 font-serif text-4xl font-bold leading-tight">{armor.nome}</Heading>
+        {/* PROMPT 65: label, capilettera, divider with ✦; copper corners on the weight and cost. */}
+        <Etichetta parti={["Armatura", armor.edition]} className="mt-2" />
+        <Heading className="pg-capolettera font-serif text-4xl font-bold leading-tight">{armor.nome}</Heading>
+        <Divisore />
         <p className="text-[15px] text-muted">{ARMOR_CATEGORY_NAMES[category]}</p>
         {armorClassRest(armor) && <p className="mt-1 font-serif text-xl font-bold text-primary">{armorClassRest(armor)}</p>}
       </div>
-      <div className="grid grid-cols-2 rounded-[14px] border border-border bg-card">
+      <div className="pg-angoli grid grid-cols-2 rounded-[14px] border border-border bg-card">
         <Cell label="PESO" value={armor.peso} />
         <Cell label="COSTO" value={armor.costo} />
       </div>

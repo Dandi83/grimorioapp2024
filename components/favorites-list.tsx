@@ -1,5 +1,6 @@
 "use client";
 
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { useEffect, useMemo, useState } from "react";
 import { Star } from "lucide-react";
 
@@ -47,9 +48,11 @@ export function FavoritesList({ unavailable = false }: { unavailable?: boolean }
   return (
     <div>
       <header className="border-b border-border px-6 pb-4 pt-6">
-        <h1 className="font-serif text-3xl font-bold text-foreground">
+        <Etichetta parti={["Compendio D&D 5e"]} />
+        <h1 className="pg-capolettera font-serif text-3xl font-bold text-foreground">
           Preferiti
         </h1>
+        <Divisore className="mt-1.5" />
         <p className="mt-1 text-[13px] tracking-wide text-muted">
           {ready
             ? `${favSpells.length} ${favSpells.length === 1 ? "incantesimo salvato" : "incantesimi salvati"} · ${favMonsters.length} ${favMonsters.length === 1 ? "mostro salvato" : "mostri salvati"}`

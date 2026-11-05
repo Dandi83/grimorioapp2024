@@ -1,5 +1,6 @@
 "use client";
 
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
@@ -69,10 +70,12 @@ export function ToolsBrowser({ rows, intro, groupTexts }: {
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
-      <div className="flex items-center justify-between gap-3 border-b-4 border-primary pb-3">
-        <h1 className="min-w-0 font-serif text-[40px] font-bold leading-tight">Strumenti</h1>
+      <Etichetta parti={["Equipaggiamento", edition]} />
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="pg-capolettera min-w-0 font-serif text-[40px] font-bold leading-tight">Strumenti</h1>
         <SectionEditionPill section="strumenti" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} />
       </div>
+      <Divisore className="mt-1" />
       <p className="mt-3 text-[15px] text-muted">{items.length} strumenti · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}</p>
       {missing && <p role="status" className="mt-3 rounded-xl border border-primary/40 bg-card px-4 py-2.5 text-[15px] font-semibold text-primary">Questo strumento non c’è nel {missing}.</p>}
       <div className="mt-3">{intro[edition]}</div>

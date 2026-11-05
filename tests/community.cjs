@@ -98,7 +98,7 @@ const community=require('../lib/community.ts');
  assert.ok(both.includes('1 creatura ›')&&both.includes('0 creature ›'),'1 creatura / N creature, 0 too');
  assert.ok(both.includes('href="/bestiario/del-grimorio"')&&both.includes('href="/bestiario/creati-da-voi"')&&both.includes('href="/bestiario/creature-originali"')&&both.includes('href="/bestiario/proponi"'));
  const soon=block('in-arrivo','visibile');
- assert.ok(soon.includes('data-tile-state="in-arrivo"')&&soon.includes('href="/in-arrivo/bestiario%3Agrimorio"')&&soon.includes('In arrivo'),'«In arrivo»: dimmed, to the page «in arrivo»');
+ assert.ok(soon.includes('data-tile-state="in-arrivo"')&&soon.includes('href="/in-arrivo/bestiario%3Agrimorio"')&&soon.includes('data-timbro-presto')&&soon.includes('>Presto<'),'«In arrivo»: softer with the «PRESTO» stamp (PROMPT 65), to the page «in arrivo»');
  assert.ok(soon.includes('Vedi tutte · 0 ›'),'a group «In arrivo» is not counted');
  const communitySoon=block('visibile','in-arrivo');
  assert.ok(communitySoon.includes('href="/in-arrivo/bestiario%3Ahomebrew"')&&communitySoon.includes('href="/bestiario/proponi"'),'community «In arrivo»: «Proponi il tuo» stays');

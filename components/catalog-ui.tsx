@@ -1,5 +1,6 @@
 "use client";
 
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { Filter, Search, X } from "lucide-react";
 
@@ -7,19 +8,25 @@ import { SectionEditionPill } from "@/components/edition/edition-pill";
 import { LIST_SEARCH_PLACEHOLDER, SEARCH_INPUT } from "@/lib/search-input";
 
 /**
- * Shared catalog header: serif title, 2024 | 2014 edition selector and a 4 px bordeaux rule.
+ * Shared catalog header: the label in small capitals (PROMPT 65), serif title with its capilettera, 2024 | 2014 edition
+ * selector and the divider with ✦ (in the place of the 4 px bordeaux rule).
  * section: an edition hidden there (/admin/sezioni) has no button; with one left there is no selector.
  */
-export function CatalogTitle({ title, section, edition, onEdition }: {
+export function CatalogTitle({ title, section, edition, onEdition, etichetta }: {
   title: string;
   section: string;
   edition?: "2024" | "2014";
   onEdition?: (value: "2024" | "2014") => void;
+  etichetta?: readonly (string | undefined)[];
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b-4 border-primary pb-3">
-      <h1 className="min-w-0 font-serif text-[40px] font-bold leading-tight text-foreground">{title}</h1>
-      {edition && onEdition && <SectionEditionPill section={section} edition={edition} choose={onEdition} />}
+    <div data-catalog-title="">
+      {etichetta && <Etichetta parti={etichetta} />}
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="pg-capolettera min-w-0 font-serif text-[40px] font-bold leading-tight text-foreground">{title}</h1>
+        {edition && onEdition && <SectionEditionPill section={section} edition={edition} choose={onEdition} />}
+      </div>
+      <Divisore className="mt-1" />
     </div>
   );
 }

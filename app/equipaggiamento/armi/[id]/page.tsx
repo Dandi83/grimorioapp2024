@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -72,10 +73,13 @@ function Sheet({ id, weapon, group, corrections, heading: Heading = "h1", share 
           <span className="font-serif text-[52px] font-bold leading-none text-primary">{weapon.danni || "—"}</span>
           <span className="text-sm font-semibold text-muted">{weapon.tipoDanno || "nessun danno"}</span>
         </div>
-        <Heading className="mt-3 font-serif text-4xl font-bold leading-tight">{weapon.nome}</Heading>
+        {/* PROMPT 65: label, capilettera, divider with ✦; copper corners on weight, cost and range. */}
+        <Etichetta parti={["Arma", weapon.edition]} className="mt-3" />
+        <Heading className="pg-capolettera font-serif text-4xl font-bold leading-tight">{weapon.nome}</Heading>
+        <Divisore />
         <p className="text-[15px] text-muted">{WEAPON_GROUP_NAMES[group]}</p>
       </div>
-      <div className="grid grid-cols-3 rounded-[14px] border border-border bg-card">
+      <div className="pg-angoli grid grid-cols-3 rounded-[14px] border border-border bg-card">
         <Cell label="PESO" value={weapon.peso} />
         <Cell label="COSTO" value={weapon.costo} />
         <Cell label="GITTATA" value={weapon.gittata?.replace("/", " / ") ?? "—"} />

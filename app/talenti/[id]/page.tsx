@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
@@ -48,9 +49,12 @@ function Panel({ id, view, edition, heading: Heading, share }: { id: string; vie
         text: [...view.paragrafi.map(paragraph => (paragraph.lead ? `${paragraph.lead}. ${paragraph.text}` : paragraph.text)), ...(view.elenco ?? [])].join(" "),
       })} />}
       <header className="flex flex-col items-center gap-1.5 pt-4 text-center">
-        <Heading className="font-serif text-4xl font-bold leading-tight">
+        {/* PROMPT 65: «TALENTO · ORIGINI» (the category of the pill), capilettera, divider with ✦. */}
+        <Etichetta parti={["Talento", view.categoria]} />
+        <Heading className="pg-capolettera font-serif text-4xl font-bold leading-tight">
           {view.nome}{view.en && <span className="ml-2 align-middle font-sans text-[20px] font-normal italic text-muted" lang="en" data-english-name="">({view.en})</span>}
         </Heading>
+        <Divisore />
         <div className="flex flex-wrap items-center justify-center gap-2">
           <RulesEditionBadge edition={edition} variant="dark" />
           {/* The category as printed under the name («Talento Origini»); in 2014 the feats have none. */}

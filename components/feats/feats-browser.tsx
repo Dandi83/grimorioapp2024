@@ -1,5 +1,6 @@
 "use client";
 
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
@@ -56,10 +57,12 @@ export function FeatsBrowser({ groups, notes = {} }: { groups: FeatGroups; notes
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/compendio" label="Compendio" />
-      <div className="flex items-center justify-between gap-3 border-b-4 border-primary pb-3">
-        <h1 className="min-w-0 font-serif text-[40px] font-bold leading-tight">Talenti</h1>
+      <Etichetta parti={["Compendio", edition]} />
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="pg-capolettera min-w-0 font-serif text-[40px] font-bold leading-tight">Talenti</h1>
         <SectionEditionPill section="talenti" edition={edition} choose={setEdition} />
       </div>
+      <Divisore className="mt-1" />
       {notes[edition] && <div className="mt-3">{notes[edition]}</div>}
       <ListSearch label="Cerca un talento" value={query} onChange={setQuery} />
       {edition === "2024" && (

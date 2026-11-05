@@ -2,8 +2,8 @@ import { hiddenPartsText } from "./community-switch.mjs";
 import { test, expect } from "./fixtures.mjs";
 
 // «Visibile · In arrivo · Nascosta» (/admin/sezioni): a section and a part in each state, as a visitor and as the
-// administrator. «In arrivo»: the entry stays (bar, Compendio, Home, filters, blocks), attenuated with the pill,
-// and opens «Sezione momentaneamente in costruzione» with «<name> · In arrivo»; the content is never served
+// administrator. «In arrivo»: the entry stays (bar, Compendio, Home, filters, blocks), softer with the tilted «PRESTO»
+// stamp (PROMPT 65), and opens «Sezione momentaneamente in costruzione» with «<name>» and the stamp; the content is never served
 // (page, direct link, search, catalogue). Local test database: everything goes back to «Visibile» at the end.
 const stateRadio = (scope, title, label) => scope.getByRole("radiogroup", { name: `Stato di ${title}`, exact: true }).getByRole("radio", { name: label, exact: true });
 const SHOTS = process.env.IN_ARRIVO_SHOTS;
@@ -44,7 +44,10 @@ async function visitor(browser, width = 390) {
 
 async function underConstruction(page, pill) {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente in costruzione");
-  if (pill) await expect(page.locator("[data-soon-pill]")).toHaveText(`${pill} · In arrivo`);
+  if (pill) {
+    await expect(page.locator("[data-soon-pill]")).toHaveText(`${pill} Presto`);
+    await expect(page.locator("[data-soon-pill] [data-timbro-presto]")).toHaveCSS("text-transform", "uppercase");
+  }
   else await expect(page.locator("[data-soon-pill]")).toHaveCount(0);
 }
 
@@ -114,13 +117,17 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   const spells = bar.locator("li[data-soon]");
   await expect(spells).toHaveCount(1);
   await expect(spells).toContainText("Incantesimi");
-  await expect(spells).toContainText("In arrivo");
-  expect(await spells.evaluate(li => getComputedStyle(li).opacity)).toBe("0.6");
+  // PROMPT 65: «PRESTO» in full colour (bordeaux, tilted), the name softer but readable (no 60% opacity any more).
+  await expect(spells.locator("[data-timbro-presto]")).toHaveText("Presto");
+  await expect(spells).not.toContainText("In arrivo");
+  await expect(spells.locator("[data-timbro-presto]")).toHaveCSS("color", "rgb(122, 31, 43)");
+  expect(await spells.evaluate(li => getComputedStyle(li).opacity)).toBe("1");
+  expect(await spells.locator("a > span").last().evaluate(el => getComputedStyle(el).color)).toBe("rgb(110, 92, 74)");
   await expect(spells.getByRole("link")).toHaveAttribute("href", "/in-arrivo/incantesimi");
   await spells.getByRole("link").click();
   await expect(pub).toHaveURL(/\/in-arrivo\/incantesimi$/);
   await underConstruction(pub, "Incantesimi");
-  expect(await pub.locator("[data-soon-pill]").evaluate(el => [getComputedStyle(el).backgroundColor, getComputedStyle(el).color])).toEqual(["rgb(224, 162, 26)", "rgb(43, 33, 24)"]);
+  expect(await pub.locator("[data-soon-pill] [data-timbro-presto]").evaluate(el => [getComputedStyle(el).color, getComputedStyle(el).transform !== "none"])).toEqual(["rgb(122, 31, 43)", true]);
   if (SHOTS) await pub.screenshot({ path: `${SHOTS}/in-arrivo-incantesimi-390.png` });
   // Direct links: the page «in costruzione», nothing of the content.
   for (const [path, pill] of [["/grimorio", "Incantesimi"], ["/spell/palla-di-fuoco", "Incantesimi"], ["/classi/mago", "Classi"]]) {
@@ -141,7 +148,7 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   const classes = pub.locator("main li[data-soon]").filter({ hasText: "Classi" });
   await expect(classes).toHaveCount(1);
   await expect(classes).toContainText("Classi");
-  await expect(classes).toContainText("In arrivo");
+  await expect(classes.locator("[data-timbro-presto]")).toHaveText("Presto");
   await expect(classes).toContainText("Ci stiamo lavorando");
   await expect(classes).not.toContainText("Barbaro");
   expect(await classes.locator("a").evaluate(a => getComputedStyle(a).borderStyle)).toBe("dashed");
@@ -156,7 +163,7 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await expect(pub.locator('[data-part="avanzamento:tabella"]')).toBeVisible();
   const calc = pub.locator('[data-part="avanzamento:calcolatore"][data-soon]');
   await expect(calc).toContainText("Calcolatore di PE");
-  await expect(calc).toContainText("In arrivo");
+  await expect(calc.locator("[data-timbro-presto]")).toHaveText("Presto");
   await expect(calc).toContainText("Ci stiamo lavorando");
   await expect(pub.locator("#calcolatore")).toHaveCount(0);
   await expect(pub.locator('[data-part="avanzamento:talenti"]')).toHaveCount(0);
@@ -168,7 +175,7 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await pub.getByRole("button", { name: /^Filtri/ }).click();
   const animals = pub.getByRole("dialog").locator('[data-part="bestiario:animali"][data-soon]');
   await expect(animals).toContainText("Animali");
-  await expect(animals).toContainText("In arrivo");
+  await expect(animals.locator("[data-timbro-presto]")).toHaveText("Presto");
   await animals.click();
   await expect(pub).toHaveURL(/\/in-arrivo\/bestiario%3Aanimali$/);
   await underConstruction(pub, "Raccolta Animali");
@@ -191,10 +198,10 @@ test("In arrivo: entries attenuated with the pill, «in costruzione» page, cont
   await desk.page.goto("/");
   const side = desk.page.getByRole("navigation", { name: "Navigazione laterale" }).locator("li[data-soon]");
   await expect(side).toContainText("Incantesimi");
-  await expect(side).toContainText("In arrivo");
+  await expect(side.locator("[data-timbro-presto]")).toHaveText("Presto");
   const shortcut = desk.page.getByRole("navigation", { name: "Scorciatoie" }).locator("a[data-soon]");
   await expect(shortcut).toContainText("Incantesimi");
-  await expect(shortcut).toContainText("In arrivo");
+  await expect(shortcut.locator("[data-timbro-presto]")).toHaveText("Presto");
   await expect(shortcut).not.toContainText(/\d+ del/);
   await expect(shortcut).toHaveAttribute("href", "/in-arrivo/incantesimi");
   if (SHOTS) await desk.page.screenshot({ path: `${SHOTS}/in-arrivo-home-1280.png` });

@@ -10,7 +10,7 @@ import { EditionPill } from "@/components/edition/edition-pill";
 import { Lock } from "lucide-react";
 import { CupIcon } from "@/components/support/cup-icon";
 import { SupportLink } from "@/components/support/support-link";
-import { LogoGrimorio } from "@/components/pergamena/pergamena";
+import { LogoGrimorio, TimbroPresto } from "@/components/pergamena/pergamena";
 
 const NONE: readonly string[] = [];
 
@@ -47,7 +47,7 @@ export function SideNav({ hidden = NONE, admin: adminView = false, soon = NONE, 
           const coming = section !== undefined && soon.includes(section);
           const off = section !== undefined && hidden.includes(section) && !coming;
           return (
-            <li key={href} className={coming ? "opacity-60" : undefined} data-soon={coming ? "" : undefined}>
+            <li key={href} className={coming ? "pg-attenuato" : undefined} data-soon={coming ? "" : undefined}>
               <Link
                 href={coming && !adminView && section ? soonHref(section) : href}
                 prefetch={false}
@@ -57,7 +57,7 @@ export function SideNav({ hidden = NONE, admin: adminView = false, soon = NONE, 
                 <Icon size={20} strokeWidth={1.75} aria-hidden />
                 <span className="min-w-0 flex-1">{label}</span>
                 {off && <span className="rounded-[6px] bg-[#2B2118] px-1.5 text-[10px] font-bold leading-4 text-amber">Nascosta</span>}
-                {coming && <span className="rounded-[6px] bg-[#E0A21A] px-1.5 text-[10px] font-bold leading-4 text-[#2B2118]">In arrivo</span>}
+                {coming && <TimbroPresto />}
               </Link>
             </li>
           );

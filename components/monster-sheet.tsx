@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
 import { ReferenceText, MonsterText } from "@/components/html-text";
 import { CardLabels } from "@/components/spell-sheet";
-import { abilityMod, type Monster } from "@/lib/monsters-types";
+import { abilityMod, isSrdAnimal, type Monster } from "@/lib/monsters-types";
 import { conditionLinks, prepareMonsterText, type CardSource } from "@/lib/card-display";
 import { damageLineHref, damageRuleLinks } from "@/lib/damage-rule-link";
 import type { SpellReferenceCatalog } from "@/lib/spell-references";
 import { DescriptionLead } from "@/components/description-lead";
 import { MonsterPictureFigure } from "@/components/monster-picture";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 
 /**
  * One creature sheet for every source: 2024 and 2014 SRD sheets, sheets made in the
@@ -95,7 +96,7 @@ function Section({ title, html, context, name }: { title: string; html?: string;
   );
 }
 
-/** Title, edition label, 4 px rule and the italic type line. */
+/** Label, title, edition label, divider (PROMPT 65, in the place of the 4 px rule) and the italic type line. */
 /** byline: the author line of a homebrew creature («Proposta da …»), under the type line. */
 /**
  * labelBelow: the pills of «I mostri creati da voi» (PROMPT 22) on their own row under the name, and the name never
@@ -106,8 +107,11 @@ export function MonsterSheetTitle({ monster, label, before, byline, labelBelow =
   return (
     <header className="px-6">
       {before}
-      <div className={`flex items-start justify-between gap-3 ${labelBelow ? "" : "border-b-4 border-primary pb-2"}`}>
-        <h1 className={`min-w-0 font-serif text-[42px] font-bold leading-[1.05] text-foreground lg:text-[46px] ${labelBelow ? "[hyphens:none] [overflow-wrap:normal] [word-break:normal]" : "break-words"}`} data-sheet-name="">{monster.nome || "Nome del mostro"}</h1>
+      {/* PROMPT 65: «MOSTRO · GS 17» above the name (the challenge of the strip), the capilettera, the divider with ✦
+          in the place of the 4 px rule. The SRD line under it (size, type, alignment) stays where it was. */}
+      <Etichetta parti={[monster.homebrew_edizione !== undefined ? "Creatura originale" : monster.id && isSrdAnimal({ id: monster.id }) ? "Animale" : "Mostro", monster.grado_sfida && `GS ${monster.grado_sfida}`]} className="mb-1.5 pt-1" />
+      <div className="flex items-start justify-between gap-3">
+        <h1 className={`pg-capolettera min-w-0 font-serif text-[42px] font-bold leading-[1.05] text-foreground lg:text-[46px] ${labelBelow ? "[hyphens:none] [overflow-wrap:normal] [word-break:normal]" : "break-words"}`} data-sheet-name="">{monster.nome || "Nome del mostro"}</h1>
         {label && !labelBelow && <div className="max-w-[55%] shrink-0 pt-3">{label}</div>}
         {/* Computer: GS and PE as a bordeaux pill at the top right. */}
         {monster.grado_sfida && (
@@ -116,7 +120,8 @@ export function MonsterSheetTitle({ monster, label, before, byline, labelBelow =
           </span>
         )}
       </div>
-      {label && labelBelow && <div className="flex border-b-4 border-primary pb-2 pt-2 [&>*]:justify-start" data-sheet-labels="">{label}</div>}
+      {label && labelBelow && <div className="flex pt-2 [&>*]:justify-start" data-sheet-labels="">{label}</div>}
+      <Divisore className="mt-2" />
       {sottotitolo && <p className="mt-2 font-serif text-[19px] italic text-muted">{sottotitolo}</p>}
       {byline && <p className="mt-1 text-[15px] text-muted">{byline}</p>}
       {/* Where the sheet comes from (a homebrew already says it next to the title). */}
@@ -163,7 +168,7 @@ export function MonsterSheetBody({ monster, legacy, hidden = [], catalog, descri
     {lead.length > 0 && <DescriptionLead>{lead.map((part, index) => <p key={index} className={index ? "mt-3" : undefined} dangerouslySetInnerHTML={{ __html: part }} />)}</DescriptionLead>}
     {/* CA, PF, initiative and challenge in an ink strip that stays at the top while the sheet scrolls (the page
         on the phone, the card column next to the list on the computer): the numbers needed at the table in sight. */}
-    <dl className="sticky top-0 z-20 mx-4 mt-4 grid grid-cols-4 overflow-hidden rounded-[12px] bg-foreground pt-[env(safe-area-inset-top,0px)] text-card shadow-[0_6px_16px_rgb(43_33_24_/_22%)]" data-monster-strip="">
+    <dl className="sticky top-0 z-20 mx-4 mt-4 grid grid-cols-4 overflow-hidden rounded-[12px] bg-foreground pt-[env(safe-area-inset-top,0px)] text-card pg-angoli !shadow-[0_6px_16px_rgb(43_33_24_/_22%)]" data-monster-strip="">
       <StripCell label="CA" value={ca.value} note={ca.note} />
       <StripCell label="PF" value={pf.value} note={pf.note} />
       {ini ? <StripCell label="Iniziativa" value={ini.value} note={ini.note} noteItalic={!monster.iniziativa} /> : <StripCell label="Iniziativa" value="—" />}

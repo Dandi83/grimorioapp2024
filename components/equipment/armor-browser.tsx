@@ -31,7 +31,7 @@ export function ArmorBrowser({ items, times, sameNumbers }: { items: ArmorListIt
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
-      <CatalogTitle section="armature" title="Armature" edition={edition} onEdition={setEdition} />
+      <CatalogTitle section="armature" title="Armature" etichetta={["Equipaggiamento", edition]} edition={edition} onEdition={setEdition} />
       <p className="mt-2 text-[15px] text-muted">
         {items.length} voci · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}
         {sameNumbers && <><br />Stesse CA, pesi e costi in entrambe le edizioni</>}

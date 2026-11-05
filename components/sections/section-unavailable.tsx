@@ -6,6 +6,7 @@ import { useSyncExternalStore } from "react";
 import { BookOpen, Hammer } from "lucide-react";
 
 import { EQUIPMENT_SECTIONS, isHiddenPath, soonOfPath } from "@/lib/public-sections";
+import { TimbroPresto } from "@/components/pergamena/pergamena";
 
 /** One of these under «Sezione momentaneamente in costruzione», a different one at every visit. */
 export const UNDER_CONSTRUCTION = [
@@ -46,7 +47,8 @@ export function NotFoundView({ hidden, soon = [] }: { hidden: string[]; soon?: r
 
 /**
  * «Sezione momentaneamente in costruzione» with a sentence at random; soon: the name of the section or part
- * «In arrivo», shown in the amber pill «<name> · In arrivo» above the title (also /in-arrivo/<id>).
+ * «In arrivo», shown under the icon with the tilted «PRESTO» stamp (PROMPT 65; before, the amber pill «<name> · In arrivo»),
+ * above the title (also /in-arrivo/<id>).
  */
 export function UnderConstruction({ soon }: { soon?: string }) {
   // The server and the hydration use the first sentence, then the one picked in this browser for this load.
@@ -56,7 +58,7 @@ export function UnderConstruction({ soon }: { soon?: string }) {
       <span className="grid size-16 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
         <Hammer size={30} aria-hidden="true" />
       </span>
-      {soon && <p data-soon-pill="" className="mt-5 rounded-full bg-[#E0A21A] px-3 py-1 text-[14px] font-bold text-[#2B2118]">{soon} · In arrivo</p>}
+      {soon && <p data-soon-pill="" className="mt-5 font-serif text-[20px] font-bold leading-7 text-muted">{soon}{" "}<TimbroPresto piccolo={false} className="ml-1" /></p>}
       <h1 className={`${soon ? "mt-3" : "mt-5"} font-serif text-[30px] font-bold leading-tight`}>Sezione momentaneamente in costruzione</h1>
       <p className="mt-3 max-w-sm text-[16px] leading-6 text-muted" data-under-construction={sentence}>{UNDER_CONSTRUCTION[sentence]}</p>
       <HomeButton />

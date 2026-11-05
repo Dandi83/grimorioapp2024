@@ -28,10 +28,10 @@ export function usePart(section: string, part: string): { shown: boolean; hidden
   return { shown: !off || admin, hidden: off, soon: soon.includes(id) };
 }
 
-/** The entry of a part «In arrivo» for the public: its name attenuated, the pill, to the «in costruzione» page. */
+/** The entry of a part «In arrivo» for the public: its name softer, the «PRESTO» stamp, to the «in costruzione» page. */
 export function SoonEntry({ id, children, className = "" }: { id: string; children: ReactNode; className?: string }) {
   return (
-    <Link href={soonHref(id)} prefetch={false} data-part={id} data-soon="" className={`opacity-60 ${className}`}>
+    <Link href={soonHref(id)} prefetch={false} data-part={id} data-soon="" className={`pg-attenuato ${className}`}>
       {children} <SoonTag className="ml-1" />
     </Link>
   );
@@ -71,7 +71,7 @@ export function EditionButtons({ section, edition, choose, className, button }: 
         if (offered) {
           return (
             <button key={value} type="button" data-part={partId(section, value)} aria-pressed={edition === value} onClick={() => choose(value)} className={button(edition === value)}>
-              {value}{offered.hidden && (admin && coming.includes(partId(section, value)) ? <SoonTag className="ml-1" /> : <HiddenTag className="ml-1" />)}
+              {value}{offered.hidden && (admin && coming.includes(partId(section, value)) ? <SoonTag testo className="ml-1" /> : <HiddenTag className="ml-1" />)}
             </button>
           );
         }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { PenLine } from "lucide-react";
 
 import { BackButton } from "@/components/back-button";
@@ -67,12 +68,13 @@ function OriginalsTile({ group, part, count, compact }: { group: "grimorio" | "c
   const href = soon ? `/in-arrivo/${encodeURIComponent(tile.part)}` : tile.href;
   return (
     <div className={`flex min-w-0 flex-col rounded-[14px] ${tile.style} ${compact ? "p-2.5" : "p-3"}`} data-originals-tile={group} data-part={tile.part} data-tile-state={soon ? "in-arrivo" : part.hidden ? "nascosta" : "visibile"}>
-      <Link href={href} prefetch={false} className={`flex min-w-0 flex-1 flex-col ${soon ? "opacity-60" : ""}`} data-originals-link={group}>
-        <span className={`text-[11px] font-bold uppercase tracking-[0.1em] ${tile.kickerStyle}`}>{tile.kicker}</span>
-        <span className={`mt-0.5 font-serif font-bold leading-tight ${compact ? "text-[16px]" : "text-[18px]"}`}>{tile.title}</span>
-        {part.hidden && part.shown && <span className="mt-1">{part.soon ? <SoonTag /> : <HiddenTag />}</span>}
+      {/* «In arrivo» (PROMPT 65): kicker and title softer, the «PRESTO» stamp in full colour (amber on the dark tile). */}
+      <Link href={href} prefetch={false} className="flex min-w-0 flex-1 flex-col" data-originals-link={group}>
+        <span className={`text-[11px] font-bold uppercase tracking-[0.1em] ${tile.kickerStyle} ${soon ? "opacity-80" : ""}`}>{tile.kicker}</span>
+        <span className={`mt-0.5 font-serif font-bold leading-tight ${compact ? "text-[16px]" : "text-[18px]"} ${soon ? "opacity-80" : ""}`}>{tile.title}</span>
+        {part.hidden && part.shown && <span className="mt-1">{part.soon ? <SoonTag testo /> : <HiddenTag />}</span>}
         {soon
-          ? <span className="mt-1.5"><SoonTag /></span>
+          ? <span className="mt-1.5"><SoonTag className={`ml-0 ${group === "community" ? "pg-timbro-chiaro" : ""}`} /></span>
           : <span className={`mt-1.5 text-[14px] font-bold ${tile.countStyle}`} data-originals-count={count}>{plural(count)} ›</span>}
       </Link>
       {group === "community" && (
@@ -97,9 +99,10 @@ export function CommunityHeader({ children }: { children?: React.ReactNode }) {
       <BackButton fallback="/bestiario" label="Bestiario" />
       <div className="mt-1 flex items-start justify-between gap-3">
         {/* PROMPT 45: only the name in the H1; «Beta» next to it, the same look. */}
-        <div className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground"><h1 className="inline">I mostri creati da voi</h1> <BetaPill /></div>
+        <div className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground"><Etichetta parti={["Bestiario", "Dalla community"]} /><h1 className="pg-capolettera inline-block">I mostri creati da voi</h1> <BetaPill /></div>
         {children}
       </div>
+      <Divisore className="mt-1" />
       <p className="mt-2 text-[15px] leading-6 text-muted">
         Creature inventate dai master della community del Grimorio. Non fanno parte dei manuali: le controlliamo una per una prima di pubblicarle.
       </p>
@@ -128,9 +131,10 @@ export function GrimorioHeader({ children }: { children?: React.ReactNode }) {
     <div data-grimorio-header="">
       <BackButton fallback="/bestiario" label="Bestiario" />
       <div className="mt-1 flex items-start justify-between gap-3">
-        <h1 className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground">Mostri del Grimorio</h1>
+        <div className="min-w-0"><Etichetta parti={["Bestiario", "Dalla redazione"]} /><h1 className="pg-capolettera font-serif text-[36px] font-bold leading-tight text-foreground">Mostri del Grimorio</h1></div>
         {children}
       </div>
+      <Divisore className="mt-1" />
       <p className="mt-2 text-[15px] leading-6 text-muted">
         Creature originali della redazione, bilanciate con il nostro simulatore.{" "}
         <Link href="/bestiario/creati-da-voi/bilanciamento" data-method-link="grimorio" className="font-semibold text-[#7A1F2B] underline-offset-4 hover:underline">Come valutiamo il bilanciamento ›</Link>
@@ -146,9 +150,10 @@ export function OriginalsHeader({ children }: { children?: React.ReactNode }) {
       <BackButton fallback="/bestiario" label="Bestiario" />
       <div className="mt-1 flex items-start justify-between gap-3">
         {/* PROMPT 45: only the name in the H1; «Beta» next to it, the same look. */}
-        <div className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground"><h1 className="inline">Creature originali</h1> <BetaPill /></div>
+        <div className="min-w-0 font-serif text-[36px] font-bold leading-tight text-foreground"><Etichetta parti={["Bestiario"]} /><h1 className="pg-capolettera inline-block">Creature originali</h1> <BetaPill /></div>
         {children}
       </div>
+      <Divisore className="mt-1" />
       <p className="mt-2 text-[15px] leading-6 text-muted">Le creature della redazione e quelle della community, tutte insieme. Non fanno parte dei manuali.</p>
     </div>
   );
