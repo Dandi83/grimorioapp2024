@@ -12,6 +12,10 @@ const SCREENS = [
   ["computer 1280", strip({ ...devices["Desktop Chrome"], viewport: { width: 1280, height: 900 }, screen: { width: 1280, height: 900 } })],
 ];
 
+let opened = 0;
+/** A link of TPK opened as a new page (as a tap from Total Party Kill does), never as a change of «#» only. */
+const open = (page, hash) => page.goto(`/personaggi?apertura=${++opened}${hash}`);
+
 async function login(page) {
   await page.goto("/admin");
   await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
@@ -69,7 +73,7 @@ for (const [name, device] of SCREENS) {
     await expect(page.getByText("Si apre la creazione guidata di Total Party Kill")).toBeVisible();
 
     // 2. Personaggio ricevuto: Brenna, checks in green, the values of TPK.
-    await page.goto(`/personaggi${BRENNA}`);
+    await open(page, BRENNA);
     await expect(page.getByRole("heading", { level: 1, name: /Nuovo personaggio/ })).toBeVisible();
     await expect(page.getByText("Arrivato da Total Party Kill")).toBeVisible();
     const summary = page.locator('[data-incoming-summary="Brenna"]');
@@ -87,7 +91,7 @@ for (const [name, device] of SCREENS) {
     await expect(tile("INIZ.")).toHaveText("+1");
     await expect(tile("M")).toHaveText("10,5");
     await page.getByRole("button", { name: "Salva nei miei personaggi" }).click();
-    await expect(page).toHaveURL(/\/personaggi$/);
+    await expect(page).toHaveURL(/\/personaggi(\?apertura=\d+)?$/);
     const card = page.locator('[data-character-card="Brenna"]');
     await expect(card).toContainText("Druido · Elfo (dei boschi) · 3° livello");
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("grimorio.characters.v1")));
@@ -129,7 +133,7 @@ for (const [name, device] of SCREENS) {
     const text = copied ?? await page.locator("[data-copied]").textContent();
     const link = /^https:\/\/ilgrimorio\.app\/personaggi(#pg0?=[A-Za-z0-9_-]+)$/.exec(copied ?? "") ?? /^https:\/\/ilgrimorio\.app\/personaggi(#pg0?=[A-Za-z0-9_-]+)$/.exec(text ?? "");
     expect(link, `copied: ${copied ?? text}`).not.toBeNull();
-    await page.goto(`/personaggi${link[1]}`);
+    await open(page, link[1]);
     await expect(page.locator('[data-incoming-summary="Brenna"]')).toBeVisible();
     await page.getByRole("button", { name: "Salva nei miei personaggi" }).click();
     await expect(page.locator("[data-duplicate]")).toContainText("«Brenna» (Druido)");
@@ -144,20 +148,20 @@ for (const [name, device] of SCREENS) {
     await expect(page.locator("[data-characters-empty]")).toBeVisible();
 
     // A broken link: the error, the page still works.
-    await page.goto("/personaggi#pg=AAAA-rotto");
+    await open(page, "#pg=AAAA-rotto");
     await expect(page.locator("[data-broken-link] [role=alert]")).toContainText("Il link è danneggiato");
     await page.getByRole("button", { name: "Torna ai miei personaggi" }).click();
     await expect(page.locator("[data-characters-empty]")).toBeVisible();
-    await expect(page).toHaveURL(/\/personaggi$/);
+    await expect(page).toHaveURL(/\/personaggi(\?apertura=\d+)?$/);
 
     // A party of two: «Nuovo party», both saved; «Annulla» first leaves nothing.
     const party = await partyLink(page);
-    await page.goto(`/personaggi${party}`);
+    await open(page, party);
     await expect(page.getByRole("heading", { level: 1, name: /Nuovo party/ })).toBeVisible();
     await expect(page.locator("[data-incoming-summary]")).toHaveCount(2);
     await page.getByRole("button", { name: "Annulla" }).click();
     await expect(page.locator("[data-characters-empty]")).toBeVisible();
-    await page.goto(`/personaggi${party}`);
+    await open(page, party);
     await page.getByRole("button", { name: "Salva nei miei personaggi" }).click();
     await expect(page.locator("[data-character-card]")).toHaveCount(2);
     await expect(page.locator('[data-character-card="Ilse"]')).toContainText("Druido · Elfo (dei boschi) · 2° livello");

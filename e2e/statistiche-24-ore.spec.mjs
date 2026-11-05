@@ -103,7 +103,7 @@ for (const width of [390, 1280]) {
     const hour = Number(new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", hourCycle: "h23" }).format(twoHoursAgo));
     const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(twoHoursAgo);
     await page.getByRole("button", { name: "+ Segna un evento" }).click();
-    await page.getByLabel("Giorno").fill(day);
+    await page.getByLabel("Giorno", { exact: true }).fill(day);
     await page.getByLabel("Ora (facoltativa)").selectOption(String(hour));
     await page.getByLabel("Cosa è successo").fill("Sponsorizzata su IG prova");
     await page.getByRole("button", { name: "Salva l’evento" }).click();

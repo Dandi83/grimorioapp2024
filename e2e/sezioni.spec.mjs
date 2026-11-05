@@ -71,11 +71,12 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   await expect(page.getByRole("heading", { level: 1, name: "Sezioni" })).toBeVisible();
   await expect(page.getByText(/^Per ogni sezione, in entrambe le edizioni: Visibile, In arrivo/)).toBeVisible();
   await expect(page.getByText("10 visibili")).toBeVisible();
-  await expect(page.getByText("0 nascoste")).toBeVisible();
+  // «I miei personaggi» starts «Nascosta» (PROMPT 62).
+  await expect(page.getByText("1 nascosta", { exact: true })).toBeVisible();
   await expect(page.getByText("Ogni cambio finisce nel Registro. Le sezioni nascoste o in arrivo restano visibili a te, con la loro etichetta.")).toBeVisible();
   await expect(page.getByText("Le singole schede si nascondono dall’interruttore nella loro lista.")).toBeVisible();
   const rows = page.getByRole("list", { name: "Sezioni" }).locator(":scope > li");
-  await expect(rows).toHaveCount(11);
+  await expect(rows).toHaveCount(12);
   await expect(rows.nth(2)).toContainText("Classi");
   await expect(rows.nth(2)).toContainText("Compendio · Personaggi · Visibile");
   for (const width of [360, 375, 390]) {
@@ -124,7 +125,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   for (const section of SECTIONS) {
     await toggle(section.title, true);
     await expect(page.getByText("9 visibili")).toBeVisible();
-    await expect(page.getByText("1 nascosta")).toBeVisible();
+    await expect(page.getByText("2 nascoste")).toBeVisible();
     await expect(page.getByRole("list", { name: "Sezioni" }).locator(":scope > li").filter({ hasText: section.title }).first()).toContainText("Nascosta");
     for (const path of [section.list, section.card].filter(Boolean)) {
       await unavailable(path);
@@ -154,7 +155,7 @@ test("sections of the app: admin hides and shows every section; public 404 page,
   // Classi and the whole Equipaggiamento hidden: empty groups and tiles leave the Compendio, the hub is unavailable.
   for (const title of ["Classi", "Armi", "Armature", "Equipaggiamento d’avventura", "Strumenti", "Bestiario"]) await toggle(title, true);
   await expect(page.getByText("2 visibili")).toBeVisible();
-  await expect(page.getByText("8 nascoste")).toBeVisible();
+  await expect(page.getByText("9 nascoste")).toBeVisible();
   await pub.goto("/compendio");
   // «Personaggi» keeps only Talenti, «In arrivo» from the start (PROMPT 49).
   await expect(pub.getByRole("list", { name: "Personaggi" }).getByRole("link")).toHaveCount(1);
@@ -573,7 +574,7 @@ test("«Nascondi tutto» and «Nascondi tutta la sezione»: everything Nascosto 
     const partsRows = (await client.query("SELECT sezione, parte, nascosta, in_arrivo FROM grimorio_section_parts").catch(() => ({ rows: [] }))).rows;
     const state = row => (!row.nascosta ? "visibile" : row.in_arrivo ? "in-arrivo" : "nascosta");
     // A row saying the default state is the same as no row: only what differs from the default counts.
-    const DEFAULTS = { talenti: "in-arrivo", "bestiario:grimorio": "in-arrivo" };
+    const DEFAULTS = { talenti: "in-arrivo", personaggi: "nascosta", "bestiario:grimorio": "in-arrivo" };
     return Object.fromEntries([
       ...sectionsRows.map(row => [row.sezione, state(row)]),
       ...partsRows.map(row => [`${row.sezione}:${row.parte}`, state(row)]),
