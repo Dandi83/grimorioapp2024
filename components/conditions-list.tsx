@@ -1,5 +1,6 @@
 "use client";
 
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import Link from "next/link";
 import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
 import { ChevronRight } from "lucide-react";
@@ -20,10 +21,12 @@ export function ConditionsList({ rows, only2024 }: { rows: Record<EquipmentEditi
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/compendio" label="Compendio" />
-      <div className="flex items-center justify-between gap-3 border-b-4 border-primary pb-3">
-        <h1 className="min-w-0 font-serif text-[40px] font-bold leading-tight">Condizioni</h1>
+      <Etichetta parti={["Compendio", edition]} />
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="pg-capolettera min-w-0 font-serif text-[40px] font-bold leading-tight">Condizioni</h1>
         <SectionEditionPill section="condizioni" edition={edition} choose={setEdition} />
       </div>
+      <Divisore className="mt-1" />
       {list.length ? (
         <ul className="mt-4 overflow-hidden rounded-[14px] border-[1.5px] border-border bg-card" aria-label={`Condizioni ${edition}`}>
           {list.map(row => (

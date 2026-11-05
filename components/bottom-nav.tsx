@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { notePathChange } from "@/components/navigation-memory";
 import { visibleNavItems } from "@/components/nav-items";
 import { soonHref } from "@/lib/public-sections";
+import { TimbroPresto } from "@/components/pergamena/pergamena";
 import { bottomBarShift, editingElement } from "@/lib/viewport-anchor";
 
 const NONE: readonly string[] = [];
@@ -108,7 +109,7 @@ export function BottomNav({ hidden = NONE, admin: adminView = false, soon = NONE
           const coming = section !== undefined && soon.includes(section);
           const off = section !== undefined && hidden.includes(section) && !coming;
           return (
-            <li key={href} className={`flex-1 ${coming ? "opacity-60" : ""}`} data-soon={coming ? "" : undefined}>
+            <li key={href} className={`flex-1 ${coming ? "pg-attenuato" : ""}`} data-soon={coming ? "" : undefined}>
               <Link
                 href={coming && !adminView && section ? soonHref(section) : href}
                 prefetch={false}
@@ -118,7 +119,7 @@ export function BottomNav({ hidden = NONE, admin: adminView = false, soon = NONE
                 className="relative flex h-full flex-col items-center justify-center gap-1.5 px-1 transition-colors"
               >
                 {off && <span className="absolute left-1/2 top-1 -translate-x-1/2 rounded-[6px] bg-[#2B2118] px-1.5 text-[10px] font-bold leading-4 text-amber">Nascosta</span>}
-                {coming && <span className="absolute left-1/2 top-1 -translate-x-1/2 whitespace-nowrap rounded-[6px] bg-[#E0A21A] px-1.5 text-[10px] font-bold leading-4 text-[#2B2118]">In arrivo</span>}
+                {coming && <span className="absolute left-1/2 top-0.5 -translate-x-1/2"><TimbroPresto className="ml-0" /></span>}
                 <Icon
                   size={26}
                   strokeWidth={1.75}

@@ -1,6 +1,7 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
 import { pageMetadata } from "@/lib/seo";
-import { Award, Backpack, Gem, Shield, ShieldAlert, TrendingUp } from "lucide-react";
+import { Award, Backpack, Gem, Shield, ShieldAlert, Swords, TrendingUp } from "lucide-react";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { SectionTiles, type SectionTile } from "@/components/section-tiles";
 import { EQUIPMENT_SECTIONS, soonHref, type PublicSectionKey } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
@@ -15,6 +16,8 @@ const CHARACTERS: Tile[] = [
   { href: "/classi", title: "Classi", text: "Barbaro, Bardo, Chierico…", Icon: Shield, square: true, sections: ["classi"] },
   // PROMPT 49: «In arrivo» until it is shown from /admin/sezioni.
   { href: "/talenti", title: "Talenti", text: "Origini, Generali, Doni epici…", Icon: Award, square: true, sections: ["talenti"] },
+  // PROMPT 65: «I miei personaggi» with the «BETA» stamp; while the section is hidden only the administrator sees it.
+  { href: "/personaggi", title: "I miei personaggi", text: "La tua compagnia", Icon: Swords, square: true, beta: true, sections: ["personaggi"] },
 ];
 
 const TILES: Tile[] = [
@@ -45,7 +48,9 @@ export default async function CompendiumPage() {
     <>
       <Breadcrumbs crumbs={[{ name: "Compendio", path: "/compendio" }]} />
     <div className="px-4 pb-8 pt-8 sm:px-6">
-      <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">Compendio</h1>
+      <Etichetta parti={["Regole, equipaggiamento e personaggi", "SRD 5.2.1"]} />
+      <h1 className="pg-capolettera mt-1 font-serif text-[40px] font-bold leading-tight">Compendio</h1>
+      <Divisore className="mt-2" />
       <p className="mt-3 text-[15px] leading-6 text-muted">Regole, equipaggiamento e strumenti per il tavolo</p>
       {groups.map(group => (
         <section key={group.label}>

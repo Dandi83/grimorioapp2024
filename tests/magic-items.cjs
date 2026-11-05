@@ -161,7 +161,8 @@ for(const page of ['/oggetti-magici',...lib.magicItems['2024'].map(i=>lib.magicI
 assert.ok(!publicPage.test('/oggetti-magici/a/b'));
 // The section is the third tile of «Regole e oggetti» (after Classi, in «Personaggi»), the bottom bar keeps its five entries.
 const compendio=fs.readFileSync('app/compendio/page.tsx','utf8');
-assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]).slice(0,5),['/classi','/talenti','/equipaggiamento','/avanzamento','/oggetti-magici']);
+// PROMPT 65: «I miei personaggi» closes «Personaggi» (only the administrator sees it while the section is hidden).
+assert.deepEqual([...compendio.matchAll(/href: "([^"]+)"/g)].map(m=>m[1]).slice(0,6),['/classi','/talenti','/personaggi','/equipaggiamento','/avanzamento','/oggetti-magici']);
 assert.ok(compendio.includes('text: "Elenco A–Z con rarità e sintonia"'));
 const nav=fs.readFileSync('components/nav-items.ts','utf8').split('export const FOOT_LINKS')[0];
 assert.equal([...nav.matchAll(/href: "/g)].length,5);

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
@@ -62,9 +63,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
           kind: "proprieta", theme: "pergamena", kicker: `Proprietà delle armi · ${edition}`, title: property.nome, en: rule.en, edition, text: rule.testo,
         })} />}
         <header className="flex flex-col items-center gap-1.5 pt-4 text-center">
-          <Heading className="font-serif text-4xl font-bold leading-tight">
+          {/* PROMPT 65: label, capilettera, divider with ✦. */}
+          <Etichetta parti={["Proprietà", edition]} />
+          <Heading className="pg-capolettera font-serif text-4xl font-bold leading-tight">
             {property.nome}{rule.en && <span className="ml-2 align-middle font-sans text-[20px] font-normal italic text-muted" lang="en" data-english-name="">({rule.en})</span>}
           </Heading>
+          <Divisore />
           <RulesEditionBadge edition={edition} variant="dark" />
           <p className="text-[15px] text-muted">Proprietà delle armi</p>
         </header>

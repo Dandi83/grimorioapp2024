@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { notFound } from "next/navigation";
 
 import { ChevronLeft } from "lucide-react";
@@ -53,9 +54,12 @@ export default async function MasteryPage({ params }: { params: Promise<{ id: st
         kind: "padronanza", kicker: "Padronanza delle armi · 2024", title: mastery.nome, en: mastery.en, edition: "2024", text: mastery.testo,
       })} />}
       <header className="flex flex-col items-center gap-1.5 pt-4 text-center">
-        <h1 className="font-serif text-4xl font-bold leading-tight">
+        {/* PROMPT 65: label, capilettera, divider with ✦. */}
+        <Etichetta parti={["Padronanza", "2024"]} />
+        <h1 className="pg-capolettera font-serif text-4xl font-bold leading-tight">
           {mastery.nome}{mastery.en && <span className="ml-2 align-middle font-sans text-[20px] font-normal italic text-muted" lang="en" data-english-name="">({mastery.en})</span>}
         </h1>
+        <Divisore />
         <RulesEditionBadge edition="2024" variant="dark" />
         <p className="text-[15px] text-muted">Padronanza delle armi</p>
       </header>

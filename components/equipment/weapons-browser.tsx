@@ -63,7 +63,7 @@ export function WeaponsBrowser({ items }: { items: WeaponListItem[] }) {
   return (
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
-      <CatalogTitle section="armi" title="Armi" edition={edition} onEdition={setEdition} />
+      <CatalogTitle section="armi" title="Armi" etichetta={["Equipaggiamento", edition]} edition={edition} onEdition={setEdition} />
       <p className="mt-2 text-[15px] text-muted">
         {plural(inEdition.length)} · {edition === "2024" ? "SRD 5.2.1, con Padronanza" : "SRD 5.1"}
       </p>

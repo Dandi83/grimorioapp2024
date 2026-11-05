@@ -1,5 +1,6 @@
 "use client";
 
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { englishShown } from "@/lib/english-match";
 import { InEnglish } from "@/components/search/in-english";
 import { FoundName } from "@/components/search/found-name";
@@ -98,7 +99,9 @@ export function MagicItemsBrowser({ rows: byEdition, title = "Oggetti magici", r
     <div className="px-6 pb-8 pt-4">
       <ParentLink href="/compendio" label="Compendio" />
       {/* The long title keeps its line on phones: the edition pill sits under it, on the right. */}
-      <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">{title}</h1>
+      <Etichetta parti={["Compendio", edition]} />
+      <h1 className="pg-capolettera font-serif text-[40px] font-bold leading-tight">{title}</h1>
+      <Divisore className="mt-1" />
       <div className="mt-3 flex justify-end empty:hidden lg:hidden">
         <SectionEditionPill section="oggetti-magici" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} />
       </div>

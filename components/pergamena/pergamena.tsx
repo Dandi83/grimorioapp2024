@@ -1,3 +1,5 @@
+import type React from "react";
+
 /**
  * «Pergamena illustrata» (PROMPT 64, passo 1): the ornaments shared by the pages, drawn with the classes of
  * app/globals.css (pg-*). They dress titles, frames and buttons; the text of the cards never changes.
@@ -40,7 +42,31 @@ export function Divisore({ ornamento = "stella", chiaro = false, className = "" 
   );
 }
 
-/** The tilted stamp next to a title («BETA»). */
-export function Timbro({ children, ...data }: { children: string } & Record<`data-${string}`, string>) {
-  return <span className="pg-timbro" {...data}>{children}</span>;
+/** The tilted stamp next to a title («BETA»); «piccolo» in the menus and on the tiles. */
+export function Timbro({ children, piccolo = false, className = "", ...data }: { children: string; piccolo?: boolean; className?: string } & Record<`data-${string}`, string>) {
+  return <span className={`pg-timbro${piccolo ? " pg-timbro-piccolo" : ""} ${className}`.trim()} {...data}>{children}</span>;
+}
+
+/**
+ * PROMPT 65: «PRESTO» in the place of the «In arrivo» pill, for everyone (menus, tiles, entries, «in costruzione» page).
+ * The labels of the admin area stay textual (components/sections/soon-tag.tsx, testo).
+ */
+export function TimbroPresto({ piccolo = true, className = "" }: { piccolo?: boolean; className?: string }) {
+  return <Timbro piccolo={piccolo} className={className} data-soon-tag="" data-timbro-presto="">Presto</Timbro>;
+}
+
+/**
+ * The small spaced capitals above a title (PROMPT 65): labels of the app and data already shown on the page, never a
+ * sentence of the SRD. data-pg-nuovo marks the words added by this style (the text checks leave them out); «chiara»
+ * on a coloured header. children: what was already on the page before this style (the level and school of a spell).
+ */
+/** segno: a small mark before the words (the dot in the colour of the school of a spell). */
+export function Etichetta({ parti, children, segno, chiara = false, className = "" }: { parti: readonly (string | undefined | false)[]; children?: React.ReactNode; segno?: React.ReactNode; chiara?: boolean; className?: string }) {
+  const words = parti.filter(Boolean).join(" · ");
+  return (
+    <p className={`pg-etichetta${chiara ? " pg-etichetta-chiara" : ""} ${className}`.trim()} data-pg-etichetta="" {...(children ? {} : { "data-pg-nuovo": "" })}>
+      {segno}
+      {children ? <>{words && <span data-pg-nuovo="">{words} · </span>}{children}</> : words}
+    </p>
+  );
 }

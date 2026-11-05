@@ -42,7 +42,7 @@ export async function HiddenPartBar({ id }: { id: string }) {
   const { soon } = await sectionView();
   return (
     <form action={showPartAction} className="flex items-center gap-2">
-      {soon.includes(id) ? <SoonTag /> : <HiddenTag />}
+      {soon.includes(id) ? <SoonTag testo /> : <HiddenTag />}
       <input type="hidden" name="parte" value={id} />
       <button type="submit" className="min-h-11 px-1 text-[14px] font-bold text-primary underline underline-offset-4">Mostra</button>
     </form>

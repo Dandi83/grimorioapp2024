@@ -29,7 +29,7 @@ function Shortcut({ href, label, icon, section, counts, soon }: HomeShortcut) {
   const shown = allowed.includes(edition) ? edition : allowed[0];
   const Icon = icon ? ICONS[icon] : null;
   const mark = Icon && <Icon size={16} strokeWidth={1.9} aria-hidden="true" />;
-  if (soon) return <Link href={href} prefetch={false} data-soon="" className="opacity-60">{mark}{label} <SoonTag /></Link>;
+  if (soon) return <Link href={href} prefetch={false} data-soon="" className="pg-attenuato">{mark}{label} <SoonTag /></Link>;
   return <Link href={href} prefetch={false}>{mark}{counts ? `${label} · ${counts[shown]} del ${shown}` : label}</Link>;
 }
 

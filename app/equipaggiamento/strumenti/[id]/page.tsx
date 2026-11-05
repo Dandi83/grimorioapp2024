@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { editionOfPage, itemDescription, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -57,9 +58,12 @@ function Cell({ label, value }: { label: string; value: string }) {
 /** level: one H1 per page (PROMPT 45): the 2014 panel next to a 2024 one has the same title as an H2, same look. */
 function Heading({ nome, kind, edition, level: Title = "h1" }: { nome: string; kind: string; edition: EquipmentEdition; level?: "h1" | "h2" }) {
   return (
-    <div className="text-center">
-      <Title className="font-serif text-4xl font-bold leading-tight">{nome}</Title>
-      <p className="mt-1 text-[15px] text-muted">{kind} · edizione {edition}</p>
+    <div className="flex flex-col items-center gap-1.5 text-center">
+      {/* PROMPT 65: label, capilettera, divider with ✦; the line «… · edizione …» under it as before. */}
+      <Etichetta parti={["Strumento", edition]} />
+      <Title className="pg-capolettera font-serif text-4xl font-bold leading-tight">{nome}</Title>
+      <Divisore />
+      <p className="text-[15px] text-muted">{kind} · edizione {edition}</p>
     </div>
   );
 }
@@ -79,7 +83,7 @@ function Sheet2024({ tool }: { tool: Tool2024 }) {
   return (
     <div className="space-y-5 pt-4">
       <Heading nome={tool.nome} kind={tool.gruppo === "artigiano" ? "Strumento da artigiano" : "Strumento"} edition="2024" />
-      <div className="grid grid-cols-2 rounded-[14px] border border-border bg-card">
+      <div className="pg-angoli grid grid-cols-2 rounded-[14px] border border-border bg-card">
         <Cell label="COSTO" value={tool.prezzo} />
         <Cell label="PESO" value={tool.peso || "non verificato"} />
       </div>
@@ -132,7 +136,7 @@ function Sheet2014({ tool, level }: { tool: Tool2014; level?: "h1" | "h2" }) {
   return (
     <div className="space-y-5 pt-4">
       <Heading nome={tool.nome} kind={GROUP_NAMES[tool.gruppo]} edition="2014" level={level} />
-      <div className="grid grid-cols-2 rounded-[14px] border border-border bg-card">
+      <div className="pg-angoli grid grid-cols-2 rounded-[14px] border border-border bg-card">
         <Cell label="COSTO" value={tool.costo} />
         <Cell label="PESO" value={tool.peso} />
       </div>

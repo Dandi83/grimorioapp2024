@@ -65,7 +65,7 @@ export default async function ClassPage({ params }: { params: Promise<{ id: stri
     const name = (card ?? entry.editions["2024"]!).nome;
     headers[edition] = (
       <div className="relative">
-        <ClassHeader id={id} name={name} line={card ? `Classe · ${CLASS_SOURCES[edition]}, p. ${card.pagina}` : `Classe · ${CLASS_SOURCES[edition]}`} heading={Object.keys(headers).length ? "h2" : "h1"} />
+        <ClassHeader id={id} name={name} kicker={["Classe", CLASS_SOURCES[edition]]} line={card ? `Classe · ${CLASS_SOURCES[edition]}, p. ${card.pagina}` : `Classe · ${CLASS_SOURCES[edition]}`} heading={Object.keys(headers).length ? "h2" : "h1"} />
         {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
         {card && <AdminEditButton target={{ kind: "contenuto", section: "classi", id, edition }} desktop="lg:absolute lg:right-6 lg:top-6" />}
       </div>

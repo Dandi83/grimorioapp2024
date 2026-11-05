@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { fitDescription, dndEdition, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { HiddenPartBar } from "@/components/sections/part-block";
@@ -77,11 +78,15 @@ export default async function ManualEntryPage({ params }: { params: Promise<{ id
       {!isCondition && (
         <Link href={`/manuale?sezione=${entry.category}`} className="text-sm font-semibold text-primary">← {MANUAL_CATEGORIES[entry.category]}</Link>
       )}
-      <header className={isCondition ? "mb-6 mt-3 border-b border-primary/40 pb-5" : "mb-6 mt-6"}>
+      <header className={isCondition ? "mb-6 mt-3" : "mb-6 mt-6"}>
         {/* «Modifica» for the administrator only, drawn in the browser (never in the cached page). */}
         <AdminEditButton target={isCondition ? { kind: "contenuto", section: "condizioni", id: entry.id, edition } : { kind: "contenuto", section: "manuale", id: entry.id, edition: "2024" }} />
-        <p className="mb-2 text-xs uppercase tracking-widest text-primary">{entry.subgroup || (isCondition ? "Condizione" : "")}</p>
-        <h1 className="font-serif text-4xl font-bold leading-tight text-foreground">{entry.title}</h1>
+        {/* A condition (PROMPT 65): «CONDIZIONE» as the label of the style, capilettera and the divider with ✦ in the
+            place of the thin rule. The other entries of the Manual stay as they were. */}
+        {isCondition ? <Etichetta parti={[]} className="mb-1">{entry.subgroup || "Condizione"}</Etichetta>
+          : <p className="mb-2 text-xs uppercase tracking-widest text-primary">{entry.subgroup}</p>}
+        <h1 className={`${isCondition ? "pg-capolettera " : ""}font-serif text-4xl font-bold leading-tight text-foreground`}>{entry.title}</h1>
+        {isCondition && <Divisore className="mt-2" />}
         {entry.edizione === "2014" && <RulesEditionBadge edition="2014" />}
       </header>
       {entry.subgroup === "Classi" && ["Bardo", "Chierico", "Druido", "Mago", "Paladino", "Ranger", "Stregone", "Warlock"].includes(entry.title) && (

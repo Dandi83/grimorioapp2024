@@ -134,3 +134,156 @@ test("I miei personaggi: label, capilettera, ⚔ divider, BETA stamp, round port
   await page.evaluate(() => localStorage.removeItem("grimorio.characters.v1"));
   await context.close();
 });
+
+// PROMPT 65 («pergamena illustrata», passo 2): sheets, list headers, Compendio and the «PRESTO» stamp. The style dresses
+// titles and frames only: one H1 with the same text, the label above made of words of the app, the capilettera that does
+// not move the line, the divider with ✦, copper corners only on the data box at the top.
+const SHEETS = [
+  ["/spell/palla-di-fuoco", "Incantesimo · 3° Livello · Invocazione", "[data-card-description]", ".pg-angoli.grid"],
+  ["/spell/aiuto-2014", "Incantesimo · 2° Livello · Abiurazione", null, ".pg-angoli.grid"],
+  ["/mostro/drago-nero-adulto", "Mostro · GS 14", null, "[data-monster-strip]"],
+  ["/mostro/aboleth-2014", "Mostro · GS 10", null, "[data-monster-strip]"],
+  ["/mostro/alce", "Animale · GS 1/4", null, "[data-monster-strip]"],
+  ["/oggetti-magici/ammazzadraghi", "Oggetto magico · Raro", null, 'ul[aria-label="Tipo, rarità e sintonia"]'],
+  ["/equipaggiamento/armi/spada-lunga", "Arma · 2024", null, ".pg-angoli.grid"],
+  ["/equipaggiamento/armature/armatura-a-piastre", "Armatura · 2024", null, ".pg-angoli.grid"],
+  ["/equipaggiamento/avventura/acido", "Equipaggiamento d’avventura · 2024", null, ".pg-angoli.grid"],
+  ["/equipaggiamento/strumenti/arnesi-da-scasso", "Strumento · 2024", null, ".pg-angoli.grid"],
+  ["/equipaggiamento/padronanze/fiaccare", "Padronanza · 2024", null, null],
+  ["/equipaggiamento/proprieta/versatile", "Proprietà · 2024", null, null],
+  ["/classi/mago", "Classe · SRD 5.2.1", null, ".pg-angoli"],
+  // The label of a condition is the one already printed above its name («Condizioni»), not a new word.
+  ["/manuale/condizioni-accecato", "Condizioni", null, null],
+];
+const LISTS = [
+  ["/grimorio", "Compendio D&D 5e · 2024", "Incantesimi"], ["/bestiario", "Compendio D&D 5e · 2024", "Bestiario"],
+  ["/oggetti-magici", "Compendio · 2024", "Oggetti magici"], ["/equipaggiamento/armi", "Equipaggiamento · 2024", "Armi"],
+  ["/equipaggiamento/avventura", "Equipaggiamento · 2024", "Equipaggiamento d’avventura"], ["/compendio/condizioni", "Compendio · 2024", "Condizioni"],
+  ["/preferiti", "Compendio D&D 5e", "Preferiti"], ["/bestiario/creature-originali", "Bestiario", "Creature originali"],
+];
+
+/** The H1 is as tall with and without its capilettera (line-height 0) and its first letter is in the given colour. */
+async function capilettera(h1, colour) {
+  await expect(h1).toHaveClass(/pg-capolettera/);
+  const check = await h1.evaluate(el => {
+    const withLetter = el.getBoundingClientRect().height;
+    el.classList.remove("pg-capolettera");
+    const without = el.getBoundingClientRect().height;
+    el.classList.add("pg-capolettera");
+    return { same: Math.abs(withLetter - without) < 0.5, colour: getComputedStyle(el, "::first-letter").color, size: getComputedStyle(el, "::first-letter").fontSize, base: getComputedStyle(el).fontSize };
+  });
+  expect(check.same).toBe(true);
+  if (colour) expect(check.colour).toBe(colour);
+  expect(parseFloat(check.size) / parseFloat(check.base)).toBeCloseTo(1.35, 2);
+}
+
+const corners = locator => locator.evaluate(el => getComputedStyle(el).backgroundImage.match(/data:image\/svg\+xml/g)?.length ?? 0);
+
+for (const [name, device] of SCREENS) {
+  test(`${name}: the sheets with label, capilettera, ✦ divider and copper corners on the data box only`, async ({ browser }) => {
+    test.setTimeout(180_000);
+    const { context, page, portraits } = await newPage(browser, device);
+    for (const [path, label, body, box] of SHEETS) {
+      await page.goto(path);
+      const h1 = page.getByRole("heading", { level: 1 });
+      await expect(h1, path).toHaveCount(1);
+      const header = h1.locator("xpath=ancestor::*[.//*[@data-pg-etichetta]][1]");
+      const kicker = header.locator("[data-pg-etichetta]").first();
+      await expect(kicker, path).toHaveText(label);
+      await expect(kicker).toHaveCSS("text-transform", "uppercase");
+      expect((await kicker.boundingBox()).y, path).toBeLessThan((await h1.boundingBox()).y);
+      await capilettera(h1, path.startsWith("/classi/") ? "rgb(255, 251, 240)" : BORDEAUX);
+      const divider = header.locator('[data-divisore="stella"]').first();
+      await expect(divider, path).toBeVisible();
+      expect((await divider.boundingBox()).y, path).toBeGreaterThan((await h1.boundingBox()).y);
+      if (box) expect(await corners(page.locator(box).first()), path).toBe(4);
+      // The text of the sheet has no ornament: no capilettera, label or corners inside it.
+      if (body) await expect(page.locator(`${body} .pg-capolettera, ${body} .pg-etichetta, ${body} .pg-angoli`)).toHaveCount(0);
+    }
+    // The ornaments are CSS and inline SVG: still no portrait loaded, nothing animated.
+    expect(await page.evaluate(() => document.getAnimations().length)).toBe(0);
+    expect(portraits).toEqual([]);
+    await context.close();
+  });
+
+  test(`${name}: list headers only (label, capilettera, divider); rows, filters and search as before`, async ({ browser }) => {
+    test.setTimeout(120_000);
+    const { context, page } = await newPage(browser, device);
+    for (const [path, label, title] of LISTS) {
+      await page.goto(path);
+      const h1 = page.getByRole("heading", { level: 1 });
+      await expect(h1, path).toHaveText(title);
+      await expect(page.locator("main [data-pg-etichetta]").filter({ visible: true }).first(), path).toHaveText(label);
+      await capilettera(h1, BORDEAUX);
+      await expect(page.locator('main [data-divisore="stella"]').filter({ visible: true }).first(), path).toBeVisible();
+      // Nothing of the style in the rows, the search box or the filters.
+      await expect(page.locator("main li.catalog-row [class*='pg-'], [data-list-search-box] [class*='pg-'], main li.catalog-row[class*='pg-']"), path).toHaveCount(0);
+    }
+    await context.close();
+  });
+
+  test(`${name}: Compendio tiles with corners, «PRESTO» on Talenti and on its «in costruzione» page, no «I miei personaggi»`, async ({ browser }) => {
+    const { context, page } = await newPage(browser, device);
+    await page.goto("/compendio");
+    const h1 = page.getByRole("heading", { level: 1 });
+    await expect(h1).toHaveText("Compendio");
+    await capilettera(h1, BORDEAUX);
+    await expect(page.locator("main [data-pg-etichetta]")).toHaveText("Regole, equipaggiamento e personaggi · SRD 5.2.1");
+    await expect(page.locator('main [data-divisore="stella"]')).toBeVisible();
+    const tiles = page.locator("main li[data-tile] > a");
+    expect(await tiles.count()).toBeGreaterThanOrEqual(6);
+    for (const tile of await tiles.all()) {
+      await expect(tile).toHaveClass(/pg-tessera/);
+      expect(await corners(tile)).toBe(4);
+      expect(await tile.evaluate(a => getComputedStyle(a).boxShadow)).toContain("rgba(60, 40, 20");
+    }
+    const talenti = page.locator("main li[data-soon]").filter({ hasText: "Talenti" });
+    await expect(talenti.locator("[data-timbro-presto]")).toHaveText("Presto");
+    await expect(talenti.locator("[data-timbro-presto]")).toHaveCSS("color", BORDEAUX);
+    expect(await talenti.locator("[data-timbro-presto]").evaluate(el => getComputedStyle(el).transform)).not.toBe("none");
+    await expect(talenti).not.toContainText("In arrivo");
+    await expect(talenti.locator("a")).toHaveClass(/pg-tessera-presto/);
+    // «I miei personaggi» is hidden: no tile and no link for the public.
+    await expect(page.locator('a[href="/personaggi"]')).toHaveCount(0);
+    await expect(page.locator("main [data-beta-label]")).toHaveCount(0);
+    await talenti.locator("a").click();
+    await expect(page).toHaveURL(/\/in-arrivo\/talenti$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente in costruzione");
+    const place = page.locator("[data-soon-pill]");
+    await expect(place).toHaveText("Talenti Presto");
+    // Under the icon, above the title.
+    const icon = await page.locator("main svg").first().boundingBox();
+    expect((await place.boundingBox()).y).toBeGreaterThan(icon.y + icon.height - 1);
+    expect((await place.boundingBox()).y).toBeLessThan((await page.getByRole("heading", { level: 1 }).boundingBox()).y);
+    await context.close();
+  });
+}
+
+test("administrator: «I miei personaggi» on the Compendio with the BETA stamp; «In arrivo» stays a text label for them", async ({ browser }) => {
+  test.setTimeout(120_000);
+  const { context, page } = await newPage(browser, SCREENS[2][1]);
+  await page.goto("/admin");
+  await page.getByLabel("Passcode").fill("passcode-di-prova-e2e");
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page.getByPlaceholder("Cerca qualsiasi scheda da modificare")).toBeVisible();
+  await page.goto("/compendio");
+  const tile = page.locator('main li[data-tile="/personaggi"]');
+  await expect(tile).toContainText("I miei personaggi");
+  await expect(tile.locator("[data-beta-label]")).toHaveText("BETA");
+  await expect(tile).toContainText("Nascosta");
+  expect(await corners(tile.locator("a"))).toBe(4);
+  // Talenti «In arrivo»: the administrator sees the content and the state as text, as in /admin/sezioni.
+  const talenti = page.locator('main li[data-tile="/talenti"]');
+  await expect(talenti.locator("[data-soon-tag]")).toHaveText("In arrivo");
+  await expect(talenti.locator("[data-timbro-presto]")).toHaveCount(0);
+  // A feat sheet (seen by the administrator while the section is «In arrivo»).
+  await page.goto("/talenti/allerta");
+  const h1 = page.getByRole("heading", { level: 1 });
+  await expect(h1).toHaveCount(1);
+  await expect(page.locator("main [data-pg-etichetta]").first()).toHaveText("Talento · Origini");
+  await capilettera(h1, BORDEAUX);
+  await page.goto("/talenti");
+  await expect(page.locator("main [data-pg-etichetta]").first()).toHaveText("Compendio · 2024");
+  await capilettera(page.getByRole("heading", { level: 1 }), BORDEAUX);
+  await context.close();
+});

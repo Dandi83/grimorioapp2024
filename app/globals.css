@@ -322,6 +322,8 @@ html[data-statistics-room] main {
  */
 :root {
   --pg-rame: #9C5B35;
+  /* Text of the entries «In arrivo»: lighter than the muted ink, still ≥ 4.5:1 on the bar (#EADFC6). */
+  --pg-attenuato: #6E5C4A;
   --pg-ombra: 0 1px 2px rgb(60 40 20 / 8%), 0 6px 18px rgb(60 40 20 / 10%);
   /* Paper: only lighter flecks over the parchment, so dark text never loses contrast; one small tile, no animation. */
   --pg-carta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .99 0 0 0 0 .96 1.6 0 0 0 -.7'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23f)' opacity='.55'/%3E%3C/svg%3E");
@@ -349,7 +351,10 @@ body {
     line-height: 0;
   }
 
-  /* The small spaced capitals above a title. */
+  /* The small spaced capitals above a title (PROMPT 65: a little room for the capilettera of the title under it). */
+  .pg-etichetta + .pg-capolettera {
+    margin-top: 0.25rem;
+  }
   .pg-etichetta {
     margin: 0;
     color: var(--color-muted);
@@ -417,5 +422,46 @@ body {
     text-transform: uppercase;
     transform: rotate(-8deg);
     vertical-align: middle;
+  }
+  /* PROMPT 65: the stamp in the menus and on the tiles («PRESTO»): same look, smaller. */
+  .pg-timbro-piccolo {
+    margin-left: 0.4rem;
+    border-width: 1.5px;
+    outline-offset: 1px;
+    padding: 0 5px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    line-height: 14px;
+  }
+  /* On a dark tile («Creati da voi»): amber border and text. */
+  .pg-timbro-chiaro {
+    border-color: var(--color-amber);
+    outline-color: rgb(224 162 26 / 40%);
+    color: var(--color-amber);
+  }
+  /* On a coloured header (the classes): cream label and capilettera, the colour of the text there. */
+  .pg-etichetta-chiara {
+    color: rgb(255 251 240 / 92%);
+  }
+  .pg-capolettera-chiara::first-letter {
+    color: inherit;
+  }
+  /*
+   * An entry «In arrivo» for the public (PROMPT 65): softer text and icon instead of a 60% opacity, so the name stays
+   * readable (≥ 4.5:1 on the bar, the column and the tiles) and the «PRESTO» stamp keeps its full colour.
+   */
+  .pg-attenuato,
+  .pg-attenuato :not(.pg-timbro) {
+    color: var(--pg-attenuato) !important;
+  }
+  .pg-attenuato svg {
+    opacity: 0.55;
+  }
+  /* The tiles of the Compendio: copper corners and the warm shadow of the cards; «PRESTO» ones lighter, dashed. */
+  .pg-tessera {
+    background-image: var(--pg-a1), var(--pg-a2), var(--pg-a3), var(--pg-a4);
+    background-position: top 5px left 5px, top 5px right 5px, bottom 5px left 5px, bottom 5px right 5px;
+    background-repeat: no-repeat;
+    box-shadow: var(--pg-ombra);
   }
 }

@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/components/seo/json-ld";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { pageMetadata } from "@/lib/seo";
 import { Backpack, Hammer, Shield, Swords } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -33,7 +34,9 @@ export default async function EquipmentPage() {
       <Breadcrumbs crumbs={[{ name: "Compendio", path: "/compendio" }, { name: "Equipaggiamento", path: "/equipaggiamento" }]} />
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/compendio" label="Compendio" />
-      <h1 className="border-b-4 border-primary pb-3 font-serif text-[40px] font-bold leading-tight">Equipaggiamento</h1>
+      <Etichetta parti={["Compendio", "SRD 5.1 e 5.2.1"]} />
+      <h1 className="pg-capolettera font-serif text-[40px] font-bold leading-tight">Equipaggiamento</h1>
+      <Divisore className="mt-1" />
       <p className="mt-3 text-[15px] leading-6 text-muted">Dati dell’SRD 5.1 (2014) e dell’SRD 5.2.1 (2024), con le differenze tra le edizioni.</p>
       <SectionTiles tiles={shown} />
     </div>

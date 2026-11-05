@@ -239,7 +239,7 @@ export function BestiarioBrowser({
         {section === "community" ? <CommunityHeader><SectionEditionPill section="bestiario" edition={edizione} choose={chooseEdition} /></CommunityHeader>
           : section === "grimorio" ? <GrimorioHeader><SectionEditionPill section="bestiario" edition={edizione} choose={chooseEdition} /></GrimorioHeader>
           : section === "originali" ? <OriginalsHeader><SectionEditionPill section="bestiario" edition={edizione} choose={chooseEdition} /></OriginalsHeader>
-          : <CatalogTitle section="bestiario" title="Bestiario" edition={edizione} onEdition={chooseEdition} />}
+          : <CatalogTitle section="bestiario" title="Bestiario" etichetta={["Compendio D&D 5e", edizione]} edition={edizione} onEdition={chooseEdition} />}
         {section === "originali" && (
           <div role="group" aria-label="Chi l’ha creata" className="mt-4 flex flex-wrap gap-2" data-community-chips="">
             {(["tutti", "grimorio", "community"] as const).filter(value => value === "tutti" || (value === "grimorio" ? grimorioPart.shown : homebrewPart.shown)).map(value => (

@@ -1,5 +1,6 @@
 "use client";
 
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AdminEditPencil } from "@/components/admin-edit/admin-edit-button";
@@ -90,7 +91,9 @@ export function GearBrowser({ rows }: { rows: Record<EquipmentEdition, GearListR
     <div className="px-4 pb-8 pt-4 sm:px-6">
       <ParentLink href="/equipaggiamento" label="Equipaggiamento" />
       {/* The long title takes the whole width; the edition pill sits under it, on the right. */}
-      <h1 className="border-b-4 border-primary pb-3 font-serif text-[34px] font-bold leading-tight">Equipaggiamento d’avventura</h1>
+      <Etichetta parti={["Equipaggiamento", edition]} />
+      <h1 className="pg-capolettera font-serif text-[34px] font-bold leading-tight">Equipaggiamento d’avventura</h1>
+      <Divisore className="mt-1" />
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <p className="text-[15px] text-muted">{count} voci · {edition === "2024" ? "SRD 5.2.1" : "SRD 5.1"}</p>
         <SectionEditionPill section="avventura" edition={edition} choose={value => { setEdition(value); setMissing(undefined); }} />

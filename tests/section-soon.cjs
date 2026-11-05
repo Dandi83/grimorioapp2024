@@ -1,5 +1,5 @@
 // «In arrivo» (/admin/sezioni): the third state of sections and parts. The entries stay for the public (bar, side
-// column, Compendio, Home), attenuated, to the «in costruzione» page with the pill «<name> · In arrivo»; the content
+// column, Compendio, Home), attenuated, to the «in costruzione» page with «<name>» and the «PRESTO» stamp (PROMPT 65); the content
 // stays out as for a hidden section (it is stored as hidden, with the in_arrivo flag).
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -42,5 +42,7 @@ assert.match(fs.readFileSync('components/sections/soon-tag.tsx', 'utf8'), /bg-\[
 assert.match(fs.readFileSync('components/section-tiles.tsx', 'utf8'), /Ci stiamo lavorando/);
 const switches = fs.readFileSync('components/sections/section-switches.tsx', 'utf8');
 for (const label of ['"Visibile"', '"In arrivo"', '"Nascosta"']) assert.ok(switches.includes(`label: ${label}`), label);
-assert.match(fs.readFileSync('components/sections/section-unavailable.tsx', 'utf8'), /\{soon\} · In arrivo/);
+// PROMPT 65: the name and the tilted «PRESTO» stamp under the icon, in the place of the pill «<name> · In arrivo».
+assert.match(fs.readFileSync('components/sections/section-unavailable.tsx', 'utf8'), /\{soon\}\{" "\}<TimbroPresto/);
+assert.match(fs.readFileSync('components/sections/soon-tag.tsx', 'utf8'), /if \(!testo\) return <TimbroPresto/);
 console.log('section-soon: pill of the «in costruzione» page, /in-arrivo titles, bar, migration and three states.');
