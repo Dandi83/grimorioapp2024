@@ -19,7 +19,7 @@ cornici e pulsanti, mai il testo delle schede.
 
 - Schede: incantesimi («INCANTESIMO · 3° LIVELLO · INVOCAZIONE», con il pallino della scuola e uno sfondo pergamena
   sotto l'etichetta sopra l'immagine), mostri («MOSTRO · GS 14», «ANIMALE · …», «CREATURA ORIGINALE · …»), oggetti
-  magici («OGGETTO MAGICO · RARO»), armi, armature, oggetti d'avventura, strumenti, padronanze, proprietà, classi
+  magici («OGGETTO MAGICO · RARO»), armi, armature, oggetti d'avventura, strumenti, padronanze («PADRONANZA · 2024»), proprietà («PROPRIETÀ · 2024»), classi
   («CLASSE · SRD 5.2.1»), talenti («TALENTO · ORIGINI»), condizioni (l'etichetta già stampata «Condizioni»).
   Capilettera nel titolo (CSS `::first-letter`: il testo dell'H1 non cambia), divisore ✦ al posto della riga di 4 px.
   Angoli di rame solo sul riquadro dei dati in alto (striscia CA/PF/Iniziativa/GS, i quattro valori dell'incantesimo,

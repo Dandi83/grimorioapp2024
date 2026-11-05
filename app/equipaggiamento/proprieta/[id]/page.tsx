@@ -64,7 +64,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ id: s
         })} />}
         <header className="flex flex-col items-center gap-1.5 pt-4 text-center">
           {/* PROMPT 65: label, capilettera, divider with ✦. */}
-          <Etichetta parti={["Proprietà delle armi", edition]} />
+          <Etichetta parti={["Proprietà", edition]} />
           <Heading className="pg-capolettera font-serif text-4xl font-bold leading-tight">
             {property.nome}{rule.en && <span className="ml-2 align-middle font-sans text-[20px] font-normal italic text-muted" lang="en" data-english-name="">({rule.en})</span>}
           </Heading>

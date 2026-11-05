@@ -47,7 +47,8 @@ async function title(scope) {
     let at = 0;
     for (const word of node.textContent.split(" ")) {
       const range = document.createRange();
-      range.setStart(node, at);
+      // PROMPT 65: the capilettera (::first-letter) is a box of its own; the first word is measured from its second letter.
+      range.setStart(node, at === 0 && word.length > 1 ? 1 : at);
       range.setEnd(node, at + word.length);
       if ([...range.getClientRects()].filter(rect => rect.width > 0).length > 1) broken.push(word);
       at += word.length + 1;

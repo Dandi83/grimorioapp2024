@@ -149,8 +149,8 @@ const SHEETS = [
   ["/equipaggiamento/armature/armatura-a-piastre", "Armatura · 2024", null, ".pg-angoli.grid"],
   ["/equipaggiamento/avventura/acido", "Equipaggiamento d’avventura · 2024", null, ".pg-angoli.grid"],
   ["/equipaggiamento/strumenti/arnesi-da-scasso", "Strumento · 2024", null, ".pg-angoli.grid"],
-  ["/equipaggiamento/padronanze/fiaccare", "Padronanza delle armi · 2024", null, null],
-  ["/equipaggiamento/proprieta/versatile", "Proprietà delle armi · 2024", null, null],
+  ["/equipaggiamento/padronanze/fiaccare", "Padronanza · 2024", null, null],
+  ["/equipaggiamento/proprieta/versatile", "Proprietà · 2024", null, null],
   ["/classi/mago", "Classe · SRD 5.2.1", null, ".pg-angoli"],
   // The label of a condition is the one already printed above its name («Condizioni»), not a new word.
   ["/manuale/condizioni-accecato", "Condizioni", null, null],

@@ -55,7 +55,7 @@ export default async function MasteryPage({ params }: { params: Promise<{ id: st
       })} />}
       <header className="flex flex-col items-center gap-1.5 pt-4 text-center">
         {/* PROMPT 65: label, capilettera, divider with ✦. */}
-        <Etichetta parti={["Padronanza delle armi", "2024"]} />
+        <Etichetta parti={["Padronanza", "2024"]} />
         <h1 className="pg-capolettera font-serif text-4xl font-bold leading-tight">
           {mastery.nome}{mastery.en && <span className="ml-2 align-middle font-sans text-[20px] font-normal italic text-muted" lang="en" data-english-name="">({mastery.en})</span>}
         </h1>

@@ -46,7 +46,9 @@ test("«In arrivo» from the start: the visitor sees only the Compendio tile; pa
   const pub = await context.newPage();
   const tile = pub.locator("main a").filter({ hasText: "Talenti" });
   // A page built while the section was shown is served once more, then built again.
-  await expect.poll(async () => { await pub.goto("/compendio"); return tile.textContent(); }).toContain("In arrivo");
+  // PROMPT 65: the tilted «PRESTO» stamp in the place of the «In arrivo» pill.
+  await expect.poll(async () => { await pub.goto("/compendio"); return tile.locator("[data-timbro-presto]").count(); }).toBe(1);
+  await expect(tile).not.toContainText("In arrivo");
   await expect(tile).toHaveAttribute("href", "/in-arrivo/talenti");
   for (const path of ["/talenti", "/talenti/allerta", "/talenti/lottatore"]) {
     const response = await pub.goto(path);
