@@ -44,6 +44,8 @@ async function seed() {
 
 test.describe.configure({ mode: "serial" });
 test.afterAll(() => database(client => client.query(`DELETE FROM grimorio_analytics_events WHERE visitor_id LIKE '${PREFIX}%'`)));
+// The event of the test is removed also when the test stops before «Cancella»: it would show on the charts of the other tests.
+test.afterEach(() => database(client => client.query("DELETE FROM grimorio_analytics_markers WHERE etichetta = 'Sponsorizzata su IG prova'").catch(() => { /* table not created yet */ })));
 
 for (const width of [390, 1280]) {
   test(`«Ultime 24 ore» at ${width}: first in the menu, tiles, 24 bars, the event on its hour; the other periods unchanged`, async ({ page }) => {
@@ -93,9 +95,15 @@ for (const width of [390, 1280]) {
     await expect(chart.locator("[data-hour-tick]")).toHaveCount(6);
     await expect(page.locator('svg[data-chart="giorni"]')).toHaveCount(0);
 
-    // An event at the Rome hour of now: its dashed line on the bar that holds that hour, then cancelled.
-    const hour = Number(new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
+    // An event two hours ago (Rome time): its dashed line on the bar that holds that hour, then cancelled. Never the
+    // current hour: the window ends at the current minute, excluded, so «hh:00» of the current hour is outside it during
+    // the first minute of every hour (the run of 5 November 2026 at 15:00). Two hours back the hour stays well inside the
+    // window whatever the minute; before 02:00 it is yesterday's (the field «Giorno» says it).
+    const twoHoursAgo = new Date(Date.now() - 2 * 3600_000);
+    const hour = Number(new Intl.DateTimeFormat("it-IT", { timeZone: "Europe/Rome", hour: "2-digit", hourCycle: "h23" }).format(twoHoursAgo));
+    const day = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(twoHoursAgo);
     await page.getByRole("button", { name: "+ Segna un evento" }).click();
+    await page.getByLabel("Giorno").fill(day);
     await page.getByLabel("Ora (facoltativa)").selectOption(String(hour));
     await page.getByLabel("Cosa è successo").fill("Sponsorizzata su IG prova");
     await page.getByRole("button", { name: "Salva l’evento" }).click();

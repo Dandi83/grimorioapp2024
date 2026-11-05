@@ -39,7 +39,8 @@ export const DEFAULT_PART_STATES: Readonly<Record<string, SectionState>> = { "be
  * The state of a section never set from /admin/sezioni: «Visibile», except the sections that start «In arrivo»
  * (PROMPT 49: «Talenti»), until the administrator chooses; also while the database cannot be read.
  */
-export const DEFAULT_SECTION_STATES: Readonly<Partial<Record<PublicSectionKey, SectionState>>> = { talenti: "in-arrivo" };
+// PROMPT 62: «I miei personaggi» starts «Nascosta» (the beta page of the administrator).
+export const DEFAULT_SECTION_STATES: Readonly<Partial<Record<PublicSectionKey, SectionState>>> = { talenti: "in-arrivo", personaggi: "nascosta" };
 const sectionStateOf = (key: string, row: { nascosta: boolean; in_arrivo?: boolean | null } | undefined): SectionState =>
   row ? stateOf(row) : DEFAULT_SECTION_STATES[key as PublicSectionKey] ?? "visibile";
 const partStateOf = (id: string, row: { nascosta: boolean; in_arrivo?: boolean | null } | undefined): SectionState =>

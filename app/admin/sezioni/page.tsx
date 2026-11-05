@@ -20,7 +20,7 @@ export default async function SectionsPage() {
     <div className="mx-auto flex max-w-2xl lg:max-w-[1200px] flex-col gap-3 px-4 pb-28 pt-4">
       <Link href="/admin" className="inline-flex min-h-11 items-center self-start text-[15px] font-bold text-[#7A1F2B]">‹ Area riservata</Link>
       <SectionSwitches scopes={scopes} sections={PUBLIC_SECTIONS.map(section => ({
-        key: section.key, title: section.title, where: section.where, state: states[section.key] ?? "visibile",
+        key: section.key, title: section.title, where: section.where, state: states[section.key] ?? "visibile", beta: "beta" in section && section.beta === true,
         parts: (section.parts as readonly SectionPart[]).map(part => ({ id: partId(section.key, part.key), title: part.title, group: part.group, state: states[partId(section.key, part.key)] ?? "visibile",
           ...(locked && partId(section.key, part.key) === COMMUNITY_PART ? { locked: true } : {}) })),
       }))} />

@@ -56,6 +56,13 @@ async function cleanup() {
   await client.end();
 }
 
+// The event of the test is removed also when the test stops before «Cancella» (the other tests read the same charts).
+test.afterEach(async () => {
+  const client = new pg.Client({ connectionString: TEST_DATABASE_URL });
+  await client.connect();
+  try { await client.query("DELETE FROM grimorio_analytics_markers WHERE etichetta = 'Prova evento e2e'"); } catch { /* table not created yet */ } finally { await client.end(); }
+});
+
 test("statistics: the administrator sees the questions with charts and marked events; others never", async ({ page, browser, request }) => {
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 390, height: 844 });

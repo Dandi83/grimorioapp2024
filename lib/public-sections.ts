@@ -36,6 +36,8 @@ interface PublicSection {
   where: string;
   paths: readonly string[];
   parts: readonly SectionPart[];
+  /** A beta page: «BETA» next to its title in /admin/sezioni. */
+  beta?: boolean;
 }
 
 export type Edition = "2024" | "2014";
@@ -95,6 +97,9 @@ export const PUBLIC_SECTIONS = [
   ] },
   // PROMPT 49: the SRD feats; the section starts «In arrivo» (lib/section-visibility.ts DEFAULT_SECTION_STATES).
   { key: "talenti", title: "Talenti", where: "Compendio · Personaggi", paths: ["/talenti"], parts: [] },
+  // PROMPT 62: «I miei personaggi» (the characters of Total Party Kill, saved in the browser). Starts «Nascosta»
+  // (lib/section-visibility.ts DEFAULT_SECTION_STATES): only the administrator opens it; no entry anywhere for the public.
+  { key: "personaggi", title: "I miei personaggi", where: "Pagina /personaggi · beta", paths: ["/personaggi"], parts: [], beta: true },
 ] as const satisfies readonly PublicSection[];
 
 export type PublicSectionKey = (typeof PUBLIC_SECTIONS)[number]["key"];

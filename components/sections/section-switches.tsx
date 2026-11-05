@@ -14,7 +14,7 @@ import type { SectionState } from "@/lib/section-visibility";
 interface PartRow { id: string; title: string; group: PartGroup; state: SectionState; locked?: boolean }
 /** What the visitors really get: a locked part is hidden. */
 const shown = (part: PartRow): SectionState => (part.locked ? "nascosta" : part.state);
-interface Row { key: string; title: string; where: string; state: SectionState; parts: PartRow[] }
+interface Row { key: string; title: string; where: string; state: SectionState; parts: PartRow[]; beta?: boolean }
 
 const OPTIONS: { value: SectionState; label: string; active: string }[] = [
   { value: "visibile", label: "Visibile", active: "bg-[#1F6B45] text-white" },
@@ -211,7 +211,7 @@ export function SectionSwitches({ sections, scopes: savedScopes = [] }: { sectio
             <li key={row.key} data-section-row={row.key} className="border-t border-[#DDCFAE]/70 first:border-t-0">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-3.5 py-2.5">
                 <div className="min-w-0 flex-1">
-                  <p className="font-serif text-[19px] font-bold leading-tight">{row.title}</p>
+                  <p className="font-serif text-[19px] font-bold leading-tight">{row.title}{row.beta && <span data-beta-label="" className="ml-2 inline-flex items-center rounded-full border border-[#7A4E00] bg-[#FCEFD0] px-[7px] py-px align-middle font-sans text-[11px] font-bold leading-4 tracking-[0.08em] text-[#7A4E00]">BETA</span>}</p>
                   <p className="mt-0.5 text-[13px] leading-5 text-[#5E4E3E]">{row.where} · <State state={row.state} /></p>
                 </div>
                 <StateSelector title={row.title} state={row.state} disabled={pending && busy === row.key} onChange={state => change(row.key, row.title, state)} />
