@@ -6,8 +6,8 @@ import Image from "next/image";
 import { Check, ChevronLeft, ChevronRight, Shield, TriangleAlert } from "lucide-react";
 
 import {
-  ABILITIES, backgroundName, cardLine, className, finalAbilities, metres, modifier, newLocalId, readCharacters, sameCharacter, sheetSpells, signed,
-  skillName, speciesLabel, subclassName, writeCharacters, type CharacterNames, type SavedCharacter,
+  ABILITIES, backgroundName, cardLine, className, finalAbilities, incomingFromLink, isSheet2014, metres, modifier, newLocalId, readCharacters,
+  sameCharacter, sheetForTpk, sheetSpells, signed, skillName, speciesLabel, subclassName, writeCharacters, type CharacterNames, type SavedCharacter,
 } from "@/lib/characters-beta";
 import { decodeHash, encodePg, validaScheda, type ErroreCampo, type SchedaV1 } from "@/lib/shared/scheda-tpk-v1";
 import { spellHref, storedSpellId } from "@/lib/spell-public-id";
@@ -85,9 +85,9 @@ export function CharactersApp({ names }: { names: CharacterNames }) {
   const readLink = useCallback(async () => {
     const hash = window.location.hash;
     if (!LINK_HASH.test(hash)) return;
-    const result = await decodeHash(hash);
-    if (result.ok) setView({ kind: "incoming", party: result.party, sheets: result.schede });
-    else setView({ kind: "broken", message: result.errore, errors: result.errori ?? [] });
+    const result = incomingFromLink(hash, await decodeHash(hash));
+    if (result.ok) setView({ kind: "incoming", party: result.party, sheets: result.sheets });
+    else setView({ kind: "broken", message: result.message, errors: result.errors });
     window.scrollTo(0, 0);
   }, []);
 
@@ -256,13 +256,19 @@ function IncomingCharacters({ sheets, party, names, saved, storageOk, onSave, on
           const found = spells.filter(id => names.spells[id]);
           const missing = spells.filter(id => !names.spells[id]);
           const errors = validaScheda(sheet);
+          const old = isSheet2014(sheet);
           return (
             <article key={`${sheet.n}-${index}`} className="flex flex-col gap-4" data-incoming={sheet.n}>
               <Summary sheet={sheet} names={names} />
+              {old && (
+                <p role="note" data-edition-2014="" className="flex items-start gap-2 rounded-xl border-2 border-[#7A1F2B] bg-[#F1DDD5] px-4 py-3 text-[16px] leading-6 text-[#7A1F2B]">
+                  <TriangleAlert size={18} aria-hidden="true" className="mt-0.5 shrink-0" />Personaggio con regole 2014: in Total Party Kill non si può usare
+                </p>
+              )}
               <div>
                 <h2 className="font-serif text-[22px] font-bold">Controlli</h2>
                 <ul className="mt-1" data-checks="">
-                  <Tick ok={errors.length === 0}>{errors.length === 0 ? "Tutto dall’SRD 5.2.1" : `${errors.length} campi da controllare`}</Tick>
+                  <Tick ok={errors.length === 0 && !old}>{errors.length > 0 ? `${errors.length} campi da controllare` : old ? "Campi validi, regole 2014" : "Tutto dall’SRD 5.2.1"}</Tick>
                   <Tick ok={Boolean(className(sheet.c) && speciesLabel(sheet) && backgroundName(sheet.bg))}>Classe, specie e background riconosciuti</Tick>
                   <Tick ok={missing.length === 0}>
                     {found.length} {found.length === 1 ? "incantesimo trovato" : "incantesimi trovati"} nel Grimorio
@@ -325,10 +331,15 @@ function CharacterSheet({ character, names, onBack, onDelete }: { character: Sav
   const [allSpells, setAllSpells] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
-  const [links, setLinks] = useState<{ play: string; share: string } | null>(null);
+  const [links, setLinks] = useState<{ play: string | null; share: string } | null>(null);
+  const old = isSheet2014(sheet);
   useEffect(() => {
     let alive = true;
-    void encodePg(sheet).then(hash => { if (alive) setLinks({ play: tpkImportUrl(hash), share: `${SITE}/personaggi${hash}` }); });
+    // TPK gets a copy with "ed": "2024" (PROMPT 71); the share link carries the sheet as it was saved.
+    const forTpk = sheetForTpk(sheet);
+    void Promise.all([forTpk ? encodePg(forTpk) : null, encodePg(sheet)]).then(([play, share]) => {
+      if (alive) setLinks({ play: play === null ? null : tpkImportUrl(play), share: `${SITE}/personaggi${share}` });
+    });
     return () => { alive = false; };
   }, [sheet]);
   const scores = finalAbilities(sheet);
@@ -414,8 +425,12 @@ function CharacterSheet({ character, names, onBack, onDelete }: { character: Sav
       )}
 
       <div className="mt-8 flex flex-col gap-2">
-        <a href={links?.play ?? tpkImportUrl("")} target="_blank" rel="noopener noreferrer" data-play=""
-          className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#7A1F2B] px-6 text-[17px] font-bold text-[#FFFBF0]">🎲 Gioca in Total Party Kill</a>
+        {old ? (
+          <p data-play-note="" className="rounded-xl border border-border bg-card px-4 py-3 text-center text-[16px] leading-6 text-muted">Total Party Kill usa le regole 2024</p>
+        ) : (
+          <a href={links?.play ?? tpkImportUrl("")} target="_blank" rel="noopener noreferrer" data-play=""
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#7A1F2B] px-6 text-[17px] font-bold text-[#FFFBF0]">🎲 Gioca in Total Party Kill</a>
+        )}
         <button type="button" onClick={copy} disabled={!links} data-copy-link=""
           className="min-h-12 rounded-full border-2 border-[#7A1F2B] px-6 text-[17px] font-bold text-[#7A1F2B]">🔗 Copia il link</button>
         {copied && <p role="status" data-copied="" className="break-all text-center text-[14px] text-muted">{copied}</p>}

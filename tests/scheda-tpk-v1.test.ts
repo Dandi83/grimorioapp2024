@@ -71,10 +71,10 @@ describe('codifica e decodifica', () => {
     expect(await decodeHash('#altro=abc')).toMatchObject({ ok: false });
     expect(await decodeHash('#pg=!!!')).toMatchObject({ ok: false });
     expect(await decodeHash('#pg=AAAA')).toMatchObject({ ok: false, errore: 'Il link è danneggiato: i dati non si leggono.' });
-    const bad = await encodePg({ ...MAGO, sp: 'mezzorco' } as SchedaV1);
+    const bad = await encodePg({ ...MAGO, sp: 'aarakocra' } as SchedaV1);
     const r = await decodeHash(bad);
     expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.errori?.[0]).toContainEqual({ campo: 'sp', messaggio: "Specie «mezzorco»: non presente nell'SRD 5.2.1" });
+    if (!r.ok) expect(r.errori?.[0]).toContainEqual({ campo: 'sp', messaggio: "Specie «aarakocra»: non presente nell'SRD 5.2.1" });
   });
 });
 

@@ -6,7 +6,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 
 // 1. Unchanged: a change is made in TPK first, then copied here with the new SHA-256 (README).
-const SHA256 = 'ff612fa10daf4069f0d4da488cb8967ced4c5bee5f5b8e6e1d24533af5a5669b';
+const SHA256 = '9fc41853264b3c8984033d6e0eb91824e5941a2d723a8f3e46f5042bbde25130';
 const source = fs.readFileSync('lib/shared/scheda-tpk-v1.ts');
 assert.equal(crypto.createHash('sha256').update(source).digest('hex'), SHA256, 'lib/shared/scheda-tpk-v1.ts differs from the copy of TPK: change it in TPK, then copy it again');
 

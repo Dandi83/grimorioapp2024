@@ -35,6 +35,22 @@ async function partyLink(page) {
   }, BRENNA);
 }
 
+/** The sheets inside a link (#pg=, #pg0=, #party=, #party0=), read in the browser. */
+function readLink(page, hash) {
+  return page.evaluate(async link => {
+    const [, key, data] = /^#(pg|pg0|party|party0)=(.+)$/.exec(link);
+    const bytes = Uint8Array.from(atob(data.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((data.length + 3) % 4)), ch => ch.charCodeAt(0));
+    const stream = new Blob([bytes]).stream();
+    const json = await new Response(key.endsWith("0") ? stream : stream.pipeThrough(new DecompressionStream("deflate-raw"))).text();
+    return JSON.parse(json);
+  }, hash);
+}
+/** Brenna's link with other fields (#pg0=, not compressed), as TPK could send it. */
+async function brennaWith(page, fields) {
+  const brenna = await readLink(page, BRENNA);
+  return page.evaluate(sheet => `#pg0=${btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(sheet)))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")}`, { ...brenna, ...fields });
+}
+
 for (const [name, device] of SCREENS) {
   test(`${name}: public 404; the administrator receives Brenna, saves her, opens the sheet, copies the link, deletes her`, async ({ browser }) => {
     test.setTimeout(150_000);
@@ -119,6 +135,15 @@ for (const [name, device] of SCREENS) {
     const play = sheet.locator("[data-play]");
     await expect(play).toHaveAttribute("href", /^https:\/\/www\.totalpartykill\.app\/importa\?da=grimorio#pg0?=[A-Za-z0-9_-]+$/);
     await expect(play).toHaveAttribute("target", "_blank");
+    // PROMPT 71: Brenna has no "ed"; the link to TPK carries "ed": "2024", the saved sheet stays as it came.
+    const playHref = await play.getAttribute("href");
+    const sent = await readLink(page, playHref.slice(playHref.indexOf("#")));
+    expect(sent.ed).toBe("2024");
+    expect(sent.n).toBe("Brenna");
+    const kept = await page.evaluate(() => JSON.parse(localStorage.getItem("grimorio.characters.v1"))[0].sheet);
+    expect("ed" in kept).toBe(false);
+    expect({ ...sent, ed: undefined }).toEqual({ ...kept, ed: undefined });
+    await expect(sheet.locator("[data-play-note]")).toHaveCount(0);
     // A spell link opens the card of the Grimorio.
     await sheet.locator('[data-spell="produrre-fiamma"]').click();
     await expect(page).toHaveURL(/\/spell\/produrre-fiamma$/);
@@ -200,4 +225,40 @@ test("/admin/sezioni: «I miei personaggi» with BETA, «Nascosta» from the sta
   await expect(row).toContainText("I miei personaggi");
   await expect(row.locator("[data-beta-label]")).toHaveText("BETA");
   await expect(row).toContainText("Nascosta");
+});
+
+// PROMPT 71: «"ed"» of the Scheda TPK v1. A 2014 character is received (with the notice) and saved, never sent to TPK;
+// a 2024 one goes as it is.
+test("2014 character: the notice in the preview, saved, no «Gioca in Total Party Kill»; «ed» 2024 unchanged", async ({ page }) => {
+  test.setTimeout(90_000);
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await login(page);
+  await page.goto("/personaggi");
+  await page.evaluate(() => localStorage.removeItem("grimorio.characters.v1"));
+
+  await open(page, await brennaWith(page, { n: "Gorm", ed: "2014" }));
+  const preview = page.locator('[data-incoming="Gorm"]');
+  await expect(preview.locator("[data-edition-2014]")).toHaveText("Personaggio con regole 2014: in Total Party Kill non si può usare");
+  await expect(page.locator("[data-broken-link]")).toHaveCount(0);
+  await page.getByRole("button", { name: "Salva nei miei personaggi" }).click();
+  await page.locator('[data-character-card="Gorm"]').click();
+  const gorm = page.locator('[data-character-sheet="Gorm"]');
+  await expect(gorm.locator("[data-play-note]")).toHaveText("Total Party Kill usa le regole 2024");
+  await expect(gorm.locator("[data-play]")).toHaveCount(0);
+  await expect(gorm.locator("[data-copy-link]")).toBeEnabled();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("grimorio.characters.v1"))[0].sheet.ed)).toBe("2014");
+
+  await open(page, await brennaWith(page, { n: "Mira", ed: "2024" }));
+  await expect(page.locator('[data-incoming="Mira"] [data-edition-2014]')).toHaveCount(0);
+  await page.getByRole("button", { name: "Salva nei miei personaggi" }).click();
+  await page.locator('[data-character-card="Mira"]').click();
+  const play = page.locator('[data-character-sheet="Mira"] [data-play]');
+  await expect(play).toHaveAttribute("href", /^https:\/\/www\.totalpartykill\.app\/importa\?da=grimorio#pg0?=[A-Za-z0-9_-]+$/);
+  const href = await play.getAttribute("href");
+  const sent = await readLink(page, href.slice(href.indexOf("#")));
+  const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("grimorio.characters.v1")).find(item => item.sheet.n === "Mira").sheet);
+  expect(sent).toEqual(stored);
+  expect(sent.ed).toBe("2024");
+  expect(errors).toEqual([]);
 });
