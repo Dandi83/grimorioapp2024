@@ -321,7 +321,9 @@ test("notices: «Come ti trovi?» and «Installala» with copper corners and the
     await context.addInitScript(invite => {
       try {
         localStorage.setItem("grimorio.edizione", "2024");
-        if (!invite) localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5));
+        // The fixtures close the invite in every context (e2e/fixtures.mjs): open again for its own check.
+        if (invite) localStorage.removeItem("grimorio-install-dismissed");
+        else localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5));
         localStorage.setItem("grimorio.giorni-di-visita", JSON.stringify(invite ? [] : ["2026-01-01", "2026-01-02"]));
       } catch { /* no storage */ }
     }, kind === "installa");

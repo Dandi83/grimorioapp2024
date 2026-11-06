@@ -55,8 +55,9 @@ export function NotFoundView({ hidden, soon = [] }: { hidden: string[]; soon?: r
 export function UnderConstruction({ soon }: { soon?: string }) {
   // The server and the hydration use the first sentence, then the one picked in this browser for this load.
   const sentence = useSyncExternalStore(noChanges, pickSentence, () => 0);
+  // px-5 (PROMPT 68): at 390 px «Sezione momentaneamente» with its capilettera still fits on one line.
   return (
-    <div className="flex flex-col items-center px-6 pb-10 pt-16 text-center">
+    <div className="flex flex-col items-center px-5 pb-10 pt-16 text-center">
       <span className="grid size-16 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
         <Hammer size={30} aria-hidden="true" />
       </span>
