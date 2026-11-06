@@ -59,9 +59,20 @@ const keysOf = value => (Array.isArray(value) ? value.flatMap(keysOf) : value &&
 
 test.describe.configure({ mode: "serial" });
 
+// What the switches of this spec leave in the database, put back at the end: the rows of /admin/registro written from
+// `since`, the states of the two parts and the row of the «Modalità solo SRD» that were not there before
+// (e2e/app.spec.mjs, later in the same half, expects the log of the reserved area empty).
+let since;
+let partsBefore = [];
+let srdOnlyBefore = false;
+const rowsOf = (client, sql, params = []) => client.query(sql, params).then(result => result.rows, () => []);
+
 test.beforeAll(async ({ browser }) => {
   test.setTimeout(120_000);
   await database(async client => {
+    since = (await client.query("SELECT now() AS t")).rows[0].t;
+    partsBefore = (await rowsOf(client, "SELECT parte FROM grimorio_section_parts WHERE sezione = 'bestiario'")).map(row => row.parte);
+    srdOnlyBefore = (await rowsOf(client, "SELECT 1 FROM grimorio_srd_only WHERE id = 1")).length > 0;
     await client.query(`CREATE TABLE IF NOT EXISTS grimorio_homebrew (id text PRIMARY KEY, scheda jsonb NOT NULL,
       edizione text NOT NULL CHECK (edizione IN ('2014', '2024', 'entrambe')), autore text, proposta_id uuid,
       pubblicata_il timestamptz NOT NULL DEFAULT now(), aggiornata_il timestamptz NOT NULL DEFAULT now(), licenza text)`);
@@ -107,6 +118,15 @@ test.afterAll(async ({ browser }) => {
   await setBestiaryPart(admin, COMMUNITY_TITLE, "Visibile");
   await setBestiaryPart(admin, GRIMORIO_TITLE, "In arrivo");
   await context.close();
+  // The states saved by these switches are the starting ones («Mostri del Grimorio» in arrivo, the community visible):
+  // the rows that were not there before go, with every row of the log written by this spec.
+  await database(async client => {
+    await client.query("DELETE FROM grimorio_section_parts WHERE sezione = 'bestiario' AND parte IN ('grimorio', 'homebrew') AND NOT (parte = ANY($1))", [partsBefore]);
+    if (!srdOnlyBefore) await client.query("DELETE FROM grimorio_srd_only WHERE id = 1 AND NOT attiva").catch(() => undefined);
+    for (const table of ["grimorio_section_parts_log", "grimorio_section_visibility_log", "grimorio_card_visibility_log", "grimorio_srd_only_log"]) {
+      await client.query(`DELETE FROM ${table} WHERE creata_il >= $1`, [since]).catch(() => undefined);
+    }
+  });
 });
 
 test("the public list: editorial staff and community, the newest first, only what the cards show", async ({ request, browser }) => {
