@@ -25,6 +25,12 @@ export async function tpkVisitor(browser, options, { edition = null, installed =
     window.matchMedia = media => (/display-mode:\s*standalone/.test(media) ? { ...query("(min-width: 0px)"), media, matches: true } : query(media));
     Object.defineProperty(navigator, "standalone", { get: () => true });
   });
+  // What the page hands to the statistics provider (grimorio:analytics-event), read in the page: WebKit does not always
+  // let the test see the requests sent with «keepalive», so the iPhone tests read these.
+  await context.addInitScript(() => {
+    window.__tpkDispatched = [];
+    window.addEventListener("grimorio:analytics-event", event => { if (String(event.detail?.event).startsWith("tpk_invite_")) window.__tpkDispatched.push(event.detail.event); });
+  });
   const events = [];
   // The test server is plain http: WebKit follows «upgrade-insecure-requests» and HSTS of the site (e2e/barra-ferma.spec.mjs).
   if (plainHttp) await context.route("**/*", async route => {
@@ -92,3 +98,6 @@ export function sent(events) {
     origin: events.find(event => event.event === "page_view")?.origin,
   };
 }
+
+/** The events of the invite handed over by the page (each once, in order). */
+export const dispatched = page => page.evaluate(() => [...new Set(window.__tpkDispatched ?? [])]);

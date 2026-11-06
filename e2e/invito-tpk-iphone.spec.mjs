@@ -1,5 +1,5 @@
 import { test, expect, devices } from "@playwright/test";
-import { invite, sent, shownAtOnce, tpkVisitor, UA } from "./invito-tpk.mjs";
+import { dispatched, invite, shownAtOnce, tpkVisitor, UA } from "./invito-tpk.mjs";
 
 // PROMPT 70, iPhone and iPad in WebKit (the engine of every browser on iOS): who arrives from Total Party Kill sees the
 // invite at once; «Installa» turns it into the guide in 3 steps with the arrow towards Condividi (at the bottom on
@@ -21,7 +21,7 @@ const STEPS = ["Tocca Condividi ⬆ nella barra di Safari", "Scorri e scegli «A
 
 test("iPhone Safari: «Installa» opens the guide in 3 steps, the arrow down at the middle; «Ho capito» closes it", async ({ browser }) => {
   test.setTimeout(90_000);
-  const { context, page, events } = await tpkVisitor(browser, { ...phone("iPhone 13", { userAgent: UA.iphoneSafari }), baseURL: base() }, { plainHttp });
+  const { context, page } = await tpkVisitor(browser, { ...phone("iPhone 13", { userAgent: UA.iphoneSafari }), baseURL: base() }, { plainHttp });
   await shownAtOnce(page, "/mostro/aboleth", "ios-safari");
   const nav = await page.locator("[data-bottom-nav]").boundingBox();
   await invite(page).getByRole("button", { name: "Installa", exact: true }).click();
@@ -42,9 +42,8 @@ test("iPhone Safari: «Installa» opens the guide in 3 steps, the arrow down at 
   await expect(invite(page).locator("[data-tpk-arrow='ipad']")).toHaveCount(0);
   await invite(page).getByRole("button", { name: "Ho capito" }).click();
   await expect(invite(page)).toHaveCount(0);
-  await expect.poll(() => sent(events).names).toEqual(["tpk_invite_shown", "tpk_invite_tapped", "tpk_invite_guide"]);
-  expect(sent(events).origin).toBe("tpk");
-  expect(events.find(event => event.event === "tpk_invite_guide").device).toBe("iphone");
+  // Handed to the statistics provider; what it sends (origin «tpk», device) is checked in e2e/invito-tpk.spec.mjs.
+  await expect.poll(() => dispatched(page)).toEqual(["tpk_invite_shown", "tpk_invite_tapped", "tpk_invite_guide"]);
   await context.close();
 });
 

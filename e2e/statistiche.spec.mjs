@@ -100,7 +100,7 @@ test("statistics: the administrator sees the questions with charts and marked ev
   await expect(tile("provenienza").locator("h2")).toHaveCSS("text-transform", "uppercase");
   await expect(tile("provenienza").locator("[data-tile-value]")).toHaveText("50%");
   await expect(tile("provenienza").locator("[data-tile-detail]")).toHaveText("diretto 25% · Google 25%");
-  await expect(tile("provenienza").locator('[data-chart="provenienze"]')).toHaveAttribute("aria-label", "Provenienza di 4 persone: Instagram 50%, Diretto 25%, Google 25%, Link condivisi 0%, Altro 0%.");
+  await expect(tile("provenienza").locator('[data-chart="provenienze"]')).toHaveAttribute("aria-label", "Provenienza di 4 persone: Instagram 50%, Diretto 25%, Google 25%, Link condivisi 0%, Total Party Kill 0%, Altro 0%.");
   await expect(page.locator("[data-tiles-note]")).toHaveText("Ultimi 7 giorni · i tuoi dispositivi non contano");
   const box = async name => (await tile(name).boundingBox());
   expect((await box("persone")).y).toBe((await box("tornano")).y);
@@ -121,7 +121,7 @@ test("statistics: the administrator sees the questions with charts and marked ev
   await expect(page.locator('[data-rest-item="arrivano"]')).not.toHaveAttribute("open", "");
   await page.locator('[data-rest-item="arrivano"] > summary').click();
   await expect(daily).toHaveAttribute("aria-label", /Persone al giorno dal .* massimo 3/);
-  await expect(page.locator('svg[data-chart="barre"]')).toHaveAttribute("aria-label", "Provenienza di 4 persone: Instagram 50%, Diretto 25%, Google 25%, Link condivisi 0%, Altro 0%.");
+  await expect(page.locator('svg[data-chart="barre"]')).toHaveAttribute("aria-label", "Provenienza di 4 persone: Instagram 50%, Diretto 25%, Google 25%, Link condivisi 0%, Total Party Kill 0%, Altro 0%.");
   await expect(page.locator("[data-devices]")).toHaveText("Su iPhone 50% · Android 25% · computer 25%");
   await expect(page.locator('[data-area="Incantesimi"]')).toContainText("50%");
   // Merged, «Respirare sott'acqua» (1 + 2 readings) comes before «Palla di fuoco» (2).
