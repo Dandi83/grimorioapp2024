@@ -4,14 +4,10 @@ import { useState } from "react";
 import { ArrowDown, ArrowUp, Copy, Download, X } from "lucide-react";
 
 import { copyLink } from "@/components/install/install-events";
+import { sendTpkInviteEvent } from "@/components/install/tpk-invite-events";
 import { TPK_INVITE_LINE, TPK_INVITE_TITLE, TPK_OPEN_SAFARI, type TpkInvite } from "@/lib/install-guide";
 import { withoutTpkMark } from "@/lib/tpk-arrival";
 
-/** The events of the invite «da TPK» (lib/analytics-events.ts): sent at once, never with the next page view. */
-export type TpkInviteEvent = "tpk_invite_shown" | "tpk_invite_tapped" | "tpk_invite_guide" | "tpk_invite_installed" | "tpk_invite_closed";
-export function sendTpkInviteEvent(event: TpkInviteEvent) {
-  window.dispatchEvent(new CustomEvent("grimorio:analytics-event", { detail: { event } }));
-}
 
 /**
  * PROMPT 70: the invite to install for who arrives from Total Party Kill (?da=tpk), drawn by components/install-prompt.tsx
@@ -19,7 +15,7 @@ export function sendTpkInviteEvent(event: TpkInviteEvent) {
  * rounded, sitting on the bottom bar (never over it), the icon of the Grimorio, the title in EB Garamond.
  * «Installa» opens the browser's install window (Chromium) or turns the box into a guide step by step (iPhone, iPad,
  * Firefox on Android, Safari on Mac); «Non ora» and ✕ close it for 7 days, «Ho capito» closes the guide.
- * Fixed above the page: nothing moves.
+ * Fixed above the page: nothing moves. Loaded only for a page opened from TPK (next/dynamic in install-prompt.tsx).
  */
 export function TpkInviteBox({ invite, admin, onInstall, onClose, onDone }: {
   invite: TpkInvite;

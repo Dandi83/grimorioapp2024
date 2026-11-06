@@ -58,8 +58,9 @@ export async function sendInstallEvent(page) {
 }
 
 /** The invite shown with no gesture, its texts, the address without da=tpk (canonical unchanged), above the bottom bar. */
-export async function shownAtOnce(page, path, kind) {
+export async function shownAtOnce(page, path, kind, { afterLoad } = {}) {
   await page.goto(`${path}${path.includes("?") ? "&" : "?"}da=tpk`);
+  if (afterLoad) await afterLoad(page);
   await expect(invite(page)).toBeVisible({ timeout: 15_000 });
   await expect(invite(page)).toHaveAttribute("data-tpk-invite", kind);
   await expect(invite(page).getByText(TITLE, { exact: true })).toBeVisible();

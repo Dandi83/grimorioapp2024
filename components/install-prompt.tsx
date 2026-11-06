@@ -9,7 +9,8 @@ import { copyLink, dismissInvite, promptInstall, useDeviceAdvice, useInstallEven
 import { queueUse } from "@/components/statistics/use-report-search";
 import { useUserEdition } from "@/components/edition/edition-provider";
 import { setInstallInvite, useRatingShown, useStatisticsNotice } from "@/components/statistics/notice";
-import { sendTpkInviteEvent, TpkInviteBox } from "@/components/install/tpk-invite";
+import dynamic from "next/dynamic";
+import { sendTpkInviteEvent } from "@/components/install/tpk-invite-events";
 import { tpkInvite } from "@/lib/install-guide";
 import { dropTpkMark, tpkArrived } from "@/lib/tpk-arrival";
 
@@ -27,6 +28,8 @@ import { dropTpkMark, tpkArrived } from "@/lib/tpk-arrival";
  * the other notices, but at once when the page is ready (no gesture) and with «Installa» also on iPhone.
  */
 const noSubscription = () => () => undefined;
+// The box «da TPK» in its own chunk: downloaded only by a page opened from Total Party Kill.
+const TpkInviteBox = dynamic(() => import("@/components/install/tpk-invite").then(module => module.TpkInviteBox), { ssr: false });
 
 export function InstallPrompt() {
   const pathname = usePathname();
@@ -39,6 +42,8 @@ export function InstallPrompt() {
   const tpk = useSyncExternalStore(noSubscription, tpkArrived, () => false);
   // The mark leaves the address once read, after the first effects of the page.
   useEffect(() => {
+    // From TPK: the box starts downloading at once, while the page waits for the statistics bar.
+    if (tpkArrived()) void import("@/components/install/tpk-invite");
     const timer = window.setTimeout(dropTpkMark, 0);
     return () => window.clearTimeout(timer);
   }, []);

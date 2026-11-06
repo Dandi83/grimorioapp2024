@@ -13,14 +13,8 @@ const base = () => test.info().project.use.baseURL;
 
 test("Android Chrome: invite at once, «Installa» opens the browser's window; origin and events «da TPK»; edition 2024 chosen", async ({ browser }) => {
   const { context, page, events } = await tpkVisitor(browser, { ...PIXEL, baseURL: base() });
-  // Chromium sends its event early: kept by the page before the invite is drawn.
-  await context.addInitScript(() => window.addEventListener("DOMContentLoaded", () => {
-    const event = new Event("beforeinstallprompt", { cancelable: true });
-    event.prompt = async () => { window.__installPrompted = true; };
-    event.userChoice = Promise.resolve({ outcome: "accepted" });
-    window.dispatchEvent(event);
-  }));
-  await shownAtOnce(page, "/mostro/aboleth", "prompt");
+  // Chromium's event once the page runs (headless browsers never send it), before any gesture.
+  await shownAtOnce(page, "/mostro/aboleth", "prompt", { afterLoad: sendInstallEvent });
   expect(await page.evaluate(() => localStorage.getItem("grimorio.edizione"))).toBe("2024");
   await expect(page.locator("[data-first-launch]")).toHaveCount(0);
   await invite(page).getByRole("button", { name: "Installa", exact: true }).click();

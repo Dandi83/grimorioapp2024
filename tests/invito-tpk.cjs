@@ -97,6 +97,7 @@ const box = fs.readFileSync("components/install/tpk-invite.tsx", "utf8");
 const css = fs.readFileSync("app/globals.css", "utf8");
 assert.match(prompt, /if \(tpk\) \{[\s\S]*?!free \|\| rating \|\| closed[\s\S]*?<TpkInviteBox/, "the variant waits for the statistics bar, the welcome screen and the question of the Home");
 assert.match(prompt, /const waiting = !!guide && !tpk &&/, "no first gesture for the variant");
+assert.match(prompt, /const TpkInviteBox = dynamic\(\(\) => import\("@\/components\/install\/tpk-invite"\)/, "its own chunk, only for who arrives from TPK");
 assert.match(prompt, /onClose=\{\(\) => \{ setClosed\(true\); dismissInvite\(\);/, "«Non ora» and ✕: the same 7 days");
 assert.match(box, /aria-label="Chiudi"[\s\S]{0,120}h-11 w-11/, "✕ at least 44 px");
 assert.match(box, />\s*Non ora\s*</);
