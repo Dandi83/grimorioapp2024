@@ -6,6 +6,7 @@ import { CupIcon } from "@/components/support/cup-icon";
 import { SupportLink } from "@/components/support/support-link";
 import { supportUrl } from "@/lib/support";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 
 export const metadata = pageMetadata({ name: "Info e note legali", path: "/info",
   description: "Informazioni e note legali di Il Grimorio.App: termini d’uso, fonti e licenze, privacy, installazione dell’app e contatti." });
@@ -29,8 +30,10 @@ export default function InfoPage() {
   return (
     <article className="mx-auto max-w-2xl px-4 pb-8 pt-4 sm:px-6">
       <Link href="/" className="inline-flex min-h-11 items-center text-[15px] font-bold text-primary">‹ Home</Link>
-      <h1 className="mt-1 font-serif text-[34px] font-bold leading-tight text-primary">Info e note legali</h1>
-      <p className="mt-2 text-[16px] leading-snug text-muted">
+      <Etichetta parti={["Il Grimorio.App", "Note legali"]} className="mt-1" />
+      <h1 className="pg-capolettera font-serif text-[34px] font-bold leading-tight text-foreground">Info e note legali</h1>
+      <Divisore className="mt-2" />
+      <p className="mt-3 text-[16px] leading-snug text-muted">
         Il Grimorio.App è gratuito e non ufficiale. Qui trovi le regole d’uso, da dove vengono i contenuti e come trattiamo i dati.
       </p>
       <p data-trademark-note="" className="mt-2 text-[16px] leading-snug text-muted">{TRADEMARK_NOTE}</p>
@@ -39,7 +42,7 @@ export default function InfoPage() {
         {TILES.map(({ href, title, line, Icon }) => (
           <li key={href}>
             <Link href={href} prefetch={false}
-              className="flex min-h-[84px] items-center gap-4 rounded-[16px] border border-border bg-card px-4 py-3 shadow-[0_1px_0_var(--color-divider)] transition-colors hover:bg-elevated focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber">
+              className="flex min-h-[84px] items-center gap-4 pg-angoli rounded-[16px] border border-border bg-card px-4 py-3 transition-colors hover:bg-elevated focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-amber">
               <span className="flex size-12 shrink-0 items-center justify-center rounded-[12px] bg-[#F2E8D2] text-primary">
                 <Icon size={24} strokeWidth={1.9} aria-hidden="true" />
               </span>

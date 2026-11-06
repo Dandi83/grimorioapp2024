@@ -48,7 +48,7 @@ export default async function CompendiumPage() {
     <>
       <Breadcrumbs crumbs={[{ name: "Compendio", path: "/compendio" }]} />
     <div className="px-4 pb-8 pt-8 sm:px-6">
-      <Etichetta parti={["Regole, equipaggiamento e personaggi", "SRD 5.2.1"]} />
+      <Etichetta parti={["Regole e personaggi", "SRD 5.2.1"]} />
       <h1 className="pg-capolettera mt-1 font-serif text-[40px] font-bold leading-tight">Compendio</h1>
       <Divisore className="mt-2" />
       <p className="mt-3 text-[15px] leading-6 text-muted">Regole, equipaggiamento e strumenti per il tavolo</p>

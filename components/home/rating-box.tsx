@@ -69,9 +69,9 @@ export function RatingBox() {
     };
     return (
       <div ref={box}><section aria-labelledby={ids.question} data-rating="domanda"
-        className="flex flex-col gap-2.5 rounded-2xl border border-[#DDCFAE] bg-[#FFFBF0] px-3.5 pb-3 pt-3.5">
+        className="pg-angoli flex flex-col gap-2.5 rounded-2xl border border-[#DDCFAE] bg-[#FFFBF0] px-3.5 pb-3 pt-3.5">
         <div className="flex items-center justify-between gap-2">
-          <h2 id={ids.question} className="text-[17px] font-bold text-[#2B2118]">Come ti trovi con il Grimorio?</h2>
+          <h2 id={ids.question} className="pg-capolettera font-serif text-[19px] font-bold leading-tight text-[#2B2118]">Come ti trovi con il Grimorio?</h2>
           <button type="button" aria-label="Chiudi" onClick={closeRating}
             className="-my-2.5 -mr-2 flex size-11 shrink-0 items-center justify-center rounded-full text-[22px] leading-none text-[#5E4E3E] focus-visible:outline-2 focus-visible:outline-[#7A1F2B]">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
@@ -80,7 +80,7 @@ export function RatingBox() {
         <div role="group" aria-label="Valutazione" className="grid grid-cols-3 gap-2">
           {VOTES.map(value => (
             <button key={value} type="button" aria-label={VOTE_LABELS[value]} onClick={() => vote(value)} data-vote={value}
-              className="flex min-h-16 flex-col items-center justify-center gap-0.5 rounded-[14px] border-[1.5px] border-[#DDCFAE] bg-[#F6EFDF] text-[13px] font-semibold text-[#5E4E3E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A1F2B] active:bg-[#EDE3CC]">
+              className="flex min-h-16 flex-col items-center justify-center gap-0.5 pg-pulsante-chiaro rounded-[14px] border-[1.5px] border-[#DDCFAE] bg-[#F6EFDF] text-[13px] font-semibold text-[#5E4E3E] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A1F2B] active:bg-[#EDE3CC]">
               <Face vote={value} />
               {VOTE_LABELS[value]}
             </button>
@@ -98,7 +98,7 @@ export function RatingBox() {
   }
   return (
     <div ref={box}><section aria-labelledby={ids.thanks} data-rating={good ? "grazie-bene" : "grazie"}
-      className="relative flex flex-col gap-2.5 rounded-2xl border border-[#9CC5AE] bg-[#E6F0EA] px-3.5 pb-3 pt-3.5">
+      className="pg-angoli relative flex flex-col gap-2.5 rounded-2xl border border-[#9CC5AE] bg-[#E6F0EA] px-3.5 pb-3 pt-3.5">
       <div className="flex items-center gap-2.5">
         <Face vote="bene" size={28} />
         <h2 id={ids.thanks} ref={thanks} tabIndex={-1} className="text-[17px] font-bold text-[#1F4D33] outline-none">
@@ -112,7 +112,7 @@ export function RatingBox() {
         {good ? (
           <>
             <button type="button" onClick={() => void share()}
-              className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#7A1F2B] text-[16px] font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2B2118]">
+              className="flex min-h-12 items-center justify-center gap-2 pg-pulsante rounded-xl bg-[#7A1F2B] text-[16px] font-bold text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2B2118]">
               <ShareIcon size={20} />Condividi
             </button>
             <Link href={writeHref(view.vote)} prefetch={false} onClick={closeRating}
@@ -123,7 +123,7 @@ export function RatingBox() {
         ) : (
           <>
             <Link href={writeHref(view.vote)} prefetch={false} onClick={closeRating}
-              className="flex min-h-12 items-center justify-center rounded-xl bg-[#7A1F2B] text-[16px] font-bold text-white">
+              className="flex min-h-12 items-center justify-center pg-pulsante rounded-xl bg-[#7A1F2B] text-[16px] font-bold text-white">
               Scrivici
             </Link>
             <button type="button" onClick={closeRating}

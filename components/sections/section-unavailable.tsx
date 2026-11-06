@@ -6,7 +6,7 @@ import { useSyncExternalStore } from "react";
 import { BookOpen, Hammer } from "lucide-react";
 
 import { EQUIPMENT_SECTIONS, isHiddenPath, soonOfPath } from "@/lib/public-sections";
-import { TimbroPresto } from "@/components/pergamena/pergamena";
+import { Divisore, Etichetta, TimbroPresto } from "@/components/pergamena/pergamena";
 
 /** One of these under «Sezione momentaneamente in costruzione», a different one at every visit. */
 export const UNDER_CONSTRUCTION = [
@@ -38,7 +38,9 @@ export function NotFoundView({ hidden, soon = [] }: { hidden: string[]; soon?: r
       <span className="grid size-16 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
         <BookOpen size={30} aria-hidden="true" />
       </span>
-      <h1 className="mt-5 font-serif text-[30px] font-bold leading-tight">Pagina non trovata</h1>
+      <Etichetta parti={["Errore 404"]} className="mt-5" />
+      <h1 className="pg-capolettera font-serif text-[30px] font-bold leading-tight">Pagina non trovata</h1>
+      <Divisore className="mt-2" />
       <p className="mt-3 max-w-sm text-[16px] leading-6 text-muted">L’indirizzo che hai aperto non corrisponde a nessuna pagina del Grimorio.</p>
       <HomeButton />
     </div>
@@ -53,13 +55,16 @@ export function NotFoundView({ hidden, soon = [] }: { hidden: string[]; soon?: r
 export function UnderConstruction({ soon }: { soon?: string }) {
   // The server and the hydration use the first sentence, then the one picked in this browser for this load.
   const sentence = useSyncExternalStore(noChanges, pickSentence, () => 0);
+  // px-5 (PROMPT 68): at 390 px «Sezione momentaneamente» with its capilettera still fits on one line.
   return (
-    <div className="flex flex-col items-center px-6 pb-10 pt-16 text-center">
+    <div className="flex flex-col items-center px-5 pb-10 pt-16 text-center">
       <span className="grid size-16 place-items-center rounded-full border-2 border-primary bg-primary-faint text-primary">
         <Hammer size={30} aria-hidden="true" />
       </span>
       {soon && <p data-soon-pill="" className="mt-5 font-serif text-[20px] font-bold leading-7 text-muted">{soon}{" "}<TimbroPresto piccolo={false} className="ml-1" /></p>}
-      <h1 className={`${soon ? "mt-3" : "mt-5"} font-serif text-[30px] font-bold leading-tight`}>Sezione momentaneamente in costruzione</h1>
+      {!soon && <Etichetta parti={["Lavori in corso"]} className="mt-5" />}
+      <h1 className={`${soon ? "mt-3" : ""} pg-capolettera text-balance font-serif text-[30px] font-bold leading-tight`}>Sezione momentaneamente in costruzione</h1>
+      <Divisore className="mt-2" />
       <p className="mt-3 max-w-sm text-[16px] leading-6 text-muted" data-under-construction={sentence}>{UNDER_CONSTRUCTION[sentence]}</p>
       <HomeButton />
     </div>

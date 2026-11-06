@@ -457,6 +457,16 @@ body {
   .pg-attenuato svg {
     opacity: 0.55;
   }
+  /*
+   * PROMPT 68: buttons of the notices («Installala», «Come ti trovi?»). Bordeaux with a thin cream line inside, as the
+   * double frame of the cards; the light ones with a copper line inside. Only shadows: the size never changes.
+   */
+  .pg-pulsante {
+    box-shadow: inset 0 0 0 2px var(--color-primary), inset 0 0 0 3px rgb(255 251 240 / 45%), 0 1px 2px rgb(60 40 20 / 18%);
+  }
+  .pg-pulsante-chiaro {
+    box-shadow: inset 0 0 0 1px rgb(156 91 53 / 28%), 0 1px 2px rgb(60 40 20 / 8%);
+  }
   /* The tiles of the Compendio: copper corners and the warm shadow of the cards; «PRESTO» ones lighter, dashed. */
   .pg-tessera {
     background-image: var(--pg-a1), var(--pg-a2), var(--pg-a3), var(--pg-a4);

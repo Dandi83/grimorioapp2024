@@ -13,10 +13,11 @@ const SHOTS = process.env.DIRITTI_SHOTS;
 const LINE = "© 2026 D.d.B. – Il Grimorio.App · Contenuti SRD sotto licenza CC BY 4.0";
 const DEED = "https://creativecommons.org/licenses/by/4.0/deed.it";
 const SRD52 = JSON.parse(fs.readFileSync(new URL("../lib/data/srd-italiano-5.2.1.json", import.meta.url), "utf8")).attribution;
-// sha256 of the HTML of /fonti and /info before this change (main faa4d54), copyright line and section left out.
+// sha256 of the HTML of /fonti and /info on main (faa4d54, attributions unchanged since; recomputed on 1a73133 without the
+// classes for PROMPT 68), copyright line and section left out.
 const MAIN = {
-  "/fonti": "fe772158e137e094b6d43772909b6e72e17128b8b33b71e21cfcab997acdadaa",
-  "/info": "60d4c0a53f53d145dbc1ad1286970daf0dd9d22e20ee55dc77ca24cf45b376f9",
+  "/fonti": "47e1b0e8beaf616d23422482536498eda9cfc7ffe9ee9a83c70b68ac728dbd46",
+  "/info": "50c618eb6727e6f356ef31a671de05b045c5f52b1e237779079dd2c97f0d513d",
 };
 
 async function legalHtml(page) {
@@ -25,6 +26,10 @@ async function legalHtml(page) {
     // The new parts of the page: the copyright note, «Sostieni il Grimorio» (PROMPT 7) and «Grafica dell’app» (the credit
     // of the class portraits, PROMPT 64), never the attributions.
     copy.querySelectorAll("[data-copyright], [data-copyright-line], [data-support-row], [data-grafica-app]").forEach(node => node.remove());
+    // PROMPT 68: the ornaments of «pergamena illustrata» (label, ✦ divider) and the classes (capilettera, corners)
+    // are style only; the text and the elements of the page are compared as they were on main.
+    copy.querySelectorAll("[data-pg-etichetta][data-pg-nuovo], [data-divisore]").forEach(node => node.remove());
+    copy.querySelectorAll("[class]").forEach(node => node.removeAttribute("class"));
     return copy.innerHTML;
   });
 }

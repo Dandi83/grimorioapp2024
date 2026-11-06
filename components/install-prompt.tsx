@@ -76,11 +76,11 @@ export function InstallPrompt() {
       data-install-prompt={button ? "button" : guide.kind}
       className={`fixed inset-x-0 z-50 flex justify-center px-4 pb-3 ${pathname.startsWith("/admin") ? "bottom-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]" : "bottom-[calc(80px+env(safe-area-inset-bottom,0px))] lg:bottom-0 lg:pb-4"}`}
     >
-      <div role="region" aria-label="Installa l’app" className="animate-dice-in w-full max-w-md rounded-2xl border border-primary-dim/40 bg-elevated p-4 shadow-2xl shadow-black/30">
+      <div role="region" aria-label="Installa l’app" className="pg-angoli animate-dice-in w-full max-w-md rounded-2xl border border-primary-dim/40 bg-elevated p-4 shadow-2xl shadow-black/30">
         <div className="flex items-start gap-3">
           <img src="/icon-install.webp" alt="" className="h-11 w-11 flex-shrink-0 rounded-xl border border-primary-dim/40" />
           <div className="min-w-0 flex-1">
-            <p className="font-serif text-base font-bold text-foreground">Aggiungi Il Grimorio.App</p>
+            <p className="pg-capolettera font-serif text-base font-bold text-foreground">Aggiungi Il Grimorio.App</p>
             <p className="mt-0.5 text-[13px] leading-snug text-muted">{line}</p>
             {!button && (
               <Link href="/installa" prefetch={false} onClick={() => { queueUse("install_prompt_tapped"); setClosed(true); }} className="inline-flex min-h-8 items-center text-[13px] font-semibold text-primary underline underline-offset-4">
@@ -96,13 +96,13 @@ export function InstallPrompt() {
 
         {button ? (
           <button type="button" onClick={() => { queueUse("install_prompt_tapped"); setClosed(true); void promptInstall().then(accepted => { if (accepted) queueUse("install_prompt_accepted"); }); }}
-            className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground transition-opacity active:opacity-80">
+            className="pg-pulsante mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary text-sm font-bold tracking-wide text-primary-foreground transition-opacity active:opacity-80">
             <Download size={18} />
             Installa l&apos;app
           </button>
         ) : linkOnly ? (
           <button type="button" onClick={copy}
-            className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-card text-sm font-bold text-primary transition-opacity active:opacity-80">
+            className="pg-pulsante-chiaro mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-card text-sm font-bold text-primary transition-opacity active:opacity-80">
             <Copy size={16} />
             <span aria-live="polite">{copied ? "Link copiato" : "Copia il link"}</span>
           </button>

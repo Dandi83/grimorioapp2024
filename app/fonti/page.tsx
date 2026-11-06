@@ -6,6 +6,7 @@ import legacySpells from "@/lib/data/spell-reference-index-2014.json";
 import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
 import { CopyrightLine } from "@/components/legal/copyright";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 
 export const metadata = pageMetadata({ name: "Fonti e licenze", section: "Info", path: "/fonti",
   description: "Fonti e licenze di Il Grimorio.App: SRD 5.2.1 e SRD 5.1 in licenza Creative Commons, attribuzioni e crediti del progetto." });
@@ -14,7 +15,9 @@ export default function SourcesPage() {
   return (
     <article className="space-y-6 p-6">
       <Link href="/" className="inline-flex min-h-11 items-center text-sm text-primary">← Torna alla Home</Link>
-      <h1 className="font-serif text-3xl font-bold">Fonti e licenze</h1>
+      <Etichetta parti={["Note legali", "SRD 5.2.1 e 5.1"]} />
+      <h1 className="pg-capolettera !mt-1 font-serif text-3xl font-bold">Fonti e licenze</h1>
+      <Divisore className="!mt-2" />
       <section className="space-y-3 text-sm"><h2 className="font-serif text-xl text-foreground">Statistiche e privacy</h2><Link href="/privacy" className="block text-primary underline underline-offset-4">Come usiamo i dati (e come non essere contati)</Link></section>
       <section aria-labelledby="project-info" className="space-y-3 text-sm leading-6 text-muted">
         <h2 id="project-info" className="font-serif text-xl font-bold text-foreground">Informazioni sul progetto</h2>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { HOMEBREW_LICENSE_URL } from "@/lib/homebrew-types";
 import { CopyrightLine, CopyrightTerms } from "@/components/legal/copyright";
 import { TRADEMARK_NOTE } from "@/lib/trademark";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 
 export const metadata = pageMetadata({ name: "Termini d’uso", section: "Info", path: "/termini",
   description: "I termini d’uso di Il Grimorio.App: come si usa l’app, le regole per le creature proposte e per le segnalazioni, i limiti." });
@@ -26,8 +27,10 @@ export default function TermsPage() {
     <article className="mx-auto max-w-2xl space-y-6 px-4 pb-8 pt-4 text-[16px] leading-7 text-muted sm:px-6">
       <div>
         <Link href="/info" className="inline-flex min-h-11 items-center text-[15px] font-bold text-primary">‹ Info e note legali</Link>
-        <h1 className="mt-1 font-serif text-[34px] font-bold leading-tight text-primary">Termini d’uso</h1>
-        <p className="mt-1 text-[14px]">Ultimo aggiornamento: {UPDATED}</p>
+        <Etichetta parti={["Note legali"]} className="mt-1" />
+        <h1 className="pg-capolettera font-serif text-[34px] font-bold leading-tight text-foreground">Termini d’uso</h1>
+        <Divisore className="mt-2" />
+        <p className="mt-2 text-[14px]">Ultimo aggiornamento: {UPDATED}</p>
       </div>
 
       <Section title="Che cos’è Il Grimorio.App">

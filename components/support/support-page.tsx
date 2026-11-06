@@ -7,6 +7,7 @@ import { CupIcon } from "@/components/support/cup-icon";
 import { trackSupport } from "@/components/support/support-link";
 import { DEFAULT_AMOUNT, SUPPORT_AMOUNTS } from "@/lib/support";
 import { shareApp } from "@/lib/share-app";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 
 /**
  * The page /sostieni. Ko-fi does not document an amount in the address of a page, so the button opens the page of
@@ -28,12 +29,16 @@ export function SupportPage({ url }: { url: string }) {
         className="inline-flex min-h-10 items-center self-start text-[15px] font-bold text-[#7A1F2B]">‹ Indietro</button>
       <div className="mt-2 flex flex-col gap-3.5 px-1">
         <img src="/icon-192.png" alt="" width={64} height={64} className="size-16 rounded-2xl shadow-[0_2px_6px_rgb(43_33_24_/_25%)]" />
-        <h1 className="font-serif text-[36px] font-semibold leading-[1.05]">Sostieni il Grimorio</h1>
+        <div>
+          <Etichetta parti={["Contributo libero", "Ko-fi"]} />
+          <h1 className="pg-capolettera font-serif text-[36px] font-semibold leading-[1.05]">Sostieni il Grimorio</h1>
+          <Divisore className="mt-2.5" />
+        </div>
         <div className="flex flex-col gap-1.5">
           <p className="font-serif text-[21px] font-semibold italic leading-[1.25] text-[#7A1F2B]">Ogni grimorio cresce con chi lo sfoglia.</p>
           <p className="text-[16px] leading-[1.5] text-[#3D3128]">Il Grimorio si arricchisce una pagina alla volta, tra una sessione e l&apos;altra, per i master e i giocatori della community. Se ti ha salvato un turno, una ricerca o un&apos;intera serata di gioco, puoi aiutarlo a crescere ancora.</p>
         </div>
-        <section aria-labelledby="sostieni-aiuto" className="flex flex-col gap-2 rounded-2xl border border-[#DDCFAE] bg-[#FFFBF0] p-3.5">
+        <section aria-labelledby="sostieni-aiuto" className="pg-angoli flex flex-col gap-2 rounded-2xl border border-[#DDCFAE] bg-[#FFFBF0] p-3.5">
           <h2 id="sostieni-aiuto" className="text-[15px] font-bold">Il tuo aiuto, in concreto</h2>
           <ul className="list-disc pl-[18px] text-[14px] leading-[1.6] text-[#3D3128]">
             <li>tiene online il Grimorio, giorno e notte</li>

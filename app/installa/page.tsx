@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { InstallHere } from "@/components/install/install-here";
 import { OPEN_BROWSER, STEPS } from "@/lib/install-guide";
+import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 
 export const metadata = pageMetadata({ name: "Installa l’app", section: "Info", path: "/installa",
   description: "Come installare Il Grimorio.App sulla schermata Home di iPhone, iPad, Android e computer, browser per browser, passo per passo." });
@@ -53,7 +54,9 @@ export default function InstallPage() {
   return (
     <article className="mx-auto max-w-2xl px-4 pb-8 pt-4 sm:px-6">
       <Link href="/info" className="inline-flex min-h-11 items-center text-[15px] font-bold text-primary">‹ Info e note legali</Link>
-      <h1 className="mt-1 font-serif text-[34px] font-bold leading-tight text-primary">Installa l’app</h1>
+      <Etichetta parti={["App", "iPhone, Android e computer"]} className="mt-1" />
+      <h1 className="pg-capolettera font-serif text-[34px] font-bold leading-tight text-foreground">Installa l’app</h1>
+      <Divisore className="mt-2" />
       <p className="mt-2 text-[16px] leading-snug text-muted">
         Il Grimorio.App si aggiunge alla schermata Home come un’app: si apre a schermo intero e le pagine già aperte restano leggibili anche senza rete. Non serve nessuno store.
       </p>
@@ -64,7 +67,7 @@ export default function InstallPage() {
           {group.note && <p className="mt-1 text-[14px] leading-snug text-muted">{group.note}</p>}
           <div className="mt-3 flex flex-col gap-2">
             {group.items.map(item => (
-              <details key={item.name} className="rounded-[14px] border border-border bg-card px-4 py-1 [&[open]]:pb-3">
+              <details key={item.name} className="pg-angoli rounded-[14px] border border-border bg-card px-4 py-1 [&[open]]:pb-3">
                 <summary className="flex min-h-11 cursor-pointer items-center font-semibold text-foreground">{item.name}</summary>
                 <ol className="list-decimal space-y-1 pl-5 text-[15px] leading-snug text-card-foreground">
                   {item.steps.map(step => <li key={step}>{step}</li>)}
