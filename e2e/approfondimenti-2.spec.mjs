@@ -89,7 +89,7 @@ test("at 390: map of days and bands with its peaks, functions and two funnels, p
   // «Funzioni» on 7 days: what these people add; the funnels as started → finished.
   await open(page, "7");
   const uses = await functionPeople(page), after = await steps(page);
-  expect(Object.fromEntries(Object.keys(uses).map(key => [key, uses[key] - before.uses[key]]))).toEqual({ filtri: 1, edizione: 2, preferiti: 1, condivisione: 1 });
+  expect(Object.fromEntries(Object.keys(uses).map(key => [key, uses[key] - before.uses[key]]))).toEqual({ filtri: 1, edizione: 2, preferiti: 1, condivisione: 1, tpk: 0 });
   expect(after.proponi[0] - before.steps.proponi[0]).toBe(3);expect(after.proponi[1] - before.steps.proponi[1]).toBe(1);
   expect(after.installa[0] - before.steps.installa[0]).toBe(2);expect(after.installa[1] - before.steps.installa[1]).toBe(1);
   await expect(page.locator('[data-function="filtri"]')).toContainText(/^Filtri\d+% · \d+$/);
