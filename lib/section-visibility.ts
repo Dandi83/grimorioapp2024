@@ -191,6 +191,14 @@ export async function visibilityState(): Promise<VisibilityState> {
   return withCommunitySwitch(state);
 }
 
+/**
+ * PROMPT 66: the same public state, without the fallback. For /api/tpk/creature-originali, kept by the network cache:
+ * when the database cannot be read it answers 503, never a list made with «everything visible».
+ */
+export async function publicVisibilityState(): Promise<VisibilityState> {
+  return withCommunitySwitch(await cachedState());
+}
+
 /** «I mostri creati da voi» while lib/community.ts is off: the part «bestiario:homebrew» hidden, whatever its switch says. */
 export const COMMUNITY_PART = "bestiario:homebrew";
 export function withCommunitySwitch(state: VisibilityState, open: boolean = communityPublic()): VisibilityState {

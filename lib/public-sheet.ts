@@ -7,10 +7,11 @@ const HIDEABLE = ["descrizione", "tratti", "azioni", "azioni_bonus", "reazioni",
  * What the public may see of a sheet (PROMPT 44): the sections hidden by the administrator taken away, so they exist
  * neither in the page nor in its metadata. The sheets without hidden sections are returned as they are.
  */
-export function publicSheet<T extends Partial<Monster>>(monster: T): T {
+// PROMPT 66: also the stored draft (HomebrewDraft), for /api/tpk/creature-originali: the same sections go away.
+export function publicSheet<T extends Partial<Monster> | { sezioni_nascoste?: readonly string[] }>(monster: T): T {
   if (!monster.sezioni_nascoste?.length) return monster;
-  const copy: Partial<Monster> = { ...monster };
-  for (const key of monster.sezioni_nascoste) if ((HIDEABLE as readonly string[]).includes(key)) delete copy[key as (typeof HIDEABLE)[number]];
+  const copy: Record<string, unknown> = { ...monster };
+  for (const key of monster.sezioni_nascoste) if ((HIDEABLE as readonly string[]).includes(key)) delete copy[key];
   delete copy.sezioni_nascoste;
   return copy as T;
 }
