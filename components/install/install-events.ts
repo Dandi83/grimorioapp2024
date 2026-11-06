@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
-import { detectDevice, installGuide, type InstallGuide } from "@/lib/install-guide";
+import { detectDevice, installGuide, isIpad, type InstallDevice, type InstallGuide } from "@/lib/install-guide";
 
 /** Chromium's install event, kept for the «Installa» button of the invite and of /installa. */
 export interface BeforeInstallPromptEvent extends Event {
@@ -48,6 +48,10 @@ export interface DeviceAdvice {
   /** «Chiudi» on the invite, less than 7 days ago. */
   dismissed: boolean;
   guide: InstallGuide;
+  /** The device read from the user agent (PROMPT 70: the invite «da TPK» chooses its variant from it). */
+  device: InstallDevice;
+  /** An iPad (also asking for the desktop site): Condividi is at the top right there. */
+  ipad: boolean;
 }
 
 let device: { key: string; advice: DeviceAdvice } | undefined;
@@ -64,7 +68,8 @@ function readDevice(): DeviceAdvice {
   const key = `${navigator.userAgent}|${navigator.maxTouchPoints || 0}|${until}|${installed}`;
   if (device?.key !== key) {
     const dismissed = Number(until) > 0 && Date.now() < Number(until);
-    device = { key, advice: { installed, dismissed, guide: installGuide(detectDevice(navigator.userAgent, navigator.maxTouchPoints || 0)) } };
+    const read = detectDevice(navigator.userAgent, navigator.maxTouchPoints || 0);
+    device = { key, advice: { installed, dismissed, guide: installGuide(read), device: read, ipad: isIpad(navigator.userAgent, navigator.maxTouchPoints || 0) } };
   }
   return device.advice;
 }
@@ -74,7 +79,7 @@ export function useDeviceAdvice(): DeviceAdvice | null {
   return useSyncExternalStore(subscribe, readDevice, () => null);
 }
 
-/** «Chiudi»: no invite for 7 days. */
+/** «Chiudi» (and «Non ora» of the invite «da TPK»): no invite for 7 days. */
 export function dismissInvite() {
   try {
     localStorage.setItem(DISMISS_KEY, String(Date.now() + 7 * 864e5));

@@ -1,7 +1,10 @@
+import { TPK_ARRIVAL } from "./tpk";
+
 // Pure helpers of the statistics (no database, no browser globals): the categories computed in the browser before
 // sending, the cleaning of the searched words, the periods of /admin/statistiche and their comparisons.
 
-export const ORIGINS = ["instagram", "diretto", "google", "condiviso", "altro"] as const;
+// «tpk» (PROMPT 70): arrived from Total Party Kill (?da=tpk, or a link from totalpartykill.app).
+export const ORIGINS = ["instagram", "diretto", "google", "condiviso", "tpk", "altro"] as const;
 export type Origin = (typeof ORIGINS)[number];
 export const DEVICES = ["iphone", "android", "computer", "altro"] as const;
 export type Device = (typeof DEVICES)[number];
@@ -14,6 +17,8 @@ export function originOf(referrer: string, search: string, own: string): Origin 
   const params = new URLSearchParams(search);
   // The link of the Instagram bio (PROMPT 31): an arrival from Instagram, whatever the in-app browser says.
   if (params.get("da") === BIO_VALUE) return "instagram";
+  // The links of Total Party Kill (PROMPT 70): ?da=tpk, whatever the referrer says.
+  if (params.get("da") === TPK_ARRIVAL) return "tpk";
   const utm = `${params.get("utm_source") ?? ""} ${params.get("utm_medium") ?? ""}`.toLowerCase();
   if (/instagram|\big\b/.test(utm)) return "instagram";
   if (params.get("ref") === "share" || /share|condivis/.test(utm)) return "condiviso";
@@ -23,6 +28,7 @@ export function originOf(referrer: string, search: string, own: string): Origin 
   if (!host || host === own.toLowerCase()) return utm.trim() ? "altro" : "diretto";
   if (/(^|\.)instagram\.com$/.test(host)) return "instagram";
   if (/(^|\.)google\.[a-z.]+$/.test(host)) return "google";
+  if (/(^|\.)totalpartykill\.app$/.test(host)) return "tpk";
   // Links passed on in messages and social networks.
   if (/(^|\.)(whatsapp\.com|wa\.me|t\.me|telegram\.org|facebook\.com|fb\.me|messenger\.com|threads\.net|reddit\.com|discord\.com|discord\.gg|x\.com|t\.co|twitter\.com)$/.test(host)) return "condiviso";
   return "altro";

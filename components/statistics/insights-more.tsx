@@ -1,4 +1,4 @@
-import { readFunctions, readHeatmap, readInstallInvite, readLcp, readNotFound, readShareImages, type InstallInviteCounts, type ShareImageCounts, type ShareImageRow, type StatisticsRange } from "@/lib/analytics";
+import { readFunctions, readHeatmap, readInstallInvite, readLcp, readNotFound, readShareImages, readTpkInvite, type InstallInviteCounts, type TpkInviteCounts, type ShareImageCounts, type ShareImageRow, type StatisticsRange } from "@/lib/analytics";
 import { SHARE_KIND_LABELS, type ShareKind } from "@/lib/share-card";
 import { bandLabel, HEAT_COLORS, heatmap, seconds, share, slowPages, twoSteps, WEEK_DAYS } from "@/lib/analytics-stats";
 import { RestItem } from "./rest-item";
@@ -34,6 +34,28 @@ function InstallInvite({ counts }: { counts: InstallInviteCounts }) {
         ))}
       </tbody>
     </table>
+  );
+}
+
+/** The invite «da TPK» (PROMPT 70), the same table for who arrived from Total Party Kill (?da=tpk). */
+function TpkInvite({ counts }: { counts: TpkInviteCounts }) {
+  const rows: [keyof TpkInviteCounts, string][] = [["shown", "Mostrato"], ["tapped", "«Installa» toccato"], ["guide", "Guida iPhone/iPad aperta"], ["closed", "Chiuso («Non ora» o ✕)"], ["installed", "Installata (dove il browser lo dice)"]];
+  return (
+    <>
+      <table className="mt-3 w-full text-[15px]" data-tpk-invite-stats="">
+        <thead><tr className="text-[12px] text-[#5E4E3E]"><th scope="col" className="text-left font-semibold">Invito «da Total Party Kill»</th><th scope="col" className="text-right font-semibold">24 ore</th><th scope="col" className="text-right font-semibold">7 giorni</th></tr></thead>
+        <tbody>
+          {rows.map(([key, label]) => (
+            <tr key={key} data-tpk-invite-row={key} className="border-t border-[#DDCFAE]">
+              <th scope="row" className="py-1 text-left font-normal">{label}</th>
+              <td className="py-1 text-right font-bold tabular-nums" data-day={counts[key].day}>{number(counts[key].day)}</td>
+              <td className="py-1 text-right font-bold tabular-nums" data-week={counts[key].week}>{number(counts[key].week)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="mt-1 text-[12px] text-[#5E4E3E]">Persone arrivate con ?da=tpk. Su iPhone l’app sulla schermata Home ha un archivio suo: la prima apertura dall’icona non si collega alla visita da TPK.</p>
+    </>
   );
 }
 
@@ -95,7 +117,7 @@ function Steps({ name, title, from, to, labels }: { name: string; title: string;
  * Read on the server when the administrator opens the page, on the period chosen; nothing reaches the public.
  */
 export async function InsightsMore({ range, hourly }: { range: StatisticsRange; hourly: boolean }) {
-  const [cells, uses, missing, lcp, invite, shareImages] = await Promise.all([hourly ? Promise.resolve([]) : readHeatmap(range), readFunctions(range), readNotFound(range), readLcp(range), readInstallInvite(),
+  const [cells, uses, missing, lcp, invite, tpkInvite, shareImages] = await Promise.all([hourly ? Promise.resolve([]) : readHeatmap(range), readFunctions(range), readNotFound(range), readLcp(range), readInstallInvite(), readTpkInvite(),
     readShareImages().catch((): ShareImageCounts => ({ formats: {}, kinds: {} }))]);
   const heat = heatmap(cells);
   const slow = slowPages(lcp);
@@ -153,6 +175,7 @@ export async function InsightsMore({ range, hourly }: { range: StatisticsRange; 
         <Steps name="proponi" title="Proponi il tuo" from={uses.proposalStart} to={uses.proposalSent} labels={["modulo aperto", "inviato"]} />
         <Steps name="installa" title="Avviso di installazione" from={uses.installShown} to={uses.installAccepted} labels={["mostrato", "accettato"]} />
         <InstallInvite counts={invite} />
+        <TpkInvite counts={tpkInvite} />
       </RestItem>
 
       <RestItem card id="passaparola-immagini" title="Passaparola">

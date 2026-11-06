@@ -168,3 +168,70 @@ export function installGuide(device: InstallDevice): InstallGuide {
   if (device.browser === "safari" && (device.safariVersion ?? 0) >= 17) return { kind: "steps", label: "Safari su Mac", steps: STEPS.desktop.safari, short: SHORT.desktop.safari, promptFirst: false };
   return { kind: "none", label, steps: [], short: "", promptFirst: false };
 }
+
+/*
+ * PROMPT 70: the invite for who arrives from Total Party Kill (?da=tpk). Same device and same install state as the
+ * invite above; what changes is what «Installa» does on each system.
+ */
+export type TpkInviteKind =
+  /** Android and computer Chromium with «beforeinstallprompt»: the browser's own install window. */
+  | "prompt"
+  /** iPhone and iPad in Safari: the guide in 3 steps with the arrow towards Condividi. */
+  | "ios-safari"
+  /** iPhone and iPad in another browser or inside an app: «Apri questa pagina in Safari» first, then the same steps. */
+  | "ios-altro"
+  /** The steps of the browser menu (Firefox on Android, Safari on Mac, the other Android browsers). */
+  | "steps"
+  /** A browser inside an app on Android: open the link in the browser. */
+  | "inapp"
+  /** Nothing to install from here (Firefox on a computer, Chrome or Edge on a computer without the install event). */
+  | "none";
+
+export interface TpkInvite {
+  kind: TpkInviteKind;
+  /** The steps of the guide opened by «Installa» (empty for «prompt» and «none»). */
+  steps: readonly string[];
+  /** ios-altro only: the gesture of this app or browser to open the page in Safari. */
+  openInSafari: string | null;
+  /** iOS only: where Safari keeps Condividi (at the bottom on iPhone, at the top right on iPad). */
+  arrow: "iphone" | "ipad" | null;
+}
+
+export const TPK_INVITE_TITLE = "Installa Il Grimorio.App";
+export const TPK_INVITE_LINE = "Arrivi da Total Party Kill: tieni il Grimorio sempre a portata di mano, anche offline.";
+/** The 3 steps of Safari on iPhone and iPad (the arrow shows where Condividi is). */
+export const TPK_IOS_STEPS = ["Tocca Condividi ⬆ nella barra di Safari", "Scorri e scegli «Aggiungi alla schermata Home»", "Tocca «Aggiungi»"] as const;
+export const TPK_OPEN_SAFARI = "Apri questa pagina in Safari";
+const TPK_FIREFOX_ANDROID = ["Apri il menu ⋮ (in alto o in basso, accanto all’indirizzo).", "Scegli «Installa» (o «Aggiungi alla schermata Home»).", "Conferma con «Aggiungi»."] as const;
+const TPK_SAFARI_MAC = ["Nel menu Archivio (File) scegli «Aggiungi al Dock».", "Conferma con «Aggiungi»: l’app si apre dal Dock e dal Launchpad."] as const;
+
+/** An iPad, also when it asks for the desktop site (it then says «Macintosh», with a touch screen). */
+export function isIpad(userAgent: string, maxTouchPoints = 0): boolean {
+  return /iPad/.test(userAgent) || (/Macintosh/.test(userAgent) && maxTouchPoints > 1);
+}
+
+/** How this app or browser opens the page in Safari, when it offers a way. */
+function openInSafari(device: InstallDevice): string {
+  if (device.inApp === "Instagram") return "Tocca ⋯ in alto a destra e scegli «Apri nel browser».";
+  if (device.inApp === "Facebook" || device.inApp === "Messenger") return "Tocca ⋯ in alto a destra e scegli «Apri nel browser esterno».";
+  if (!device.inApp && ["chrome", "edge", "firefox", "opera"].includes(device.browser)) return "Copia il link qui sotto, apri Safari e incollalo nella barra dell’indirizzo.";
+  return "Se l’app lo offre, tocca ⋯ (o l’icona di Safari, la bussola) e scegli «Apri in Safari». Altrimenti copia il link e incollalo in Safari.";
+}
+
+/** What the invite «da TPK» does on this device. canPrompt: Chromium sent «beforeinstallprompt». */
+export function tpkInvite(device: InstallDevice, guide: InstallGuide, canPrompt: boolean, ipad = false): TpkInvite {
+  const plain = (kind: TpkInviteKind, steps: readonly string[] = []): TpkInvite => ({ kind, steps, openInSafari: null, arrow: null });
+  if (device.platform === "ios") {
+    const arrow = ipad ? "ipad" : "iphone";
+    if (device.browser === "safari" && !device.inApp) return { kind: "ios-safari", steps: TPK_IOS_STEPS, openInSafari: null, arrow };
+    return { kind: "ios-altro", steps: TPK_IOS_STEPS, openInSafari: openInSafari(device), arrow: null };
+  }
+  if (device.inApp) return plain("inapp", OPEN_BROWSER);
+  if (guide.kind === "none") return plain("none");
+  if (canPrompt && guide.promptFirst) return plain("prompt");
+  // Chrome and Edge on a computer without the event: already installed, or the browser does not offer it now.
+  if (guide.kind === "button") return plain("none");
+  if (device.platform === "android" && device.browser === "firefox") return plain("steps", TPK_FIREFOX_ANDROID);
+  if (device.platform === "desktop" && device.browser === "safari") return plain("steps", TPK_SAFARI_MAC);
+  return plain("steps", guide.steps);
+}
