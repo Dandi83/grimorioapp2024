@@ -8,7 +8,7 @@ import { TEST_DATABASE_URL } from "./test-db.mjs";
 // (?da=amico) and the page «Come si trovano?» of the reserved area. The statistics server is simulated in the
 // public tests (the test server never collects); the reserved page reads rows written only in the local test database.
 const SHOTS = process.env.VALUTAZIONE_SHOTS;
-const TEXT = "Ti consiglio Il Grimorio.App: incantesimi, mostri e regole di D&D 2014 e 2024 in italiano, gratis.";
+const TEXT = "Ti consiglio Il Grimorio.App: incantesimi, mostri e regole 5e, edizioni 2014 e 2024, in italiano, gratis.";
 const URL = "https://ilgrimorio.app/?da=amico";
 
 /** /api/analytics as on ilgrimorio.app: counting on; the events and the votes sent are kept here. */

@@ -39,7 +39,7 @@ for (const [name, device] of SCREENS) {
     await expect(logo.locator(".text-amber")).toHaveCSS("color", AMBER);
     // The label above the sentence, the light divider with ✦ under it.
     const label = page.locator("section .pg-etichetta");
-    await expect(label).toHaveText("Compendio D&D 5e · SRD in italiano");
+    await expect(label).toHaveText("Compendio 5e · SRD in italiano");
     await expect(label).toHaveCSS("text-transform", "uppercase");
     const quote = await page.locator("#home-quote").boundingBox();
     expect((await label.boundingBox()).y).toBeLessThan(quote.y);
@@ -156,10 +156,10 @@ const SHEETS = [
   ["/manuale/condizioni-accecato", "Condizioni", null, null],
 ];
 const LISTS = [
-  ["/grimorio", "Compendio D&D 5e · 2024", "Incantesimi"], ["/bestiario", "Compendio D&D 5e · 2024", "Bestiario"],
+  ["/grimorio", "Compendio 5e · 2024", "Incantesimi"], ["/bestiario", "Compendio 5e · 2024", "Bestiario"],
   ["/oggetti-magici", "Compendio · 2024", "Oggetti magici"], ["/equipaggiamento/armi", "Equipaggiamento · 2024", "Armi"],
   ["/equipaggiamento/avventura", "Equipaggiamento · 2024", "Equipaggiamento d’avventura"], ["/compendio/condizioni", "Compendio · 2024", "Condizioni"],
-  ["/preferiti", "Compendio D&D 5e", "Preferiti"], ["/bestiario/creature-originali", "Bestiario", "Creature originali"],
+  ["/preferiti", "Compendio 5e", "Preferiti"], ["/bestiario/creature-originali", "Bestiario", "Creature originali"],
 ];
 
 /** The H1 is as tall with and without its capilettera (line-height 0) and its first letter is in the given colour. */

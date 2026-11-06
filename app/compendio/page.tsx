@@ -7,7 +7,7 @@ import { EQUIPMENT_SECTIONS, soonHref, type PublicSectionKey } from "@/lib/publi
 import { sectionView } from "@/lib/section-view";
 
 export const metadata = pageMetadata({ name: "Compendio", path: "/compendio",
-  description: "Il compendio di D&D 5e in italiano: classi, equipaggiamento, oggetti magici, condizioni e avanzamento di livello, per il 2014 e il 2024." });
+  description: "Il compendio compatibile con D&D 5e in italiano: classi, equipaggiamento, oggetti magici, condizioni e avanzamento di livello, per il 2014 e il 2024." });
 
 type Tile = SectionTile & { sections: readonly PublicSectionKey[] };
 

@@ -23,7 +23,7 @@ export function trapFocus(event: ReactKeyboardEvent<HTMLElement>) {
 }
 
 /**
- * «Scegli l’edizione»: handle, title and the two large choices «D&D 2024» · «D&D 2014» (the active one full).
+ * «Scegli l’edizione»: handle, title and the two large choices «Regole 2024» · «Regole 2014» (the active one full).
  * A tap applies the choice to the whole app and closes the panel (EditionProvider announces it to screen
  * readers); a tap outside, Esc or the handle dragged down close it without changing anything.
  * page: a section page showing another edition than the user's (an address with an edition) says so

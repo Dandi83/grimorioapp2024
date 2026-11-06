@@ -8,7 +8,7 @@ import { bonusFeatsRule, challengeOptions } from "@/lib/advancement-challenge";
 import { sectionPage } from "@/lib/section-view";
 
 export const metadata = pageMetadata({ name: "Avanzamento di livello", section: "Compendio", path: "/avanzamento",
-  description: "L’avanzamento di livello in D&D 5e: punti esperienza per livello, bonus di competenza e calcolo dei PE degli scontri, in italiano." });
+  description: "L’avanzamento di livello nelle regole compatibili con D&D 5e: punti esperienza per livello, bonus di competenza e calcolo dei PE degli scontri, in italiano." });
 
 const SRD_521 = "https://media.dndbeyond.com/compendium-images/srd/5.2/IT_SRD_CC_v5.2.1.pdf";
 

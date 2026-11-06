@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const counts = editions.map(e => `${weaponsWithProperty(property.id, e).length} nel ${e}`).join(" e ");
   return pageMetadata({
     name: en ? `${property.nome} (${en})` : property.nome, section: "Proprietà", edition, path: `/equipaggiamento/proprieta/${property.id}`,
-    description: fitDescription(`${property.nome}${en ? ` (${en})` : ""}: proprietà delle armi di ${dndEdition(edition)}, con la regola e le armi che la hanno (${counts}), in italiano su Il Grimorio.App.`),
+    description: fitDescription(`${property.nome}${en ? ` (${en})` : ""}: proprietà delle armi nelle ${dndEdition(edition)}, con la regola e le armi che la hanno (${counts}), in italiano su Il Grimorio.App.`),
   });
 }
 

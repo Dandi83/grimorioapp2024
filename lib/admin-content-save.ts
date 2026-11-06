@@ -13,7 +13,7 @@ export async function saveAdminContent(
     return { ok: false, error: "Seleziona un’edizione valida." };
   }
   if (edition && sourceEdition && edition !== sourceEdition) {
-    return { ok: false, error: `La fonte di questa scheda usa D&D ${sourceEdition}.` };
+    return { ok: false, error: `La fonte di questa scheda usa le regole ${sourceEdition}.` };
   }
   try {
     // Older open forms without the field preserve any existing manual label.

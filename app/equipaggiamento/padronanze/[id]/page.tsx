@@ -11,7 +11,7 @@ import { WEAPON_GROUP_NAMES } from "@/lib/equipment-types";
 import { CLOSED_METADATA, pageEditions, sectionClosed, sectionPage, sectionPublic } from "@/lib/section-view";
 import { ShareRow } from "@/components/share/share-row";
 import { ruleCard } from "@/lib/share-card-server";
-import { fitDescription, pageMetadata } from "@/lib/seo";
+import { dndEdition, fitDescription, pageMetadata } from "@/lib/seo";
 import { getMastery, masteries, weaponsWithMastery } from "@/lib/weapon-masteries";
 
 /**
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const count = weaponsWithMastery(mastery.nome).length;
   return pageMetadata({
     name: mastery.en ? `${mastery.nome} (${mastery.en})` : mastery.nome, section: "Padronanze", edition: "2024", path: `/equipaggiamento/padronanze/${mastery.id}`,
-    description: fitDescription(`${mastery.nome}${mastery.en ? ` (${mastery.en})` : ""}: proprietà di padronanza delle armi di D&D 2024, con il testo delle regole e le ${count} armi che la hanno, in italiano su Il Grimorio.App.`),
+    description: fitDescription(`${mastery.nome}${mastery.en ? ` (${mastery.en})` : ""}: proprietà di padronanza delle armi, ${dndEdition("2024")}, con il testo e le ${count} armi che la hanno, in italiano su Il Grimorio.App.`),
   });
 }
 

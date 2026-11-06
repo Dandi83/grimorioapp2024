@@ -7,7 +7,7 @@ import { getCorrectedConditions } from "@/lib/corrected-content";
 import { sectionPage } from "@/lib/section-view";
 
 export const metadata = pageMetadata({ name: "Condizioni", section: "Compendio", path: "/compendio/condizioni",
-  description: "Le condizioni di D&D 5e in italiano, 2014 e 2024: accecato, avvelenato, prono, spaventato e tutte le altre, con cosa comportano." });
+  description: "Le condizioni compatibili con D&D 5e in italiano, 2014 e 2024: accecato, avvelenato, prono, spaventato e tutte le altre, con cosa comportano." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
 

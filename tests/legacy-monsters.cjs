@@ -66,7 +66,7 @@ function load(relative, deps = {}) {
     const edited = {...monster, descrizione: 'Testo personalizzato'};
     assert.equal(provider.previewMonsters([edited], 'preview').find(m => m.id === edited.id), edited);
     const badge = renderToStaticMarkup(createElement(MonsterProvenanceBadge, {source, linked: true}));
-    assert.ok(badge.includes('D&amp;D5e 2014'), 'edition label explicitly requested by user');
+    assert.ok(badge.includes('5e 2014'), 'edition label explicitly requested by user');
     assert.ok(badge.includes(legacy.sourceUrl + '#page=' + r.page));
     selected = monster;
     const html = renderToStaticMarkup(await page({params: Promise.resolve({id: monster.id})}));
@@ -124,8 +124,8 @@ function load(relative, deps = {}) {
   assert.ok(attribution.includes('https://creativecommons.org/licenses/by/4.0/legalcode.it'));
   assert.ok(attribution.includes(legacy.sourceUrl));
   // The count follows the data, and the CC BY note says what was changed.
-  assert.ok(attribution.includes(`Le ${legacy.records.length} schede «D&amp;D5e 2014» sono trascritte dall’SRD 5.1 italiano`));
+  assert.ok(attribution.includes(`Le ${legacy.records.length} schede «5e 2014» sono trascritte dall’SRD 5.1 italiano`));
   assert.ok(attribution.includes('le regole non sono state modificate né convertite alle regole 2024'));
-  assert.ok(attribution.includes(`I ${require('../lib/data/srd-spells-5.1-it.json').records.length} incantesimi «D&amp;D5e 2014» pubblicati finora`), 'the 2014 spells are attributed too');
+  assert.ok(attribution.includes(`I ${require('../lib/data/srd-spells-5.1-it.json').records.length} incantesimi «5e 2014» pubblicati finora`), 'the 2014 spells are attributed too');
   console.log(`D&D 2014: ${legacy.records.length} approved records, ${330 + legacy.records.length} catalog entries, correct variant bases, sources, edition labels, no cross-edition links, precedence and license attribution passed.`);
 })().catch(error => {console.error(error); process.exit(1);});

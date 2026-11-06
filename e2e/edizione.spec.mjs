@@ -36,9 +36,9 @@ test("first launch: only over the Home, 2014 chosen once for every section, sear
   await expect(firstLaunch(page)).toHaveAttribute("role", "dialog");
   await expect(firstLaunch(page).getByRole("heading", { name: "Scegli l’edizione" })).toHaveCSS("font-size", "40px");
   // Only the logo, the title and the two choices.
-  await expect(firstLaunch(page)).toHaveText("Il Grimorio.AppScegli l’edizioneD&D 2024D&D 2014");
-  const choice2024 = firstLaunch(page).getByRole("button", { name: "D&D 2024", exact: true });
-  const choice2014 = firstLaunch(page).getByRole("button", { name: "D&D 2014", exact: true });
+  await expect(firstLaunch(page)).toHaveText("Il Grimorio.AppScegli l’edizioneRegole 2024Regole 2014");
+  const choice2024 = firstLaunch(page).getByRole("button", { name: "Regole 2024", exact: true });
+  const choice2014 = firstLaunch(page).getByRole("button", { name: "Regole 2014", exact: true });
   await expect(choice2024).toBeFocused();
   for (const [button, color] of [[choice2024, "rgb(122, 31, 43)"], [choice2014, "rgb(45, 76, 122)"]]) {
     await expect(button).toHaveCSS("background-color", color);
@@ -108,7 +108,7 @@ test("old choices: all 2014 adopted without the first launch; different ones ask
   });
   await mixed.goto("/");
   await expect(firstLaunch(mixed)).toBeVisible();
-  await firstLaunch(mixed).getByRole("button", { name: "D&D 2024" }).click();
+  await firstLaunch(mixed).getByRole("button", { name: "Regole 2024" }).click();
   await mixed.reload();
   await mixed.waitForTimeout(500);
   await expect(firstLaunch(mixed)).toHaveCount(0);
@@ -169,13 +169,13 @@ test("keyboard: first launch and panel reachable with Tab, visible focus, Esc cl
   await expect(firstLaunch(page)).toBeVisible();
   const outline = () => page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle);
   // Focus on «2024» without the ring until a key is pressed (:focus-visible only).
-  await expect(firstLaunch(page).getByRole("button", { name: "D&D 2024" })).toBeFocused();
+  await expect(firstLaunch(page).getByRole("button", { name: "Regole 2024" })).toBeFocused();
   expect(await outline()).toBe("none");
   await page.keyboard.press("Tab");
-  await expect(firstLaunch(page).getByRole("button", { name: "D&D 2014" })).toBeFocused();
+  await expect(firstLaunch(page).getByRole("button", { name: "Regole 2014" })).toBeFocused();
   expect(await outline()).not.toBe("none");
   await page.keyboard.press("Tab");
-  await expect(firstLaunch(page).getByRole("button", { name: "D&D 2024" })).toBeFocused();
+  await expect(firstLaunch(page).getByRole("button", { name: "Regole 2024" })).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(firstLaunch(page)).toHaveCount(0);
   expect(await stored(page)).toBe("2024");
@@ -192,14 +192,14 @@ test("keyboard: first launch and panel reachable with Tab, visible focus, Esc cl
   await page.keyboard.press("Enter");
   const panel = page.getByRole("dialog", { name: "Scegli l’edizione" });
   await expect(panel).toBeVisible();
-  await expect(panel.getByRole("button", { name: "D&D 2024" })).toBeFocused();
-  await expect(panel.getByRole("button", { name: "D&D 2024" })).toHaveAttribute("aria-pressed", "true");
+  await expect(panel.getByRole("button", { name: "Regole 2024" })).toBeFocused();
+  await expect(panel.getByRole("button", { name: "Regole 2024" })).toHaveAttribute("aria-pressed", "true");
   expect(await outline(), "opened with the keyboard: visible focus").not.toBe("none");
   await expect(panel.getByRole("button", { name: "Fatto" })).toHaveCount(0);
   await page.keyboard.press("Tab");
-  await expect(panel.getByRole("button", { name: "D&D 2014" })).toBeFocused();
+  await expect(panel.getByRole("button", { name: "Regole 2014" })).toBeFocused();
   await page.keyboard.press("Tab");
-  await expect(panel.getByRole("button", { name: "D&D 2024" })).toBeFocused();
+  await expect(panel.getByRole("button", { name: "Regole 2024" })).toBeFocused();
   // Esc closes it without changing anything.
   await page.keyboard.press("Escape");
   await expect(panel).toHaveCount(0);
@@ -233,11 +233,11 @@ test("phone: pill on the picture of the Home, sheet from the bottom closed by a 
   await pill.click();
   const panel = page.getByRole("dialog", { name: "Scegli l’edizione" });
   // Opened with a tap: focus on the active choice, no ring.
-  await expect(panel.getByRole("button", { name: "D&D 2024" })).toBeFocused();
+  await expect(panel.getByRole("button", { name: "Regole 2024" })).toBeFocused();
   expect(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle)).toBe("none");
   // Only the title and the two large choices: the active one full, the other cream with a border.
-  await expect(panel).toHaveText("Scegli l’edizioneD&D 2024D&D 2014");
-  for (const [name, background, color] of [["D&D 2024", "rgb(122, 31, 43)", "rgb(255, 255, 255)"], ["D&D 2014", "rgb(255, 251, 240)", "rgb(45, 76, 122)"]]) {
+  await expect(panel).toHaveText("Scegli l’edizioneRegole 2024Regole 2014");
+  for (const [name, background, color] of [["Regole 2024", "rgb(122, 31, 43)", "rgb(255, 255, 255)"], ["Regole 2014", "rgb(255, 251, 240)", "rgb(45, 76, 122)"]]) {
     const choice = panel.getByRole("button", { name });
     await expect(choice).toHaveCSS("background-color", background);
     await expect(choice).toHaveCSS("color", color);
@@ -258,9 +258,9 @@ test("phone: pill on the picture of the Home, sheet from the bottom closed by a 
   await page.mouse.up();
   await expect(panel).toHaveCount(0);
   expect(await stored(page)).toBe("2024");
-  // A tap on «D&D 2014» applies it and closes the sheet by itself.
+  // A tap on «Regole 2014» applies it and closes the sheet by itself.
   await pill.click();
-  await panel.getByRole("button", { name: "D&D 2014" }).click();
+  await panel.getByRole("button", { name: "Regole 2014" }).click();
   await expect(panel).toHaveCount(0);
   expect(await stored(page)).toBe("2014");
   await expect(page.getByRole("button", { name: "Cerca nel Grimorio 2014…" })).toBeVisible();

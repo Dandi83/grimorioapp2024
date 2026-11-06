@@ -89,7 +89,7 @@ test("Home with da=tpk and no edition yet: no «Scegli l'edizione», the 2024, s
   expect(await page.evaluate(() => localStorage.getItem("grimorio.edizione"))).toBe("2024");
   await invite(page).getByRole("button", { name: "Chiudi" }).click();
   await page.getByRole("button", { name: "Edizione 2024: cambia la tua edizione" }).click();
-  await page.getByRole("dialog", { name: "Scegli l’edizione" }).getByRole("button", { name: /D&D 2014/ }).click();
+  await page.getByRole("dialog", { name: "Scegli l’edizione" }).getByRole("button", { name: /Regole 2014/ }).click();
   expect(await page.evaluate(() => localStorage.getItem("grimorio.edizione"))).toBe("2014");
   await context.close();
 

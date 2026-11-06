@@ -30,7 +30,7 @@ export async function setContentEditionAction(_previous: Result | null, form: Fo
     if (getSrdSource(id, spell.descrizione) || getOriginalSource(id, spell.descrizione)) sourceEdition = "2024";
   }
   if (edition && sourceEdition && edition !== sourceEdition) {
-    return { ok: false, error: `La fonte di questa scheda usa D&D ${sourceEdition}.` };
+    return { ok: false, error: `La fonte di questa scheda usa le regole ${sourceEdition}.` };
   }
   try {
     await saveContentEdition(kind, id, edition || undefined);

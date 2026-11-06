@@ -7,7 +7,7 @@ import { bestiaryList, visibleCards, sectionPage } from "@/lib/section-view";
 
 
 export const metadata = pageMetadata({ name: "Bestiario", path: "/bestiario",
-  description: "Mostri e animali di D&D 5e in italiano, edizioni 2014 e 2024: cerca per nome e filtra per tipo, taglia, grado di sfida e habitat." });
+  description: "Mostri e animali compatibili con D&D 5e in italiano, edizioni 2014 e 2024: cerca per nome e filtra per tipo, taglia, grado di sfida e habitat." });
 
 export default async function BestiarioPage() {
   // Before anything of the page: the gate of the layout runs in parallel and cannot stop what the page streams.

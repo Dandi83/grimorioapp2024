@@ -46,7 +46,7 @@ test("edition sheet of a list and welcome screen: the page is held and put back"
   const panel = page.getByRole("dialog", { name: "Scegli l’edizione" });
   await expect(panel).toBeVisible();
   await expect.poll(() => bodyLock(page)).toEqual({ position: "fixed", top: `-${y}px`, y: 0 });
-  await panel.getByRole("button", { name: "D&D 2014" }).click();
+  await panel.getByRole("button", { name: "Regole 2014" }).click();
   await expect(panel).toHaveCount(0);
   await expectEdition(page, "2014");
   await expect.poll(() => bodyLock(page)).toEqual({ position: "", top: "", y });
@@ -58,7 +58,7 @@ test("edition sheet of a list and welcome screen: the page is held and put back"
   await first.goto("/");
   await expect(first.locator("[data-first-launch]")).toBeVisible();
   await expect.poll(() => bodyLock(first)).toEqual({ position: "fixed", top: "0px", y: 0 });
-  await first.locator("[data-first-launch]").getByRole("button", { name: "D&D 2024" }).click();
+  await first.locator("[data-first-launch]").getByRole("button", { name: "Regole 2024" }).click();
   await expect(first.locator("[data-first-launch]")).toHaveCount(0);
   await expect.poll(() => bodyLock(first)).toEqual({ position: "", top: "", y: 0 });
   await fresh.close();

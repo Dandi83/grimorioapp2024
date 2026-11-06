@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const kind = view.categoria ? `talento ${view.categoria === "Generale" ? "generale" : `di ${view.categoria === "Origini" ? "origine" : view.categoria.toLowerCase()}`}` : "talento";
   return pageMetadata({
     name: view.en ? `${view.nome} (${view.en})` : view.nome, section: "Talenti", edition, path: `/talenti/${feat.id}`,
-    description: fitDescription(`${view.nome}${view.en ? ` (${view.en})` : ""}: ${kind} di ${dndEdition(edition)}${view.prerequisito ? `, prerequisito ${view.prerequisito}` : ""}. Il testo delle regole in italiano su Il Grimorio.App.`),
+    description: fitDescription(`${view.nome}${view.en ? ` (${view.en})` : ""}: ${kind} delle ${dndEdition(edition)}${view.prerequisito ? `, prerequisito ${view.prerequisito}` : ""}. Il testo delle regole in italiano su Il Grimorio.App.`),
   });
 }
 

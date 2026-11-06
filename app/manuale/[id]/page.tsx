@@ -43,8 +43,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const isCondition = entry.category === "condizioni";
   return pageMetadata({ name: entry.title, section: isCondition ? "Condizioni" : "Manuale", edition: isCondition ? edition : undefined, path: `/manuale/${entry.id}`,
     description: isCondition
-      ? fitDescription(`${entry.title}, condizione di ${dndEdition(edition)}: cosa comporta per la creatura e come si conclude, in italiano su Il Grimorio.App.`)
-      : fitDescription(`${entry.title}: voce del manuale di D&D 5e in italiano, con le regole spiegate su Il Grimorio.App.`) });
+      ? fitDescription(`${entry.title}, condizione delle ${dndEdition(edition)}: cosa comporta per la creatura e come si conclude, in italiano su Il Grimorio.App.`)
+      : fitDescription(`${entry.title}: voce del manuale delle regole compatibili con D&D 5e, spiegata in italiano su Il Grimorio.App.`) });
 }
 
 export default async function ManualEntryPage({ params }: { params: Promise<{ id: string }> }) {

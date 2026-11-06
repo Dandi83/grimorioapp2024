@@ -48,7 +48,7 @@ export function FavoritesList({ unavailable = false }: { unavailable?: boolean }
   return (
     <div>
       <header className="border-b border-border px-6 pb-4 pt-6">
-        <Etichetta parti={["Compendio D&D 5e"]} />
+        <Etichetta parti={["Compendio 5e"]} />
         <h1 className="pg-capolettera font-serif text-3xl font-bold text-foreground">
           Preferiti
         </h1>

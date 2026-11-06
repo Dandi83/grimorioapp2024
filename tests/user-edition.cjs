@@ -82,10 +82,10 @@ const key=async(k,target=window)=>act(async()=>target.dispatchEvent(new Keyboard
  assert.equal(seen.ready,true);assert.equal(seen.chosen,false);assert.ok(dialog(),'first launch on the Home');
  assert.equal(dialog().getAttribute('role'),'dialog');assert.equal(dialog().getAttribute('aria-modal'),'true');
  assert.equal(document.getElementById(dialog().getAttribute('aria-labelledby')).textContent,'Scegli l’edizione');
- assert.equal(document.activeElement.textContent,'D&D 2024','focus on the first choice');
- assert.equal(dialog().textContent,'Il Grimorio.AppScegli l’edizioneD&D 2024D&D 2014','logo, title and the two choices, nothing else');
+ assert.equal(document.activeElement.textContent,'Regole 2024','focus on the first choice');
+ assert.equal(dialog().textContent,'Il Grimorio.AppScegli l’edizioneRegole 2024Regole 2014','logo, title and the two choices, nothing else');
  // Choosing 2014 saves it and shows the Home; the screen does not come back.
- await click(button('D&D 2014'));
+ await click(button('Regole 2014'));
  assert.equal(dialog(),null);assert.equal(localStorage.getItem('grimorio.edizione'),'2014');assert.equal(seen.edition,'2014');
  assert.equal(status().textContent,'Ora tutta l’app parte dal 2014.','said to screen readers');
  await mount();
@@ -118,18 +118,18 @@ const key=async(k,target=window)=>act(async()=>target.dispatchEvent(new Keyboard
  const panel=()=>[...document.querySelectorAll('[role="dialog"]:not([data-first-launch])')].find(d=>d.textContent.includes('Scegli l’edizione'));
  const choice=text=>[...panel().querySelectorAll('button[aria-pressed]')].find(b=>b.textContent===text);
  assert.ok(panel());assert.equal(pill().getAttribute('aria-expanded'),'true');
- assert.equal(panel().textContent,'Scegli l’edizioneD&D 2024D&D 2014','title and the two choices, nothing else');
+ assert.equal(panel().textContent,'Scegli l’edizioneRegole 2024Regole 2014','title and the two choices, nothing else');
  assert.equal(panel().querySelector('[role="status"]'),null);assert.equal(button('Fatto'),undefined);
- assert.equal(choice('D&D 2024').getAttribute('aria-pressed'),'true');assert.equal(choice('D&D 2024').style.backgroundColor,'rgb(122, 31, 43)');
- assert.equal(choice('D&D 2014').getAttribute('aria-pressed'),'false');assert.equal(choice('D&D 2014').style.color,'rgb(45, 76, 122)');
+ assert.equal(choice('Regole 2024').getAttribute('aria-pressed'),'true');assert.equal(choice('Regole 2024').style.backgroundColor,'rgb(122, 31, 43)');
+ assert.equal(choice('Regole 2014').getAttribute('aria-pressed'),'false');assert.equal(choice('Regole 2014').style.color,'rgb(45, 76, 122)');
  assert.equal(document.activeElement.getAttribute('aria-pressed'),'true','focus on the active choice');
  assert.equal(status().textContent,'');assert.ok(status().className.includes('sr-only'));assert.equal(status().getAttribute('aria-live'),'polite');
- await click(choice('D&D 2014'));
+ await click(choice('Regole 2014'));
  assert.equal(panel(),undefined,'a choice closes the panel');assert.equal(document.activeElement,pill(),'focus back on the pill');
  assert.equal(localStorage.getItem('grimorio.edizione'),'2014');assert.equal(seen.edition,'2014');
  assert.equal(status().textContent,'Ora tutta l’app parte dal 2014.','said to screen readers');
  assert.equal(pill().textContent,'Edizione 2014');assert.equal(pill().style.backgroundColor,'rgb(45, 76, 122)');
- await click(pill());assert.equal(choice('D&D 2014').style.backgroundColor,'rgb(45, 76, 122)');
+ await click(pill());assert.equal(choice('Regole 2014').style.backgroundColor,'rgb(45, 76, 122)');
  await key('Escape');assert.equal(panel(),undefined,'Esc closes the panel');assert.equal(document.activeElement,pill(),'focus back on the pill');
  await click(pill());await click(panel().parentElement.querySelector(':scope > [aria-hidden="true"]'));
  assert.equal(panel(),undefined,'a tap outside closes the panel');assert.equal(seen.edition,'2014','closing changes nothing');
@@ -158,15 +158,15 @@ const key=async(k,target=window)=>act(async()=>target.dispatchEvent(new Keyboard
  await click(pills()[0]);
  assert.equal(document.querySelector('[data-testid="page-edition-note"]').textContent,'Questa pagina mostra il 2014. La tua edizione è il 2024.');
  assert.ok(document.querySelector('[data-part="incantesimi:2014"]')&&document.querySelector('[data-part="incantesimi:2024"]'),'the editions of the section are parts of the page');
- assert.equal(panel().querySelector('button[aria-pressed="true"]').textContent,'D&D 2014','the edition of the page is the active one');
- await click(choice('D&D 2024'));
+ assert.equal(panel().querySelector('button[aria-pressed="true"]').textContent,'Regole 2014','the edition of the page is the active one');
+ await click(choice('Regole 2024'));
  assert.deepEqual(chosen,['2024'],'the choice goes through the page');
  assert.equal(seen.edition,'2024');assert.equal(document.querySelector('[data-testid="page-edition-note"]'),null,'page and user edition agree again');
  assert.deepEqual(pills().map(b=>b.getAttribute('aria-label').slice(0,14)),['Edizione 2024:','Edizione 2024:']);
  assert.equal(panel(),undefined,'the panel of the page closes too');
  // From the column pill too.
  await click(pills()[1]);
- await click(choice('D&D 2014'));
+ await click(choice('Regole 2014'));
  assert.deepEqual(chosen,['2024','2014']);assert.equal(localStorage.getItem('grimorio.edizione'),'2014');
 
  await act(async()=>root.unmount());

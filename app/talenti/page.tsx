@@ -6,7 +6,7 @@ import { sectionPage } from "@/lib/section-view";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({ name: "Talenti", section: "Compendio", path: "/talenti",
-  description: "I talenti di D&D 5e in italiano dall’SRD: Origini, Generali, Stile di combattimento e Doni epici del 2024, e Lottatore del 2014." });
+  description: "I talenti compatibili con D&D 5e in italiano dall’SRD: Origini, Generali, Stile di combattimento e Doni epici del 2024, e Lottatore del 2014." });
 
 /** The rows of the list: names, English names, categories and prerequisites only. */
 function groups(): FeatGroups {

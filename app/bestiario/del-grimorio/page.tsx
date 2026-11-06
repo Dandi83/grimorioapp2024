@@ -15,7 +15,7 @@ const PART = partId("bestiario", "grimorio");
 export async function generateMetadata() {
   const state = await partState("bestiario", "grimorio");
   return state.shown ? pageMetadata({ name: "Mostri del Grimorio", section: "Bestiario", path: "/bestiario/del-grimorio",
-    description: "I mostri originali della redazione di Il Grimorio.App per D&D 2014 e 2024, bilanciati con il nostro simulatore sui mostri ufficiali." }) : CLOSED_PART_METADATA;
+    description: "I mostri originali della redazione di Il Grimorio.App, compatibili con D&D 5e (2014 e 2024), bilanciati con il nostro simulatore sui mostri ufficiali." }) : CLOSED_PART_METADATA;
 }
 
 /**

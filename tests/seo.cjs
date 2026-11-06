@@ -17,11 +17,16 @@ for(const text of ['Breve.','x'.repeat(10)+' '+'parola '.repeat(60),'Una descriz
 assert.equal(seo.fitDescription('Una descrizione di lunghezza giusta, che resta com’è perché sta tra settanta e centosessanta caratteri.'),'Una descrizione di lunghezza giusta, che resta com’è perché sta tra settanta e centosessanta caratteri.');
 const spell24=seo.spellDescription({nome:'Palla di fuoco',livello:3,scuola:'Invocazione',edizione:'2024'}),spell14=seo.spellDescription({nome:'Palla di fuoco',livello:3,scuola:'Invocazione',edizione:'2014'});
 assert.notEqual(spell24,spell14,'2014 and 2024 differ');
-assert.match(spell14,/D&D 2014/);assert.match(spell24,/D&D 2024/);
+// PROMPT 72: «D&D» only in the descriptive form «compatibili con D&D 5e», once.
+assert.match(spell14,/regole 2014 compatibili con D&D 5e/);assert.match(spell24,/regole 2024 compatibili con D&D 5e/);
+for(const text of [spell14,spell24]) assert.equal(text.split('D&D').length-1,1,text);
 assert.match(seo.spellDescription({nome:'Luce',livello:0,edizione:'2024'}),/trucchetto/);
 // A creature of the redazione: only the head of the card (never a hidden section).
 const redazione=seo.monsterDescription({nome:'Drago di prova',tipo:'Drago (cromatico)',taglia:'Enorme',gs:'17',edizione:'2024',origine:'redazione'});
-assert.equal(redazione,'Drago di prova, creatura originale della redazione, Drago Enorme, GS 17, D&D 2024. Statistiche, tratti e azioni in italiano su Il Grimorio.App.');
+assert.equal(redazione,'Drago di prova, creatura originale della redazione, Drago Enorme, GS 17, regole 2024 compatibili con D&D 5e. Statistiche, tratti e azioni in italiano.');
+// The site title and the manifest without «D&D» (PROMPT 72).
+assert.equal(seo.SITE_TITLE,'Il Grimorio.App — Incantesimi, mostri e regole 5e in italiano');
+assert.doesNotMatch(seo.SITE_TITLE,/D&D|Dungeons/);
 assert.equal(seo.editionOfPage({'2014':1,'2024':1}),'entrambe');
 assert.equal(seo.editionOfPage({'2014':1,'2024':1},['2014']),'2014');
 assert.equal(seo.editionOfPage({'2014':1}),'2014');

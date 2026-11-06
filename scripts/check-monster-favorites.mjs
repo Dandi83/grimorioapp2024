@@ -82,6 +82,6 @@ for(const summary of originalSummaries){
  assert.doesNotMatch(title,/<sup\b|\*/,`No asterisk beside ${row.id} in public lists`);
  // The address without proper names (lib/spell-public-id.ts) when the stored id has one.
  assert.ok(markup.includes(`/spell/${publicIds[row.id]??row.id}`),row.id);
- assert.doesNotMatch(markup,/D&amp;D5e|lucide-book-open/,'Edition labels belong only inside detail pages');
+ assert.doesNotMatch(markup,/D&amp;D5e|\b5e 20(14|24)|lucide-book-open/,'Edition labels belong only inside detail pages');
 }
 console.log('[spell lists] All 53 original summaries have plain titles without edition badges; detail links preserved.');
