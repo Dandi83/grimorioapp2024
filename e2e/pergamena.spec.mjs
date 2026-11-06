@@ -228,7 +228,7 @@ for (const [name, device] of SCREENS) {
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).toHaveText("Compendio");
     await capilettera(h1, BORDEAUX);
-    await expect(page.locator("main [data-pg-etichetta]")).toHaveText("Regole, equipaggiamento e personaggi · SRD 5.2.1");
+    await expect(page.locator("main [data-pg-etichetta]")).toHaveText("Regole e personaggi · SRD 5.2.1");
     await expect(page.locator('main [data-divisore="stella"]')).toBeVisible();
     const tiles = page.locator("main li[data-tile] > a");
     expect(await tiles.count()).toBeGreaterThanOrEqual(6);
@@ -258,6 +258,98 @@ for (const [name, device] of SCREENS) {
     await context.close();
   });
 }
+
+// PROMPT 68 (passo 3): the secondary pages. [address, label, H1, selector of the boxes with copper corners]
+const SECONDARY = [
+  ["/info", "Il Grimorio.App · Note legali", "Info e note legali", "main ul a[href], main [data-copyright]"],
+  ["/fonti", "Note legali · SRD 5.2.1 e 5.1", "Fonti e licenze", null],
+  ["/privacy", "Note legali · Privacy", "Come usiamo i dati", null],
+  ["/termini", "Note legali", "Termini d’uso", null],
+  ["/sostieni", "Contributo libero · Ko-fi", "Sostieni il Grimorio", "main section[aria-labelledby='sostieni-aiuto']"],
+  ["/installa", "App · iPhone, Android e computer", "Installa l’app", "main details"],
+  ["/pagina-che-non-esiste-p68", "Errore 404", "Pagina non trovata", null],
+];
+
+for (const [name, device] of SCREENS) {
+  test(`${name}: secondary pages with label, capilettera, ✦ divider and copper corners on the cards; the Compendio label on one line`, async ({ browser }) => {
+    test.setTimeout(120_000);
+    const { context, page } = await newPage(browser, device);
+    for (const [path, label, title, cards] of SECONDARY) {
+      const response = await page.goto(path);
+      expect(response.status(), path).toBe(path.includes("non-esiste") ? 404 : 200);
+      const h1 = page.getByRole("heading", { level: 1 });
+      await expect(h1, path).toHaveCount(1);
+      await expect(h1, path).toHaveText(title);
+      const kicker = page.locator("main [data-pg-etichetta]").first();
+      await expect(kicker, path).toHaveText(label);
+      await expect(kicker).toHaveCSS("text-transform", "uppercase");
+      await expect(kicker).toHaveAttribute("data-pg-nuovo", "");
+      expect((await kicker.boundingBox()).y, path).toBeLessThan((await h1.boundingBox()).y);
+      await capilettera(h1, BORDEAUX);
+      await expect(h1).toHaveCSS("color", "rgb(43, 33, 24)");
+      const divider = page.locator('main [data-divisore="stella"]').first();
+      await expect(divider, path).toBeVisible();
+      expect((await divider.boundingBox()).y, path).toBeGreaterThan((await h1.boundingBox()).y);
+      if (cards) {
+        const boxes = page.locator(cards);
+        expect(await boxes.count(), path).toBeGreaterThan(0);
+        for (const box of await boxes.all()) expect(await corners(box), path).toBe(4);
+      }
+    }
+    // «Sezione momentaneamente in costruzione»: the hidden or «In arrivo» section, label/divider around the same H1.
+    await page.goto("/in-arrivo/talenti");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sezione momentaneamente in costruzione");
+    // The fonts of the site first: a fallback font wraps the long title elsewhere.
+    await page.evaluate(() => document.fonts.ready);
+    await capilettera(page.getByRole("heading", { level: 1 }), BORDEAUX);
+    await expect(page.locator('main [data-divisore="stella"]')).toBeVisible();
+    // The label of the Compendio never wraps (390 and 412 px).
+    await page.goto("/compendio");
+    const compendio = page.locator("main [data-pg-etichetta]");
+    await expect(compendio).toHaveText("Regole e personaggi · SRD 5.2.1");
+    const lines = await compendio.evaluate(el => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)));
+    expect(lines).toBe(1);
+    await context.close();
+  });
+}
+
+test("notices: «Come ti trovi?» and «Installala» with copper corners and the buttons of the style, same size as before", async ({ browser }) => {
+  for (const kind of ["valutazione", "installa"]) {
+    const context = await browser.newContext({ ...strip(devices["iPhone 13"]), baseURL: test.info().project.use.baseURL, serviceWorkers: "block" });
+    await context.route("**/api/analytics", route => route.request().method() === "GET"
+      ? route.fulfill({ json: { enabled: true, excluded: false, consent: "accepted" } }) : route.fulfill({ json: { ok: true } }));
+    await context.addInitScript(invite => {
+      try {
+        localStorage.setItem("grimorio.edizione", "2024");
+        if (!invite) localStorage.setItem("grimorio-install-dismissed", String(Date.now() + 864e5));
+        localStorage.setItem("grimorio.giorni-di-visita", JSON.stringify(invite ? [] : ["2026-01-01", "2026-01-02"]));
+      } catch { /* no storage */ }
+    }, kind === "installa");
+    const page = await context.newPage();
+    if (kind === "valutazione") {
+      await page.goto("/");
+      const box = page.getByRole("region", { name: "Come ti trovi con il Grimorio?" });
+      await expect(box).toBeVisible({ timeout: 15_000 });
+      expect(await corners(box)).toBe(4);
+      await capilettera(box.getByRole("heading", { level: 2 }), BORDEAUX);
+      for (const button of await box.locator("[data-vote]").all()) await expect(button).toHaveClass(/pg-pulsante-chiaro/);
+      await box.getByRole("button", { name: "Bene" }).click();
+      const thanks = page.locator("section[data-rating='grazie-bene']").filter({ visible: true }).first();
+      expect(await corners(thanks)).toBe(4);
+      await expect(thanks.getByRole("button", { name: "Condividi" })).toHaveClass(/pg-pulsante/);
+    } else {
+      await page.goto("/grimorio");
+      // Its moment is the first gesture of the person (components/install-prompt.tsx), once the page is ready.
+      await page.waitForLoadState("networkidle");
+      await page.mouse.wheel(0, 200);
+      const invite = page.getByRole("region", { name: "Installa l’app" });
+      await expect(invite).toBeVisible({ timeout: 15_000 });
+      expect(await corners(invite)).toBe(4);
+      await expect(invite.getByText("Aggiungi Il Grimorio.App")).toHaveClass(/pg-capolettera/);
+    }
+    await context.close();
+  }
+});
 
 test("administrator: «I miei personaggi» on the Compendio with the BETA stamp; «In arrivo» stays a text label for them", async ({ browser }) => {
   test.setTimeout(120_000);

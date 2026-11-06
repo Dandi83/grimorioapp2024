@@ -13,7 +13,7 @@ const link = "font-semibold text-primary underline underline-offset-4";
 export function CopyrightSection({ affiliation = true }: { affiliation?: boolean }) {
   return (
     <section data-copyright="" aria-labelledby="diritti-autore"
-      className="mt-5 space-y-2 rounded-[16px] border-[1.5px] border-primary/40 bg-card px-4 py-3.5 text-[16px] leading-snug text-foreground">
+      className="pg-angoli mt-5 space-y-2 rounded-[16px] border-[1.5px] border-primary/40 bg-card px-4 py-3.5 text-[16px] leading-snug text-foreground">
       <h2 id="diritti-autore" className="font-serif text-[22px] font-bold leading-tight text-primary">Diritti d’autore</h2>
       <p>
         © 2026 D.d.B. – Il Grimorio.App. Codice, grafica, logo e testi originali dell’app (comprese le traduzioni e i contenuti
