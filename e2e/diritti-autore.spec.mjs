@@ -30,7 +30,8 @@ async function legalHtml(page) {
     // are style only; the text and the elements of the page are compared as they were on main.
     copy.querySelectorAll("[data-pg-etichetta][data-pg-nuovo], [data-divisore]").forEach(node => node.remove());
     copy.querySelectorAll("[class]").forEach(node => node.removeAttribute("class"));
-    return copy.innerHTML;
+    // PROMPT 72: the labels are «5e 2014» / “5e 2024” (no «D&D»); put back as on main, the rest must be byte for byte the same.
+    return copy.innerHTML.replace(/«5e 2014»/g, "«D&amp;D5e 2014»").replace(/“5e (2014|2024)”/g, "“D&amp;D5e $1”");
   });
 }
 
