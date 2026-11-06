@@ -23,7 +23,7 @@ export const TPK_LIST_PATH = "/api/tpk/creature-originali";
 export const TPK_LIST_CACHE = "public, s-maxage=3600, stale-while-revalidate=86400";
 export const TPK_LICENSE_NOTE = "Le creature della community sono CC BY-NC-SA 4.0: uso solo non commerciale, con autore, licenza e link alla scheda. Se Total Party Kill diventasse a pagamento o con pubblicità, vanno tolte o serve un consenso diverso.";
 /** The creatures of the editorial staff: their own licence for TPK, not the CC one of the site. */
-export const TPK_EDITORIAL_LICENSE = "© 2026 D.d.B. – Il Grimorio.App, uso consentito a Total Party Kill";
+export const TPK_EDITORIAL_LICENSE = "© 2026 Il Grimorio.App – uso consentito a Total Party Kill";
 export const TPK_EDITORIAL_LICENSE_URL = `${SITE_URL}/info`;
 
 /** One published row, as the server reads it (lib/homebrew.ts): already without email, proposal or notes. */

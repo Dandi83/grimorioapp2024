@@ -68,7 +68,7 @@ const [cat, moth, ripper] = list.creature;
 // The editorial staff: their licence, no author, the picture (medium WebP), the visible sections only.
 assert.deepEqual({...ripper, scheda: undefined}, {
   id: 'homebrew-squartatore', url: 'https://ilgrimorio.app/mostro/homebrew-squartatore', origine: 'redazione', autore: null,
-  licenza: '© 2026 D.d.B. – Il Grimorio.App, uso consentito a Total Party Kill', licenza_url: 'https://ilgrimorio.app/info',
+  licenza: '© 2026 Il Grimorio.App – uso consentito a Total Party Kill', licenza_url: 'https://ilgrimorio.app/info',
   verificato: false, giudizio_bilanciamento: null, pubblicata_il: '2026-10-30T10:00:00.000Z', aggiornata_il: '2026-11-02T10:00:00.000Z',
   immagine: {url: 'https://ilgrimorio.app/immagini-mostri/0123456789abcdef-m.webp', alt: 'Lo squartatore nel bosco', crediti: 'Illustrazione di prova'},
   scheda: undefined,
@@ -112,6 +112,11 @@ const text = JSON.stringify(list);
 for (const secret of [SECRET.tattiche, SECRET.tana, SECRET.agganci, SECRET.varianti, 'fuori dal gs', '00000000-0000-4000-8000-000000000000', 'homebrew-lupo-2014', 'homebrew-senza-licenza', 'homebrew-nascosto']) {
   assert.ok(!text.includes(secret), secret);
 }
+// PROMPT 67: the editorial licence names only the Grimorio, never the initials of the author (the legal pages keep their signature).
+assert.equal(tpk.TPK_EDITORIAL_LICENSE, '© 2026 Il Grimorio.App – uso consentito a Total Party Kill');
+assert.ok(!text.includes('D.d.B.'), 'D.d.B. in the TPK list');
+assert.ok(!fs.readFileSync('lib/tpk-creatures.ts', 'utf8').includes('D.d.B.'), 'D.d.B. in lib/tpk-creatures.ts');
+assert.ok(fs.readFileSync('components/legal/copyright.tsx', 'utf8').includes('© 2026 D.d.B. – Il Grimorio.App'), 'legal signature (PROMPT 63)');
 
 // The route: GET only, dynamic, the exact network cache, no ISR timer, no CORS, no write.
 const route = fs.readFileSync('app/api/tpk/creature-originali/route.ts', 'utf8');
