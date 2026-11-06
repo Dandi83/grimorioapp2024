@@ -255,6 +255,8 @@ export function AnalyticsProvider() {
       // «L'hai provato al tavolo?» (components/homebrew/table-test.tsx): the vote of this card; the box hears back when it is saved.
       else if (name === "prova_tavolo" && ["facile", "giusto", "difficile"].includes(detail.vote))
         void send("prova_tavolo", { tableVote: detail.vote }).then(ok => window.dispatchEvent(new CustomEvent("grimorio:prova-tavolo-salvata", { detail: { ok } })));
+      // «⚔ Affrontalo in Total Party Kill» (components/tpk/tpk-summon-button.tsx): the creature is the one of the path.
+      else if (name === "tpk_summon_click") void send("tpk_summon_click");
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
       else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results, area: detail.area });
     };

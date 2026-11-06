@@ -60,6 +60,9 @@ export const PUBLIC_SECTIONS = [
     { key: "homebrew", title: "I mostri creati da voi", group: "raccolte", set: "raccolta", page: "/bestiario" },
     // PROMPT 25: the original creatures of the editorial staff (homebrew without an author), «In arrivo» until set.
     { key: "grimorio", title: "Mostri del Grimorio", group: "raccolte", set: "raccolta", page: "/bestiario" },
+    // PROMPT 69: «⚔ Affrontalo in Total Party Kill» at the bottom of the 2024 creatures (lib/tpk-summon.ts). Starts
+    // «Nascosta» (lib/section-visibility.ts DEFAULT_PART_STATES) while «Evoca» of TPK is «In arrivo».
+    { key: "tpk", title: "Affrontalo in TPK", group: "blocchi", page: "/mostro/drago-nero-adulto" },
   ] },
   { key: "classi", title: "Classi", where: "Compendio · Personaggi", paths: ["/classi"], parts: [
     ...editions("/classi/mago"),
