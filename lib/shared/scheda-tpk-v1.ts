@@ -60,6 +60,8 @@ export interface TalentoV1 {
 
 export interface SchedaV1 {
   v: 1;
+  /** PROMPT 38: edizione delle regole del PG ("2024" = SRD 5.2.1). Facoltativo: i link vecchi non ce l'hanno. */
+  ed?: '2024' | '2014';
   /** Nome. */
   n: string;
   /** Classe. */
@@ -227,9 +229,40 @@ export function validaScheda(x: unknown): ErroreCampo[] {
   if (x.lv !== undefined && (!isObj(x.lv) || !Object.entries(x.lv).every(([k, v]) => /^([2-9]|1[0-9]|20)$/.test(k) && isObj(v)))) no('lv', 'Scelte per livello: chiavi da "2" a "20"');
   if (!isObj(x.eq) || !['A', 'B', 'C'].includes(x.eq.k as string) || typeof x.eq.bgA !== 'boolean') no('eq', 'Equipaggiamento: serve {k: "A" o "B", bgA: sì/no}');
   if (x.pt !== undefined && typeof x.pt !== 'string' && typeof x.pt !== 'number') no('pt', 'Ritratto: valore non valido');
+  if (x.ed !== undefined && x.ed !== '2024' && x.ed !== '2014') no('ed', `Edizione «${String(x.ed)}»: attesa "2024" o "2014"`);
   if (x.calc !== undefined && (!isObj(x.calc) || !Object.values(x.calc).every((v) => typeof v === 'number'))) no('calc', 'Valori calcolati: devono essere numeri');
   return err;
 }
+
+// ---------------------------------------------------------------- edizione 2014 (PROMPT 38)
+// Total Party Kill usa solo le regole 2024 (SRD 5.2.1). Un PG della versione 2014 non si importa.
+// Si rifiuta solo con un segno CERTO: l'edizione dichiarata ("ed": "2014") o elementi che esistono solo nel 2014
+// (incantesimi «-2014», specie e sottorazze del 2014). Senza segni il PG si tratta come 2024 (com'era prima).
+
+/** Specie che nel 2024 non esistono più. */
+const SPECIE_SOLO_2014 = ['mezzelfo', 'mezzorco', 'mezz-elfo', 'mezz-orco', 'mezzo-elfo', 'mezzo-orco'];
+/** Sottorazze del 2014 (nel 2024 nani e halfling non hanno opzioni). */
+const OPZIONI_SOLO_2014: Readonly<Record<string, readonly string[]>> = { nano: ['colline', 'montagne'], halfling: ['piedelesto', 'tozzo'] };
+
+/** Incantesimo della versione 2014 (id pubblico «…-2014», o id salvato che vi porta). */
+export const incantesimo2014 = (id: unknown): boolean => typeof id === 'string' && (/-2014$/.test(id) || /-2014$/.test(idPubblicoIncantesimo(id)));
+
+/** I segni certi che la scheda è della versione 2014 (vuoto = nessun segno). */
+export function segni2014(x: unknown): string[] {
+  if (!isObj(x)) return [];
+  const out: string[] = [];
+  const ed = x.ed ?? x.edizione ?? x.regole;
+  if (ed === '2014' || ed === 2014) out.push('edizione 2014');
+  const lista = (v: unknown): unknown[] => (Array.isArray(v) ? v : v === undefined ? [] : [v]);
+  const params = Array.isArray(x.ft) ? x.ft.flatMap((f) => (isObj(f) && isObj(f.p) ? [...lista(f.p.inc), ...lista(f.p.tr)] : [])) : [];
+  const spells = [...lista(x.tr), ...lista(x.pr), ...lista(x.lb), ...lista(x.st), ...params].filter(incantesimo2014);
+  if (spells.length) out.push(`incantesimi 2014: ${[...new Set(spells as string[])].join(', ')}`);
+  if (typeof x.sp === 'string' && SPECIE_SOLO_2014.includes(x.sp)) out.push(`specie 2014: ${x.sp}`);
+  if (typeof x.sp === 'string' && typeof x.so === 'string' && OPZIONI_SOLO_2014[x.sp]?.includes(x.so)) out.push(`sottorazza 2014: ${x.sp} ${x.so}`);
+  return out;
+}
+
+export const MESSAGGIO_2014 = 'Questo personaggio è della versione 2014. Total Party Kill usa le regole 2024: crea la versione 2024 sul Grimorio.App o creane uno nuovo qui.';
 
 // ---------------------------------------------------------------- codifica
 
@@ -266,7 +299,7 @@ export function encodeParty(list: SchedaV1[]): Promise<string> {
 
 export type Decodifica =
   | { ok: true; party: boolean; schede: SchedaV1[] }
-  | { ok: false; errore: string; errori?: ErroreCampo[][]; grezzi?: unknown[] };
+  | { ok: false; errore: string; errori?: ErroreCampo[][]; grezzi?: unknown[]; edizione2014?: string[] };
 
 /** Legge la parte dopo "#" di un link e valida le schede. */
 export async function decodeHash(hash: string): Promise<Decodifica> {
@@ -287,6 +320,9 @@ export async function decodeHash(hash: string): Promise<Decodifica> {
   const party = chiave.startsWith('party');
   const list = party ? json : [json];
   if (!Array.isArray(list) || !list.length || list.length > 4) return { ok: false, errore: 'Un party ha da 1 a 4 personaggi.' };
+  // PROMPT 38: i PG della versione 2014 non si importano (prima degli altri errori: il messaggio è più utile)
+  const vecchi = list.flatMap(segni2014);
+  if (vecchi.length) return { ok: false, errore: MESSAGGIO_2014, edizione2014: vecchi, grezzi: list };
   const errori = list.map(validaScheda);
   if (errori.some((e) => e.length)) return { ok: false, errore: list.length > 1 ? 'Alcune schede non sono valide.' : 'La scheda non è valida.', errori, grezzi: list };
   return { ok: true, party, schede: list as SchedaV1[] };

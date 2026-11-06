@@ -2,7 +2,7 @@
  * «I miei personaggi» (PROMPT 62, beta): what the page shows of a «Scheda TPK v1» (lib/shared/scheda-tpk-v1.ts, never
  * changed here) and how it is kept in the browser. Pure helpers, used only by app/personaggi: no database, no server.
  */
-import type { Caratteristica, SchedaV1 } from "./shared/scheda-tpk-v1";
+import { segni2014, validaScheda, type Caratteristica, type Decodifica, type ErroreCampo, type SchedaV1 } from "./shared/scheda-tpk-v1";
 
 export const CLASS_NAMES: Readonly<Record<string, string>> = {
   barbaro: "Barbaro", bardo: "Bardo", chierico: "Chierico", druido: "Druido", guerriero: "Guerriero", ladro: "Ladro",
@@ -83,6 +83,40 @@ export const metres = (value: number) => String(Math.round(value * 10) / 10).rep
 export function sheetSpells(sheet: SchedaV1): string[] {
   const fromFeats = (sheet.ft ?? []).flatMap(feat => [feat.p?.tr, feat.p?.inc].flat()).filter((id): id is string => typeof id === "string");
   return [...new Set([sheet.st, ...sheet.tr, ...sheet.pr, ...(sheet.lb ?? []), ...fromFeats].filter((id): id is string => typeof id === "string" && id.length > 0))];
+}
+
+/* ------------------------------------------------------------------ edition and Total Party Kill (PROMPT 71) */
+
+/**
+ * A sheet with the 2014 rules: "ed": "2014" or another sure sign of the shared file (segni2014: 2014 spells, species or
+ * subraces). Total Party Kill uses the 2024 rules only and refuses these sheets; the Grimorio keeps and shows them.
+ */
+export const isSheet2014 = (sheet: SchedaV1) => segni2014(sheet).length > 0;
+
+/**
+ * The sheet as it goes to Total Party Kill («Gioca in Total Party Kill»): null for a 2014 sheet (no button); "ed": "2024"
+ * added when missing (the sheets saved before, like Brenna); the same object when it already says "2024". It is a copy:
+ * the character saved in the browser is never rewritten.
+ */
+export function sheetForTpk(sheet: SchedaV1): SchedaV1 | null {
+  if (isSheet2014(sheet)) return null;
+  return sheet.ed === "2024" ? sheet : { ...sheet, ed: "2024" };
+}
+
+export type IncomingLink = { ok: true; party: boolean; sheets: SchedaV1[] } | { ok: false; message: string; errors: ErroreCampo[][] };
+
+/**
+ * A link #pg= / #party= as the page reads it. decodeHash (shared file) refuses the 2014 sheets, because TPK cannot use
+ * them; the Grimorio still receives them when the fields are valid (the preview says they cannot go to TPK).
+ */
+export function incomingFromLink(hash: string, result: Decodifica): IncomingLink {
+  if (result.ok) return { ok: true, party: result.party, sheets: result.schede };
+  if (result.edizione2014?.length && result.grezzi?.length) {
+    const errors = result.grezzi.map(validaScheda);
+    if (errors.every(list => list.length === 0)) return { ok: true, party: /^#?party0?=/.test(hash.trim()), sheets: result.grezzi as SchedaV1[] };
+    return { ok: false, message: result.grezzi.length > 1 ? "Alcune schede non sono valide." : "La scheda non è valida.", errors };
+  }
+  return { ok: false, message: result.errore, errors: result.errori ?? [] };
 }
 
 /* ------------------------------------------------------------------ saving in the browser */

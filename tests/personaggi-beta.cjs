@@ -31,6 +31,51 @@ const BRENNA = fs.readFileSync('tests/scheda-tpk-grimorio.cjs', 'utf8').match(/'
   for (const id of Object.keys(tpk.BACKGROUND)) assert.ok(c.BACKGROUND_NAMES[id], id);
   for (const id of tpk.ABILITA) assert.ok(c.SKILL_NAMES[id], id);
 
+  // PROMPT 71: «"ed"» of the shared file. To TPK: always "ed": "2024" (added to a sheet saved without it, like Brenna; the
+  // saved sheet is not rewritten); "2024" unchanged; a 2014 sheet never goes (no button). Links from TPK: with or without
+  // "ed"; a valid 2014 sheet is received (decodeHash refuses it for TPK) and the page says it cannot be used there.
+  assert.equal('ed' in brenna, false, 'the example link of Brenna has no "ed"');
+  const brennaTpk = c.sheetForTpk(brenna);
+  assert.equal(brennaTpk.ed, '2024');
+  assert.equal('ed' in brenna, false, 'the saved sheet is not rewritten');
+  assert.deepEqual({ ...brennaTpk, ed: undefined }, { ...brenna, ed: undefined }, 'only "ed" is added');
+  const playLink = require('../lib/tpk.ts').tpkImportUrl(await tpk.encodePg(brennaTpk));
+  assert.match(playLink, /^https:\/\/www\.totalpartykill\.app\/importa#pg0?=[A-Za-z0-9_-]+$/);
+  const back = await tpk.decodeHash(playLink.slice(playLink.indexOf('#')));
+  assert.equal(back.ok, true, JSON.stringify(back));
+  assert.equal(back.schede[0].ed, '2024', 'the link to TPK decodes with "ed": "2024"');
+  assert.deepEqual({ ...back.schede[0], ed: undefined }, { ...brenna, ed: undefined }, 'the rest of Brenna unchanged');
+  const brenna2024 = { ...brenna, ed: '2024' };
+  assert.equal(c.sheetForTpk(brenna2024), brenna2024, '"ed": "2024" goes as it is');
+  const brenna2014 = { ...brenna, ed: '2014' };
+  assert.equal(c.sheetForTpk(brenna2014), null, 'a 2014 sheet never goes to TPK');
+  assert.equal(c.isSheet2014(brenna2014), true);
+  assert.equal(c.isSheet2014(brenna), false);
+  assert.equal(c.isSheet2014(brenna2024), false);
+  assert.equal(c.sheetForTpk({ ...brenna, tr: [...brenna.tr, 'luce-2014'] }), null, 'a 2014 spell is a sure sign too (as in TPK)');
+  for (const [sheet, ed] of [[brenna, undefined], [brenna2024, '2024']]) {
+    const hash = await tpk.encodePg(sheet);
+    const got = c.incomingFromLink(hash, await tpk.decodeHash(hash));
+    assert.equal(got.ok, true); assert.equal(got.party, false); assert.equal(got.sheets[0].ed, ed);
+  }
+  const hash2014 = await tpk.encodePg(brenna2014);
+  const raw2014 = await tpk.decodeHash(hash2014);
+  assert.equal(raw2014.ok, false, 'the shared file refuses the 2014 sheets (for TPK)');
+  assert.ok(raw2014.edizione2014.includes('edizione 2014'));
+  const got2014 = c.incomingFromLink(hash2014, raw2014);
+  assert.equal(got2014.ok, true, 'the Grimorio receives a valid 2014 sheet');
+  assert.equal(got2014.sheets[0].ed, '2014');
+  const party2014 = await tpk.encodeParty([brenna, brenna2014]);
+  const gotParty = c.incomingFromLink(party2014, await tpk.decodeHash(party2014));
+  assert.equal(gotParty.ok, true); assert.equal(gotParty.party, true); assert.equal(gotParty.sheets.length, 2);
+  const bad2014 = await tpk.encodePg({ ...brenna2014, c: 'artefice' });
+  const gotBad = c.incomingFromLink(bad2014, await tpk.decodeHash(bad2014));
+  assert.equal(gotBad.ok, false, 'a 2014 sheet with wrong fields is still a broken link');
+  assert.ok(gotBad.errors[0].some(e => e.campo === 'c'));
+  const app = fs.readFileSync('components/characters-beta/characters-app.tsx', 'utf8');
+  assert.ok(app.includes('Total Party Kill usa le regole 2024') && app.includes('Personaggio con regole 2014: in Total Party Kill non si può usare'));
+  assert.ok(app.includes('sheetForTpk(sheet)') && /encodePg\(forTpk\)/.test(app), 'the play link is made from the copy with "ed"');
+
   // Saving: «grimorio.characters.v1», apart from the favorites; a storage that throws (private window) gives null / false.
   const memory = new Map();
   const storage = { getItem: key => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, value) };
