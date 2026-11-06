@@ -106,7 +106,7 @@ assert.match(fs.readFileSync('lib/card-display.ts','utf8'),/castingTime: casting
   if(edition==='2014'){
    // The edition pill opens its panel: the 2014 choice.
    await click(document.querySelector('button[aria-label^="Edizione "]'));
-   await click([...document.querySelectorAll('[role="dialog"] button[aria-pressed]')].find(b=>b.textContent==='D&D 2014'));
+   await click([...document.querySelectorAll('[role="dialog"] button[aria-pressed]')].find(b=>b.textContent==='Regole 2014'));
   }
   await click(button('Filtri'));
   assert.deepEqual([...group().querySelectorAll('button')].map(b=>b.textContent),['Azione','Azione bonus','Reazione','1 minuto o più'],'a separate group with four options');

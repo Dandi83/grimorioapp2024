@@ -1,4 +1,4 @@
-import { SITE_NAME, SITE_URL } from "@/lib/seo";
+import { SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/seo";
 import type { Metadata, Viewport } from "next";
 import { EB_Garamond, Source_Sans_3 } from "next/font/google";
 import type { ReactNode } from "react";
@@ -38,9 +38,10 @@ const ebGaramond = EB_Garamond({
 // PROMPT 45: the one base address of the site; every page gives its canonical, title and description (lib/seo.ts).
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Il Grimorio.App — Incantesimi e Bestiario D&D 5e",
+  // PROMPT 72: «D&D» only as a description of compatibility, never in the name of the site; not in the keywords.
+  title: SITE_TITLE,
   description:
-    "Consulta, cerca e filtra incantesimi, mostri e animali di Dungeons & Dragons 5e in italiano. Salva i preferiti. Progetto fan-made.",
+    "Consulta, cerca e filtra incantesimi, mostri e animali compatibili con D&D 5e, in italiano. Salva i preferiti. Progetto fan-made.",
   applicationName: "Il Grimorio.App",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
@@ -49,8 +50,6 @@ export const metadata: Metadata = {
     title: "Grimorio",
   },
   keywords: [
-    "D&D",
-    "Dungeons & Dragons",
     "incantesimi",
     "bestiario",
     "mostri",
@@ -60,9 +59,9 @@ export const metadata: Metadata = {
     "italiano",
   ],
   openGraph: {
-    title: "Il Grimorio.App — Incantesimi e Bestiario D&D 5e",
+    title: SITE_TITLE,
     description:
-      "Consulta, cerca e filtra incantesimi, mostri e animali di D&D 5e in italiano.",
+      "Consulta, cerca e filtra incantesimi, mostri e animali compatibili con D&D 5e, in italiano.",
     type: "website",
     siteName: SITE_NAME,
     locale: "it_IT",

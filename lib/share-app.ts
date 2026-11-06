@@ -5,7 +5,7 @@ import type { ShareFrom } from "./analytics-events";
 /** The sharing of the whole app (card «Porta il Grimorio al tavolo», invite after «Bene»): always the same message. */
 export const APP_SHARE = {
   title: "Il Grimorio.App",
-  text: "Ti consiglio Il Grimorio.App: incantesimi, mostri e regole di D&D 2014 e 2024 in italiano, gratis.",
+  text: "Ti consiglio Il Grimorio.App: incantesimi, mostri e regole 5e, edizioni 2014 e 2024, in italiano, gratis.",
   url: "https://ilgrimorio.app/?da=amico",
 } as const;
 

@@ -54,7 +54,7 @@ test("Home: the edition pill centred on the picture, larger, without overlaps at
   await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("button", { name: "Edizione 2024: cambia la tua edizione" }).click();
   const panel = page.getByRole("dialog", { name: "Scegli l’edizione" });
-  await expect(panel).toHaveText("Scegli l’edizioneD&D 2024D&D 2014");
+  await expect(panel).toHaveText("Scegli l’edizioneRegole 2024Regole 2014");
   // The pill of the computer column and those of the sections keep their size.
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
@@ -81,7 +81,7 @@ test("first visit: welcome screen, then the Home with the bar and no invite; cou
   await page.waitForTimeout(2000);
   await expect(bar(page)).toHaveCount(0);
   await expect(invite(page)).toHaveCount(0);
-  await welcome.getByRole("button", { name: "D&D 2024", exact: true }).click();
+  await welcome.getByRole("button", { name: "Regole 2024", exact: true }).click();
   await expect(welcome).toHaveCount(0);
   // The bar after the choice: dark, «Statistiche anonime?», «Info» to «Come usiamo i dati», «No» and «Ok».
   await expect(bar(page)).toBeVisible();

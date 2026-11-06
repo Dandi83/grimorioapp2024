@@ -9,12 +9,17 @@ import type { Metadata } from "next";
 
 export const SITE_URL = "https://ilgrimorio.app";
 export const SITE_NAME = "Il Grimorio.App";
+/** PROMPT 72: the title of the site (Home, default title, Open Graph), without «D&D». */
+export const SITE_TITLE = "Il Grimorio.App — Incantesimi, mostri e regole 5e in italiano";
 
 export type SeoEdition = "2014" | "2024" | "entrambe";
 
-/** «D&D 2024», «D&D 2014», «D&D 2014 e 2024». */
+/**
+ * «regole 2024 compatibili con D&D 5e» (also «regole 2014 …», «regole 2014 e 2024 …»). PROMPT 72: «D&D» only in this
+ * descriptive form, once per description, never as a name of the site.
+ */
 export function dndEdition(edition: SeoEdition | undefined): string {
-  return edition === "2014" ? "D&D 2014" : edition === "entrambe" ? "D&D 2014 e 2024" : "D&D 2024";
+  return `regole ${edition === "2014" ? "2014" : edition === "entrambe" ? "2014 e 2024" : "2024"} compatibili con D&D 5e`;
 }
 
 /** «Palla di fuoco (2014) — Incantesimi · Il Grimorio.App»; without a section: «Compendio · Il Grimorio.App». */
@@ -33,7 +38,9 @@ const TAIL = " su Il Grimorio.App.";
 export function fitDescription(text: string): string {
   let out = text.replace(/\s+/g, " ").trim();
   if (out.length < DESCRIPTION_MIN) out = `${out.replace(/[.\s]+$/, "")}. Consultala gratis${TAIL}`;
-  if (out.length < DESCRIPTION_MIN) out = `${out} Schede e regole di D&D 5e in italiano.`;
+  if (out.length < DESCRIPTION_MIN) out = `${out} Schede e regole 5e in italiano.`;
+  // PROMPT 72: a long description drops « su Il Grimorio.App» first (the title already names the site), then it is cut.
+  if (out.length > DESCRIPTION_MAX && out.endsWith(TAIL)) out = `${out.slice(0, -TAIL.length)}.`;
   if (out.length > DESCRIPTION_MAX) {
     const cut = out.slice(0, DESCRIPTION_MAX - 1);
     out = `${cut.slice(0, Math.max(cut.lastIndexOf(" "), DESCRIPTION_MIN)).replace(/[,;:.\s]+$/, "")}…`;
@@ -103,14 +110,14 @@ export function websiteLd() {
 
 const SPELL_LEVEL = (level: number) => (level === 0 ? "trucchetto" : `incantesimo di ${level}° livello`);
 
-/** «Palla di fuoco, incantesimo di 3° livello di invocazione, D&D 2024. Scheda completa in italiano su Il Grimorio.App.» */
+/** «Palla di fuoco, incantesimo di 3° livello di invocazione, regole 2024 compatibili con D&D 5e. Scheda completa in italiano su Il Grimorio.App.» */
 export function spellDescription(spell: { nome: string; livello: number; scuola?: string; edizione: SeoEdition }): string {
   const school = spell.scuola ? ` di ${spell.scuola.toLowerCase()}` : "";
   return fitDescription(`${spell.nome}, ${SPELL_LEVEL(spell.livello)}${school}, ${dndEdition(spell.edizione)}. Scheda completa in italiano${TAIL}`);
 }
 
 /**
- * «Aboleth, Aberrazione Grande, GS 10, D&D 2024. Statistiche, tratti e azioni in italiano su Il Grimorio.App.»
+ * «Aboleth, Aberrazione Grande, GS 10, regole 2024 compatibili con D&D 5e. Statistiche, tratti e azioni in italiano su Il Grimorio.App.»
  * Only the head of the card (never a section: a hidden one of a creature of the redazione stays out too).
  */
 export function monsterDescription(monster: { nome: string; tipo?: string; taglia?: string; gs?: string; edizione: SeoEdition; origine?: "redazione" | "community" }): string {
@@ -125,7 +132,7 @@ export function editionOfPage(has: { "2014"?: unknown; "2024"?: unknown }, shown
   return in2014 && in2024 ? "entrambe" : in2014 ? "2014" : "2024";
 }
 
-/** «Spada lunga: arma da guerra da mischia, D&D 2014 e 2024. Danni, proprietà e padronanza in italiano su Il Grimorio.App.» */
+/** «Spada lunga: arma da guerra da mischia, regole 2014 e 2024 compatibili con D&D 5e. Danni, proprietà e padronanza in italiano su Il Grimorio.App.» */
 export function itemDescription(name: string, kind: string, edition: SeoEdition, what: string): string {
   return fitDescription(`${name}: ${kind}, ${dndEdition(edition)}. ${what} in italiano${TAIL}`);
 }

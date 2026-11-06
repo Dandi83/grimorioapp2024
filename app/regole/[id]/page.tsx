@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const rule = getRule(id);
   if (!rule) notFound();
   return pageMetadata({ name: rule.title, section: "Regole", edition: rule.edizione, path: `/regole/${rule.id}`,
-    description: fitDescription(`${rule.title}: regola di ${dndEdition(rule.edizione)} (${rule.chapter}) spiegata in italiano, come la trovi nelle schede, su Il Grimorio.App.`) });
+    description: fitDescription(`${rule.title} (${rule.chapter}): ${dndEdition(rule.edizione)}, spiegate in italiano come le trovi nelle schede, su Il Grimorio.App.`) });
 }
 
 export default async function RulePage({ params }: { params: Promise<{ id: string }> }) {

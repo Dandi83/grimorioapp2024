@@ -77,7 +77,7 @@ for (const width of [390, 1280]) {
     await expect(page).toHaveURL(/\/admin\/contenuti\/nomi-inglesi$/);
     const rows = page.locator("[data-search-english-pending] > li");
     expect(await rows.count()).toBe(50);
-    expect(await page.locator("[data-search-english-pending] [data-search-english-edition]").allInnerTexts()).toEqual(Array(50).fill(expect.stringMatching(/^(D&D5e\s*)?(2014|2024)$/)));
+    expect(await page.locator("[data-search-english-pending] [data-search-english-edition]").allInnerTexts()).toEqual(Array(50).fill(expect.stringMatching(/^(5e\s*)?(2014|2024)$/)));
     expect(await page.locator("[data-search-english-pending] [data-search-english-label]").allInnerTexts()).toEqual(Array(50).fill(expect.stringMatching(/^[A-Z][a-z]+ · (trucchetto|liv\. \d)$/)));
     const synaptic = row(page, "incantesimo", "scossa-sinaptica");
     await expect(synaptic).toContainText("Scossa sinaptica");

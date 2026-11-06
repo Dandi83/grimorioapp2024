@@ -545,7 +545,7 @@ test("magic items 2024: Compendio tile, search, combined filters in the address,
   await expect(rows).toHaveCount(258);
   await expect(page.getByRole("status").filter({ hasText: /oggetti/ })).toHaveText("258 oggetti");
   // No edition labels in the list: names, type, rarity and the attunement chip only.
-  await expect(page.locator("main").getByText("D&D5e")).toHaveCount(0);
+  await expect(page.locator("main").getByText(/D&D5e|\b5e 20(14|24)\b/)).toHaveCount(0);
   const search = page.getByRole("searchbox", { name: "Cerca un oggetto magico" });
   await search.fill("spada");
   await expect(rows.first()).toBeVisible();

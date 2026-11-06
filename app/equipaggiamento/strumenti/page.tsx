@@ -8,7 +8,7 @@ import { getCorrectedTools } from "@/lib/corrected-content";
 import { sectionPage } from "@/lib/section-view";
 
 export const metadata = pageMetadata({ name: "Strumenti", section: "Equipaggiamento", path: "/equipaggiamento/strumenti",
-  description: "Gli strumenti di D&D 5e in italiano, 2014 e 2024: da artigiano, giochi e strumenti musicali, con costo, peso e uso al tavolo." });
+  description: "Gli strumenti compatibili con D&D 5e in italiano, 2014 e 2024: da artigiano, giochi e strumenti musicali, con costo, peso e uso al tavolo." });
 
 function Folded({ title, paragraphs }: { title: string; paragraphs: string[] }) {
   return (

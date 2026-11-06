@@ -139,7 +139,7 @@ function load(relative, deps = {}) {
   assert.ok(ui.includes('value="2014" selected=""'));
   const {MonsterProvenanceBadge} = load('components/monster-provenance-badge.tsx');
   const badge = renderToStaticMarkup(React.createElement(MonsterProvenanceBadge,{edition:'2014'}));
-  assert.equal(badge.replace(/<[^>]*>/g,''),'D&amp;D5e 2014');
+  assert.equal(badge.replace(/<[^>]*>/g,''),'5e 2014');
   assert.ok(badge.includes('data-monster-provenance="unverified"'),'manual edition must not certify an SRD source');
   assert.ok(!badge.includes('<a'),'manual edition cannot invent a source link');
   assert.equal(provider.usesLegacyMonsterRules({...monster,edizione:'2014'}),true,'manual 2014 records must not link to 2024 conditions');

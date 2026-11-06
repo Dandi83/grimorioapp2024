@@ -8,7 +8,7 @@ import { englishName } from "@/lib/english-names";
 import type { EquipmentEdition } from "@/lib/equipment-types";
 
 export const metadata = pageMetadata({ name: "Armi", section: "Equipaggiamento", path: "/equipaggiamento/armi",
-  description: "Tutte le armi di D&D 5e in italiano, 2014 e 2024: danni, proprietà, padronanze, costo e peso, con le differenze tra le edizioni." });
+  description: "Tutte le armi compatibili con D&D 5e in italiano, 2014 e 2024: danni, proprietà, padronanze, costo e peso, con le differenze tra le edizioni." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
 

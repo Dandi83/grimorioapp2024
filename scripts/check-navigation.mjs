@@ -57,8 +57,10 @@ assert.ok(!home.includes('Fonti e licenze'));
 assert.ok(!home.includes('href="/preferiti"'));
 assert.ok(home.includes('href="/admin"'));
 assert.ok(!home.includes('/equipaggiamento'),'Equipaggiamento is reached from the Compendio, not from Home');
-// Home: only «Area riservata» (with the lock) at the top and «Info e note legali» at the bottom.
-assert.ok(!home.includes('href="/fonti"'));
+// Home: only «Area riservata» (with the lock) at the top and «Info e note legali» at the bottom; PROMPT 72: under them,
+// the one line on non-affiliation is the only link to /fonti.
+assert.equal(home.split('href="/fonti"').length-1,1);
+assert.ok(home.includes('<Link href="/fonti" prefetch={false}>{NON_AFFILIATION_SHORT}</Link>'));
 assert.ok(!home.includes('Termini e condizioni'));
 assert.ok(!home.includes('Segnala un errore'));
 assert.ok(home.includes('<Lock size={16}'));

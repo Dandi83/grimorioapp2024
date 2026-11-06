@@ -14,7 +14,7 @@ async function groups() {
 
 export async function generateMetadata() {
   return (await groups()).shown ? pageMetadata({ name: "Creature originali", section: "Bestiario", path: "/bestiario/creature-originali",
-    description: "Le creature originali di Il Grimorio.App in un unico elenco: i mostri della redazione e quelli della community, per D&D 2014 e 2024." }) : CLOSED_PART_METADATA;
+    description: "Le creature originali di Il Grimorio.App in un unico elenco: i mostri della redazione e quelli della community, compatibili con D&D 5e (2014 e 2024)." }) : CLOSED_PART_METADATA;
 }
 
 /**

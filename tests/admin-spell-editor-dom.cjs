@@ -113,7 +113,7 @@ const choose=async(id,value)=>{const el=document.getElementById(id);assert.equal
  for(const field of ['livello','componenti','durata'])assert.equal(new FormData(document.querySelector('form')).get(field),custom[field]);
  assert.equal(document.getElementById('edition').value,'2014');
  await click(button('Anteprima'));
- assert.ok(document.querySelector('article').textContent.includes('D&D5e 2014'));
+ assert.ok(document.querySelector('article').textContent.includes('5e 2014'));
  assert.equal(document.querySelectorAll('article a[href="/manuale/condizioni-paralizzato"]').length,0);
  await act(async()=>root.unmount());
  const {renderToStaticMarkup}=requireProject('react-dom/server');

@@ -53,8 +53,9 @@
   isolation: isolate;
   display: flex;
   /* Room for the share card under it (and the bar): the Home still fits one screen of a phone. */
-  min-height: clamp(420px, calc(100vh - 20.5rem), 610px);
-  min-height: clamp(420px, calc(100svh - 20.5rem), 610px);
+  /* PROMPT 72: 34 px more for the line «Progetto non ufficiale…» at the foot. */
+  min-height: clamp(420px, calc(100vh - 22.625rem), 610px);
+  min-height: clamp(420px, calc(100svh - 22.625rem), 610px);
   flex: 1;
   align-items: flex-end;
   justify-content: center;
@@ -106,7 +107,7 @@
   pointer-events: none;
 }
 
-/* «COMPENDIO D&D 5E · SRD IN ITALIANO», light on the dark picture. */
+/* «COMPENDIO 5E · SRD IN ITALIANO», light on the dark picture (PROMPT 72: no «D&D»). */
 .label {
   margin-bottom: 12px;
   color: rgb(255 251 240 / 82%);
@@ -195,6 +196,29 @@
 }
 
 .info a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* PROMPT 72: «Progetto non ufficiale, non affiliato a Wizards of the Coast», small and centred, the last line (link to /fonti). */
+.unofficial {
+  margin: 0;
+  padding: 0 16px 6px;
+  text-align: center;
+}
+
+.unofficial a {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  color: #5E4E3E;
+  font-size: 12px;
+  line-height: 1.3;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.unofficial a:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }

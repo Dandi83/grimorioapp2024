@@ -10,7 +10,7 @@ import { soonHref, type PublicSectionKey } from "@/lib/public-sections";
 import { sectionView } from "@/lib/section-view";
 
 export const metadata = pageMetadata({ name: "Equipaggiamento", section: "Compendio", path: "/equipaggiamento",
-  description: "L’equipaggiamento di D&D 5e in italiano: armi, armature, equipaggiamento d’avventura e strumenti, con costi e pesi del 2014 e del 2024." });
+  description: "L’equipaggiamento compatibile con D&D 5e in italiano: armi, armature, equipaggiamento d’avventura e strumenti, con costi e pesi del 2014 e del 2024." });
 
 /** Hub of the Equipaggiamento section; tools, adventuring gear, mounts and magic items will join here. */
 export default async function EquipmentPage() {

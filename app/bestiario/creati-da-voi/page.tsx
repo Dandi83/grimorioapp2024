@@ -14,7 +14,7 @@ import { CLOSED_PART_METADATA, bestiaryList, partState, sectionPage, visibleCard
 export async function generateMetadata() {
   const state = await partState("bestiario", "homebrew");
   return state.shown ? pageMetadata({ name: "I mostri creati da voi", section: "Bestiario", path: "/bestiario/creati-da-voi",
-    description: "Creature inventate dai master della community di Il Grimorio.App per D&D 2014 e 2024, controllate dalla redazione prima di pubblicarle." }) : CLOSED_PART_METADATA;
+    description: "Creature inventate dai master della community di Il Grimorio.App, compatibili con D&D 5e (2014 e 2024), controllate dalla redazione prima di pubblicarle." }) : CLOSED_PART_METADATA;
 }
 
 /**

@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!view) notFound();
   const edition = editionOfPage(entry.editions, shown);
   return pageMetadata({ name: view.nome, section: "Classi", edition, path: `/classi/${id}`,
-    description: fitDescription(`${view.nome}, classe di ${dndEdition(edition)}: privilegi per livello, sottoclasse e tabella della classe in italiano su Il Grimorio.App.`) });
+    description: fitDescription(`${view.nome}, classe delle ${dndEdition(edition)}: privilegi per livello, sottoclasse e tabella della classe in italiano su Il Grimorio.App.`) });
 }
 
 export default async function ClassPage({ params }: { params: Promise<{ id: string }> }) {

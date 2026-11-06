@@ -7,7 +7,7 @@ import { getCorrectedMagicItems } from "@/lib/corrected-content";
 import { sectionPage } from "@/lib/section-view";
 
 export const metadata = pageMetadata({ name: "Oggetti magici", section: "Compendio", path: "/oggetti-magici",
-  description: "Gli oggetti magici di D&D 5e in italiano dalla A alla Z, 2014 e 2024: cerca per nome e filtra per tipo, rarità e sintonia." });
+  description: "Gli oggetti magici compatibili con D&D 5e in italiano dalla A alla Z, 2014 e 2024: cerca per nome e filtra per tipo, rarità e sintonia." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
 

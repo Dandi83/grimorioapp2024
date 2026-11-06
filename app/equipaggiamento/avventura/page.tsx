@@ -6,7 +6,7 @@ import { getCorrectedGear } from "@/lib/corrected-content";
 import { sectionPage } from "@/lib/section-view";
 
 export const metadata = pageMetadata({ name: "Equipaggiamento d’avventura", section: "Equipaggiamento", path: "/equipaggiamento/avventura",
-  description: "L’equipaggiamento d’avventura di D&D 5e in italiano, 2014 e 2024: oggetti, dotazioni e contenitori con costo, peso e uso." });
+  description: "L’equipaggiamento d’avventura compatibile con D&D 5e in italiano, 2014 e 2024: oggetti, dotazioni e contenitori con costo, peso e uso." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
 

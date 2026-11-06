@@ -5,10 +5,10 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
-    name: "Il Grimorio.App — Incantesimi e Bestiario D&D 5e",
+    // PROMPT 72: the name of the installed app without «D&D» (a trademark of Wizards of the Coast).
+    name: "Il Grimorio.App",
     short_name: "Grimorio",
-    description:
-      "Consulta, cerca e filtra incantesimi, mostri e animali di D&D 5e in italiano. Salva i preferiti.",
+    description: "Incantesimi, mostri e regole 5e in italiano",
     lang: "it",
     dir: "ltr",
     start_url: "/",

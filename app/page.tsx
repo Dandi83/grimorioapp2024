@@ -1,6 +1,7 @@
 import { shortLivedFallback } from "@/lib/isr-fallback";
 import { JsonLd } from "@/components/seo/json-ld";
-import { pageMetadata, websiteLd } from "@/lib/seo";
+import { pageMetadata, SITE_TITLE, websiteLd } from "@/lib/seo";
+import { NON_AFFILIATION_SHORT } from "@/lib/trademark";
 import { HeroPicture } from "@/components/home/hero-picture";
 import Link from "next/link";
 import { Lock } from "lucide-react";
@@ -24,8 +25,8 @@ import styles from "./home.module.css";
 
 
 export const metadata = pageMetadata({
-  name: "Il Grimorio.App", path: "/", title: "Il Grimorio.App — Incantesimi, mostri e regole di D&D 5e in italiano",
-  description: "Consulta, cerca e filtra incantesimi, mostri, oggetti magici e regole di D&D 5e in italiano, edizioni 2014 e 2024. Gratis, anche offline.",
+  name: "Il Grimorio.App", path: "/", title: SITE_TITLE,
+  description: "Consulta, cerca e filtra incantesimi, mostri, oggetti magici e regole compatibili con D&D 5e, in italiano, edizioni 2014 e 2024. Gratis, anche offline.",
 });
 
 /**
@@ -86,7 +87,7 @@ export default async function HomePage() {
         <EditionPill place="home" size="large" className={styles.edition} />
         <div className={styles.copy}>
           {/* PROMPT 64: the small spaced capitals above the sentence, the divider with ✦ under it (light on the picture). */}
-          <p className={`pg-etichetta ${styles.label}`}>Compendio D&amp;D 5e · SRD in italiano</p>
+          <p className={`pg-etichetta ${styles.label}`}>Compendio 5e · SRD in italiano</p>
           <h1 id="home-quote" className={styles.quote}>
             Il sapere è la più
             <br />
@@ -108,6 +109,10 @@ export default async function HomePage() {
       <p className={styles.info}>
         <SupportLink enabled={support} from="home" className={styles.support}><CupIcon size={18} />Sostieni il Grimorio</SupportLink>
         <Link href="/info" prefetch={false}>Info e note legali</Link>
+      </p>
+      {/* PROMPT 72: on every screen, the last line of the Home: not official, not affiliated (details in /fonti). */}
+      <p className={styles.unofficial} data-non-affiliazione="">
+        <Link href="/fonti" prefetch={false}>{NON_AFFILIATION_SHORT}</Link>
       </p>
       <FirstLaunch />
     </div>

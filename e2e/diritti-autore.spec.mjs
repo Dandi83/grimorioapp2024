@@ -24,8 +24,8 @@ async function legalHtml(page) {
   return page.locator("main article").first().evaluate(article => {
     const copy = article.cloneNode(true);
     // The new parts of the page: the copyright note, «Sostieni il Grimorio» (PROMPT 7) and «Grafica dell’app» (the credit
-    // of the class portraits, PROMPT 64), never the attributions.
-    copy.querySelectorAll("[data-copyright], [data-copyright-line], [data-support-row], [data-grafica-app]").forEach(node => node.remove());
+    // of the class portraits, PROMPT 64) and the sentence on non-affiliation (PROMPT 72), never the attributions.
+    copy.querySelectorAll("[data-copyright], [data-copyright-line], [data-support-row], [data-grafica-app], [data-non-affiliazione]").forEach(node => node.remove());
     // PROMPT 68: the ornaments of «pergamena illustrata» (label, ✦ divider) and the classes (capilettera, corners)
     // are style only; the text and the elements of the page are compared as they were on main.
     copy.querySelectorAll("[data-pg-etichetta][data-pg-nuovo], [data-divisore]").forEach(node => node.remove());

@@ -10,7 +10,7 @@ import type { EquipmentEdition } from "@/lib/equipment-types";
 const withEnglish = (edition: EquipmentEdition, id: string) => { const en = englishName("armature", edition, id); return en ? { en } : {}; };
 
 export const metadata = pageMetadata({ name: "Armature", section: "Equipaggiamento", path: "/equipaggiamento/armature",
-  description: "Tutte le armature e lo scudo di D&D 5e in italiano, 2014 e 2024: Classe Armatura, Forza richiesta, Furtività, peso e costo." });
+  description: "Tutte le armature e lo scudo compatibili con D&D 5e in italiano, 2014 e 2024: Classe Armatura, Forza richiesta, Furtività, peso e costo." });
 
 // Manual corrections from the admin area appear within five minutes (at once after saving).
 

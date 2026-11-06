@@ -191,7 +191,7 @@ export function GrimorioBrowser({
   return (
     <div ref={root}>
       <div className="px-6 pb-2 pt-8">
-        <CatalogTitle section="incantesimi" title="Incantesimi" etichetta={["Compendio D&D 5e", edizione]} edition={edizione} onEdition={hasLegacy ? chooseEdition : undefined} />
+        <CatalogTitle section="incantesimi" title="Incantesimi" etichetta={["Compendio 5e", edizione]} edition={edizione} onEdition={hasLegacy ? chooseEdition : undefined} />
         <SearchAndFilters query={q} onQuery={setQ} label="Cerca un incantesimo" compact={!!pane} active={active.length} onOpen={() => setDraft(filters)} />
         <ActiveFilters filters={active} />
       </div>

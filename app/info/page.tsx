@@ -5,7 +5,7 @@ import { CopyrightLine, CopyrightSection } from "@/components/legal/copyright";
 import { CupIcon } from "@/components/support/cup-icon";
 import { SupportLink } from "@/components/support/support-link";
 import { supportUrl } from "@/lib/support";
-import { TRADEMARK_NOTE } from "@/lib/trademark";
+import { NON_AFFILIATION_NOTE, TRADEMARK_NOTE } from "@/lib/trademark";
 import { Divisore, Etichetta } from "@/components/pergamena/pergamena";
 
 export const metadata = pageMetadata({ name: "Info e note legali", path: "/info",
@@ -36,6 +36,7 @@ export default function InfoPage() {
       <p className="mt-3 text-[16px] leading-snug text-muted">
         Il Grimorio.App è gratuito e non ufficiale. Qui trovi le regole d’uso, da dove vengono i contenuti e come trattiamo i dati.
       </p>
+      <p data-non-affiliazione="" className="mt-2 text-[16px] leading-snug text-muted">{NON_AFFILIATION_NOTE}</p>
       <p data-trademark-note="" className="mt-2 text-[16px] leading-snug text-muted">{TRADEMARK_NOTE}</p>
       <CopyrightSection />
       <ul className="mt-5 flex flex-col gap-3">
