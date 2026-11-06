@@ -86,6 +86,13 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
   assert.deepEqual(await analytics.readLcp(range(today)),[{path:'/grimorio',values:[3100]}],'phones only');
   const uses2=await analytics.readFunctions(range(today));
   assert.equal(uses2.edizione,1);assert.equal(uses2.proposalStart,1);assert.equal(uses2.proposalSent,0);
+  // «⚔ Affrontalo in Total Party Kill» (PROMPT 69): people who tapped it and the creatures most chosen.
+  assert.equal(uses2.tpk,0);assert.deepEqual(uses2.tpkTop,[]);
+  for(const path of ['/mostro/drago-nero-adulto','/mostro/drago-nero-adulto','/mostro/homebrew-squartatore'])
+    assert.equal(await analytics.storeAnalyticsEvent(parseAnalyticsInput(event('tpk_summon_click',{session,path})),visitor),true);
+  const uses3=await analytics.readFunctions(range(today));
+  assert.equal(uses3.tpk,1,'one person');
+  assert.deepEqual(uses3.tpkTop,[{id:'drago-nero-adulto',times:2,people:1},{id:'homebrew-squartatore',times:1,people:1}]);
   await pg.query("DELETE FROM grimorio_analytics_events WHERE visitor_id=$1 OR event_name='lcp'",[visitor]);
  }
  const marked=await analytics.readStatistics(range(today));

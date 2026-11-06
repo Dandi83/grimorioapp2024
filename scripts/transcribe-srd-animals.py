@@ -7,6 +7,11 @@ extract=module('extract','scripts/transcribe-srd-monsters.py');source=module('so
 doc=fitz.open('/tmp/grimorio-srd-it.pdf');refs=source.reference('/tmp/grimorio-srd-it.pdf',385,405);records=[]
 for block,ref in zip(extract.blocks(doc,385,405),refs):
  m,body=extract.parse(block)
+ # PROMPT 69: the markup repair decided on 24 October (lib/data/layout-repairs-20261024.json), now in the data too:
+ # in the PDF the whole sentence is bold, but «Multiattacco.» is the title and «Trafiggere» ends the sentence. Same words.
+ if m['id']=='triceratopo':
+  joined='<strong>Multiattacco. Il triceratopo effettua due attacchi Trafiggere.</strong>'
+  assert joined in m['azioni'];m['azioni']=m['azioni'].replace(joined,'<strong>Multiattacco.</strong> Il triceratopo effettua due attacchi Trafiggere.')
  records.append(dict(page=block['page'],sourceName=block['name'],sourceText=ref['text'],sourceSha256=hashlib.sha256(source.compact(ref['text']).encode()).hexdigest(),bodyText=body,monster=m))
 assert len(records)==95
 idx=[]

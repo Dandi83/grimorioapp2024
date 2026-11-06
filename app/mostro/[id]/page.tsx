@@ -27,6 +27,8 @@ import { getSpellReferenceCatalog } from "@/lib/spell-reference-catalog";
 import { ReportLink } from "@/components/feedback/report-link";
 import { CardOriginBox } from "@/components/card-origin-box";
 import { monsterCard } from "@/lib/share-card-server";
+import { TpkSummon } from "@/components/tpk/tpk-summon";
+import { tpkSummonApplies } from "@/lib/tpk-summon";
 
 /** A creature of a hidden collection (Mostri, Animali, community, editorial staff) is not found; true when the administrator sees it hidden. */
 async function collectionCard(collection: Collection): Promise<boolean> {
@@ -135,6 +137,8 @@ export default async function MonsterDetailPage({
         labelBelow={homebrew}
       />
       <MonsterSheetBody monster={monster} legacy={legacy} hidden={await linksOut()} catalog={await getSpellReferenceCatalog()} descriptionFirst={homebrew} />
+      {/* «⚔ Affrontalo in Total Party Kill» (PROMPT 69): after the last block, before the source; 2024 creatures only. */}
+      {tpkSummonApplies(monster) && <TpkSummon id={monster.id} />}
       {/* The administrator's box under the sheet (PROMPT 11), asked for in the browser after the session check: never in this HTML. */}
       {balanceApplies(monster) && <AdminMonsterPanel id={monster.id} />}
       {source && (

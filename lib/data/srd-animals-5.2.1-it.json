@@ -3950,7 +3950,7 @@
         "sensi": "Percezione passiva 10",
         "linguaggi": "nessuna",
         "tratti": "",
-        "azioni": "<strong>Multiattacco. Il triceratopo effettua due attacchi </strong><br><br><strong>Trafiggere.</strong><br><br><strong>Trafiggere. </strong><em>Tiro per colpire in mischia:</em> +9, portata 1,5 m. <em>Colpito:</em> 19 (2d12 + 6) danni perforanti. Se il bersaglio è una creatura di taglia Enorme o inferiore e il triceratopo si è mosso di 6 metri o più in linea retta verso di esso subito prima del colpo, il bersaglio subisce 9 (2d8) danni perforanti extra e cade a terra prono.",
+        "azioni": "<strong>Multiattacco.</strong> Il triceratopo effettua due attacchi Trafiggere.<br><br><strong>Trafiggere. </strong><em>Tiro per colpire in mischia:</em> +9, portata 1,5 m. <em>Colpito:</em> 19 (2d12 + 6) danni perforanti. Se il bersaglio è una creatura di taglia Enorme o inferiore e il triceratopo si è mosso di 6 metri o più in linea retta verso di esso subito prima del colpo, il bersaglio subisce 9 (2d8) danni perforanti extra e cade a terra prono.",
         "reazioni": "",
         "azioni_leggendarie": "",
         "descrizione": "",

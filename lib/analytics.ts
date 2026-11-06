@@ -623,6 +623,8 @@ export async function readHeatmap(range: StatisticsRange): Promise<{ day: number
 }
 
 export type FunctionUses = { people: number; filtri: number; edizione: number; preferiti: number; condivisione: number;
+  /** «⚔ Affrontalo in Total Party Kill» (PROMPT 69): the people who tapped it, and the creatures most chosen (taps). */
+  tpk: number; tpkTop: { id: string; times: number; people: number }[];
   proposalStart: number; proposalSent: number; installShown: number; installAccepted: number };
 /** The people of the period who used each function (each person once), and the two small funnels. */
 export async function readFunctions(range: StatisticsRange): Promise<FunctionUses> {
@@ -631,12 +633,17 @@ export async function readFunctions(range: StatisticsRange): Promise<FunctionUse
   const people = (names: string) => `count(DISTINCT visitor_id) FILTER (WHERE event_name IN (${names}))::int`;
   const { rows } = await pool.query(`SELECT ${people("'page_view'")} AS people, ${people("'filter_apply'")} AS filtri,
       ${people("'edition_change'")} AS edizione, ${people("'favorite_add'")} AS preferiti,
-      ${people("'share_click','share_native','share_copy'")} AS condivisione,
+      ${people("'share_click','share_native','share_copy'")} AS condivisione, ${people("'tpk_summon_click'")} AS tpk,
       ${people("'proposal_start'")} AS proposal_start, ${people("'proposal_sent'")} AS proposal_sent,
       ${people("'install_prompt_shown'")} AS install_shown, ${people("'install_prompt_accepted'")} AS install_accepted
     FROM grimorio_analytics_events WHERE ${where}`, period);
   const row = rows[0] ?? {};
+  const { rows: top } = await pool.query<{ id: string; times: number; people: number }>(`SELECT substr(path, 9) AS id, count(*)::int AS times,
+      count(DISTINCT visitor_id)::int AS people
+    FROM grimorio_analytics_events WHERE ${where} AND event_name='tpk_summon_click' AND path LIKE '/mostro/%'
+    GROUP BY path ORDER BY times DESC, path ASC LIMIT 5`, period);
   return { people: row.people ?? 0, filtri: row.filtri ?? 0, edizione: row.edizione ?? 0, preferiti: row.preferiti ?? 0, condivisione: row.condivisione ?? 0,
+    tpk: row.tpk ?? 0, tpkTop: top,
     proposalStart: row.proposal_start ?? 0, proposalSent: row.proposal_sent ?? 0, installShown: row.install_shown ?? 0, installAccepted: row.install_accepted ?? 0 };
 }
 

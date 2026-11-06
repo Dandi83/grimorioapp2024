@@ -32,9 +32,10 @@ const stateOf = (row: { nascosta: boolean; in_arrivo?: boolean | null } | undefi
   !row?.nascosta ? "visibile" : row.in_arrivo ? "in-arrivo" : "nascosta";
 /**
  * The state of a part never set from /admin/sezioni: «Visibile», except the parts that start «In arrivo» (PROMPT 25:
- * «Mostri del Grimorio»), until the administrator chooses.
+ * «Mostri del Grimorio») or «Nascosta» (PROMPT 69: «Affrontalo in TPK»), until the administrator chooses.
  */
-export const DEFAULT_PART_STATES: Readonly<Record<string, SectionState>> = { "bestiario:grimorio": "in-arrivo" };
+// PROMPT 69: «Affrontalo in TPK» starts «Nascosta»: the button only for the administrator, labelled.
+export const DEFAULT_PART_STATES: Readonly<Record<string, SectionState>> = { "bestiario:grimorio": "in-arrivo", "bestiario:tpk": "nascosta" };
 /**
  * The state of a section never set from /admin/sezioni: «Visibile», except the sections that start «In arrivo»
  * (PROMPT 49: «Talenti»), until the administrator chooses; also while the database cannot be read.

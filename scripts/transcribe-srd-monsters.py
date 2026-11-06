@@ -20,8 +20,14 @@ def joinlines(lines):
 def render(lines):
     # Paragraph boundaries: a PDF bold-italic label starts a new ability; preserve all other lines.
     paragraphs=[];parts=[]
+    def open_label(line):
+        # PROMPT 69: a bold label that wraps (e.g. «Resistenza leggendaria (3/giorno o 4/giorno nella» / «tana).»)
+        # ends its line in bold without the closing full stop: the next line continues the same label.
+        last=[s for s in line['spans'] if s['text'].strip()]
+        return bool(last and 'Bold' in last[-1]['font'] and not last[-1]['text'].strip().endswith(('.',':')))
     for l in lines:
         starts=bool(l['spans'] and 'BoldItalic' in l['spans'][0]['font'] and l['spans'][0]['bbox'][0]%250.5<80)
+        if starts and parts and open_label(parts[-1]):starts=False
         # Use indentation/vertical gap as additional paragraph boundary (never drop content).
         if parts and (starts or l.get('break')):
             paragraphs.append(parts);parts=[]

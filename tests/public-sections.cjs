@@ -73,7 +73,7 @@ const parts = Object.fromEntries(ps.PUBLIC_SECTIONS.map(section => [section.key,
 for (const key of ['incantesimi','bestiario','armi','armature','avventura','strumenti','oggetti-magici','condizioni','classi']) {
   assert.deepEqual(parts[key].slice(0, 2), ['2014', '2024'], `${key}: Edizione 2014 and 2024`);
 }
-assert.deepEqual(parts.bestiario.slice(2), ['mostri', 'animali', 'homebrew', 'grimorio']);
+assert.deepEqual(parts.bestiario.slice(2), ['mostri', 'animali', 'homebrew', 'grimorio', 'tpk']);
 assert.deepEqual(parts.classi.slice(2), ['tab-tabella', 'tab-sottoclasse', 'abilita', 'diventare', 'lista-incantesimi', 'incantesimi-del']);
 for (const key of ['armi', 'avventura', 'strumenti', 'oggetti-magici']) assert.ok(parts[key].includes('confronto'), `${key}: 2014 → 2024`);
 assert.deepEqual(parts.avanzamento, ['tabella', 'punti-ferita', 'talenti', 'calcolatore']);
