@@ -47,6 +47,10 @@ test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async ({ browser }) => {
   await database(async client => {
+    // The table of its own (the first write of the site creates it): never left to a spec run before this one.
+    await client.query(`CREATE TABLE IF NOT EXISTS grimorio_homebrew (id text PRIMARY KEY, scheda jsonb NOT NULL,
+      edizione text NOT NULL CHECK (edizione IN ('2014', '2024', 'entrambe')), autore text, proposta_id uuid,
+      pubblicata_il timestamptz NOT NULL DEFAULT now(), aggiornata_il timestamptz NOT NULL DEFAULT now(), licenza text)`);
     await client.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS bilanciamento text").catch(() => {});
     await client.query("ALTER TABLE grimorio_homebrew ADD COLUMN IF NOT EXISTS verificato boolean NOT NULL DEFAULT false").catch(() => {});
     const insert = "INSERT INTO grimorio_homebrew (id, scheda, edizione, autore, licenza, bilanciamento, verificato) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO NOTHING";
