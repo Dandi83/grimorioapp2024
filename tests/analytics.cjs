@@ -32,7 +32,7 @@ function load(relative,deps={}){const file=path.resolve(relative),m={exports:{}}
  assert.equal(data.people,3,'people are different visitors, not page views');
  assert.equal(data.returning,1,'back at least a second time: two sessions');
  assert.equal(data.installed,1);
- assert.deepEqual(data.origins,{instagram:1,diretto:0,google:1,condiviso:0,altro:0},'first arrival of each person, unknown ones left out');
+ assert.deepEqual(data.origins,{instagram:1,diretto:0,google:1,condiviso:0,tpk:0,altro:0},'first arrival of each person, unknown ones left out');
  assert.deepEqual(data.devices,{iphone:1,android:1,computer:0,altro:0});
  assert.deepEqual(data.areas,{incantesimi:1,bestiario:1,compendio:1});
  assert.deepEqual(data.cards.map(row=>[row.id,row.opens]),[['gatto',3],['allarme-2014',1]]);

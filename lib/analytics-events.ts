@@ -44,7 +44,17 @@ export const ANALYTICS_EVENTS = [
   // «⚔ Affrontalo in Total Party Kill» (PROMPT 69) tapped at the bottom of a creature: the creature is the one of the
   // path (/mostro/<id>); nothing else is sent. TPK itself is opened by the link, never called by the Grimorio.
   "tpk_summon_click",
+  // The invite to install «da TPK» (PROMPT 70, components/install/tpk-invite.tsx), for who arrives with ?da=tpk: shown,
+  // «Installa» tapped, the guide of iPhone/iPad opened, installed (the browser's window accepted, Android and computer),
+  // closed («Non ora» or ✕). From any public page, with the kind of device only.
+  "tpk_invite_shown",
+  "tpk_invite_tapped",
+  "tpk_invite_guide",
+  "tpk_invite_installed",
+  "tpk_invite_closed",
 ] as const;
+/** The events of the invite «da TPK»: from any public page. */
+export const TPK_INVITE_EVENTS = ["tpk_invite_shown", "tpk_invite_tapped", "tpk_invite_guide", "tpk_invite_installed", "tpk_invite_closed"] as const;
 /** The image events: from any public sheet. */
 export const SHARE_IMAGE_EVENTS = ["share_image_open", "share_image_sent", "share_image_saved"] as const;
 /** The sheets with «Condividi» (PROMPT 50): the sharing of their link and of their image is counted from all of them. */
@@ -160,7 +170,8 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   // The whole app is shared from the Home (or another public page); the cards keep their own share events.
   const appShare = (HOME_EVENTS as readonly string[]).includes(r.event as string) || (r.event === "share_cancel" && !!from);
   const image = (SHARE_IMAGE_EVENTS as readonly string[]).includes(r.event as string);
-  if (r.event !== "page_view" && r.event !== "search" && r.event !== "not_found" && !install && !appShare && !/^\/(spell|mostro)\//.test(r.path)
+  const tpkInvite = (TPK_INVITE_EVENTS as readonly string[]).includes(r.event as string);
+  if (r.event !== "page_view" && r.event !== "search" && r.event !== "not_found" && !install && !appShare && !tpkInvite && !/^\/(spell|mostro)\//.test(r.path)
     && !((image || ["share_click", "share_native", "share_copy", "share_cancel"].includes(r.event as string)) && SHEET_PATH.test(r.path))) return;
   if (image && (!SHARE_FORMATS.includes(r.imageFormat as ShareFormat) || !SHARE_KINDS.includes(r.imageKind as ShareKind))) return;
   if ((r.event === "share_tap" || r.event === "share_sent") && !from) return;
@@ -201,7 +212,7 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
     const groups = [...new Set(r.filters.filter((group): group is FilterGroup => FILTER_GROUPS.includes(group as FilterGroup)))];
     if (groups.length) input.filters = groups;
   }
-  if ((input.event === "page_view" || install || appShare || image) && DEVICES.includes(r.device as Device)) input.device = r.device as Device;
+  if ((input.event === "page_view" || install || appShare || image || tpkInvite) && DEVICES.includes(r.device as Device)) input.device = r.device as Device;
   if (appShare && from && ["share_tap", "share_sent", "share_cancel"].includes(input.event)) input.from = from;
   if (input.event === "support_link") input.from = r.from as AnalyticsInput["from"];
   if (input.event === "support_click") input.amount = r.amount as number;

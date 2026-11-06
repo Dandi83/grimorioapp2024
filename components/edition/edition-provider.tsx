@@ -5,6 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Edition } from "@/lib/public-sections";
 import { USER_EDITION_KEY, isEdition, storedEdition } from "@/lib/user-edition";
 import { queueUse } from "@/components/statistics/use-report-search";
+import { tpkArrived } from "@/lib/tpk-arrival";
 
 interface UserEdition {
   /** The edition every public section starts from: 2024 until the device is read (server rendering, first paint). */
@@ -64,7 +65,13 @@ export function EditionProvider({ forced, children }: { forced?: Edition; childr
     { edition: "2024", chosen: false, ready: false, landedOnHome: false, canStore: false });
 
   useEffect(() => {
-    const stored = storedEdition(read);
+    let stored = storedEdition(read);
+    // PROMPT 70: arrived from Total Party Kill (?da=tpk) without a choice yet: the 2024, chosen for this device, and no
+    // welcome screen (the pill still changes it). A choice already made stays as it is.
+    if (!stored.chosen && tpkArrived()) {
+      write("2024");
+      stored = { edition: "2024", chosen: true };
+    }
     // Adopted from the old keys: written once, so the old keys are never read again.
     const canStore = stored.migrated ? write(stored.edition) : (() => {
       try {

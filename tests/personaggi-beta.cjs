@@ -72,8 +72,8 @@ const BRENNA = fs.readFileSync('tests/scheda-tpk-grimorio.cjs', 'utf8').match(/'
   // PROMPT 63: the address of Total Party Kill lives in lib/tpk.ts only; the old Vercel address is gone from the app.
   const tpkLinks = require('../lib/tpk.ts');
   assert.equal(tpkLinks.TPK_URL, 'https://www.totalpartykill.app');
-  assert.equal(tpkLinks.TPK_CREATE_URL, 'https://www.totalpartykill.app/crea?ritorno=grimorio');
-  assert.equal(tpkLinks.tpkImportUrl('#pg=abc'), 'https://www.totalpartykill.app/importa#pg=abc');
+  assert.equal(tpkLinks.TPK_CREATE_URL, 'https://www.totalpartykill.app/crea?ritorno=grimorio&da=grimorio');
+  assert.equal(tpkLinks.tpkImportUrl('#pg=abc'), 'https://www.totalpartykill.app/importa?da=grimorio#pg=abc');
   const old = [];
   (function walk(dir) { for (const e of fs.readdirSync(dir, { withFileTypes: true })) { const f = `${dir}/${e.name}`; if (e.isDirectory()) { if (!['node_modules', '.next', '.git', 'test-results'].includes(e.name)) walk(f); } else if (/\.(ts|tsx|js|mjs|cjs|json|md)$/.test(e.name) && fs.readFileSync(f, 'utf8').includes('total-party-kill' + '.vercel.app')) old.push(f); } })('.');
   assert.deepEqual(old, [], 'the old address of TPK');

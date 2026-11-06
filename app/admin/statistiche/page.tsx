@@ -28,7 +28,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Statistiche — Il Grimorio.App", robots: { index: false, follow: false } };
 
 /** «Da Instagram», «Da Google»…: the label of the first origin in the tile. */
-const ORIGIN_LABEL: Record<string, string> = { instagram: "Instagram", diretto: "diretto", google: "Google", condiviso: "link condivisi", altro: "altro" };
+const ORIGIN_LABEL: Record<string, string> = { instagram: "Instagram", diretto: "diretto", google: "Google", condiviso: "link condivisi", tpk: "Total Party Kill", altro: "altro" };
 const SOFT = "text-[15px] leading-6 text-[#5E4E3E]";
 
 const number = (value: number) => value.toLocaleString("it-IT");
@@ -82,7 +82,8 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const returningChange = data.previousPeople ? returning - share(data.previousReturning, data.previousPeople) : null;
   const origins = [
     { key: "instagram", label: "Instagram", value: data.origins.instagram }, { key: "diretto", label: "Diretto", value: data.origins.diretto },
-    { key: "google", label: "Google", value: data.origins.google }, { key: "condiviso", label: "Link condivisi", value: data.origins.condiviso }, { key: "altro", label: "Altro", value: data.origins.altro },
+    { key: "google", label: "Google", value: data.origins.google }, { key: "condiviso", label: "Link condivisi", value: data.origins.condiviso },
+    { key: "tpk", label: "Total Party Kill", value: data.origins.tpk }, { key: "altro", label: "Altro", value: data.origins.altro },
   ];
   const known = origins.reduce((sum, row) => sum + row.value, 0);
   const ranked = [...origins].sort((a, b) => b.value - a.value);

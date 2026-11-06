@@ -663,6 +663,30 @@ export async function readInstallInvite(): Promise<InstallInviteCounts> {
   return { shown: both("install_prompt_shown"), tapped: both("install_prompt_tapped"), closed: both("install_prompt_closed"), installed: both("app_installed") };
 }
 
+/**
+ * The invite «da TPK» (PROMPT 70), next to «Installala»: the people of the last 24 hours and 7 days who saw it, tapped
+ * «Installa», opened the guide of iPhone/iPad, closed it, and who installed: the browser's window accepted from the invite
+ * (Android, computer) or the installation said by the browser (app_installed) of a person who had seen it. On iPhone the
+ * app on the Home screen has its own storage: its first opening cannot be tied to the visit from TPK.
+ */
+export type TpkInviteCounts = Record<"shown" | "tapped" | "guide" | "closed" | "installed", { day: number; week: number }>;
+export async function readTpkInvite(): Promise<TpkInviteCounts> {
+  await ensureSchema();
+  const { rows } = await pool.query(`WITH seen AS (
+      SELECT visitor_id, event_name, received_at FROM grimorio_analytics_events
+      WHERE is_test=false AND received_at >= now() - interval '7 days'
+        AND (event_name IN ('tpk_invite_shown','tpk_invite_tapped','tpk_invite_guide','tpk_invite_installed','tpk_invite_closed') OR (event_name='app_installed' AND visitor_id IN (
+          SELECT visitor_id FROM grimorio_analytics_events WHERE event_name='tpk_invite_shown' AND is_test=false AND received_at >= now() - interval '7 days'))))
+    SELECT event_name, count(DISTINCT visitor_id) FILTER (WHERE received_at >= now() - interval '24 hours')::int AS day, count(DISTINCT visitor_id)::int AS week
+    FROM seen GROUP BY event_name
+    UNION ALL
+    SELECT 'installed', count(DISTINCT visitor_id) FILTER (WHERE received_at >= now() - interval '24 hours')::int, count(DISTINCT visitor_id)::int
+    FROM seen WHERE event_name IN ('tpk_invite_installed','app_installed')`);
+  const by = new Map(rows.map(row => [row.event_name as string, { day: row.day ?? 0, week: row.week ?? 0 }]));
+  const get = (name: string) => by.get(name) ?? { day: 0, week: 0 };
+  return { shown: get("tpk_invite_shown"), tapped: get("tpk_invite_tapped"), guide: get("tpk_invite_guide"), closed: get("tpk_invite_closed"), installed: get("installed") };
+}
+
 /** One count of the last 24 hours and of the last 7 days. */
 export type DayWeek = { day: number; week: number };
 export type ShareImageRow = { open: DayWeek; sent: DayWeek; saved: DayWeek };
