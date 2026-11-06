@@ -109,6 +109,21 @@
   animation: dice-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* PROMPT 70: the arrow of the iPhone guide towards Condividi (down on iPhone, up on iPad). Only a transform, moved by
+   the compositor; still for who prefers less motion. */
+@keyframes tpk-freccia {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+@keyframes tpk-freccia-su {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tpk-freccia { animation: tpk-freccia 1.2s ease-in-out infinite; }
+  .tpk-freccia-su { animation: tpk-freccia-su 1.2s ease-in-out infinite; }
+}
+
 /* Shared creature-sheet typography and section separators (same for 2014, 2024 and the editor preview). */
 .monster-sheet [data-monster-section] {
   margin: 28px 24px 0;

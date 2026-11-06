@@ -13,7 +13,7 @@ Total Party Kill (TPK) ha aggiornato il file condiviso «Scheda TPK v1» (PROMPT
 - Un PG con `"ed": "2024"` va così com'è.
 - Un PG 2014 non ha il pulsante. Al suo posto c'è la nota «Total Party Kill usa le regole 2024» (`data-play-note`). Conta come 2014 se ha `"ed": "2014"` o un altro segno certo del file condiviso (`segni2014`: incantesimi «-2014», specie o sottorazze del 2014), perché TPK rifiuterebbe anche quelli.
 - «🔗 Copia il link» (indirizzo del Grimorio) porta il PG com'è salvato, senza aggiungere `"ed"`.
-- `lib/tpk.ts` non cambia: la PR del PROMPT 69 lo modifica.
+- `lib/tpk.ts` non cambia in questa PR. Con il PROMPT 70 il link è `https://www.totalpartykill.app/importa?da=grimorio#pg=…`: `da=grimorio` sta tra i parametri, il `#pg=` viene dopo e contiene il PG con `"ed": "2024"`. Il branch è stato aggiornato da main dopo i PROMPT 69 e 70; le prove controllano entrambi.
 
 ## Ricezione da TPK (#pg=, #party=)
 - Si accettano PG con o senza `"ed"`.

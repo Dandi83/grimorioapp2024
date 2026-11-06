@@ -10,6 +10,8 @@ import { setAdminDevice, setStatisticsCounted, setStatisticsNotice } from "@/com
 import { recordVisitDay } from "@/components/home/rating-store";
 import { FRIEND_PARAM, FRIEND_VALUE } from "@/lib/share-app";
 import { releaseWhenAway } from "@/lib/page-room";
+import { TPK_ARRIVAL } from "@/lib/tpk";
+import { tpkArrived } from "@/lib/tpk-arrival";
 
 type Consent = "accepted" | "rejected";
 type Status = { enabled: boolean; excluded: boolean; consent: Consent | null };
@@ -51,10 +53,10 @@ function measureLcp() {
 /** The first opening of the installed app was sent from this browser (the server keeps it once per visitor too). */
 const APP_OPENED = "grimorio_statistics_app_opened";
 
-/** «?da=amico» and «?da=bio» leave the address once read: a link shared again, or saved in the favourites, does not carry them. */
+/** «?da=amico», «?da=bio» and «?da=tpk» (PROMPT 70, already taken off by lib/tpk-arrival.ts) leave the address once read: a link shared again, or saved in the favourites, does not carry them. */
 function dropFriendMark() {
   const url = new URL(window.location.href);
-  if (![FRIEND_VALUE, BIO_VALUE].includes(url.searchParams.get(FRIEND_PARAM) ?? "")) return;
+  if (![FRIEND_VALUE, BIO_VALUE, TPK_ARRIVAL].includes(url.searchParams.get(FRIEND_PARAM) ?? "")) return;
   url.searchParams.delete(FRIEND_PARAM);
   window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
 }
@@ -146,7 +148,8 @@ export function AnalyticsProvider() {
       isTest = false,
       origin: Origin = "diretto";
     // Where the session started from: only the category (lib/analytics-stats.ts), never the referrer.
-    const arrival = () => originOf(document.referrer, window.location.search, window.location.hostname);
+    // From Total Party Kill (PROMPT 70): the mark was read when the page opened and is off the address by now.
+    const arrival = () => originOf(document.referrer, tpkArrived() ? `?da=${TPK_ARRIVAL}` : window.location.search, window.location.hostname);
     try {
       const old = JSON.parse(sessionStorage.getItem(SESSION) || "null") as {
         id?: string;
@@ -257,6 +260,9 @@ export function AnalyticsProvider() {
         void send("prova_tavolo", { tableVote: detail.vote }).then(ok => window.dispatchEvent(new CustomEvent("grimorio:prova-tavolo-salvata", { detail: { ok } })));
       // «⚔ Affrontalo in Total Party Kill» (components/tpk/tpk-summon-button.tsx): the creature is the one of the path.
       else if (name === "tpk_summon_click") void send("tpk_summon_click");
+      // The invite to install «da TPK» (components/install/tpk-invite.tsx): its steps, with the kind of device.
+      // The server keeps only the five names of lib/analytics-events.ts TPK_INVITE_EVENTS.
+      else if (typeof name === "string" && name.startsWith("tpk_invite_")) void send(name, { device });
       // A search (components/statistics/use-report-search.ts): the word and how many results it gave.
       else if (name === "search" && typeof detail.query === "string" && typeof detail.results === "number") void send("search", { query: detail.query, results: detail.results, area: detail.area });
     };

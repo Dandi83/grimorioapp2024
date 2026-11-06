@@ -84,7 +84,7 @@ for (const [name, device] of SCREENS) {
     await expect(page.locator("[data-characters-empty]")).toBeVisible();
     const create = page.locator("[data-create-character]");
     await expect(create).toHaveText("＋ Crea il tuo personaggio");
-    await expect(create).toHaveAttribute("href", "https://www.totalpartykill.app/crea?ritorno=grimorio");
+    await expect(create).toHaveAttribute("href", "https://www.totalpartykill.app/crea?ritorno=grimorio&da=grimorio");
     await expect(create).toHaveAttribute("target", "_blank");
     await expect(page.getByText("Si apre la creazione guidata di Total Party Kill")).toBeVisible();
 
@@ -133,7 +133,7 @@ for (const [name, device] of SCREENS) {
     await expect(spells).toHaveCount(12);
     await expect(sheet.locator('[data-spell="produrre-fiamma"]')).toHaveAttribute("href", "/spell/produrre-fiamma");
     const play = sheet.locator("[data-play]");
-    await expect(play).toHaveAttribute("href", /^https:\/\/www\.totalpartykill\.app\/importa#pg0?=[A-Za-z0-9_-]+$/);
+    await expect(play).toHaveAttribute("href", /^https:\/\/www\.totalpartykill\.app\/importa\?da=grimorio#pg0?=[A-Za-z0-9_-]+$/);
     await expect(play).toHaveAttribute("target", "_blank");
     // PROMPT 71: Brenna has no "ed"; the link to TPK carries "ed": "2024", the saved sheet stays as it came.
     const playHref = await play.getAttribute("href");
@@ -254,7 +254,7 @@ test("2014 character: the notice in the preview, saved, no «Gioca in Total Part
   await page.getByRole("button", { name: "Salva nei miei personaggi" }).click();
   await page.locator('[data-character-card="Mira"]').click();
   const play = page.locator('[data-character-sheet="Mira"] [data-play]');
-  await expect(play).toHaveAttribute("href", /^https:\/\/www\.totalpartykill\.app\/importa#pg0?=[A-Za-z0-9_-]+$/);
+  await expect(play).toHaveAttribute("href", /^https:\/\/www\.totalpartykill\.app\/importa\?da=grimorio#pg0?=[A-Za-z0-9_-]+$/);
   const href = await play.getAttribute("href");
   const sent = await readLink(page, href.slice(href.indexOf("#")));
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("grimorio.characters.v1")).find(item => item.sheet.n === "Mira").sheet);

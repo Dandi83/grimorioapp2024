@@ -2,13 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Copy, Download, X } from "lucide-react";
 
 import { copyLink, dismissInvite, promptInstall, useDeviceAdvice, useInstallEvent } from "@/components/install/install-events";
 import { queueUse } from "@/components/statistics/use-report-search";
 import { useUserEdition } from "@/components/edition/edition-provider";
 import { setInstallInvite, useRatingShown, useStatisticsNotice } from "@/components/statistics/notice";
+import dynamic from "next/dynamic";
+import { sendTpkInviteEvent } from "@/components/install/tpk-invite-events";
+import { tpkInvite } from "@/lib/install-guide";
+import { dropTpkMark, tpkArrived } from "@/lib/tpk-arrival";
 
 /**
  * The invite to install the app, small, above the bottom bar: the «Installa» button where the browser offers it
@@ -19,7 +23,14 @@ import { setInstallInvite, useRatingShown, useStatisticsNotice } from "@/compone
  * «No»), then its usual moment; a bar closed in an earlier visit changes nothing (components/statistics/notice.ts).
  * Its moment (PROMPT 43): the first touch, click, scroll or key of the person on the page (one passive listener that
  * removes itself), never a timer; without a gesture it does not show. Fixed above the page: nothing moves.
+ * PROMPT 70: a page opened from Total Party Kill (?da=tpk) gets the variant «da TPK» (components/install/tpk-invite.tsx)
+ * in place of this one: the same device, install state, 7 days of «Chiudi» and the same wait for the statistics bar and
+ * the other notices, but at once when the page is ready (no gesture) and with «Installa» also on iPhone.
  */
+const noSubscription = () => () => undefined;
+// The box «da TPK» in its own chunk: downloaded only by a page opened from Total Party Kill.
+const TpkInviteBox = dynamic(() => import("@/components/install/tpk-invite").then(module => module.TpkInviteBox), { ssr: false });
+
 export function InstallPrompt() {
   const pathname = usePathname();
   const event = useInstallEvent();
@@ -27,6 +38,15 @@ export function InstallPrompt() {
   const [late, setLate] = useState(false);
   const [closed, setClosed] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Arrived from Total Party Kill: false on the server and at hydration, then read in the browser (lib/tpk-arrival.ts).
+  const tpk = useSyncExternalStore(noSubscription, tpkArrived, () => false);
+  // The mark leaves the address once read, after the first effects of the page.
+  useEffect(() => {
+    // From TPK: the box starts downloading at once, while the page waits for the statistics bar.
+    if (tpkArrived()) void import("@/components/install/tpk-invite");
+    const timer = window.setTimeout(dropTpkMark, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
   const notice = useStatisticsNotice();
   const { firstLaunch } = useUserEdition();
   // Nor together with the question of the Home: it waits until that is answered or closed.
@@ -35,7 +55,10 @@ export function InstallPrompt() {
   const guide = advice && !advice.installed && !advice.dismissed && advice.guide.kind !== "none" ? advice.guide : null;
   // A gesture counts unless the statistics bar or the welcome screen is open (their own taps never bring it at once);
   // one made while the bar is still unknown counts, the invite then waits for the bar like before.
-  const waiting = !!guide && notice !== "open" && !firstLaunch && !late;
+  const waiting = !!guide && !tpk && notice !== "open" && !firstLaunch && !late;
+  // The variant «da TPK»: what «Installa» does here (lib/install-guide.ts).
+  const fromTpk = tpk && advice && !advice.installed && !advice.dismissed ? tpkInvite(advice.device, advice.guide, event !== null, advice.ipad) : null;
+  const tpkDue = !!fromTpk && fromTpk.kind !== "none";
 
   useEffect(() => {
     if (!waiting) return;
@@ -53,12 +76,33 @@ export function InstallPrompt() {
   const button = !!guide && guide.promptFirst && event !== null;
   // Told to the question of the Home (components/statistics/notice.ts): it never shows while the invite is due.
   const inviteState = advice === null ? "waiting"
-    : !guide || closed || pathname === "/installa" || (!button && guide.kind === "button") ? "none"
-      : free && late ? "shown" : "waiting";
+    : tpk ? (!tpkDue || closed || pathname === "/installa" ? "none" : free ? "shown" : "waiting")
+      : !guide || closed || pathname === "/installa" || (!button && guide.kind === "button") ? "none"
+        : free && late ? "shown" : "waiting";
   useEffect(() => { setInstallInvite(inviteState); }, [inviteState]);
   // The invite seen and accepted (PROMPT 32): names only, sent with the next event.
   const seen = inviteState === "shown" && !rating;
-  useEffect(() => { if (seen) queueUse("install_prompt_shown"); }, [seen]);
+  useEffect(() => { if (seen && !tpk) queueUse("install_prompt_shown"); }, [seen, tpk]);
+  // «da TPK»: its own events (lib/analytics-events.ts), sent at once; shown once per page.
+  const tpkSeen = useRef(false);
+  useEffect(() => {
+    if (!seen || !tpk || tpkSeen.current) return;
+    tpkSeen.current = true;
+    sendTpkInviteEvent("tpk_invite_shown");
+  }, [seen, tpk]);
+
+  if (tpk) {
+    if (!fromTpk || !tpkDue || !free || rating || closed || pathname === "/installa") return null;
+    return (
+      <TpkInviteBox
+        invite={fromTpk}
+        admin={pathname.startsWith("/admin")}
+        onInstall={() => { setClosed(true); void promptInstall().then(accepted => { if (accepted) sendTpkInviteEvent("tpk_invite_installed"); }); }}
+        onClose={() => { setClosed(true); dismissInvite(); sendTpkInviteEvent("tpk_invite_closed"); }}
+        onDone={() => setClosed(true)}
+      />
+    );
+  }
 
   if (!guide || !free || rating || closed || pathname === "/installa") return null;
   if (!late || (!button && guide.kind === "button")) return null;
