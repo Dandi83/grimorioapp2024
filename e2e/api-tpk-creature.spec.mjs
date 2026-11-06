@@ -151,7 +151,7 @@ test("the public list: editorial staff and community, the newest first, only wha
   const ours = list.creature.find(creature => creature.id === OURS);
   expect({ ...ours, scheda: undefined }).toEqual({
     id: OURS, url: `https://ilgrimorio.app/mostro/${OURS}`, origine: "redazione", autore: null,
-    licenza: "© 2026 D.d.B. – Il Grimorio.App, uso consentito a Total Party Kill", licenza_url: "https://ilgrimorio.app/info",
+    licenza: "© 2026 Il Grimorio.App – uso consentito a Total Party Kill", licenza_url: "https://ilgrimorio.app/info",
     verificato: false, giudizio_bilanciamento: null, pubblicata_il: "2026-10-30T10:00:00.000Z", aggiornata_il: ours.aggiornata_il,
     immagine: { url: "https://ilgrimorio.app/immagini-mostri/0123456789abcdef-m.webp", alt: "Lo squartatore di prova", crediti: "Illustrazione di prova" },
     scheda: undefined,
@@ -171,6 +171,8 @@ test("the public list: editorial staff and community, the newest first, only wha
     "decisa_il", "creata_il", "homebrew_id", "bilanciamento", "sezioni_nascoste", "device_hash"];
   expect(keysOf(list).filter(key => PRIVATE.includes(key))).toEqual([]);
   for (const secret of [...Object.values(SECRET), "fuori dal gs", ...PROPOSALS, OLD, NO_LICENSE]) expect(raw, secret).not.toContain(secret);
+  // PROMPT 67: the editorial licence names only the Grimorio, never «D.d.B.», anywhere in the whole JSON.
+  expect(raw).not.toContain("D.d.B.");
 
   // The same answer for the administrator: the cookies of the reserved area change nothing.
   const { context } = await signIn(browser);
