@@ -1,4 +1,4 @@
-import { COMMUNITY_ON, hiddenPartsText } from "./community-switch.mjs";
+import { hiddenPartsText } from "./community-switch.mjs";
 import { test, expect, devices } from "./fixtures.mjs";
 import { readFileSync } from "node:fs";
 import pg from "pg";
@@ -284,8 +284,12 @@ test("parts of the sections: every part in its page, editions, collections, clas
   page.on("pageerror", error => errors.push(error.message));
   pub.on("pageerror", error => errors.push(error.message));
 
+  // Parts born «Nascosta» (lib/section-visibility.ts DEFAULT_PART_STATES): not in the public page until shown; the
+  // button of «Affrontalo in TPK» has its own test (e2e/affrontalo-tpk.spec.mjs, PROMPT 69).
+  const BORN_HIDDEN = ["bestiario:tpk"];
   for (const section of registry.PUBLIC_SECTIONS) {
     for (const part of section.parts) {
+      if (BORN_HIDDEN.includes(`${section.key}:${part.key}`)) continue;
       await pub.goto(part.page);
       if (section.key === "bestiario" && part.group === "raccolte") await pub.getByRole("button", { name: "Filtri" }).click();
       // The editions are the choices of the pill's panel.
@@ -503,9 +507,8 @@ test("parts of the sections: every part in its page, editions, collections, clas
   // Everything visible again; the pages built meanwhile are built again for the next server (see the sections test).
   await page.goto("/admin/sezioni");
   await expect(page.getByText("10 visibili")).toBeVisible();
-  // Nothing hidden, except «I mostri creati da voi» while the switch of lib/community.ts is off.
-  if (COMMUNITY_ON) await expect(page.getByText(/part[ei] nascost/)).toHaveCount(0);
-  else await expect(page.getByText(/part[ei] nascost/)).toHaveText(hiddenPartsText(0));
+  // Only the parts born «Nascosta» (PROMPT 69) and, while the switch of lib/community.ts is off, «I mostri creati da voi».
+  await expect(page.getByText(/part[ei] nascost/)).toHaveText(hiddenPartsText(0));
   for (const path of ["/", "/grimorio", "/spell/palla-di-fuoco", "/spell/palla-di-fuoco-2014", "/bestiario", "/mostro/alce", "/classi", "/classi/mago", "/compendio", "/compendio/condizioni",
     "/manuale/condizioni-accecato", "/equipaggiamento/armi", "/equipaggiamento/armi/tridente", "/equipaggiamento/avventura", "/avanzamento", "/preferiti", "/ricerca-indice.json"]) {
     expect((await pub.request.get(path)).status(), path).toBe(200);
@@ -554,9 +557,8 @@ test("«la tua edizione» with 2014 hidden in every section: no first launch, ev
   // Everything visible again; the pages built meanwhile are built again for the next server.
   for (const key of sections) await toggle2014(key, false);
   await page.goto("/admin/sezioni");
-  // Nothing hidden, except «I mostri creati da voi» while the switch of lib/community.ts is off.
-  if (COMMUNITY_ON) await expect(page.getByText(/part[ei] nascost/)).toHaveCount(0);
-  else await expect(page.getByText(/part[ei] nascost/)).toHaveText(hiddenPartsText(0));
+  // Only the parts born «Nascosta» (PROMPT 69) and, while the switch of lib/community.ts is off, «I mostri creati da voi».
+  await expect(page.getByText(/part[ei] nascost/)).toHaveText(hiddenPartsText(0));
   for (const path of ["/", "/grimorio", "/bestiario", "/classi", "/classi/mago", "/oggetti-magici", "/compendio/condizioni", "/equipaggiamento/armi", "/equipaggiamento/armature",
     "/equipaggiamento/avventura", "/equipaggiamento/strumenti", "/ricerca-indice.json"]) {
     expect((await page.request.get(path)).status(), path).toBe(200);
@@ -574,7 +576,7 @@ test("«Nascondi tutto» and «Nascondi tutta la sezione»: everything Nascosto 
     const partsRows = (await client.query("SELECT sezione, parte, nascosta, in_arrivo FROM grimorio_section_parts").catch(() => ({ rows: [] }))).rows;
     const state = row => (!row.nascosta ? "visibile" : row.in_arrivo ? "in-arrivo" : "nascosta");
     // A row saying the default state is the same as no row: only what differs from the default counts.
-    const DEFAULTS = { talenti: "in-arrivo", personaggi: "nascosta", "bestiario:grimorio": "in-arrivo" };
+    const DEFAULTS = { talenti: "in-arrivo", personaggi: "nascosta", "bestiario:grimorio": "in-arrivo", "bestiario:tpk": "nascosta" };
     return Object.fromEntries([
       ...sectionsRows.map(row => [row.sezione, state(row)]),
       ...partsRows.map(row => [`${row.sezione}:${row.parte}`, state(row)]),

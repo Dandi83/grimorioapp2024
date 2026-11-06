@@ -135,7 +135,19 @@ export async function InsightsMore({ range, hourly }: { range: StatisticsRange; 
           <Bar name="edizione" label="Cambio edizione" part={uses.edizione} whole={uses.people} />
           <Bar name="preferiti" label="Preferiti" part={uses.preferiti} whole={uses.people} />
           <Bar name="condivisione" label="Condivisione scheda" part={uses.condivisione} whole={uses.people} />
+          <Bar name="tpk" label="Affrontalo in TPK" part={uses.tpk} whole={uses.people} />
         </ul>
+        {/* PROMPT 69: the creatures sent to Total Party Kill most often in the period (taps, people). */}
+        {uses.tpkTop.length > 0 && (
+          <ul className="mt-2 divide-y divide-[#DDCFAE]" aria-label="Mostri più affrontati in Total Party Kill" data-tpk-top="">
+            {uses.tpkTop.map(row => (
+              <li key={row.id} className="flex items-baseline justify-between gap-3 py-1 text-[15px]" data-tpk-row={row.id}>
+                <code className="min-w-0 break-all text-[14px]">{row.id}</code>
+                <b className="shrink-0 tabular-nums">× {number(row.times)} <span className="font-normal text-[#5E4E3E]">· {number(row.people)} {row.people === 1 ? "persona" : "persone"}</span></b>
+              </li>
+            ))}
+          </ul>
+        )}
         <p className="mt-1 text-[12px] text-[#5E4E3E]">% delle {number(uses.people)} persone del periodo. I dadi non compaiono: la sezione non è pubblica.</p>
         <h3 className={SMALL_TITLE}>Due passaggi</h3>
         <Steps name="proponi" title="Proponi il tuo" from={uses.proposalStart} to={uses.proposalSent} labels={["modulo aperto", "inviato"]} />

@@ -977,9 +977,10 @@ test("admin corrections: tiles, weapons list per edition, edit with reason, publ
   await page.goto("/admin/contenuti");
   const tiles = page.getByRole("main");
   for (const name of ["Incantesimi", "Mostri", "Armi", "Armature", "Equipaggiamento", "Strumenti", "Oggetti magici", "Condizioni", "Manuale"]) await expect(tiles.getByRole("link", { name: new RegExp(`^${name}`) })).toBeVisible();
-  // No whole section «In arrivo»; the part «Mostri del Grimorio» starts «in arrivo» and is counted as such (PROMPT 29).
+  // No whole section «In arrivo»; the part «Mostri del Grimorio» starts «in arrivo» and is counted as such (PROMPT 29),
+  // «Affrontalo in TPK» starts «Nascosta» (PROMPT 69).
   await expect(tiles.getByText("In arrivo per gli utenti", { exact: true })).toHaveCount(0);
-  await expect(tiles.locator('[data-content-row="mostri"]')).toContainText("1 parte in arrivo per gli utenti");
+  await expect(tiles.locator('[data-content-row="mostri"]')).toContainText("1 parte in arrivo · 1 parte nascosta per gli utenti");
   await page.goto("/admin");
   await expect(page.getByRole("link", { name: /^Registro/ })).toBeVisible();
   for (const width of [360, 390]) {

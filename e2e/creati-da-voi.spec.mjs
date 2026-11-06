@@ -261,7 +261,7 @@ test("/admin/sezioni: «I mostri creati da voi» shows its real state, «Spenta 
     await page.goto("/admin/sezioni");
     const bestiario = page.locator('[data-section-row="bestiario"]');
     // The summary of the Bestiario and the count at the top take it as hidden.
-    await expect(bestiario.locator("[data-parts-summary]")).toContainText("1 parte non visibile: I mostri creati da voi");
+    await expect(bestiario.locator("[data-parts-summary]")).toContainText(/\d+ part[ei] non visibil[ei]:.*I mostri creati da voi/); // with «Affrontalo in TPK», born hidden (PROMPT 69)
     await expect(page.getByText(/^\d+ (parte nascosta|parti nascoste)$/)).toBeVisible();
     await bestiario.locator("[data-parts-summary]").click();
     const row = page.locator('[data-part-row="bestiario:homebrew"]');

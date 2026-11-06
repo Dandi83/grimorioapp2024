@@ -122,23 +122,23 @@ for (const width of [390, 1280]) {
       await expect(page.locator("main").first(), path).not.toContainText(OLD);
     }
 
-    // /admin/contenuti, row Mostri: «Mostri del Grimorio» in arrivo (its default), the community visible.
+    // /admin/contenuti, row Mostri: «Mostri del Grimorio» in arrivo and «Affrontalo in TPK» nascosta (their defaults,
+    // PROMPT 25 and 69), the community visible.
     await page.goto("/admin/contenuti");
     const monsters = page.locator('[data-content-row="mostri"]');
-    await expect(monsters).toContainText("1 parte in arrivo per gli utenti");
-    await expect(monsters).not.toContainText("nascost");
+    await expect(monsters).toContainText("1 parte in arrivo · 1 parte nascosta per gli utenti");
     await noSideScroll();
     // The community hidden too: both, each with its number.
     await setBestiaryPart(page, COMMUNITY_TITLE, "Nascosta");
     try {
       await page.goto("/admin/contenuti");
-      await expect(monsters).toContainText("1 parte in arrivo · 1 parte nascosta per gli utenti");
-      await expect(monsters).toHaveAttribute("aria-label", /1 parte in arrivo · 1 parte nascosta per gli utenti/);
+      await expect(monsters).toContainText("1 parte in arrivo · 2 parti nascoste per gli utenti");
+      await expect(monsters).toHaveAttribute("aria-label", /1 parte in arrivo · 2 parti nascoste per gli utenti/);
     } finally {
       await setBestiaryPart(page, COMMUNITY_TITLE, "Visibile");
     }
     await page.goto("/admin/contenuti");
-    await expect(monsters).toContainText("1 parte in arrivo per gli utenti");
+    await expect(monsters).toContainText("1 parte in arrivo · 1 parte nascosta per gli utenti");
     await context.close();
   });
 }

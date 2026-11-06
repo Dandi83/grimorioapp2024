@@ -41,6 +41,9 @@ export const ANALYTICS_EVENTS = [
   "share_image_open",
   "share_image_sent",
   "share_image_saved",
+  // «⚔ Affrontalo in Total Party Kill» (PROMPT 69) tapped at the bottom of a creature: the creature is the one of the
+  // path (/mostro/<id>); nothing else is sent. TPK itself is opened by the link, never called by the Grimorio.
+  "tpk_summon_click",
 ] as const;
 /** The image events: from any public sheet. */
 export const SHARE_IMAGE_EVENTS = ["share_image_open", "share_image_sent", "share_image_saved"] as const;
@@ -167,6 +170,7 @@ export function parseAnalyticsInput(raw: unknown): AnalyticsInput | undefined {
   const favorite = r.event === "favorite_add" || r.event === "favorite_remove";
   if (favorite && (!FAVORITE_KINDS.includes(r.favoriteKind as FavoriteKind) || typeof r.favoriteId !== "string" || !CARD_ID.test(r.favoriteId))) return;
   if (r.event === "prova_tavolo" && (!TABLE_VOTES.includes(r.tableVote as TableVote) || !/^\/mostro\/[a-z0-9][a-z0-9-]{0,119}$/.test(r.path))) return;
+  if (r.event === "tpk_summon_click" && !/^\/mostro\/[a-z0-9][a-z0-9-]{0,119}$/.test(r.path)) return;
   const input: AnalyticsInput = {
     event: r.event as AnalyticsEvent,
     id: r.id as string,
