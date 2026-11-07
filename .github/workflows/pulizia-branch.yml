@@ -2,17 +2,33 @@ name: Pulizia branch uniti
 
 # PROMPT 42: lanciata solo a mano (Actions → «Pulizia branch uniti» → Run workflow). «prova» elenca e non tocca
 # nulla; «elimina» cancella soltanto i branch già uniti in main (mai main, mai protetti, mai con una PR aperta).
+# PROMPT 74: due modalità in più, che lavorano SOLO sull'elenco esplicito del campo «branch» (nomi separati da virgola,
+# spazio o a capo; vuoto = errore e nessuna azione; «prova» ed «elimina» lo ignorano):
+#   - «archivia-prova»: mostra solo cosa farebbe (tag da creare, branch da eliminare, rifiuti con il motivo);
+#   - «archivia-ed-elimina»: per ogni branch crea il tag d'archivio «archivio/<nome-branch>» sull'ultimo commit
+#     attuale (se esiste già sullo stesso commit va bene; su un altro commit il branch è rifiutato), rilegge il tag
+#     da GitHub e cancella il branch solo se il tag esiste davvero e punta all'ultimo commit attuale del branch,
+#     ricontrollato subito prima della cancellazione. Nessun tag viene mai cancellato o spostato.
+# Rifiutati sempre, senza toccare nulla: main, branch protetti, cloud/… (filone iPhone), branch con una PR aperta,
+# nomi che non esistono. Solo il GITHUB_TOKEN automatico; prove senza GitHub in tests/pulizia-branch.cjs.
 on:
   workflow_dispatch:
     inputs:
       modalita:
-        description: "«prova» elenca soltanto; «elimina» cancella i branch già uniti in main"
+        description: "«prova» elenca soltanto; «elimina» cancella i branch già uniti in main; «archivia-prova» / «archivia-ed-elimina» lavorano sull'elenco del campo «branch» (tag archivio/<nome> e poi cancellazione)"
         required: true
         default: prova
         type: choice
         options:
           - prova
           - elimina
+          - archivia-prova
+          - archivia-ed-elimina
+      branch:
+        description: "Solo per «archivia-prova» e «archivia-ed-elimina»: nomi dei branch separati da virgola, spazio o a capo (obbligatorio; ignorato da «prova» ed «elimina»)"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -35,4 +51,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           MODALITA: ${{ inputs.modalita }}
+          BRANCH_LIST: ${{ inputs.branch }}
         run: bash .github/scripts/pulizia-branch.sh
