@@ -47,11 +47,47 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # WebKit and Firefox: the compatibility test of every engine (e2e/compatibilita-*.spec.mjs).
-      # On 27 October 2026 this step hung for 70 minutes once: now it stops after 10 and the job can run again.
+      # Chromium, WebKit and Firefox: the compatibility test of every engine (e2e/compatibilita-*.spec.mjs).
+      # PROMPT 73: the system packages (~185 .deb, ~139 MB) came from the Ubuntu mirror at ~240 kB/s and the step
+      # went past its 10 minutes. Now browsers and .deb files are in the GitHub cache, keyed on the system and on
+      # the Playwright version of package-lock.json; scripts/ci-browser-deps.sh installs from the cache without
+      # apt-get update and uses the mirror only for what is missing (retries, two attempts, 20 minutes in all).
+      - name: Versione di Playwright e sistema
+        id: pw
+        run: |
+          echo "versione=$(node -p 'require("./package-lock.json").packages["node_modules/playwright-core"].version')" >> "$GITHUB_OUTPUT"
+          . /etc/os-release
+          echo "sistema=${ID}-${VERSION_ID}-${{ runner.arch }}" >> "$GITHUB_OUTPUT"
+      - name: Browser dalla cache
+        id: cache-browser
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-browser-${{ steps.pw.outputs.sistema }}-${{ steps.pw.outputs.versione }}
+      # The newest saved set of .deb files for this system and Playwright version (a new one is saved only when
+      # something had to come from the mirror).
+      - name: Pacchetti di sistema dalla cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/pw-apt-debs
+          key: pw-apt-${{ steps.pw.outputs.sistema }}-${{ steps.pw.outputs.versione }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: pw-apt-${{ steps.pw.outputs.sistema }}-${{ steps.pw.outputs.versione }}-
       - name: Browser per le prove
-        timeout-minutes: 10
-        run: npx playwright install --with-deps chromium webkit firefox
+        id: browser
+        timeout-minutes: 20
+        run: bash scripts/ci-browser-deps.sh
+      - name: Salva i browser in cache
+        if: steps.cache-browser.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: pw-browser-${{ steps.pw.outputs.sistema }}-${{ steps.pw.outputs.versione }}
+      - name: Salva i pacchetti di sistema in cache
+        if: steps.browser.outputs.pacchetti-da-salvare == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/pw-apt-debs
+          key: pw-apt-${{ steps.pw.outputs.sistema }}-${{ steps.pw.outputs.versione }}-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Build e prove nel browser
         run: npm run test:e2e -- --shard=${{ matrix.parte }}/2
       - name: Tracce delle prove fallite
